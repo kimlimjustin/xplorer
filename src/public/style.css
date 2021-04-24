@@ -1,0 +1,23 @@
+body{
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.container{
+    display: flex;
+}
+
+.sidebar{
+    width: 250px;
+    height: 100vh;
+    padding: 15px;
+    display: inline-block;
+}
+
+.main{
+    padding: 15px;
+    height: 100vh;
+    display: inline-block;
+    flex: 1;
+}

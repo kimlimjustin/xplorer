@@ -1,0 +1,8 @@
+{
+    "default": {
+        "sidebarBackground": "#14141b",
+        "mainBackground": "#1a1b26",
+        "textColor": "#afafaf",
+        "fontSize": "18px"
+    }
+}
