@@ -2,6 +2,13 @@
     "default": {
         "sidebarBackground": "#14141b",
         "mainBackground": "#1a1b26",
+        "tabsManager": "#14141b",
+        "minimizeBackgroundColor": "#fbd914",
+        "minimizeColor": "#14141b",
+        "maximizeBackgroundColor": "#ae00ed",
+        "maximizeColor": "#14141b",
+        "exitBackgroundColor": "#ff4743",
+        "exitColor": "#14141b",
         "textColor": "#afafaf",
         "fontSize": "18px"
     }
