@@ -1,20 +1,9 @@
-const fs = require('fs');
 const {remote} = require('electron');
+const changeTheme = require("./theme.js");
 
-window.addEventListener('DOMContentLoaded', () => {
-    const theme = JSON.parse(fs.readFileSync("src/config/theme.json"));
-    // Styling
-    document.body.style.backgroundColor =  theme.default.mainBackground
-    document.body.style.color = theme.default.textColor
-    document.body.style.fontSize = theme.default.fontSize
-    document.querySelector(".tabs-manager").style.backgroundColor = theme.default.tabsManager
-    document.querySelector(".sidebar").style.backgroundColor = theme.default.sidebarBackground
-    document.querySelector("#minimize").style.backgroundColor = theme.default.minimizeBackgroundColor
-    document.querySelector("#minimize").style.color = theme.default.minimizeColor
-    document.querySelector("#maximize").style.backgroundColor = theme.default.maximizeBackgroundColor
-    document.querySelector("#maximize").style.color = theme.default.maximizeColor
-    document.querySelector("#exit").style.backgroundColor = theme.default.exitBackgroundColor
-    document.querySelector("#exit").style.color = theme.default.exitColor
+document.addEventListener('DOMContentLoaded', () => {
+    // Change window theme
+    changeTheme(document)
 
     // Minimize the screen
     document.querySelector("#minimize").addEventListener("click", () => {
@@ -29,6 +18,23 @@ window.addEventListener('DOMContentLoaded', () => {
     document.querySelector("#exit").addEventListener("click", () => {
         const electronWindow = remote.BrowserWindow.getFocusedWindow()
         electronWindow.close()
+    })
+
+    document.querySelectorAll(".tab").forEach(tab => {
+        const closeTab = document.createElement("span");
+        closeTab.innerHTML = "&times;"
+        closeTab.classList.add("close-tab-btn");
+        // Listen to close tab button
+        closeTab.addEventListener("click", () => {
+            // Close the window if user close the only tab
+            if(document.querySelectorAll(".tab").length === 1){
+                const electronWindow = remote.BrowserWindow.getFocusedWindow()
+                electronWindow.close()
+            }else{
+                tab.parentElement.removeChild(tab)
+            }
+        })
+        tab.appendChild(closeTab)
     })
 })
   

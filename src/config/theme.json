@@ -1,15 +1,23 @@
 {
     "default": {
+        "textColor": "#afafaf",
+        "fontSize": "18px",
+        "fontFamily": "system-ui",
+
         "sidebarBackground": "#14141b",
         "mainBackground": "#1a1b26",
-        "tabsManager": "#14141b",
+        "topbarBackground": "#14141b",
+
         "minimizeBackgroundColor": "#fbd914",
         "minimizeColor": "#14141b",
         "maximizeBackgroundColor": "#ae00ed",
         "maximizeColor": "#14141b",
         "exitBackgroundColor": "#ff4743",
         "exitColor": "#14141b",
-        "textColor": "#afafaf",
-        "fontSize": "18px"
+
+        "tabBackgroundColor": "#1a1b26",
+        "tabColor": "#afafaf",
+        "newTabBackgroundColor": "#1a1b26",
+        "newTabColor": "#afafaf"
     }
 }

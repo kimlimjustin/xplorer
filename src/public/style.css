@@ -4,6 +4,12 @@ body{
     overflow: hidden;
 }
 
+.dochub-brand{
+    font-size: 1.5rem;
+    text-align: center;
+    display: block;
+}
+
 .container{
     display: flex;
 }
@@ -14,6 +20,7 @@ body{
 }
 
 .sidebar{
+    min-width: 250px;
     width: 250px;
     height: 100vh;
     padding: 15px;
@@ -26,20 +33,60 @@ body{
     flex: 1;
 }
 
+
 .tabs-manager{
+    flex: 1;
+    overflow: auto;
+    display: flex;
+    width: 100%;
+    -webkit-app-region: no-drag;
+    margin: 0 1rem;
+}
+
+.tab{
+    width: fit-content;
+    padding: 5px 5rem;
+    cursor: pointer;
+    border-radius: 5px;
+    position: relative;
+    -webkit-app-region: no-drag;
+    margin: 0 1rem;
+    display: inline-block;
+}
+
+.close-tab-btn{
+    position: absolute;
+    right: 1rem;
+    font-size: 2rem;
+    top: -.35rem;
+    cursor: pointer;
+}
+
+.create-new-tab{
+    padding: 5px;
+    cursor: pointer;
+    -webkit-app-region: no-drag;
+    display: inline-block;
+    width: calc(1rem + 5px);
+    text-align: center;
+    border-radius: 5px;
+}
+
+.topbar{
     padding: 15px;
     -webkit-app-region: drag;
+    display: flex;
 }
 
 .window-manager{
-    text-align: right;
+    margin-left: auto;
 }
 
 .window-manager span{
     border-radius: 50%;
     padding: 5px;
-    width: 1rem;
-    height: 1rem;
+    width: calc(1rem + 2.5px);
+    height: calc(1rem + 2.5px);
     display: inline-block;
     text-align: -webkit-center;
     cursor: pointer;
