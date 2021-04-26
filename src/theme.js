@@ -1,6 +1,7 @@
 const fs = require('fs');
+const path = require('path');
 const changeTheme = (document) => {
-    const theme = JSON.parse(fs.readFileSync("src/config/theme.json"));
+    const theme = JSON.parse(fs.readFileSync(path.resolve(__dirname, "config/theme.json")));
     document.body.style.backgroundColor =  theme.default.mainBackground
     document.body.style.color = theme.default.textColor
     document.body.style.fontSize = theme.default.fontSize

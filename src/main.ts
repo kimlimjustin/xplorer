@@ -8,7 +8,6 @@ try {
 function createWindow() {
    const {width, height} = screen.getPrimaryDisplay().workAreaSize
    const win = new BrowserWindow({
-      transparent:true,
       frame: false,
       width: Math.floor(width * .8),
       height: Math.floor(height * .8),
