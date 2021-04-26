@@ -16,6 +16,13 @@ const changeTheme = (document) => {
     document.querySelector("#exit").style.color = theme.default.exitColor
     document.querySelector(".create-new-tab").style.backgroundColor = theme.default.newTabBackgroundColor
     document.querySelector(".create-new-tab").style.color = theme.default.newTabColor
+    document.querySelector("#go-back").style.backgroundColor = theme.default.navigatorBackgroundColor
+    document.querySelector("#go-back").style.color = theme.default.navigatorColor
+    document.querySelector("#go-next").style.backgroundColor = theme.default.navigatorBackgroundColor
+    document.querySelector("#go-next").style.color = theme.default.navigatorColor
+    document.querySelector("#refresh").style.backgroundColor = theme.default.navigatorBackgroundColor
+    document.querySelector("#refresh").style.color = theme.default.navigatorColor
+    document.querySelector(".path-navigator").style.backgroundColor = theme.default.pathNavigatorBackgroundColor
     document.querySelectorAll(".tab").forEach(tab => {
         tab.style.backgroundColor = theme.default.tabBackgroundColor
     })

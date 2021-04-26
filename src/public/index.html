@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <meta charset="UTF-8">
-    <title>Xplorer</title>
+    <title>Dochub</title>
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
     <div class="container">
         <div class="sidebar">
@@ -15,22 +13,31 @@
         </div>
         <div class="main">
             <div class="topbar">
-                <div class="tabs-manager">
-                    <div class="tab">
-                        <span>Home</span>
+                <div class="row">
+                    <div class="tabs-manager">
+                        <div class="tab">
+                            <span>Home</span>
+                        </div>
+                        <span class="create-new-tab">
+                            &plus;
+                        </span>
                     </div>
-                    <span class="create-new-tab">
-                        &plus;
-                    </span>
+                    <div class="window-manager">
+                        <span id="minimize" title="Minimize"></span>
+                        <span id="maximize" title="Maximize"></span>
+                        <span id="exit" title="Exit"></span>
+                    </div>
                 </div>
-                <div class="window-manager">
-                    <span id="minimize" title="Minimize">&UnderBar;</span>
-                    <span id="maximize" title="Maximize">&square;</span>
-                    <span id="exit" title="Exit">&times;</span>
+                <div class="row">
+                    <div class="navigator">
+                        <span id="go-back">&larr;</span>
+                        <span id="go-next">&rarr;</span>
+                        <span id="refresh">&#10227;</span>
+                    </div>
+                    <input class="path-navigator" type="text" value="Home" />
                 </div>
             </div>
         </div>
     </div>
 </body>
-
 </html>
