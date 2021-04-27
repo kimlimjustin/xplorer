@@ -1,13 +1,11 @@
 const {remote} = require('electron');
-const changeTheme = require("./theme.js");
+const {changeTheme, getThemeJSON} = require("./theme.js");
 const getDrives = require('./drives.ts');
 const fs = require('fs');
 const os = require('os');
+const storage = require('electron-json-storage')
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Change window theme
-    changeTheme(document, 'light')
-
     // Minimize the screen
     document.querySelector("#minimize").addEventListener("click", () => {
         const electronWindow = remote.BrowserWindow.getFocusedWindow()
@@ -40,6 +38,36 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         })
         tab.appendChild(closeTab)
+    })
+    // Change window theme
+    storage.get('theme', (err, data) => {
+        // If user has no preference theme
+        if(!data || !Object.keys(data).length){
+            // Detect system theme
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                storage.set("theme", {theme: "dark"})
+                changeTheme(document, "dark")
+            }else{
+                storage.set("theme", {theme: "light"})
+                changeTheme(document, "dark")
+            }
+        }else{
+            const themeJSON = getThemeJSON()
+            // Check if the theme available
+            if(themeJSON.availableThemes.indexOf(data.theme) !== -1){
+                changeTheme(document, data.theme)
+            }
+            else{ // If the theme not available
+                // Detect system theme
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    storage.set("theme", {theme: "dark"})
+                    changeTheme(document, "dark")
+                }else{
+                    storage.set("theme", {theme: "light"})
+                    changeTheme(document, "dark")
+                }
+            }
+        }
     })
 })
   

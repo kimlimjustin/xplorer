@@ -35,4 +35,8 @@ const changeTheme = (document, theme) => {
     })
 }
 
-module.exports = changeTheme
+const getThemeJSON = () => {
+    return JSON.parse(fs.readFileSync(path.resolve(__dirname, "config/theme.json")));
+}
+
+module.exports = {changeTheme, getThemeJSON}

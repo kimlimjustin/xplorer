@@ -1,4 +1,5 @@
 {
+    "availableThemes": ["light", "dark"],
     "dark": {
         "textColor": "#4fe0be",
         "fontSize": "18px",
