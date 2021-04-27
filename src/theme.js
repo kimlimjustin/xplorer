@@ -26,12 +26,11 @@ const changeTheme = (document, theme) => {
     document.querySelector(".path-navigator").style.background = themeJSON[theme].pathNavigatorBackground
     document.querySelectorAll(".tab").forEach(tab => {
         tab.style.background = themeJSON[theme].tabBackground
-    })
-    document.querySelectorAll(".tab").forEach(tab => {
         tab.style.color = themeJSON[theme].tabColor
     })
     document.querySelectorAll(".drive").forEach(drive => {
         drive.style.background = themeJSON[theme].driveBackground
+        drive.style.color = themeJSON[theme].driveColor
     })
 }
 

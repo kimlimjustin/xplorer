@@ -4,6 +4,12 @@ const getDrives = require('./drives.ts');
 const fs = require('fs');
 const os = require('os');
 const storage = require('electron-json-storage')
+const {getCurrentWindow, globalShortcut} = remote
+
+// Function to reload
+const reload = () => {
+    getCurrentWindow().reload()
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     // Minimize the screen
@@ -20,6 +26,16 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector("#exit").addEventListener("click", () => {
         const electronWindow = remote.BrowserWindow.getFocusedWindow()
         electronWindow.close()
+    })
+
+    // Refresh the page
+    document.querySelector("#refresh").addEventListener("click",reload)
+    globalShortcut.register("F5", reload)
+    globalShortcut.register("CommandOrControl+R", reload);
+    // Remove shortcut from the current window to avoid multiple reload on the new window
+    window.addEventListener("beforeunload", () => {
+        globalShortcut.unregister("F5", reload)
+        globalShortcut.unregister("CommandOrControl+R", reload);
     })
 
     // Closing tab

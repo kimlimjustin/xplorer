@@ -24,7 +24,8 @@
         "navigatorColor": "#4fe0be",
         "pathNavigatorBackground": "#a2b7ff",
         "pathNavigatorColor": "#000",
-        "driveBackground": "-webkit-linear-gradient(-70deg,#a2c33a,#c7a310)"
+        "driveBackground": "#a2b7ff",
+        "driveColor": "#000"
     },
     "light": {
         "textColor": "#000",
@@ -50,6 +51,7 @@
         "navigatorColor": "#000",
         "pathNavigatorBackground": "#d1d1d8",
         "pathNavigatorColor": "#000",
-        "driveBackground": "-webkit-linear-gradient(-70deg,#a2c33a,#c7a310)"
+        "driveBackground": "#d1d1d8",
+        "driveColor": "#000"
     }
 }
