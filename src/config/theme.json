@@ -1,5 +1,5 @@
 {
-    "default": {
+    "dark": {
         "textColor": "#4fe0be",
         "fontSize": "18px",
         "fontFamily": "system-ui",
@@ -8,20 +8,47 @@
         "mainBackground": "#1a1b26",
         "topbarBackground": "#14141b",
 
-        "minimizeBackgroundColor": "#fbd914",
+        "minimizebackground": "#fbd914",
         "minimizeColor": "#14141b",
-        "maximizeBackgroundColor": "#00ca4e",
+        "maximizebackground": "#00ca4e",
         "maximizeColor": "#14141b",
-        "exitBackgroundColor": "#ff4743",
+        "exitbackground": "#ff4743",
         "exitColor": "#14141b",
 
-        "tabBackgroundColor": "#1a1b26",
-        "tabColor": "#4fe0be",
-        "newTabBackgroundColor": "#1a1b26",
-        "newTabColor": "#4fe0be",
-        "navigatorBackgroundColor": "#4fe0be",
+        "tabBackground": "#a2b7ff",
+        "tabColor": "#000",
+        "newTabBackground": "#a2b7ff",
+        "newTabColor": "#000",
+        "navigatorBackground": "transparent",
+        "navigatorColor": "#4fe0be",
+        "pathNavigatorBackground": "#a2b7ff",
+        "pathNavigatorColor": "#000",
+        "driveBackground": "-webkit-linear-gradient(-70deg,#a2c33a,#c7a310)"
+    },
+    "light": {
+        "textColor": "#000",
+        "fontSize": "18px",
+        "fontFamily": "system-ui",
+
+        "sidebarBackground": "#d1d1d8",
+        "mainBackground": "#f3f3f3",
+        "topbarBackground": "#eeeeee",
+
+        "minimizebackground": "#fbd914",
+        "minimizeColor": "#14141b",
+        "maximizebackground": "#00ca4e",
+        "maximizeColor": "#14141b",
+        "exitbackground": "#ff4743",
+        "exitColor": "#14141b",
+
+        "tabBackground": "#d1d1d8",
+        "tabColor": "#000",
+        "newTabBackground": "#d1d1d8",
+        "newTabColor": "#000",
+        "navigatorBackground": "transparent",
         "navigatorColor": "#000",
-        "pathNavigatorBackgroundColor": "#4fe0d9",
-        "pathNavigatorColor": "#000"
+        "pathNavigatorBackground": "#d1d1d8",
+        "pathNavigatorColor": "#000",
+        "driveBackground": "-webkit-linear-gradient(-70deg,#a2c33a,#c7a310)"
     }
 }

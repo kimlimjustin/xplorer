@@ -52,7 +52,6 @@ body{
     -webkit-app-region: no-drag;
     margin: 0 1rem;
     display: inline-block;
-    background: linear-gradient(-70deg,#db469f,#2188ff) left bottom #777 no-repeat;
 }
 
 .close-tab-btn{
@@ -70,7 +69,6 @@ body{
     width: calc(1rem + 5px);
     text-align: center;
     border-radius: 5px;
-    background: linear-gradient(-70deg,#db469f,#2188ff) left bottom #777 no-repeat;
 }
 
 .topbar{
@@ -85,13 +83,14 @@ body{
 .window-manager span{
     border-radius: 50%;
     padding: 5px;
-    width: calc(1rem + 2.5px);
-    height: calc(1rem + 2.5px);
+    width: 1rem;
+    height: 1rem;
     display: inline-block;
     text-align: -webkit-center;
     cursor: pointer;
     vertical-align: middle;
     font-size: 1rem;
+    top: -1rem;
     -webkit-app-region: no-drag;
 }
 
@@ -116,7 +115,7 @@ body{
     display: inline-block;
 }
 
-#go-back, #go-next, #refresh{
+#go-back, #go-forward, #refresh{
     margin: .2rem;
     padding: .2rem;
     cursor: pointer;
@@ -137,5 +136,18 @@ body{
     -webkit-app-region: no-drag;
     border: none;
     border-radius: 5px;
-    padding: .3rem;
+    padding: .5rem;
+    vertical-align: middle;
+}
+
+.drive{
+    display: inline-block;
+    margin: 2rem;
+    padding: 1rem;
+    border-radius: 5px;
+}
+
+.drive-title{
+    margin: 0;
+    font-size: 2rem;
 }

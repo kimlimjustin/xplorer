@@ -1,33 +1,37 @@
 const fs = require('fs');
 const path = require('path');
-const changeTheme = (document) => {
-    const theme = JSON.parse(fs.readFileSync(path.resolve(__dirname, "config/theme.json")));
-    document.body.style.backgroundColor =  theme.default.mainBackground
-    document.body.style.color = theme.default.textColor
-    document.body.style.fontSize = theme.default.fontSize
-    document.body.style.fontFamily = theme.default.fontFamily
-    document.querySelector(".topbar").style.backgroundColor = theme.default.topbarBackground
-    document.querySelector(".sidebar").style.backgroundColor = theme.default.sidebarBackground
-    document.querySelector("#minimize").style.backgroundColor = theme.default.minimizeBackgroundColor
-    document.querySelector("#minimize").style.color = theme.default.minimizeColor
-    document.querySelector("#maximize").style.backgroundColor = theme.default.maximizeBackgroundColor
-    document.querySelector("#maximize").style.color = theme.default.maximizeColor
-    document.querySelector("#exit").style.backgroundColor = theme.default.exitBackgroundColor
-    document.querySelector("#exit").style.color = theme.default.exitColor
-    document.querySelector(".create-new-tab").style.backgroundColor = theme.default.newTabBackgroundColor
-    document.querySelector(".create-new-tab").style.color = theme.default.newTabColor
-    document.querySelector("#go-back").style.backgroundColor = theme.default.navigatorBackgroundColor
-    document.querySelector("#go-back").style.color = theme.default.navigatorColor
-    document.querySelector("#go-next").style.backgroundColor = theme.default.navigatorBackgroundColor
-    document.querySelector("#go-next").style.color = theme.default.navigatorColor
-    document.querySelector("#refresh").style.backgroundColor = theme.default.navigatorBackgroundColor
-    document.querySelector("#refresh").style.color = theme.default.navigatorColor
-    document.querySelector(".path-navigator").style.backgroundColor = theme.default.pathNavigatorBackgroundColor
+// Change page theme
+const changeTheme = (document, theme) => {
+    const themeJSON = JSON.parse(fs.readFileSync(path.resolve(__dirname, "config/theme.json")));
+    document.body.style.background =  themeJSON[theme].mainBackground
+    document.body.style.color = themeJSON[theme].textColor
+    document.body.style.fontSize = themeJSON[theme].fontSize
+    document.body.style.fontFamily = themeJSON[theme].fontFamily
+    document.querySelector(".topbar").style.background = themeJSON[theme].topbarBackground
+    document.querySelector(".sidebar").style.background = themeJSON[theme].sidebarBackground
+    document.querySelector("#minimize").style.background = themeJSON[theme].minimizebackground
+    document.querySelector("#minimize").style.color = themeJSON[theme].minimizeColor
+    document.querySelector("#maximize").style.background = themeJSON[theme].maximizebackground
+    document.querySelector("#maximize").style.color = themeJSON[theme].maximizeColor
+    document.querySelector("#exit").style.background = themeJSON[theme].exitbackground
+    document.querySelector("#exit").style.color = themeJSON[theme].exitColor
+    document.querySelector(".create-new-tab").style.background = themeJSON[theme].newTabBackground
+    document.querySelector(".create-new-tab").style.color = themeJSON[theme].newTabColor
+    document.querySelector("#go-back").style.background = themeJSON[theme].navigatorBackground
+    document.querySelector("#go-back").style.color = themeJSON[theme].navigatorColor
+    document.querySelector("#go-forward").style.background = themeJSON[theme].navigatorBackground
+    document.querySelector("#go-forward").style.color = themeJSON[theme].navigatorColor
+    document.querySelector("#refresh").style.background = themeJSON[theme].navigatorBackground
+    document.querySelector("#refresh").style.color = themeJSON[theme].navigatorColor
+    document.querySelector(".path-navigator").style.background = themeJSON[theme].pathNavigatorBackground
     document.querySelectorAll(".tab").forEach(tab => {
-        tab.style.backgroundColor = theme.default.tabBackgroundColor
+        tab.style.background = themeJSON[theme].tabBackground
     })
     document.querySelectorAll(".tab").forEach(tab => {
-        tab.style.color = theme.default.tabColor
+        tab.style.color = themeJSON[theme].tabColor
+    })
+    document.querySelectorAll(".drive").forEach(drive => {
+        drive.style.background = themeJSON[theme].driveBackground
     })
 }
 

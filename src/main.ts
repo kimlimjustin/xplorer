@@ -5,6 +5,8 @@ try {
    require('electron-reloader')(module)
 } catch (_) { }
 
+
+// Create a new window
 function createWindow() {
    const {width, height} = screen.getPrimaryDisplay().workAreaSize
    const win = new BrowserWindow({
