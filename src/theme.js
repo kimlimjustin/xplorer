@@ -28,9 +28,9 @@ const changeTheme = (document, theme) => {
         tab.style.background = themeJSON[theme].tabBackground
         tab.style.color = themeJSON[theme].tabColor
     })
-    document.querySelectorAll(".drive").forEach(drive => {
-        drive.style.background = themeJSON[theme].driveBackground
-        drive.style.color = themeJSON[theme].driveColor
+    document.querySelectorAll(".favorite").forEach(favorite => {
+        favorite.style.background = themeJSON[theme].favoriteBackground
+        favorite.style.color = themeJSON[theme].favoriteColor
     })
 }
 

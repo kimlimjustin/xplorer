@@ -130,6 +130,10 @@ body{
     margin-left: 2rem;
 }
 
+#main{
+    padding: 1rem;
+}
+
 .path-navigator{
     flex: 1;
     margin: 0 1rem;
@@ -140,14 +144,25 @@ body{
     vertical-align: middle;
 }
 
-.drive{
+.favorite{
     display: inline-block;
-    margin: 2rem;
+    margin: 1rem;
     padding: 1rem;
     border-radius: 5px;
 }
 
-.drive-title{
+.favorite-title{
     margin: 0;
-    font-size: 2rem;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.favorites-title{
+    margin-left: 1rem;
+    font-size: .8rem;
+}
+
+.favorite-icon{
+    width: 5rem;
+    display: block;
 }
