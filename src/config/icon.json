@@ -1,0 +1,13 @@
+{
+    "favorites": {
+        "desktop": "desktop.svg",
+        "document": "document.svg",
+        "download": "download.svg",
+        "music": "music.svg",
+        "picture": "picture.svg",
+        "video": "video.svg"
+    },
+    "extension": {
+
+    }
+}

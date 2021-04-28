@@ -1,7 +1,6 @@
 body{
     margin: 0;
     padding: 0;
-    overflow: hidden;
 }
 
 .xplorer-brand{
@@ -22,15 +21,15 @@ body{
 .sidebar{
     min-width: 250px;
     width: 250px;
-    height: 100vh;
     padding: 15px;
     display: inline-block;
 }
 
 .main{
     height: 100vh;
-    display: inline-block;
     flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 
@@ -39,7 +38,6 @@ body{
     overflow: auto;
     display: flex;
     width: 100%;
-    -webkit-app-region: no-drag;
     margin: 0 1rem;
 }
 
@@ -132,6 +130,7 @@ body{
 
 #main{
     padding: 1rem;
+    overflow: auto;
 }
 
 .path-navigator{
@@ -149,6 +148,7 @@ body{
     margin: 1rem;
     padding: 1rem;
     border-radius: 5px;
+    cursor: pointer;
 }
 
 .favorite-title{
