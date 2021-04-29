@@ -10,7 +10,7 @@ var Constants = /** @class */ (function () {
     /**
      * Command to execute on Windows.
      */
-    Constants.WINDOWS_COMMAND = 'wmic logicaldisk get Caption,FreeSpace,Size,VolumeSerialNumber,Description  /format:list';
+    Constants.WINDOWS_COMMAND = 'wmic logicaldisk get Caption,FreeSpace,Size,VolumeName,Description  /format:list';
     /**
      * Command to execute on Linux.
      */
