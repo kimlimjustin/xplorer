@@ -23,7 +23,6 @@ const Drives = async () => {
             <section class="main-section">
             <h1 class="pendrives-title">Pendrives</h1>
                 ${USBStick.map((drive) => {
-                    console.log(drive)
                     let driveName = drive._mounted.split("/")[drive._mounted.split("/").length - 1]
                     return `
                     <div class="pendrive">

@@ -62,25 +62,13 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         tab.appendChild(closeTab)
     })
-    // Change window theme
-    storage.get('theme', (err, data) => {
-        // If user has no preference theme
-        if(!data || !Object.keys(data).length){
-            // Detect system theme
-            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                storage.set("theme", {theme: "dark"})
-                changeTheme(document, "dark")
-            }else{
-                storage.set("theme", {theme: "light"})
-                changeTheme(document, "dark")
-            }
-        }else{
-            const themeJSON = getThemeJSON()
-            // Check if the theme available
-            if(themeJSON.availableThemes.indexOf(data.theme) !== -1){
-                changeTheme(document, data.theme)
-            }
-            else{ // If the theme not available
+
+    // Function to update page theme
+    const updateTheme = () => {
+        // Change window theme
+        storage.get('theme', (err, data) => {
+            // If user has no preference theme
+            if(!data || !Object.keys(data).length){
                 // Detect system theme
                 if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                     storage.set("theme", {theme: "dark"})
@@ -89,18 +77,56 @@ document.addEventListener('DOMContentLoaded', () => {
                     storage.set("theme", {theme: "light"})
                     changeTheme(document, "dark")
                 }
+            }else{
+                const themeJSON = getThemeJSON()
+                // Check if the theme available
+                if(themeJSON.availableThemes.indexOf(data.theme) !== -1){
+                    changeTheme(document, data.theme)
+                }
+                else{ // If the theme not available
+                    // Detect system theme
+                    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                        storage.set("theme", {theme: "dark"})
+                        changeTheme(document, "dark")
+                    }else{
+                        storage.set("theme", {theme: "light"})
+                        changeTheme(document, "dark")
+                    }
+                }
             }
-        }
-    })
+        })
+    }
     // Content for home page
     const homePage = () => {
         // Create a new main element
         const newMainElement = document.createElement("div");
+
+        let previousDrive; // Previous drive tags (used to detect USB Drive changes)
+        // Detecting USB Drive changes every 500 ms
+        setInterval(() => {
+            Drives().then(drives => {
+                if(previousDrive === undefined){
+                    previousDrive = drives
+                }else{
+                    // If the drives change ...
+                    if(previousDrive !== drives){
+                        // Update the content in the main page ...
+                        newMainElement.innerHTML = Favorites() + drives
+                        changeContent(newMainElement)
+                        // And also the theme :)
+                        updateTheme()
+                    }
+                }
+                previousDrive = drives
+            })
+        }, 500)
+
         Drives().then(drives => {
             newMainElement.innerHTML = Favorites() + drives
             changeContent(newMainElement)
         })
     }
     homePage()
+    updateTheme()
 })
   
