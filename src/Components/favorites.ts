@@ -3,7 +3,8 @@ const fs = require('fs');
 const Favorites = () => {
     const iconJSON = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../config/icon.json")));
     return(
-        `<h2 class="favorites-title">Favorites</h2>
+        `<section class="home-section">
+        <h2 class="favorites-title">Favorites</h2>
         <div class="favorite">
             <h3 class="favorite-title"><img src="${path.join(__dirname,  `../icon/${iconJSON.favorites.desktop}`)}" alt="Desktop icon" class="favorite-icon">Desktop</h3>
         </div>
@@ -21,7 +22,7 @@ const Favorites = () => {
         </div>
         <div class="favorite">
             <h3 class="favorite-title"><img src="${path.join(__dirname,  `../icon/${iconJSON.favorites.video}`)}" alt="Video icon" class="favorite-icon">Videos</h3>
-        </div>`
+        </div></section>`
     )
 }
 module.exports =  Favorites

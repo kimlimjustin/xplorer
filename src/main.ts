@@ -1,5 +1,6 @@
 const { app, BrowserWindow, Menu, screen } = require('electron')
 const path = require('path')
+const storage = require('electron-json-storage')
 
 try {
    require('electron-reloader')(module)
@@ -24,6 +25,7 @@ function createWindow() {
    win.loadFile('src/public/index.html')
    //win.removeMenu()
 }
+app.allowRendererProcessReuse = false
 
 app.whenReady().then(() => {
    createWindow()
@@ -36,6 +38,7 @@ app.whenReady().then(() => {
 })
 
 app.on('window-all-closed', () => {
+   storage.remove('_loc')
    if (process.platform !== 'darwin') {
       app.quit()
    }

@@ -32,6 +32,9 @@ body{
     flex-direction: column;
 }
 
+.home-section{
+    margin: 2rem 0;
+}
 
 .tabs-manager{
     flex: 1;
@@ -143,7 +146,7 @@ body{
     vertical-align: middle;
 }
 
-.favorite{
+.favorite, .pendrive{
     display: inline-block;
     margin: 1rem;
     padding: 1rem;
@@ -157,12 +160,43 @@ body{
     text-align: center;
 }
 
-.favorites-title{
+.favorites-title, .pendrives-title{
     margin-left: 1rem;
     font-size: .8rem;
 }
 
 .favorite-icon{
     width: 5rem;
+    display: block;
+}
+
+.pendrive-icon{
+    width: 3.5rem;
+    display: inline-block;
+    vertical-align: middle;
+}
+.pendrive-info{
+    display: inline-block;
+    margin: 0;
+    vertical-align: middle;
+    font-size: .8rem;
+}
+
+.pendrive-info p{
+    margin: .1rem 0;
+}
+
+.pendrive-title{
+    margin: .1rem 0 .5rem 0;
+}
+
+.pendrive-total-capacity{
+    width: 100%;
+    height: 7px;
+    border-radius: 3px;
+}
+
+.pendrive-used-capacity{
+    height: inherit;
     display: block;
 }

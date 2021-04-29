@@ -1,10 +1,17 @@
 const {remote} = require('electron');
 const {changeTheme, getThemeJSON} = require("./theme.js");
-const getDrives = require('./drives.ts');
+const Drives = require('./Components/drives.js');
 const fs = require('fs');
 const os = require('os');
 const storage = require('electron-json-storage')
 const {getCurrentWindow, globalShortcut} = remote
+const Favorites = require('./Components/favorites.ts');
+// Function to change main element content
+const changeContent = newElement => {
+    newElement.id = "main";
+    const mainElement = document.body.querySelector("#main");
+    mainElement.parentElement.replaceChild(newElement, mainElement);
+}
 
 // Function to reload
 const reload = () => {
@@ -85,5 +92,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     })
+    // Content for home page
+    const homePage = () => {
+        // Create a new main element
+        const newMainElement = document.createElement("div");
+        Drives().then(drives => {
+            newMainElement.innerHTML = Favorites() + drives
+            changeContent(newMainElement)
+        })
+    }
+    homePage()
 })
   

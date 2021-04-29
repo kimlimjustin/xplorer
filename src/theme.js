@@ -32,6 +32,16 @@ const changeTheme = (document, theme) => {
         favorite.style.background = themeJSON[theme].favoriteBackground
         favorite.style.color = themeJSON[theme].favoriteColor
     })
+    document.querySelectorAll(".pendrive").forEach(pendrive => {
+        pendrive.style.background = themeJSON[theme].pendriveBackground
+        pendrive.style.color = themeJSON[theme].pendriveColor
+    })
+    document.querySelectorAll(".pendrive-total-capacity").forEach(bar => {
+        bar.style.background = themeJSON[theme].pendriveTotalCapacityBackground
+    })
+    document.querySelectorAll(".pendrive-used-capacity").forEach(bar => {
+        bar.style.background = themeJSON[theme].pendriveUsedCapacityBackground
+    })
 }
 
 const getThemeJSON = () => {

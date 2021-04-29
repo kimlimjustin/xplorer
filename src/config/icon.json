@@ -5,7 +5,8 @@
         "download": "download.svg",
         "music": "music.svg",
         "picture": "picture.svg",
-        "video": "video.svg"
+        "video": "video.svg",
+        "usb": "usb.svg"
     },
     "extension": {
 
