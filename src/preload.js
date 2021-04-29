@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     changeTheme(document, "dark")
                 }else{
                     storage.set("theme", {theme: "light"})
-                    changeTheme(document, "dark")
+                    changeTheme(document, "light")
                 }
             }else{
                 const themeJSON = getThemeJSON()
@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         changeTheme(document, "dark")
                     }else{
                         storage.set("theme", {theme: "light"})
-                        changeTheme(document, "dark")
+                        changeTheme(document, "light")
                     }
                 }
             }
