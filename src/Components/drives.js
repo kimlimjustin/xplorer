@@ -43,19 +43,7 @@ const Drives = async () => {
             return `
             <section class="main-section">
             <h1 class="pendrives-title">Pendrives</h1>
-                ${USBStick.map((drive) => {
-                    let driveName = drive._mounted.split("/")[drive._mounted.split("/").length - 1] // Get name of drive
-                    return `
-                    <div class="pendrive">
-                        <img src="${path.join(__dirname,  `../icon/${iconJSON.favorites.usb}`)}" alt="Desktop icon" class="pendrive-icon">
-                        <div class="pendrive-info">
-                            <h4 class="pendrive-title">${driveName}</h4>
-                            <div class="pendrive-total-capacity"><span class="pendrive-used-capacity" style="width: ${drive._capacity}"></span></div>
-                            <p>${formatBytes(drive._available, kBlockFormat = true)} free of ${formatBytes(drive._blocks, kBlockFormat = true)}</p>
-                        </div>
-                    </div>
-                    `
-                })}
+                ${toElements(USBStick, kBlockFormat = true)}
             </section>
             `
         }

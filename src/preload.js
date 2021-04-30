@@ -1,8 +1,6 @@
 const {remote} = require('electron');
 const {changeTheme, getThemeJSON} = require("./theme.js");
 const Drives = require('./Components/drives.js');
-const fs = require('fs');
-const os = require('os');
 const storage = require('electron-json-storage')
 const {getCurrentWindow, globalShortcut} = remote
 const Favorites = require('./Components/favorites.ts');
@@ -18,6 +16,7 @@ const reload = () => {
     getCurrentWindow().reload()
 }
 
+// Wait DOM Content to be loaded
 document.addEventListener('DOMContentLoaded', () => {
     // Minimize the screen
     document.querySelector("#minimize").addEventListener("click", () => {
@@ -61,6 +60,26 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         })
         tab.appendChild(closeTab)
+    })
+    
+    // Create a new tab event
+    const createNewTabElement = document.querySelector(".create-new-tab")
+    createNewTabElement.addEventListener('click', ()=> {
+        const newTab = document.createElement("div");
+        newTab.classList.add('tab');
+        newTab.innerHTML = "Home<span class='close-tab-btn'>&times;</span>";
+        // Listen to close tab button
+        newTab.querySelector(".close-tab-btn").addEventListener("click", () => {
+            // Close the window if user close the only tab
+            if(document.querySelectorAll(".tab").length === 1){
+                const electronWindow = remote.BrowserWindow.getFocusedWindow()
+                electronWindow.close()
+            }else{
+                newTab.parentElement.removeChild(newTab)
+            }
+        })
+        createNewTabElement.parentElement.insertBefore(newTab, createNewTabElement) // Insert the new tab
+        updateTheme() // Update the theme
     })
 
     // Function to update page theme

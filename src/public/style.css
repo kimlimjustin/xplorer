@@ -28,6 +28,7 @@ body{
 .main{
     height: 100vh;
     flex: 1;
+    overflow: auto;
     display: flex;
     flex-direction: column;
 }
@@ -42,6 +43,10 @@ body{
     display: flex;
     width: 100%;
     margin: 0 1rem;
+}
+
+.tabs-manager:not(.tab):not(.create-new-tab){
+    -webkit-app-region: drag;
 }
 
 .tab{
