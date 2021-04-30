@@ -1,0 +1,17 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="body_1" width="512" height="384">
+
+<defs>
+    <linearGradient transform="matrix(1 0 0 1 0 0)"  id="1" x1="2" y1="2" x2="15" y2="2">
+        <stop stop-color="#FDF701" offset="0%"/>
+        <stop stop-color="#FFC828" offset="100%"/>
+    </linearGradient>
+</defs>
+
+<g transform="matrix(2 0 0 2 0 0)">
+	<g transform="matrix(12 0 0 12 32 0)">
+	</g>
+    <path transform="matrix(12 0 0 12 32 0)"  d="M2 2L2 3L2 12L2 13L15 13L15 12L15 6L15 5L15 4L8.407812 4L6.407813 2L7 2.007813L7 2L3 2L2 2zM3 3L6 3L7 4L7 4.007813L7 4L6 5L3 5z" stroke="none" fill="url(#1)" />
+</g>
+</svg>

@@ -1,5 +1,6 @@
 {
   "name": "xplorer",
+  "Description": "Xplorer, a customizable, modern file manager",
   "version": "1.0.0",
   "description": "",
   "main": "src/main.ts",
