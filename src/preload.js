@@ -3,7 +3,7 @@ const {changeTheme, getThemeJSON} = require("./theme.js");
 const Drives = require('./Components/drives.js');
 const storage = require('electron-json-storage')
 const {getCurrentWindow, globalShortcut} = remote
-const Favorites = require('./Components/favorites.ts');
+const Favorites = require('./Components/favorites.js');
 // Function to change main element content
 const changeContent = newElement => {
     newElement.id = "main";
@@ -158,11 +158,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 }else{
                     // If the drives change ...
                     if(previousDrive !== drives){
-                        // Update the content in the main page ...
-                        newMainElement.innerHTML = Favorites() + drives
-                        changeContent(newMainElement)
-                        // And also the theme :)
-                        updateTheme()
+                        Favorites(favorites => {
+                            // Update the content in the main page ...
+                            newMainElement.innerHTML = favorites + drives
+                            changeContent(newMainElement)
+                            // And also the theme :)
+                            updateTheme()
+                        })
                     }
                 }
                 previousDrive = drives
@@ -170,8 +172,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 500)
 
         Drives().then(drives => {
-            newMainElement.innerHTML = Favorites() + drives
-            changeContent(newMainElement)
+            Favorites(favorites => {
+                newMainElement.innerHTML = favorites + drives
+                changeContent(newMainElement)
+            })
         })
     }
     homePage()

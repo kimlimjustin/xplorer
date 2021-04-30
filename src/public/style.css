@@ -19,15 +19,15 @@ body{
 }
 
 .sidebar{
-    min-width: 250px;
-    width: 250px;
+    flex: 1;
     padding: 15px;
     display: inline-block;
+    min-width: 200px;
 }
 
 .main{
     height: 100vh;
-    flex: 1;
+    flex: 4;
     overflow: auto;
     display: flex;
     flex-direction: column;
