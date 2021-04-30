@@ -49,6 +49,10 @@ body{
     -webkit-app-region: drag;
 }
 
+.tabs-manager::-webkit-scrollbar{
+    display: none;
+}
+
 .tab{
     width: fit-content;
     padding: 5px 5rem;
@@ -95,21 +99,31 @@ body{
     text-align: -webkit-center;
     cursor: pointer;
     vertical-align: middle;
-    font-size: 1rem;
     top: -1rem;
     -webkit-app-region: no-drag;
 }
 
+#minimize, #maximize, #exit{
+    width: .5rem;
+    height: .5rem;
+}
+
 #minimize:hover::before{
     content: '\005F';
+    position: absolute;
+    transform: translate(-50%, -50%);
 }
 
 #maximize:hover::before{
     content: '□';
+    position: absolute;
+    transform: translate(-50%, -40%);
 }
 
 #exit:hover::before{
     content: "×";
+    position: absolute;
+    transform: translate(-50%, -40%);
 }
 
 .row{
