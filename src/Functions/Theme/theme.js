@@ -42,6 +42,10 @@ const changeTheme = (document, theme) => {
     document.querySelectorAll(".pendrive-used-capacity").forEach(bar => {
         bar.style.background = themeJSON[theme].pendriveUsedCapacityBackground
     })
+    document.querySelectorAll(".file-grid").forEach(grid => {
+        grid.style.background = themeJSON[theme].gridBackground
+        grid.style.color = themeJSON[theme].gridColor
+    })
 }
 
 const getThemeJSON = () => {

@@ -179,7 +179,7 @@ body{
     text-align: center;
 }
 
-.favorites-title, .pendrives-title{
+.section-title{
     margin-left: 1rem;
     font-size: .8rem;
 }
@@ -218,4 +218,13 @@ body{
 .pendrive-used-capacity{
     height: inherit;
     display: block;
+}
+
+.file-grid{
+    display: inline-block;
+    margin: .5rem 1rem;
+    padding: .5rem;
+    border-radius: 5px;
+    width: 100px;
+    overflow-wrap: break-word;
 }

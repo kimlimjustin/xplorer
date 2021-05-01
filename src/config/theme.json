@@ -30,7 +30,10 @@
         "pendriveBackground": "#a2b7ff",
         "pendriveColor": "#000",
         "pendriveTotalCapacityBackground": "#eee",
-        "pendriveUsedCapacityBackground": "#8989e2"
+        "pendriveUsedCapacityBackground": "#8989e2",
+
+        "gridBackground": "#a2b7ff",
+        "gridColor": "#000"
     },
     "light": {
         "textColor": "#000",
@@ -62,6 +65,9 @@
         "pendriveBackground": "#d1d1d8",
         "pendriveColor": "#000",
         "pendriveTotalCapacityBackground": "#eee",
-        "pendriveUsedCapacityBackground": "#8989e2"
+        "pendriveUsedCapacityBackground": "#8989e2",
+
+        "gridBackground": "#d1d1d8",
+        "gridColor": "#000"
     }
 }

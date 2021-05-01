@@ -41,8 +41,8 @@ const Drives = async () => {
         if(!USBStick.length) return "" // Return empty string if no USB plugged in
         else{
             return `
-            <section class="main-section">
-            <h1 class="pendrives-title">Pendrives</h1>
+            <section class="home-section">
+            <h1 class="section-title">Pendrives</h1>
                 ${toElements(USBStick, kBlockFormat = true)}
             </section>
             `
