@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 // Change page theme
 const changeTheme = (document, theme) => {
-    const themeJSON = JSON.parse(fs.readFileSync(path.resolve(__dirname, "config/theme.json")));
+    const themeJSON = JSON.parse(fs.readFileSync(path.resolve(__dirname,"../../" , "config/theme.json")));
     document.body.style.background =  themeJSON[theme].mainBackground
     document.body.style.color = themeJSON[theme].textColor
     document.body.style.fontSize = themeJSON[theme].fontSize
@@ -45,7 +45,7 @@ const changeTheme = (document, theme) => {
 }
 
 const getThemeJSON = () => {
-    return JSON.parse(fs.readFileSync(path.resolve(__dirname, "config/theme.json")));
+    return JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../", "config/theme.json")));
 }
 
 module.exports = {changeTheme, getThemeJSON}

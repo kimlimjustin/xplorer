@@ -1,7 +1,7 @@
 const nodeDiskInfo = require('../node-disk-info/index');
 const fs = require('fs');
 const path = require('path');
-const formatBytes = require('../Functions/filesize.js');
+const formatBytes = require('../Functions/Math/filesize.js');
 
 const Drives = async () => {
     // Get all Physical disks Detected on the system
