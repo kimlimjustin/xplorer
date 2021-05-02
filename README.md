@@ -1,7 +1,7 @@
-<p align="center">
-<img height=100 src="https://repository-images.githubusercontent.com/360936748/2ce1b700-aa8e-11eb-877b-c12abc599979" style="vertical-align:middle;" />
-<span style="vertical-align:middle;font-size:3rem;"><strong>Xplorer</strong></span>
-</p>
+<div align="center">
+<img height=100 src="https://repository-images.githubusercontent.com/360936748/2ce1b700-aa8e-11eb-877b-c12abc599979"/></div>
+<p align="center"><b>Xplorer</b></p>
+
 <p align="center">
   <strong>A customizable, modern and cross-platform file explorer.</strong>
 </p>
