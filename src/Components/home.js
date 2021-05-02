@@ -1,24 +1,13 @@
+const os = require('os');
 const Drives = require('./drives.js');
 const Favorites = require('./favorites.js');
 const changeContent = require("../Functions/DOM/changeContent");
 const updateTheme = require('../Functions/Theme/updateTheme');
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
-
-const getFilesAndDir = async () => {
-    let result = []
-    const files = await fs.readdirSync(os.homedir())
-    files.forEach(file => {
-        const isDir = fs.lstatSync(path.join(os.homedir(), file)).isDirectory()
-        result.push({ filename: file, isDir })
-    })
-    return result
-}
+const {getFilesAndDir} = require('../Functions/Files/get');
 
 // Home files for linux
 const homeFiles = (callback) => {
-    getFilesAndDir().then(files => {
+    getFilesAndDir(os.homedir(), files => {
         let result = `<section class='home-section'><h1 class="section-title">Files</h1>`;
         files.forEach(file => {
             result += `<div class="file-grid">
@@ -74,11 +63,13 @@ const Home = () => {
                     // Add home files into home page
                     newMainElement.innerHTML = favorites + drives + files
                     changeContent(newMainElement)
+                    updateTheme()
                 })
             }
             else {
                 newMainElement.innerHTML = favorites + drives
                 changeContent(newMainElement)
+                updateTheme()
             }
         })
     })
