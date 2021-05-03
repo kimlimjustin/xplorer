@@ -1,3 +1,5 @@
+const updateTheme = require("../Functions/Theme/updateTheme");
+
 const Tab = () => {
     // Closing tab
     document.querySelectorAll(".tab").forEach(tab => {
@@ -62,6 +64,7 @@ const Tab = () => {
     const shortcut = e => {
         if(e.ctrlKey && e.key === "t"){
             createNewTab()
+            updateTheme()
         }
     }
     document.addEventListener("keyup", shortcut, false)
