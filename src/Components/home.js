@@ -4,6 +4,7 @@ const Favorites = require('./favorites.js');
 const changeContent = require("../Functions/DOM/changeContent");
 const updateTheme = require('../Functions/Theme/updateTheme');
 const {getFilesAndDir} = require('../Functions/Files/get');
+const hideFiles = require('../Functions/Filter/hideFiles.js');
 
 // Home files for linux
 const homeFiles = (callback) => {
@@ -39,6 +40,20 @@ const Home = () => {
                                 changeContent(newMainElement)
                                 // And also the theme :)
                                 updateTheme()
+                                // Hide files shorcut
+                                const hideFilesShortcut = e => {
+                                    if(e.ctrlKey && e.key === "h"){
+                                        hideFiles(os.homedir(), () => {
+                                            homeFiles(files => {
+                                                // Add home files into home page
+                                                newMainElement.innerHTML = favorites + drives + files
+                                                changeContent(newMainElement)
+                                                updateTheme()
+                                            })
+                                        })
+                                    }
+                                }
+                                document.addEventListener("keyup", hideFilesShortcut, false)
                             })
                         }
                         else{
@@ -64,6 +79,20 @@ const Home = () => {
                     newMainElement.innerHTML = favorites + drives + files
                     changeContent(newMainElement)
                     updateTheme()
+                    // Hide files shorcut
+                    const hideFilesShortcut = e => {
+                        if(e.ctrlKey && e.key === "h"){
+                            hideFiles(os.homedir(), () => {
+                                homeFiles(files => {
+                                    // Add home files into home page
+                                    newMainElement.innerHTML = favorites + drives + files
+                                    changeContent(newMainElement)
+                                    updateTheme()
+                                })
+                            })
+                        }
+                    }
+                    document.addEventListener("keyup", hideFilesShortcut, false)
                 })
             }
             else {
