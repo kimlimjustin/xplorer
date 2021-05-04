@@ -1,16 +1,16 @@
 {
   "name": "xplorer",
-  "Description": "Xplorer, a customizable, modern file manager",
+  "description": "Xplorer, a customizable, modern file manager",
   "version": "1.0.0",
-  "description": "",
+  "author": "Justin Maximillian Kimlim <kimlimjustin@gmail.com>",
   "main": "src/main.ts",
+  "icon": "build/icon.icns",
   "scripts": {
     "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "electron-builder"
   },
   "keywords": [],
-  "author": "",
   "license": "ISC",
   "devDependencies": {
     "electron": "^12.0.5",

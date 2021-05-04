@@ -24,6 +24,47 @@ const Home = () => {
     const newMainElement = document.createElement("div");
 
     let previousDrive; // Previous drive tags (used to detect USB Drive changes)
+    let globalFavorites; // Global variable to store favorites
+    let globalDrives; // Global variable to store drives
+
+    // Hide files shorcut
+    const hideFilesShortcut = e => {
+        if(e.ctrlKey && e.key === "h"){
+            hideFiles(os.homedir(), () => {
+                homeFiles(files => {
+                    // Add home files into home page
+                    newMainElement.innerHTML = globalFavorites + globalDrives + files
+                    changeContent(newMainElement)
+                    updateTheme()
+                })
+            })
+        }
+    }
+
+    const _homeFiles = (drives) => {
+        globalDrives = drives // Save drives into global variable
+        Favorites(favorites => {
+            globalFavorites = favorites; // Save favorites into global variable
+            if (process.platform === "linux") {
+                homeFiles(files => {
+                    // Update the content in the main page ...
+                    newMainElement.innerHTML = favorites + drives + files
+                    changeContent(newMainElement)
+                    // And also the theme :)
+                    updateTheme()
+                    document.addEventListener("keyup", hideFilesShortcut, false)
+                })
+            }
+            else{
+                // Update the content in the main page ...
+                newMainElement.innerHTML = favorites + drives
+                changeContent(newMainElement)
+                // And also the theme :)
+                updateTheme()
+            }
+        })
+    }
+
     // Detecting USB Drive changes every 500 ms
     setInterval(() => {
         Drives().then(drives => {
@@ -32,38 +73,8 @@ const Home = () => {
             } else {
                 // If the drives change ...
                 if (previousDrive !== drives) {
-                    Favorites(favorites => {
-                        if (process.platform === "linux") {
-                            homeFiles(files => {
-                                // Update the content in the main page ...
-                                newMainElement.innerHTML = favorites + drives + files
-                                changeContent(newMainElement)
-                                // And also the theme :)
-                                updateTheme()
-                                // Hide files shorcut
-                                const hideFilesShortcut = e => {
-                                    if(e.ctrlKey && e.key === "h"){
-                                        hideFiles(os.homedir(), () => {
-                                            homeFiles(files => {
-                                                // Add home files into home page
-                                                newMainElement.innerHTML = favorites + drives + files
-                                                changeContent(newMainElement)
-                                                updateTheme()
-                                            })
-                                        })
-                                    }
-                                }
-                                document.addEventListener("keyup", hideFilesShortcut, false)
-                            })
-                        }
-                        else{
-                            // Update the content in the main page ...
-                            newMainElement.innerHTML = favorites + drives
-                            changeContent(newMainElement)
-                            // And also the theme :)
-                            updateTheme()
-                        }
-                    })
+                    _homeFiles(drives)
+                    document.removeEventListener("keyup", hideFilesShortcut, false)
                 }
             }
             previousDrive = drives
@@ -71,36 +82,7 @@ const Home = () => {
     }, 500)
 
     Drives().then(drives => {
-        Favorites(favorites => {
-            // If Xplorer runs on Linux ...
-            if (process.platform === "linux") {
-                homeFiles(files => {
-                    // Add home files into home page
-                    newMainElement.innerHTML = favorites + drives + files
-                    changeContent(newMainElement)
-                    updateTheme()
-                    // Hide files shorcut
-                    const hideFilesShortcut = e => {
-                        if(e.ctrlKey && e.key === "h"){
-                            hideFiles(os.homedir(), () => {
-                                homeFiles(files => {
-                                    // Add home files into home page
-                                    newMainElement.innerHTML = favorites + drives + files
-                                    changeContent(newMainElement)
-                                    updateTheme()
-                                })
-                            })
-                        }
-                    }
-                    document.addEventListener("keyup", hideFilesShortcut, false)
-                })
-            }
-            else {
-                newMainElement.innerHTML = favorites + drives
-                changeContent(newMainElement)
-                updateTheme()
-            }
-        })
+        _homeFiles(drives)
     })
 }
 
