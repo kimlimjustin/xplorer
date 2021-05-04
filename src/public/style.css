@@ -227,4 +227,34 @@ body{
     border-radius: 5px;
     width: 100px;
     overflow-wrap: break-word;
+    cursor: pointer;
+}
+
+.menu{
+    vertical-align: middle;
+    width: 1rem;
+    -webkit-app-region: no-drag;
+    position: relative;
+}
+
+.menu-dropdown{
+    display: none;
+    position: absolute;
+    right: 0;
+    z-index: 1;
+    padding: 5px 8px;
+    width: max-content;
+    -webkit-app-region: no-drag;
+}
+
+.menu:active .menu-dropdown, .menu:focus .menu-dropdown, .menu:hover .menu-dropdown{
+    display: block;
+}
+
+.menu-svg{
+    vertical-align: sub;
+    width: 1rem;
+    fill: inherit;
+    cursor: pointer;
+    -webkit-app-region: no-drag;
 }

@@ -5,6 +5,7 @@ const changeContent = require("../Functions/DOM/changeContent");
 const updateTheme = require('../Functions/Theme/updateTheme');
 const {getFilesAndDir} = require('../Functions/Files/get');
 const hideFiles = require('../Functions/Filter/hideFiles.js');
+const OptionMenu = require("../Functions/DOM/optionMenu");
 
 // Home files for linux
 const homeFiles = (callback) => {
@@ -40,6 +41,18 @@ const Home = () => {
             })
         }
     }
+    OptionMenu(process.platform === "win32", os.homedir(), response => {
+        if(response.type === "hide"){
+            hideFiles(os.homedir(), () => {
+                homeFiles(files => {
+                    // Add home files into home page
+                    newMainElement.innerHTML = globalFavorites + globalDrives + files
+                    changeContent(newMainElement)
+                    updateTheme()
+                })
+            })
+        }
+    })
 
     const _homeFiles = (drives) => {
         globalDrives = drives // Save drives into global variable
