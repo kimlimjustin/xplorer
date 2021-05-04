@@ -50,7 +50,7 @@ const Drives = async () => {
     }else{
         return `
         <section class="main-section">
-        <h1 class="pendrives-title">Drives</h1>
+        <h1 class="section-title">Drives</h1>
             ${toElements(drives)}
         </section>
         `
