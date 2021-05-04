@@ -2,8 +2,9 @@ const nodeDiskInfo = require('../node-disk-info/index');
 const fs = require('fs');
 const path = require('path');
 const formatBytes = require('../Functions/Math/filesize.js');
+const Translate = require("../Components/multilingual");
 
-const Drives = async () => {
+const Drives = async (callback) => {
     // Get all Physical disks Detected on the system
     const drives = await nodeDiskInfo.getDiskInfoSync()
     // Function to convert drives into HTML Tags
@@ -38,22 +39,12 @@ const Drives = async () => {
                 USBStick.push(drive)
             }
         })
-        if(!USBStick.length) return "" // Return empty string if no USB plugged in
+        if(!USBStick.length) callback("") // Return empty string if no USB plugged in
         else{
-            return `
-            <section class="home-section">
-            <h1 class="section-title">Pendrives</h1>
-                ${toElements(USBStick, kBlockFormat = true)}
-            </section>
-            `
+            Translate(`<section class="home-section"><h1 class="section-title">Pendrives</h1>${toElements(USBStick, kBlockFormat = true)}</section>`, navigator.language, translated => callback(translated))
         }
     }else{
-        return `
-        <section class="main-section">
-        <h1 class="section-title">Drives</h1>
-            ${toElements(drives)}
-        </section>
-        `
+        Translate(`<section class="home-section"><h1 class="section-title">Pendrives</h1>${toElements(USBStick)}</section>`, navigator.language, translated => callback(translated))
     }
 }
 

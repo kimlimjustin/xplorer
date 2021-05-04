@@ -6,6 +6,7 @@ const updateTheme = require('../Functions/Theme/updateTheme');
 const {getFilesAndDir} = require('../Functions/Files/get');
 const hideFiles = require('../Functions/Filter/hideFiles.js');
 const OptionMenu = require("../Functions/DOM/optionMenu");
+const Translate = require('../Components/multilingual');
 
 // Home files for linux
 const homeFiles = (callback) => {
@@ -16,7 +17,7 @@ const homeFiles = (callback) => {
             ${file.filename}
             </div>`
         })
-        callback(result + "</section>")
+        Translate(result + "</section>", navigator.language, translated => callback(translated))
     })
 }
 // Content for home page
@@ -80,7 +81,7 @@ const Home = () => {
 
     // Detecting USB Drive changes every 500 ms
     setInterval(() => {
-        Drives().then(drives => {
+        Drives(drives => {
             if (previousDrive === undefined) {
                 previousDrive = drives
             } else {
@@ -94,7 +95,7 @@ const Home = () => {
         })
     }, 500)
 
-    Drives().then(drives => {
+    Drives(drives => {
         _homeFiles(drives)
     })
 }
