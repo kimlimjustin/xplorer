@@ -17,7 +17,7 @@ const updateTheme = () => {
         }else{
             const themeJSON = getThemeJSON()
             // Check if the theme available
-            if(themeJSON.availableThemes.indexOf(data.theme) !== -1){
+            if(Object.keys(themeJSON).indexOf(data.theme) !== -1){
                 changeTheme(document, data.theme)
             }
             else{ // If the theme not available

@@ -1,6 +1,5 @@
 {
-    "availableThemes": ["light", "dark"],
-    "dark": {
+    "dark+": {
         "textColor": "#4fe0be",
         "fontSize": "18px",
         "fontFamily": "system-ui",
@@ -35,7 +34,77 @@
         "gridBackground": "#a2b7ff",
         "gridColor": "#000"
     },
+    "dark": {
+        "textColor": "#87c1ce",
+        "fontSize": "18px",
+        "fontFamily": "system-ui",
+
+        "sidebarBackground": "#1b1e2e",
+        "mainBackground": "#24283b",
+        "topbarBackground": "#1b1e2e",
+
+        "minimizebackground": "#fbd914",
+        "minimizeColor": "#14141b",
+        "maximizebackground": "#00ca4e",
+        "maximizeColor": "#14141b",
+        "exitbackground": "#ff4743",
+        "exitColor": "#14141b",
+
+        "tabBackground": "#39496a",
+        "tabColor": "#87c1ce",
+        "newTabBackground": "#39496a",
+        "newTabColor": "#87c1ce",
+        "navigatorBackground": "transparent",
+        "navigatorColor": "#87c1ce",
+        "pathNavigatorBackground": "#39496a",
+        "pathNavigatorColor": "#87c1ce",
+        
+        "favoriteBackground": "#39496a",
+        "favoriteColor": "#87c1ce",
+        "pendriveBackground": "#39496a",
+        "pendriveColor": "#87c1ce",
+        "pendriveTotalCapacityBackground": "#eee",
+        "pendriveUsedCapacityBackground": "#8989e2",
+
+        "gridBackground": "#39496a",
+        "gridColor": "#87c1ce"
+    },
     "light": {
+        "textColor": "#000",
+        "fontSize": "18px",
+        "fontFamily": "system-ui",
+
+        "sidebarBackground": "#cbccd1",
+        "mainBackground": "#d5d6db",
+        "topbarBackground": "#cbccd1",
+
+        "minimizebackground": "#fbd914",
+        "minimizeColor": "#14141b",
+        "maximizebackground": "#00ca4e",
+        "maximizeColor": "#14141b",
+        "exitbackground": "#ff4743",
+        "exitColor": "#14141b",
+
+        "tabBackground": "#e0e0e0",
+        "tabColor": "#000 ",
+        "newTabBackground": "#d5d6db",
+        "newTabColor": "#000",
+        "navigatorBackground": "transparent",
+        "navigatorColor": "#000",
+        "pathNavigatorBackground": "#e0e0e0",
+        "pathNavigatorColor": "#000",
+
+        "favoriteBackground": "#e0e0e0",
+        "favoriteColor": "#000",
+        "pendriveBackground": "#e0e0e0",
+        "pendriveColor": "#000",
+        "pendriveTotalCapacityBackground": "#eee",
+        "pendriveUsedCapacityBackground": "#8989e2",
+
+        "gridBackground": "#e0e0e0",
+        "gridColor": "#000"
+    },
+    "light+": {
         "textColor": "#000",
         "fontSize": "18px",
         "fontFamily": "system-ui",
@@ -60,14 +129,14 @@
         "pathNavigatorBackground": "#d1d1d8",
         "pathNavigatorColor": "#000",
 
-        "favoriteBackground": "#d1d1d8",
+        "favoriteBackground": "#dbdbdc",
         "favoriteColor": "#000",
-        "pendriveBackground": "#d1d1d8",
+        "pendriveBackground": "#dbdbdc",
         "pendriveColor": "#000",
         "pendriveTotalCapacityBackground": "#eee",
         "pendriveUsedCapacityBackground": "#8989e2",
 
-        "gridBackground": "#d1d1d8",
+        "gridBackground": "#dbdbdc",
         "gridColor": "#000"
     }
 }
