@@ -7,13 +7,14 @@ const {getFilesAndDir} = require('../Functions/Files/get');
 const hideFiles = require('../Functions/Filter/hideFiles.js');
 const OptionMenu = require("../Functions/DOM/optionMenu");
 const Translate = require('../Components/multilingual');
+const nativeDrag = require('../Functions/DOM/drag.js');
 
 // Home files for linux
 const homeFiles = (callback) => {
     getFilesAndDir(os.homedir(), files => {
         let result = `<section class='home-section'><h1 class="section-title">Files</h1>`;
         files.forEach(file => {
-            result += `<div class="file-grid">
+            result += `<div class="file-grid" draggable="true">
             ${file.filename}
             </div>`
         })
@@ -38,6 +39,7 @@ const Home = () => {
                     newMainElement.innerHTML = globalFavorites + globalDrives + files
                     changeContent(newMainElement)
                     updateTheme()
+                    nativeDrag(document.querySelectorAll('.file-grid'), os.homedir())
                 })
             })
         }
@@ -50,6 +52,7 @@ const Home = () => {
                     newMainElement.innerHTML = globalFavorites + globalDrives + files
                     changeContent(newMainElement)
                     updateTheme()
+                    nativeDrag(document.querySelectorAll('.file-grid'), os.homedir())
                 })
             })
         }
@@ -67,6 +70,7 @@ const Home = () => {
                     // And also the theme :)
                     updateTheme()
                     document.addEventListener("keyup", hideFilesShortcut, false)
+                    nativeDrag(document.querySelectorAll('.file-grid'), os.homedir())
                 })
             }
             else{
