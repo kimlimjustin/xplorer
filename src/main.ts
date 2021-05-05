@@ -43,9 +43,10 @@ app.on('window-all-closed', () => {
       app.quit()
    }
 })
- ipcMain.on('ondragstart', (event, filePath) => {
+ ipcMain.on('ondragstart', (event, filePath, options) => {
+    console.log(options)
     event.sender.startDrag({
        file: filePath,
-       icon: path.join(__dirname, "icon/folder.png")
+       icon: options.isDir ? path.join(__dirname, "icon/folder.png") : path.join(__dirname, "icon/file.png")
     })
  })

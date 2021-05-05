@@ -70,7 +70,7 @@
         "pendriveTotalCapacityBackground": "#eee",
         "pendriveUsedCapacityBackground": "#8989e2",
 
-        "gridBackground": "#39496a",
+        "gridBackground": "transparent",
         "gridColor": "#87c1ce"
     },
     "light": {

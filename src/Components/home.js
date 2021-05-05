@@ -8,16 +8,19 @@ const hideFiles = require('../Functions/Filter/hideFiles.js');
 const OptionMenu = require("../Functions/DOM/optionMenu");
 const Translate = require('../Components/multilingual');
 const nativeDrag = require('../Functions/DOM/drag.js');
+const getIcon = require('../Functions/Icon/icon.js');
 
 // Home files for linux
 const homeFiles = (callback) => {
-    getFilesAndDir(os.homedir(), files => {
+    getFilesAndDir(os.homedir(), async files => {
         let result = `<section class='home-section'><h1 class="section-title">Files</h1>`;
-        files.forEach(file => {
-            result += `<div class="file-grid" draggable="true">
-            ${file.filename}
+        for(const file of files){
+            const icon = await getIcon(file.filename, file.isDir)
+            result += `<div class="file-grid" draggable="true" data-isdir=${file.isDir}>
+            <img src = "${icon}" class="file-grid-preview" />
+            <span class="file-grid-filename">${file.filename}</span>
             </div>`
-        })
+        }
         Translate(result + "</section>", navigator.language, translated => callback(translated))
     })
 }

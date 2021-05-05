@@ -226,7 +226,6 @@ body{
     padding: .5rem;
     border-radius: 5px;
     width: 100px;
-    overflow-wrap: break-word;
     cursor: pointer;
 }
 
@@ -257,4 +256,21 @@ body{
     fill: inherit;
     cursor: pointer;
     -webkit-app-region: no-drag;
+}
+
+.file-grid-preview{
+    margin: auto;
+    display: block;
+    width: 4rem;
+}
+
+.file-grid .file-grid-filename{
+    overflow-wrap: break-word;
+    -webkit-line-clamp: initial;
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    overflow: hidden;
+    height: fit-content;
+    text-align: center;
 }

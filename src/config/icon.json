@@ -1,14 +1,26 @@
 {
     "favorites": {
-        "desktop": "desktop.svg",
-        "document": "document.svg",
-        "download": "download.svg",
-        "music": "music.svg",
-        "picture": "picture.svg",
-        "video": "video.svg",
+        "desktop": "folder-desktop.svg",
+        "document": "folder-document.svg",
+        "download": "folder-download.svg",
+        "music": "folder-music.svg",
+        "picture": "folder-picture.svg",
+        "video": "folder-video.svg",
         "usb": "usb.svg"
     },
+    "folder": {
+        "Desktop": "folder-desktop.svg",
+        "Documents": "folder-document.svg",
+        "Downloads": "folder-download.svg",
+        "Music": "folder-music.svg",
+        "Pictures": "folder-picture.svg",
+        "Videos": "folder-video.svg"
+    },
     "extension": {
-
+        "pdf": "pdf.svg"
+    },
+    "default": {
+        "folder": "folder.svg",
+        "file": "file.svg"
     }
 }
