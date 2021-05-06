@@ -92,10 +92,15 @@ const Home = () => {
             if (previousDrive === undefined) {
                 previousDrive = drives
             } else {
+                let _previousDrive = document.createElement("div");
+                let _drives = document.createElement("div");
+                _previousDrive.innerHTML = previousDrive
+                _drives.innerHTML = drives
                 // If the drives change ...
-                if (previousDrive !== drives) {
+                if (!_previousDrive.isEqualNode(_drives)) {
                     _homeFiles(drives)
                     document.removeEventListener("keyup", hideFilesShortcut, false)
+                    previousDrive = drives
                 }
             }
             previousDrive = drives
