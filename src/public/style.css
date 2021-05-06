@@ -171,12 +171,27 @@ body{
     padding: 1rem;
     border-radius: 5px;
     cursor: pointer;
+    transition: all .3s ease;
+}
+
+/* Hover effects */
+.favorite:hover, .pendrive:hover {
+    background: rgba(57, 73, 106, 0.685) !important;
+}
+
+.favorite:hover * {
+    transform: scale(1.02) !important;
+}
+
+.pendrive:hover * {
+    transform: scale(1.01) !important;
 }
 
 .favorite-title{
     margin: 0;
     font-size: 1rem;
     text-align: center;
+    transition: all .3s ease;
 }
 
 .section-title{
@@ -187,18 +202,22 @@ body{
 .favorite-icon{
     width: 5rem;
     display: block;
+    transition: all .3s ease;
 }
 
 .pendrive-icon{
     width: 3.5rem;
     display: inline-block;
     vertical-align: middle;
+    transition: all .3s ease;
 }
+
 .pendrive-info{
     display: inline-block;
     margin: 0;
     vertical-align: middle;
     font-size: .8rem;
+    transition: all .3s ease;
 }
 
 .pendrive-info p{
@@ -207,17 +226,20 @@ body{
 
 .pendrive-title{
     margin: .1rem 0 .5rem 0;
+    transition: all .3s ease;
 }
 
 .pendrive-total-capacity{
     width: 100%;
     height: 7px;
     border-radius: 3px;
+    transition: all .3s ease;
 }
 
 .pendrive-used-capacity{
     height: inherit;
     display: block;
+    transition: all .3s ease;
 }
 
 .file-grid{
