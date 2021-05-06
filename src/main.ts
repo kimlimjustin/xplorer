@@ -1,6 +1,7 @@
 const { app, BrowserWindow, Menu, screen, ipcMain } = require('electron')
 const path = require('path')
 const storage = require('electron-json-storage')
+require('@electron/remote/main').initialize()
 
 try {
    require('electron-reloader')(module)

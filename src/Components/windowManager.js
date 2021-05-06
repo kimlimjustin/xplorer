@@ -1,4 +1,4 @@
-const {remote} = require('electron');
+const remote = require('@electron/remote')
 const {getCurrentWindow, globalShortcut} = remote
 // Function to reload
 const reload = () => {
