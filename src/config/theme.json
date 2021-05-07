@@ -27,13 +27,16 @@
         "menuDropdownColor": "#000",
         
         "favoriteBackground": "#a2b7ff",
+        "favoriteHoverBackground": "#829cf5",
         "favoriteColor": "#000",
         "pendriveBackground": "#a2b7ff",
+        "pendriveHoverBackground": "#829cf5",
         "pendriveColor": "#000",
         "pendriveTotalCapacityBackground": "#eee",
         "pendriveUsedCapacityBackground": "#8989e2",
 
         "gridBackground": "#a2b7ff",
+        "gridHoverBackground": "#829cf5",
         "gridColor": "#000"
     },
     "dark": {
@@ -64,13 +67,16 @@
         "menuDropdownColor": "#87c1ce",
         
         "favoriteBackground": "#39496a",
+        "favoriteHoverBackground": "#39496aaf",
         "favoriteColor": "#87c1ce",
         "pendriveBackground": "#39496a",
+        "pendriveHoverBackground": "#39496aaf",
         "pendriveColor": "#87c1ce",
         "pendriveTotalCapacityBackground": "#eee",
         "pendriveUsedCapacityBackground": "#8989e2",
 
         "gridBackground": "transparent",
+        "gridHoverBackground": "transparent",
         "gridColor": "#87c1ce"
     },
     "light": {
@@ -101,13 +107,16 @@
         "menuDropdownColor": "#000",
 
         "favoriteBackground": "#e0e0e0",
+        "favoriteHoverBackground": "#c5ccd2",
         "favoriteColor": "#000",
         "pendriveBackground": "#e0e0e0",
+        "pendriveHoverBackground": "#c5ccd2",
         "pendriveColor": "#000",
         "pendriveTotalCapacityBackground": "#eee",
         "pendriveUsedCapacityBackground": "#8989e2",
 
         "gridBackground": "#e0e0e0",
+        "gridHoverBackground": "#c5ccd2",
         "gridColor": "#000"
     },
     "light+": {
@@ -138,13 +147,16 @@
         "menuDropdownColor": "#000",
 
         "favoriteBackground": "#dbdbdc",
+        "favoriteHoverBackground": "#c5ccd2",
         "favoriteColor": "#000",
         "pendriveBackground": "#dbdbdc",
+        "pendriveHoverBackground": "#c5ccd2",
         "pendriveColor": "#000",
         "pendriveTotalCapacityBackground": "#eee",
         "pendriveUsedCapacityBackground": "#8989e2",
 
         "gridBackground": "#dbdbdc",
+        "gridHoverBackground": "#c5ccd2",
         "gridColor": "#000"
     }
 }
