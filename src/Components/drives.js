@@ -22,7 +22,7 @@ const Drives = async (callback) => {
                         :`<h4 class="pendrive-title">${driveName}</h4>`
                     }
                     <div class="pendrive-total-capacity"><span class="pendrive-used-capacity" style="width: ${drive._capacity}"></span></div>
-                    <p>${formatBytes(drive._available, kBlockFormat = kBlockFormat)} free of ${formatBytes(drive._blocks)}</p>
+                    <p>${formatBytes(drive._available, kBlockFormat = kBlockFormat)} free of ${formatBytes(drive._blocks, kBlockFormat = kBlockFormat)}</p>
                 </div>
             </div>
             `
@@ -32,9 +32,10 @@ const Drives = async (callback) => {
     if(process.platform === "linux"){
         // Get all USB Stick
         const USBStick = []
+        console.log(drives)
         drives.forEach(drive => {
-            // If the drive is detected as physical disk...
-            if(drive._filesystem.indexOf("/sdb") !== -1){
+            // If the drive is detected as not-first physical disk...
+            if(drive._filesystem.indexOf("/sda") === -1 && drive._filesystem.indexOf("tmpfs") === -1){
                 // ... push it into the USB Stick array
                 USBStick.push(drive)
             }
