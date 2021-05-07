@@ -1,5 +1,16 @@
 const fs = require('fs');
 const path = require('path');
+
+// Function to simulate hover effect
+const hoverEffect = (element, before, after) => {
+    element.addEventListener("mouseover", () => {
+        element.style.background = after
+        element.addEventListener("mouseout", () => {
+            element.style.background = before
+        })
+    })
+}
+
 // Change page theme
 const changeTheme = (document, theme) => {
     const themeJSON = JSON.parse(fs.readFileSync(path.resolve(__dirname,"../../" , "config/theme.json")));
@@ -34,10 +45,12 @@ const changeTheme = (document, theme) => {
     document.querySelectorAll(".favorite").forEach(favorite => {
         favorite.style.background = themeJSON[theme].favoriteBackground
         favorite.style.color = themeJSON[theme].favoriteColor
+        hoverEffect(favorite, themeJSON[theme].favoriteBackground, themeJSON[theme].favoriteHoverBackground)
     })
     document.querySelectorAll(".pendrive").forEach(pendrive => {
         pendrive.style.background = themeJSON[theme].pendriveBackground
         pendrive.style.color = themeJSON[theme].pendriveColor
+        hoverEffect(pendrive, themeJSON[theme].pendriveBackground, themeJSON[theme].pendriveHoverBackground)
     })
     document.querySelectorAll(".pendrive-total-capacity").forEach(bar => {
         bar.style.background = themeJSON[theme].pendriveTotalCapacityBackground
@@ -48,6 +61,8 @@ const changeTheme = (document, theme) => {
     document.querySelectorAll(".file-grid").forEach(grid => {
         grid.style.background = themeJSON[theme].gridBackground
         grid.style.color = themeJSON[theme].gridColor
+        console.log(themeJSON[theme].gridBackground, themeJSON[theme].gridHoverBackground)
+        hoverEffect(grid, themeJSON[theme].gridBackground, themeJSON[theme].gridHoverBackground)
     })
 }
 

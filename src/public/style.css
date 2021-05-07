@@ -165,19 +165,15 @@ body{
     vertical-align: middle;
 }
 
-.favorite, .pendrive{
+.favorite, .pendrive, .file-grid{
     display: inline-block;
     margin: 1rem;
     padding: 1rem;
     border-radius: 5px;
     cursor: pointer;
-    transition: all .3s ease;
+    transition: all .4s ease;
 }
 
-/* Hover effects */
-.favorite:hover, .pendrive:hover {
-    background: rgba(57, 73, 106, 0.685) !important;
-}
 
 .favorite:hover * {
     transform: scale(1.02) !important;
