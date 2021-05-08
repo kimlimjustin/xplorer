@@ -30,20 +30,21 @@ const windowManager = () => {
 
     // Refresh the page
     document.querySelector("#refresh").addEventListener("click",reload)
-    globalShortcut.register("F5", reload)
-    globalShortcut.register("CommandOrControl+R", reload);
-    globalShortcut.register("F10", minimize);
-    globalShortcut.register("Alt+Down", minimize);
-    globalShortcut.register("F11", maximize);
-    globalShortcut.register("Alt+Up", maximize);
+    // Window shortcut
+    const Shortcut = e => {
+        e.preventDefault()
+        // Refresh page shortcut
+        if((e.ctrlKey && e.key === "r") || e.key === "F5") reload()
+        // Minimze window shortcut
+        else if((e.altKey && e.key === "ArrowDown") || e.key === "F10") minimize()
+        // Maximize window shortcut
+        else if((e.altKey && e.key === "ArrowUp") || e.key === "F11") maximize()
+    }
+
+    document.addEventListener("keyup", Shortcut, false)
     // Remove shortcut from the current window to avoid multiple reload on the new window
     window.addEventListener("beforeunload", () => {
-        globalShortcut.unregister("F5", reload)
-        globalShortcut.unregister("CommandOrControl+R", reload);
-        globalShortcut.unregister("F10", minimize);
-        globalShortcut.unregister("Alt+Down", minimize);
-        globalShortcut.unregister("F11", maximize);
-        globalShortcut.unregister("Alt+Up", maximize);
+        document.removeEventListener("keyup", Shortcut, false)
     })
 }
 

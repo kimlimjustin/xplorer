@@ -32,7 +32,6 @@ const Drives = async (callback) => {
     if(process.platform === "linux"){
         // Get all USB Stick
         const USBStick = []
-        console.log(drives)
         drives.forEach(drive => {
             // If the drive is detected as not-first physical disk...
             if(drive._filesystem.indexOf("/sda") === -1 && drive._filesystem.indexOf("tmpfs") === -1){

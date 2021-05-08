@@ -61,7 +61,6 @@ const changeTheme = (document, theme) => {
     document.querySelectorAll(".file-grid").forEach(grid => {
         grid.style.background = themeJSON[theme].gridBackground
         grid.style.color = themeJSON[theme].gridColor
-        console.log(themeJSON[theme].gridBackground, themeJSON[theme].gridHoverBackground)
         hoverEffect(grid, themeJSON[theme].gridBackground, themeJSON[theme].gridHoverBackground)
     })
 }
