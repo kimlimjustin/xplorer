@@ -17,7 +17,13 @@
         "Videos": "folder-video.svg"
     },
     "extension": {
-        "pdf": "pdf.svg"
+        "pdf": "pdf.svg",
+        "html": "html.svg",
+        "css": "css.svg",
+        "js": "javascript.svg",
+        "ts": "typescript.svg",
+        "jsx": "react.svg",
+        "tsx": "react_ts.svg"
     },
     "default": {
         "folder": "folder.svg",
