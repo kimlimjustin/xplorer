@@ -23,7 +23,8 @@
         "js": "extension/javascript.svg",
         "ts": "extension/typescript.svg",
         "jsx": "extension/react.svg",
-        "tsx": "extension/react_ts.svg"
+        "tsx": "extension/react_ts.svg",
+        "video": "extension/video.svg"
     },
     "default": {
         "folder": "folder.svg",
