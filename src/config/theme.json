@@ -35,9 +35,7 @@
         "pendriveTotalCapacityBackground": "#eee",
         "pendriveUsedCapacityBackground": "#8989e2",
 
-        "gridBackground": "#a2b7ff",
-        "gridHoverBackground": "#829cf5",
-        "gridColor": "#000"
+        "scrollbar": "darkplus-scrollbar"
     },
     "dark": {
         "textColor": "#87c1ce",
@@ -77,7 +75,9 @@
 
         "gridBackground": "transparent",
         "gridHoverBackground": "transparent",
-        "gridColor": "#87c1ce"
+        "gridColor": "#87c1ce",
+
+        "scrollbar": "dark-scrollbar"
     },
     "light": {
         "textColor": "#000",
@@ -117,7 +117,13 @@
 
         "gridBackground": "#e0e0e0",
         "gridHoverBackground": "#c5ccd2",
-        "gridColor": "#000"
+        "gridColor": "#000",
+
+        "scrollBarTrack": "rgb(179, 179, 179)",
+        "scrollBarThumb": "#888",
+        "scrollBarThumbHover": "#555",
+
+        "scrollbar": "light-scrollbar"
     },
     "light+": {
         "textColor": "#000",
@@ -157,6 +163,8 @@
 
         "gridBackground": "#dbdbdc",
         "gridHoverBackground": "#c5ccd2",
-        "gridColor": "#000"
+        "gridColor": "#000",
+
+        "scrollbar": "lightplus-scrollbar"
     }
 }

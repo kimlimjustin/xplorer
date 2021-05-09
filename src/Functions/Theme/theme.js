@@ -38,6 +38,7 @@ const changeTheme = (document, theme) => {
     document.querySelector(".path-navigator").style.color = themeJSON[theme].pathNavigatorColor
     document.querySelector(".menu-dropdown").style.background = themeJSON[theme].menuDropdownBackground
     document.querySelector(".menu-dropdown").style.color = themeJSON[theme].menuDropdownColor
+    document.querySelector(".tabs-manager").classList.add(themeJSON[theme].scrollbar)
     document.querySelectorAll(".tab").forEach(tab => {
         tab.style.background = themeJSON[theme].tabBackground
         tab.style.color = themeJSON[theme].tabColor
