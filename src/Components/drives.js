@@ -44,7 +44,7 @@ const Drives = async (callback) => {
             Translate(`<section class="home-section"><h1 class="section-title">Pendrives</h1>${toElements(USBStick, kBlockFormat = true)}</section>`, navigator.language, translated => callback(translated))
         }
     }else{
-        Translate(`<section class="home-section"><h1 class="section-title">Pendrives</h1>${toElements(drives)}</section>`, navigator.language, translated => callback(translated))
+        Translate(`<section class="home-section"><h1 class="section-title">Drives</h1>${toElements(drives)}</section>`, navigator.language, translated => callback(translated))
     }
 }
 
