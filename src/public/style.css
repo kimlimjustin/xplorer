@@ -43,15 +43,14 @@ body{
     display: flex;
     width: 100%;
     margin: 0 1rem;
+    -webkit-app-region: no-drag;
 }
 
-.tabs-manager:not(.tab):not(.create-new-tab){
-    -webkit-app-region: drag;
-}
 
-.tabs-manager::-webkit-scrollbar{
-    display: none;
-}
+.tabs-manager::-webkit-scrollbar{ height: 6px;  }
+.tabs-manager::-webkit-scrollbar-track{background: var(--tabs-scrollbar-track);}
+.tabs-manager::-webkit-scrollbar-thumb{background: var(--tabs-scrollbar-thumb);}
+.tabs-manager::-webkit-scrollbar-thumb:hover{background: var(--tabs-scrollbar-thumb-hover);}
 
 .tab{
     width: fit-content;

@@ -25,6 +25,10 @@
         "pathNavigatorColor": "#000",
         "menuDropdownBackground": "#a2b7ff",
         "menuDropdownColor": "#000",
+
+        "tabsScrollbarTrack": "rgb(139, 164, 248)",
+        "tabsScrollbarThumb": "rgb(116, 118, 231)",
+        "tabsScrollbarThumbHover": "rgb(103, 105, 238)",
         
         "favoriteBackground": "#a2b7ff",
         "favoriteHoverBackground": "#829cf5",
@@ -33,11 +37,7 @@
         "pendriveHoverBackground": "#829cf5",
         "pendriveColor": "#000",
         "pendriveTotalCapacityBackground": "#eee",
-        "pendriveUsedCapacityBackground": "#8989e2",
-
-        "gridBackground": "#a2b7ff",
-        "gridHoverBackground": "#829cf5",
-        "gridColor": "#000"
+        "pendriveUsedCapacityBackground": "#8989e2"
     },
     "dark": {
         "textColor": "#87c1ce",
@@ -65,6 +65,10 @@
         "pathNavigatorColor": "#87c1ce",
         "menuDropdownBackground": "#39496a",
         "menuDropdownColor": "#87c1ce",
+
+        "tabsScrollbarTrack": "rgb(128, 128, 128)",
+        "tabsScrollbarThumb": "rgb(77, 77, 77)",
+        "tabsScrollbarThumbHover": "rgb(59, 59, 59)",
         
         "favoriteBackground": "#39496a",
         "favoriteHoverBackground": "#39496aaf",
@@ -77,7 +81,9 @@
 
         "gridBackground": "transparent",
         "gridHoverBackground": "transparent",
-        "gridColor": "#87c1ce"
+        "gridColor": "#87c1ce",
+
+        "scrollbar": "dark-scrollbar"
     },
     "light": {
         "textColor": "#000",
@@ -106,6 +112,10 @@
         "menuDropdownBackground": "#e0e0e0",
         "menuDropdownColor": "#000",
 
+        "tabsScrollbarTrack": "rgb(185, 185, 185)",
+        "tabsScrollbarThumb": "rgb(163, 163, 163)",
+        "tabsScrollbarThumbHover": "#888",
+
         "favoriteBackground": "#e0e0e0",
         "favoriteHoverBackground": "#c5ccd2",
         "favoriteColor": "#000",
@@ -117,7 +127,13 @@
 
         "gridBackground": "#e0e0e0",
         "gridHoverBackground": "#c5ccd2",
-        "gridColor": "#000"
+        "gridColor": "#000",
+
+        "scrollBarTrack": "rgb(179, 179, 179)",
+        "scrollBarThumb": "#888",
+        "scrollBarThumbHover": "#555",
+
+        "scrollbar": "light-scrollbar"
     },
     "light+": {
         "textColor": "#000",
@@ -146,6 +162,10 @@
         "menuDropdownBackground": "#d1d1d8",
         "menuDropdownColor": "#000",
 
+        "tabsScrollbarTrack": "rgb(229, 229, 233)",
+        "tabsScrollbarThumb": "rgb(195, 195, 201)",
+        "tabsScrollbarThumbHover": "rgb(187, 187, 187)",
+
         "favoriteBackground": "#dbdbdc",
         "favoriteHoverBackground": "#c5ccd2",
         "favoriteColor": "#000",
@@ -157,6 +177,8 @@
 
         "gridBackground": "#dbdbdc",
         "gridHoverBackground": "#c5ccd2",
-        "gridColor": "#000"
+        "gridColor": "#000",
+
+        "scrollbar": "lightplus-scrollbar"
     }
 }
