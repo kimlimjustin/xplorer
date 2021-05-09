@@ -17,13 +17,13 @@
         "Videos": "folder-video.svg"
     },
     "extension": {
-        "pdf": "pdf.svg",
-        "html": "html.svg",
-        "css": "css.svg",
-        "js": "javascript.svg",
-        "ts": "typescript.svg",
-        "jsx": "react.svg",
-        "tsx": "react_ts.svg"
+        "pdf": "extension/pdf.svg",
+        "html": "extension/html.svg",
+        "css": "extension/css.svg",
+        "js": "extension/javascript.svg",
+        "ts": "extension/typescript.svg",
+        "jsx": "extension/react.svg",
+        "tsx": "extension/react_ts.svg"
     },
     "default": {
         "folder": "folder.svg",
