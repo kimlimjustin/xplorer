@@ -17,6 +17,21 @@ const getFilesAndDir = async (dir, callback) => {
     filterHidden(result, dir, result => {
         callback(result)
     })
+    // Watch the directory
+    fs.watch(dir, async (eventType, filename) => {
+        let result = []
+        // Get files of the dir
+        const files = await fs.readdirSync(dir)
+        files.forEach(file => {
+            // Check if the file is a dir
+            const isDir = fs.lstatSync(path.join(dir, file)).isDirectory()
+            result.push({ filename: file, isDir })
+        })
+        // Filter hidden files
+        filterHidden(result, dir, result => {
+            callback(result)
+        })  
+    })
 }
 
 module.exports = { getFilesAndDir }
