@@ -10,6 +10,7 @@ const OptionMenu = require("../Functions/DOM/optionMenu");
 const Translate = require('../Components/multilingual');
 const nativeDrag = require('../Functions/DOM/drag.js');
 const getPreview = require('../Functions/preview/preview.js');
+const {listenOpen} = require('../Functions/Files/open');
 
 // Home files for linux
 const homeFiles = (callback) => {
@@ -19,7 +20,7 @@ const homeFiles = (callback) => {
             const preview = await getPreview(path.join(os.homedir(), file.filename), file.isDir)
             result += `<div class="file-grid" draggable="true" data-isdir=${file.isDir}>
             ${preview}
-            <span class="file-grid-filename">${file.filename}</span>
+            <span class="file-grid-filename" id="file-filename">${file.filename}</span>
             </div>`
         }
         Translate(result + "</section>", navigator.language, translated => callback(translated))
@@ -42,8 +43,9 @@ const Home = () => {
                     // Add home files into home page
                     newMainElement.innerHTML = globalFavorites + globalDrives + files
                     changeContent(newMainElement)
-                    updateTheme()
-                    nativeDrag(document.querySelectorAll('.file-grid'), os.homedir())
+                    updateTheme() // Update the theme
+                    nativeDrag(document.querySelectorAll('.file-grid'), os.homedir()) // Listen to native drag
+                    listenOpen(document.querySelectorAll(".file-grid"), os.homedir()) // Listen to open the file
                 })
             })
         }
@@ -55,8 +57,9 @@ const Home = () => {
                     // Add home files into home page
                     newMainElement.innerHTML = globalFavorites + globalDrives + files
                     changeContent(newMainElement)
-                    updateTheme()
-                    nativeDrag(document.querySelectorAll('.file-grid'), os.homedir())
+                    updateTheme() // Update the theme
+                    nativeDrag(document.querySelectorAll('.file-grid'), os.homedir()) // Listen to native drag
+                    listenOpen(document.querySelectorAll(".file-grid"), os.homedir()) // Listen to open the file
                 })
             })
         }
@@ -74,7 +77,8 @@ const Home = () => {
                     // And also the theme :)
                     updateTheme()
                     document.addEventListener("keyup", hideFilesShortcut, false)
-                    nativeDrag(document.querySelectorAll('.file-grid'), os.homedir())
+                    nativeDrag(document.querySelectorAll('.file-grid'), os.homedir()) // Listen to native drag
+                    listenOpen(document.querySelectorAll(".file-grid"), os.homedir()) // Listen to open the file
                 })
             }
             else{

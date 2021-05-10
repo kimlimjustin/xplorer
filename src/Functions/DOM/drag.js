@@ -6,7 +6,7 @@ const nativeDrag = (elements, srcPath) => {
     elements.forEach(file => {
         file.ondragstart = e => {
             e.preventDefault()
-            ipcRenderer.send('ondragstart', path.join(srcPath, file.querySelector(".file-grid-filename").innerText), {isDir: file.dataset.isdir == 'true'})
+            ipcRenderer.send('ondragstart', path.join(srcPath, file.querySelector("#file-filename").innerText), {isDir: file.dataset.isdir == 'true'})
         }
     })
 }
