@@ -19,13 +19,6 @@ const Tab = () => {
         })
         tab.appendChild(closeTab)
 
-        // Scroll the tab
-        tab.addEventListener("click",() => {
-            // Check whether the tab is scrolling to left or to right
-            if(tab.parentNode.scrollLeft < window.pageXOffset + tab.getBoundingClientRect().left){
-                tab.parentNode.scrollLeft = window.pageXOffset + tab.getBoundingClientRect().left + tab.offsetWidth
-            }else tab.parentNode.scrollLeft = window.pageXOffset + tab.getBoundingClientRect().left - tab.offsetWidth
-        })
     })
 
     const createNewTabElement = document.querySelector(".create-new-tab")
@@ -49,13 +42,8 @@ const Tab = () => {
         newTab.parentNode.scrollLeft = window.pageXOffset + newTab.getBoundingClientRect().left + newTab.offsetWidth // Scroll the tabs scrollbar
         updateTheme() // Update the theme
 
-        // Scroll the tab
-        newTab.addEventListener("click",() => {
-            // Check whether the tab is scrolling to left or to right
-            if(newTab.parentNode.scrollLeft < window.pageXOffset + newTab.getBoundingClientRect().left){
-                newTab.parentNode.scrollLeft = window.pageXOffset + newTab.getBoundingClientRect().left + newTab.offsetWidth
-            }else newTab.parentNode.scrollLeft = window.pageXOffset + newTab.getBoundingClientRect().left - newTab.offsetWidth
-        })
+        // Scroll the tab to the right end
+        newTab.parentNode.scrollLeft = newTab.parentNode.scrollWidth
     }
 
     // Create a new tab event
@@ -68,6 +56,11 @@ const Tab = () => {
         }
     }
     document.addEventListener("keyup", shortcut, false)
+
+    // Scroll the tabs
+    document.querySelector(".tabs-manager").addEventListener("wheel", e => {
+        e.deltaY > 0 ? document.querySelector(".tabs-manager").scrollLeft += 25 : document.querySelector(".tabs-manager").scrollLeft -= 25;
+    })
 }
 
 module.exports = Tab
