@@ -1,5 +1,5 @@
 const updateTheme = require("../Functions/Theme/updateTheme");
-
+const remote = require('@electron/remote');
 const Tab = () => {
     // Closing tab
     document.querySelectorAll(".tab").forEach(tab => {

@@ -1,4 +1,5 @@
 const os = require('os');
+const path = require('path');
 const Drives = require('./drives.js');
 const Favorites = require('./favorites.js');
 const changeContent = require("../Functions/DOM/changeContent");
@@ -15,7 +16,7 @@ const homeFiles = (callback) => {
     getFilesAndDir(os.homedir(), async files => {
         let result = `<section class='home-section'><h1 class="section-title">Files</h1>`;
         for(const file of files){
-            const icon = await getIcon(file.filename, file.isDir)
+            const icon = await getIcon(path.join(os.homedir(), file.filename), file.isDir)
             result += `<div class="file-grid" draggable="true" data-isdir=${file.isDir}>
             <img src = "${icon}" class="file-grid-preview" />
             <span class="file-grid-filename">${file.filename}</span>

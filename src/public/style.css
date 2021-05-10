@@ -280,6 +280,7 @@ body{
     margin: auto;
     display: block;
     width: 4rem;
+    height: 3rem;
 }
 
 .file-grid .file-grid-filename{

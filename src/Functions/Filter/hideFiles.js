@@ -7,12 +7,16 @@ const hideFiles = (path, callback) => {
         // Check if no default preference
         else if(!data  || !Object.keys(data).length){
             storage.set('hiddenFiles', {[path]: false})
+            // Toggle hidden file on menu
+            document.querySelector("#show-hidden-files").checked = false
             callback(true)
         }
         else{
             // Set data based on the opposite of previous preference
             const preference = !data[path]
-            storage.set('hiddenFiles', {[path]: preference})
+            // Toggle hidden file on menu
+            document.querySelector("#show-hidden-files").checked = data[path]
+            storage.set('hiddenFiles', {[path]: preference, default: preference})
             callback(true)
         }
     })

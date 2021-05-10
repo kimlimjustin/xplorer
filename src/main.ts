@@ -1,6 +1,7 @@
 const { app, BrowserWindow, Menu, screen, ipcMain } = require('electron')
 const path = require('path')
 const storage = require('electron-json-storage')
+require('@electron/remote/main').initialize()
 
 try {
    require('electron-reloader')(module)
@@ -44,7 +45,6 @@ app.on('window-all-closed', () => {
    }
 })
  ipcMain.on('ondragstart', (event, filePath, options) => {
-    console.log(options)
     event.sender.startDrag({
        file: filePath,
        icon: options.isDir ? path.join(__dirname, "icon/folder.png") : path.join(__dirname, "icon/file.png")
