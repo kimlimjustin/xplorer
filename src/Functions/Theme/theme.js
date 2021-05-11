@@ -38,6 +38,8 @@ const changeTheme = (document, theme) => {
     document.querySelector(".path-navigator").style.color = themeJSON[theme].pathNavigatorColor
     document.querySelector(".menu-dropdown").style.background = themeJSON[theme].menuDropdownBackground
     document.querySelector(".menu-dropdown").style.color = themeJSON[theme].menuDropdownColor
+    document.querySelector(".sidebar-setting-btn").style.background = themeJSON[theme].settingButtonBackground
+    document.querySelector(".sidebar-setting-btn").style.color = themeJSON[theme].settingButtonColor
     document.querySelector(".tabs-manager").style.setProperty("--tabs-scrollbar-track", themeJSON[theme].tabsScrollbarTrack)
     document.querySelector(".tabs-manager").style.setProperty("--tabs-scrollbar-thumb", themeJSON[theme].tabsScrollbarThumb)
     document.querySelector(".tabs-manager").style.setProperty("--tabs-scrollbar-thumb-hover", themeJSON[theme].tabsScrollbarThumbHover)

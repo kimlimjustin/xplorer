@@ -16,7 +16,7 @@ const openFile = file => {
 const listenOpen = (elements, dirPath) => {
     elements.forEach(element => {
         // Open the file if it's not directory
-        if(!element.dataset.isdir){
+        if(element.dataset.isdir !== "true"){
             element.addEventListener("dblclick", () => {
                 openFile(path.join(dirPath, element.querySelector("#file-filename").innerText))
             })

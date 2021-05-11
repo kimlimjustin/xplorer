@@ -26,6 +26,9 @@
         "menuDropdownBackground": "#a2b7ff",
         "menuDropdownColor": "#000",
 
+        "settingButtonBackground": "inherit",
+        "settingButtonColor": "#98aec1",
+
         "tabsScrollbarTrack": "rgb(139, 164, 248)",
         "tabsScrollbarThumb": "rgb(116, 118, 231)",
         "tabsScrollbarThumbHover": "rgb(103, 105, 238)",
@@ -65,6 +68,9 @@
         "pathNavigatorColor": "#87c1ce",
         "menuDropdownBackground": "#39496a",
         "menuDropdownColor": "#87c1ce",
+        
+        "settingButtonBackground": "inherit",
+        "settingButtonColor": "#98aec1",
 
         "tabsScrollbarTrack": "rgb(128, 128, 128)",
         "tabsScrollbarThumb": "rgb(77, 77, 77)",
@@ -111,6 +117,9 @@
         "pathNavigatorColor": "#000",
         "menuDropdownBackground": "#e0e0e0",
         "menuDropdownColor": "#000",
+
+        "settingButtonBackground": "inherit",
+        "settingButtonColor": "inherit",
 
         "tabsScrollbarTrack": "rgb(185, 185, 185)",
         "tabsScrollbarThumb": "rgb(163, 163, 163)",
@@ -161,6 +170,9 @@
         "pathNavigatorColor": "#000",
         "menuDropdownBackground": "#d1d1d8",
         "menuDropdownColor": "#000",
+
+        "settingButtonBackground": "inherit",
+        "settingButtonColor": "inherit",
 
         "tabsScrollbarTrack": "rgb(229, 229, 233)",
         "tabsScrollbarThumb": "rgb(195, 195, 201)",
