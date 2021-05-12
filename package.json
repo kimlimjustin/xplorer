@@ -8,13 +8,21 @@
   "scripts": {
     "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "electron-builder"
+    "build": "electron-builder -wml"
+  },
+  "build": {
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    }
   },
   "keywords": [],
   "license": "ISC",
   "devDependencies": {
     "electron": "^12.0.5",
-    "electron-builder": "^22.10.5",
+    "electron-builder": "20.31.2",
     "electron-reloader": "^1.2.1"
   },
   "dependencies": {

@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const VanillaTilt = require('../../../lib/tilt');
+const VanillaTilt = require('../../../lib/tilt/tilt');
 
 // Function to simulate hover effect
 const hoverEffect = (element, before, after) => {

@@ -1,4 +1,4 @@
-const nodeDiskInfo = require('../node-disk-info/index');
+const nodeDiskInfo = require('../../lib/node-disk-info/index');
 const fs = require('fs');
 const path = require('path');
 const formatBytes = require('../Functions/Math/filesize.js');
