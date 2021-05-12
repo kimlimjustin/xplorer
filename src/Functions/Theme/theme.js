@@ -1,20 +1,21 @@
 const fs = require('fs');
 const path = require('path');
+const VanillaTilt = require('../../../lib/tilt');
 
 // Function to simulate hover effect
 const hoverEffect = (element, before, after) => {
-    element.addEventListener("mouseover", () => {
+    element.addEventListener("mouseover", (e) => {
         element.style.background = after
         element.addEventListener("mouseout", () => {
             element.style.background = before
         })
-    })
+    });
 }
 
 // Change page theme
 const changeTheme = (document, theme) => {
-    const themeJSON = JSON.parse(fs.readFileSync(path.resolve(__dirname,"../../" , "config/theme.json")));
-    document.body.style.background =  themeJSON[theme].mainBackground
+    const themeJSON = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../", "config/theme.json")));
+    document.body.style.background = themeJSON[theme].mainBackground
     document.body.style.color = themeJSON[theme].textColor
     document.body.style.fontSize = themeJSON[theme].fontSize
     document.body.style.fontFamily = themeJSON[theme].fontFamily
@@ -68,10 +69,11 @@ const changeTheme = (document, theme) => {
         grid.style.color = themeJSON[theme].gridColor
         hoverEffect(grid, themeJSON[theme].gridBackground, themeJSON[theme].gridHoverBackground)
     })
+    VanillaTilt();
 }
 
 const getThemeJSON = () => {
     return JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../", "config/theme.json")));
 }
 
-module.exports = {changeTheme, getThemeJSON}
+module.exports = { changeTheme, getThemeJSON }
