@@ -1,12 +1,19 @@
 body{
     margin: 0;
     padding: 0;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+     -khtml-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none; 
 }
 
 .xplorer-brand{
     font-size: 1.5rem;
     text-align: center;
     display: block;
+    padding: 15px;
 }
 
 .container{
@@ -20,9 +27,67 @@ body{
 
 .sidebar{
     flex: 1;
-    padding: 15px;
+    min-width: fit-content;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.sidebar-nav{
+    flex-grow: 1;
+    margin: 1rem 0;
+    padding: 15px 20px;
+    overflow: auto;
+}
+
+.sidebar-nav-item{
+    margin: 0 1rem;
+}
+
+.sidebar-nav-item-dropdown-btn{
+    cursor: pointer;
+    font-size: 1.3rem;
+}
+
+.sidebar-nav-item-dropdown-btn::after{
+    content: "▼";
+    float: right;
+}
+
+.sidebar-nav-item-dropdown-container{
+    padding-left: 1rem;
+}
+
+.sidebar-nav-item-dropdown-container span{
+    margin: 1rem .5rem;
+    display: block;
+}
+
+.sidebar-nav-item-dropdown-container span img{
+    width: 1.5rem;
+    height: 1.5rem;
     display: inline-block;
-    min-width: 200px;
+    vertical-align: bottom;
+}
+.sidebar-setting-btn{
+    text-align: center;
+    cursor: pointer;
+    padding: 15px;
+    transition: .5s;
+}
+
+.sidebar-setting-btn:hover{
+    transform: scale(0.95);
+}
+
+.sidebar-setting-btn-icon{
+    width: 2rem;
+    vertical-align: middle;
+}
+
+.sidebar-setting-btn-text{
+    vertical-align: middle;
+    margin: 0 .2rem;
 }
 
 .main{
