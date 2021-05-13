@@ -5,6 +5,12 @@
   "author": "Justin Maximillian Kimlim <kimlimjustin@gmail.com>",
   "main": "src/main.ts",
   "icon": "build/icon.icns",
+  "homepage": "https://github.com/kimlimjustin/xplorer#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kimlimjustin/xplorer.git"
+  },
+  "os": ["darwin", "win32", "linux"],
   "scripts": {
     "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -18,8 +24,8 @@
       ]
     }
   },
-  "keywords": [],
-  "license": "ISC",
+  "keywords": ["Xplorer", "File explorer", "File", "File manager", "Folders", "Directory"],
+  "license": "Apache-2.0",
   "devDependencies": {
     "electron": "^12.0.5",
     "electron-builder": "20.31.2",

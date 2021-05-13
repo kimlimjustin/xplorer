@@ -8,10 +8,13 @@ try {
 } catch (_) { }
 
 
+console.log(process.argv)
+
 // Create a new window
 function createWindow() {
    const {width, height} = screen.getPrimaryDisplay().workAreaSize
    const win = new BrowserWindow({
+      title: "xplorer",
       frame: false,
       width: Math.floor(width * .8),
       height: Math.floor(height * .8),
