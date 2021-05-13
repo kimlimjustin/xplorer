@@ -12,65 +12,71 @@ const hoverEffect = (element, before, after) => {
     });
 }
 
+// Function to change an element style
+const changeElementTheme = (element, variable, style, theme) => {
+    const themeJSON = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../", "config/theme.json")));
+    if(element) element.style[style] = themeJSON[theme][variable]
+}
+
 // Change page theme
 const changeTheme = (document, theme) => {
     const themeJSON = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../", "config/theme.json")));
-    document.body.style.background = themeJSON[theme].mainBackground
-    document.body.style.color = themeJSON[theme].textColor
-    document.body.style.fontSize = themeJSON[theme].fontSize
-    document.body.style.fontFamily = themeJSON[theme].fontFamily
+    changeElementTheme(document.body, "mainBackground", "background", theme)
+    changeElementTheme(document.body, "textColor", "color", theme)
+    changeElementTheme(document.body, "fontSize", "fontSize", theme)
+    changeElementTheme(document.body, "fontFamily", "fontFamily", theme)
     document.body.style.setProperty("--scrollbar-track", themeJSON[theme].scrollbarTrackBackground)
     document.body.style.setProperty("--scrollbar-thumb", themeJSON[theme].scrollbarThumbBackground)
     document.body.style.setProperty("--scrollbar-thumb-hover", themeJSON[theme].scrollbarThumbHoverBackground)
 
-    document.querySelector(".topbar").style.background = themeJSON[theme].topbarBackground
-    document.querySelector(".sidebar").style.background = themeJSON[theme].sidebarBackground
-    document.querySelector("#minimize").style.background = themeJSON[theme].minimizebackground
-    document.querySelector("#minimize").style.color = themeJSON[theme].minimizeColor
-    document.querySelector("#maximize").style.background = themeJSON[theme].maximizebackground
-    document.querySelector("#maximize").style.color = themeJSON[theme].maximizeColor
-    document.querySelector("#exit").style.background = themeJSON[theme].exitbackground
-    document.querySelector("#exit").style.color = themeJSON[theme].exitColor
-    document.querySelector(".create-new-tab").style.background = themeJSON[theme].newTabBackground
-    document.querySelector(".create-new-tab").style.color = themeJSON[theme].newTabColor
-    document.querySelector("#go-back").style.background = themeJSON[theme].navigatorBackground
-    document.querySelector("#go-back").style.color = themeJSON[theme].navigatorColor
-    document.querySelector("#go-forward").style.background = themeJSON[theme].navigatorBackground
-    document.querySelector("#go-forward").style.color = themeJSON[theme].navigatorColor
-    document.querySelector("#refresh").style.background = themeJSON[theme].navigatorBackground
-    document.querySelector("#refresh").style.color = themeJSON[theme].navigatorColor
-    document.querySelector(".path-navigator").style.background = themeJSON[theme].pathNavigatorBackground
-    document.querySelector(".path-navigator").style.color = themeJSON[theme].pathNavigatorColor
-    document.querySelector(".menu-dropdown").style.background = themeJSON[theme].menuDropdownBackground
-    document.querySelector(".menu-dropdown").style.color = themeJSON[theme].menuDropdownColor
-    document.querySelector(".sidebar-setting-btn").style.background = themeJSON[theme].settingButtonBackground
-    document.querySelector(".sidebar-setting-btn").style.color = themeJSON[theme].settingButtonColor
+    changeElementTheme(document.querySelector(".topbar"), "topbarBackground", "background", theme)
+    changeElementTheme(document.querySelector(".sidebar"), "sidebarBackground", "background", theme)
+    changeElementTheme(document.querySelector("#minimize"), "minimizeBackground", "background", theme)
+    changeElementTheme(document.querySelector("#minimize"), "minimizeColor", "color", theme)
+    changeElementTheme(document.querySelector("#maximize"), "maximizeBackground", "background", theme)
+    changeElementTheme(document.querySelector("#maximize"), "maximizeColor", "color", theme)
+    changeElementTheme(document.querySelector("#exit"), "exitBackground", "background", theme)
+    changeElementTheme(document.querySelector("#exit"), "exitColor", "color", theme)
+    changeElementTheme(document.querySelector(".create-new-tab"), "newTabBackground", "background", theme)
+    changeElementTheme(document.querySelector(".create-new-tab"), "newTabColor", "color", theme)
+    changeElementTheme(document.querySelector("#go-back"), "navigatorBackground", "background", theme)
+    changeElementTheme(document.querySelector("#go-back"), "navigatorColor", "color", theme)
+    changeElementTheme(document.querySelector("#go-forward"), "navigatorBackground", "background", theme)
+    changeElementTheme(document.querySelector("#go-forward"), "navigatorColor", "color", theme)
+    changeElementTheme(document.querySelector("#refresh"), "navigatorBackground", "background", theme)
+    changeElementTheme(document.querySelector("#refresh"), "navigatorColor", "color", theme)
+    changeElementTheme(document.querySelector(".path-navigator"), "pathNavigatorBackground", "background", theme)
+    changeElementTheme(document.querySelector(".path-navigator"), "pathNavigatorColor", "color", theme)
+    changeElementTheme(document.querySelector(".menu-dropdown"), "menuDropdownBackground", "background", theme)
+    changeElementTheme(document.querySelector(".menu-dropdown"), "menuDropdownColor", "color", theme)
+    changeElementTheme(document.querySelector(".sidebar-setting-btn"), "settingButtonBackground", "background", theme)
+    changeElementTheme(document.querySelector(".sidebar-setting-btn"), "settingButtonColor", "color", theme)
     document.querySelector(".tabs-manager").style.setProperty("--tabs-scrollbar-track", themeJSON[theme].tabsScrollbarTrack)
     document.querySelector(".tabs-manager").style.setProperty("--tabs-scrollbar-thumb", themeJSON[theme].tabsScrollbarThumb)
     document.querySelector(".tabs-manager").style.setProperty("--tabs-scrollbar-thumb-hover", themeJSON[theme].tabsScrollbarThumbHover)
     document.querySelectorAll(".tab").forEach(tab => {
-        tab.style.background = themeJSON[theme].tabBackground
-        tab.style.color = themeJSON[theme].tabColor
+        changeElementTheme(tab, "tabBackground", "background", theme)
+        changeElementTheme(tab, "tabColor", "color", theme)
     })
     document.querySelectorAll(".favorite").forEach(favorite => {
-        favorite.style.background = themeJSON[theme].favoriteBackground
-        favorite.style.color = themeJSON[theme].favoriteColor
+        changeElementTheme(favorite, "favoriteBackground", "background", theme)
+        changeElementTheme(favorite, "favoriteColor", "color", theme)
         hoverEffect(favorite, themeJSON[theme].favoriteBackground, themeJSON[theme].favoriteHoverBackground)
     })
     document.querySelectorAll(".pendrive").forEach(pendrive => {
-        pendrive.style.background = themeJSON[theme].pendriveBackground
-        pendrive.style.color = themeJSON[theme].pendriveColor
+        changeElementTheme(pendrive, "pendriveBackground", "background", theme)
+        changeElementTheme(pendrive, "pendriveColor", "color", theme)
         hoverEffect(pendrive, themeJSON[theme].pendriveBackground, themeJSON[theme].pendriveHoverBackground)
     })
     document.querySelectorAll(".pendrive-total-capacity").forEach(bar => {
-        bar.style.background = themeJSON[theme].pendriveTotalCapacityBackground
+        changeElementTheme(bar, "pendriveTotalCapacityBackground", "background", theme)
     })
     document.querySelectorAll(".pendrive-used-capacity").forEach(bar => {
-        bar.style.background = themeJSON[theme].pendriveUsedCapacityBackground
+        changeElementTheme(bar, "pendriveUsedCapacityBackground", "background", theme)
     })
     document.querySelectorAll(".file-grid").forEach(grid => {
-        grid.style.background = themeJSON[theme].gridBackground
-        grid.style.color = themeJSON[theme].gridColor
+        changeElementTheme(grid, "gridBackground", "background", theme)
+        changeElementTheme(grid, "gridColor", "color", theme)
         hoverEffect(grid, themeJSON[theme].gridBackground, themeJSON[theme].gridHoverBackground)
     })
     VanillaTilt();

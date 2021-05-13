@@ -29,5 +29,16 @@
     "default": {
         "folder": "folder.svg",
         "file": "file.svg"
+    },
+    "sidebar": {
+        "Desktop": "sidebar/desktop.svg",
+        "Documents": "sidebar/document.svg",
+        "Downloads": "sidebar/download.svg",
+        "Favorites": "sidebar/favorite.svg",
+        "Home": "sidebar/home.svg",
+        "Music": "sidebar/music.svg",
+        "Pictures": "sidebar/picture.svg",
+        "setting": "sidebar/settings.svg",
+        "Videos": "sidebar/video.svg"
     }
 }
