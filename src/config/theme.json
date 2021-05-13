@@ -3,6 +3,9 @@
         "textColor": "#4fe0be",
         "fontSize": "18px",
         "fontFamily": "system-ui",
+        "scrollbarTrackBackground": "rgb(139, 164, 248)",
+        "scrollbarThumbBackground": "rgb(116, 118, 231)",
+        "scrollbarThumbHoverBackground": "rgb(103, 105, 238)",
 
         "sidebarBackground": "#14141b",
         "mainBackground": "#1a1b26",
@@ -46,6 +49,9 @@
         "textColor": "#87c1ce",
         "fontSize": "18px",
         "fontFamily": "system-ui",
+        "scrollbarTrackBackground": "rgb(128, 128, 128)",
+        "scrollbarThumbBackground": "rgb(77, 77, 77)",
+        "scrollbarThumbHoverBackground": "rgb(59, 59, 59)",
 
         "sidebarBackground": "#1b1e2e",
         "mainBackground": "#24283b",
@@ -95,6 +101,9 @@
         "textColor": "#000",
         "fontSize": "18px",
         "fontFamily": "system-ui",
+        "scrollbarTrackBackground": "rgb(185, 185, 185)",
+        "scrollbarThumbBackground": "rgb(163, 163, 163)",
+        "scrollbarThumbHoverBackground": "#888",
 
         "sidebarBackground": "#cbccd1",
         "mainBackground": "#d5d6db",
@@ -148,6 +157,9 @@
         "textColor": "#000",
         "fontSize": "18px",
         "fontFamily": "system-ui",
+        "scrollbarTrackBackground": "rgb(229, 229, 233)",
+        "scrollbarThumbBackground": "rgb(195, 195, 201)",
+        "scrollbarThumbHoverBackground": "rgb(187, 187, 187)",
 
         "sidebarBackground": "#d1d1d8",
         "mainBackground": "#f3f3f3",

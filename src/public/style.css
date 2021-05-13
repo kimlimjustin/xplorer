@@ -9,6 +9,11 @@ body{
             user-select: none; 
 }
 
+::-webkit-scrollbar{ width: 5px; }
+::-webkit-scrollbar-track{background: var(--scrollbar-track);}
+::-webkit-scrollbar-thumb{background: var(--scrollbar-thumb);}
+::-webkit-scrollbar-thumb:hover{background: var(--scrollbar-thumb-hover);}
+
 .xplorer-brand{
     font-size: 1.5rem;
     text-align: center;
@@ -112,7 +117,7 @@ body{
 }
 
 
-.tabs-manager::-webkit-scrollbar{ height: 6px;  }
+.tabs-manager::-webkit-scrollbar{ height: 3px;  }
 .tabs-manager::-webkit-scrollbar-track{background: var(--tabs-scrollbar-track);}
 .tabs-manager::-webkit-scrollbar-thumb{background: var(--tabs-scrollbar-thumb);}
 .tabs-manager::-webkit-scrollbar-thumb:hover{background: var(--tabs-scrollbar-thumb-hover);}

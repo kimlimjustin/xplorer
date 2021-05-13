@@ -19,6 +19,10 @@ const changeTheme = (document, theme) => {
     document.body.style.color = themeJSON[theme].textColor
     document.body.style.fontSize = themeJSON[theme].fontSize
     document.body.style.fontFamily = themeJSON[theme].fontFamily
+    document.body.style.setProperty("--scrollbar-track", themeJSON[theme].scrollbarTrackBackground)
+    document.body.style.setProperty("--scrollbar-thumb", themeJSON[theme].scrollbarThumbBackground)
+    document.body.style.setProperty("--scrollbar-thumb-hover", themeJSON[theme].scrollbarThumbHoverBackground)
+
     document.querySelector(".topbar").style.background = themeJSON[theme].topbarBackground
     document.querySelector(".sidebar").style.background = themeJSON[theme].sidebarBackground
     document.querySelector("#minimize").style.background = themeJSON[theme].minimizebackground
