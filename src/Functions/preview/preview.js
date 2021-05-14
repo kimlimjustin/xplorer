@@ -21,25 +21,32 @@ const getPreview =  (filename, isDir) => {
     // Get user preference on icon
     const icon  = storage.get('icon')
     let iconJSON = null;
-    if(icon.data) iconJSON = JSON.parse(fs.readFileSync(icon.data.iconJSON))
+    if(icon.data && fs.existsSync(icon.data.iconJSON)) iconJSON = JSON.parse(fs.readFileSync(icon.data.iconJSON))
     if(isDir){
+        const folderName = filename.split("/").pop()
         // Check if there's a icon for the folder name
-        if(Object.keys(iconJSON.folder).indexOf(filename) !== -1){
-            return iconPreview(path.join(__dirname, "../../icon/", iconJSON.folder[filename]))
-        }else return iconPreview(path.join(__dirname, "../../icon/", iconJSON.default.folder))
+        if(Object.keys(iconJSON ? iconJSON.folder : defaultIconJSON.folder).indexOf(folderName) !== -1){
+            let fileLoc = iconJSON ? iconJSON.folder[folderName][0] === "/" ? iconJSON.folder[folderName] : path.join(icon.data.iconJSON, '../', iconJSON.folder[folderName]) : defaultIconJSON.folder[folderName][0] === "/" ? defaultIconJSON.folder[folderName] : path.join(__dirname, "../../icon/", defaultIconJSON.folder[folderName]) // Icon file loc for user preference based icon
+            if(iconJSON && fs.existsSync(fileLoc)) return iconPreview(fileLoc)
+            else return iconPreview(path.join(__dirname, "../../icon/", defaultIconJSON.folder[folderName]))
+        }else{
+            let fileLoc = iconJSON ? iconJSON.default.folder[0] === "/" ? iconJSON.default.folder : path.join(icon.data.iconJSON, '../', iconJSON.default.folder) : defaultIconJSON.default.folder[0] === "/" ? defaultIconJSON.default.folder : path.join(__dirname, "../../icon/", iconJSON ? iconJSON.default.folder : defaultIconJSON.default.folder)// Icon file loc for user preference based icon
+            if(iconJSON && fs.existsSync(fileLoc)) return iconPreview(fileLoc)
+            else return iconPreview(path.join(__dirname, "../../icon/", iconJSON ? iconJSON.default.folder : defaultIconJSON.default.folder))
+        }
     }else{
         const ext = filename.split('.').pop().toLowerCase() // Get extension of filename
         if(IMAGE.indexOf(ext) !== -1) return iconPreview(filename) // Show the image itself if the file is image
-        else if(VIDEO.indexOf(ext) !== -1) return videoPreview(filename, iconJSON) // Show vthe video itself if the file is video
+        else if(VIDEO.indexOf(ext) !== -1) return videoPreview(filename, iconJSON ? iconJSON : defaultIconJSON) // Show vthe video itself if the file is video
         // Check if there's a icon for the filename name
-        if(Object.keys(iconJSON.extension).indexOf(ext) !== -1){
-            let fileLoc = iconJSON.extension[ext][0] === "/" ? iconJSON.extension[ext] : path.join(icon.data.iconJSON, '../', iconJSON.extension[ext]) // File loc for user preference based icon
+        if(Object.keys(iconJSON ? iconJSON.extension : defaultIconJSON.extension).indexOf(ext) !== -1){
+            let fileLoc = iconJSON ? iconJSON.extension[ext][0] === "/" ? iconJSON.extension[ext] : path.join(icon.data.iconJSON, '../', iconJSON.extension[ext]) : defaultIconJSON.extension[ext][0] === "/" ? defaultIconJSON.extension[ext] : path.join(__dirname, "../../icon/", defaultIconJSON.extension[ext]) // Icon file loc for user preference based icon
             if(iconJSON && fs.existsSync(fileLoc)) return iconPreview(fileLoc)
             else return iconPreview(path.join(__dirname, "../../icon/", defaultIconJSON.extension[ext]))
         }else{
-            let fileLoc = iconJSON.default.file[0] === "/" ? iconJSON.extension[ext] : path.join(icon.data.iconJSON, '../', iconJSON.default.file) // File loc for user preference based icon
+            let fileLoc = iconJSON ? iconJSON.default.file[0] === "/" ? iconJSON.default.file : path.join(icon.data.iconJSON, '../', iconJSON.default.file) : defaultIconJSON.default.file[0] === "/" ? defaultIconJSON.default.file : path.join(__dirname, "../../icon/", iconJSON ? iconJSON.default.file : defaultIconJSON.default.file)// Icon file loc for user preference based icon
             if(iconJSON && fs.existsSync(fileLoc)) return iconPreview(fileLoc)
-            else return iconPreview(path.join(__dirname, "../../icon/", iconJSON.default.file))
+            else return iconPreview(path.join(__dirname, "../../icon/", iconJSON ? iconJSON.default.file : defaultIconJSON.default.file))
         }
     }
 }
