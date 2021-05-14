@@ -11,11 +11,11 @@
         "mainBackground": "#1a1b26",
         "topbarBackground": "#14141b",
 
-        "minimizebackground": "#fbd914",
+        "minimizeBackground": "#fbd914",
         "minimizeColor": "#14141b",
-        "maximizebackground": "#00ca4e",
+        "maximizeBackground": "#00ca4e",
         "maximizeColor": "#14141b",
-        "exitbackground": "#ff4743",
+        "exitBackground": "#ff4743",
         "exitColor": "#14141b",
 
         "tabBackground": "#a2b7ff",
@@ -57,11 +57,11 @@
         "mainBackground": "#24283b",
         "topbarBackground": "#1b1e2e",
 
-        "minimizebackground": "#fbd914",
+        "minimizeBackground": "#fbd914",
         "minimizeColor": "#14141b",
-        "maximizebackground": "#00ca4e",
+        "maximizeBackground": "#00ca4e",
         "maximizeColor": "#14141b",
-        "exitbackground": "#ff4743",
+        "exitBackground": "#ff4743",
         "exitColor": "#14141b",
 
         "tabBackground": "#39496a",
@@ -109,11 +109,11 @@
         "mainBackground": "#d5d6db",
         "topbarBackground": "#cbccd1",
 
-        "minimizebackground": "#fbd914",
+        "minimizeBackground": "#fbd914",
         "minimizeColor": "#14141b",
-        "maximizebackground": "#00ca4e",
+        "maximizeBackground": "#00ca4e",
         "maximizeColor": "#14141b",
-        "exitbackground": "#ff4743",
+        "exitBackground": "#ff4743",
         "exitColor": "#14141b",
 
         "tabBackground": "#e0e0e0",
@@ -165,11 +165,11 @@
         "mainBackground": "#f3f3f3",
         "topbarBackground": "#eeeeee",
 
-        "minimizebackground": "#fbd914",
+        "minimizeBackground": "#fbd914",
         "minimizeColor": "#14141b",
-        "maximizebackground": "#00ca4e",
+        "maximizeBackground": "#00ca4e",
         "maximizeColor": "#14141b",
-        "exitbackground": "#ff4743",
+        "exitBackground": "#ff4743",
         "exitColor": "#14141b",
 
         "tabBackground": "#d1d1d8",

@@ -10,7 +10,11 @@
     "type": "git",
     "url": "https://github.com/kimlimjustin/xplorer.git"
   },
-  "os": ["darwin", "win32", "linux"],
+  "os": [
+    "darwin",
+    "win32",
+    "linux"
+  ],
   "scripts": {
     "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -24,7 +28,14 @@
       ]
     }
   },
-  "keywords": ["Xplorer", "File explorer", "File", "File manager", "Folders", "Directory"],
+  "keywords": [
+    "Xplorer",
+    "File explorer",
+    "File",
+    "File manager",
+    "Folders",
+    "Directory"
+  ],
   "license": "Apache-2.0",
   "devDependencies": {
     "electron": "^12.0.5",
@@ -33,6 +44,7 @@
   },
   "dependencies": {
     "@electron/remote": "^1.1.0",
-    "electron-json-storage": "^4.5.0"
+    "electron-json-storage": "^4.5.0",
+    "electron-json-storage-sync": "^1.2.0"
   }
 }

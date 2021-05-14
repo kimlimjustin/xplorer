@@ -15,7 +15,7 @@ const Drives = async (callback) => {
             let driveName = drive._mounted.split("/")[drive._mounted.split("/").length - 1] // Get name of drive
             result += `
             <div class="pendrive" data-tilt>
-                <img src="${path.join(__dirname, `../icon/${iconJSON.favorites.usb}`)}" alt="USB icon" class="pendrive-icon">
+                <img src="${getIcon('favorites', 'usb')}" alt="USB icon" class="pendrive-icon">
                 <div class="pendrive-info">
                     ${drive._volumename
                     ? `<h4 class="pendrive-title">${drive._volumename} (${driveName})</h4>`
