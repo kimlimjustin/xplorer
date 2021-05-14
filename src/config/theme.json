@@ -43,7 +43,11 @@
         "pendriveHoverBackground": "#829cf5",
         "pendriveColor": "#000",
         "pendriveTotalCapacityBackground": "#eee",
-        "pendriveUsedCapacityBackground": "#8989e2"
+        "pendriveUsedCapacityBackground": "#8989e2",
+
+        "gridBackground": "transparent",
+        "gridHoverBackground": "transparent",
+        "gridColor": "inherit"
     },
     "dark": {
         "textColor": "#87c1ce",
@@ -93,9 +97,7 @@
 
         "gridBackground": "transparent",
         "gridHoverBackground": "transparent",
-        "gridColor": "#87c1ce",
-
-        "scrollbar": "dark-scrollbar"
+        "gridColor": "#87c1ce"
     },
     "light": {
         "textColor": "#000",
@@ -145,13 +147,7 @@
 
         "gridBackground": "#e0e0e0",
         "gridHoverBackground": "#c5ccd2",
-        "gridColor": "#000",
-
-        "scrollBarTrack": "rgb(179, 179, 179)",
-        "scrollBarThumb": "#888",
-        "scrollBarThumbHover": "#555",
-
-        "scrollbar": "light-scrollbar"
+        "gridColor": "#000"
     },
     "light+": {
         "textColor": "#000",
@@ -201,8 +197,6 @@
 
         "gridBackground": "#dbdbdc",
         "gridHoverBackground": "#c5ccd2",
-        "gridColor": "#000",
-
-        "scrollbar": "lightplus-scrollbar"
+        "gridColor": "#000"
     }
 }
