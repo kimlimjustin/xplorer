@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const formatBytes = require('../Functions/Math/filesize.js');
 const Translate = require("../Components/multilingual");
+const getIcon = require('../Functions/Icon/icon');
 
 const Drives = async (callback) => {
     // Get all Physical disks Detected on the system

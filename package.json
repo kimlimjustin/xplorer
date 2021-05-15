@@ -21,6 +21,15 @@
     "build": "electron-builder -wml"
   },
   "build": {
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "nsis": {
+      "license": "LICENSE",
+      "runAfterFinish": true
+    },
     "linux": {
       "target": [
         "AppImage",
