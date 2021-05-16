@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const formatBytes = require('../Functions/Math/filesize.js');
 const Translate = require("../Components/multilingual");
-const getIcon = require('../Functions/Icon/icon');
+const getPreview = require('../Functions/preview/preview');
 
 const Drives = async (callback) => {
     // Get all Physical disks Detected on the system
@@ -16,7 +16,7 @@ const Drives = async (callback) => {
             let driveName = drive._mounted.split("/")[drive._mounted.split("/").length - 1] // Get name of drive
             result += `
             <div class="pendrive" data-tilt>
-                <img src="${getIcon('favorites', 'usb')}" alt="USB icon" class="pendrive-icon">
+                <img src="${getPreview('favorites', 'usb')}" alt="USB icon" class="pendrive-icon">
                 <div class="pendrive-info">
                     ${drive._volumename
                     ? `<h4 class="pendrive-title">${drive._volumename} (${driveName})</h4>`

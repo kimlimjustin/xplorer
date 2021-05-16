@@ -17,7 +17,7 @@ const homeFiles = (callback) => {
     getFilesAndDir(os.homedir(), async files => {
         let result = `<section class='home-section'><h1 class="section-title">Files</h1>`;
         for(const file of files){
-            const preview = await getPreview(path.join(os.homedir(), file.filename), file.isDir)
+            const preview = await getPreview(path.join(os.homedir(), file.filename), category = file.isDir ? "folder": "file")
             result += `<div class="file-grid" draggable="true" data-isdir=${file.isDir}>
             ${preview}
             <span class="file-grid-filename" id="file-filename">${file.filename}</span>

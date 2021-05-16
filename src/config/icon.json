@@ -1,44 +1,70 @@
 {
     "favorites": {
-        "desktop": "folder-desktop.svg",
-        "document": "folder-document.svg",
-        "download": "folder-download.svg",
-        "music": "folder-music.svg",
-        "picture": "folder-picture.svg",
-        "video": "folder-video.svg",
+        "desktop": "folder/folder-desktop.svg",
+        "document": "folder/folder-document.svg",
+        "download": "folder/folder-download.svg",
+        "music": "folder/folder-music.svg",
+        "picture": "folder/folder-picture.svg",
+        "video": "folder/folder-video.svg",
         "usb": "usb.svg"
     },
     "folder": {
-        "Desktop": "folder-desktop.svg",
-        "Documents": "folder-document.svg",
-        "Downloads": "folder-download.svg",
-        "Music": "folder-music.svg",
-        "Pictures": "folder-picture.svg",
-        "Videos": "folder-video.svg"
+        "desktop": "folder/folder-desktop.svg",
+        "documents": "folder/folder-document.svg",
+        "downloads": "folder/folder-download.svg",
+        "music": "folder/folder-music.svg",
+        "pictures": "folder/folder-picture.svg",
+        "videos": "folder/folder-video.svg",
+        "js": "folder/folder-javascript.svg",
+        "javascript": "folder/folder-javascript.svg",
+        "template": "folder/folder-template.svg",
+        "templates": "folder/folder-template.svg",
+        "public": "folder/folder-public.svg",
+        "Publics": "folder/folder-public.svg",
+        "test": "folder/folder-test.svg",
+        "project": "folder/folder-project.svg",
+        "projects": "folder/folder-project.svg",
+        "python": "folder/folder-python.svg",
+        "function": "folder/folder-function.svg",
+        "functions": "folder/folder-function.svg",
+        "math": "folder/folder-function.svg",
+        ".git": "folder/folder-git.svg",
+        "git": "folder/folder-git.svg"
     },
-    "extension": {
+    "file": {
         "pdf": "extension/pdf.svg",
+        "htm": "extension/html.svg",
         "html": "extension/html.svg",
         "css": "extension/css.svg",
         "js": "extension/javascript.svg",
         "ts": "extension/typescript.svg",
         "jsx": "extension/react.svg",
         "tsx": "extension/react_ts.svg",
-        "video": "extension/video.svg"
+        "video": "extension/video.svg",
+        "json": "extension/json.svg",
+        "python": "extension/python.svg",
+        "py": "extension/python.svg",
+        "py3": "extension/python.svg",
+        "pyc": "extension/python.svg",
+        "c": "extension/c.svg",
+        "c++": "extension/cpp.svg",
+        "h": "extension/h.svg"
     },
     "default": {
         "folder": "folder.svg",
         "file": "file.svg"
     },
     "sidebar": {
-        "Desktop": "sidebar/desktop.svg",
-        "Documents": "sidebar/document.svg",
-        "Downloads": "sidebar/download.svg",
-        "Favorites": "sidebar/favorite.svg",
-        "Home": "sidebar/home.svg",
-        "Music": "sidebar/music.svg",
-        "Pictures": "sidebar/picture.svg",
+        "desktop": "sidebar/desktop.svg",
+        "documents": "sidebar/document.svg",
+        "downloads": "sidebar/download.svg",
+        "favorites": "sidebar/favorite.svg",
+        "home": "sidebar/home.svg",
+        "music": "sidebar/music.svg",
+        "pictures": "sidebar/picture.svg",
         "setting": "sidebar/settings.svg",
-        "Videos": "sidebar/video.svg"
+        "videos": "sidebar/video.svg",
+        "trash": "sidebar/trash.svg",
+        "recent": "sidebar/recent.svg"
     }
 }
