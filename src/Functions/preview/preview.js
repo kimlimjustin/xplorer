@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const storage = require('electron-json-storage-sync');
-const os = require('os');
 
 const IMAGE = ['jpg', 'png', 'gif', 'bmp', 'jpeg', 'jpe', 'jif', 'jfif', 'jfi', 'webp', 'tiff', 'tif', 'ico'];
 const VIDEO = ['mp4', 'webm', 'mpg', 'mp2', 'mpeg', 'mpe', 'mpv', 'ocg', 'm4p', 'm4v', 'avi', 'wmv', 'mov', 'qt', 'flv', 'swf'];
@@ -17,19 +16,22 @@ const videoPreview =  (filename, iconJSON) => {
 }
 
 const getPreview =  (filename, category = "folder", HTMLFormat = true) => {
-    filename = filename.toLowerCase() // Lowercase filename
     let defaultIconJSON = JSON.parse(fs.readFileSync(path.join(__dirname, "../../config/icon.json")))
     // Get user preference on icon
     const icon  = storage.get('icon')
     let iconJSON = null;
 
     if(icon.data && fs.existsSync(icon.data.iconJSON)) iconJSON = JSON.parse(fs.readFileSync(icon.data.iconJSON))
-    //if(isDir){
-    const folderName = filename.split("/").pop()
+    
     const ext = filename.split('.').pop().toLowerCase() // Get extension of filename
 
     if(IMAGE.indexOf(ext) !== -1) return HTMLFormat ? iconPreview(filename) : filename // Show the image itself if the file is image
     else if(VIDEO.indexOf(ext) !== -1) return HTMLFormat ? videoPreview(filename, iconJSON ? iconJSON : defaultIconJSON) : filename // Show the video itself if the file is video
+
+    filename = filename.toLowerCase() // Lowercase filename
+
+    const folderName = filename.split("/").pop()
+
     // Check if there's a icon for the folder name
     if(Object.keys(iconJSON ? iconJSON[category] : defaultIconJSON[category]).indexOf(category === "file" ? ext : folderName) !== -1){
         let fileLoc = iconJSON ? iconJSON[category][category === "file" ? ext: folderName][0] === "/" ? iconJSON[category][category === "file" ? ext: folderName] : path.join(icon.data.iconJSON, '../', iconJSON[category][category === "file" ? ext: folderName]) : defaultIconJSON[category][category === "file" ? ext: folderName][0] === "/" ? defaultIconJSON[category][category === "file" ? ext: folderName] : path.join(__dirname, "../../icon/", defaultIconJSON[category][category === "file" ? ext: folderName]) // Icon file loc for user preference based icon
