@@ -1,6 +1,6 @@
 const os = require('os');
 const path = require('path');
-const Drives = require('./drives.js');
+const {Drives} = require('./drives.js');
 const Favorites = require('./favorites.js');
 const changeContent = require("../Functions/DOM/changeContent");
 const updateTheme = require('../Functions/Theme/updateTheme');
