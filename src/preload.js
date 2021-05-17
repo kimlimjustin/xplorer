@@ -8,7 +8,7 @@ const {changeSidebar, Sidebar} = require('./Functions/DOM/sidebar');
 // Wait DOM Content to be loaded
 document.addEventListener('DOMContentLoaded', () => {
     webFrame.setZoomFactor(1)
-    Sidebar(sidebar => changeSidebar(sidebar))
+    changeSidebar(Sidebar())
     // Listen to minimze, maximize, exit and reload button
     windowManager()
     // Tab listener
