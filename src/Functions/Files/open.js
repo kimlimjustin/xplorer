@@ -10,7 +10,7 @@ const COMMAND = () => {
 }
 
 const openFile = file => {
-    exec(`${COMMAND()} ${file}`)
+    exec(`${COMMAND()} "${file}"`)
 }
 
 const listenOpen = (elements, dirPath) => {
