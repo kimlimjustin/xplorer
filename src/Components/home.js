@@ -1,24 +1,24 @@
 const os = require('os');
 const path = require('path');
-const {Drives} = require('./drives.js');
+const { Drives } = require('./drives.js');
 const Favorites = require('./favorites.js');
 const changeContent = require("../Functions/DOM/changeContent");
 const updateTheme = require('../Functions/Theme/updateTheme');
-const {getFilesAndDir} = require('../Functions/Files/get');
+const { getFilesAndDir } = require('../Functions/Files/get');
 const hideFiles = require('../Functions/Filter/hideFiles.js');
 const OptionMenu = require("../Functions/DOM/optionMenu");
 const Translate = require('../Components/multilingual');
 const nativeDrag = require('../Functions/DOM/drag.js');
 const getPreview = require('../Functions/preview/preview.js');
-const {listenOpen} = require('../Functions/Files/open');
+const { listenOpen } = require('../Functions/Files/open');
 
 // Home files for linux
 const homeFiles = (callback) => {
     getFilesAndDir(os.homedir(), async files => {
         let result = `<section class='home-section'><h1 class="section-title">Files</h1>`;
-        for(const file of files){
-            const preview = await getPreview(path.join(os.homedir(), file.filename), category = file.isDir ? "folder": "file")
-            result += `<div class="file-grid" draggable="true" data-isdir=${file.isDir}>
+        for (const file of files) {
+            const preview = await getPreview(path.join(os.homedir(), file.filename), category = file.isDir ? "folder" : "file")
+            result += `<div class="file-grid" draggable="true" data-isdir=${file.isDir} data-path = ${path.join(os.homedir(), file.filename)}>
             ${preview}
             <span class="file-grid-filename" id="file-filename">${file.filename}</span>
             </div>`
@@ -37,7 +37,7 @@ const Home = () => {
 
     // Hide files shorcut
     const hideFilesShortcut = e => {
-        if(e.ctrlKey && e.key === "h"){
+        if (e.ctrlKey && e.key === "h") {
             hideFiles(os.homedir(), () => {
                 homeFiles(files => {
                     // Add home files into home page
@@ -45,13 +45,13 @@ const Home = () => {
                     changeContent(newMainElement)
                     updateTheme() // Update the theme
                     nativeDrag(document.querySelectorAll('.file-grid'), os.homedir()) // Listen to native drag
-                    listenOpen(document.querySelectorAll(".file-grid"), os.homedir()) // Listen to open the file
+                    listenOpen(document.querySelectorAll(".file-grid")) // Listen to open the file
                 })
             })
         }
     }
     OptionMenu(process.platform === "win32", os.homedir(), response => {
-        if(response.type === "hide"){
+        if (response.type === "hide") {
             hideFiles(os.homedir(), () => {
                 homeFiles(files => {
                     // Add home files into home page
@@ -59,7 +59,7 @@ const Home = () => {
                     changeContent(newMainElement)
                     updateTheme() // Update the theme
                     nativeDrag(document.querySelectorAll('.file-grid'), os.homedir()) // Listen to native drag
-                    listenOpen(document.querySelectorAll(".file-grid"), os.homedir()) // Listen to open the file
+                    listenOpen(document.querySelectorAll(".file-grid")) // Listen to open the file
                 })
             })
         }
@@ -78,10 +78,10 @@ const Home = () => {
                     updateTheme()
                     document.addEventListener("keyup", hideFilesShortcut, false)
                     nativeDrag(document.querySelectorAll('.file-grid'), os.homedir()) // Listen to native drag
-                    listenOpen(document.querySelectorAll(".file-grid"), os.homedir()) // Listen to open the file
+                    listenOpen(document.querySelectorAll(".file-grid")) // Listen to open the file
                 })
             }
-            else{
+            else {
                 // Update the content in the main page ...
                 newMainElement.innerHTML = favorites + drives
                 changeContent(newMainElement)
