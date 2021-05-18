@@ -78,6 +78,7 @@ const Home = () => {
                     updateTheme()
                     document.addEventListener("keyup", hideFilesShortcut, false)
                     nativeDrag(document.querySelectorAll('.file-grid'), os.homedir()) // Listen to native drag
+                    listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
                 })
             }
             else {
@@ -86,8 +87,8 @@ const Home = () => {
                 changeContent(newMainElement)
                 // And also the theme :)
                 updateTheme()
+                listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
             }
-            listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
         })
     })
 }
