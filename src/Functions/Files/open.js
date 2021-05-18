@@ -11,9 +11,9 @@ const listenOpen = (elements) => {
         element.addEventListener("dblclick", () => {
             // Open the file if it's not directory
             if (element.dataset.isdir !== "true") {
-                open(element.dataset.path)
+                open(unescape(element.dataset.path))
             } else {
-                openDir(element.dataset.path)
+                openDir(unescape(element.dataset.path))
             }
         })
     })
@@ -27,7 +27,7 @@ const openDir = (dir) => {
         const result = document.createElement("div");
         for (const file of files) {
             const preview = await getPreview(path.join(dir, file.filename), category = file.isDir ? "folder" : "file")
-            result.innerHTML += `<div class="file-grid" draggable="true" data-isdir=${file.isDir} data-path = ${path.join(dir, file.filename)} data-listenOpen>
+            result.innerHTML += `<div class="file-grid" draggable="true" data-isdir=${file.isDir} data-path = ${escape(path.join(dir, file.filename))} data-listenOpen>
             ${preview}
             <span class="file-grid-filename" id="file-filename">${file.filename}</span>
             </div>`
