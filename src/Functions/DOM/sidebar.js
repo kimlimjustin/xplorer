@@ -1,6 +1,8 @@
 const storage = require('electron-json-storage-sync');
 const { getDrives } = require('../../Components/drives');
 const getPreview = require("../preview/preview");
+const path = require("path");
+const os = require('os');
 
 const changeSidebar = newElement => {
     const sidebarElement = document.body.querySelector(".sidebar");
@@ -12,7 +14,7 @@ const Sidebar = () => {
     const favoritesElement = favorites => {
         let result = ""
         for(const favorite of favorites){
-            result += `<span><img src="${getPreview(favorite, category = 'sidebar', HTMLFormat = false)}" alt="${favorite} icon"> ${favorite}</span>`
+            result += `<span data-listenOpen data-path = "${path.join(os.homedir(), favorite)}" data-isdir="true"><img src="${getPreview(favorite, category = 'sidebar', HTMLFormat = false)}" alt="${favorite} icon"> ${favorite}</span>`
         }
         return result;
     }

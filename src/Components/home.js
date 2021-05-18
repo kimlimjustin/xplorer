@@ -18,7 +18,7 @@ const homeFiles = (callback) => {
         let result = `<section class='home-section'><h1 class="section-title">Files</h1>`;
         for (const file of files) {
             const preview = await getPreview(path.join(os.homedir(), file.filename), category = file.isDir ? "folder" : "file")
-            result += `<div class="file-grid" draggable="true" data-isdir=${file.isDir} data-path = ${path.join(os.homedir(), file.filename)}>
+            result += `<div class="file-grid" draggable="true" data-isdir=${file.isDir} data-path = ${path.join(os.homedir(), file.filename)} data-listenOpen>
             ${preview}
             <span class="file-grid-filename" id="file-filename">${file.filename}</span>
             </div>`
@@ -45,7 +45,7 @@ const Home = () => {
                     changeContent(newMainElement)
                     updateTheme() // Update the theme
                     nativeDrag(document.querySelectorAll('.file-grid'), os.homedir()) // Listen to native drag
-                    listenOpen(document.querySelectorAll(".file-grid")) // Listen to open the file
+                    listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
                 })
             })
         }
@@ -59,7 +59,7 @@ const Home = () => {
                     changeContent(newMainElement)
                     updateTheme() // Update the theme
                     nativeDrag(document.querySelectorAll('.file-grid'), os.homedir()) // Listen to native drag
-                    listenOpen(document.querySelectorAll(".file-grid")) // Listen to open the file
+                    listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
                 })
             })
         }
@@ -78,7 +78,6 @@ const Home = () => {
                     updateTheme()
                     document.addEventListener("keyup", hideFilesShortcut, false)
                     nativeDrag(document.querySelectorAll('.file-grid'), os.homedir()) // Listen to native drag
-                    listenOpen(document.querySelectorAll(".file-grid")) // Listen to open the file
                 })
             }
             else {
@@ -88,6 +87,7 @@ const Home = () => {
                 // And also the theme :)
                 updateTheme()
             }
+            listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
         })
     })
 }

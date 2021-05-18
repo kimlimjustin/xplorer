@@ -83,6 +83,7 @@ body{
 .sidebar-nav-item-dropdown-container span{
     margin: .5rem;
     display: block;
+    cursor: pointer;
 }
 
 .sidebar-nav-item-dropdown-container span img{
