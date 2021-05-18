@@ -54,6 +54,7 @@
   "dependencies": {
     "@electron/remote": "^1.1.0",
     "electron-json-storage": "^4.5.0",
-    "electron-json-storage-sync": "^1.2.0"
+    "electron-json-storage-sync": "^1.2.0",
+    "open": "^8.0.9"
   }
 }

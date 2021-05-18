@@ -1,6 +1,8 @@
 const storage = require('electron-json-storage-sync');
 const { getDrives } = require('../../Components/drives');
 const getPreview = require("../preview/preview");
+const path = require("path");
+const os = require('os');
 
 const changeSidebar = newElement => {
     const sidebarElement = document.body.querySelector(".sidebar");
@@ -12,7 +14,7 @@ const Sidebar = () => {
     const favoritesElement = favorites => {
         let result = ""
         for(const favorite of favorites){
-            result += `<span><img src="${getPreview(favorite, category = 'sidebar', HTMLFormat = false)}" alt="${favorite} icon"> ${favorite}</span>`
+            result += `<span data-listenOpen data-path = "${path.join(os.homedir(), favorite)}" data-isdir="true"><img src="${getPreview(favorite, category = 'sidebar', HTMLFormat = false)}" alt="${favorite} icon"> ${favorite}</span>`
         }
         return result;
     }
@@ -25,7 +27,7 @@ const Sidebar = () => {
             let drivesElement = ""
             for(const drive of drives){
                 let driveName = process.platform === "win32" ? `${drive._volumename} (${drive._mounted})`: drive._mounted.split("/")[drive._mounted.split("/").length - 1] // Get name of drive
-                drivesElement += `<span><img src="${getPreview('usb', category = 'favorites', HTMLFormat = false)}" alt="${driveName}">${driveName}</span>`
+                drivesElement += `<span data-listenOpen data-path = "${drive._mounted}" data-isdir="true"><img src="${getPreview('usb', category = 'favorites', HTMLFormat = false)}" alt="${driveName}">${driveName}</span>`
             }
             let result = `<div class="sidebar-nav-item">
                 <span class="sidebar-nav-item-dropdown-btn"><img src="${getPreview('usb', category = "favorites", HTMLFormat = false)}" alt="Drives icon"> ${process.platform === "win32" ? "Drives" : "Pendrives"}</span>

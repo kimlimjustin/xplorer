@@ -18,7 +18,7 @@ const homeFiles = (callback) => {
         let result = `<section class='home-section'><h1 class="section-title">Files</h1>`;
         for (const file of files) {
             const preview = await getPreview(path.join(os.homedir(), file.filename), category = file.isDir ? "folder" : "file")
-            result += `<div class="file-grid" draggable="true" data-isdir=${file.isDir} data-path = ${path.join(os.homedir(), file.filename)}>
+            result += `<div class="file-grid" draggable="true" data-isdir=${file.isDir} data-path = ${path.join(os.homedir(), file.filename)} data-listenOpen>
             ${preview}
             <span class="file-grid-filename" id="file-filename">${file.filename}</span>
             </div>`
@@ -45,7 +45,7 @@ const Home = () => {
                     changeContent(newMainElement)
                     updateTheme() // Update the theme
                     nativeDrag(document.querySelectorAll('.file-grid'), os.homedir()) // Listen to native drag
-                    listenOpen(document.querySelectorAll(".file-grid")) // Listen to open the file
+                    listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
                 })
             })
         }
@@ -59,13 +59,13 @@ const Home = () => {
                     changeContent(newMainElement)
                     updateTheme() // Update the theme
                     nativeDrag(document.querySelectorAll('.file-grid'), os.homedir()) // Listen to native drag
-                    listenOpen(document.querySelectorAll(".file-grid")) // Listen to open the file
+                    listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
                 })
             })
         }
     })
 
-    const _homeFiles = (drives) => {
+    Drives(drives => {
         globalDrives = drives // Save drives into global variable
         Favorites(favorites => {
             globalFavorites = favorites; // Save favorites into global variable
@@ -78,7 +78,6 @@ const Home = () => {
                     updateTheme()
                     document.addEventListener("keyup", hideFilesShortcut, false)
                     nativeDrag(document.querySelectorAll('.file-grid'), os.homedir()) // Listen to native drag
-                    listenOpen(document.querySelectorAll(".file-grid")) // Listen to open the file
                 })
             }
             else {
@@ -88,32 +87,8 @@ const Home = () => {
                 // And also the theme :)
                 updateTheme()
             }
+            listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
         })
-    }
-
-    // Detecting USB Drive changes every 500 ms
-    setInterval(() => {
-        Drives(drives => {
-            if (previousDrive === undefined) {
-                previousDrive = drives
-            } else {
-                let _previousDrive = document.createElement("div");
-                let _drives = document.createElement("div");
-                _previousDrive.innerHTML = previousDrive
-                _drives.innerHTML = drives
-                // If the drives change ...
-                if (!_previousDrive.isEqualNode(_drives)) {
-                    _homeFiles(drives)
-                    document.removeEventListener("keyup", hideFilesShortcut, false)
-                    previousDrive = drives
-                }
-            }
-            previousDrive = drives
-        })
-    }, 500)
-
-    Drives(drives => {
-        _homeFiles(drives)
     })
 }
 
