@@ -65,7 +65,7 @@ const Home = () => {
         }
     })
 
-    const _homeFiles = (drives) => {
+    Drives(drives => {
         globalDrives = drives // Save drives into global variable
         Favorites(favorites => {
             globalFavorites = favorites; // Save favorites into global variable
@@ -89,31 +89,6 @@ const Home = () => {
                 updateTheme()
             }
         })
-    }
-
-    // Detecting USB Drive changes every 500 ms
-    setInterval(() => {
-        Drives(drives => {
-            if (previousDrive === undefined) {
-                previousDrive = drives
-            } else {
-                let _previousDrive = document.createElement("div");
-                let _drives = document.createElement("div");
-                _previousDrive.innerHTML = previousDrive
-                _drives.innerHTML = drives
-                // If the drives change ...
-                if (!_previousDrive.isEqualNode(_drives)) {
-                    _homeFiles(drives)
-                    document.removeEventListener("keyup", hideFilesShortcut, false)
-                    previousDrive = drives
-                }
-            }
-            previousDrive = drives
-        })
-    }, 500)
-
-    Drives(drives => {
-        _homeFiles(drives)
     })
 }
 
