@@ -10,8 +10,10 @@ const getFilesAndDir = async (dir, callback) => {
     const files = await fs.readdirSync(dir)
     files.forEach(file => {
         // Check if the file is a dir
-        const isDir = fs.lstatSync(path.join(dir, file)).isDirectory()
-        result.push({ filename: file, isDir })
+        try{
+            const isDir = fs.lstatSync(path.join(dir, file)).isDirectory()  
+            result.push({ filename: file, isDir })
+        }catch(e){}
     })
     // Filter hidden files
     filterHidden(result, dir, result => {
