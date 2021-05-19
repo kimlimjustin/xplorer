@@ -9,6 +9,10 @@ const changeSidebar = newElement => {
     sidebarElement.parentElement.replaceChild(newElement, sidebarElement);
 }
 
+const getDriveBasePath = mounted => {
+    return process.platform === "win32" ? escape(path.resolve(mounted, "/")) : escape(drive._mounted)
+}
+
 const Sidebar = () => {
     // Functions to get favorites element
     const favoritesElement = favorites => {
@@ -27,7 +31,7 @@ const Sidebar = () => {
             let drivesElement = ""
             for(const drive of drives){
                 let driveName = process.platform === "win32" ? `${drive._volumename} (${drive._mounted})`: drive._mounted.split("/")[drive._mounted.split("/").length - 1] // Get name of drive
-                drivesElement += `<span data-listenOpen data-path = "${drive._mounted}" data-isdir="true"><img src="${getPreview('usb', category = 'favorites', HTMLFormat = false)}" alt="${driveName}">${driveName}</span>`
+                drivesElement += `<span data-listenOpen data-path = "${getDriveBasePath(drive._mounted)}" data-isdir="true"><img src="${getPreview('usb', category = 'favorites', HTMLFormat = false)}" alt="${driveName}">${driveName}</span>`
             }
             let result = `<div class="sidebar-nav-item">
                 <span class="sidebar-nav-item-dropdown-btn"><img src="${getPreview('usb', category = "favorites", HTMLFormat = false)}" alt="Drives icon"> ${process.platform === "win32" ? "Drives" : "Pendrives"}</span>

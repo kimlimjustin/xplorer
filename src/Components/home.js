@@ -31,7 +31,6 @@ const Home = () => {
     // Create a new main element
     const newMainElement = document.createElement("div");
 
-    let previousDrive; // Previous drive tags (used to detect USB Drive changes)
     let globalFavorites; // Global variable to store favorites
     let globalDrives; // Global variable to store drives
 

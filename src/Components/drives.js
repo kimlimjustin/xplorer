@@ -28,6 +28,10 @@ const getUniqueDrives = drives => {
     return result;
 }
 
+const getDriveBasePath = mounted => {
+    return process.platform === "win32" ? escape(path.resolve(mounted, "/")) : escape(drive._mounted)
+}
+
 const Drives = async (callback) => {
     const drives =  await getDrives()
     // Function to convert drives into HTML Tags
@@ -36,7 +40,7 @@ const Drives = async (callback) => {
         drives.forEach((drive) => {
             let driveName = drive._mounted.split("/")[drive._mounted.split("/").length - 1] // Get name of drive
             result += `
-            <div class="pendrive" data-tilt data-isdir="true" data-listenOpen data-path = "${escape(drive._mounted)}">
+            <div class="pendrive" data-tilt data-isdir="true" data-listenOpen data-path = "${getDriveBasePath(drive._mounted)}">
                 <img src="${getPreview('usb', category = "favorites", HTMLFormat = false)}" alt="USB icon" class="pendrive-icon">
                 <div class="pendrive-info">
                     ${drive._volumename

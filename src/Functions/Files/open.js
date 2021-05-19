@@ -33,7 +33,7 @@ const openDir = (dir) => {
             </div>`
         }
         changeContent(result)
-        listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
+        listenOpen(document.getElementById("main").querySelectorAll("[data-listenOpen]")) // Listen to open the file
     })
 }
 
