@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const storage = require('electron-json-storage-sync');
 
-const IMAGE = ['jpg', 'png', 'gif', 'bmp', 'jpeg', 'jpe', 'jif', 'jfif', 'jfi', 'webp', 'tiff', 'tif', 'ico'];
+const IMAGE = ['jpg', 'png', 'gif', 'bmp', 'jpeg', 'jpe', 'jif', 'jfif', 'jfi', 'webp', 'tiff', 'tif', 'ico', 'svg', 'webp'];
 const VIDEO = ['mp4', 'webm', 'mpg', 'mp2', 'mpeg', 'mpe', 'mpv', 'ocg', 'm4p', 'm4v', 'avi', 'wmv', 'mov', 'qt', 'flv', 'swf'];
 
 // Return image view of preview
@@ -30,7 +30,7 @@ const getPreview =  (filename, category = "folder", HTMLFormat = true) => {
 
     filename = filename.toLowerCase() // Lowercase filename
 
-    const folderName = filename.split("/").pop()
+    const folderName = filename.split(/[\\\/]/).pop()
 
     // Check if there's a icon for the folder name
     if(Object.keys(iconJSON ? iconJSON[category] : defaultIconJSON[category]).indexOf(category === "file" ? ext : folderName) !== -1){
