@@ -7,6 +7,7 @@ const os = require('os');
 const changeSidebar = newElement => {
     const sidebarElement = document.body.querySelector(".sidebar");
     sidebarElement.parentElement.replaceChild(newElement, sidebarElement);
+    return;
 }
 
 const getDriveBasePath = mounted => {
@@ -80,7 +81,6 @@ const Sidebar = () => {
             })
         })
     })
-
     return sidebarElement
 }
 

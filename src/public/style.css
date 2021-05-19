@@ -348,7 +348,7 @@ body{
 .file-grid-preview{
     margin: auto;
     display: block;
-    width: 4rem;
+    max-width: 4rem;
     height: 3rem;
 }
 

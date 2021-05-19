@@ -4,18 +4,22 @@ const changeContent = require("../DOM/changeContent");
 const path = require('path');
 const os = require('os');
 const open = require('open');
-const Home = require('../../Components/home.js');
+const Home = require('../../Components/home');
+
+const openFileHandler = (e) => {
+    const element = e.target.dataset.path ? e.target : e.target.parentNode
+    // Open the file if it's not directory
+    if (element.dataset.isdir !== "true") {
+        open(unescape(element.dataset.path))
+    } else {
+        openDir(unescape(element.dataset.path))
+    }
+}
 
 const listenOpen = (elements) => {
     elements.forEach(element => {
-        element.addEventListener("dblclick", () => {
-            // Open the file if it's not directory
-            if (element.dataset.isdir !== "true") {
-                open(unescape(element.dataset.path))
-            } else {
-                openDir(unescape(element.dataset.path))
-            }
-        })
+        element.removeEventListener("dblclick", openFileHandler)
+        element.addEventListener("dblclick", openFileHandler)
     })
 }
 
@@ -39,7 +43,7 @@ const openDir = (dir) => {
                 </div>`
             }
             changeContent(result)
-            listenOpen(document.getElementById("main").querySelectorAll("[data-listenOpen]")) // Listen to open the file
+            listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
         }
     })
 }
