@@ -25,15 +25,22 @@ const openDir = (dir) => {
     }
     getFilesAndDir(dir, async files => {
         const result = document.createElement("div");
-        for (const file of files) {
-            const preview = await getPreview(path.join(dir, file.filename), category = file.isDir ? "folder" : "file")
-            result.innerHTML += `<div class="file-grid" draggable="true" data-isdir=${file.isDir} data-path = ${escape(path.join(dir, file.filename))} data-listenOpen>
-            ${preview}
-            <span class="file-grid-filename" id="file-filename">${file.filename}</span>
-            </div>`
+        if(!files.length){
+            let emptyDirNotification = document.createElement("span")
+            emptyDirNotification.classList.add('empty-dir-notification')
+            emptyDirNotification.innerText = "This folder is empty."
+            changeContent(emptyDirNotification);
+        }else{
+            for (const file of files) {
+                const preview = await getPreview(path.join(dir, file.filename), category = file.isDir ? "folder" : "file")
+                result.innerHTML += `<div class="file-grid" draggable="true" data-isdir=${file.isDir} data-path = ${escape(path.join(dir, file.filename))} data-listenOpen>
+                ${preview}
+                <span class="file-grid-filename" id="file-filename">${file.filename}</span>
+                </div>`
+            }
+            changeContent(result)
+            listenOpen(document.getElementById("main").querySelectorAll("[data-listenOpen]")) // Listen to open the file
         }
-        changeContent(result)
-        listenOpen(document.getElementById("main").querySelectorAll("[data-listenOpen]")) // Listen to open the file
     })
 }
 
