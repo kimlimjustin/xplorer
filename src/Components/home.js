@@ -10,7 +10,6 @@ const OptionMenu = require("../Functions/DOM/optionMenu");
 const Translate = require('../Components/multilingual');
 const nativeDrag = require('../Functions/DOM/drag.js');
 const getPreview = require('../Functions/preview/preview.js');
-const { listenOpen } = require('../Functions/Files/open');
 
 // Home files for linux
 const homeFiles = (callback) => {
@@ -27,7 +26,7 @@ const homeFiles = (callback) => {
     })
 }
 // Content for home page
-const Home = () => {
+const Home = (_callback) => {
     // Create a new main element
     const newMainElement = document.createElement("div");
 
@@ -44,7 +43,7 @@ const Home = () => {
                     changeContent(newMainElement)
                     updateTheme() // Update the theme
                     nativeDrag(document.querySelectorAll('.file-grid'), os.homedir()) // Listen to native drag
-                    listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
+                    _callback()
                 })
             })
         }
@@ -58,7 +57,7 @@ const Home = () => {
                     changeContent(newMainElement)
                     updateTheme() // Update the theme
                     nativeDrag(document.querySelectorAll('.file-grid'), os.homedir()) // Listen to native drag
-                    listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
+                    _callback()
                 })
             })
         }
@@ -77,7 +76,7 @@ const Home = () => {
                     updateTheme()
                     document.addEventListener("keyup", hideFilesShortcut, false)
                     nativeDrag(document.querySelectorAll('.file-grid'), os.homedir()) // Listen to native drag
-                    listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
+                    _callback()
                 })
             }
             else {
@@ -86,7 +85,7 @@ const Home = () => {
                 changeContent(newMainElement)
                 // And also the theme :)
                 updateTheme()
-                listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
+                _callback()
             }
         })
     })
