@@ -1,8 +1,8 @@
 const storage = require('electron-json-storage-sync');
-const { getDrives } = require('../../Components/drives');
-const getPreview = require("../preview/preview");
 const path = require("path");
 const os = require('os');
+const { getDrives } = require('./drives');
+const getPreview = require('../Functions/preview/preview');
 
 const changeSidebar = newElement => {
     const sidebarElement = document.body.querySelector(".sidebar");
@@ -14,7 +14,7 @@ const getDriveBasePath = mounted => {
     return process.platform === "win32" ? escape(path.resolve(mounted, "/")) : escape(drive._mounted)
 }
 
-const Sidebar = () => {
+const createSidebar = () => {
     // Functions to get favorites element
     const favoritesElement = favorites => {
         let result = ""
@@ -34,7 +34,7 @@ const Sidebar = () => {
                 let driveName = process.platform === "win32" ? `${drive._volumename} (${drive._mounted})`: drive._mounted.split("/")[drive._mounted.split("/").length - 1] // Get name of drive
                 drivesElement += `<span data-listenOpen data-path = "${getDriveBasePath(drive._mounted)}" data-isdir="true"><img src="${getPreview('usb', category = 'favorites', HTMLFormat = false)}" alt="${driveName}">${driveName}</span>`
             }
-            let result = `<div class="sidebar-nav-item">
+            let result = `<div class="sidebar-nav-item" id="sidebar-drives">
                 <span class="sidebar-nav-item-dropdown-btn"><img src="${getPreview('usb', category = "favorites", HTMLFormat = false)}" alt="Drives icon"> ${process.platform === "win32" ? "Drives" : "Pendrives"}</span>
                 <div class="sidebar-nav-item-dropdown-container">
                     ${drivesElement}
@@ -80,8 +80,25 @@ const Sidebar = () => {
                 e.target.parentNode.classList.toggle('nav-hide-item')
             })
         })
+        changeSidebar(sidebarElement)
+
+        // Listen drives change
+        let _prevDrives;
+        setInterval(() => {
+            getDrivesElement().then(_drives => {
+                if (_prevDrives === undefined) _prevDrives = _drives
+                else {
+                    if (_drives !== _prevDrives) {
+                        const _newElement = document.createElement("div")
+                        _newElement.innerHTML = _drives.trim()
+                        document.getElementById("sidebar-drives").parentNode.replaceChild(_newElement.firstChild, document.getElementById("sidebar-drives"))
+                    }
+                    _prevDrives = _drives
+                }
+            })
+        }, 500);
     })
-    return sidebarElement
+    return;
 }
 
-module.exports = {changeSidebar, Sidebar}
+module.exports =  createSidebar

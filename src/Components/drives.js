@@ -88,4 +88,4 @@ const Drives = async (callback) => {
     }, 500);
 }
 
-module.exports = {Drives, getDrives}
+module.exports = {Drives, getDrives, getUniqueDrives}
