@@ -24,16 +24,16 @@ const getDrives = async () => {
 // Get unique drives regardless space left
 const getUniqueDrives = drives => {
     let result = []
-    drives.forEach(drive => result.push({_filesystem: drive._filesystem, _mounted: drive._filesystem, _volumename: drive._volumename}))
+    drives.forEach(drive => result.push({ _filesystem: drive._filesystem, _mounted: drive._filesystem, _volumename: drive._volumename }))
     return result;
 }
 
 const getDriveBasePath = mounted => {
-    return process.platform === "win32" ? escape(path.resolve(mounted, "/")) : escape(drive._mounted)
+    return process.platform === "win32" ? escape(path.resolve(mounted, "/")) : escape(mounted)
 }
 
 const Drives = async (callback) => {
-    const drives =  await getDrives()
+    const drives = await getDrives()
     // Function to convert drives into HTML Tags
     const toElements = (drives, kBlockFormat = false) => {
         let result = "" // Element Result
@@ -58,7 +58,7 @@ const Drives = async (callback) => {
 
     // Function to return drives section
     const returnElement = (drives) => {
-        switch(process.platform){
+        switch (process.platform) {
             case "win32":
                 Translate(`<section class="home-section"><h1 class="section-title">Drives</h1>${toElements(drives)}</section>`, navigator.language, translated => callback(translated))
                 break;
@@ -75,12 +75,12 @@ const Drives = async (callback) => {
     let previousDrive;
     // Function to listen changes of drives
     setInterval(async () => {
-        const _drives =  await getDrives()
+        const _drives = await getDrives()
         let _uniqueDrive = getUniqueDrives(_drives)
-        if(previousDrive === undefined){
+        if (previousDrive === undefined) {
             previousDrive = _uniqueDrive
-        }else{
-            if(JSON.stringify(_uniqueDrive) !== JSON.stringify(previousDrive)){
+        } else {
+            if (JSON.stringify(_uniqueDrive) !== JSON.stringify(previousDrive)) {
                 returnElement(_drives)
             }
         }
@@ -88,4 +88,4 @@ const Drives = async (callback) => {
     }, 500);
 }
 
-module.exports = {Drives, getDrives, getUniqueDrives}
+module.exports = { Drives, getDrives, getUniqueDrives }

@@ -4,7 +4,7 @@ const storage = require('electron-json-storage-sync');
 const { openDir } = require("../Functions/Files/open");
 
 const Tab = () => {
-    let tabsInfo = { focus: "1", tabs: {1: "Home"}, focusHistory: [1], latestIndex: 1} // default tabs information
+    let tabsInfo = { focus: "1", tabs: { 1: "Home" }, focusHistory: [1], latestIndex: 1 } // default tabs information
     // Store default tabs information into local storage
     storage.set("tabs", tabsInfo)
 
@@ -18,10 +18,10 @@ const Tab = () => {
         closeTab.addEventListener("click", e => {
             e.stopPropagation()
             // Close the window if user close the only tab
-            if(document.querySelectorAll(".tab").length === 1){
+            if (document.querySelectorAll(".tab").length === 1) {
                 const electronWindow = remote.BrowserWindow.getFocusedWindow()
                 electronWindow.close()
-            }else{
+            } else {
                 tab.parentElement.removeChild(tab)
                 tabsInfo.focusHistory = tabsInfo.focusHistory.filter(tabIndex => tabIndex !== index + 1)
                 tabsInfo.focus = tabsInfo.focusHistory[tabsInfo.focusHistory.length - 1]
@@ -44,6 +44,8 @@ const Tab = () => {
     const createNewTabElement = document.querySelector(".create-new-tab")
     //  Function to create new tab
     const createNewTab = e => {
+        tabsInfo = storage.get("tabs")?.data // Fetch latest tabs information
+
         const newTab = document.createElement("div");
         newTab.classList.add('tab');
         newTab.innerHTML = "<span id='tab-position'>Home</span><span class='close-tab-btn'>&times;</span>";
@@ -56,12 +58,12 @@ const Tab = () => {
         newTab.querySelector(".close-tab-btn").addEventListener("click", e => {
             e.stopPropagation()
             // Close the window if user close the only tab
-            if(document.querySelectorAll(".tab").length === 1){
+            if (document.querySelectorAll(".tab").length === 1) {
                 const electronWindow = remote.BrowserWindow.getFocusedWindow()
                 electronWindow.close()
             } else {
                 tabsInfo.focusHistory = tabsInfo.focusHistory.filter(tabIndex => String(tabIndex) !== String(newTab.dataset.tabIndex))
-                if(String(tabsInfo.focus) === String(newTab.dataset.tabIndex)) tabsInfo.focus = tabsInfo.focusHistory[tabsInfo.focusHistory.length - 1]
+                if (String(tabsInfo.focus) === String(newTab.dataset.tabIndex)) tabsInfo.focus = tabsInfo.focusHistory[tabsInfo.focusHistory.length - 1]
                 delete tabsInfo.tabs[newTab.dataset.tabIndex]
                 storage.set("tabs", tabsInfo)
                 newTab.parentElement.removeChild(newTab)
@@ -74,25 +76,26 @@ const Tab = () => {
         newTab.parentNode.scrollLeft = newTab.parentNode.scrollWidth
 
         // Edit tabs information
-        tabsInfo.tabs[tabsInfo.latestIndex] = "Home"
+        tabsInfo.tabs[String(tabsInfo.latestIndex)] = "Home"
         tabsInfo.focus = tabsInfo.latestIndex
         tabsInfo.focusHistory.push(tabsInfo.latestIndex)
         storage.set('tabs', tabsInfo)
+        openDir("Home")
 
         newTab.addEventListener("click", () => {
             const tabs = storage.get('tabs')?.data
             tabs.focus = newTab.dataset.tabIndex
-            tabs.focusHistory.push(newTab.dataset.tabIndex)
+            tabs.focusHistory.push(parseInt(newTab.dataset.tabIndex))
             storage.set('tabs', tabs)
             openDir(tabs.tabs[newTab.dataset.tabIndex])
         })
     }
 
     // Create a new tab event
-    createNewTabElement.addEventListener('click',createNewTab)
+    createNewTabElement.addEventListener('click', createNewTab)
     // Add new tab shortcut
     const shortcut = e => {
-        if(e.ctrlKey && e.key === "t"){ // Shortcut for new tab
+        if (e.ctrlKey && e.key === "t") { // Shortcut for new tab
             createNewTab()
             updateTheme()
         } else if (e.ctrlKey && e.key === "w") { // Shortcut for exit tab
@@ -101,7 +104,7 @@ const Tab = () => {
                 const electronWindow = remote.BrowserWindow.getFocusedWindow()
                 electronWindow.close()
             } else {
-                
+
             }
         }
     }
