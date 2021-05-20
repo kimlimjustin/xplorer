@@ -1,5 +1,5 @@
 const Tab = require('./Components/tab')
-const updateTheme = require('./Functions/Theme/updateTheme');
+const { updateTheme } = require('./Functions/Theme/theme');
 const Home = require('./Components/home.js');
 const windowManager = require('./Components/windowManager');
 const {webFrame} = require('electron');
