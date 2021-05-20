@@ -1,4 +1,4 @@
-const updateTheme = require("../Functions/Theme/updateTheme");
+const { updateTheme } = require('../Functions/Theme/theme');
 const remote = require('@electron/remote');
 const storage = require('electron-json-storage-sync');
 const { openDir } = require("../Functions/Files/open");

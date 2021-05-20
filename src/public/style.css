@@ -7,6 +7,7 @@ body{
        -moz-user-select: none;
         -ms-user-select: none;
             user-select: none; 
+    scroll-behavior: smooth;
 }
 
 ::-webkit-scrollbar{ width: 5px; }
