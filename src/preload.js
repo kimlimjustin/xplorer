@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Tab listener
     Tab()
     // Home Component as default view
-    /*var _ = (function () {
+    var _ = (function () {
         let homeExecuted = false; // only execute home once
         if (!homeExecuted) {
             Home(() => {
@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             })
         }
         
-    })()*/
+    })()
     // Update the page theme
     updateTheme()
 })

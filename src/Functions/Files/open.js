@@ -5,6 +5,7 @@ const path = require('path');
 const os = require('os');
 const open = require('open');
 const Home = require('../../Components/home');
+const changePosition = require("../Tab/changePosition");
 
 const openFileHandler = (e) => {
     const element = e.target.dataset.path ? e.target : e.target.parentNode.dataset.path ? e.target.parentNode : e.target.parentNode.parentNode
@@ -18,7 +19,7 @@ const openFileHandler = (e) => {
 }
 
 const listenOpen = (elements) => {
-    console.log(elements)
+    //console.log(elements)
     elements.forEach(element => {
         element.removeEventListener("dblclick", openFileHandler)
         element.addEventListener("dblclick", openFileHandler)
@@ -26,9 +27,9 @@ const listenOpen = (elements) => {
 }
 
 const openDir = (dir) => {
-    if(dir === path.join(os.homedir(), 'Home')){
+    changePosition(dir)
+    if(dir === path.join(os.homedir(), 'Home') || dir === "Home"){
         Home(() => {
-            console.log(document.querySelectorAll("[data-listenOpen]"))
             listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
         })
     }else{
@@ -47,7 +48,7 @@ const openDir = (dir) => {
                     <span class="file-grid-filename" id="file-filename">${file.filename}</span>
                     </div>`
                 }
-                changeContent(result)
+                changeContent(result, autoScroll = false)
                 listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
             }
         })

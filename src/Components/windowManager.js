@@ -1,8 +1,10 @@
-const remote = require('@electron/remote')
-const {getCurrentWindow, globalShortcut} = remote
+const { openDir } = require('../Functions/Files/open')
+const storage = require('electron-json-storage-sync')
+const remote = require("@electron/remote")
 // Function to reload
 const reload = () => {
-    getCurrentWindow().reload()
+    const tabs = storage.get('tabs')?.data
+    openDir(tabs.tabs[tabs.focus])     
 }
 
 // Function to minimize window

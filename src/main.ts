@@ -27,8 +27,8 @@ function createWindow() {
    })
 
    win.loadFile('src/public/index.html')
-   //win.removeMenu()
 }
+
 app.allowRendererProcessReuse = false
 
 app.whenReady().then(() => {
@@ -42,7 +42,7 @@ app.whenReady().then(() => {
 })
 
 app.on('window-all-closed', () => {
-   storage.remove('_loc')
+   storage.remove('tabs')
    if (process.platform !== 'darwin') {
       app.quit()
    }
