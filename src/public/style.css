@@ -67,7 +67,6 @@ body{
     padding-left: 1.75rem;
 }
 
-
 .nav-hide-item .sidebar-nav-item-dropdown-btn::after{
     content: "▼" !important;
 }
@@ -349,7 +348,7 @@ body{
 .file-grid-preview{
     margin: auto;
     display: block;
-    width: 4rem;
+    max-width: 4rem;
     height: 3rem;
 }
 
@@ -362,4 +361,9 @@ body{
     overflow: hidden;
     height: fit-content;
     text-align: center;
+}
+
+.empty-dir-notification{
+    margin: 0 auto;
+    font-weight: bold;
 }
