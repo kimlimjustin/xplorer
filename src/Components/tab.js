@@ -1,6 +1,7 @@
 const updateTheme = require("../Functions/Theme/updateTheme");
 const remote = require('@electron/remote');
-const storage = require('electron-json-storage-sync')
+const storage = require('electron-json-storage-sync');
+const { openDir } = require("../Functions/Files/open");
 
 const Tab = () => {
     let tabsInfo = { focus: "1", tabs: {1: "Home"}, focusHistory: [1], latestIndex: 1} // default tabs information
@@ -29,6 +30,14 @@ const Tab = () => {
             }
         })
         tab.appendChild(closeTab)
+
+        tab.addEventListener("click", () => {
+            const tabs = storage.get('tabs')?.data
+            tabs.focus = index + 1
+            tabs.focusHistory.push(index + 1)
+            storage.set('tabs', tabs)
+            openDir(tabs.tabs[index + 1])
+        })
 
     })
 
@@ -69,6 +78,14 @@ const Tab = () => {
         tabsInfo.focus = tabsInfo.latestIndex
         tabsInfo.focusHistory.push(tabsInfo.latestIndex)
         storage.set('tabs', tabsInfo)
+
+        newTab.addEventListener("click", () => {
+            const tabs = storage.get('tabs')?.data
+            tabs.focus = newTab.dataset.tabIndex
+            tabs.focusHistory.push(newTab.dataset.tabIndex)
+            storage.set('tabs', tabs)
+            openDir(tabs.tabs[newTab.dataset.tabIndex])
+        })
     }
 
     // Create a new tab event
