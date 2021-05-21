@@ -10,6 +10,7 @@ const OptionMenu = require("../Functions/DOM/optionMenu");
 const Translate = require('../Components/multilingual');
 const nativeDrag = require('../Functions/DOM/drag.js');
 const getPreview = require('../Functions/preview/preview.js');
+const { startLoading, stopLoading } = require('../Functions/DOM/loading.js');
 
 // Home files for linux
 const homeFiles = (callback) => {
@@ -27,6 +28,7 @@ const homeFiles = (callback) => {
 }
 // Content for home page
 const Home = (_callback) => {
+    startLoading()
     // Create a new main element
     const newMainElement = document.createElement("div");
 
@@ -77,6 +79,7 @@ const Home = (_callback) => {
                     document.addEventListener("keyup", hideFilesShortcut, false)
                     nativeDrag(document.querySelectorAll('.file-grid'), os.homedir()) // Listen to native drag
                     _callback()
+                    stopLoading()
                 })
             }
             else {
@@ -86,6 +89,7 @@ const Home = (_callback) => {
                 // And also the theme :)
                 updateTheme()
                 _callback()
+                stopLoading()
             }
         })
     })

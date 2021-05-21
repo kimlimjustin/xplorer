@@ -24,7 +24,7 @@ const getElement = (variable, theme) => {
 
 // Function to change an element style
 const changeElementTheme = (element, variable, style, theme) => {
-    if(element) element.style[style] = themeJSON? themeJSON[theme][variable] ? themeJSON[theme][variable] : defaultThemeJSON[defaultTheme][variable] : defaultThemeJSON[theme][variable]
+    if (element) element.style[style] = themeJSON ? themeJSON[theme][variable] ? themeJSON[theme][variable] : defaultThemeJSON[defaultTheme][variable] : defaultThemeJSON[theme][variable]
 }
 
 // Change page theme
@@ -37,6 +37,8 @@ const changeTheme = (document, theme) => {
     document.body.style.setProperty("--scrollbar-thumb", themeJSON ? themeJSON[theme].scrollbarThumbBackground : defaultThemeJSON[theme].scrollbarThumbBackground)
     document.body.style.setProperty("--scrollbar-thumb-hover", themeJSON ? themeJSON[theme].scrollbarThumbHoverBackground : defaultThemeJSON[theme].scrollbarThumbHoverBackground)
 
+    changeElementTheme(document.querySelector(".loading-bar"), "loadingBar", "background", theme)
+    changeElementTheme(document.querySelector(".loader"), "loader", "background", theme)
     changeElementTheme(document.querySelector(".topbar"), "topbarBackground", "background", theme)
     changeElementTheme(document.querySelector(".sidebar"), "sidebarBackground", "background", theme)
     changeElementTheme(document.querySelector("#minimize"), "minimizeBackground", "background", theme)
@@ -152,9 +154,9 @@ const updateTheme = async () => {
         defaultTheme = "light"
     }
     // If user has no preference theme
-    if(!data || !Object.keys(data).length){
+    if (!data || !Object.keys(data).length) {
         await changeTheme(document, defaultTheme)
-    }else{
+    } else {
         // If user preference is default color theme...
         if (Object.keys(defaultThemeJSON).indexOf(data.theme) !== -1) {
             await changeTheme(document, data.theme)
@@ -172,4 +174,4 @@ const updateTheme = async () => {
 }
 
 
-module.exports = { changeTheme,  updateTheme }
+module.exports = { changeTheme, updateTheme }

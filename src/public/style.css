@@ -233,6 +233,36 @@ body{
     vertical-align: middle;
 }
 
+.loading-bar{
+    height: 5px;
+    visibility: hidden;
+    overflow: hidden;
+}
+
+.loading-bar[data-loading="true"]{
+    visibility: inherit;
+}
+
+.loader{
+    width: 20px;
+    height: 5px;
+    display: block;
+    animation: loading 5s infinite;
+    position: relative;
+}
+
+@keyframes loading {
+    0%{
+        left: -2%;
+    }
+    50%{
+        left: 100%;
+    }
+    100%{
+        left: -2%;
+    }
+}
+
 .pendrive{
     width: 250px;
     display: inline-flex !important;

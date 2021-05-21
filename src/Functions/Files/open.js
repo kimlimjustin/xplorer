@@ -8,6 +8,7 @@ const changePosition = require("../Tab/changePosition");
 const VanillaTilt = require("../../../lib/tilt/tilt");
 const { updateTheme } = require("../Theme/theme");
 const nativeDrag = require("../DOM/drag");
+const { startLoading, stopLoading } = require("../DOM/loading");
 
 function getCommandLine() {
     switch (process.platform) {
@@ -51,6 +52,7 @@ const listenOpen = (elements) => {
 }
 
 const openDir = (dir) => {
+    startLoading()
     changePosition(dir)
     if (dir === path.join(os.homedir(), 'Home') || dir === "Home") {
         Home(() => {
@@ -76,6 +78,7 @@ const openDir = (dir) => {
                 updateTheme()
                 nativeDrag(document.querySelectorAll(".file-grid"), dir)
                 listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
+                stopLoading()
             }
         })
     }
