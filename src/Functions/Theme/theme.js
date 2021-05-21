@@ -134,7 +134,6 @@ const changeTheme = (document, theme) => {
     document.querySelectorAll(".pendrive-used-capacity").forEach(bar => {
         changeElementTheme(bar, "pendriveUsedCapacityBackground", "background", theme)
     })
-    console.log(document.querySelectorAll(".file-grid"))
     document.querySelectorAll(".file-grid").forEach(grid => {
         changeElementTheme(grid, "gridBackground", "background", theme)
         changeElementTheme(grid, "gridColor", "color", theme)

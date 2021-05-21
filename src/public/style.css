@@ -173,6 +173,10 @@ body{
     -webkit-app-region: drag;
 }
 
+.topbar:focus{
+    cursor: grabbing;
+}
+
 .window-manager{
     margin-left: auto;
 }

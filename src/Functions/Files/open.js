@@ -7,6 +7,7 @@ const Home = require('../../Components/home');
 const changePosition = require("../Tab/changePosition");
 const VanillaTilt = require("../../../lib/tilt/tilt");
 const { updateTheme } = require("../Theme/theme");
+const nativeDrag = require("../DOM/drag");
 
 function getCommandLine() {
     switch (process.platform) {
@@ -25,8 +26,10 @@ function openFileWithDefaultApp(file) {
 }
 
 const openFileHandler = (e) => {
-    const element = e.target.dataset.path ? e.target : e.target.parentNode.dataset.path ? e.target.parentNode : e.target.parentNode.parentNode
-    console.log(element)
+    let element = e.target
+    while (!element.dataset.path) {
+        element = element.parentNode
+    }
     // Open the file if it's not directory
     if (element.dataset.isdir !== "true") {
         openFileWithDefaultApp(unescape(element.dataset.path))
@@ -67,6 +70,7 @@ const openDir = (dir) => {
                 }
                 changeContent(result, autoScroll = false)
                 updateTheme()
+                nativeDrag(document.querySelectorAll(".file-grid"), dir)
                 listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
             }
         })
