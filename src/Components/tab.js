@@ -48,6 +48,7 @@ const Tab = () => {
 
         const newTab = document.createElement("div");
         newTab.classList.add('tab');
+        newTab.classList.add('tab-hover-effect');
         newTab.innerHTML = "<span id='tab-position'>Home</span><span class='close-tab-btn'>&times;</span>";
         tabsInfo.latestIndex += 1
         newTab.dataset.tabIndex = tabsInfo.latestIndex

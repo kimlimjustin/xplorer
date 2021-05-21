@@ -84,6 +84,32 @@ const changeTheme = (document, theme) => {
             obj.style.borderImage = `radial-gradient(20% 75% at ${x}px ${y}px, ${getElement("cardHoverEffectBorderImage", theme)} ) 1 / 1px / 0px stretch `;
         })
     })
+    document.querySelectorAll(".sidebar-hover-effect").forEach(obj => {
+        obj.onmouseleave = (e) => {
+            obj.style.background = getElement("sidebarBackground", theme);
+            obj.style.borderImage = null;
+        }
+        obj.addEventListener("mousemove", (e) => {
+            const rect = e.target.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElement("sidebarHoverEffectBackground", theme)} )`;
+            obj.style.borderImage = `radial-gradient(20% 75% at ${x}px ${y}px, ${getElement("sidebarHoverEffectBorderImage", theme)} ) 1 / 1px / 0px stretch `;
+        })
+    })
+    document.querySelectorAll(".tab-hover-effect").forEach(obj => {
+        obj.onmouseleave = (e) => {
+            obj.style.background = getElement("tabBackground", theme);
+            obj.style.borderImage = null;
+        }
+        obj.addEventListener("mousemove", (e) => {
+            const rect = e.target.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElement("tabHoverEffectBackground", theme)} )`;
+            obj.style.borderImage = `radial-gradient(20% 75% at ${x}px ${y}px, ${getElement("tabHoverEffectBorderImage", theme)} ) 1 / 1px / 0px stretch `;
+        })
+    })
     document.querySelectorAll(".pendrive").forEach(pendrive => {
         changeElementTheme(pendrive, "pendriveBackground", "background", theme)
         changeElementTheme(pendrive, "pendriveColor", "color", theme)
@@ -95,6 +121,7 @@ const changeTheme = (document, theme) => {
     document.querySelectorAll(".pendrive-used-capacity").forEach(bar => {
         changeElementTheme(bar, "pendriveUsedCapacityBackground", "background", theme)
     })
+    console.log(document.querySelectorAll(".file-grid"))
     document.querySelectorAll(".file-grid").forEach(grid => {
         changeElementTheme(grid, "gridBackground", "background", theme)
         changeElementTheme(grid, "gridColor", "color", theme)
