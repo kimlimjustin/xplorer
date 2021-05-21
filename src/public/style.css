@@ -7,6 +7,7 @@ body{
        -moz-user-select: none;
         -ms-user-select: none;
             user-select: none; 
+    scroll-behavior: smooth;
 }
 
 ::-webkit-scrollbar{ width: 5px; }
@@ -80,9 +81,9 @@ body{
 }
 
 .sidebar-nav-item-dropdown-container span{
-    margin: .5rem;
     display: block;
     cursor: pointer;
+    padding: .2rem;
 }
 
 .sidebar-nav-item-dropdown-container span img{
@@ -98,7 +99,7 @@ body{
     transition: .5s;
 }
 
-.sidebar-setting-btn:hover{
+.sidebar-setting-btn-inner:hover{
     transform: scale(0.95);
 }
 
@@ -170,6 +171,10 @@ body{
 .topbar{
     padding: 15px;
     -webkit-app-region: drag;
+}
+
+.topbar:focus{
+    cursor: grabbing;
 }
 
 .window-manager{

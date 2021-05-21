@@ -3,7 +3,7 @@ const path = require('path');
 const { Drives } = require('./drives.js');
 const Favorites = require('./favorites.js');
 const changeContent = require("../Functions/DOM/changeContent");
-const updateTheme = require('../Functions/Theme/updateTheme');
+const { updateTheme } = require('../Functions/Theme/theme');
 const { getFilesAndDir } = require('../Functions/Files/get');
 const hideFiles = require('../Functions/Filter/hideFiles.js');
 const OptionMenu = require("../Functions/DOM/optionMenu");
@@ -17,7 +17,7 @@ const homeFiles = (callback) => {
         let result = `<section class='home-section'><h1 class="section-title">Files</h1>`;
         for (const file of files) {
             const preview = await getPreview(path.join(os.homedir(), file.filename), category = file.isDir ? "folder" : "file")
-            result += `<div class="file-grid" draggable="true" data-isdir=${file.isDir} data-path = ${path.join(os.homedir(), file.filename)} data-listenOpen>
+            result += `<div class="file-grid file-hover-effect" draggable="true" data-isdir=${file.isDir} data-path = ${path.join(os.homedir(), file.filename)} data-listenOpen>
             ${preview}
             <span class="file-grid-filename" id="file-filename">${file.filename}</span>
             </div>`

@@ -19,7 +19,7 @@ const createSidebar = () => {
     const favoritesElement = favorites => {
         let result = ""
         for(const favorite of favorites){
-            result += `<span data-listenOpen data-path = "${path.join(os.homedir(), favorite)}" data-isdir="true"><img src="${getPreview(favorite, category = 'sidebar', HTMLFormat = false)}" alt="${favorite} icon"> ${favorite}</span>`
+            result += `<span data-listenOpen data-path = "${path.join(os.homedir(), favorite)}" data-isdir="true" class="sidebar-hover-effect"><img src="${getPreview(favorite, category = 'sidebar', HTMLFormat = false)}" alt="${favorite} icon"> ${favorite}</span>`
         }
         return result;
     }
@@ -32,10 +32,12 @@ const createSidebar = () => {
             let drivesElement = ""
             for(const drive of drives){
                 let driveName = process.platform === "win32" ? `${drive._volumename} (${drive._mounted})`: drive._mounted.split("/")[drive._mounted.split("/").length - 1] // Get name of drive
-                drivesElement += `<span data-listenOpen data-path = "${getDriveBasePath(drive._mounted)}" data-isdir="true"><img src="${getPreview('usb', category = 'favorites', HTMLFormat = false)}" alt="${driveName}">${driveName}</span>`
+                drivesElement += `<span data-listenOpen data-path = "${getDriveBasePath(drive._mounted)}" data-isdir="true" class="sidebar-hover-effect"><img src="${getPreview('usb', category = 'favorites', HTMLFormat = false)}" alt="${driveName}">${driveName}</span>`
             }
             let result = `<div class="sidebar-nav-item" id="sidebar-drives">
+                <div class="sidebar-hover-effect">
                 <span class="sidebar-nav-item-dropdown-btn"><img src="${getPreview('usb', category = "favorites", HTMLFormat = false)}" alt="Drives icon"> ${process.platform === "win32" ? "Drives" : "Pendrives"}</span>
+                </div>
                 <div class="sidebar-nav-item-dropdown-container">
                     ${drivesElement}
                 </div>
@@ -62,16 +64,20 @@ const createSidebar = () => {
         <span class="xplorer-brand">Xplorer</span>
         <div class="sidebar-nav">
             <div class="sidebar-nav-item">
-                <span class="sidebar-nav-item-dropdown-btn"><img src="${getPreview('Favorites', category = "sidebar", HTMLFormat = false)}" alt="Favorites icon"> Favorites</span>
+                <div class="sidebar-hover-effect">
+                    <span class="sidebar-nav-item-dropdown-btn"><img src="${getPreview('Favorites', category = "sidebar", HTMLFormat = false)}" alt="Favorites icon"> Favorites</span>
+                </div>
                 <div class="sidebar-nav-item-dropdown-container">
                     ${favoritesElement(_favorites)}
                 </div>
             </div>
             ${drivesElement}
         </div>
-        <div class="sidebar-setting-btn">
-            <img src="${getPreview('setting', category= 'sidebar', HTMLFormat = false)}" alt="Setting icon" class="sidebar-setting-btn-icon">
-            <span class="sidebar-setting-btn-text">Settings</span>
+        <div class="sidebar-setting-btn sidebar-hover-effect">
+            <div class="sidebar-setting-btn-inner">
+                <img src="${getPreview('setting', category= 'sidebar', HTMLFormat = false)}" alt="Setting icon" class="sidebar-setting-btn-icon">
+                <span class="sidebar-setting-btn-text">Settings</span>
+            </div>
         </div>`
 
         // Collapse section

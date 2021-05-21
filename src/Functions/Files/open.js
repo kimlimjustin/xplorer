@@ -3,52 +3,78 @@ const getPreview = require("../preview/preview");
 const changeContent = require("../DOM/changeContent");
 const path = require('path');
 const os = require('os');
-const open = require('open');
 const Home = require('../../Components/home');
 const changePosition = require("../Tab/changePosition");
+const VanillaTilt = require("../../../lib/tilt/tilt");
+const { updateTheme } = require("../Theme/theme");
+const nativeDrag = require("../DOM/drag");
+
+function getCommandLine() {
+    switch (process.platform) {
+        case 'darwin':
+            return 'open';
+        default:
+            return 'xdg-open';
+    }
+}
+
+function openFileWithDefaultApp(file) {
+    /^win/.test(process.platform) ?
+        require("child_process").exec('start "" "' + file + '"') :
+        require("child_process").spawn(getCommandLine(), [file],
+            { detached: true, stdio: 'ignore' }).unref();
+}
 
 const openFileHandler = (e) => {
-    const element = e.target.dataset.path ? e.target : e.target.parentNode.dataset.path ? e.target.parentNode : e.target.parentNode.parentNode
-    console.log(element)
+    let element = e.target
+    while (!element.dataset.path) {
+        element = element.parentNode
+    }
     // Open the file if it's not directory
     if (element.dataset.isdir !== "true") {
-        open(unescape(element.dataset.path))
+        openFileWithDefaultApp(unescape(element.dataset.path))
     } else {
         openDir(unescape(element.dataset.path))
     }
 }
 
 const listenOpen = (elements) => {
-    //console.log(elements)
     elements.forEach(element => {
-        element.removeEventListener("dblclick", openFileHandler)
-        element.addEventListener("dblclick", openFileHandler)
+        if (document.getElementById("main").contains(element)) {
+            element.removeEventListener("dblclick", openFileHandler)
+            element.addEventListener("dblclick", openFileHandler)
+        } else {
+            element.removeEventListener("click", openFileHandler)
+            element.addEventListener("click", openFileHandler)
+        }
     })
 }
 
 const openDir = (dir) => {
     changePosition(dir)
-    if(dir === path.join(os.homedir(), 'Home') || dir === "Home"){
+    if (dir === path.join(os.homedir(), 'Home') || dir === "Home") {
         Home(() => {
             listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
         })
-    }else{
+    } else {
         getFilesAndDir(dir, async files => {
             const result = document.createElement("div");
-            if(!files.length){
+            if (!files.length) {
                 let emptyDirNotification = document.createElement("span")
                 emptyDirNotification.classList.add('empty-dir-notification')
                 emptyDirNotification.innerText = "This folder is empty."
                 changeContent(emptyDirNotification);
-            }else{
+            } else {
                 for (const file of files) {
                     const preview = await getPreview(path.join(dir, file.filename), category = file.isDir ? "folder" : "file")
-                    result.innerHTML += `<div class="file-grid" draggable="true" data-isdir=${file.isDir} data-path = ${escape(path.join(dir, file.filename))} data-listenOpen>
+                    result.innerHTML += `<div class="file-grid grid-hover-effect" draggable="true" data-isdir=${file.isDir} data-path = ${escape(path.join(dir, file.filename))} data-listenOpen data-tilt>
                     ${preview}
                     <span class="file-grid-filename" id="file-filename">${file.filename}</span>
                     </div>`
                 }
                 changeContent(result, autoScroll = false)
+                updateTheme()
+                nativeDrag(document.querySelectorAll(".file-grid"), dir)
                 listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
             }
         })

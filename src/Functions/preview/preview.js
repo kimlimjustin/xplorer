@@ -7,7 +7,7 @@ const VIDEO = ['mp4', 'webm', 'mpg', 'mp2', 'mpeg', 'mpe', 'mpv', 'ocg', 'm4p', 
 
 // Return image view of preview
 const iconPreview = (filename) => {
-    return `<img src = "${filename}" class="file-grid-preview" />`
+    return `<img data-src = "${filename}" class="file-grid-preview" />`
 }
 // Return video view of preview
 const videoPreview =  (filename, iconJSON) => {
