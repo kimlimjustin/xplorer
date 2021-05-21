@@ -39,10 +39,14 @@ const openFileHandler = (e) => {
 }
 
 const listenOpen = (elements) => {
-    //console.log(elements)
     elements.forEach(element => {
-        element.removeEventListener("dblclick", openFileHandler)
-        element.addEventListener("dblclick", openFileHandler)
+        if (document.getElementById("main").contains(element)) {
+            element.removeEventListener("dblclick", openFileHandler)
+            element.addEventListener("dblclick", openFileHandler)
+        } else {
+            element.removeEventListener("click", openFileHandler)
+            element.addEventListener("click", openFileHandler)
+        }
     })
 }
 

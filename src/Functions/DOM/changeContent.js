@@ -7,6 +7,9 @@ function isElementInViewport (el) { // Check if element in viewport
         rect.right <= (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */
     );
 }
+
+const FETCHED_ICONS = [] // Array of fetch icons
+
 // Function to change main element content
 const changeContent = (newElement, autoScroll = true) => {
     newElement.id = "main";
@@ -21,9 +24,16 @@ const changeContent = (newElement, autoScroll = true) => {
             let _detectImg = setInterval(() => {
                 if (isElementInViewport(img)) {
                     img.src = img.dataset.src
+                    if(FETCHED_ICONS.indexOf(img.dataset.src) === -1) FETCHED_ICONS.push(img.dataset.src)
+                    img.removeAttribute("data-src")
                     clearInterval(_detectImg)
                 } else {
-                    img.removeAttribute("src")
+                    if (FETCHED_ICONS.indexOf(img.dataset.src) !== - 1) {
+                        img.src = img.dataset.src
+                        clearInterval(_detectImg)
+                    } else {
+                        img.removeAttribute("src")
+                    }
                 }
             }, 1000);
         }
