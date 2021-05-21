@@ -16,6 +16,12 @@ const hoverEffect = (element, before, after) => {
     });
 }
 
+// Function to get an element style
+const getElement = (variable, theme) => {
+    const themeJSON = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../", "config/theme.json")));
+    return themeJSON[theme][variable]
+}
+
 // Function to change an element style
 const changeElementTheme = (element, variable, style, theme) => {
     if(element) element.style[style] = themeJSON? themeJSON[theme][variable] ? themeJSON[theme][variable] : defaultThemeJSON[defaultTheme][variable] : defaultThemeJSON[theme][variable]
@@ -64,6 +70,19 @@ const changeTheme = (document, theme) => {
         changeElementTheme(favorite, "favoriteBackground", "background", theme)
         changeElementTheme(favorite, "favoriteColor", "color", theme)
         hoverEffect(favorite, themeJSON ? themeJSON[theme].favoriteBackground : defaultThemeJSON[theme].favoriteBackground, themeJSON ? themeJSON[theme].favoriteHoverBackground : defaultThemeJSON[theme].favoriteHoverBackground)
+    })
+    document.querySelectorAll(".hover-effect").forEach(obj => {
+        obj.onmouseleave = (e) => {
+            e.target.style.background = getElement("pendriveBackground", theme);
+            e.target.style.borderImage = null;
+        }
+        obj.addEventListener("mousemove", (e) => {
+            const rect = e.target.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            e.target.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElement("hoverEffectBackground", theme)} )`;
+            e.target.style.borderImage = `radial-gradient(20% 75% at ${x}px ${y}px, ${getElement("hoverEffectBorderImage", theme)} ) 1 / 1px / 0px stretch `;
+        })
     })
     document.querySelectorAll(".pendrive").forEach(pendrive => {
         changeElementTheme(pendrive, "pendriveBackground", "background", theme)

@@ -47,7 +47,10 @@
 
         "gridBackground": "transparent",
         "gridHoverBackground": "transparent",
-        "gridColor": "inherit"
+        "gridColor": "inherit",
+
+        "hoverEffectBackground": "rgba(255,255,255,0.2),rgba(255,255,255,0)",
+        "hoverEffectBorderImage": "rgba(255,255,255,0.7),rgba(255,255,255,0.1)"
     },
     "dark": {
         "textColor": "#87c1ce",
@@ -97,7 +100,10 @@
 
         "gridBackground": "transparent",
         "gridHoverBackground": "transparent",
-        "gridColor": "#87c1ce"
+        "gridColor": "#87c1ce",
+
+        "hoverEffectBackground": "rgba(255,255,255,0.2),rgba(255,255,255,0)",
+        "hoverEffectBorderImage": "rgba(255,255,255,0.7),rgba(255,255,255,0.1)"
     },
     "light": {
         "textColor": "#000",
@@ -147,7 +153,10 @@
 
         "gridBackground": "#e0e0e0",
         "gridHoverBackground": "#c5ccd2",
-        "gridColor": "#000"
+        "gridColor": "#000",
+
+        "hoverEffectBackground": "rgb(77 77 77 / 0.2),rgba(77,77,77,0)",
+        "hoverEffectBorderImage": "rgba(77,77,77,0.7),rgba(77,77,77,0.1)"
     },
     "light+": {
         "textColor": "#000",
@@ -197,6 +206,9 @@
 
         "gridBackground": "#dbdbdc",
         "gridHoverBackground": "#c5ccd2",
-        "gridColor": "#000"
+        "gridColor": "#000",
+
+        "hoverEffectBackground": "rgb(52 52 52 / 0.2),rgba(52,52,52,0)",
+        "hoverEffectBorderImage": "rgba(52,52,52,0.7),rgba(52,52,52,0.1)"
     }
 }
