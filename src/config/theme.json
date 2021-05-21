@@ -46,9 +46,10 @@
         "pendriveUsedCapacityBackground": "#8989e2",
 
         "gridBackground": "transparent",
-        "gridHoverBackground": "transparent",
         "gridColor": "inherit",
 
+        "gridHoverEffectBackground": "rgba(79, 86, 109, 1),rgba(35, 35, 53, .5)",
+        "gridHoverEffectBorderImage": "rgba(79, 86, 109, 1),rgba(35, 35, 53, .5)",
         "cardHoverEffectBackground": "#c2d0ff,rgba(162, 182, 255, 0.8)",
         "cardHoverEffectBorderImage": "rgba(255,255,255,0.7),rgba(255,255,255,0.1)",
         "sidebarHoverEffectBackground": "rgba(45, 45, 57, 0.7),rgba(20, 20, 27, 0.8)",
@@ -103,9 +104,10 @@
         "pendriveUsedCapacityBackground": "#8989e2",
 
         "gridBackground": "transparent",
-        "gridHoverBackground": "transparent",
         "gridColor": "#87c1ce",
 
+        "gridHoverEffectBackground": "rgba(140, 162, 210 , 0.4),#24283b",
+        "gridHoverEffectBorderImage": "rgba(140, 162, 210, 0.4),#24283b",
         "cardHoverEffectBackground": "rgba(140, 162, 210 , 0.7),rgba(140, 162, 210, 0.2)",
         "cardHoverEffectBorderImage": "rgba(140, 162, 210, 0.7),rgba(140, 162, 210, 0.2)",
         "sidebarHoverEffectBackground": "rgba(140, 162, 210, 0.2),rgba(27, 30, 46 , 0.7)",
@@ -160,9 +162,10 @@
         "pendriveUsedCapacityBackground": "#8989e2",
 
         "gridBackground": "#e0e0e0",
-        "gridHoverBackground": "#c5ccd2",
         "gridColor": "#000",
 
+        "gridHoverEffectBackground": "rgba(187,188,193,255),#c5ccd2",
+        "gridHoverEffectBorderImage": "rgba(187,188,193,255),#c5ccd2",
         "cardHoverEffectBackground": "rgba(187,188,193,255),rgba(224,224,224,255)",
         "cardHoverEffectBorderImage": "rgba(187,188, 193,255),rgba(224,224,224,255)",
         "sidebarHoverEffectBackground": "rgba(224,224,224,255),rgba(203,204,209,255)",
@@ -220,6 +223,8 @@
         "gridHoverBackground": "#c5ccd2",
         "gridColor": "#000",
 
+        "gridHoverEffectBackground": "rgba(234,234,234,255),#c5ccd2",
+        "gridHoverEffectBorderImage": "rgba(234,234,234,255),#c5ccd2",
         "cardHoverEffectBackground": "rgba(234,234,234,255),rgba(215,215,216,255)",
         "cardHoverEffectBorderImage": "rgba(187,187,188,255),rgba(215,215,216,255)",
         "sidebarHoverEffectBackground": "rgba(234,234,234,255),rgba(203,204,209,255)",

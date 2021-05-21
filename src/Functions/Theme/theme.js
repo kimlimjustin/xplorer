@@ -110,6 +110,19 @@ const changeTheme = (document, theme) => {
             obj.style.borderImage = `radial-gradient(20% 75% at ${x}px ${y}px, ${getElement("tabHoverEffectBorderImage", theme)} ) 1 / 1px / 0px stretch `;
         })
     })
+    document.querySelectorAll(".grid-hover-effect").forEach(obj => {
+        obj.onmouseleave = (e) => {
+            obj.style.background = getElement("gridBackground", theme);
+            obj.style.borderImage = null;
+        }
+        obj.addEventListener("mousemove", (e) => {
+            const rect = e.target.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElement("gridHoverEffectBackground", theme)} )`;
+            obj.style.borderImage = `radial-gradient(20% 75% at ${x}px ${y}px, ${getElement("gridHoverEffectBorderImage", theme)} ) 1 / 1px / 0px stretch `;
+        })
+    })
     document.querySelectorAll(".pendrive").forEach(pendrive => {
         changeElementTheme(pendrive, "pendriveBackground", "background", theme)
         changeElementTheme(pendrive, "pendriveColor", "color", theme)
@@ -125,7 +138,6 @@ const changeTheme = (document, theme) => {
     document.querySelectorAll(".file-grid").forEach(grid => {
         changeElementTheme(grid, "gridBackground", "background", theme)
         changeElementTheme(grid, "gridColor", "color", theme)
-        hoverEffect(grid, themeJSON ? themeJSON[theme].gridBackground : defaultThemeJSON[theme].gridBackground, themeJSON ? themeJSON[theme].gridHoverBackground : defaultThemeJSON[theme].gridHoverBackground)
     })
     VanillaTilt();
     return;
