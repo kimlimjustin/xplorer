@@ -81,9 +81,9 @@ body{
 }
 
 .sidebar-nav-item-dropdown-container span{
-    margin: .5rem;
     display: block;
     cursor: pointer;
+    padding: .2rem;
 }
 
 .sidebar-nav-item-dropdown-container span img{
@@ -99,7 +99,7 @@ body{
     transition: .5s;
 }
 
-.sidebar-setting-btn:hover{
+.sidebar-setting-btn-inner:hover{
     transform: scale(0.95);
 }
 

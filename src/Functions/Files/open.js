@@ -5,6 +5,8 @@ const path = require('path');
 const os = require('os');
 const Home = require('../../Components/home');
 const changePosition = require("../Tab/changePosition");
+const VanillaTilt = require("../../../lib/tilt/tilt");
+const { updateTheme } = require("../Theme/theme");
 
 function getCommandLine() {
     switch (process.platform) {
@@ -58,12 +60,13 @@ const openDir = (dir) => {
             } else {
                 for (const file of files) {
                     const preview = await getPreview(path.join(dir, file.filename), category = file.isDir ? "folder" : "file")
-                    result.innerHTML += `<div class="file-grid" draggable="true" data-isdir=${file.isDir} data-path = ${escape(path.join(dir, file.filename))} data-listenOpen>
+                    result.innerHTML += `<div class="file-grid grid-hover-effect" draggable="true" data-isdir=${file.isDir} data-path = ${escape(path.join(dir, file.filename))} data-listenOpen data-tilt>
                     ${preview}
                     <span class="file-grid-filename" id="file-filename">${file.filename}</span>
                     </div>`
                 }
                 changeContent(result, autoScroll = false)
+                updateTheme()
                 listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
             }
         })
