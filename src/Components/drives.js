@@ -40,7 +40,7 @@ const Drives = async (callback) => {
         drives.forEach((drive) => {
             let driveName = drive._mounted.split("/")[drive._mounted.split("/").length - 1] // Get name of drive
             result += `
-            <div class="pendrive hover-effect" data-tilt data-isdir="true" data-listenOpen data-path = "${getDriveBasePath(drive._mounted)}">
+            <div class="pendrive card-hover-effect" data-tilt data-isdir="true" data-listenOpen data-path = "${getDriveBasePath(drive._mounted)}">
                 <img src="${getPreview('usb', category = "favorites", HTMLFormat = false)}" alt="USB icon" class="pendrive-icon">
                 <div class="pendrive-info">
                     ${drive._volumename

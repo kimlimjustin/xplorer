@@ -71,17 +71,17 @@ const changeTheme = (document, theme) => {
         changeElementTheme(favorite, "favoriteColor", "color", theme)
         hoverEffect(favorite, themeJSON ? themeJSON[theme].favoriteBackground : defaultThemeJSON[theme].favoriteBackground, themeJSON ? themeJSON[theme].favoriteHoverBackground : defaultThemeJSON[theme].favoriteHoverBackground)
     })
-    document.querySelectorAll(".hover-effect").forEach(obj => {
+    document.querySelectorAll(".card-hover-effect").forEach(obj => {
         obj.onmouseleave = (e) => {
-            e.target.style.background = getElement("pendriveBackground", theme);
-            e.target.style.borderImage = null;
+            obj.style.background = getElement("pendriveBackground", theme);
+            obj.style.borderImage = null;
         }
         obj.addEventListener("mousemove", (e) => {
             const rect = e.target.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
-            e.target.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElement("hoverEffectBackground", theme)} )`;
-            e.target.style.borderImage = `radial-gradient(20% 75% at ${x}px ${y}px, ${getElement("hoverEffectBorderImage", theme)} ) 1 / 1px / 0px stretch `;
+            obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElement("cardHoverEffectBackground", theme)} )`;
+            obj.style.borderImage = `radial-gradient(20% 75% at ${x}px ${y}px, ${getElement("cardHoverEffectBorderImage", theme)} ) 1 / 1px / 0px stretch `;
         })
     })
     document.querySelectorAll(".pendrive").forEach(pendrive => {
