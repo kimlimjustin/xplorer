@@ -1,5 +1,5 @@
 <div align="center">
-<img height=100 src="https://repository-images.githubusercontent.com/360936748/2ce1b700-aa8e-11eb-877b-c12abc599979" />
+<img height=100 src="https://repository-images.githubusercontent.com/360936748/a0855a00-bb4a-11eb-8e22-5f868d7b5f66" />
 <h2>Xplorer</h2>
 </div>
 
@@ -29,13 +29,14 @@ Xplorer is a modern file explorer that supports multiple platform built on the t
     │   ├── Filter      // Functions to filter files and directories
     │   ├── Math        // Math functions
     │   ├── preview     // Functions to show preview of a file
+    │   ├── tab         // Functions to handle with tab
     │   └── Theme       // Functions that change Xplorer theme
     ├── icon            // Icon used inside Xplorer
-    │   ├── exact       // Icon for the exact file name
-    │   └── extension   // Icon for an extension of a file
+    │   ├── extension   // Icon for an extension of a file
+    │   ├── folder      // Icon for a folder
+    │   └── sidebar     // Icon for the sidebar
     ├── Languages       // Multilingual resources for Xplorer
     └── public          // Basic HTML and CSS files
-        └── icon        // Icon of sidebar
 ```
 ## Local Setup
 - Download and install [node js](https://nodejs.org/en/).
