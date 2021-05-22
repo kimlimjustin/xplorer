@@ -20,7 +20,7 @@ const getFilesAndDir = async (dir, callback) => {
         // Filter hidden files
         filterHidden(files, dir, result => {
             callback(files)
-        })  
+        })
     })
 
     let focusingPath; // Watch if focusing path changes

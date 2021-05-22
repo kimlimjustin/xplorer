@@ -58,7 +58,6 @@ const createSidebar = () => {
     }
 
     getDrivesElement().then(drivesElement => { // get drives element
-        console.log(drivesElement)
         let sidebarElement = document.createElement("div");
         sidebarElement.classList.add("sidebar")
         sidebarElement.innerHTML = `

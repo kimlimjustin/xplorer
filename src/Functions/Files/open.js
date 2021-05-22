@@ -1,11 +1,9 @@
 const { getFilesAndDir } = require("../Files/get");
 const getPreview = require("../preview/preview");
-const changeContent = require("../DOM/changeContent");
 const path = require('path');
 const os = require('os');
 const Home = require('../../Components/home');
 const changePosition = require("../Tab/changePosition");
-const VanillaTilt = require("../../../lib/tilt/tilt");
 const { updateTheme } = require("../Theme/theme");
 const nativeDrag = require("../DOM/drag");
 const { startLoading, stopLoading } = require("../DOM/loading");
@@ -51,7 +49,22 @@ const listenOpen = (elements) => {
     })
 }
 
+const FETCHED_ICONS = [] // Array of fetch icons
+
+const isElementInViewport = el => { // Check if element in viewport
+    var rect = el.getBoundingClientRect();
+    return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /* or $(window).height() */
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */
+    );
+}
+
+
 const openDir = (dir) => {
+    console.time()
+    const MAIN_ELEMENT = document.getElementById("main");
     startLoading()
     changePosition(dir)
     if (dir === path.join(os.homedir(), 'Home') || dir === "Home") {
@@ -60,25 +73,54 @@ const openDir = (dir) => {
         })
     } else {
         getFilesAndDir(dir, async files => {
-            const result = document.createElement("div");
+            MAIN_ELEMENT.innerHTML = "";
             if (!files.length) {
-                let emptyDirNotification = document.createElement("span")
-                emptyDirNotification.classList.add('empty-dir-notification')
-                emptyDirNotification.innerText = "This folder is empty."
-                changeContent(emptyDirNotification);
+                MAIN_ELEMENT.classList.add('empty-dir-notification')
+                MAIN_ELEMENT.innerText = "This folder is empty."
                 stopLoading()
             } else {
                 for (const file of files) {
                     const preview = await getPreview(path.join(dir, file.filename), category = file.isDir ? "folder" : "file")
-                    result.innerHTML += `<div class="file-grid grid-hover-effect" draggable="true" data-isdir=${file.isDir} data-path = ${escape(path.join(dir, file.filename))} data-listenOpen data-tilt>
+                    const fileGrid = document.createElement("div")
+                    fileGrid.className = "file-grid grid-hover-effect"
+                    fileGrid.setAttribute("draggable", 'true')
+                    fileGrid.setAttribute("data-listenOpen", '')
+                    fileGrid.setAttribute("data-tilt", '')
+                    fileGrid.dataset.isdir = file.isDir
+                    fileGrid.dataset.path = escape(path.join(dir, file.filename))
+                    fileGrid.innerHTML = `
                     ${preview}
                     <span class="file-grid-filename" id="file-filename">${file.filename}</span>
-                    </div>`
+                    `
+                    MAIN_ELEMENT.appendChild(fileGrid)
                 }
-                changeContent(result, autoScroll = false)
+
                 updateTheme()
                 nativeDrag(document.querySelectorAll(".file-grid"), dir)
                 listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
+
+                // Only show image when its visible in viewport to reduce latency
+                MAIN_ELEMENT.querySelectorAll("img").forEach(img => {
+                    if (!img.src && img.dataset.src) {
+                        let _detectImg = setInterval(() => {
+                            if (isElementInViewport(img)) {
+                                img.src = img.dataset.src
+                                if (FETCHED_ICONS.indexOf(img.dataset.src) === -1) FETCHED_ICONS.push(img.dataset.src)
+                                img.removeAttribute("data-src")
+                                clearInterval(_detectImg)
+                            } else {
+                                // Directly show icons if it was fetched before
+                                if (FETCHED_ICONS.indexOf(img.dataset.src) !== - 1) {
+                                    img.src = img.dataset.src
+                                    clearInterval(_detectImg)
+                                } else {
+                                    img.removeAttribute("src")
+                                }
+                            }
+                        }, 500);
+                    }
+                })
+                console.timeEnd()
                 stopLoading()
             }
         })
