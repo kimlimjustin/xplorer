@@ -24,7 +24,7 @@ const getDrives = async () => {
 // Get unique drives regardless space left
 const getUniqueDrives = drives => {
     let result = []
-    drives.forEach(drive => result.push({ _filesystem: drive._filesystem, _mounted: drive._filesystem, _volumename: drive._volumename }))
+    drives.forEach(drive => result.push({ _filesystem: drive._filesystem, _mounted: drive._filesystem, _volumename: drive._volumename || drive._filesystem }))
     return result;
 }
 
@@ -43,8 +43,8 @@ const Drives = async (callback) => {
             <div class="pendrive card-hover-effect" data-tilt data-isdir="true" data-listenOpen data-path = "${getDriveBasePath(drive._mounted)}">
                 <img src="${getPreview('usb', category = "favorites", HTMLFormat = false)}" alt="USB icon" class="pendrive-icon">
                 <div class="pendrive-info">
-                    ${drive._volumename
-                    ? `<h4 class="pendrive-title">${drive._volumename} (${driveName})</h4>`
+                    ${drive._volumename || drive._filesystem
+                    ? `<h4 class="pendrive-title">${drive._volumename || drive._filesystem} (${driveName})</h4>`
                     : `<h4 class="pendrive-title">${driveName}</h4>`
                 }
                     <div class="pendrive-total-capacity"><span class="pendrive-used-capacity" style="width: ${drive._capacity}"></span></div>
