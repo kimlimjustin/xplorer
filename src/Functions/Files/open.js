@@ -66,6 +66,7 @@ const openDir = (dir) => {
                 emptyDirNotification.classList.add('empty-dir-notification')
                 emptyDirNotification.innerText = "This folder is empty."
                 changeContent(emptyDirNotification);
+                stopLoading()
             } else {
                 for (const file of files) {
                     const preview = await getPreview(path.join(dir, file.filename), category = file.isDir ? "folder" : "file")
