@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const storage = require('electron-json-storage-sync');
+const preference = storage.get("preference")?.data
 
 const defaultIconJSON = JSON.parse(fs.readFileSync(path.join(__dirname, "../../config/icon.json")))
 let iconJSON = null;
@@ -15,7 +16,7 @@ const iconPreview = (filename) => {
 // Return video view of preview
 const videoPreview = (filename, iconJSON) => {
     let alt = path.join(__dirname, "../../icon/", iconJSON.file.video) // Alternative for video if video could not be oaded
-    return `<video autoplay loop muted class="file-grid-preview"><source src = "${filename}" /><img src = "${alt}" /></video>`
+    return preference?.autoPlayPreviewVideo ? `<video autoplay loop muted class="file-grid-preview"><source src = "${filename}" /><img src = "${alt}" /></video>` : iconPreview(alt)
 }
 
 const getPreview = (filename, category = "folder", HTMLFormat = true) => {
