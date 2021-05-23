@@ -15,12 +15,21 @@ const getDriveBasePath = mounted => {
 }
 
 const createSidebar = () => {
+    const { data } = storage.get('sidebar'); // Get user favorites data on sidebar
     // Functions to get favorites element
-    const favoritesElement = favorites => {
-        let result = ""
+    const getFavoritesElement = favorites => {
+        let favoritesElement = ""
         for (const favorite of favorites) {
-            result += `<span data-listenOpen data-path = "${path.join(os.homedir(), favorite)}" data-isdir="true" class="sidebar-hover-effect"><img src="${getPreview(favorite, category = 'sidebar', HTMLFormat = false)}" alt="${favorite} icon"> ${favorite}</span>`
+            favoritesElement += `<span data-listenOpen data-path = "${path.join(os.homedir(), favorite)}" data-isdir="true" class="sidebar-hover-effect"><img src="${getPreview(favorite, category = 'sidebar', HTMLFormat = false)}" alt="${favorite} icon"> ${favorite}</span>`
         }
+        let result = `<div class="sidebar-nav-item ${data.hideSection.favorites ? "nav-hide-item" : ''}">
+        <div class="sidebar-hover-effect">
+            <span class="sidebar-nav-item-dropdown-btn" data-section="favorites"><img src="${getPreview('Favorites', category = "sidebar", HTMLFormat = false)}" alt="Favorites icon"> Favorites</span>
+        </div>
+        <div class="sidebar-nav-item-dropdown-container">
+            ${favoritesElement}
+        </div>
+        </div>`
         return result;
     }
 
@@ -34,9 +43,9 @@ const createSidebar = () => {
                 let driveName = process.platform === "win32" ? `${drive._volumename || drive._filesystem} (${drive._mounted})` : drive._mounted.split("/")[drive._mounted.split("/").length - 1] // Get name of drive
                 drivesElement += `<span data-listenOpen data-path = "${getDriveBasePath(drive._mounted)}" data-isdir="true" class="sidebar-hover-effect"><img src="${getPreview('usb', category = 'favorites', HTMLFormat = false)}" alt="${driveName}">${driveName}</span>`
             }
-            let result = `<div class="sidebar-nav-item" id="sidebar-drives">
+            let result = `<div class="sidebar-nav-item ${data.hideSection.drives ? "nav-hide-item" : ''}" id="sidebar-drives">
                 <div class="sidebar-hover-effect">
-                <span class="sidebar-nav-item-dropdown-btn"><img src="${getPreview('usb', category = "favorites", HTMLFormat = false)}" alt="Drives icon"> ${process.platform === "win32" ? "Drives" : "Pendrives"}</span>
+                <span class="sidebar-nav-item-dropdown-btn" data-section="drives"><img src="${getPreview('usb', category = "favorites", HTMLFormat = false)}" alt="Drives icon"> ${process.platform === "win32" ? "Drives" : "Pendrives"}</span>
                 </div>
                 <div class="sidebar-nav-item-dropdown-container">
                     ${drivesElement}
@@ -45,8 +54,6 @@ const createSidebar = () => {
             return result;
         }
     }
-
-    const { data } = storage.get('sidebar'); // Get user favorites data on sidebar
 
     let _favorites = ['Home', 'Recent', 'Desktop', 'Documents', 'Downloads', 'Pictures', 'Music', 'Videos', 'Trash']
     // If user has no preference sidebar item
@@ -63,14 +70,7 @@ const createSidebar = () => {
         sidebarElement.innerHTML = `
         <span class="xplorer-brand">Xplorer</span>
         <div class="sidebar-nav">
-            <div class="sidebar-nav-item">
-                <div class="sidebar-hover-effect">
-                    <span class="sidebar-nav-item-dropdown-btn"><img src="${getPreview('Favorites', category = "sidebar", HTMLFormat = false)}" alt="Favorites icon"> Favorites</span>
-                </div>
-                <div class="sidebar-nav-item-dropdown-container">
-                    ${favoritesElement(_favorites)}
-                </div>
-            </div>
+            ${getFavoritesElement(_favorites)}
             ${drivesElement}
         </div>
         <div class="sidebar-setting-btn sidebar-hover-effect">
@@ -83,7 +83,13 @@ const createSidebar = () => {
         // Collapse section
         sidebarElement.querySelectorAll(".sidebar-nav-item-dropdown-btn").forEach(btn => {
             btn.addEventListener("click", e => {
-                e.target.parentNode.classList.toggle('nav-hide-item')
+                e.target.parentNode.parentNode.classList.toggle('nav-hide-item')
+
+                // Save preference into local storage
+                const sidebar = storage.get("sidebar")?.data
+                if(!sidebar.hideSection) sidebar.hideSection = {} // Initialize if it's not exist
+                sidebar.hideSection[e.target.dataset.section] = e.target.parentNode.parentNode.classList.contains('nav-hide-item')
+                storage.set("sidebar", sidebar)
             })
         })
         changeSidebar(sidebarElement)
