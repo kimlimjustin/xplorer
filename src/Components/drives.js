@@ -1,5 +1,4 @@
 const nodeDiskInfo = require('../../lib/node-disk-info/index');
-const fs = require('fs');
 const path = require('path');
 const formatBytes = require('../Functions/Math/filesize.js');
 const Translate = require("../Components/multilingual");
@@ -33,6 +32,8 @@ const getDriveBasePath = mounted => {
 }
 
 const Drives = async (callback) => {
+    const storage = require('electron-json-storage-sync');
+
     const drives = await getDrives()
     // Function to convert drives into HTML Tags
     const toElements = (drives, kBlockFormat = false) => {
@@ -58,15 +59,18 @@ const Drives = async (callback) => {
 
     // Function to return drives section
     const returnElement = (drives) => {
-        switch (process.platform) {
-            case "win32":
-                Translate(`<section class="home-section"><h1 class="section-title">Drives</h1>${toElements(drives)}</section>`, navigator.language, translated => callback(translated))
-                break;
-            case "darwin":
-                callback('') // Xplorer does not support drives for macOS recently
-                break;
-            default:
-                Translate(`<section class="home-section"><h1 class="section-title">Pendrives</h1>${toElements(drives, kBlockFormat = true)}</section>`, navigator.language, translated => callback(drives.length ? translated : ""))
+        const tabs = storage.get('tabs')?.data
+        if (tabs.tabs[tabs.focus] === "Home") {
+            switch (process.platform) {
+                case "win32":
+                    Translate(`<section class="home-section"><h1 class="section-title">Drives</h1>${toElements(drives)}</section>`, navigator.language, translated => callback(translated))
+                    break;
+                case "darwin":
+                    callback('') // Xplorer does not support drives for macOS recently
+                    break;
+                default:
+                    Translate(`<section class="home-section"><h1 class="section-title">Pendrives</h1>${toElements(drives, kBlockFormat = true)}</section>`, navigator.language, translated => callback(drives.length ? translated : ""))
+            }
         }
     }
 
