@@ -25,8 +25,6 @@ const Favorites = (callback) => {
             <h3 class="favorite-title"><img src="${getPreview('video', category = "favorites", HTMLFormat = false)}" alt="Video icon" class="favorite-icon">Videos</h3>
         </div></section>
         `;
-    Translate(result, navigator.language, result => {
-        callback(result)
-    })
+    callback(Translate(result))
 }
 module.exports = Favorites

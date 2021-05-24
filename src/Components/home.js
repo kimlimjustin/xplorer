@@ -23,7 +23,7 @@ const homeFiles = (callback) => {
             <span class="file-grid-filename" id="file-filename">${file.filename}</span>
             </div>`
         }
-        Translate(result + "</section>", navigator.language, translated => callback(translated))
+        callback(Translate(result + "</section>"))
     })
 }
 // Content for home page

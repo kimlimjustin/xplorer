@@ -63,13 +63,13 @@ const Drives = async (callback) => {
         if (tabs.tabs[tabs.focus] === "Home") {
             switch (process.platform) {
                 case "win32":
-                    Translate(`<section class="home-section"><h1 class="section-title">Drives</h1>${toElements(drives)}</section>`, navigator.language, translated => callback(translated))
+                    callback(Translate(`<section class="home-section"><h1 class="section-title">Drives</h1>${toElements(drives)}</section>`))
                     break;
                 case "darwin":
                     callback('') // Xplorer does not support drives for macOS recently
                     break;
                 default:
-                    Translate(`<section class="home-section"><h1 class="section-title">Pendrives</h1>${toElements(drives, kBlockFormat = true)}</section>`, navigator.language, translated => callback(drives.length ? translated : ""))
+                    callback(drives.length ? Translate(`<section class="home-section"><h1 class="section-title">Pendrives</h1>${toElements(drives, kBlockFormat = true)}</section>`):"")
             }
         }
     }

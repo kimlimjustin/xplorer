@@ -3,6 +3,7 @@ const path = require("path");
 const os = require('os');
 const { getDrives } = require('./drives');
 const getPreview = require('../Functions/preview/preview');
+const Translate = require('./multilingual');
 
 const changeSidebar = newElement => {
     const sidebarElement = document.body.querySelector(".sidebar");
@@ -20,7 +21,7 @@ const createSidebar = () => {
     const getFavoritesElement = favorites => {
         let favoritesElement = ""
         for (const favorite of favorites) {
-            favoritesElement += `<span data-listenOpen data-path = "${path.join(os.homedir(), favorite)}" data-isdir="true" class="sidebar-hover-effect"><img src="${getPreview(favorite, category = 'sidebar', HTMLFormat = false)}" alt="${favorite} icon"> ${favorite}</span>`
+            favoritesElement += Translate(`<span data-listenOpen data-path = "${path.join(os.homedir(), favorite)}" data-isdir="true" class="sidebar-hover-effect"><img src="${getPreview(favorite, category = 'sidebar', HTMLFormat = false)}" alt="${favorite} icon"> ${favorite}</span>`)
         }
         let result = `<div class="sidebar-nav-item ${data.hideSection.favorites ? "nav-hide-item" : ''}">
         <div class="sidebar-hover-effect">

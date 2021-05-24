@@ -9,7 +9,7 @@ const { openDir, listenOpen } = require('./Functions/Files/open');
 // Wait DOM Content to be loaded
 document.addEventListener('DOMContentLoaded', async () => {
     webFrame.setZoomFactor(1)
-    createSidebar()
+    await createSidebar()
     // Listen to minimze, maximize, exit and reload button
     windowManager()
     // Tab listener

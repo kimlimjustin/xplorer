@@ -22,16 +22,15 @@ const OptionMenu = (showMenu = true, path, callback) => {
     if(showMenu) menu.style.display = "none"
 
     // Translate text inside menu
-    Translate(menu.innerHTML, navigator.language, (translated) => {
-        menu.innerHTML = translated
-        // Get user preference
-        storage.get('hiddenFiles', (err, data) => {
-            const toggleHiddenFiles = document.querySelector("#show-hidden-files")
-            checkUserPreference(path, preference => {
-                toggleHiddenFiles.checked = !preference
-                toggleHiddenFiles.addEventListener("change", e => {
-                    callback({checked: e.target.checked, type: "hide"})
-                })
+    const translated = Translate(menu.innerHTML)
+    menu.innerHTML = translated
+    // Get user preference
+    storage.get('hiddenFiles', (err, data) => {
+        const toggleHiddenFiles = document.querySelector("#show-hidden-files")
+        checkUserPreference(path, preference => {
+            toggleHiddenFiles.checked = !preference
+            toggleHiddenFiles.addEventListener("change", e => {
+                callback({checked: e.target.checked, type: "hide"})
             })
         })
     })
