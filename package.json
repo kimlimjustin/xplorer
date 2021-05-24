@@ -18,9 +18,13 @@
   "scripts": {
     "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "electron-builder -wml"
+    "build": "electron-builder",
+    "build-wml": "electron-builder"
   },
   "build": {
+    "extraResources": [
+      "lib/fs/fs.exe"
+    ],
     "win": {
       "target": [
         "nsis"
