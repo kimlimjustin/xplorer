@@ -16,7 +16,7 @@ const homeFiles = (callback) => {
         let result = `<section class='home-section'><h1 class="section-title">Files</h1>`;
         for (const file of files) {
             const preview = await getPreview(path.join(os.homedir(), file.filename), category = file.isDir ? "folder" : "file")
-            result += `<div class="file-grid file-hover-effect" draggable="true" data-isdir=${file.isDir} data-path = ${path.join(os.homedir(), file.filename)} data-listenOpen>
+            result += `<div class="file-grid file-hover-effect" draggable="true" data-isdir=${file.isDir} data-path = ${path.join(os.homedir(), file.filename)} data-listenOpen ${file.isHidden ? "data-hidden-file" : ""}>
             ${preview}
             <span class="file-grid-filename" id="file-filename">${file.filename}</span>
             </div>`
@@ -39,7 +39,6 @@ const Home = (_callback) => {
                     changeContent(newMainElement)
                     // And also the theme :)
                     updateTheme()
-                    document.addEventListener("keyup", hideFilesShortcut, false)
                     nativeDrag(document.querySelectorAll('.file-grid'), os.homedir()) // Listen to native drag
                     _callback()
                     stopLoading()

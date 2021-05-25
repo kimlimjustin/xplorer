@@ -74,6 +74,7 @@ const openDir = (dir) => {
     } else {
         getFilesAndDir(dir, async files => {
             MAIN_ELEMENT.innerHTML = "";
+            if (MAIN_ELEMENT.classList.contains('empty-dir-notification')) MAIN_ELEMENT.classList.remove('empty-dir-notification') // Remove class if exist
             if (!files.length) {
                 MAIN_ELEMENT.classList.add('empty-dir-notification')
                 MAIN_ELEMENT.innerText = "This folder is empty."
