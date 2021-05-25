@@ -403,6 +403,10 @@ body{
     font-weight: bold;
 }
 
+[data-hide-hidden-files="true"] [data-hidden-file]{
+    display: none;
+}
+
 [data-hidden-file] .file-grid-preview{
     opacity: .5;
 }
