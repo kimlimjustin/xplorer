@@ -1,4 +1,4 @@
-function isElementInViewport (el) { // Check if element in viewport
+function isElementInViewport(el) { // Check if element in viewport
     var rect = el.getBoundingClientRect();
     return (
         rect.top >= 0 &&
@@ -17,14 +17,14 @@ const changeContent = (newElement, autoScroll = true) => {
     let _scrollTop = mainElement.scrollTop;
     mainElement.parentElement.replaceChild(newElement, mainElement);
     if (autoScroll) newElement.scrollTop = _scrollTop
-    
+
     // Only show image when its visible to reduce latency
     newElement.querySelectorAll("img").forEach(img => {
         if (!img.src && img.dataset.src) {
             let _detectImg = setInterval(() => {
                 if (isElementInViewport(img)) {
                     img.src = img.dataset.src
-                    if(FETCHED_ICONS.indexOf(img.dataset.src) === -1) FETCHED_ICONS.push(img.dataset.src)
+                    if (FETCHED_ICONS.indexOf(img.dataset.src) === -1) FETCHED_ICONS.push(img.dataset.src)
                     img.removeAttribute("data-src")
                     clearInterval(_detectImg)
                 } else {

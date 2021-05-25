@@ -33,6 +33,7 @@ const getDriveBasePath = mounted => {
 
 const Drives = async (callback) => {
     const storage = require('electron-json-storage-sync');
+    const os = require('os');
 
     const drives = await getDrives()
     // Function to convert drives into HTML Tags
@@ -60,7 +61,8 @@ const Drives = async (callback) => {
     // Function to return drives section
     const returnElement = (drives) => {
         const tabs = storage.get('tabs')?.data
-        if (tabs.tabs[tabs.focus] === "Home") {
+        const focusingPath = tabs.tabs[tabs.focus]
+        if (focusingPath === "Home" || focusingPath === path.join(os.homedir(), 'Home')) {
             switch (process.platform) {
                 case "win32":
                     callback(Translate(`<section class="home-section"><h1 class="section-title">Drives</h1>${toElements(drives)}</section>`))
@@ -69,7 +71,7 @@ const Drives = async (callback) => {
                     callback('') // Xplorer does not support drives for macOS recently
                     break;
                 default:
-                    callback(drives.length ? Translate(`<section class="home-section"><h1 class="section-title">Pendrives</h1>${toElements(drives, kBlockFormat = true)}</section>`):"")
+                    callback(drives.length ? Translate(`<section class="home-section"><h1 class="section-title">Pendrives</h1>${toElements(drives, kBlockFormat = true)}</section>`) : "")
             }
         }
     }
