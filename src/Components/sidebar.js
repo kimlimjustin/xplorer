@@ -4,10 +4,12 @@ const os = require('os');
 const { getDrives } = require('./drives');
 const getPreview = require('../Functions/preview/preview');
 const Translate = require('./multilingual');
+const { updateTheme } = require('../Functions/Theme/theme');
 
 const changeSidebar = newElement => {
     const sidebarElement = document.body.querySelector(".sidebar");
     sidebarElement.parentElement.replaceChild(newElement, sidebarElement);
+    updateTheme()
     return;
 }
 
@@ -21,9 +23,9 @@ const createSidebar = () => {
     const getFavoritesElement = favorites => {
         let favoritesElement = ""
         for (const favorite of favorites) {
-            favoritesElement += Translate(`<span data-listenOpen data-path = "${path.join(os.homedir(), favorite)}" data-isdir="true" class="sidebar-hover-effect"><img src="${getPreview(favorite, category = 'sidebar', HTMLFormat = false)}" alt="${favorite} icon"> ${favorite}</span>`)
+            favoritesElement += `<span data-listenOpen data-path = "${path.join(os.homedir(), favorite)}" data-isdir="true" class="sidebar-hover-effect"><img src="${getPreview(favorite, category = 'sidebar', HTMLFormat = false)}" alt="${favorite} icon"> ${Translate(favorite)}</span>`
         }
-        let result = `<div class="sidebar-nav-item ${data.hideSection.favorites ? "nav-hide-item" : ''}">
+        let result = `<div class="sidebar-nav-item ${data?.hideSection?.favorites ? "nav-hide-item" : ''}">
         <div class="sidebar-hover-effect">
             <span class="sidebar-nav-item-dropdown-btn" data-section="favorites"><img src="${getPreview('Favorites', category = "sidebar", HTMLFormat = false)}" alt="Favorites icon"> Favorites</span>
         </div>
@@ -44,7 +46,7 @@ const createSidebar = () => {
                 let driveName = process.platform === "win32" ? `${drive._volumename || drive._filesystem} (${drive._mounted})` : drive._mounted.split("/")[drive._mounted.split("/").length - 1] // Get name of drive
                 drivesElement += `<span data-listenOpen data-path = "${getDriveBasePath(drive._mounted)}" data-isdir="true" class="sidebar-hover-effect"><img src="${getPreview('usb', category = 'favorites', HTMLFormat = false)}" alt="${driveName}">${driveName}</span>`
             }
-            let result = `<div class="sidebar-nav-item ${data.hideSection.drives ? "nav-hide-item" : ''}" id="sidebar-drives">
+            let result = `<div class="sidebar-nav-item ${data?.hideSection?.drives ? "nav-hide-item" : ''}" id="sidebar-drives">
                 <div class="sidebar-hover-effect">
                 <span class="sidebar-nav-item-dropdown-btn" data-section="drives"><img src="${getPreview('usb', category = "favorites", HTMLFormat = false)}" alt="Drives icon"> ${process.platform === "win32" ? "Drives" : "Pendrives"}</span>
                 </div>
