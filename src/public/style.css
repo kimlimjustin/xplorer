@@ -402,3 +402,7 @@ body{
     margin: 0 auto;
     font-weight: bold;
 }
+
+[data-hidden-file] .file-grid-preview{
+    opacity: .5;
+}

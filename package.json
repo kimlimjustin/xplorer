@@ -1,7 +1,7 @@
 {
   "name": "xplorer",
   "description": "Xplorer, a customizable, modern file manager",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "author": "Justin Maximillian Kimlim <kimlimjustin@gmail.com>",
   "main": "src/main.ts",
   "icon": "build/icon.icns",
@@ -18,9 +18,13 @@
   "scripts": {
     "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "electron-builder -wml"
+    "build": "electron-builder",
+    "build-wml": "electron-builder"
   },
   "build": {
+    "extraResources": [
+      "lib/fs/fs.exe"
+    ],
     "win": {
       "target": [
         "nsis"

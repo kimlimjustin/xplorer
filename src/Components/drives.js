@@ -1,5 +1,4 @@
 const nodeDiskInfo = require('../../lib/node-disk-info/index');
-const fs = require('fs');
 const path = require('path');
 const formatBytes = require('../Functions/Math/filesize.js');
 const Translate = require("../Components/multilingual");
@@ -24,7 +23,7 @@ const getDrives = async () => {
 // Get unique drives regardless space left
 const getUniqueDrives = drives => {
     let result = []
-    drives.forEach(drive => result.push({ _filesystem: drive._filesystem, _mounted: drive._filesystem, _volumename: drive._volumename }))
+    drives.forEach(drive => result.push({ _filesystem: drive._filesystem, _mounted: drive._filesystem, _volumename: drive._volumename || drive._filesystem }))
     return result;
 }
 
@@ -33,6 +32,8 @@ const getDriveBasePath = mounted => {
 }
 
 const Drives = async (callback) => {
+    const storage = require('electron-json-storage-sync');
+
     const drives = await getDrives()
     // Function to convert drives into HTML Tags
     const toElements = (drives, kBlockFormat = false) => {
@@ -43,8 +44,8 @@ const Drives = async (callback) => {
             <div class="pendrive card-hover-effect" data-tilt data-isdir="true" data-listenOpen data-path = "${getDriveBasePath(drive._mounted)}">
                 <img src="${getPreview('usb', category = "favorites", HTMLFormat = false)}" alt="USB icon" class="pendrive-icon">
                 <div class="pendrive-info">
-                    ${drive._volumename
-                    ? `<h4 class="pendrive-title">${drive._volumename} (${driveName})</h4>`
+                    ${drive._volumename || drive._filesystem
+                    ? `<h4 class="pendrive-title">${drive._volumename || drive._filesystem} (${driveName})</h4>`
                     : `<h4 class="pendrive-title">${driveName}</h4>`
                 }
                     <div class="pendrive-total-capacity"><span class="pendrive-used-capacity" style="width: ${drive._capacity}"></span></div>
@@ -58,15 +59,18 @@ const Drives = async (callback) => {
 
     // Function to return drives section
     const returnElement = (drives) => {
-        switch (process.platform) {
-            case "win32":
-                Translate(`<section class="home-section"><h1 class="section-title">Drives</h1>${toElements(drives)}</section>`, navigator.language, translated => callback(translated))
-                break;
-            case "darwin":
-                callback('') // Xplorer does not support drives for macOS recently
-                break;
-            default:
-                Translate(`<section class="home-section"><h1 class="section-title">Pendrives</h1>${toElements(drives, kBlockFormat = true)}</section>`, navigator.language, translated => callback(drives.length ? translated : ""))
+        const tabs = storage.get('tabs')?.data
+        if (tabs.tabs[tabs.focus] === "Home") {
+            switch (process.platform) {
+                case "win32":
+                    callback(Translate(`<section class="home-section"><h1 class="section-title">Drives</h1>${toElements(drives)}</section>`))
+                    break;
+                case "darwin":
+                    callback('') // Xplorer does not support drives for macOS recently
+                    break;
+                default:
+                    callback(drives.length ? Translate(`<section class="home-section"><h1 class="section-title">Pendrives</h1>${toElements(drives, kBlockFormat = true)}</section>`):"")
+            }
         }
     }
 
