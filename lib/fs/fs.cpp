@@ -30,6 +30,11 @@ int main(int argc, char** argv){
     cout << "File Name | Is Hidden | Is Directory" << endl;
     DIR *dir;
     struct dirent *ent;
+    for (int i = 2; i < argc; i++)
+    {
+        strcat(argv[1], " ");
+        strcat(argv[1], argv[i]);
+    }
     if ((dir = opendir (argv[1])) != NULL) {
     /* print all the files and directories within directory */
     while ((ent = readdir (dir)) != NULL) {
