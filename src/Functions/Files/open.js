@@ -82,11 +82,6 @@ const openDir = (dir) => {
                 MAIN_ELEMENT.innerText = "This folder is empty."
                 stopLoading()
             } else {
-
-                const userPreference = storage.get('preference')?.data // Read user preference
-                const hideHiddenFiles = userPreference ? userPreference?.hideHiddenFiles : true // Hide hidden files as default
-                MAIN_ELEMENT.dataset.hideHiddenFiles = hideHiddenFiles
-
                 for (const file of files) {
                     const preview = await getPreview(path.join(dir, file.filename), category = file.isDir ? "folder" : "file")
                     const fileGrid = document.createElement("div")
