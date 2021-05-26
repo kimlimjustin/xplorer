@@ -1,6 +1,6 @@
 const { app, BrowserWindow, Menu, screen, ipcMain } = require('electron')
 const path = require('path')
-const storage = require('electron-json-storage')
+const storage = require('electron-json-storage-sync')
 require('@electron/remote/main').initialize()
 
 try {
