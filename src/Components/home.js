@@ -2,7 +2,6 @@ const os = require('os');
 const path = require('path');
 const { Drives, getDrives, getUniqueDrives, drivesToElements } = require('./drives.js');
 const Favorites = require('./favorites.js');
-const changeContent = require("../Functions/DOM/changeContent");
 const { updateTheme } = require('../Functions/Theme/theme');
 const { getFilesAndDir } = require('../Functions/Files/get');
 const Translate = require('../Components/multilingual');
@@ -29,14 +28,13 @@ const homeFiles = (callback) => {
 const Home = async (_callback) => {
     startLoading()
     // Create a new main element
-    const newMainElement = document.createElement("div");
+    const MAIN_ELEMENT = document.getElementById("main");
     const favorites = Favorites();
     const drives = await Drives();
     if (process.platform === "linux") {
         homeFiles(files => {
             // Update the content in the main page ...
-            newMainElement.innerHTML = favorites + drives + files
-            changeContent(newMainElement)
+            MAIN_ELEMENT.innerHTML = favorites + drives + files
             // And also the theme :)
             updateTheme()
             nativeDrag(document.querySelectorAll('.file-grid'), os.homedir()) // Listen to native drag
@@ -46,8 +44,7 @@ const Home = async (_callback) => {
     }
     else {
         // Update the content in the main page ...
-        newMainElement.innerHTML = favorites + drives
-        changeContent(newMainElement)
+        MAIN_ELEMENT.innerHTML = favorites + drives
         // And also the theme :)
         updateTheme()
         _callback()
