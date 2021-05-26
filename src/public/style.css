@@ -151,6 +151,15 @@ body{
     display: inline-block;
 }
 
+.tab #tab-position{
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden; 
+    width: 100px;
+    text-align: center;
+    display: inline-grid;
+}
+
 .close-tab-btn{
     position: absolute;
     right: 1rem;

@@ -5,7 +5,7 @@ const getPreview = require('../Functions/preview/preview');
 
 const Favorites = () => {
     let result = `<section class="home-section">
-        <h2 class="section-title">Favorites</h2>
+        <h2 class="section-title">${Translate("Favorites")}</h2>
         <div class="favorite card-hover-effect" data-tilt data-listenOpen data-isdir="true" data-path="${escape(path.join(os.homedir(), 'Desktop'))}">
             <h3 class="favorite-title"><img src="${getPreview('desktop', category = "favorites", HTMLFormat = false)}" alt="Desktop icon" class="favorite-icon">${Translate("Desktop")}</h3>
         </div>

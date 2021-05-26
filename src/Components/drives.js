@@ -45,7 +45,7 @@ const drivesToElements = (drives, kBlockFormat = false) => {
                 : `<h4 class="pendrive-title">${driveName}</h4>`
             }
                 <div class="pendrive-total-capacity"><span class="pendrive-used-capacity" style="width: ${drive._capacity}"></span></div>
-                <p>${formatBytes(drive._available, kBlockFormat = kBlockFormat)} free of ${formatBytes(drive._blocks, kBlockFormat = kBlockFormat)}</p>
+                <p>${formatBytes(drive._available, kBlockFormat = kBlockFormat)} ${Translate("free of")} ${formatBytes(drive._blocks, kBlockFormat = kBlockFormat)}</p>
             </div>
         </div>
         `

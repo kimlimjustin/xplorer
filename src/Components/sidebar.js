@@ -27,7 +27,7 @@ const createSidebar = () => {
         }
         let result = `<div class="sidebar-nav-item ${data?.hideSection?.favorites ? "nav-hide-item" : ''}">
         <div class="sidebar-hover-effect">
-            <span class="sidebar-nav-item-dropdown-btn" data-section="favorites"><img src="${getPreview('Favorites', category = "sidebar", HTMLFormat = false)}" alt="Favorites icon"> Favorites</span>
+            <span class="sidebar-nav-item-dropdown-btn" data-section="favorites"><img src="${getPreview('Favorites', category = "sidebar", HTMLFormat = false)}" alt="Favorites icon"> ${Translate("Favorites")}</span>
         </div>
         <div class="sidebar-nav-item-dropdown-container">
             ${favoritesElement}
@@ -48,7 +48,7 @@ const createSidebar = () => {
             }
             let result = `<div class="sidebar-nav-item ${data?.hideSection?.drives ? "nav-hide-item" : ''}" id="sidebar-drives">
                 <div class="sidebar-hover-effect">
-                <span class="sidebar-nav-item-dropdown-btn" data-section="drives"><img src="${getPreview('usb', category = "favorites", HTMLFormat = false)}" alt="Drives icon"> ${process.platform === "win32" ? "Drives" : "Pendrives"}</span>
+                <span class="sidebar-nav-item-dropdown-btn" data-section="drives"><img src="${getPreview('usb', category = "favorites", HTMLFormat = false)}" alt="Drives icon"> ${process.platform === "win32" ? Translate("Drives") : Translate("Pendrives")}</span>
                 </div>
                 <div class="sidebar-nav-item-dropdown-container">
                     ${drivesElement}
@@ -79,7 +79,7 @@ const createSidebar = () => {
         <div class="sidebar-setting-btn sidebar-hover-effect">
             <div class="sidebar-setting-btn-inner">
                 <img src="${getPreview('setting', category = 'sidebar', HTMLFormat = false)}" alt="Setting icon" class="sidebar-setting-btn-icon">
-                <span class="sidebar-setting-btn-text">Settings</span>
+                <span class="sidebar-setting-btn-text">${Translate("Settings")}</span>
             </div>
         </div>`
 

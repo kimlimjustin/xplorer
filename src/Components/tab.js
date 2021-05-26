@@ -2,6 +2,7 @@ const { updateTheme } = require('../Functions/Theme/theme');
 const remote = require('@electron/remote');
 const storage = require('electron-json-storage-sync');
 const { openDir } = require("../Functions/Files/open");
+const Translate = require('./multilingual');
 
 const Tab = () => {
     let tabsInfo = { focus: "1", tabs: { 1: "Home" }, focusHistory: [1], latestIndex: 1 } // default tabs information
@@ -30,6 +31,8 @@ const Tab = () => {
             }
         })
         tab.appendChild(closeTab)
+
+        tab.querySelector("#tab-position").innerText = Translate(tab.querySelector("#tab-position").innerText)
 
         tab.addEventListener("click", () => {
             const tabs = storage.get('tabs')?.data
