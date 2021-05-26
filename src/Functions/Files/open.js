@@ -64,13 +64,14 @@ const isElementInViewport = el => { // Check if element in viewport
 
 
 const openDir = (dir) => {
-    console.time()
+    console.time(dir)
     const MAIN_ELEMENT = document.getElementById("main");
     startLoading()
     changePosition(dir)
     if (dir === path.join(os.homedir(), 'Home') || dir === "Home") {
         Home(() => {
             listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
+            console.timeEnd(dir)
         })
     } else {
         getFilesAndDir(dir, async files => {
@@ -128,7 +129,7 @@ const openDir = (dir) => {
                         }, 500);
                     }
                 })
-                console.timeEnd()
+                console.timeEnd(dir)
                 stopLoading()
             }
         })

@@ -3,7 +3,7 @@ const os = require('os');
 const Translate = require('./multilingual');
 const getPreview = require('../Functions/preview/preview');
 
-const Favorites = (callback) => {
+const Favorites = () => {
     let result = `<section class="home-section">
         <h2 class="section-title">Favorites</h2>
         <div class="favorite card-hover-effect" data-tilt data-listenOpen data-isdir="true" data-path="${escape(path.join(os.homedir(), 'Desktop'))}">
@@ -22,9 +22,9 @@ const Favorites = (callback) => {
             <h3 class="favorite-title"><img src="${getPreview('music', category = "favorites", HTMLFormat = false)}" alt="Music icon" class="favorite-icon">${Translate("Music")}</h3>
         </div>
         <div class="favorite card-hover-effect" data-tilt data-listenOpen data-isdir="true" data-path="${escape(path.join(os.homedir(), 'Videos'))}">
-            <h3 class="favorite-title"><img src="${getPreview('video', category = "favorites", HTMLFormat = false)}" alt="Video icon" class="favorite-icon">${Translate("Video")}</h3>
+            <h3 class="favorite-title"><img src="${getPreview('video', category = "favorites", HTMLFormat = false)}" alt="Video icon" class="favorite-icon">${Translate("Videos")}</h3>
         </div></section>
         `;
-    callback(result)
+    return result;
 }
 module.exports = Favorites
