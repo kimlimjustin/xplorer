@@ -105,7 +105,7 @@ const openDir = (dir) => {
 
                 // Only show image when its visible in viewport to reduce latency
                 MAIN_ELEMENT.querySelectorAll("img").forEach(img => {
-                    if (!img.src && img.dataset.src) {
+                    if (img.dataset.src) {
                         let _detectImg = setInterval(() => {
                             if (isElementInViewport(img)) {
                                 img.src = img.dataset.src
@@ -117,8 +117,6 @@ const openDir = (dir) => {
                                 if (FETCHED_ICONS.indexOf(img.dataset.src) !== - 1) {
                                     img.src = img.dataset.src
                                     clearInterval(_detectImg)
-                                } else {
-                                    img.removeAttribute("src")
                                 }
                             }
                         }, 500);

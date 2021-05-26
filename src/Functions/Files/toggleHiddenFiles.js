@@ -14,6 +14,7 @@ const toggleHiddenFiles = () => {
             hideHiddenFiles = !hideHiddenFiles
             storage.set('preference', Object.assign({}, userPreference, { hideHiddenFiles }))
             document.getElementById("main").dataset.hideHiddenFiles = hideHiddenFiles
+            document.getElementById("show-hidden-files").checked = !hideHiddenFiles
         }
     }
     document.addEventListener("keyup", Shortcut, false)
