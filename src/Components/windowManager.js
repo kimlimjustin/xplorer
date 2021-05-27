@@ -1,10 +1,13 @@
 const { openDir } = require('../Functions/Files/open')
 const storage = require('electron-json-storage-sync')
 const remote = require("@electron/remote")
+const toggleHiddenFiles = require('../Functions/Files/toggleHiddenFiles')
+const createSidebar = require('./sidebar')
 // Function to reload
 const reload = () => {
     const tabs = storage.get('tabs')?.data
-    openDir(tabs.tabs[tabs.focus])     
+    openDir(tabs.tabs[tabs.focus]);
+    createSidebar()
 }
 
 // Function to minimize window

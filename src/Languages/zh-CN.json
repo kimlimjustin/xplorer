@@ -9,5 +9,11 @@
     "Icon": "图标",
     "Show hidden files": "显示隐藏文件",
     "Files": "文件",
-    "Pendrives": "移动存储"
+    "Pendrives": "移动存储",
+    "Home": "主页",
+    "Recent": "最近",
+    "Trash": "垃圾",
+    "Drives": "硬盘",
+    "free of": "可用，共",
+    "Settings": "设置"
 }

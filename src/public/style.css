@@ -151,6 +151,15 @@ body{
     display: inline-block;
 }
 
+.tab #tab-position{
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden; 
+    width: 100px;
+    text-align: center;
+    display: inline-grid;
+}
+
 .close-tab-btn{
     position: absolute;
     right: 1rem;
@@ -401,6 +410,10 @@ body{
 .empty-dir-notification{
     margin: 0 auto;
     font-weight: bold;
+}
+
+[data-hide-hidden-files="true"] [data-hidden-file]{
+    display: none;
 }
 
 [data-hidden-file] .file-grid-preview{

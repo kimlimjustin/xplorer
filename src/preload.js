@@ -4,7 +4,9 @@ const Home = require('./Components/home.js');
 const windowManager = require('./Components/windowManager');
 const {webFrame} = require('electron');
 const createSidebar = require('./Components/sidebar');
-const { openDir, listenOpen } = require('./Functions/Files/open');
+const { listenOpen } = require('./Functions/Files/open');
+const toggleHiddenFiles = require('./Functions/Files/toggleHiddenFiles');
+const optionMenu = require('./Components/optionMenu');
 
 // Wait DOM Content to be loaded
 document.addEventListener('DOMContentLoaded', async () => {
@@ -27,5 +29,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     })()
     // Update the page theme
     updateTheme()
+    // Initialize toggle hidden files feature
+    toggleHiddenFiles()
+    // Initialize option menu feature
+    optionMenu()
 })
   

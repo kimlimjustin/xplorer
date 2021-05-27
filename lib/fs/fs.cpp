@@ -36,16 +36,16 @@ int main(int argc, char** argv){
         strcat(argv[1], argv[i]);
     }
     if ((dir = opendir (argv[1])) != NULL) {
-    /* print all the files and directories within directory */
-    while ((ent = readdir (dir)) != NULL) {
-        string path = argv[1] + string(ent->d_name);
-        cout << ent->d_name << " | " << CheckHiddenFile(path) << " | " << CheckIsDir(path) << endl;
-    }
-    closedir (dir);
+        /* print all the files and directories within directory */
+        while ((ent = readdir (dir)) != NULL) {
+            string path = argv[1] + string(ent->d_name);
+            cout << ent->d_name << " | " << CheckHiddenFile(path) << " | " << CheckIsDir(path) << endl;
+        }
+        closedir (dir);
     } else {
-    /* could not open directory */
-    perror ("");
-    return EXIT_FAILURE;
+        /* could not open directory */
+        perror ("");
+        return EXIT_FAILURE;
     }
     return 0;
 }

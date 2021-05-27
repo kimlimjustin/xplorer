@@ -7,6 +7,7 @@ const changePosition = require("../Tab/changePosition");
 const { updateTheme } = require("../Theme/theme");
 const nativeDrag = require("../DOM/drag");
 const { startLoading, stopLoading } = require("../DOM/loading");
+const storage = require('electron-json-storage-sync')
 
 function getCommandLine() {
     switch (process.platform) {
@@ -63,13 +64,14 @@ const isElementInViewport = el => { // Check if element in viewport
 
 
 const openDir = (dir) => {
-    console.time()
+    console.time(dir)
     const MAIN_ELEMENT = document.getElementById("main");
     startLoading()
     changePosition(dir)
     if (dir === path.join(os.homedir(), 'Home') || dir === "Home") {
         Home(() => {
             listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
+            console.timeEnd(dir)
         })
     } else {
         getFilesAndDir(dir, async files => {
@@ -103,7 +105,7 @@ const openDir = (dir) => {
 
                 // Only show image when its visible in viewport to reduce latency
                 MAIN_ELEMENT.querySelectorAll("img").forEach(img => {
-                    if (!img.src && img.dataset.src) {
+                    if (img.dataset.src) {
                         let _detectImg = setInterval(() => {
                             if (isElementInViewport(img)) {
                                 img.src = img.dataset.src
@@ -115,14 +117,12 @@ const openDir = (dir) => {
                                 if (FETCHED_ICONS.indexOf(img.dataset.src) !== - 1) {
                                     img.src = img.dataset.src
                                     clearInterval(_detectImg)
-                                } else {
-                                    img.removeAttribute("src")
                                 }
                             }
                         }, 500);
                     }
                 })
-                console.timeEnd()
+                console.timeEnd(dir)
                 stopLoading()
             }
         })
