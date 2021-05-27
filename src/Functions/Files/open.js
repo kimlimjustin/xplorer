@@ -7,7 +7,9 @@ const changePosition = require("../Tab/changePosition");
 const { updateTheme } = require("../Theme/theme");
 const nativeDrag = require("../DOM/drag");
 const { startLoading, stopLoading } = require("../DOM/loading");
-const storage = require('electron-json-storage-sync')
+const storage = require('electron-json-storage-sync');
+const Recent = require("../../Components/recent");
+const LAZY_LOAD = require("../DOM/lazyLoadingImage");
 
 function getCommandLine() {
     switch (process.platform) {
@@ -30,11 +32,24 @@ const openFileHandler = (e) => {
     while (!element.dataset.path) {
         element = element.parentNode
     }
+    const filePath = unescape(element.dataset.path)
     // Open the file if it's not directory
     if (element.dataset.isdir !== "true") {
-        openFileWithDefaultApp(unescape(element.dataset.path))
+        let recents = storage.get('recent')?.data;
+        openFileWithDefaultApp(filePath)
+
+        // Push file into recent files
+        if (recents) {
+            if (recents.indexOf(filePath) !== -1) {
+                recents.push(recents.splice(recents.indexOf(filePath), 1)[0]);
+                storage.set('recent', recents)
+            } else {
+                storage.set('recent', [...recents, filePath])
+            }
+        }
+        else storage.set('recent', [element.dataset.path])
     } else {
-        openDir(unescape(element.dataset.path))
+        openDir(filePath)
     }
 }
 
@@ -50,19 +65,6 @@ const listenOpen = (elements) => {
     })
 }
 
-const FETCHED_ICONS = [] // Array of fetch icons
-
-const isElementInViewport = el => { // Check if element in viewport
-    var rect = el.getBoundingClientRect();
-    return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /* or $(window).height() */
-        rect.right <= (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */
-    );
-}
-
-
 const openDir = (dir) => {
     console.time(dir)
     const MAIN_ELEMENT = document.getElementById("main");
@@ -73,6 +75,9 @@ const openDir = (dir) => {
             listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
             console.timeEnd(dir)
         })
+    } else if (dir === path.join(os.homedir(), 'Recent') || dir === "Recent") {
+        Recent()
+        changePosition('Recent')
     } else {
         getFilesAndDir(dir, async files => {
             MAIN_ELEMENT.innerHTML = "";
@@ -102,26 +107,8 @@ const openDir = (dir) => {
                 updateTheme()
                 nativeDrag(document.querySelectorAll(".file-grid"), dir)
                 listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
+                LAZY_LOAD()
 
-                // Only show image when its visible in viewport to reduce latency
-                MAIN_ELEMENT.querySelectorAll("img").forEach(img => {
-                    if (img.dataset.src) {
-                        let _detectImg = setInterval(() => {
-                            if (isElementInViewport(img)) {
-                                img.src = img.dataset.src
-                                if (FETCHED_ICONS.indexOf(img.dataset.src) === -1) FETCHED_ICONS.push(img.dataset.src)
-                                img.removeAttribute("data-src")
-                                clearInterval(_detectImg)
-                            } else {
-                                // Directly show icons if it was fetched before
-                                if (FETCHED_ICONS.indexOf(img.dataset.src) !== - 1) {
-                                    img.src = img.dataset.src
-                                    clearInterval(_detectImg)
-                                }
-                            }
-                        }, 500);
-                    }
-                })
                 console.timeEnd(dir)
                 stopLoading()
             }

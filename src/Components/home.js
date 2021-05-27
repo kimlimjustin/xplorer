@@ -9,6 +9,7 @@ const nativeDrag = require('../Functions/DOM/drag.js');
 const getPreview = require('../Functions/preview/preview.js');
 const { startLoading, stopLoading } = require('../Functions/DOM/loading.js');
 const storage = require('electron-json-storage-sync');
+const LAZY_LOAD = require('../Functions/DOM/lazyLoadingImage.js');
 
 // Home files for linux
 const homeFiles = (callback) => {
@@ -16,7 +17,7 @@ const homeFiles = (callback) => {
         let result = `<section class='home-section'><h1 class="section-title">Files</h1>`;
         for (const file of files) {
             const preview = await getPreview(path.join(os.homedir(), file.filename), category = file.isDir ? "folder" : "file")
-            result += `<div class="file-grid file-hover-effect" draggable="true" data-isdir=${file.isDir} data-path = ${path.join(os.homedir(), file.filename)} data-listenOpen ${file.isHidden ? "data-hidden-file" : ""}>
+            result += `<div class="file-grid file-hover-effect" draggable="true" data-isdir=${file.isDir} data-path = ${escape(path.join(os.homedir(), file.filename))} data-listenOpen ${file.isHidden ? "data-hidden-file" : ""}>
             ${preview}
             <span class="file-grid-filename" id="file-filename">${file.filename}</span>
             </div>`
@@ -27,7 +28,7 @@ const homeFiles = (callback) => {
 // Content for home page
 const Home = async (_callback) => {
     startLoading()
-    // Create a new main element
+    // Get the main element
     const MAIN_ELEMENT = document.getElementById("main");
     const favorites = Favorites();
     const drives = await Drives();
@@ -40,6 +41,7 @@ const Home = async (_callback) => {
             nativeDrag(document.querySelectorAll('.file-grid'), os.homedir()) // Listen to native drag
             _callback()
             stopLoading()
+            LAZY_LOAD()
         })
     }
     else {
