@@ -61,6 +61,7 @@ const Home = async (_callback) => {
             previousDrive = _uniqueDrive
         } else {
             if (JSON.stringify(_uniqueDrive) !== JSON.stringify(previousDrive)) {
+                if (document.getElementById("drives").classList.contains('hidden')) document.getElementById("drives").classList.remove('hidden')
                 document.getElementById("drives").innerHTML = drivesToElements(_drives)
                 updateTheme()
             }

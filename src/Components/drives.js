@@ -59,7 +59,7 @@ const Drives = async () => {
 
     const drives = await getDrives()
 
-    
+
     const tabs = storage.get('tabs')?.data
     const focusingPath = tabs.tabs[tabs.focus]
     if (focusingPath === "Home" || focusingPath === path.join(os.homedir(), 'Home')) {
@@ -69,7 +69,7 @@ const Drives = async () => {
             case "darwin":
                 return '' // Xplorer does not support drives for macOS recently
             default:
-                return drives.length ? Translate(`<section class="home-section" id="drives"><h1 class="section-title">Pendrives</h1>${drivesToElements(drives, kBlockFormat = true)}</section>`) : ""
+                return Translate(`<section class="home-section ${!drives.length ? 'hidden' : ''}" id="drives"><h1 class="section-title">Pendrives</h1>${drivesToElements(drives, kBlockFormat = true)}</section>`)
         }
     }
 }

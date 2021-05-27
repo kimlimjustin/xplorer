@@ -419,3 +419,7 @@ body{
 [data-hidden-file] .file-grid-preview{
     opacity: .5;
 }
+
+.hidden{
+    display: none;
+}
