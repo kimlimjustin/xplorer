@@ -13,9 +13,11 @@ const VIDEO = ['mp4', 'webm', 'mpg', 'mp2', 'mpeg', 'mpe', 'mpv', 'ocg', 'm4p', 
 const DEFAULT_FILE_ICON = path.join(__dirname, "../../icon", defaultIconJSON.default.file)
 const DEFAULT_FOLDER_ICON = path.join(__dirname, "../../icon", defaultIconJSON.default.folder)
 
+let DEFAULT_IMAGE = path.join(__dirname, '../../icon', defaultIconJSON.file.image)
+
 // Return image view of preview
 const iconPreview = (filename, isdir) => {
-    return `<img data-src = "${filename}" class="file-grid-preview" src="${isdir ? DEFAULT_FOLDER_ICON : DEFAULT_FILE_ICON}" />`
+    return `<img data-src = "${filename}" class="file-grid-preview" src="${isdir ? DEFAULT_FOLDER_ICON : DEFAULT_FILE_ICON}" onerror="this.onerror=null;this.src='${DEFAULT_IMAGE}'" />`
 }
 // Return video view of preview
 const videoPreview = (filename) => {
@@ -44,6 +46,8 @@ const getPreview = (filename, category = "folder", HTMLFormat = true) => {
     const folderName = filename.split(/[\\\/]/).pop()
 
     let categoryObj = category === "file" ? ext : folderName
+
+    if (fs.existsSync(iconJSON?.file?.image)) DEFAULT_IMAGE = path.join(icon?.data?.iconJSON, '../', iconJSON.file.image)
 
     // Check if there's a icon for the folder name
     if (Object.keys(iconJSON?.[category] || defaultIconJSON[category]).indexOf(categoryObj) !== -1) {

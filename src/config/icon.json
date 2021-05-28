@@ -221,7 +221,8 @@
         "psd1": "extension/powershell.svg",
         "ps1xml": "extension/powershell.svg",
         "psc1": "extension/powershell.svg",
-        "pssc": "extension/powershell.svg"
+        "pssc": "extension/powershell.svg",
+        "image": "extension/image.svg"
     },
     "default": {
         "folder": "folder.svg",
