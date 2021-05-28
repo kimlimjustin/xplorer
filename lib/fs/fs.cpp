@@ -26,8 +26,17 @@ bool CheckIsDir(string const& FilePath){
     }
 }
 
+bool CheckIsSystemFile(string const& FilePath){
+    DWORD const result = GetFileAttributesA(FilePath.c_str());
+    if (result != 0xFFFFFFFF){
+        return !!(result & FILE_ATTRIBUTE_SYSTEM);
+    }else{
+        return false;
+    }
+}
+
 int main(int argc, char** argv){
-    cout << "File Name | Is Hidden | Is Directory" << endl;
+    cout << "File Name | Is Hidden | Is Directory | Is System Protected File" << endl;
     DIR *dir;
     struct dirent *ent;
     for (int i = 2; i < argc; i++)
@@ -39,7 +48,7 @@ int main(int argc, char** argv){
         /* print all the files and directories within directory */
         while ((ent = readdir (dir)) != NULL) {
             string path = argv[1] + string(ent->d_name);
-            cout << ent->d_name << " | " << CheckHiddenFile(path) << " | " << CheckIsDir(path) << endl;
+            cout << ent->d_name << " | " << CheckHiddenFile(path) << " | " << CheckIsDir(path) << " | " << CheckIsSystemFile(path) << endl;
         }
         closedir (dir);
     } else {
