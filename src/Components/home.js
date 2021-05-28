@@ -19,10 +19,10 @@ const homeFiles = (callback) => {
             const preview = await getPreview(path.join(os.homedir(), file.filename), category = file.isDir ? "folder" : "file")
             result += `<div class="file-grid file-hover-effect" draggable="true" data-isdir=${file.isDir} data-path = "${escape(path.join(os.homedir(), file.filename))}" data-listenOpen ${file.isHidden ? "data-hidden-file" : ""}>
             ${preview}
-            <span class="file-grid-filename" id="file-filename">${file.filename}</span>
+            <span class="file-grid-filename" id="file-filename">${Translate(file.filename)}</span>
             </div>`
         }
-        callback(Translate(result + "</section>"))
+        callback(result + "</section>")
     })
 }
 // Content for home page
