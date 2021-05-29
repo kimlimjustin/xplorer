@@ -1,6 +1,5 @@
 const fs = require('fs');
 const fscpp = require("../../../lib/fs/fs")
-const path = require('path');
 const storage = require("electron-json-storage-sync")
 
 // Function to get all files and directory inside a directory
