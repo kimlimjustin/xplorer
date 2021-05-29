@@ -33,7 +33,7 @@ const getDriveBasePath = mounted => {
 
 // Function to convert drives into HTML Tags
 const drivesToElements = (drives, kBlockFormat = false) => {
-    let result = "" // Element Result
+    let result = drives.length ? `<h1 class="section-title">${Translate(process.platform === "linux" ? "Pendrives" : "Drives")}</h1>` : "" // Element Result
     drives.forEach((drive) => {
         let driveName = drive._mounted.split("/")[drive._mounted.split("/").length - 1] // Get name of drive
         result += `
@@ -65,11 +65,11 @@ const Drives = async () => {
     if (focusingPath === "Home" || focusingPath === path.join(os.homedir(), 'Home')) {
         switch (process.platform) {
             case "win32":
-                return Translate(`<section class="home-section" id="drives"><h1 class="section-title">Drives</h1>${drivesToElements(drives)}</section>`)
+                return `<section class="home-section" id="drives">${drivesToElements(drives)}</section>`
             case "darwin":
                 return '' // Xplorer does not support drives for macOS recently
             default:
-                return Translate(`<section class="home-section ${!drives.length ? 'hidden' : ''}" id="drives"><h1 class="section-title">Pendrives</h1>${drivesToElements(drives, kBlockFormat = true)}</section>`)
+                return `<section class="home-section" id="drives">${drivesToElements(drives, kBlockFormat = true)}</section>`
         }
     }
 }
