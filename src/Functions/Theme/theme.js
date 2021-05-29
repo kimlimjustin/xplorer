@@ -17,14 +17,13 @@ const hoverEffect = (element, before, after) => {
 }
 
 // Function to get an element style
-const getElement = (variable, theme) => {
-    const themeJSON = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../", "config/theme.json")));
-    return themeJSON[theme][variable]
+const getElementStyle = (variable, theme) => {
+    return themeJSON?.[theme]?.[variable] || defaultThemeJSON[theme][variable]
 }
 
 // Function to change an element style
 const changeElementTheme = (element, variable, style, theme) => {
-    if (element) element.style[style] = themeJSON ? themeJSON[theme][variable] ? themeJSON[theme][variable] : defaultThemeJSON[defaultTheme][variable] : defaultThemeJSON[theme][variable]
+    if (element) element.style[style] = themeJSON?.[theme]?.[variable] || defaultThemeJSON[theme][variable]
 }
 
 // Change page theme
@@ -61,6 +60,7 @@ const changeTheme = (document, theme) => {
     changeElementTheme(document.querySelector(".menu-dropdown"), "menuDropdownColor", "color", theme)
     changeElementTheme(document.querySelector(".sidebar-setting-btn"), "settingButtonBackground", "background", theme)
     changeElementTheme(document.querySelector(".sidebar-setting-btn"), "settingButtonColor", "color", theme)
+    changeElementTheme(document.querySelector(".contextmenu"), "contextMenuBackground", "background", theme)
     document.querySelector(".tabs-manager").style.setProperty("--tabs-scrollbar-track", themeJSON ? themeJSON[theme].tabsScrollbarTrack : defaultThemeJSON[theme].tabsScrollbarTrack)
     document.querySelector(".tabs-manager").style.setProperty("--tabs-scrollbar-thumb", themeJSON ? themeJSON[theme].tabsScrollbarThumb : defaultThemeJSON[theme].tabsScrollbarThumb)
     document.querySelector(".tabs-manager").style.setProperty("--tabs-scrollbar-thumb-hover", themeJSON ? themeJSON[theme].tabsScrollbarThumbHover : defaultThemeJSON[theme].tabsScrollbarThumbHover)
@@ -75,54 +75,54 @@ const changeTheme = (document, theme) => {
     })
     document.querySelectorAll(".card-hover-effect").forEach(obj => {
         obj.onmouseleave = (e) => {
-            obj.style.background = getElement("pendriveBackground", theme);
+            obj.style.background = getElementStyle("pendriveBackground", theme);
             obj.style.borderImage = null;
         }
         obj.addEventListener("mousemove", (e) => {
             const rect = e.target.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
-            obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElement("cardHoverEffectBackground", theme)} )`;
-            obj.style.borderImage = `radial-gradient(20% 75% at ${x}px ${y}px, ${getElement("cardHoverEffectBorderImage", theme)} ) 1 / 1px / 0px stretch `;
+            obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle("cardHoverEffectBackground", theme)} )`;
+            obj.style.borderImage = `radial-gradient(20% 75% at ${x}px ${y}px, ${getElementStyle("cardHoverEffectBorderImage", theme)} ) 1 / 1px / 0px stretch `;
         })
     })
     document.querySelectorAll(".sidebar-hover-effect").forEach(obj => {
         obj.onmouseleave = (e) => {
-            obj.style.background = getElement("sidebarBackground", theme);
+            obj.style.background = getElementStyle("sidebarBackground", theme);
             obj.style.borderImage = null;
         }
         obj.addEventListener("mousemove", (e) => {
             const rect = e.target.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
-            obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElement("sidebarHoverEffectBackground", theme)} )`;
-            obj.style.borderImage = `radial-gradient(20% 75% at ${x}px ${y}px, ${getElement("sidebarHoverEffectBorderImage", theme)} ) 1 / 1px / 0px stretch `;
+            obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle("sidebarHoverEffectBackground", theme)} )`;
+            obj.style.borderImage = `radial-gradient(20% 75% at ${x}px ${y}px, ${getElementStyle("sidebarHoverEffectBorderImage", theme)} ) 1 / 1px / 0px stretch `;
         })
     })
     document.querySelectorAll(".tab-hover-effect").forEach(obj => {
         obj.onmouseleave = (e) => {
-            obj.style.background = getElement("tabBackground", theme);
+            obj.style.background = getElementStyle("tabBackground", theme);
             obj.style.borderImage = null;
         }
         obj.addEventListener("mousemove", (e) => {
             const rect = e.target.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
-            obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElement("tabHoverEffectBackground", theme)} )`;
-            obj.style.borderImage = `radial-gradient(20% 75% at ${x}px ${y}px, ${getElement("tabHoverEffectBorderImage", theme)} ) 1 / 1px / 0px stretch `;
+            obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle("tabHoverEffectBackground", theme)} )`;
+            obj.style.borderImage = `radial-gradient(20% 75% at ${x}px ${y}px, ${getElementStyle("tabHoverEffectBorderImage", theme)} ) 1 / 1px / 0px stretch `;
         })
     })
     document.querySelectorAll(".grid-hover-effect").forEach(obj => {
         obj.onmouseleave = (e) => {
-            obj.style.background = getElement("gridBackground", theme);
+            obj.style.background = getElementStyle("gridBackground", theme);
             obj.style.borderImage = null;
         }
         obj.addEventListener("mousemove", (e) => {
             const rect = e.target.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
-            obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElement("gridHoverEffectBackground", theme)} )`;
-            obj.style.borderImage = `radial-gradient(20% 75% at ${x}px ${y}px, ${getElement("gridHoverEffectBorderImage", theme)} ) 1 / 1px / 0px stretch `;
+            obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle("gridHoverEffectBackground", theme)} )`;
+            obj.style.borderImage = `radial-gradient(20% 75% at ${x}px ${y}px, ${getElementStyle("gridHoverEffectBorderImage", theme)} ) 1 / 1px / 0px stretch `;
         })
     })
     document.querySelectorAll(".pendrive").forEach(pendrive => {
@@ -145,7 +145,6 @@ const changeTheme = (document, theme) => {
 }
 
 const updateTheme = async () => {
-    // Change window theme
     const { data } = storage.get("theme")
     // Detect system theme
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -172,6 +171,5 @@ const updateTheme = async () => {
     }
     return;
 }
-
 
 module.exports = { changeTheme, updateTheme }

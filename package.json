@@ -3,7 +3,7 @@
   "description": "Xplorer, a customizable, modern file manager",
   "version": "0.1.0",
   "author": "Justin Maximillian Kimlim <kimlimjustin@gmail.com>",
-  "main": "src/main.ts",
+  "main": "src/main.js",
   "icon": "build/icon.icns",
   "homepage": "https://github.com/kimlimjustin/xplorer#readme",
   "repository": {

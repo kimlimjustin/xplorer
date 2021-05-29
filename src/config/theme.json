@@ -58,7 +58,10 @@
         "sidebarHoverEffectBackground": "rgba(45, 45, 57, 0.7),rgba(20, 20, 27, 0.8)",
         "sidebarHoverEffectBorderImage": "rgba(45, 45, 57, 0.7),rgba(255,255,255,0.1)",
         "tabHoverEffectBackground": "#c2d0ff,rgba(162, 182, 255, 0.8)",
-        "tabHoverEffectBorderImage": "rgba(255,255,255,0.1),rgba(45, 45, 57, 0.7)"
+        "tabHoverEffectBorderImage": "rgba(255,255,255,0.1),rgba(45, 45, 57, 0.7)",
+
+        "contextMenuBackground": "#1b1e2e",
+        "contextMenuColor": "inherit"
     },
     "dark": {
         "textColor": "#87c1ce",
@@ -119,7 +122,10 @@
         "sidebarHoverEffectBackground": "rgba(140, 162, 210, 0.2),rgba(27, 30, 46 , 0.7)",
         "sidebarHoverEffectBorderImage": "rgba(140, 162, 210, 0.2),rgba(27, 30, 46 , 0.7)",
         "tabHoverEffectBackground": "rgba(140, 162, 210, 0.2),rgba(27, 30, 46 , 0.7)",
-        "tabHoverEffectBorderImage": "rgba(140, 162, 210, 0.2),rgba(27, 30, 46 , 0.7)"
+        "tabHoverEffectBorderImage": "rgba(140, 162, 210, 0.2),rgba(27, 30, 46 , 0.7)",
+
+        "contextMenuBackground": "#1b1e2e",
+        "contextMenuColor": "inherit"
     },
     "light": {
         "textColor": "#000",
@@ -180,7 +186,10 @@
         "sidebarHoverEffectBackground": "rgba(224,224,224,255),rgba(203,204,209,255)",
         "sidebarHoverEffectBorderImage": "rgba(157,162,189,255),rgba(203,204,209,255)",
         "tabHoverEffectBackground": "rgba(224,224,224,255),rgba(203,204,209,255)",
-        "tabHoverEffectBorderImage": "rgba(157,162,189,255),rgba(203,204,209,255)"
+        "tabHoverEffectBorderImage": "rgba(157,162,189,255),rgba(203,204,209,255)",
+
+        "contextMenuBackground": "#cbccd1",
+        "contextMenuColor": "inherit"
     },
     "light+": {
         "textColor": "#000",
@@ -242,6 +251,9 @@
         "sidebarHoverEffectBackground": "rgba(234,234,234,255),rgba(203,204,209,255)",
         "sidebarHoverEffectBorderImage": "rgba(157,162,189,255),rgba(203,204,209,255)",
         "tabHoverEffectBackground": "rgba(234,234,234,255),rgba(203,204,209,255)",
-        "tabHoverEffectBorderImage": "rgba(157,162,189,255),rgba(203,204,209,255)"
+        "tabHoverEffectBorderImage": "rgba(157,162,189,255),rgba(203,204,209,255)",
+
+        "contextMenuBackground": "#d1d1d8",
+        "contextMenuColor": "inherit"
     }
 }
