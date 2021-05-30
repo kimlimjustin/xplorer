@@ -116,7 +116,6 @@ const openDir = (dir) => {
     console.time(dir)
     startLoading()
     changePosition(dir)
-    const MAIN_ELEMENT = document.getElementById("main");
     if (dir === path.join(os.homedir(), 'Home') || dir === "Home") {
         Home(() => {
             listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file

@@ -1,6 +1,5 @@
 const storage = require("electron-json-storage-sync");
-const tab = require("./tab");
-console.log(tab)
+const {execSync} = require('child_process')
 
 let contextMenu = document.querySelector(".contextmenu");
 document.addEventListener("DOMContentLoaded", () => contextMenu = document.querySelector(".contextmenu"))
@@ -11,8 +10,8 @@ const ContextMenuInner = element => {
         [
             { "menu": "Open", "role": "open" },
             { "menu": "Open in new tab", "visible": element?.dataset?.isdir === 'true', "role": "openInNewTab" },
-            { "menu": "Open in intregrated terminal", "visible": element?.dataset?.isdir === "true" },
-            "Preview"
+            { "menu": "Open in terminal", "visible": element?.dataset?.isdir === "true", "role": "reveal" },
+            { "menu": "Preview", "visible": element?.dataset?.isdir !== "false" }
         ],
         [
             "Cut",
@@ -54,13 +53,13 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir)=> {
 
         contextMenu.querySelectorAll("span").forEach(menu => {
             menu.addEventListener("click", () => {
+                const filePath = unescape(element.dataset.path)
                 switch (menu.getAttribute("role")) {
                     case "open":
                     case "openInNewTab":
                         if (menu.getAttribute("role") === "openInNewTab") {
                             createNewTab()
                         }
-                        const filePath = unescape(element.dataset.path)
                         if (element.dataset.isdir !== 'true') {
                             let recents = storage.get('recent')?.data;
                             openFileWithDefaultApp(filePath)
@@ -78,7 +77,16 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir)=> {
                         } else {
                             openDir(filePath)
                         }
-                    break;
+                        break;
+                    case "reveal":
+                        if (process.platform === "win32") {
+                            execSync(`${filePath.split("\\")[0]} && cd ${filePath} && start cmd`)
+                        } else if (process.platform === "linux") {
+                            execSync(`gnome-terminal --working-directory="${filePath}"`)
+                        } else {
+                            execSync(`open -a Terminal ${filePath}`)
+                        }
+                        break;
                 }
             })
         })
