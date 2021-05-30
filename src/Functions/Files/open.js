@@ -52,7 +52,7 @@ const openFileHandler = (e) => {
                 storage.set('recent', [...recents, filePath])
             }
         }
-        else storage.set('recent', [element.dataset.path])
+        else storage.set('recent', [filePath])
     } else {
         openDir(filePath)
     }
@@ -89,13 +89,17 @@ const displayFiles = async (files, dir) => {
             fileGrid.dataset.isdir = file.isDir
             if (file.isHidden) fileGrid.dataset.hiddenFile = true
             fileGrid.dataset.path = escape(path.join(dir, file.filename))
+            fileGrid.dataset.createdAt = file.createdAt
+            fileGrid.dataset.modifiedAt = file.modifiedAt
+            fileGrid.dataset.accessedAt = file.accessedAt
+            fileGrid.dataset.size = file.size
             fileGrid.innerHTML = `
             ${preview}
             <span class="file-grid-filename" id="file-filename">${file.filename}</span>
             `
             MAIN_ELEMENT.appendChild(fileGrid)
 
-            ContextMenu(fileGrid)
+            ContextMenu(fileGrid, openFileWithDefaultApp, openDir)
         }
 
         updateTheme()

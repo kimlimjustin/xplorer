@@ -428,4 +428,5 @@ body{
 
 .contextmenu span{
     display: block;
+    cursor: pointer;
 }
