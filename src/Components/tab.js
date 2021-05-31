@@ -1,8 +1,66 @@
 const { updateTheme } = require('../Functions/Theme/theme');
 const remote = require('@electron/remote');
 const storage = require('electron-json-storage-sync');
-const { openDir } = require("../Functions/Files/open");
 const Translate = require('./multilingual');
+
+//  Function to create new tab
+const createNewTab = (path) => {
+    const createNewTabElement = document.querySelector(".create-new-tab")
+    let tabsInfo = storage.get("tabs")?.data // Fetch latest tabs information
+
+    const newTab = document.createElement("div");
+    newTab.classList.add('tab');
+    newTab.classList.add('tab-hover-effect');
+    newTab.innerHTML = "<span id='tab-position'>Home</span><span class='close-tab-btn'>&times;</span>";
+    tabsInfo.latestIndex += 1
+    newTab.dataset.tabIndex = tabsInfo.latestIndex
+    newTab.id = `tab${tabsInfo.latestIndex}`
+
+    updateTheme() // Update the theme
+    // Listen to close tab button
+    newTab.querySelector(".close-tab-btn").addEventListener("click", e => {
+        e.stopPropagation()
+        // Close the window if user close the only tab
+        if (document.querySelectorAll(".tab").length === 1) {
+            const electronWindow = remote.BrowserWindow.getFocusedWindow()
+            electronWindow.close()
+        } else {
+            tabsInfo.focusHistory = tabsInfo.focusHistory.filter(tabIndex => String(tabIndex) !== String(newTab.dataset.tabIndex))
+            if (String(tabsInfo.focus) === String(newTab.dataset.tabIndex)) tabsInfo.focus = tabsInfo.focusHistory[tabsInfo.focusHistory.length - 1]
+            delete tabsInfo.tabs[newTab.dataset.tabIndex]
+            storage.set("tabs", tabsInfo)
+            newTab.parentElement.removeChild(newTab)
+        }
+    })
+    createNewTabElement.parentElement.insertBefore(newTab, createNewTabElement) // Insert the new tab
+    newTab.parentNode.scrollLeft = window.pageXOffset + newTab.getBoundingClientRect().left + newTab.offsetWidth // Scroll the tabs scrollbar
+
+    // Scroll the tab to the right end
+    newTab.parentNode.scrollLeft = newTab.parentNode.scrollWidth
+
+    // Edit tabs information
+    tabsInfo.tabs[String(tabsInfo.latestIndex)] = path || "Home"
+    tabsInfo.focus = tabsInfo.latestIndex
+    tabsInfo.focusHistory.push(tabsInfo.latestIndex)
+    storage.set('tabs', tabsInfo)
+
+    const { openDir } = require("../Functions/Files/open");
+    openDir(path || "Home")
+
+    newTab.addEventListener("click", () => {
+        SwitchTab(newTab.dataset.tabIndex)
+    })
+    return;
+}
+
+const SwitchTab = (tabIndex) => {
+    const tabs = storage.get('tabs')?.data
+    tabs.focus = tabIndex
+    tabs.focusHistory.push(parseInt(tabIndex))
+    storage.set('tabs', tabs)
+    const { openDir } = require("../Functions/Files/open");
+    openDir(tabs.tabs[tabIndex])
+}
 
 const Tab = () => {
     let tabsInfo = { focus: "1", tabs: { 1: "Home" }, focusHistory: [1], latestIndex: 1 } // default tabs information
@@ -35,65 +93,12 @@ const Tab = () => {
         tab.querySelector("#tab-position").innerText = Translate(tab.querySelector("#tab-position").innerText)
 
         tab.addEventListener("click", () => {
-            const tabs = storage.get('tabs')?.data
-            tabs.focus = index + 1
-            tabs.focusHistory.push(index + 1)
-            storage.set('tabs', tabs)
-            openDir(tabs.tabs[index + 1])
+            SwitchTab(index + 1)
         })
 
     })
 
     const createNewTabElement = document.querySelector(".create-new-tab")
-    //  Function to create new tab
-    const createNewTab = e => {
-        tabsInfo = storage.get("tabs")?.data // Fetch latest tabs information
-
-        const newTab = document.createElement("div");
-        newTab.classList.add('tab');
-        newTab.classList.add('tab-hover-effect');
-        newTab.innerHTML = "<span id='tab-position'>Home</span><span class='close-tab-btn'>&times;</span>";
-        tabsInfo.latestIndex += 1
-        newTab.dataset.tabIndex = tabsInfo.latestIndex
-        newTab.id = `tab${tabsInfo.latestIndex}`
-
-        updateTheme() // Update the theme
-        // Listen to close tab button
-        newTab.querySelector(".close-tab-btn").addEventListener("click", e => {
-            e.stopPropagation()
-            // Close the window if user close the only tab
-            if (document.querySelectorAll(".tab").length === 1) {
-                const electronWindow = remote.BrowserWindow.getFocusedWindow()
-                electronWindow.close()
-            } else {
-                tabsInfo.focusHistory = tabsInfo.focusHistory.filter(tabIndex => String(tabIndex) !== String(newTab.dataset.tabIndex))
-                if (String(tabsInfo.focus) === String(newTab.dataset.tabIndex)) tabsInfo.focus = tabsInfo.focusHistory[tabsInfo.focusHistory.length - 1]
-                delete tabsInfo.tabs[newTab.dataset.tabIndex]
-                storage.set("tabs", tabsInfo)
-                newTab.parentElement.removeChild(newTab)
-            }
-        })
-        createNewTabElement.parentElement.insertBefore(newTab, createNewTabElement) // Insert the new tab
-        newTab.parentNode.scrollLeft = window.pageXOffset + newTab.getBoundingClientRect().left + newTab.offsetWidth // Scroll the tabs scrollbar
-
-        // Scroll the tab to the right end
-        newTab.parentNode.scrollLeft = newTab.parentNode.scrollWidth
-
-        // Edit tabs information
-        tabsInfo.tabs[String(tabsInfo.latestIndex)] = "Home"
-        tabsInfo.focus = tabsInfo.latestIndex
-        tabsInfo.focusHistory.push(tabsInfo.latestIndex)
-        storage.set('tabs', tabsInfo)
-        openDir("Home")
-
-        newTab.addEventListener("click", () => {
-            const tabs = storage.get('tabs')?.data
-            tabs.focus = newTab.dataset.tabIndex
-            tabs.focusHistory.push(parseInt(newTab.dataset.tabIndex))
-            storage.set('tabs', tabs)
-            openDir(tabs.tabs[newTab.dataset.tabIndex])
-        })
-    }
 
     // Create a new tab event
     createNewTabElement.addEventListener('click', createNewTab)
@@ -120,4 +125,4 @@ const Tab = () => {
     })
 }
 
-module.exports = Tab
+module.exports = { Tab, createNewTab }

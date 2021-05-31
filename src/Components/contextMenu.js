@@ -58,7 +58,8 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir)=> {
                     case "open":
                     case "openInNewTab":
                         if (menu.getAttribute("role") === "openInNewTab") {
-                            createNewTab()
+                            const { createNewTab } = require('./tab');
+                            createNewTab(filePath)
                         }
                         if (element.dataset.isdir !== 'true') {
                             let recents = storage.get('recent')?.data;
