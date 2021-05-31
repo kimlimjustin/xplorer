@@ -10,6 +10,7 @@ const getPreview = require('../Functions/preview/preview.js');
 const { startLoading, stopLoading } = require('../Functions/DOM/loading.js');
 const storage = require('electron-json-storage-sync');
 const LAZY_LOAD = require('../Functions/DOM/lazyLoadingImage.js');
+const { createContextMenus } = require('./contextMenu.js');
 
 // Home files for linux
 const homeFiles = (callback) => {
@@ -37,6 +38,8 @@ const Home = async (_callback) => {
         homeFiles(files => {
             // Update the content in the main page ...
             MAIN_ELEMENT.innerHTML = favorites + drives + files
+
+            createContextMenus(document.querySelectorAll(".file-grid"))
             // And also the theme :)
             updateTheme()
             nativeDrag(document.querySelectorAll('.file-grid'), os.homedir()) // Listen to native drag

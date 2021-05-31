@@ -425,6 +425,7 @@ body{
     position: fixed;
     padding: 10px;
     border-radius: 2px;
+    -webkit-app-region: no-drag;
 }
 
 .contextmenu span{

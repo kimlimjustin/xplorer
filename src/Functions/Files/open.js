@@ -10,9 +10,9 @@ const { startLoading, stopLoading } = require("../DOM/loading");
 const storage = require('electron-json-storage-sync');
 const Recent = require("../../Components/recent");
 const LAZY_LOAD = require("../DOM/lazyLoadingImage");
-
 const fs = require('fs');
-const ContextMenu = require("../../Components/contextMenu");
+const { ContextMenu } = require("../../Components/contextMenu");
+
 const LINUX_TRASH_FILES_PATH = path.join(os.homedir(), '.local/share/Trash/files')
 const LINUX_TRASH_INFO_PATH = path.join(os.homedir(), '.local/share/Trash/info')
 
@@ -138,4 +138,4 @@ const openDir = (dir) => {
     }
 }
 
-module.exports = { listenOpen, openDir }
+module.exports = { listenOpen, openDir, openFileWithDefaultApp }

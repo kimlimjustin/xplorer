@@ -1,5 +1,5 @@
 const storage = require("electron-json-storage-sync");
-const {execSync} = require('child_process')
+const { execSync } = require('child_process');
 
 let contextMenu = document.querySelector(".contextmenu");
 document.addEventListener("DOMContentLoaded", () => contextMenu = document.querySelector(".contextmenu"))
@@ -37,19 +37,26 @@ const ContextMenuInner = element => {
                     contextMenu.appendChild(menu)
                 }
             })
-            if(index !== FileMenu.length - 1) contextMenu.innerHTML += `<hr />`
+            if (index !== FileMenu.length - 1) contextMenu.innerHTML += `<hr />`
         })
     }
 }
 
-const ContextMenu = (element, openFileWithDefaultApp, openDir)=> {
+const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
+    // Escape circular dependency
+    if (!openFileWithDefaultApp) openFileWithDefaultApp = require('../Functions/Files/open').openFileWithDefaultApp
+    if (!openDir) openDir = require("../Functions/Files/open").openDir
+
     element.addEventListener("contextmenu", e => {
         ContextMenuInner(element)
         contextMenu.style.left = e.pageX + "px";
         contextMenu.style.top = e.pageY + "px";
 
+        const TOPBAR_ELEMENT = document.querySelector(".topbar");
+
         if (contextMenu.offsetWidth + e.pageX > window.innerWidth) contextMenu.style.left = e.pageX - contextMenu.offsetWidth + "px";
-        if (contextMenu.offsetHeight + e.pageY > window.innerHeight) contextMenu.style.top = e.pageY - contextMenu.offsetHeight + "px";
+        if (contextMenu.offsetHeight + e.pageY > window.innerHeight && e.pageY - contextMenu.offsetHeight > TOPBAR_ELEMENT.offsetHeight)
+            contextMenu.style.top = e.pageY - contextMenu.offsetHeight + "px";
 
         contextMenu.querySelectorAll("span").forEach(menu => {
             menu.addEventListener("click", () => {
@@ -101,4 +108,9 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir)=> {
         document.body.addEventListener("click", exitContextMenu)
     })
 }
-module.exports = ContextMenu
+
+const createContextMenus = (elements) => {
+    elements.forEach(element => ContextMenu(element))
+}
+
+module.exports = { ContextMenu, createContextMenus }
