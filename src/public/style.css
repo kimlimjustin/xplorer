@@ -163,7 +163,7 @@ body{
 .close-tab-btn{
     position: absolute;
     right: 1rem;
-    font-size: 1rem;
+    font-size: 1.2rem;
     cursor: pointer;
 }
 
@@ -175,6 +175,7 @@ body{
     width: calc(1rem + 5px);
     text-align: center;
     border-radius: 5px;
+    font-size: 1.2rem;
 }
 
 .topbar{

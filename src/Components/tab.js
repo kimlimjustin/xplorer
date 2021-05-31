@@ -101,7 +101,7 @@ const Tab = () => {
     const createNewTabElement = document.querySelector(".create-new-tab")
 
     // Create a new tab event
-    createNewTabElement.addEventListener('click', createNewTab)
+    createNewTabElement.addEventListener('click', () => createNewTab())
     // Add new tab shortcut
     const shortcut = e => {
         if (e.ctrlKey && e.key === "t") { // Shortcut for new tab
