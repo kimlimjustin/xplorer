@@ -6,9 +6,9 @@ const changePosition = (newPath) => {
     const tabs = storage.get('tabs')?.data
     const _focusingTab = tabs.tabs[String(tabs.focus)]
     tabs.tabs[String(tabs.focus)].position = newPath
-    console.log(_focusingTab)
+    
     if (newPath !== _focusingTab.history[_focusingTab.history.length - 1]) {
-        console.log(_focusingTab, newPath)
+        
         if (_focusingTab.currentIndex + 1 === _focusingTab.history.length) {
             tabs.tabs[String(tabs.focus)].currentIndex += 1
             tabs.tabs[String(tabs.focus)].history.push(newPath)
@@ -24,7 +24,6 @@ const changePosition = (newPath) => {
     } else if (_focusingTab.history[_focusingTab.currentIndex + 1] === newPath) {
         tabs.tabs[String(tabs.focus)].currentIndex += 1
     } else {
-        console.log(_focusingTab)
         tabs.tabs[String(tabs.focus)].history.slice(0, tabs.tabs[String(tabs.focus)].currentIndex - 1)
         tabs.tabs[String(tabs.focus)].currentIndex += 1
     }

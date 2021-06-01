@@ -131,9 +131,23 @@ const Tab = () => {
         if (_focusingTab.currentIndex > 0) {
             tabs.tabs[tabs.focus].currentIndex -= 1
             tabs.tabs[tabs.focus].position = _focusingTab.history[_focusingTab.currentIndex]
-            //console.log(tabs)
+            
             storage.set("tabs", tabs)
             openDir(_focusingTab.history[_focusingTab.currentIndex])
+        }
+    })
+    document.getElementById("go-forward").addEventListener("click", () => {
+        const tabs = storage.get('tabs')?.data;
+        const { openDir } = require("../Functions/Files/open");
+        const _focusingTab = tabs.tabs[tabs.focus]
+        console.log(_focusingTab.history?.[_focusingTab.currentIndex + 1])
+        if (_focusingTab.currentIndex >= 0 && _focusingTab.history?.[_focusingTab.currentIndex + 1]) {
+            tabs.tabs[tabs.focus].currentIndex += 1
+            tabs.tabs[tabs.focus].position = _focusingTab.history[_focusingTab.currentIndex]
+            
+            storage.set("tabs", tabs)
+            openDir(_focusingTab.history[_focusingTab.currentIndex])
+            storage.set("tabs", tabs)
         }
     })
 }
