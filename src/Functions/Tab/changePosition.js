@@ -4,9 +4,33 @@ const Translate = require('../../Components/multilingual')
 const changePosition = (newPath) => {
     document.querySelector(".path-navigator").value = newPath
     const tabs = storage.get('tabs')?.data
-    tabs.tabs[String(tabs.focus)] = newPath
+    const _focusingTab = tabs.tabs[String(tabs.focus)]
+    tabs.tabs[String(tabs.focus)].position = newPath
+    console.log(_focusingTab)
+    if (newPath !== _focusingTab.history[_focusingTab.history.length - 1]) {
+        console.log(_focusingTab, newPath)
+        if (_focusingTab.currentIndex + 1 === _focusingTab.history.length) {
+            tabs.tabs[String(tabs.focus)].currentIndex += 1
+            tabs.tabs[String(tabs.focus)].history.push(newPath)
+        } else if (_focusingTab.history[_focusingTab.currentIndex + 1] === newPath) {
+            tabs.tabs[String(tabs.focus)].currentIndex += 1
+        } else {
+            if (_focusingTab.history[_focusingTab.currentIndex] !== newPath) {
+                tabs.tabs[String(tabs.focus)].history = tabs.tabs[String(tabs.focus)].history.slice(0, tabs.tabs[String(tabs.focus)].currentIndex - 1)
+                tabs.tabs[String(tabs.focus)].history.push(newPath)
+                tabs.tabs[String(tabs.focus)].currentIndex += 1    
+            }
+        }
+    } else if (_focusingTab.history[_focusingTab.currentIndex + 1] === newPath) {
+        tabs.tabs[String(tabs.focus)].currentIndex += 1
+    } else {
+        console.log(_focusingTab)
+        tabs.tabs[String(tabs.focus)].history.slice(0, tabs.tabs[String(tabs.focus)].currentIndex - 1)
+        tabs.tabs[String(tabs.focus)].currentIndex += 1
+    }
     document.getElementById(`tab${tabs.focus}`).querySelector("#tab-position").innerText = process.platform === "win32" && newPath.split("\\").filter(p => p !== "").length === 1 ? Translate(newPath.split("\\")[0]) : Translate(newPath.substring(newPath.replace(/\//g, "\\").lastIndexOf("\\") + 1))
     storage.set('tabs', tabs)
+    return
 }
 
 module.exports = changePosition

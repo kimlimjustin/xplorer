@@ -6,7 +6,7 @@ const createSidebar = require('./sidebar')
 // Function to reload
 const reload = () => {
     const tabs = storage.get('tabs')?.data
-    openDir(tabs.tabs[tabs.focus]);
+    openDir(tabs.tabs[tabs.focus].position);
     createSidebar()
 }
 

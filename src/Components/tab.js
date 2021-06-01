@@ -39,7 +39,7 @@ const createNewTab = (path) => {
     newTab.parentNode.scrollLeft = newTab.parentNode.scrollWidth
 
     // Edit tabs information
-    tabsInfo.tabs[String(tabsInfo.latestIndex)] = path || "Home"
+    tabsInfo.tabs[String(tabsInfo.latestIndex)] = { position: path || "Home" , history: ["Home"], currentIndex: 0}
     tabsInfo.focus = tabsInfo.latestIndex
     tabsInfo.focusHistory.push(tabsInfo.latestIndex)
     storage.set('tabs', tabsInfo)
@@ -59,11 +59,11 @@ const SwitchTab = (tabIndex) => {
     tabs.focusHistory.push(parseInt(tabIndex))
     storage.set('tabs', tabs)
     const { openDir } = require("../Functions/Files/open");
-    openDir(tabs.tabs[tabIndex])
+    openDir(tabs.tabs[tabIndex].position)
 }
 
 const Tab = () => {
-    let tabsInfo = { focus: "1", tabs: { 1: "Home" }, focusHistory: [1], latestIndex: 1 } // default tabs information
+    let tabsInfo = { focus: "1", tabs: { 1: { position: "Home", history: ["Home"], currentIndex: 0 } }, focusHistory: [1], latestIndex: 1 } // default tabs information
     // Store default tabs information into local storage
     storage.set("tabs", tabsInfo)
 
@@ -101,7 +101,7 @@ const Tab = () => {
     const createNewTabElement = document.querySelector(".create-new-tab")
 
     // Create a new tab event
-    createNewTabElement.addEventListener('click', () => createNewTab())
+    createNewTabElement.addEventListener('click', () =>  createNewTab())
     // Add new tab shortcut
     const shortcut = e => {
         if (e.ctrlKey && e.key === "t") { // Shortcut for new tab
@@ -122,6 +122,19 @@ const Tab = () => {
     // Scroll the tabs
     document.querySelector(".tabs-manager").addEventListener("wheel", e => {
         e.deltaY > 0 ? document.querySelector(".tabs-manager").scrollLeft += 25 : document.querySelector(".tabs-manager").scrollLeft -= 25;
+    })
+
+    document.getElementById("go-back").addEventListener("click", () => {
+        const tabs = storage.get('tabs')?.data;
+        const { openDir } = require("../Functions/Files/open");
+        const _focusingTab = tabs.tabs[tabs.focus]
+        if (_focusingTab.currentIndex > 0) {
+            tabs.tabs[tabs.focus].currentIndex -= 1
+            tabs.tabs[tabs.focus].position = _focusingTab.history[_focusingTab.currentIndex]
+            //console.log(tabs)
+            storage.set("tabs", tabs)
+            openDir(_focusingTab.history[_focusingTab.currentIndex])
+        }
     })
 }
 

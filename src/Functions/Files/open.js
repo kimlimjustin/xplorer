@@ -112,10 +112,10 @@ const displayFiles = async (files, dir) => {
     }
 }
 
-const openDir = (dir) => {
+const openDir = async (dir) => {
     console.time(dir)
     startLoading()
-    changePosition(dir)
+    await changePosition(dir)
     if (dir === path.join(os.homedir(), 'Home') || dir === "Home") {
         Home(() => {
             listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
