@@ -26,10 +26,10 @@ const createNewTab = (path) => {
             electronWindow.close()
         } else {
             const tabs = storage.get("tabs")?.data
-            tabsInfo.focusHistory = tabsInfo.focusHistory.filter(tabIndex => String(tabIndex) !== String(newTab.dataset.tabIndex))
-            if (String(tabsInfo.focus) === String(newTab.dataset.tabIndex)) tabsInfo.focus = String(tabsInfo.focusHistory[tabsInfo.focusHistory.length - 1])
-            delete tabsInfo.tabs[newTab.dataset.tabIndex]
-            storage.set("tabs", tabsInfo)
+            tabs.focusHistory = tabs.focusHistory.filter(tabIndex => String(tabIndex) !== String(newTab.dataset.tabIndex))
+            if (String(tabsInfo.focus) === String(newTab.dataset.tabIndex)) tabs.focus = String(tabs.focusHistory[tabs.focusHistory.length - 1])
+            delete tabs.tabs[newTab.dataset.tabIndex]
+            storage.set("tabs", tabs)
             newTab.parentElement.removeChild(newTab)
         }
     })
