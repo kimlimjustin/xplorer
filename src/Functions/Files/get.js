@@ -17,7 +17,7 @@ const getFilesAndDir = async (dir, callback) => {
     let focusingPath; // Watch if focusing path changes
     setInterval(() => {
         const tabs = storage.get('tabs')?.data
-        const _focusingPath = tabs.tabs[tabs.focus].position
+        const _focusingPath = tabs.tabs[tabs.focus]?.position
         if (focusingPath === undefined) {
             focusingPath = _focusingPath
         } else {

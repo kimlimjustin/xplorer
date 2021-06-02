@@ -59,10 +59,9 @@ const Drives = async () => {
 
     const drives = await getDrives()
 
-
     const tabs = storage.get('tabs')?.data
     const focusingPath = tabs.tabs[tabs.focus].position
-    console.log(focusingPath)
+    
     if (focusingPath === "Home" || focusingPath === path.join(os.homedir(), 'Home')) {
         switch (process.platform) {
             case "win32":

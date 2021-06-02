@@ -71,7 +71,7 @@ const Home = async (_callback) => {
             }
         }
         const tabs = storage.get('tabs')?.data
-        const focusingPath = tabs.tabs[tabs.focus].position
+        const focusingPath = tabs.tabs[tabs.focus]?.position
         if (focusingPath !== "Home" && focusingPath !== path.join(os.homedir(), 'Home')) {
             clearInterval(listenDrives)
         }

@@ -11,7 +11,7 @@ const createNewTab = (path) => {
     const newTab = document.createElement("div");
     newTab.classList.add('tab');
     newTab.classList.add('tab-hover-effect');
-    newTab.innerHTML = "<span id='tab-position'>Home</span><span class='close-tab-btn'>&times;</span>";
+    newTab.innerHTML = `<span id='tab-position'>${Translate("Home")}</span><span class='close-tab-btn'>&times;</span>`;
     tabsInfo.latestIndex += 1
     newTab.dataset.tabIndex = tabsInfo.latestIndex
     newTab.id = `tab${tabsInfo.latestIndex}`
@@ -25,8 +25,9 @@ const createNewTab = (path) => {
             const electronWindow = remote.BrowserWindow.getFocusedWindow()
             electronWindow.close()
         } else {
+            const tabs = storage.get("tabs")?.data
             tabsInfo.focusHistory = tabsInfo.focusHistory.filter(tabIndex => String(tabIndex) !== String(newTab.dataset.tabIndex))
-            if (String(tabsInfo.focus) === String(newTab.dataset.tabIndex)) tabsInfo.focus = tabsInfo.focusHistory[tabsInfo.focusHistory.length - 1]
+            if (String(tabsInfo.focus) === String(newTab.dataset.tabIndex)) tabsInfo.focus = String(tabsInfo.focusHistory[tabsInfo.focusHistory.length - 1])
             delete tabsInfo.tabs[newTab.dataset.tabIndex]
             storage.set("tabs", tabsInfo)
             newTab.parentElement.removeChild(newTab)
@@ -39,8 +40,8 @@ const createNewTab = (path) => {
     newTab.parentNode.scrollLeft = newTab.parentNode.scrollWidth
 
     // Edit tabs information
-    tabsInfo.tabs[String(tabsInfo.latestIndex)] = { position: path || "Home" , history: ["Home"], currentIndex: 0}
-    tabsInfo.focus = tabsInfo.latestIndex
+    tabsInfo.tabs[String(tabsInfo.latestIndex)] = { position: path || "Home" , history: ["Home"], currentIndex: -1}
+    tabsInfo.focus = String(tabsInfo.latestIndex)
     tabsInfo.focusHistory.push(tabsInfo.latestIndex)
     storage.set('tabs', tabsInfo)
 
@@ -55,8 +56,9 @@ const createNewTab = (path) => {
 
 const SwitchTab = (tabIndex) => {
     const tabs = storage.get('tabs')?.data
-    tabs.focus = tabIndex
+    tabs.focus = String(tabIndex)
     tabs.focusHistory.push(parseInt(tabIndex))
+    tabs.tabs[tabs.focus].currentIndex -= 1
     storage.set('tabs', tabs)
     const { openDir } = require("../Functions/Files/open");
     openDir(tabs.tabs[tabIndex].position)
@@ -82,10 +84,11 @@ const Tab = () => {
                 electronWindow.close()
             } else {
                 tab.parentElement.removeChild(tab)
-                tabsInfo.focusHistory = tabsInfo.focusHistory.filter(tabIndex => tabIndex !== index + 1)
-                tabsInfo.focus = tabsInfo.focusHistory[tabsInfo.focusHistory.length - 1]
-                delete tabsInfo.tabs[index + 1]
-                storage.set("tabs", tabsInfo)
+                const tabs = storage.get('tabs')?.data
+                tabs.focusHistory = tabs.focusHistory.filter(tabIndex => tabIndex !== index + 1)
+                tabs.focus = String(tabs.focusHistory[tabs.focusHistory.length - 1])
+                delete tabs.tabs[index + 1]
+                storage.set("tabs", tabs)
             }
         })
         tab.appendChild(closeTab)
@@ -140,7 +143,7 @@ const Tab = () => {
         const tabs = storage.get('tabs')?.data;
         const { openDir } = require("../Functions/Files/open");
         const _focusingTab = tabs.tabs[tabs.focus]
-        console.log(_focusingTab.history?.[_focusingTab.currentIndex + 1])
+        console.log('z')
         if (_focusingTab.currentIndex >= 0 && _focusingTab.history?.[_focusingTab.currentIndex + 1]) {
             tabs.tabs[tabs.focus].currentIndex += 1
             tabs.tabs[tabs.focus].position = _focusingTab.history[_focusingTab.currentIndex]

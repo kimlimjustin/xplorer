@@ -18,7 +18,7 @@ const changePosition = (newPath) => {
             if (_focusingTab.history[_focusingTab.currentIndex] !== newPath) {
                 tabs.tabs[String(tabs.focus)].history = tabs.tabs[String(tabs.focus)].history.slice(0, tabs.tabs[String(tabs.focus)].currentIndex - 1)
                 tabs.tabs[String(tabs.focus)].history.push(newPath)
-                tabs.tabs[String(tabs.focus)].currentIndex += 1    
+                tabs.tabs[String(tabs.focus)].currentIndex -= 1    
             }
         }
     } else if (_focusingTab.history[_focusingTab.currentIndex + 1] === newPath) {
@@ -27,6 +27,7 @@ const changePosition = (newPath) => {
         tabs.tabs[String(tabs.focus)].history.slice(0, tabs.tabs[String(tabs.focus)].currentIndex - 1)
         tabs.tabs[String(tabs.focus)].currentIndex += 1
     }
+    console.log(tabs.focus)
     document.getElementById(`tab${tabs.focus}`).querySelector("#tab-position").innerText = process.platform === "win32" && newPath.split("\\").filter(p => p !== "").length === 1 ? Translate(newPath.split("\\")[0]) : Translate(newPath.substring(newPath.replace(/\//g, "\\").lastIndexOf("\\") + 1))
     storage.set('tabs', tabs)
     return
