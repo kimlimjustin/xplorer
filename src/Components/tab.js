@@ -110,13 +110,18 @@ const Tab = () => {
         if (e.ctrlKey && e.key === "t") { // Shortcut for new tab
             createNewTab()
             updateTheme()
-        } else if (e.ctrlKey && e.key === "w") { // Shortcut for exit tab
+        } else if (e.ctrlKey && e.key === "e") { // Shortcut for exit tab
             const tabs = storage.get('tabs')?.data
-            if (Object.keys(tabs.tabs).length === 1) {
+            if (document.querySelectorAll(".tab").length === 1) {
                 const electronWindow = remote.BrowserWindow.getFocusedWindow()
                 electronWindow.close()
             } else {
-
+                const tab = document.getElementById(`tab${tabs.focus}`)
+                tab.parentElement.removeChild(tab)
+                tabs.focusHistory = tabs.focusHistory.filter(tabIndex => String(tabIndex) !== tabs.focus )
+                tabs.focus = String(tabs.focusHistory[tabs.focusHistory.length - 1])
+                delete tabs.tabs[tabs.focus]
+                storage.set("tabs", tabs)
             }
         }
     }
