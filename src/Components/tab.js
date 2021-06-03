@@ -104,8 +104,38 @@ const Tab = () => {
     const createNewTabElement = document.querySelector(".create-new-tab")
 
     // Create a new tab event
-    createNewTabElement.addEventListener('click', () =>  createNewTab())
-    // Add new tab shortcut
+    createNewTabElement.addEventListener('click', () => createNewTab())
+    
+    // Function to navigate backward
+    const goBack = () => {
+        const tabs = storage.get('tabs')?.data;
+        const { openDir } = require("../Functions/Files/open");
+        const _focusingTab = tabs.tabs[tabs.focus]
+        if (_focusingTab.currentIndex > 0) {
+            tabs.tabs[tabs.focus].currentIndex -= 1
+            tabs.tabs[tabs.focus].position = _focusingTab.history[_focusingTab.currentIndex]
+            
+            storage.set("tabs", tabs)
+            openDir(_focusingTab.history[_focusingTab.currentIndex])
+        }
+    }
+
+    // Function to navigate forward
+    const goForward = () => {
+        const tabs = storage.get('tabs')?.data;
+        const { openDir } = require("../Functions/Files/open");
+        const _focusingTab = tabs.tabs[tabs.focus]
+        if (_focusingTab.currentIndex >= 0 && _focusingTab.history?.[_focusingTab.currentIndex + 1]) {
+            tabs.tabs[tabs.focus].currentIndex += 1
+            tabs.tabs[tabs.focus].position = _focusingTab.history[_focusingTab.currentIndex]
+            
+            storage.set("tabs", tabs)
+            openDir(_focusingTab.history[_focusingTab.currentIndex])
+            storage.set("tabs", tabs)
+        }
+    }
+
+    // shortcuts for tabs
     const shortcut = e => {
         if (e.ctrlKey && e.key === "t") { // Shortcut for new tab
             createNewTab()
@@ -123,41 +153,21 @@ const Tab = () => {
                 delete tabs.tabs[tabs.focus]
                 storage.set("tabs", tabs)
             }
+        } else if (e.altKey && e.key === "ArrowLeft") {
+            goBack()
+        } else if (e.altKey && e.key === "ArrowRight") {
+            goForward()
         }
     }
-    document.addEventListener("keyup", shortcut, false)
+    document.addEventListener("keydown", shortcut, false)
 
     // Scroll the tabs
     document.querySelector(".tabs-manager").addEventListener("wheel", e => {
         e.deltaY > 0 ? document.querySelector(".tabs-manager").scrollLeft += 25 : document.querySelector(".tabs-manager").scrollLeft -= 25;
     })
 
-    document.getElementById("go-back").addEventListener("click", () => {
-        const tabs = storage.get('tabs')?.data;
-        const { openDir } = require("../Functions/Files/open");
-        const _focusingTab = tabs.tabs[tabs.focus]
-        if (_focusingTab.currentIndex > 0) {
-            tabs.tabs[tabs.focus].currentIndex -= 1
-            tabs.tabs[tabs.focus].position = _focusingTab.history[_focusingTab.currentIndex]
-            
-            storage.set("tabs", tabs)
-            openDir(_focusingTab.history[_focusingTab.currentIndex])
-        }
-    })
-    document.getElementById("go-forward").addEventListener("click", () => {
-        const tabs = storage.get('tabs')?.data;
-        const { openDir } = require("../Functions/Files/open");
-        const _focusingTab = tabs.tabs[tabs.focus]
-        console.log('z')
-        if (_focusingTab.currentIndex >= 0 && _focusingTab.history?.[_focusingTab.currentIndex + 1]) {
-            tabs.tabs[tabs.focus].currentIndex += 1
-            tabs.tabs[tabs.focus].position = _focusingTab.history[_focusingTab.currentIndex]
-            
-            storage.set("tabs", tabs)
-            openDir(_focusingTab.history[_focusingTab.currentIndex])
-            storage.set("tabs", tabs)
-        }
-    })
+    document.getElementById("go-back").addEventListener("click", () => goBack())
+    document.getElementById("go-forward").addEventListener("click", () => goForward())
 }
 
 module.exports = { Tab, createNewTab }
