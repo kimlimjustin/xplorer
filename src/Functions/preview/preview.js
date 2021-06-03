@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const storage = require('electron-json-storage-sync');
-const preference = storage.get("preference")?.data
 
 const defaultIconJSON = JSON.parse(fs.readFileSync(path.join(__dirname, "../../config/icon.json")))
 let iconJSON = null;
@@ -67,7 +66,7 @@ const getPreview = (filename, category = "folder", HTMLFormat = true) => {
     if (IMAGE.indexOf(ext) !== -1) return HTMLFormat ? iconPreview(filename, isdir = false) : filename // Show the image itself if the file is image
     else if (VIDEO.indexOf(ext) !== -1) return HTMLFormat ? videoPreview(filename) : filename // Show the video itself if the file is video
 
-    if(ext === "exe") return HTMLFormat ? exePreview(filename) : filename
+    if(ext === "exe" && preference?.extractExeIcon) return HTMLFormat ? exePreview(filename) : filename
 
     filename = filename.toLowerCase() // Lowercase filename
 
