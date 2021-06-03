@@ -20,6 +20,7 @@ const iconPreview = (filename, isdir) => {
 }
 // Return video view of preview
 const videoPreview = (filename) => {
+    const preference = storage.get("preference")?.data
     let alt = path.join(iconJSONPath || __dirname, iconJSON ? '../' : '../../icon', iconJSON?.file?.video || defaultIconJSON.file.video) // Alternative for video if video could not be oaded
     if (!fs.existsSync(alt)) alt = path.join(__dirname, '../../icon/', defaultIconJSON.default.file)
     return preference?.autoPlayPreviewVideo ? `<video autoplay loop muted class="file-grid-preview"><source src = "${filename}" /><img src = "${alt}" /></video>` : iconPreview(alt)
@@ -52,7 +53,8 @@ const exePreview = (filename) => {
 }
 
 const getPreview = (filename, category = "folder", HTMLFormat = true) => {
-    // Get user preference on icon
+    // Get user preference
+    const preference = storage.get("preference")?.data
     const icon = storage.get('icon')
 
     if (icon.data && fs.existsSync(icon.data.iconJSON)) {
