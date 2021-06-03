@@ -26,6 +26,32 @@ const videoPreview = (filename) => {
     return preference?.autoPlayPreviewVideo ? `<video autoplay loop muted class="file-grid-preview"><source src = "${filename}" /><img src = "${alt}" /></video>` : iconPreview(alt)
 }
 
+const exePreview = (filename) => {
+    const basename = filename.split(/[\\/]/)[filename.split(/[\\/]/).length - 1]
+    const electron = require('electron');
+    const app = electron.app || (electron.remote && electron.remote.app) || null;
+    const EXE_ICON_CACHE_DIR = path.join(app.getPath('userData'), 'Cache/Exe Icon');
+
+    // Create cache directory if not exist
+    if (!fs.existsSync(EXE_ICON_CACHE_DIR)) {
+        if (!fs.existsSync(path.join(EXE_ICON_CACHE_DIR, '..'))) {
+            fs.mkdirSync(path.join(EXE_ICON_CACHE_DIR, '..'))
+        }
+        fs.mkdirSync(EXE_ICON_CACHE_DIR)
+    }
+    const ICON_FILE_NAME = path.join(EXE_ICON_CACHE_DIR, basename + '.ico')
+
+    // Cache the icon parsed from the exe
+    if (fs.existsSync(ICON_FILE_NAME)) {
+        return iconPreview(ICON_FILE_NAME)
+    } else {
+        const { extractIcon } = require('../../../bindings');
+        const buffer = extractIcon(filename, 'large');
+        fs.writeFileSync(ICON_FILE_NAME, buffer);
+        return iconPreview(ICON_FILE_NAME)
+    }
+}
+
 const getPreview = (filename, category = "folder", HTMLFormat = true) => {
     // Get user preference on icon
     const icon = storage.get('icon')
@@ -40,6 +66,8 @@ const getPreview = (filename, category = "folder", HTMLFormat = true) => {
 
     if (IMAGE.indexOf(ext) !== -1) return HTMLFormat ? iconPreview(filename, isdir = false) : filename // Show the image itself if the file is image
     else if (VIDEO.indexOf(ext) !== -1) return HTMLFormat ? videoPreview(filename) : filename // Show the video itself if the file is video
+
+    if(ext === "exe") return HTMLFormat ? exePreview(filename) : filename
 
     filename = filename.toLowerCase() // Lowercase filename
 
