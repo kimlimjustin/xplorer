@@ -1,9 +1,9 @@
-const { readDir, extractIcon } = require("../bindings");
+const { readDir, extractIcon } = require("../lib/wasm/bindings");
 const path = require('path');
 const fs = require('fs');
 
 test('read files in directory', () => {
-    expect(readDir(__dirname)[2].filename).toBe(path.basename(__filename))
+    expect(readDir(__dirname)[process.platform === "win32" ? 2 : 0].filename).toBe(path.basename(__filename))
 })
 
 if (process.platform === "win32") {
