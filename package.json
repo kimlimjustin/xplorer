@@ -17,11 +17,11 @@
   ],
   "scripts": {
     "start": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "build": "electron-builder",
     "build-wml": "electron-builder -wml",
-    "compile-cpp": "cd lib/fs && g++ fs.cpp -static -o fs.exe",
-    "install": "node-gyp rebuild"
+    "native_build": "node-gyp rebuild",
+    "install": "node install.js"
   },
   "build": {
     "directories": {
@@ -57,11 +57,12 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "electron": "^12.0.5",
-    "electron-builder": "20.31.2",
+    "electron-builder": "^22.10.5",
     "electron-reloader": "^1.2.1"
   },
   "dependencies": {
     "@electron/remote": "^1.1.0",
-    "electron-json-storage-sync": "^1.2.0"
+    "electron-json-storage-sync": "^1.2.0",
+    "jest": "^27.0.4"
   }
 }

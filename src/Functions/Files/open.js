@@ -86,7 +86,7 @@ const displayFiles = async (files, dir) => {
             fileGrid.setAttribute("draggable", 'true')
             fileGrid.setAttribute("data-listenOpen", '')
             fileGrid.setAttribute("data-tilt", '')
-            fileGrid.dataset.isdir = file.isDir
+            fileGrid.dataset.isdir = !!file.isDir
             if (file.isHidden) fileGrid.dataset.hiddenFile = true
             fileGrid.dataset.path = escape(path.join(dir, file.filename))
             fileGrid.dataset.createdAt = file.createdAt

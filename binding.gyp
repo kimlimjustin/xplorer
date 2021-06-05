@@ -3,7 +3,7 @@
     {
       "target_name": "module",
       "product_extension": "node",
-      "include_dirs" : [ "lib/exe-icon-extractor" ],
+      "include_dirs" : [ "lib/wasm" ],
       "conditions": [
         ['OS=="win"', {
           'cflags': [
@@ -12,7 +12,7 @@
         },],
       ],
       "sources": [
-        "lib/exe-icon-extractor/exe-icon-extractor.cc"
+        "lib/wasm/module.cc"
       ]
     }
   ]
