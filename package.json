@@ -20,7 +20,8 @@
     "test": "jest",
     "build": "electron-builder",
     "build-wml": "electron-builder -wml",
-    "install": "node-gyp rebuild"
+    "native_build": "node-gyp rebuild",
+    "install": "node install.js"
   },
   "build": {
     "directories": {

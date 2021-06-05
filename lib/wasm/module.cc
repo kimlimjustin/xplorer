@@ -24,12 +24,11 @@ using namespace std;
 #endif
 #endif
 
-
 typedef struct
 {
 	WORD idReserved; // must be 0
-	WORD idType; // 1 = ICON, 2 = CURSOR
-	WORD idCount; // number of images (and ICONDIRs)
+	WORD idType;	 // 1 = ICON, 2 = CURSOR
+	WORD idCount;	 // number of images (and ICONDIRs)
 
 	// ICONDIR [1...n]
 	// ICONIMAGE [1...n]
@@ -45,7 +44,7 @@ typedef struct
 	BYTE bHeight;
 	BYTE bColorCount;
 	BYTE bReserved;
-	WORD wPlanes; // for cursors, this field = wXHotSpot
+	WORD wPlanes;	// for cursors, this field = wXHotSpot
 	WORD wBitCount; // for cursors, this field = wYHotSpot
 	DWORD dwBytesInRes;
 	DWORD dwImageOffset; // file-offset to the start of ICONIMAGE
@@ -60,9 +59,9 @@ typedef struct
 typedef struct
 {
 	BITMAPINFOHEADER biHeader; // header for color bitmap (no mask header)
-	//RGBQUAD rgbColors[1...n];
-	//BYTE bXOR[1]; // DIB bits for color bitmap
-	//BYTE bAND[1]; // DIB bits for mask bitmap
+							   //RGBQUAD rgbColors[1...n];
+							   //BYTE bXOR[1]; // DIB bits for color bitmap
+							   //BYTE bAND[1]; // DIB bits for mask bitmap
 
 } ICONIMAGE;
 
@@ -98,7 +97,7 @@ static BOOL GetIconBitmapInfo(HICON hIcon, ICONINFO *pIconInfo, BITMAP *pbmpColo
 //
 // Write one icon directory entry - specify the index of the image
 //
-static void WriteIconDirectoryEntry(BYTE* buffer, int* pBufferOffset, int nIdx, HICON hIcon, UINT nImageOffset)
+static void WriteIconDirectoryEntry(BYTE *buffer, int *pBufferOffset, int nIdx, HICON hIcon, UINT nImageOffset)
 {
 	ICONINFO iconInfo;
 	ICONDIR iconDir;
@@ -137,11 +136,11 @@ static void WriteIconDirectoryEntry(BYTE* buffer, int* pBufferOffset, int nIdx, 
 	DeleteObject(iconInfo.hbmMask);
 }
 
-static UINT WriteIconData(BYTE* buffer, int* pBufferOffset, HBITMAP hBitmap)
+static UINT WriteIconData(BYTE *buffer, int *pBufferOffset, HBITMAP hBitmap)
 {
 	BITMAP bmp;
 	int i;
-	BYTE * pIconData;
+	BYTE *pIconData;
 
 	UINT nBitmapBytes;
 
@@ -179,10 +178,10 @@ static UINT WriteIconData(BYTE* buffer, int* pBufferOffset, HBITMAP hBitmap)
 //
 // Create a .ICO file, using the specified array of HICON images
 //
-BOOL SaveIcon3(HICON hIcon[], int nNumIcons, BYTE* buffer, int* pWritten)
+BOOL SaveIcon3(HICON hIcon[], int nNumIcons, BYTE *buffer, int *pWritten)
 {
 	int i;
-	int* pImageOffset = (int *)malloc(nNumIcons * sizeof(int));
+	int *pImageOffset = (int *)malloc(nNumIcons * sizeof(int));
 	int bufferOffset = 0;
 
 	if (hIcon == 0 || nNumIcons < 1)
@@ -195,14 +194,13 @@ BOOL SaveIcon3(HICON hIcon[], int nNumIcons, BYTE* buffer, int* pWritten)
 	ICONHEADER iconheader;
 
 	// Setup the icon header
-	iconheader.idReserved = 0; // Must be 0
-	iconheader.idType = 1; // Type 1 = ICON (type 2 = CURSOR)
+	iconheader.idReserved = 0;		// Must be 0
+	iconheader.idType = 1;			// Type 1 = ICON (type 2 = CURSOR)
 	iconheader.idCount = nNumIcons; // number of ICONDIRs
 
 	// Write the header to disk
 	memcpy(&(buffer[bufferOffset]), &iconheader, sizeof(iconheader));
 	bufferOffset += sizeof(iconheader);
-
 
 	//
 	// Leave space for the IconDir entries
@@ -212,7 +210,8 @@ BOOL SaveIcon3(HICON hIcon[], int nNumIcons, BYTE* buffer, int* pWritten)
 	//
 	// Now write the actual icon images!
 	//
-	for (i = 0; i < nNumIcons; i++) {
+	for (i = 0; i < nNumIcons; i++)
+	{
 		ICONINFO iconInfo;
 		BITMAP bmpColor, bmpMask;
 
@@ -268,13 +267,17 @@ BOOL SaveIcon3(HICON hIcon[], int nNumIcons, BYTE* buffer, int* pWritten)
 	return 1;
 }
 
-void throwIfNotSuccess(napi_env env, napi_status status, char* msg) {
-	if (status != napi_ok) {
+void throwIfNotSuccess(napi_env env, napi_status status, char *msg)
+{
+	if (status != napi_ok)
+	{
 		throw napi_throw_error(env, NULL, msg);
 	}
 }
-napi_value extractIcon(napi_env env, napi_callback_info info) {
-	try {
+napi_value extractIcon(napi_env env, napi_callback_info info)
+{
+	try
+	{
 		size_t argc = 2;
 		napi_value argv[1];
 		throwIfNotSuccess(env, napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr), "unable to read arguments");
@@ -288,84 +291,104 @@ napi_value extractIcon(napi_env env, napi_callback_info info) {
 		wchar_t type[10];
 		size_t szType;
 
-		throwIfNotSuccess(env, napi_get_value_string_utf16(env, argv[0], (char16_t*)path, sizeof(path), &szPath), "unable to read path");
-		throwIfNotSuccess(env, napi_get_value_string_utf16(env, argv[1], (char16_t*)type, sizeof(type), &szType), "unable to read type");
-    	path[szPath] = 0;
-    	type[szType] = 0;
+		throwIfNotSuccess(env, napi_get_value_string_utf16(env, argv[0], (char16_t *)path, sizeof(path), &szPath), "unable to read path");
+		throwIfNotSuccess(env, napi_get_value_string_utf16(env, argv[1], (char16_t *)type, sizeof(type), &szType), "unable to read type");
+		path[szPath] = 0;
+		type[szType] = 0;
 
-    	// 00 Existence only. 02 Write permission. 04 Read permission. 06 Read and write permission.
-    	if (_waccess_s(&path[0], 4) != 0) {
-    		napi_throw_error(env, NULL, "The icon is not accesible");
-    	}; 
+		// 00 Existence only. 02 Write permission. 04 Read permission. 06 Read and write permission.
+		if (_waccess_s(&path[0], 4) != 0)
+		{
+			napi_throw_error(env, NULL, "The icon is not accesible");
+		};
 
 		HICON hIconLarge;
 		HICON hIconSmall;
 
 		int extractIcon = ExtractIconExW(path, 0, &hIconLarge, &hIconSmall, 1);
-		if (extractIcon <= 0) {
+		if (extractIcon <= 0)
+		{
 			throw napi_throw_error(env, NULL, "ExtractIconEx failed");
 			return 0;
 		}
 
-		HICON* target;
-		if (szType == 5 && memcmp(type, L"small", sizeof(L"small")) == 0 && hIconSmall != NULL || hIconLarge == NULL && hIconSmall != NULL) {
+		HICON *target;
+		if (szType == 5 && memcmp(type, L"small", sizeof(L"small")) == 0 && hIconSmall != NULL || hIconLarge == NULL && hIconSmall != NULL)
+		{
 			target = &hIconSmall;
 		}
-		else if (szType == 5 && memcmp(type, L"large", sizeof(L"large")) == 0 && hIconLarge != NULL) {
+		else if (szType == 5 && memcmp(type, L"large", sizeof(L"large")) == 0 && hIconLarge != NULL)
+		{
 			target = &hIconLarge;
 		}
-		else {
+		else
+		{
 			throw napi_throw_error(env, NULL, "Unknown icon type (type small or large not found)");
 			return 0;
 		}
 
-		BYTE buffer[(256*256)*4]; // (256x256) Max Windows Icon Size x 4 bytes (32 bits)
+		BYTE buffer[(256 * 256) * 4]; // (256x256) Max Windows Icon Size x 4 bytes (32 bits)
 		int written;
 		SaveIcon3(target, 1, buffer, &written);
 
 		napi_value result;
-		void* dummy;
+		void *dummy;
 		throwIfNotSuccess(env, napi_create_buffer_copy(env, written, buffer, &dummy, &result), "unable to create buffer");
 
 		return result;
 	}
-	catch(napi_status status){
+	catch (napi_status status)
+	{
 		return 0;
 	}
-	catch(...) {
+	catch (...)
+	{
 		napi_throw_error(env, NULL, "Unknown error");
 		return 0;
 	}
 }
 
-bool CheckHiddenFile(string const& FilePath){
-    DWORD const result = GetFileAttributesA(FilePath.c_str());
-    if (result != 0xFFFFFFFF){
-        return !!(result & FILE_ATTRIBUTE_HIDDEN);
-    }else{
-        return false;
-    }
+bool CheckHiddenFile(string const &FilePath)
+{
+	DWORD const result = GetFileAttributesA(FilePath.c_str());
+	if (result != 0xFFFFFFFF)
+	{
+		return !!(result & FILE_ATTRIBUTE_HIDDEN);
+	}
+	else
+	{
+		return false;
+	}
 }
 
-bool CheckIsDir(string const& FilePath){
-    DWORD const result = GetFileAttributesA(FilePath.c_str());
-    if (result != 0xFFFFFFFF){
-        return !!(result & FILE_ATTRIBUTE_DIRECTORY);
-    }else{
-        return false;
-    }
+bool CheckIsDir(string const &FilePath)
+{
+	DWORD const result = GetFileAttributesA(FilePath.c_str());
+	if (result != 0xFFFFFFFF)
+	{
+		return !!(result & FILE_ATTRIBUTE_DIRECTORY);
+	}
+	else
+	{
+		return false;
+	}
 }
 
-bool CheckIsSystemFile(string const& FilePath){
-    DWORD const result = GetFileAttributesA(FilePath.c_str());
-    if (result != 0xFFFFFFFF){
-        return !!(result & FILE_ATTRIBUTE_SYSTEM);
-    }else{
-        return false;
-    }
+bool CheckIsSystemFile(string const &FilePath)
+{
+	DWORD const result = GetFileAttributesA(FilePath.c_str());
+	if (result != 0xFFFFFFFF)
+	{
+		return !!(result & FILE_ATTRIBUTE_SYSTEM);
+	}
+	else
+	{
+		return false;
+	}
 }
 
-napi_value readDir(napi_env env, napi_callback_info info){
+napi_value readDir(napi_env env, napi_callback_info info)
+{
 	napi_status status;
 
 	size_t argc = 2;
@@ -375,8 +398,8 @@ napi_value readDir(napi_env env, napi_callback_info info){
 	size_t str_size;
 	size_t str_size_read;
 	napi_get_value_string_utf8(env, argv[0], NULL, 0, &str_size);
-	char * path;
-	path = (char*)calloc(str_size + 1, sizeof(char));
+	char *path;
+	path = (char *)calloc(str_size + 1, sizeof(char));
 	str_size = str_size + 1;
 	napi_get_value_string_utf8(env, argv[0], path, str_size, &str_size_read);
 
@@ -387,30 +410,32 @@ napi_value readDir(napi_env env, napi_callback_info info){
 	assert(status == napi_ok);
 
 	DIR *dir;
-    struct dirent *ent;
-	if ((dir = opendir (path)) != NULL) {
-        while ((ent = readdir (dir)) != NULL) {
+	struct dirent *ent;
+	if ((dir = opendir(path)) != NULL)
+	{
+		while ((ent = readdir(dir)) != NULL)
+		{
 			string filepath = path + string(ent->d_name);
 
 			struct stat fileInfo;
-            stat(filepath.c_str(), &fileInfo);
+			stat(filepath.c_str(), &fileInfo);
 
-			struct tm * created_timeinfo;
-			char created_buffer [80];
-            created_timeinfo = localtime(&fileInfo.st_ctime);
-            strftime(created_buffer, 80, "%d/%m/%Y %H:%M:%S", created_timeinfo);
+			struct tm *created_timeinfo;
+			char created_buffer[80];
+			created_timeinfo = localtime(&fileInfo.st_ctime);
+			strftime(created_buffer, 80, "%d/%m/%Y %H:%M:%S", created_timeinfo);
 			string created_str(created_buffer);
 
-			struct tm * modified_timeinfo;
-            char modified_buffer [80];
-            modified_timeinfo = localtime(&fileInfo.st_mtime);
-            strftime(modified_buffer, 80, "%d/%m/%Y %H:%M:%S", modified_timeinfo);
+			struct tm *modified_timeinfo;
+			char modified_buffer[80];
+			modified_timeinfo = localtime(&fileInfo.st_mtime);
+			strftime(modified_buffer, 80, "%d/%m/%Y %H:%M:%S", modified_timeinfo);
 			string modified_str(modified_buffer);
 
-            struct tm * accessed_timeinfo;
-            char accessed_buffer [80];
-            accessed_timeinfo = localtime(&fileInfo.st_atime);
-            strftime(accessed_buffer, 80, "%d/%m/%Y %H:%M:%S", accessed_timeinfo);
+			struct tm *accessed_timeinfo;
+			char accessed_buffer[80];
+			accessed_timeinfo = localtime(&fileInfo.st_atime);
+			strftime(accessed_buffer, 80, "%d/%m/%Y %H:%M:%S", accessed_timeinfo);
 			string accessed_str(accessed_buffer);
 
 			napi_value filename, isHidden, isDir, isSystemFile, createdAt, modifiedAt, accessedAt, size;
@@ -419,7 +444,7 @@ napi_value readDir(napi_env env, napi_callback_info info){
 
 			status = napi_create_string_utf8(env, ent->d_name, NAPI_AUTO_LENGTH, &filename);
 			assert(status == napi_ok);
-            status = napi_create_string_utf8(env, created_str.c_str(), NAPI_AUTO_LENGTH, &createdAt);
+			status = napi_create_string_utf8(env, created_str.c_str(), NAPI_AUTO_LENGTH, &createdAt);
 			assert(status == napi_ok);
 			status = napi_create_string_utf8(env, modified_str.c_str(), NAPI_AUTO_LENGTH, &modifiedAt);
 			assert(status == napi_ok);
@@ -429,14 +454,14 @@ napi_value readDir(napi_env env, napi_callback_info info){
 			assert(status == napi_ok);
 			status = napi_create_double(env, CheckHiddenFile(filepath), &isHidden);
 			assert(status == napi_ok);
-            status = napi_create_double(env, CheckIsDir(filepath), &isDir);
+			status = napi_create_double(env, CheckIsDir(filepath), &isDir);
 			assert(status == napi_ok);
-            status = napi_create_double(env, CheckIsSystemFile(filepath), &isSystemFile);
+			status = napi_create_double(env, CheckIsSystemFile(filepath), &isSystemFile);
 			assert(status == napi_ok);
-			
-            status = napi_set_named_property(env, files_item, "filename", filename);
+
+			status = napi_set_named_property(env, files_item, "filename", filename);
 			assert(status == napi_ok);
-            status = napi_set_named_property(env, files_item, "createdAt", createdAt);
+			status = napi_set_named_property(env, files_item, "createdAt", createdAt);
 			assert(status == napi_ok);
 			status = napi_set_named_property(env, files_item, "modifiedAt", modifiedAt);
 			assert(status == napi_ok);
@@ -446,15 +471,17 @@ napi_value readDir(napi_env env, napi_callback_info info){
 			assert(status == napi_ok);
 			status = napi_set_named_property(env, files_item, "isHidden", isHidden);
 			assert(status == napi_ok);
-            status = napi_set_named_property(env, files_item, "isDir", isDir);
+			status = napi_set_named_property(env, files_item, "isDir", isDir);
 			assert(status == napi_ok);
-            status = napi_set_named_property(env, files_item, "isSystemFile", isSystemFile);
+			status = napi_set_named_property(env, files_item, "isSystemFile", isSystemFile);
 			assert(status == napi_ok);
 
 			status = napi_call_function(env, files, files_push_fn, 1, &files_item, NULL);
 			assert(status == napi_ok);
 		}
-	}else{
+	}
+	else
+	{
 		napi_throw_error(env, NULL, "Could not open directory");
 		return 0;
 	}
@@ -462,19 +489,19 @@ napi_value readDir(napi_env env, napi_callback_info info){
 	return files;
 }
 
-napi_value Init(napi_env env, napi_value exports) {
+napi_value Init(napi_env env, napi_value exports)
+{
 	napi_value fn;
-
 
 	// Arguments 2 and 3 are function name and length respectively
 	// We will leave them as empty for this example
 	throwIfNotSuccess(env, napi_create_function(env, "readDir", sizeof("readDir"), readDir, NULL, &fn),
-  	"Unable to wrap native function");
+					  "Unable to wrap native function");
 
 	throwIfNotSuccess(env, napi_set_named_property(env, exports, "readDir", fn), "Unable to populate exports");
 
 	throwIfNotSuccess(env, napi_create_function(env, "extractIcon", sizeof("extractIcon"), extractIcon, NULL, &fn),
-  	"Unable to wrap native function");
+					  "Unable to wrap native function");
 
 	throwIfNotSuccess(env, napi_set_named_property(env, exports, "extractIcon", fn), "Unable to populate exports");
 

@@ -1,11 +1,11 @@
 const fs = require('fs');
 const storage = require("electron-json-storage-sync")
-const { readDir } = require("../../../bindings");
+const { readDir } = require("../../../lib/wasm/bindings");
 
 // Function to get all files and directory inside a directory
 const getFilesAndDir = async (dir, callback) => {
     // Get files of the dir
-    if (!dir.endsWith("\\")) dir = dir + "\\"
+    if (!dir.endsWith("\\") && process.platform === "win32") dir = dir + "\\"
     const files = readDir(dir)
     //console.log(files)
     callback(files)
