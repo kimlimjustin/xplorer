@@ -17,7 +17,7 @@
   ],
   "scripts": {
     "start": "electron .",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "build": "electron-builder",
     "build-wml": "electron-builder -wml",
     "install": "node-gyp rebuild"
@@ -61,6 +61,7 @@
   },
   "dependencies": {
     "@electron/remote": "^1.1.0",
-    "electron-json-storage-sync": "^1.2.0"
+    "electron-json-storage-sync": "^1.2.0",
+    "jest": "^27.0.4"
   }
 }
