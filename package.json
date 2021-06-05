@@ -20,7 +20,6 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "electron-builder",
     "build-wml": "electron-builder -wml",
-    "compile-cpp": "cd lib/fs && g++ fs.cpp -static -o fs.exe",
     "install": "node-gyp rebuild"
   },
   "build": {
