@@ -44,11 +44,11 @@ const createSidebar = () => {
             let drivesElement = ""
             for (const drive of drives) {
                 let driveName = process.platform === "win32" ? `${drive._volumename || drive._filesystem} (${drive._mounted})` : drive._mounted.split("/")[drive._mounted.split("/").length - 1] // Get name of drive
-                drivesElement += `<span data-listenOpen data-path = "${getDriveBasePath(drive._mounted)}" data-isdir="true" class="sidebar-hover-effect"><img src="${getPreview('usb', category = 'favorites', HTMLFormat = false)}" alt="${driveName}">${driveName}</span>`
+                drivesElement += `<span data-listenOpen data-path = "${getDriveBasePath(drive._mounted)}" data-isdir="true" class="sidebar-hover-effect"><img src="${getPreview(drive._filesystem === "Removable Disk" ? 'usb' : 'hard-disk', category = 'favorites', HTMLFormat = false)}" alt="${driveName}">${driveName}</span>`
             }
             let result = `<div class="sidebar-nav-item ${data?.hideSection?.drives ? "nav-hide-item" : ''}" id="sidebar-drives">
                 <div class="sidebar-hover-effect">
-                <span class="sidebar-nav-item-dropdown-btn" data-section="drives"><img src="${getPreview('usb', category = "favorites", HTMLFormat = false)}" alt="Drives icon"> ${process.platform === "win32" ? Translate("Drives") : Translate("Pendrives")}</span>
+                <span class="sidebar-nav-item-dropdown-btn" data-section="drives"><img src="${getPreview('hard-disk', category = "favorites", HTMLFormat = false)}" alt="Drives icon"> ${process.platform === "win32" ? Translate("Drives") : Translate("Pendrives")}</span>
                 </div>
                 <div class="sidebar-nav-item-dropdown-container">
                     ${drivesElement}

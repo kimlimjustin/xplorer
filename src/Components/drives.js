@@ -38,7 +38,7 @@ const drivesToElements = (drives, kBlockFormat = false) => {
         let driveName = drive._mounted.split("/")[drive._mounted.split("/").length - 1] // Get name of drive
         result += `
         <div class="pendrive card-hover-effect" data-tilt data-isdir="true" data-listenOpen data-path = "${getDriveBasePath(drive._mounted)}">
-            <img src="${getPreview('usb', category = "favorites", HTMLFormat = false)}" alt="USB icon" class="pendrive-icon">
+            <img src="${getPreview(drive._filesystem === "Removable Disk" ? 'usb' : 'hard-disk', category = "favorites", HTMLFormat = false)}" alt="USB icon" class="pendrive-icon">
             <div class="pendrive-info">
                 ${drive._volumename || drive._filesystem
                 ? `<h4 class="pendrive-title">${drive._volumename || drive._filesystem} (${driveName})</h4>`
@@ -58,6 +58,7 @@ const Drives = async () => {
     const os = require('os');
 
     const drives = await getDrives()
+    console.log(drives)
 
     const tabs = storage.get('tabs')?.data
     const focusingPath = tabs.tabs[tabs.focus].position
