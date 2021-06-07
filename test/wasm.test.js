@@ -10,5 +10,6 @@ if (process.platform === "win32") {
     test('Extract exe icon', () => {
         const buffer = extractIcon("C:\\Windows\\System32\\cmd.exe", "large");
         fs.writeFileSync("test.ico", buffer);
+        fs.unlinkSync("test.ico")
     })
 }
