@@ -7,12 +7,11 @@ const getFilesAndDir = async (dir, callback) => {
     // Get files of the dir
     if (!dir.endsWith("\\") && process.platform === "win32") dir = dir + "\\"
     const files = readDir(dir)
-    //console.log(files)
     callback(files)
     // Watch the directory
     const watcher = fs.watch(dir, async (eventType, filename) => {
         // Get files of the dir
-        const files = fscpp(dir)
+        const files = readDir(dir)
         callback(files)
     })
 
