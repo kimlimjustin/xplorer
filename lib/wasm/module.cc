@@ -348,45 +348,6 @@ napi_value extractIcon(napi_env env, napi_callback_info info)
 	}
 }
 
-bool CheckHiddenFile(string const &FilePath)
-{
-	DWORD const result = GetFileAttributesA(FilePath.c_str());
-	if (result != 0xFFFFFFFF)
-	{
-		return !!(result & FILE_ATTRIBUTE_HIDDEN);
-	}
-	else
-	{
-		return false;
-	}
-}
-
-bool CheckIsDir(string const &FilePath)
-{
-	DWORD const result = GetFileAttributesA(FilePath.c_str());
-	if (result != 0xFFFFFFFF)
-	{
-		return !!(result & FILE_ATTRIBUTE_DIRECTORY);
-	}
-	else
-	{
-		return false;
-	}
-}
-
-bool CheckIsSystemFile(string const &FilePath)
-{
-	DWORD const result = GetFileAttributesA(FilePath.c_str());
-	if (result != 0xFFFFFFFF)
-	{
-		return !!(result & FILE_ATTRIBUTE_SYSTEM);
-	}
-	else
-	{
-		return false;
-	}
-}
-
 napi_value readDir(napi_env env, napi_callback_info info)
 {
 	napi_status status;
@@ -452,11 +413,14 @@ napi_value readDir(napi_env env, napi_callback_info info)
 			assert(status == napi_ok);
 			status = napi_create_double(env, fileInfo.st_size, &size);
 			assert(status == napi_ok);
-			status = napi_create_double(env, CheckHiddenFile(filepath), &isHidden);
+
+			DWORD const result = GetFileAttributesA(filepath.c_str());
+
+			status = napi_get_boolean(env, !!(result & FILE_ATTRIBUTE_HIDDEN), &isHidden);
 			assert(status == napi_ok);
-			status = napi_create_double(env, CheckIsDir(filepath), &isDir);
+			status = napi_get_boolean(env, !!(result & FILE_ATTRIBUTE_DIRECTORY), &isDir);
 			assert(status == napi_ok);
-			status = napi_create_double(env, CheckIsSystemFile(filepath), &isSystemFile);
+			status = napi_get_boolean(env, !!(result & FILE_ATTRIBUTE_SYSTEM), &isSystemFile);
 			assert(status == napi_ok);
 
 			status = napi_set_named_property(env, files_item, "filename", filename);
