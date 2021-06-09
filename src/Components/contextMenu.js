@@ -4,14 +4,16 @@ const { execSync } = require('child_process');
 let contextMenu = document.querySelector(".contextmenu");
 document.addEventListener("DOMContentLoaded", () => contextMenu = document.querySelector(".contextmenu"))
 
-const ContextMenuInner = element => {
+const ContextMenuInner = (element, target) => {
+    if(target?.dataset?.path === undefined && target.parentNode?.dataset?.path) target = target.parentNode
     contextMenu.innerHTML = ""
     const FileMenu = [
         [
             { "menu": "Open", "role": "open" },
-            { "menu": "Open in new tab", "visible": element?.dataset?.isdir === 'true', "role": "openInNewTab" },
-            { "menu": "Open in terminal", "visible": element?.dataset?.isdir === "true", "role": "reveal" },
-            { "menu": "Preview", "visible": element?.dataset?.isdir !== "false" }
+            { "menu": "Open in new tab", "visible": target?.dataset?.isdir === 'true', "role": "openInNewTab" },
+            { "menu": "Open in terminal", "visible": target?.dataset?.isdir === "true", "role": "reveal" },
+            { "menu": "Open in vscode", "role": "code" },
+            { "menu": "Preview", "visible": target?.dataset?.isdir !== "false" }
         ],
         [
             "Cut",
@@ -27,8 +29,27 @@ const ContextMenuInner = element => {
             "Properties"
         ]
     ]
-    if (element.dataset.path) {
-        FileMenu.forEach((section, index) => {
+    const BodyMenu = [
+        [
+            { "menu": "Layout Mode" },
+            { "menu": "Sort by" },
+            { "menu": "Refresh", "role": "refresh" }
+        ],
+        [
+            { "menu": "Paste" }
+        ],
+        [
+            { "menu": "Open in terminal", "role": "reveal" },
+            { "menu": "Open in vscode", "role": "code" },
+            { "menu": "New" }
+        ],
+        [
+            { "menu": "Pin to sidebar" },
+            { "menu": "Properties" }
+        ]
+    ]
+    const MenuToElements = menu => {
+        menu.forEach((section, index) => {
             section.forEach(item => {
                 if (item.visible || item.visible === undefined) {
                     const menu = document.createElement('span')
@@ -37,9 +58,11 @@ const ContextMenuInner = element => {
                     contextMenu.appendChild(menu)
                 }
             })
-            if (index !== FileMenu.length - 1) contextMenu.innerHTML += `<hr />`
+            if (index !== menu.length - 1) contextMenu.innerHTML += `<hr />`
         })
     }
+    if (target === document.getElementById("main")) MenuToElements(BodyMenu)
+    else if(target?.dataset?.path) MenuToElements(FileMenu)
 }
 
 const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
@@ -48,7 +71,7 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
     if (!openDir) openDir = require("../Functions/Files/open").openDir
 
     element.addEventListener("contextmenu", e => {
-        ContextMenuInner(element)
+        ContextMenuInner(element, e.target)
         contextMenu.style.left = e.pageX + "px";
         contextMenu.style.top = e.pageY + "px";
 
@@ -60,7 +83,8 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
 
         contextMenu.querySelectorAll("span").forEach(menu => {
             menu.addEventListener("click", () => {
-                const filePath = unescape(element.dataset.path)
+                const target = e.target?.dataset?.path ? e.target : e.target?.parentNode?.dataset?.path ? e.target.parentNode : e.target
+                const filePath = unescape(target.dataset.path)
                 switch (menu.getAttribute("role")) {
                     case "open":
                     case "openInNewTab":
@@ -68,7 +92,7 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
                             const { createNewTab } = require('./tab');
                             createNewTab(filePath)
                         }
-                        if (element.dataset.isdir !== 'true') {
+                        if (target.dataset.isdir !== 'true') {
                             let recents = storage.get('recent')?.data;
                             openFileWithDefaultApp(filePath)
 
@@ -94,6 +118,9 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
                         } else {
                             execSync(`open -a Terminal ${filePath}`)
                         }
+                        break;
+                    case "code":
+                        execSync(`code ${filePath}`)
                         break;
                 }
             })
