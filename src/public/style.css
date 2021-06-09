@@ -231,6 +231,7 @@ body{
 #main{
     padding: 1rem;
     overflow: auto;
+    height: 100%;
 }
 
 .path-navigator{
