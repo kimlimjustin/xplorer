@@ -1,5 +1,10 @@
 const storage = require("electron-json-storage-sync");
 const { execSync } = require('child_process');
+let vscodeInstalled = false
+try {
+    execSync("code --version")
+    vscodeInstalled = true
+}catch(_){}
 
 let contextMenu = document.querySelector(".contextmenu");
 document.addEventListener("DOMContentLoaded", () => contextMenu = document.querySelector(".contextmenu"))
@@ -12,7 +17,7 @@ const ContextMenuInner = (element, target) => {
             { "menu": "Open", "role": "open" },
             { "menu": "Open in new tab", "visible": target?.dataset?.isdir === 'true', "role": "openInNewTab" },
             { "menu": "Open in terminal", "visible": target?.dataset?.isdir === "true", "role": "reveal" },
-            { "menu": "Open in vscode", "role": "code" },
+            { "menu": "Open in vscode", "role": "code", "visible": vscodeInstalled },
             { "menu": "Preview", "visible": target?.dataset?.isdir !== "false" }
         ],
         [
@@ -40,7 +45,7 @@ const ContextMenuInner = (element, target) => {
         ],
         [
             { "menu": "Open in terminal", "role": "reveal" },
-            { "menu": "Open in vscode", "role": "code" },
+            { "menu": "Open in vscode", "role": "code", "visible": vscodeInstalled },
             { "menu": "New" }
         ],
         [
