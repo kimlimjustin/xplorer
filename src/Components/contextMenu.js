@@ -14,43 +14,43 @@ const ContextMenuInner = (element, target) => {
     contextMenu.innerHTML = ""
     const FileMenu = [
         [
-            { "menu": "Open", "role": "open" },
+            { "menu": "Open", "role": "open", "shortcut": "Enter" },
             { "menu": "Open in new tab", "visible": target?.dataset?.isdir === 'true', "role": "openInNewTab" },
-            { "menu": "Open in terminal", "visible": target?.dataset?.isdir === "true", "role": "reveal" },
-            { "menu": "Open in vscode", "role": "code", "visible": vscodeInstalled },
-            { "menu": "Preview", "visible": target?.dataset?.isdir !== "false" }
+            { "menu": "Open in terminal", "visible": target?.dataset?.isdir === "true", "role": "reveal", "shortcut": "Alt+T" },
+            { "menu": "Open in vscode", "role": "code", "visible": vscodeInstalled, "shortcut": "Shift+Enter" },
+            { "menu": "Preview", "visible": target?.dataset?.isdir !== "false", "shortcut": "Ctrl+P" }
         ],
         [
-            "Cut",
-            "Copy",
-            "Create Shortcut"
+            { "menu": "Cut", "shortcut": "Ctrl+X" },
+            { "menu": "Copy", "shortcut": "Ctrl+C" },
+            { "menu": "Create Shortcut", "shortcut": "Alt+S" },
         ],
         [
-            "Rename",
-            "Delete",
-            "Pin to Sidebar"
+            { "menu": "Rename", "shortcut": "f2"},
+            { "menu": "Delete", "shortcut": "Del" },
+            { "menu": "Pin to Sidebar", "shortcut": "Alt+P" }
         ],
         [
-            "Properties"
+            { "menu": "Properties", "shortcut": "Ctrl+P" }
         ]
     ]
     const BodyMenu = [
         [
             { "menu": "Layout Mode" },
             { "menu": "Sort by" },
-            { "menu": "Refresh", "role": "refresh" }
+            { "menu": "Refresh", "role": "refresh", "shortcut": "F5" }
         ],
         [
-            { "menu": "Paste" }
+            { "menu": "Paste", "shortcut": "Ctrl+V" }
         ],
         [
-            { "menu": "Open in terminal", "role": "reveal" },
-            { "menu": "Open in vscode", "role": "code", "visible": vscodeInstalled },
+            { "menu": "Open in terminal", "role": "reveal", "shortcut": "Alt+T" },
+            { "menu": "Open in vscode", "role": "code", "visible": vscodeInstalled, "shortcut": "Shift+Enter" },
             { "menu": "New" }
         ],
         [
-            { "menu": "Pin to sidebar" },
-            { "menu": "Properties" }
+            { "menu": "Pin to Sidebar", "shortcut": "Alt+P" },
+            { "menu": "Properties", "shortcut": "Ctrl+P" }
         ]
     ]
     const MenuToElements = menu => {
@@ -58,7 +58,9 @@ const ContextMenuInner = (element, target) => {
             section.forEach(item => {
                 if (item.visible || item.visible === undefined) {
                     const menu = document.createElement('span')
-                    menu.innerText = item?.menu || item
+                    menu.classList.add("contextmenu-item");
+                    if (item.shortcut) menu.innerHTML = `${item?.menu || item}<span class="contextmenu-item-shortcut">${item.shortcut}</span>`
+                    else menu.innerHTML = item?.menu || item
                     menu.setAttribute("role", item?.role)
                     contextMenu.appendChild(menu)
                 }
@@ -128,6 +130,10 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
                         break;
                     case "code":
                         execSync(`code ${filePath}`)
+                        break;
+                    case "refresh":
+                        const { reload } = require("./windowManager");
+                        reload()
                         break;
                 }
             })
