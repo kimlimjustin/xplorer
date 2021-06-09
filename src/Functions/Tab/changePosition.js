@@ -3,6 +3,8 @@ const Translate = require('../../Components/multilingual')
 
 const changePosition = (newPath) => {
     document.querySelector(".path-navigator").value = newPath
+    document.getElementById("main").dataset.path = escape(newPath)
+
     const tabs = storage.get('tabs')?.data
     const _focusingTab = tabs.tabs[String(tabs.focus)]
     tabs.tabs[String(tabs.focus)].position = newPath

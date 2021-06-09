@@ -71,6 +71,8 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
     if (!openDir) openDir = require("../Functions/Files/open").openDir
 
     element.addEventListener("contextmenu", e => {
+        // Disable context menu if current path is home and on windows
+        if (window.platform === "win32" && (!document.getElementById("main").dataset?.path || document.getElementById("main").dataset?.path === "Home")) return;
         ContextMenuInner(element, e.target)
         contextMenu.style.left = e.pageX + "px";
         contextMenu.style.top = e.pageY + "px";
