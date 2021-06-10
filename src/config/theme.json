@@ -61,7 +61,9 @@
         "tabHoverEffectBorderImage": "rgba(255,255,255,0.1),rgba(45, 45, 57, 0.7)",
 
         "contextMenuBackground": "#1b1e2e",
-        "contextMenuColor": "inherit"
+        "contextMenuColor": "inherit",
+        "contextMenuSubmenuBackground": "#1b1e2e",
+        "contextMenuSubmenuColor": "inherit"
     },
     "dark": {
         "textColor": "#87c1ce",
@@ -125,7 +127,9 @@
         "tabHoverEffectBorderImage": "rgba(140, 162, 210, 0.2),rgba(27, 30, 46 , 0.7)",
 
         "contextMenuBackground": "#1b1e2e",
-        "contextMenuColor": "inherit"
+        "contextMenuColor": "inherit",
+        "contextMenuSubmenuBackground": "#1b1e2e",
+        "contextMenuSubmenuColor": "inherit"
     },
     "light": {
         "textColor": "#000",
@@ -189,7 +193,9 @@
         "tabHoverEffectBorderImage": "rgba(157,162,189,255),rgba(203,204,209,255)",
 
         "contextMenuBackground": "#cbccd1",
-        "contextMenuColor": "inherit"
+        "contextMenuColor": "inherit",
+        "contextMenuSubmenuBackground": "#cbccd1",
+        "contextMenuSubmenuColor": "inherit"
     },
     "light+": {
         "textColor": "#000",
@@ -254,6 +260,8 @@
         "tabHoverEffectBorderImage": "rgba(157,162,189,255),rgba(203,204,209,255)",
 
         "contextMenuBackground": "#d1d1d8",
-        "contextMenuColor": "inherit"
+        "contextMenuColor": "inherit",
+        "contextMenuSubmenuBackground": "#d1d1d8",
+        "contextMenuSubmenuColor": "inherit"
     }
 }
