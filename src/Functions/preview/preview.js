@@ -68,7 +68,7 @@ const getPreview = (filename, category = "folder", HTMLFormat = true) => {
     if (IMAGE.indexOf(ext) !== -1) return HTMLFormat ? iconPreview(filename, isdir = false) : filename // Show the image itself if the file is image
     else if (VIDEO.indexOf(ext) !== -1) return HTMLFormat ? videoPreview(filename) : filename // Show the video itself if the file is video
 
-    if (ext === "exe" && preference?.extractExeIcon) return HTMLFormat ? exePreview(filename) : filename
+    if (ext === "exe" && preference?.extractExeIcon !== false) return HTMLFormat ? exePreview(filename) : filename
 
     filename = filename.toLowerCase() // Lowercase filename
 

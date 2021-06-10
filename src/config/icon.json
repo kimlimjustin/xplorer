@@ -10,6 +10,7 @@
         "music": "folder/folder-music.svg",
         "picture": "folder/folder-picture.svg",
         "usb": "usb.svg",
+        "hard-disk": "hard-disk.svg",
         "video": "folder/folder-video.svg"
     },
     "file": {

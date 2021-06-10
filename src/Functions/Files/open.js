@@ -15,6 +15,7 @@ const { ContextMenu } = require("../../Components/contextMenu");
 
 const LINUX_TRASH_FILES_PATH = path.join(os.homedir(), '.local/share/Trash/files')
 const LINUX_TRASH_INFO_PATH = path.join(os.homedir(), '.local/share/Trash/info')
+const IGNORE_FILE = ['.', '..'];
 
 function getCommandLine() {
     switch (process.platform) {
@@ -80,6 +81,7 @@ const displayFiles = async (files, dir) => {
         stopLoading()
     } else {
         for (const file of files) {
+            if(IGNORE_FILE.indexOf(file.filename) !== -1) continue
             const preview = await getPreview(path.join(dir, file.filename), category = file.isDir ? "folder" : "file")
             const fileGrid = document.createElement("div")
             fileGrid.className = "file-grid grid-hover-effect"
