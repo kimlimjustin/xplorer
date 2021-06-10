@@ -4,13 +4,17 @@ let vscodeInstalled = false
 try {
     execSync("code --version")
     vscodeInstalled = true
-}catch(_){}
+} catch (_) { }
 
 let contextMenu = document.querySelector(".contextmenu");
 document.addEventListener("DOMContentLoaded", () => contextMenu = document.querySelector(".contextmenu"))
 
 const ContextMenuInner = (element, target) => {
-    if(target?.dataset?.path === undefined && target.parentNode?.dataset?.path) target = target.parentNode
+    if (target.classList.contains("home-section")) target = document.getElementById("main") // If context menu target is on home-section, use main element as target instead.
+    while (!target.dataset.path) {
+        target = target.parentNode
+    }
+    // Reset context menu contents
     contextMenu.innerHTML = ""
     const FileMenu = [
         [
@@ -26,7 +30,7 @@ const ContextMenuInner = (element, target) => {
             { "menu": "Create Shortcut", "shortcut": "Alt+S" },
         ],
         [
-            { "menu": "Rename", "shortcut": "f2"},
+            { "menu": "Rename", "shortcut": "f2" },
             { "menu": "Delete", "shortcut": "Del" },
             { "menu": "Pin to Sidebar", "shortcut": "Alt+P" }
         ],
@@ -69,7 +73,7 @@ const ContextMenuInner = (element, target) => {
         })
     }
     if (target === document.getElementById("main")) MenuToElements(BodyMenu)
-    else if(target?.dataset?.path) MenuToElements(FileMenu)
+    else if (target?.dataset?.path) MenuToElements(FileMenu)
 }
 
 const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
@@ -92,7 +96,10 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
 
         contextMenu.querySelectorAll("span").forEach(menu => {
             menu.addEventListener("click", () => {
-                const target = e.target?.dataset?.path ? e.target : e.target?.parentNode?.dataset?.path ? e.target.parentNode : e.target
+                let target = e.target;
+                while (!target.dataset.path) {
+                    target = target.parentNode
+                }
                 const filePath = unescape(target.dataset.path)
                 switch (menu.getAttribute("role")) {
                     case "open":
