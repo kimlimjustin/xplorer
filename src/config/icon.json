@@ -241,5 +241,17 @@
         "setting": "sidebar/settings.svg",
         "trash": "sidebar/trash.svg",
         "videos": "sidebar/video.svg"
+    },
+    "contextmenu": {
+        "layout": "contextmenu/layout.svg",
+        "sort": "contextmenu/sort.svg",
+        "refresh": "contextmenu/refresh.svg",
+        "paste": "contextmenu/paste.svg",
+        "terminal": "contextmenu/terminal.svg",
+        "vscode": "contextmenu/vscode.svg",
+        "pin": "contextmenu/pin.svg",
+        "new": "contextmenu/new file.svg",
+        "file property": "contextmenu/file setting.svg",
+        "folder property": "contextmenu/folder setting.svg"
     }
 }

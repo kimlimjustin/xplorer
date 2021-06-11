@@ -438,6 +438,12 @@ body{
     cursor: pointer;
 }
 
+.contextmenu-item img{
+    width: 1rem;
+    padding: .2rem;
+    vertical-align: bottom;
+}
+
 .contextmenu-item-shortcut{
     float: right;
     padding-left: 5px;

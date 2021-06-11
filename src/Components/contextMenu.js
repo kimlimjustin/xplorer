@@ -1,6 +1,7 @@
 const storage = require("electron-json-storage-sync");
 const { execSync } = require('child_process');
 const { updateTheme } = require("../Functions/Theme/theme");
+const getPreview = require("../Functions/preview/preview");
 let vscodeInstalled = false
 try {
     execSync("code --version")
@@ -46,21 +47,21 @@ const ContextMenuInner = (element, target, coorX, coorY) => {
     ]
     const BodyMenu = [
         [
-            { "menu": "Layout Mode", "submenu": ["Grid View (Large)", "Grid View (Medium)", "Grid View (Small)", "Tiles View", "Detail Size"] },
-            { "menu": "Sort by", "submenu": ["A-Z", "Z-A", "Last Modified", "First Modified", "Size", "Type"] },
-            { "menu": "Refresh", "role": "refresh", "shortcut": "F5" }
+            { "menu": "Layout Mode", "submenu": ["Grid View (Large)", "Grid View (Medium)", "Grid View (Small)", "Tiles View", "Detail Size"], "icon": "layout" },
+            { "menu": "Sort by", "submenu": ["A-Z", "Z-A", "Last Modified", "First Modified", "Size", "Type"], "icon": "sort" },
+            { "menu": "Refresh", "role": "refresh", "shortcut": "F5", "icon": "refresh" }
         ],
         [
-            { "menu": "Paste", "shortcut": "Ctrl+V" }
+            { "menu": "Paste", "shortcut": "Ctrl+V", "icon": "paste" }
         ],
         [
-            { "menu": "Open in terminal", "role": "reveal", "shortcut": "Alt+T" },
-            { "menu": "Open in vscode", "role": "code", "visible": vscodeInstalled, "shortcut": "Shift+Enter" },
-            { "menu": "New" }
+            { "menu": "Open in terminal", "role": "reveal", "shortcut": "Alt+T", "icon": "terminal" },
+            { "menu": "Open in vscode", "role": "code", "visible": vscodeInstalled, "shortcut": "Shift+Enter", "icon": "vscode" },
+            { "menu": "New", "submenu": ["folder", "file"], "icon": "new" }
         ],
         [
-            { "menu": "Pin to Sidebar", "shortcut": "Alt+P" },
-            { "menu": "Properties", "shortcut": "Ctrl+P" }
+            { "menu": "Pin to Sidebar", "shortcut": "Alt+P", "icon": "pin" },
+            { "menu": "Properties", "shortcut": "Ctrl+P", "icon": target?.dataset?.isdir ? "folder property": "file property" }
         ]
     ]
     const MenuToElements = menu => {
@@ -69,8 +70,13 @@ const ContextMenuInner = (element, target, coorX, coorY) => {
                 if (item.visible || item.visible === undefined) {
                     const menu = document.createElement('span')
                     menu.classList.add("contextmenu-item");
-                    if (item.shortcut) menu.innerHTML = `${item?.menu || item}<span class="contextmenu-item-shortcut">${item.shortcut}</span>`
-                    else menu.innerHTML = item?.menu ?? item
+                    if (item.icon) {
+                        if (item.shortcut) menu.innerHTML = `<img src = "${getPreview(item.icon, 'contextmenu', false)}">${item?.menu || item}<span class="contextmenu-item-shortcut">${item.shortcut}</span>`
+                        else menu.innerHTML = `<img src = "${getPreview(item.icon, 'contextmenu', false)}" > ${ item?.menu ?? item }`
+                    } else {
+                        if (item.shortcut) menu.innerHTML = `${item?.menu || item}<span class="contextmenu-item-shortcut">${item.shortcut}</span>`
+                        else menu.innerHTML = item?.menu ?? item
+                    }
                     menu.setAttribute("role", item?.role)
                     contextMenu.appendChild(menu)
 
