@@ -112,9 +112,9 @@ const ContextMenuInner = (element, target, coorX, coorY) => {
 
     document.querySelectorAll(".contextmenu-item").forEach(menu => {
         if (menu.dataset.submenu) {
-            let submenuCoorX = coorX + contextMenu.offsetWidth
-            let submenuCoorY = coorY + 10
             const submenu = document.getElementById(menu.dataset.submenu)
+            let submenuCoorX = coorX + contextMenu.offsetWidth
+            let submenuCoorY = coorY + menu.offsetTop
 
             if (coorX + contextMenu.offsetWidth > window.innerWidth) submenuCoorX = coorX - contextMenu.offsetWidth
             if (contextMenu.offsetHeight + coorY > window.innerHeight && coorY - contextMenu.offsetHeight > TOPBAR_ELEMENT.offsetHeight)
