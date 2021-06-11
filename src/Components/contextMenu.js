@@ -123,8 +123,19 @@ const ContextMenuInner = (element, target, coorX, coorY) => {
             submenu.style.left = submenuCoorX + "px"
             submenu.style.top = submenuCoorY + "px"
 
-            const onhover = () => submenu.style.display = "block"
-            const onstophover = () => submenu.style.display = "none";
+            const onhover = () => {
+                document.querySelectorAll(".contextmenu-submenu").forEach(submenu => submenu.style.display = "none")
+                submenu.style.display = "block"
+            }
+            const onstophover = () => {
+                const trackMousePosition = e => {
+                    if (!e.target === menu.parentElement) {
+                        submenu.style.display = "none"
+                        document.removeEventListener("mouseover", trackMousePosition)
+                    }
+                }
+                document.addEventListener("mouseover", trackMousePosition)
+            }
 
             menu.addEventListener("mouseover", onhover)
             menu.addEventListener("mouseout", onstophover)

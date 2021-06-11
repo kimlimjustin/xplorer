@@ -453,3 +453,7 @@ body{
 .contextmenu-submenu{
     display: none;
 }
+
+.contextmenu-submenu:hover{
+    display: block;
+}
