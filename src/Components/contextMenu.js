@@ -25,24 +25,24 @@ const ContextMenuInner = (element, target, coorX, coorY) => {
     contextMenuSubmenus.innerHTML = ""
     const FileMenu = [
         [
-            { "menu": "Open", "role": "open", "shortcut": "Enter" },
-            { "menu": "Open in new tab", "visible": target?.dataset?.isdir === 'true', "role": "openInNewTab" },
-            { "menu": "Open in terminal", "visible": target?.dataset?.isdir === "true", "role": "reveal", "shortcut": "Alt+T" },
-            { "menu": "Open in vscode", "role": "code", "visible": vscodeInstalled, "shortcut": "Shift+Enter" },
-            { "menu": "Preview", "visible": target?.dataset?.isdir !== "false", "shortcut": "Ctrl+P" }
+            { "menu": "Open", "role": "open", "shortcut": "Enter", "icon": "open" },
+            { "menu": "Open in new tab", "visible": target?.dataset?.isdir === 'true', "role": "openInNewTab", "icon": "open in new tab" },
+            { "menu": "Open in terminal", "visible": target?.dataset?.isdir === "true", "role": "reveal", "shortcut": "Alt+T", "icon": "terminal" },
+            { "menu": "Open in vscode", "role": "code", "visible": vscodeInstalled, "shortcut": "Shift+Enter", "icon": "vscode" },
+            { "menu": "Preview", "visible": target?.dataset?.isdir !== "false", "shortcut": "Ctrl+P", "icon": "preview" }
         ],
         [
-            { "menu": "Cut", "shortcut": "Ctrl+X" },
-            { "menu": "Copy", "shortcut": "Ctrl+C" },
-            { "menu": "Create Shortcut", "shortcut": "Alt+S" },
+            { "menu": "Cut", "shortcut": "Ctrl+X", "icon": "cut" },
+            { "menu": "Copy", "shortcut": "Ctrl+C", "icon": "copy" },
+            { "menu": "Create Shortcut", "shortcut": "Alt+S", "icon": "shortcut" },
         ],
         [
-            { "menu": "Rename", "shortcut": "f2" },
-            { "menu": "Delete", "shortcut": "Del" },
-            { "menu": "Pin to Sidebar", "shortcut": "Alt+P" }
+            { "menu": "Rename", "shortcut": "f2", "icon": "rename" },
+            { "menu": "Delete", "shortcut": "Del", "icon": "delete" },
+            { "menu": "Pin to Sidebar", "shortcut": "Alt+P", "icon": "pin" }
         ],
         [
-            { "menu": "Properties", "shortcut": "Ctrl+P" }
+            { "menu": "Properties", "shortcut": "Ctrl+P", "icon": target?.dataset?.isdir ? "folder property": "file property" }
         ]
     ]
     const BodyMenu = [
@@ -71,11 +71,11 @@ const ContextMenuInner = (element, target, coorX, coorY) => {
                     const menu = document.createElement('span')
                     menu.classList.add("contextmenu-item");
                     if (item.icon) {
-                        if (item.shortcut) menu.innerHTML = `<img src = "${getPreview(item.icon, 'contextmenu', false)}">${item?.menu || item}<span class="contextmenu-item-shortcut">${item.shortcut}</span>`
-                        else menu.innerHTML = `<img src = "${getPreview(item.icon, 'contextmenu', false)}" > ${ item?.menu ?? item }`
+                        if (item.shortcut) menu.innerHTML = `<img src = "${getPreview(item.icon, 'contextmenu', false)}">${item?.menu.trim() ?? item.trim()}<span class="contextmenu-item-shortcut">${item.shortcut}</span>`
+                        else menu.innerHTML = `<img src = "${getPreview(item.icon, 'contextmenu', false)}" >${ item?.menu?.trim() ?? item.trim() }`
                     } else {
-                        if (item.shortcut) menu.innerHTML = `${item?.menu || item}<span class="contextmenu-item-shortcut">${item.shortcut}</span>`
-                        else menu.innerHTML = item?.menu ?? item
+                        if (item.shortcut) menu.innerHTML = `${item?.menu?.trim() || item.trim()}<span class="contextmenu-item-shortcut">${item.shortcut}</span>`
+                        else menu.innerHTML = item?.menu?.trim() ?? item.trim()
                     }
                     menu.setAttribute("role", item?.role)
                     contextMenu.appendChild(menu)

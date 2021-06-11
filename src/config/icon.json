@@ -252,6 +252,14 @@
         "pin": "contextmenu/pin.svg",
         "new": "contextmenu/new file.svg",
         "file property": "contextmenu/file setting.svg",
-        "folder property": "contextmenu/folder setting.svg"
+        "folder property": "contextmenu/folder setting.svg",
+        "open": "contextmenu/open.svg",
+        "open in new tab": "contextmenu/open in new tab.svg",
+        "preview": "contextmenu/preview.svg",
+        "delete": "contextmenu/delete.svg",
+        "copy": "contextmenu/copy.svg",
+        "cut": "contextmenu/cut.svg",
+        "shortcut": "contextmenu/shortcut.svg",
+        "rename": "contextmenu/rename.svg"
     }
 }
