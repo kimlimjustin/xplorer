@@ -2,6 +2,8 @@ const storage = require("electron-json-storage-sync");
 const { execSync } = require('child_process');
 const { updateTheme } = require("../Functions/Theme/theme");
 const getPreview = require("../Functions/preview/preview");
+const os = require("os");
+const path = require("path");
 let vscodeInstalled = false
 try {
     execSync("code --version")
@@ -42,7 +44,7 @@ const ContextMenuInner = (element, target, coorX, coorY) => {
             { "menu": "Pin to Sidebar", "shortcut": "Alt+P", "icon": "pin" }
         ],
         [
-            { "menu": "Properties", "shortcut": "Ctrl+P", "icon": target?.dataset?.isdir ? "folder property": "file property" }
+            { "menu": "Properties", "shortcut": "Ctrl+P", "icon": target?.dataset?.isdir ? "folder property" : "file property" }
         ]
     ]
     const BodyMenu = [
@@ -61,7 +63,7 @@ const ContextMenuInner = (element, target, coorX, coorY) => {
         ],
         [
             { "menu": "Pin to Sidebar", "shortcut": "Alt+P", "icon": "pin" },
-            { "menu": "Properties", "shortcut": "Ctrl+P", "icon": target?.dataset?.isdir ? "folder property": "file property" }
+            { "menu": "Properties", "shortcut": "Ctrl+P", "icon": target?.dataset?.isdir ? "folder property" : "file property" }
         ]
     ]
     const MenuToElements = menu => {
@@ -72,7 +74,7 @@ const ContextMenuInner = (element, target, coorX, coorY) => {
                     menu.classList.add("contextmenu-item");
                     if (item.icon) {
                         if (item.shortcut) menu.innerHTML = `<img src = "${getPreview(item.icon, 'contextmenu', false)}">${item?.menu.trim() ?? item.trim()}<span class="contextmenu-item-shortcut">${item.shortcut}</span>`
-                        else menu.innerHTML = `<img src = "${getPreview(item.icon, 'contextmenu', false)}" >${ item?.menu?.trim() ?? item.trim() }`
+                        else menu.innerHTML = `<img src = "${getPreview(item.icon, 'contextmenu', false)}" >${item?.menu?.trim() ?? item.trim()}`
                     } else {
                         if (item.shortcut) menu.innerHTML = `${item?.menu?.trim() || item.trim()}<span class="contextmenu-item-shortcut">${item.shortcut}</span>`
                         else menu.innerHTML = item?.menu?.trim() ?? item.trim()
@@ -206,7 +208,8 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
                         }
                         break;
                     case "code":
-                        execSync(`code ${filePath}`)
+                        if (process.platform === "linux" && (filePath === "Home" || filePath === path.join(os.homedir(), "Home"))) execSync(`code ${os.homedir()}`)
+                        else execSync(`code ${filePath}`)
                         break;
                     case "refresh":
                         const { reload } = require("./windowManager");
