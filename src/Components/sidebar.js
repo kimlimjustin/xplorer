@@ -5,6 +5,7 @@ const { getDrives } = require('./drives');
 const getPreview = require('../Functions/preview/preview');
 const Translate = require('./multilingual');
 const { updateTheme } = require('../Functions/Theme/theme');
+const Setting = require('./setting');
 
 const changeSidebar = newElement => {
     const sidebarElement = document.body.querySelector(".sidebar");
@@ -90,14 +91,14 @@ const createSidebar = () => {
 
                 // Save preference into local storage
                 const sidebar = storage.get("sidebar")?.data
-                if(!sidebar.hideSection) sidebar.hideSection = {} // Initialize if it's not exist
+                if (!sidebar.hideSection) sidebar.hideSection = {} // Initialize if it's not exist
                 sidebar.hideSection[e.target.dataset.section] = e.target.parentNode.parentNode.classList.contains('nav-hide-item')
                 storage.set("sidebar", sidebar)
             })
         })
         changeSidebar(sidebarElement)
 
-        // Listen drives change
+        Setting()
     })
     let _prevDrives;
     setInterval(() => {
