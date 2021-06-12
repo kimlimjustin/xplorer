@@ -31,6 +31,9 @@ const createNewTab = (path) => {
             delete tabs.tabs[newTab.dataset.tabIndex]
             storage.set("tabs", tabs)
             newTab.parentElement.removeChild(newTab)
+
+            const { openDir } = require("../Functions/Files/open");
+            openDir(tabs.tabs[tabs.focus].position)
         }
     })
     createNewTabElement.parentElement.insertBefore(newTab, createNewTabElement) // Insert the new tab
@@ -40,7 +43,7 @@ const createNewTab = (path) => {
     newTab.parentNode.scrollLeft = newTab.parentNode.scrollWidth
 
     // Edit tabs information
-    tabsInfo.tabs[String(tabsInfo.latestIndex)] = { position: path || "Home" , history: ["Home"], currentIndex: -1}
+    tabsInfo.tabs[String(tabsInfo.latestIndex)] = { position: path || "Home", history: ["Home"], currentIndex: -1 }
     tabsInfo.focus = String(tabsInfo.latestIndex)
     tabsInfo.focusHistory.push(tabsInfo.latestIndex)
     storage.set('tabs', tabsInfo)
@@ -89,6 +92,9 @@ const Tab = () => {
                 tabs.focus = String(tabs.focusHistory[tabs.focusHistory.length - 1])
                 delete tabs.tabs[index + 1]
                 storage.set("tabs", tabs)
+
+                const { openDir } = require("../Functions/Files/open");
+                openDir(tabs.tabs[tabs.focus].position)
             }
         })
         tab.appendChild(closeTab)
@@ -105,7 +111,7 @@ const Tab = () => {
 
     // Create a new tab event
     createNewTabElement.addEventListener('click', () => createNewTab())
-    
+
     // Function to navigate backward
     const goBack = () => {
         const tabs = storage.get('tabs')?.data;
@@ -114,7 +120,7 @@ const Tab = () => {
         if (_focusingTab.currentIndex > 0) {
             tabs.tabs[tabs.focus].currentIndex -= 1
             tabs.tabs[tabs.focus].position = _focusingTab.history[_focusingTab.currentIndex]
-            
+
             storage.set("tabs", tabs)
             openDir(_focusingTab.history[_focusingTab.currentIndex])
         }
@@ -128,7 +134,7 @@ const Tab = () => {
         if (_focusingTab.currentIndex >= 0 && _focusingTab.history?.[_focusingTab.currentIndex + 1]) {
             tabs.tabs[tabs.focus].currentIndex += 1
             tabs.tabs[tabs.focus].position = _focusingTab.history[_focusingTab.currentIndex]
-            
+
             storage.set("tabs", tabs)
             openDir(_focusingTab.history[_focusingTab.currentIndex])
             storage.set("tabs", tabs)
@@ -148,7 +154,7 @@ const Tab = () => {
             } else {
                 const tab = document.getElementById(`tab${tabs.focus}`)
                 tab.parentElement.removeChild(tab)
-                tabs.focusHistory = tabs.focusHistory.filter(tabIndex => String(tabIndex) !== tabs.focus )
+                tabs.focusHistory = tabs.focusHistory.filter(tabIndex => String(tabIndex) !== tabs.focus)
                 tabs.focus = String(tabs.focusHistory[tabs.focusHistory.length - 1])
                 delete tabs.tabs[tabs.focus]
                 storage.set("tabs", tabs)
