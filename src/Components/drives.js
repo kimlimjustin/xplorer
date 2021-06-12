@@ -58,7 +58,6 @@ const Drives = async () => {
     const os = require('os');
 
     const drives = await getDrives()
-    console.log(drives)
 
     const tabs = storage.get('tabs')?.data
     const focusingPath = tabs.tabs[tabs.focus].position
