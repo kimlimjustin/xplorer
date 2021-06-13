@@ -45,14 +45,10 @@ const exePreview = (filename) => {
     if (fs.existsSync(ICON_FILE_NAME)) {
         return iconPreview(ICON_FILE_NAME)
     } else {
-        try {
-            const { extractIcon } = require('../../../lib/wasm/bindings');
-            const buffer = extractIcon(filename, 'large');
-            fs.writeFileSync(ICON_FILE_NAME, buffer);
-            return iconPreview(ICON_FILE_NAME)
-        } catch (_) {
-            return iconPreview(filename)
-        }
+        const { extractIcon } = require('../../../lib/wasm/bindings');
+        const buffer = extractIcon(filename, 'large');
+        fs.writeFileSync(ICON_FILE_NAME, buffer);
+        return iconPreview(ICON_FILE_NAME)
     }
 }
 
@@ -72,7 +68,9 @@ const getPreview = (filename, category = "folder", HTMLFormat = true) => {
     if (IMAGE.indexOf(ext) !== -1) return HTMLFormat ? iconPreview(filename, isdir = false) : filename // Show the image itself if the file is image
     else if (VIDEO.indexOf(ext) !== -1) return HTMLFormat ? videoPreview(filename) : filename // Show the video itself if the file is video
 
-    if (ext === "exe" && preference?.extractExeIcon !== false && process.platform === "win32") return HTMLFormat ? exePreview(filename) : filename
+    try {
+        if (ext === "exe" && preference?.extractExeIcon !== false && process.platform === "win32") return exePreview(filename)
+    }catch(_){}
 
     filename = filename.toLowerCase() // Lowercase filename
 
