@@ -16,12 +16,14 @@ const Appearance = () => {
     </select>`
     settingsMain.querySelector("select").addEventListener("change", ({ target: { value } }) => {
         storage.set("theme", { "theme": value })
-        updateTheme()
+        const { reload } = require("./windowManager");
+        reload()
     })
 }
 
 const Preference = () => {
-
+    let settingsMain = document.querySelector(".settings-main");
+    settingsMain.innerHTML = `<h3></h3>`
 }
 
 const About = () => {

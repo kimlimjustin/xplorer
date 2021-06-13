@@ -33,16 +33,16 @@ const windowManager = () => {
     })
 
     // Refresh the page
-    document.querySelector("#refresh").addEventListener("click",reload)
+    document.querySelector("#refresh").addEventListener("click", reload)
     // Window shortcut
     const Shortcut = e => {
         e.preventDefault()
         // Refresh page shortcut
-        if((e.ctrlKey && e.key === "r") || e.key === "F5") reload()
+        if ((e.ctrlKey && e.key === "r") || e.key === "F5") reload()
         // Minimze window shortcut
-        else if((e.altKey && e.key === "ArrowDown") || e.key === "F10") minimize()
+        else if ((e.altKey && e.key === "ArrowDown") || e.key === "F10") minimize()
         // Maximize window shortcut
-        else if((e.altKey && e.key === "ArrowUp") || e.key === "F11") maximize()
+        else if ((e.altKey && e.key === "ArrowUp") || e.key === "F11") maximize()
     }
 
     document.addEventListener("keyup", Shortcut, false)
