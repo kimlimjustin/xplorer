@@ -261,5 +261,10 @@
         "cut": "contextmenu/cut.svg",
         "shortcut": "contextmenu/shortcut.svg",
         "rename": "contextmenu/rename.svg"
+    },
+    "settings": {
+        "about": "settings/about.svg",
+        "appearance": "settings/appearance.svg",
+        "preference": "settings/preference.svg"
     }
 }

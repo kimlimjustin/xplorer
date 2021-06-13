@@ -472,7 +472,16 @@ body{
 }
 
 .settings-main{
+    -webkit-app-region: no-drag;
     flex: 4;
+    padding: 1rem;
+}
+
+.settings-main select{
+    background: inherit;
+    padding: .25rem .5rem;
+    border-radius: 2px;
+    color: inherit;
 }
 
 .exit-setting-btn{
@@ -483,6 +492,19 @@ body{
 .settings-sidebar-header{
     padding: 1rem;
     text-align: center;
+}
+
+.settings-sidebar-item{
+    display: block;
+    margin: .5rem;
+    padding: .5rem;
+    cursor: pointer;
+}
+
+.settings-sidebar-item img{
+    width: 1.5rem;
+    vertical-align: middle;
+    margin-right: 1rem;
 }
 
 @keyframes open-setting{

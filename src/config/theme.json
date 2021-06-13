@@ -236,8 +236,8 @@
         "menuDropdownBackground": "#d1d1d8",
         "menuDropdownColor": "#000",
 
-        "settingSidebarBackground": "#d1d1d8",
-        "settingMainBackground": "#f3f3f3",
+        "settingsSidebarBackground": "#d1d1d8",
+        "settingsMainBackground": "#f3f3f3",
         "settingButtonBackground": "inherit",
         "settingButtonColor": "inherit",
 
