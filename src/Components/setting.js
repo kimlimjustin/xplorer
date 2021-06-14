@@ -2,22 +2,54 @@ const Translate = require("./multilingual")
 const getPreview = require("../Functions/preview/preview");
 const { updateTheme } = require("../Functions/Theme/theme");
 const storage = require("electron-json-storage-sync");
-const theme = storage.get("theme")?.data?.theme
 const fs = require("fs");
 const path = require("path");
 
 const Appearance = () => {
+    const theme = storage.get("theme")?.data?.theme
+    const autoPlayPreviewVideo = storage.get("preference")?.data?.autoPlayPreviewVideo
+    const extractExeIcon = storage.get("preference")?.data?.extractExeIcon
+    console.log(autoPlayPreviewVideo)
     let settingsMain = document.querySelector(".settings-main");
     settingsMain.innerHTML = `<h3 class="settings-title">App Theme</h3>
-    <select>
+    <select name="theme">
         <option>System Default</option>
         <option ${theme === "light" ? "selected" : ""} value="light">Light</option>
         <option ${theme === "dark" ? "selected" : ""} value="dark">Dark</option>
         <option ${theme === "light+" ? "selected" : ""} value="light+">Light+</option>
         <option ${theme === "dark+" ? "selected" : ""} value="dark+">Dark+</option>
-    </select>`
-    settingsMain.querySelector("select").addEventListener("change", ({ target: { value } }) => {
+    </select>
+    <h3 class="settings-title">File Preview</h3>
+    <div class="toggle-box">
+        <label class="toggle">
+            <input type="checkbox" name="preview-video" ${autoPlayPreviewVideo ? "checked" : ""}>
+            <span class="toggle-slider"></span>
+            <span class="toggle-label">Auto play video file as preview (May consume high ammount of RAM)</span>
+        </label>
+    </div>
+    <div class="toggle-box">
+        <label class="toggle">
+            <input type="checkbox" name="extract-exe-icon" ${extractExeIcon ? "checked" : ""} ${process.platform !== "win32" ? "disabled" : ""}>
+            <span class="toggle-slider"></span>
+            <span class="toggle-label">Extract exe file icon and make it as preview (Only for windows)</span>
+        </label>
+    </div>`
+    settingsMain.querySelector('[name="theme"]').addEventListener("change", ({ target: { value } }) => {
         storage.set("theme", { "theme": value })
+        const { reload } = require("./windowManager");
+        reload()
+    })
+    settingsMain.querySelector(`[name="preview-video"]`).addEventListener("change", ({ target: { checked } }) => {
+        let preference = storage.get("preference")?.data
+        preference.autoPlayPreviewVideo = checked
+        storage.set("preference", preference)
+        const { reload } = require("./windowManager");
+        reload()
+    })
+    settingsMain.querySelector(`[name="extract-exe-icon"]`).addEventListener("change", ({ target: { checked } }) => {
+        let preference = storage.get("preference")?.data
+        preference.extractExeIcon = checked
+        storage.set("preference", preference)
         const { reload } = require("./windowManager");
         reload()
     })
