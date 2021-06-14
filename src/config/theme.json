@@ -32,6 +32,8 @@
         "menuDropdownBackground": "#a2b7ff",
         "menuDropdownColor": "#000",
 
+        "settingsSidebarBackground": "#14141b",
+        "settingsMainBackground": "#1a1b26",
         "settingButtonBackground": "inherit",
         "settingButtonColor": "#98aec1",
 
@@ -98,6 +100,8 @@
         "menuDropdownBackground": "#39496a",
         "menuDropdownColor": "#87c1ce",
         
+        "settingsSidebarBackground": "#1b1e2e",
+        "settingsMainBackground": "#24283b",
         "settingButtonBackground": "inherit",
         "settingButtonColor": "#98aec1",
 
@@ -164,6 +168,8 @@
         "menuDropdownBackground": "#e0e0e0",
         "menuDropdownColor": "#000",
 
+        "settingsSidebarBackground": "#cbccd1",
+        "settingsMainBackground": "#d5d6db",
         "settingButtonBackground": "inherit",
         "settingButtonColor": "inherit",
 
@@ -230,6 +236,8 @@
         "menuDropdownBackground": "#d1d1d8",
         "menuDropdownColor": "#000",
 
+        "settingsSidebarBackground": "#d1d1d8",
+        "settingsMainBackground": "#f3f3f3",
         "settingButtonBackground": "inherit",
         "settingButtonColor": "inherit",
 

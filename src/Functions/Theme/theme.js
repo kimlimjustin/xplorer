@@ -58,6 +58,8 @@ const changeTheme = (document, theme) => {
     changeElementTheme(document.querySelector(".path-navigator"), "pathNavigatorColor", "color", theme)
     changeElementTheme(document.querySelector(".menu-dropdown"), "menuDropdownBackground", "background", theme)
     changeElementTheme(document.querySelector(".menu-dropdown"), "menuDropdownColor", "color", theme)
+    changeElementTheme(document.querySelector(".settings-sidebar"), "settingsSidebarBackground", "background", theme)
+    changeElementTheme(document.querySelector(".settings-main"), "settingsMainBackground", "background", theme)
     changeElementTheme(document.querySelector(".sidebar-setting-btn"), "settingButtonBackground", "background", theme)
     changeElementTheme(document.querySelector(".sidebar-setting-btn"), "settingButtonColor", "color", theme)
     changeElementTheme(document.querySelector(".contextmenu"), "contextMenuBackground", "background", theme)
