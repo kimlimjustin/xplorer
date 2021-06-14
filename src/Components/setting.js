@@ -4,6 +4,7 @@ const { updateTheme } = require("../Functions/Theme/theme");
 const storage = require("electron-json-storage-sync");
 const fs = require("fs");
 const path = require("path");
+const version = require("../../package.json").version;
 
 const Appearance = () => {
     const theme = storage.get("theme")?.data?.theme
@@ -93,7 +94,13 @@ const Preference = () => {
 
 const About = () => {
     let settingsMain = document.querySelector(".settings-main");
-    settingsMain.innerHTML = `<h3></h3>`
+    settingsMain.innerHTML = `<h3 class="settings-title">Xplorer</h3>
+    <h6 class="settings-about-version">Version ${version}</h6>
+    <ul>
+    <li><a href="https://github.com/kimlimjustin/xplorer">GitHub</a></li>
+    <li><a href="https://github.com/kimlimjustin/xplorer/blob/master/LICENSE">License</a></li>
+    <li><a href="https://github.com/kimlimjustin/xplorer/graphs/contributors">Contributors</a></li>
+    </ul>`
 }
 
 const Setting = () => {

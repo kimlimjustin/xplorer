@@ -594,3 +594,8 @@ input:checked + .toggle-slider:before {
 .settings-title{
     margin: 1.5rem 0 .5rem 0;
 }
+
+.settings-about-version{
+    margin: 0;
+    font-weight: normal;
+}
