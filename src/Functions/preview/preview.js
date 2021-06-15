@@ -6,6 +6,10 @@ const defaultIconJSON = JSON.parse(fs.readFileSync(path.join(__dirname, "../../c
 let iconJSON = null;
 let iconJSONPath = null;
 
+// Get user preference
+const preference = storage.get("preference")?.data
+const icon = storage.get('icon')
+
 const IMAGE = ['jpg', 'png', 'gif', 'bmp', 'jpeg', 'jpe', 'jif', 'jfif', 'jfi', 'webp', 'tiff', 'tif', 'ico', 'svg', 'webp'];
 const VIDEO = ['mp4', 'webm', 'mpg', 'mp2', 'mpeg', 'mpe', 'mpv', 'ocg', 'm4p', 'm4v', 'avi', 'wmv', 'mov', 'qt', 'flv', 'swf'];
 
@@ -53,9 +57,6 @@ const exePreview = (filename) => {
 }
 
 const getPreview = (filename, category = "folder", HTMLFormat = true) => {
-    // Get user preference
-    const preference = storage.get("preference")?.data
-    const icon = storage.get('icon')
 
     if (icon.data && fs.existsSync(icon.data.iconJSON)) {
         iconJSON = JSON.parse(fs.readFileSync(icon.data.iconJSON))
