@@ -26,36 +26,41 @@ You can add your language by doing these steps:
 - Create a new file with `<Language Code>.json` file name format.
 - Copy the JSON code from one of those languages available there.
 - Paste in your language JSON and edit it.
+- Add a value on `availableLanguages` inside `index.json` which your language code as key, and the language name as value.
 - Open a [Pull Request.](#pull-requests)
 
 
 ## Structure
 ```
 .
-├── build               // Icon sources for building app
+├── build               // Web Assembly builds
+├── icons               // Icon sources for building xplorer
 ├── lib                 // Library needed for xplorer app
 │   └── node-disk-info  // Detect user's node disk
 │   |   ├── classes
 │   |   ├── platforms
 │   |   └── utils
-│   └── tilt            // Tilt effect of card
+│   ├── tilt            // Tilt effect of card
+│   └── wasm            // C/C++ programs for wasm
 └── src                 // Source code of the Xplorer
-    ├── Components      // Components of Xplorer
-    ├── config          // JSON files of user preferences
-    ├── Functions       // Functions that frequently being called
-    │   ├── DOM         // Functions that change DOM property
-    │   ├── Files       // Functions to deal with file
-    │   ├── Filter      // Functions to filter files and directories
-    │   ├── Math        // Math functions
-    │   ├── preview     // Functions to show preview of a file
-    │   ├── tab         // Functions to handle with tab
-    │   └── Theme       // Functions that change Xplorer theme
-    ├── icon            // Icon used inside Xplorer
-    │   ├── extension   // Icon for an extension of a file
-    │   ├── folder      // Icon for a folder
-    │   └── sidebar     // Icon for the sidebar
-    ├── Languages       // Multilingual resources for Xplorer
-    └── public          // Basic HTML and CSS files
+│   ├── Components      // Components of Xplorer
+│   ├── config          // JSON files of user preferences
+│   ├── Functions       // Functions that frequently being called
+│   │   ├── DOM         // Functions that change DOM property
+│   │   ├── Files       // Functions to deal with file
+│   │   ├── Math        // Math functions
+│   │   ├── preview     // Functions to show preview of a file
+│   │   ├── tab         // Functions to handle with tab
+│   │   └── Theme       // Functions that change Xplorer theme
+│   ├── icon            // Icon used inside Xplorer
+│   │   ├── contextmenu // Icon for context menu's menu
+│   │   ├── extension   // Icon for an extension of a file
+│   │   ├── folder      // Icon for a folder
+│   │   ├── settings    // Icon for settings
+│   │   └── sidebar     // Icon for the sidebar
+│   ├── Languages       // Multilingual resources for Xplorer
+│   └── public          // Basic HTML and CSS files
+└── test                // Testing code
 ```
 
 ## Setup Xplorer Locally
