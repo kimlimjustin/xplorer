@@ -78,10 +78,12 @@ You can add your language by doing these steps:
 - Run Xplorer locally by running `yarn start` command
 
 #### Commands available
-- `yarn start` - Running Xplorer locally
-- `yarn build` - Packaging Xplorer
-- `yarn build-wml` - Packaging Xplorer for windows, macOS, and Linux operating systems.
-- `yarn compile-cpp` - Compile `lib/fs/fs.cpp` file.
+- `yarn`              - Install dependencies
+- `yarn start`        - Running Xplorer locally
+- `yarn build`        - Packaging Xplorer
+- `yarn build-wml`    - Packaging Xplorer for windows, macOS, and Linux operating systems.
+- `yarn test`         - Run unit test
+- `yarn native_build` - compile c++
 
 ## License
 By contributing to Xplorer, you agree that your contributions will be licensed under the [Apache-2.0 License](https://github.com/kimlimjustin/xplorer/blob/master/LICENSE).
