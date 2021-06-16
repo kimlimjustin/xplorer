@@ -599,3 +599,9 @@ input:checked + .toggle-slider:before {
     margin: 0;
     font-weight: normal;
 }
+
+.sidebar-text{
+    display: inline-block !important;
+    margin: 0 .2rem;
+    padding: 0 !important;
+}

@@ -1863,6 +1863,11 @@ fsevents@^2.3.2, fsevents@~2.3.1:
   resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.2.tgz#8a526f78b8fdf4623b709e0b975c52c24c02fd1a"
   integrity sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==
 
+fswin@^3.21.107:
+  version "3.21.107"
+  resolved "https://registry.yarnpkg.com/fswin/-/fswin-3.21.107.tgz#dad9259f72b016ae2e142552a41c58780d99920d"
+  integrity sha512-soKM5UyaZcsdCr3tlJXYTVPgpSMD28uJKFI5izxgLzBZe4z1Vh8/6on7I1Wv9CrBBerJXSTeTwr0RW+GRhu72Q==
+
 function-bind@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/function-bind/-/function-bind-1.1.1.tgz#a56899d3ea3c9bab874bb9773b7c5ede92f4895d"
@@ -2187,6 +2192,11 @@ is-glob@^4.0.1, is-glob@~4.0.1:
   integrity sha512-5G0tKtBTFImOqDnLB2hG6Bp2qcKEFduo4tZu9MT/H6NQv/ghhy30o55ufafxJ/LdH79LLs2Kfrn85TLKyA7BUg==
   dependencies:
     is-extglob "^2.1.1"
+
+is-hidden-file@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/is-hidden-file/-/is-hidden-file-1.1.1.tgz#6dbc5c8401543c456497ad58306835de610aa6b1"
+  integrity sha512-drIDJRVo1AhbNZ6NJG5Oa6JWMCQ8p6Hu4Ey3IdeIGik6s8CigIhJQM0YrA/glrRk64cM3nvMxdCOgaZckwrQvQ==
 
 is-installed-globally@^0.4.0:
   version "0.4.0"

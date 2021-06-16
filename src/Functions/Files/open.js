@@ -1,4 +1,3 @@
-const { getFilesAndDir } = require("../Files/get");
 const getPreview = require("../preview/preview");
 const path = require('path');
 const os = require('os');
@@ -12,6 +11,7 @@ const Recent = require("../../Components/recent");
 const LAZY_LOAD = require("../DOM/lazyLoadingImage");
 const fs = require('fs');
 const { ContextMenu } = require("../../Components/contextMenu");
+const { isHiddenFile } = require("is-hidden-file");
 
 const LINUX_TRASH_FILES_PATH = path.join(os.homedir(), '.local/share/Trash/files')
 const LINUX_TRASH_INFO_PATH = path.join(os.homedir(), '.local/share/Trash/info')
@@ -71,38 +71,58 @@ const listenOpen = (elements) => {
     })
 }
 
-const displayFiles = async (files, dir) => {
+const displayFiles = async (dir) => {
+    const hideSystemFile = storage.get("preference")?.data?.hideSystemFiles ?? true
     const MAIN_ELEMENT = document.getElementById("main");
     MAIN_ELEMENT.innerHTML = "";
     if (MAIN_ELEMENT.classList.contains('empty-dir-notification')) MAIN_ELEMENT.classList.remove('empty-dir-notification') // Remove class if exist
+    const files = fs.readdirSync(dir, { withFileTypes: true })
     if (!files.length) {
         MAIN_ELEMENT.classList.add('empty-dir-notification')
         MAIN_ELEMENT.innerText = "This folder is empty."
         stopLoading()
     } else {
-        for (const file of files) {
-            if(IGNORE_FILE.indexOf(file.filename) !== -1) continue
-            const preview = await getPreview(path.join(dir, file.filename), category = file.isDir ? "folder" : "file")
+        await files.forEach(async dirent => {
+            if (IGNORE_FILE.indexOf(dirent.name) !== -1) return;
+            const preview = await getPreview(path.join(dir, dirent.name), category = dirent.isDirectory() ? "folder" : "file")
             const fileGrid = document.createElement("div")
             fileGrid.className = "file-grid grid-hover-effect"
             fileGrid.setAttribute("draggable", 'true')
             fileGrid.setAttribute("data-listenOpen", '')
             fileGrid.setAttribute("data-tilt", '')
-            fileGrid.dataset.isdir = !!file.isDir
-            if (file.isHidden) fileGrid.dataset.hiddenFile = true
-            fileGrid.dataset.path = escape(path.join(dir, file.filename))
-            fileGrid.dataset.createdAt = file.createdAt
-            fileGrid.dataset.modifiedAt = file.modifiedAt
-            fileGrid.dataset.accessedAt = file.accessedAt
-            fileGrid.dataset.size = file.size
+            fileGrid.dataset.isdir = dirent.isDirectory()
+            if (isHiddenFile(path.join(dir, dirent.name))) fileGrid.dataset.hiddenFile = true
+            fileGrid.dataset.path = escape(path.join(dir, dirent.name))
+            try {
+                const stat = fs.statSync(path.join(dir, dirent.name))
+                fileGrid.dataset.createdAt = stat.ctime
+                fileGrid.dataset.modifiedAt = stat.mtime
+                fileGrid.dataset.accessedAt = stat.atime
+                fileGrid.dataset.size = stat.size
+            } catch (_) {
+                if (hideSystemFile) return;
+                else {
+                    if (process.platform === "win32") {
+                        const { getAttributesSync } = require("fswin");
+                        const stat = getAttributesSync(path.join(dir, dirent.name));
+                        if (stat) {
+                            fileGrid.dataset.createdAt = stat.CREATION_TIME;
+                            fileGrid.dataset.modifiedAt = stat.LAST_WRITE_TIME;
+                            fileGrid.dataset.accessedAt = stat.LAST_ACCESS_TIME;
+                            fileGrid.dataset.size = stat.SIZE;
+                        }
+                    }
+                    fileGrid.dataset.hiddenFile = true
+                }
+            }
             fileGrid.innerHTML = `
             ${preview}
-            <span class="file-grid-filename" id="file-filename">${file.filename}</span>
+            <span class="file-grid-filename" id="file-filename">${dirent.name}</span>
             `
             MAIN_ELEMENT.appendChild(fileGrid)
 
             ContextMenu(fileGrid, openFileWithDefaultApp, openDir)
-        }
+        })
 
         updateTheme()
         nativeDrag(document.querySelectorAll(".file-grid"), dir)
@@ -134,9 +154,7 @@ const openDir = async (dir) => {
             displayFiles(files, LINUX_TRASH_FILES_PATH)
         }
     } else {
-        getFilesAndDir(dir, files => {
-            displayFiles(files, dir)
-        })
+        displayFiles(dir)
     }
 }
 
