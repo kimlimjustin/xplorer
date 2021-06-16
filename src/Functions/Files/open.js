@@ -155,6 +155,24 @@ const openDir = async (dir) => {
         }
     } else {
         displayFiles(dir)
+        // Watch the directory
+        const watcher = fs.watch(dir, async (eventType, filename) => {
+            // Get files of the dir
+            displayFiles(dir)
+        })
+
+        let focusingPath; // Watch if focusing path changes
+        setInterval(() => {
+            const tabs = storage.get('tabs')?.data
+            const _focusingPath = tabs.tabs[tabs.focus]?.position
+            if (focusingPath === undefined) {
+                focusingPath = _focusingPath
+            } else {
+                if (focusingPath !== _focusingPath) {
+                    watcher.close()
+                }
+            }
+        }, 500);
     }
 }
 
