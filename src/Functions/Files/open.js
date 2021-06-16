@@ -12,7 +12,6 @@ const LAZY_LOAD = require("../DOM/lazyLoadingImage");
 const fs = require('fs');
 const { ContextMenu } = require("../../Components/contextMenu");
 const { isHiddenFile } = require("is-hidden-file");
-const hideSystemFile = storage.get("preference")?.data?.hideSystemFile ?? true
 
 const LINUX_TRASH_FILES_PATH = path.join(os.homedir(), '.local/share/Trash/files')
 const LINUX_TRASH_INFO_PATH = path.join(os.homedir(), '.local/share/Trash/info')
@@ -73,6 +72,7 @@ const listenOpen = (elements) => {
 }
 
 const displayFiles = async (dir) => {
+    const hideSystemFile = storage.get("preference")?.data?.hideSystemFiles ?? true
     const MAIN_ELEMENT = document.getElementById("main");
     MAIN_ELEMENT.innerHTML = "";
     if (MAIN_ELEMENT.classList.contains('empty-dir-notification')) MAIN_ELEMENT.classList.remove('empty-dir-notification') // Remove class if exist
@@ -82,7 +82,6 @@ const displayFiles = async (dir) => {
         MAIN_ELEMENT.innerText = "This folder is empty."
         stopLoading()
     } else {
-        const timer = ms => new Promise(res => setTimeout(res, ms))
         await files.forEach(async dirent => {
             if (IGNORE_FILE.indexOf(dirent.name) !== -1) return;
             const preview = await getPreview(path.join(dir, dirent.name), category = dirent.isDirectory() ? "folder" : "file")
@@ -101,9 +100,9 @@ const displayFiles = async (dir) => {
                 fileGrid.dataset.accessedAt = stat.atime
                 fileGrid.dataset.size = stat.size
             } catch (_) {
-                console.log(dirent.name)
                 if (hideSystemFile) return;
                 else {
+                    console.log(dirent.name)
                     fileGrid.dataset.systemFile = true
                     fileGrid.dataset.hiddenFile = true
                 }
