@@ -1,12 +1,22 @@
 const fs = require('fs');
 const storage = require("electron-json-storage-sync")
-const { readDir } = require("../../../lib/wasm/bindings");
+const path = require('path');
+const { isHiddenFile } = require("is-hidden-file")
 
 // Function to get all files and directory inside a directory
 const getFilesAndDir = async (dir, callback) => {
     // Get files of the dir
     if (!dir.endsWith("\\") && process.platform === "win32") dir = dir + "\\"
-    const files = readDir(dir)
+    const files = fs.readdirSync(dir, { withFileTypes: true })
+        .map(dirent => {
+            try {
+                const stat = fs.statSync(path.join(dir, dirent.name))
+                return { "filename": dirent.name, "isDir": dirent.isDirectory(), "isHidden": isHiddenFile(dirent.name), "size": stat.size, "createdAt": stat.ctime, "modifiedAt": stat.mtime, "accessedAt": stat.atime }
+            } catch(err) {
+                return {"filename": dirent.name, "isDir": dirent.isDirectory() ,"isSystem": true, "isHidden": isHiddenFile(dirent.name)}
+            }
+        })
+    //const files = readDir(dir)
     callback(files)
     // Watch the directory
     const watcher = fs.watch(dir, async (eventType, filename) => {

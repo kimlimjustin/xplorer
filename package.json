@@ -63,6 +63,7 @@
   "dependencies": {
     "@electron/remote": "^1.1.0",
     "electron-json-storage-sync": "^1.2.0",
+    "is-hidden-file": "^1.1.1",
     "jest": "^27.0.4"
   }
 }

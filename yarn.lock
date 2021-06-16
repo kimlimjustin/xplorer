@@ -2188,6 +2188,11 @@ is-glob@^4.0.1, is-glob@~4.0.1:
   dependencies:
     is-extglob "^2.1.1"
 
+is-hidden-file@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/is-hidden-file/-/is-hidden-file-1.1.1.tgz#6dbc5c8401543c456497ad58306835de610aa6b1"
+  integrity sha512-drIDJRVo1AhbNZ6NJG5Oa6JWMCQ8p6Hu4Ey3IdeIGik6s8CigIhJQM0YrA/glrRk64cM3nvMxdCOgaZckwrQvQ==
+
 is-installed-globally@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/is-installed-globally/-/is-installed-globally-0.4.0.tgz#9a0fd407949c30f86eb6959ef1b7994ed0b7b520"
