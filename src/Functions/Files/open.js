@@ -102,8 +102,16 @@ const displayFiles = async (dir) => {
             } catch (_) {
                 if (hideSystemFile) return;
                 else {
-                    console.log(dirent.name)
-                    fileGrid.dataset.systemFile = true
+                    if (process.platform === "win32") {
+                        const { getAttributesSync } = require("fswin");
+                        const stat = getAttributesSync(path.join(dir, dirent.name));
+                        if (stat) {
+                            fileGrid.dataset.createdAt = stat.CREATION_TIME;
+                            fileGrid.dataset.modifiedAt = stat.LAST_WRITE_TIME;
+                            fileGrid.dataset.accessedAt = stat.LAST_ACCESS_TIME;
+                            fileGrid.dataset.size = stat.SIZE;
+                        }
+                    }
                     fileGrid.dataset.hiddenFile = true
                 }
             }
