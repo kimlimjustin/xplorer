@@ -3,7 +3,7 @@ const path = require('path');
 const { Drives, getDrives, getUniqueDrives, drivesToElements } = require('./drives.js');
 const Favorites = require('./favorites.js');
 const { updateTheme } = require('../Functions/Theme/theme');
-const { getFilesAndDir } = require('../Functions/Files/get');
+const fs = require("fs");
 const Translate = require('../Components/multilingual');
 const nativeDrag = require('../Functions/DOM/drag.js');
 const getPreview = require('../Functions/preview/preview.js');
@@ -11,20 +11,42 @@ const { startLoading, stopLoading } = require('../Functions/DOM/loading.js');
 const storage = require('electron-json-storage-sync');
 const LAZY_LOAD = require('../Functions/DOM/lazyLoadingImage.js');
 const { createContextMenus } = require('./contextMenu.js');
+const { isHiddenFile } = require('is-hidden-file');
 
 // Home files for linux
 const homeFiles = (callback) => {
-    getFilesAndDir(os.homedir(), async files => {
+    const readHomeFiles = async () => {
         let result = `<section class='home-section'><h1 class="section-title">Files</h1>`;
-        for (const file of files) {
-            const preview = await getPreview(path.join(os.homedir(), file.filename), category = file.isDir ? "folder" : "file")
-            result += `<div class="file-grid grid-hover-effect" draggable="true" data-isdir=${file.isDir} data-path = "${escape(path.join(os.homedir(), file.filename))}" data-listenOpen ${file.isHidden ? "data-hidden-file" : ""} data-tilt>
-            ${preview}
-            <span class="file-grid-filename" id="file-filename">${Translate(file.filename)}</span>
-            </div>`
-        }
+        await fs.readdirSync(os.homedir(), { withFileTypes: true })
+            .map(async dirent => {
+                const stat = fs.statSync(path.join(os.homedir(), dirent.name))
+                const preview = await getPreview(path.join(os.homedir(), dirent.name), category = dirent.isDirectory() ? "folder" : "file")
+                result += `<div class="file-grid grid-hover-effect" draggable="true" data-isdir=${dirent.isDirectory()} data-path = "${escape(path.join(os.homedir(), dirent.name))}" data-listenOpen ${isHiddenFile(path.join(os.homedir(), dirent.name)) ? "data-hidden-file" : ""} data-tilt data-size="${stat.size}" data-created-at="${stat.ctime}" data-modified-at="${stat.mtime}" data-accessed-at="${stat.atime}">
+                ${preview}
+                <span class="file-grid-filename" id="file-filename">${Translate(dirent.name)}</span>
+                </div>`
+            })
         callback(result + "</section>")
+    }
+    readHomeFiles()
+
+    // Watch the directory
+    const watcher = fs.watch(os.homedir(), async (eventType, filename) => {
+        readHomeFiles()
     })
+
+    let focusingPath; // Watch if focusing path changes
+    setInterval(() => {
+        const tabs = storage.get('tabs')?.data
+        const _focusingPath = tabs.tabs[tabs.focus]?.position
+        if (focusingPath === undefined) {
+            focusingPath = _focusingPath
+        } else {
+            if (focusingPath !== _focusingPath) {
+                watcher.close()
+            }
+        }
+    }, 500);
 }
 // Content for home page
 const Home = async (_callback) => {
@@ -36,6 +58,7 @@ const Home = async (_callback) => {
     const drives = await Drives();
     if (process.platform === "linux") {
         homeFiles(files => {
+            console.log('a')
             // Update the content in the main page ...
             MAIN_ELEMENT.innerHTML = favorites + drives + files
 
