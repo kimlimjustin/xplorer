@@ -49,7 +49,7 @@ const ContextMenuInner = (element, target, coorX, coorY) => {
     ]
     const BodyMenu = [
         [
-            { "menu": "Layout Mode", "submenu": ["Grid View (Large)", "Grid View (Medium)", "Grid View (Small)", "Tiles View", "Detail Size"], "icon": "layout" },
+            { "menu": "Layout Mode", "submenu": ["Grid View (Large)", "Grid View (Medium)", "Grid View (Small)", "Detail View"], "icon": "layout" },
             { "menu": "Sort by", "submenu": ["A-Z", "Z-A", "Last Modified", "First Modified", "Size", "Type"], "icon": "sort" },
             { "menu": "Refresh", "role": "refresh", "shortcut": "F5", "icon": "refresh" }
         ],

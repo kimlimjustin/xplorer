@@ -358,7 +358,7 @@ body{
     margin: .5rem 1rem;
     padding: .5rem;
     border-radius: 5px;
-    width: 100px;
+    width: 6rem;
     cursor: pointer;
 }
 
@@ -389,6 +389,54 @@ body{
     fill: inherit;
     cursor: pointer;
     -webkit-app-region: no-drag;
+}
+
+.file-modifiedAt, .file-size{
+    display: none;
+}
+
+.detail-view{
+    display: inline-flex;
+    width: -webkit-fill-available;
+}
+
+
+.detail-view .file-grid-preview{
+    margin: 0;
+    display: inline-block;
+    height: 1.5rem;
+    max-width: 2rem;
+}
+
+.detail-view .file-grid-filename{
+    flex: 3;
+    -webkit-box-orient: initial !important;
+    padding-left: 1rem;
+    white-space: nowrap;
+}
+
+.detail-view .file-modifiedAt, .detail-view .file-size{
+    display: block;
+    flex:1.2;
+    font-size: .8rem;
+}
+
+.large-grid-view{
+    width: 12rem;
+}
+
+.medium-grid-view{
+    width: 9rem;
+}
+
+.medium-grid-view .file-grid-preview{
+    max-width: 9rem;
+    height: 6rem;
+}
+
+.large-grid-view .file-grid-preview{
+    max-width: 12rem;
+    height: 9rem;
 }
 
 .file-grid-preview{

@@ -62,10 +62,10 @@ const Home = async (_callback) => {
             // Update the content in the main page ...
             MAIN_ELEMENT.innerHTML = favorites + drives + files
 
-            createContextMenus(document.querySelectorAll(".file-grid"))
+            createContextMenus(document.querySelectorAll(".file"))
             // And also the theme :)
             updateTheme()
-            nativeDrag(document.querySelectorAll('.file-grid'), os.homedir()) // Listen to native drag
+            nativeDrag(document.querySelectorAll('.file'), os.homedir()) // Listen to native drag
             _callback()
             stopLoading()
             LAZY_LOAD()

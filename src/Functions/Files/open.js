@@ -12,6 +12,7 @@ const LAZY_LOAD = require("../DOM/lazyLoadingImage");
 const fs = require('fs');
 const { ContextMenu } = require("../../Components/contextMenu");
 const { isHiddenFile } = require("is-hidden-file");
+const formatBytes = require("../Math/filesize");
 
 const LINUX_TRASH_FILES_PATH = path.join(os.homedir(), '.local/share/Trash/files')
 const LINUX_TRASH_INFO_PATH = path.join(os.homedir(), '.local/share/Trash/info')
@@ -28,10 +29,10 @@ function getCommandLine() {
 
 function openFileWithDefaultApp(file) {
     /^win/.test(process.platform) ?
-        require("child_process").exec('start "" "' + file + '"') :
+    require("child_process").exec('start "" "' + file + '"') :
         require("child_process").spawn(getCommandLine(), [file],
             { detached: true, stdio: 'ignore' }).unref();
-}
+        }
 
 const openFileHandler = (e) => {
     let element = e.target
@@ -43,7 +44,7 @@ const openFileHandler = (e) => {
     if (element.dataset.isdir !== "true") {
         let recents = storage.get('recent')?.data;
         openFileWithDefaultApp(filePath)
-
+        
         // Push file into recent files
         if (recents) {
             if (recents.indexOf(filePath) !== -1) {
@@ -86,19 +87,20 @@ const displayFiles = async (dir) => {
             if (IGNORE_FILE.indexOf(dirent.name) !== -1) return;
             const preview = await getPreview(path.join(dir, dirent.name), category = dirent.isDirectory() ? "folder" : "file")
             const fileGrid = document.createElement("div")
-            fileGrid.className = "file-grid grid-hover-effect"
+            fileGrid.className = "file-grid grid-hover-effect file" 
             fileGrid.setAttribute("draggable", 'true')
             fileGrid.setAttribute("data-listenOpen", '')
             fileGrid.setAttribute("data-tilt", '')
             fileGrid.dataset.isdir = dirent.isDirectory()
             if (isHiddenFile(path.join(dir, dirent.name))) fileGrid.dataset.hiddenFile = true
             fileGrid.dataset.path = escape(path.join(dir, dirent.name))
+            let createdAt, modifiedAt, accessedAt, size;
             try {
                 const stat = fs.statSync(path.join(dir, dirent.name))
-                fileGrid.dataset.createdAt = stat.ctime
-                fileGrid.dataset.modifiedAt = stat.mtime
-                fileGrid.dataset.accessedAt = stat.atime
-                fileGrid.dataset.size = stat.size
+                createdAt = stat.ctime
+                modifiedAt = stat.mtime
+                accessedAt = stat.atime
+                size = stat.size
             } catch (_) {
                 if (hideSystemFile) return;
                 else {
@@ -106,10 +108,10 @@ const displayFiles = async (dir) => {
                         const { getAttributesSync } = require("fswin");
                         const stat = getAttributesSync(path.join(dir, dirent.name));
                         if (stat) {
-                            fileGrid.dataset.createdAt = stat.CREATION_TIME;
-                            fileGrid.dataset.modifiedAt = stat.LAST_WRITE_TIME;
-                            fileGrid.dataset.accessedAt = stat.LAST_ACCESS_TIME;
-                            fileGrid.dataset.size = stat.SIZE;
+                            createdAt = stat.CREATION_TIME;
+                            modifiedAt = stat.LAST_WRITE_TIME;
+                            accessedAt = stat.LAST_ACCESS_TIME;
+                            size = stat.SIZE;
                         }
                     }
                     fileGrid.dataset.hiddenFile = true
@@ -117,7 +119,8 @@ const displayFiles = async (dir) => {
             }
             fileGrid.innerHTML = `
             ${preview}
-            <span class="file-grid-filename" id="file-filename">${dirent.name}</span>
+            <span class="file-grid-filename" id="file-filename">${dirent.name}</span><span class="file-modifiedAt" id="file-createdAt">${new Date(modifiedAt).toLocaleString(navigator.language, {hour12: false})}</span>
+            ${size > 0 ? `<span class="file-size" id="file-size">${formatBytes(size)}</span>` :`<span class="file-size" id="file-size"></span>`}
             `
             MAIN_ELEMENT.appendChild(fileGrid)
 
@@ -125,7 +128,7 @@ const displayFiles = async (dir) => {
         })
 
         updateTheme()
-        nativeDrag(document.querySelectorAll(".file-grid"), dir)
+        nativeDrag(document.querySelectorAll(".file"), dir)
         listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
         LAZY_LOAD()
 
