@@ -230,7 +230,8 @@ body{
 
 #main{
     padding: 1rem;
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
     height: 100%;
 }
 
