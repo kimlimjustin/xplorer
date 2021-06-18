@@ -27,9 +27,6 @@
     "directories": {
       "buildResources": "icons"
     },
-    "extraResources": [
-      "lib/fs/fs.exe"
-    ],
     "win": {
       "target": [
         "nsis"
