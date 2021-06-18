@@ -73,20 +73,43 @@ const listenOpen = (elements) => {
 }
 
 const displayFiles = async (dir) => {
+    const { getAttributesSync } = require("fswin");
     const hideSystemFile = storage.get("preference")?.data?.hideSystemFiles ?? true
     const layout = storage.get("layout")?.data?.[dir] ?? 's'
     const MAIN_ELEMENT = document.getElementById("main");
     MAIN_ELEMENT.innerHTML = "";
     if (MAIN_ELEMENT.classList.contains('empty-dir-notification')) MAIN_ELEMENT.classList.remove('empty-dir-notification') // Remove class if exist
-    const files = fs.readdirSync(dir, { withFileTypes: true })
+    const files = fs.readdirSync(dir, { withFileTypes: true }).map(dirent => {
+        let result = { name: dirent.name, isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)) }
+        try {
+            const stat = fs.statSync(path.join(dir, dirent.name))
+            result.createdAt = stat.ctime
+            result.modifiedAt = stat.mtime
+            result.accessedAt = stat.atime
+            result.size = stat.size
+        } catch (_) {
+            if (process.platform === "win32" && !hideSystemFile) {
+                const stat = getAttributesSync(path.join(dir, dirent.name));
+                if (stat) {
+                    result.createdAt = stat.CREATION_TIME;
+                    result.modifiedAt = stat.LAST_WRITE_TIME;
+                    result.accessedAt = stat.LAST_ACCESS_TIME;
+                    result.size = stat.SIZE;
+                }
+            }
+            result.isSystemFile = true
+        }
+        return result
+    })
     if (!files.length) {
         MAIN_ELEMENT.classList.add('empty-dir-notification')
         MAIN_ELEMENT.innerText = "This folder is empty."
         stopLoading()
     } else {
         await files.forEach(async dirent => {
+            if (hideSystemFile && dirent.isSystemFile) return;
             if (IGNORE_FILE.indexOf(dirent.name) !== -1) return;
-            const preview = await getPreview(path.join(dir, dirent.name), category = dirent.isDirectory() ? "folder" : "file")
+            const preview = await getPreview(path.join(dir, dirent.name), category = dirent.isDir ? "folder" : "file")
             const fileGrid = document.createElement("div")
             fileGrid.className = "file-grid grid-hover-effect file"
             switch (layout) {
@@ -107,36 +130,13 @@ const displayFiles = async (dir) => {
             fileGrid.setAttribute("draggable", 'true')
             fileGrid.setAttribute("data-listenOpen", '')
             fileGrid.setAttribute("data-tilt", '')
-            fileGrid.dataset.isdir = dirent.isDirectory()
-            if (isHiddenFile(path.join(dir, dirent.name))) fileGrid.dataset.hiddenFile = true
+            fileGrid.dataset.isdir = dirent.isDir
+            if (dirent.isHidden) fileGrid.dataset.hiddenFile = true
             fileGrid.dataset.path = escape(path.join(dir, dirent.name))
-            let createdAt, modifiedAt, accessedAt, size;
-            try {
-                const stat = fs.statSync(path.join(dir, dirent.name))
-                createdAt = stat.ctime
-                modifiedAt = stat.mtime
-                accessedAt = stat.atime
-                size = stat.size
-            } catch (_) {
-                if (hideSystemFile) return;
-                else {
-                    if (process.platform === "win32") {
-                        const { getAttributesSync } = require("fswin");
-                        const stat = getAttributesSync(path.join(dir, dirent.name));
-                        if (stat) {
-                            createdAt = stat.CREATION_TIME;
-                            modifiedAt = stat.LAST_WRITE_TIME;
-                            accessedAt = stat.LAST_ACCESS_TIME;
-                            size = stat.SIZE;
-                        }
-                    }
-                    fileGrid.dataset.hiddenFile = true
-                }
-            }
             fileGrid.innerHTML = `
             ${preview}
-            <span class="file-grid-filename" id="file-filename">${dirent.name}</span><span class="file-modifiedAt" id="file-createdAt">${new Date(modifiedAt).toLocaleString(navigator.language, {hour12: false})}</span>
-            ${size > 0 ? `<span class="file-size" id="file-size">${formatBytes(size)}</span>` :`<span class="file-size" id="file-size"></span>`}
+            <span class="file-grid-filename" id="file-filename">${dirent.name}</span><span class="file-modifiedAt" id="file-createdAt">${new Date(dirent.modifiedAt).toLocaleString(navigator.language, {hour12: false})}</span>
+            ${dirent.size > 0 ? `<span class="file-size" id="file-size">${formatBytes(dirent.size)}</span>` :`<span class="file-size" id="file-size"></span>`}
             `
             MAIN_ELEMENT.appendChild(fileGrid)
 
