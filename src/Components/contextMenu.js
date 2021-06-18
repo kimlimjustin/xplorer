@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
     contextMenuSubmenus = document.getElementById("contextmenu-submenus");
 })
 
-const ContextMenuInner = (element, target, coorX, coorY) => {
+const ContextMenuInner = (target, coorX, coorY) => {
     if (target.classList.contains("home-section")) target = document.getElementById("main") // If context menu target is on home-section, use main element as target instead.
     while (!target.dataset.path) {
         target = target.parentNode
@@ -131,21 +131,43 @@ const ContextMenuInner = (element, target, coorX, coorY) => {
             }
 
             const clickSubmenuEvent = (e) => {
-                console.log('a')
                 if (e.target.getAttribute("role")) {
                     const files = document.querySelectorAll(".file")
+                    const layout = storage.get('layout')?.data ?? {}
+                    const tabs = storage.get("tabs")?.data
+                    const currentPath = tabs.tabs[tabs.focus].position
                     switch (e.target.innerText) {
                         case "Grid View (Large)":
-                            files.forEach(file => { clearLayoutModeClasses(file); file.classList.add("large-grid-view") })
+                            files.forEach(file => {
+                                clearLayoutModeClasses(file);
+                                file.classList.add("large-grid-view")
+                                layout[currentPath] = "l" // l = Large grid view
+                                storage.set("layout", layout)
+                            })
                             break;
                         case "Grid View (Medium)":
-                            files.forEach(file => { clearLayoutModeClasses(file); file.classList.add("medium-grid-view") })
+                            files.forEach(file => {
+                                clearLayoutModeClasses(file);
+                                file.classList.add("medium-grid-view")
+                                layout[currentPath] = "m" // m = Medium grid view
+                                storage.set("layout", layout)
+                            })
                             break;
                         case "Grid View (Small)":
-                            files.forEach(file => { clearLayoutModeClasses(file); file.classList.add("small-grid-view") })
+                            files.forEach(file => {
+                                clearLayoutModeClasses(file);
+                                file.classList.add("small-grid-view")
+                                layout[currentPath] = "s" // s = Small grid view
+                                storage.set("layout", layout)
+                            })
                             break;
                         case "Detail View":
-                            files.forEach(file => { clearLayoutModeClasses(file); file.classList.add("detail-view") })
+                            files.forEach(file => {
+                                clearLayoutModeClasses(file);
+                                file.classList.add("detail-view")
+                                layout[currentPath] = "d" // d = Detail view
+                                storage.set("layout", layout)
+                            })
                             break;
                     }
                 }
@@ -194,7 +216,7 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
         
         contextMenu.style.left = coorX + "px";
         contextMenu.style.top = coorY + "px";
-        ContextMenuInner(element, e.target, coorX, coorY)
+        ContextMenuInner(e.target, coorX, coorY)
 
         contextMenu.querySelectorAll("span").forEach(menu => {
             menu.addEventListener("click", () => {

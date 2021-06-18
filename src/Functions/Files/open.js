@@ -74,6 +74,7 @@ const listenOpen = (elements) => {
 
 const displayFiles = async (dir) => {
     const hideSystemFile = storage.get("preference")?.data?.hideSystemFiles ?? true
+    const layout = storage.get("layout")?.data?.[dir] ?? 's'
     const MAIN_ELEMENT = document.getElementById("main");
     MAIN_ELEMENT.innerHTML = "";
     if (MAIN_ELEMENT.classList.contains('empty-dir-notification')) MAIN_ELEMENT.classList.remove('empty-dir-notification') // Remove class if exist
@@ -87,7 +88,22 @@ const displayFiles = async (dir) => {
             if (IGNORE_FILE.indexOf(dirent.name) !== -1) return;
             const preview = await getPreview(path.join(dir, dirent.name), category = dirent.isDirectory() ? "folder" : "file")
             const fileGrid = document.createElement("div")
-            fileGrid.className = "file-grid grid-hover-effect file" 
+            fileGrid.className = "file-grid grid-hover-effect file"
+            switch (layout) {
+                case "m":
+                    fileGrid.classList.add("medium-grid-view")
+                    break;
+                case "l":
+                    fileGrid.classList.add("large-grid-view")
+                    break;
+                case "d":
+                    fileGrid.classList.add("detail-view")
+                    break;
+                default:
+                    fileGrid.classList.add("small-grid-view")
+                    break;
+
+            }
             fileGrid.setAttribute("draggable", 'true')
             fileGrid.setAttribute("data-listenOpen", '')
             fileGrid.setAttribute("data-tilt", '')
