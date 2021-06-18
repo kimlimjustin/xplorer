@@ -49,7 +49,7 @@ const ContextMenuInner = (element, target, coorX, coorY) => {
     ]
     const BodyMenu = [
         [
-            { "menu": "Layout Mode", "submenu": ["Grid View (Large)", "Grid View (Medium)", "Grid View (Small)", "Detail View"], "icon": "layout" },
+            { "menu": "Layout Mode", "submenu": ["Grid View (Large)", "Grid View (Medium)", "Grid View (Small)", "Detail View"], "icon": "layout", "role": "layout" },
             { "menu": "Sort by", "submenu": ["A-Z", "Z-A", "Last Modified", "First Modified", "Size", "Type"], "icon": "sort" },
             { "menu": "Refresh", "role": "refresh", "shortcut": "F5", "icon": "refresh" }
         ],
@@ -97,7 +97,7 @@ const ContextMenuInner = (element, target, coorX, coorY) => {
                             const submenuItemElement = document.createElement("span");
                             submenuItemElement.classList.add("contextmenu-item")
                             submenuItemElement.innerHTML = submenuItem
-                            if (submenuItem.role) menu.setAttribute("role", submenuItem?.role)
+                            if (item?.role) submenuItemElement.setAttribute("role", item?.role)
                             submenu.appendChild(submenuItemElement)
                         })
                     }
@@ -110,24 +110,51 @@ const ContextMenuInner = (element, target, coorX, coorY) => {
     else if (target?.dataset?.path) MenuToElements(FileMenu)
 
     updateTheme()
-    const TOPBAR_ELEMENT = document.querySelector(".topbar");
 
     document.querySelectorAll(".contextmenu-item").forEach(menu => {
         if (menu.dataset.submenu) {
             const submenu = document.getElementById(menu.dataset.submenu)
+            const submenuItems = submenu.childNodes;
             let submenuCoorX = coorX + contextMenu.offsetWidth
             let submenuCoorY = coorY + menu.offsetTop
 
             if (coorX + contextMenu.offsetWidth > window.innerWidth) submenuCoorX = coorX - contextMenu.offsetWidth
-            if (contextMenu.offsetHeight + coorY > window.innerHeight && coorY - contextMenu.offsetHeight > TOPBAR_ELEMENT.offsetHeight)
-                submenuCoorY = coorY - (contextMenu.offsetHeight * .5)
 
             submenu.style.left = submenuCoorX + "px"
             submenu.style.top = submenuCoorY + "px"
 
+            const clearLayoutModeClasses = element => {
+                element.classList.remove("large-grid-view")
+                element.classList.remove("medium-grid-view")
+                element.classList.remove("small-grid-view")
+                element.classList.remove("detail-view")
+            }
+
+            const clickSubmenuEvent = (e) => {
+                console.log('a')
+                if (e.target.getAttribute("role")) {
+                    const files = document.querySelectorAll(".file")
+                    switch (e.target.innerText) {
+                        case "Grid View (Large)":
+                            files.forEach(file => { clearLayoutModeClasses(file); file.classList.add("large-grid-view") })
+                            break;
+                        case "Grid View (Medium)":
+                            files.forEach(file => { clearLayoutModeClasses(file); file.classList.add("medium-grid-view") })
+                            break;
+                        case "Grid View (Small)":
+                            files.forEach(file => { clearLayoutModeClasses(file); file.classList.add("small-grid-view") })
+                            break;
+                        case "Detail View":
+                            files.forEach(file => { clearLayoutModeClasses(file); file.classList.add("detail-view") })
+                            break;
+                    }
+                }
+            }
+
             const onhover = () => {
                 document.querySelectorAll(".contextmenu-submenu").forEach(submenu => submenu.style.display = "none")
                 submenu.style.display = "block"
+                submenu.addEventListener("click", clickSubmenuEvent)
             }
             const onstophover = () => {
                 const trackMousePosition = e => {
@@ -157,14 +184,17 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
     element.addEventListener("contextmenu", e => {
         // Disable context menu if current path is home and on windows
         if (window.platform === "win32" && (!document.getElementById("main").dataset?.path || document.getElementById("main").dataset?.path === "Home")) return;
-        ContextMenuInner(element, e.target, e.pageX, e.pageY)
-        contextMenu.style.left = e.pageX + "px";
-        contextMenu.style.top = e.pageY + "px";
+        let coorX = e.pageX;
+        let coorY = e.pageY;
 
         const TOPBAR_ELEMENT = document.querySelector(".topbar");
 
-        if (contextMenu.offsetHeight + e.pageY > window.innerHeight && e.pageY - contextMenu.offsetHeight > TOPBAR_ELEMENT.offsetHeight)
-            contextMenu.style.top = e.pageY - (contextMenu.offsetHeight * .5) + "px";
+        if (contextMenu.offsetHeight + coorY > window.innerHeight && coorY - contextMenu.offsetHeight > TOPBAR_ELEMENT.offsetHeight)
+            coorY = coorY - (contextMenu.offsetHeight * .5) + "px";
+        
+        contextMenu.style.left = coorX + "px";
+        contextMenu.style.top = coorY + "px";
+        ContextMenuInner(element, e.target, coorX, coorY)
 
         contextMenu.querySelectorAll("span").forEach(menu => {
             menu.addEventListener("click", () => {
