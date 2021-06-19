@@ -50,7 +50,7 @@ const ContextMenuInner = (target, coorX, coorY) => {
     const BodyMenu = [
         [
             { "menu": "Layout Mode", "submenu": ["Grid View (Large)", "Grid View (Medium)", "Grid View (Small)", "Detail View"], "icon": "layout", "role": "layout" },
-            { "menu": "Sort by", "submenu": ["A-Z", "Z-A", "Last Modified", "First Modified", "Size", "Type"], "icon": "sort" },
+            { "menu": "Sort by", "submenu": ["A-Z", "Z-A", "Last Modified", "First Modified", "Size", "Type"], "icon": "sort", "role": "sort" },
             { "menu": "Refresh", "role": "refresh", "shortcut": "F5", "icon": "refresh" }
         ],
         [
@@ -134,40 +134,43 @@ const ContextMenuInner = (target, coorX, coorY) => {
                 if (e.target.getAttribute("role")) {
                     const files = document.querySelectorAll(".file")
                     const layout = storage.get('layout')?.data ?? {}
+                    const sort = storage.get('layout')?.data ?? {}
                     const tabs = storage.get("tabs")?.data
                     const currentPath = tabs.tabs[tabs.focus].position
+                    console.log(e.target.innerText)
                     switch (e.target.innerText) {
                         case "Grid View (Large)":
                             files.forEach(file => {
                                 clearLayoutModeClasses(file);
                                 file.classList.add("large-grid-view")
-                                layout[currentPath] = "l" // l = Large grid view
-                                storage.set("layout", layout)
                             })
+                            layout[currentPath] = "l" // l = Large grid view
+                            storage.set("layout", layout)
                             break;
                         case "Grid View (Medium)":
                             files.forEach(file => {
                                 clearLayoutModeClasses(file);
                                 file.classList.add("medium-grid-view")
-                                layout[currentPath] = "m" // m = Medium grid view
-                                storage.set("layout", layout)
                             })
+                            layout[currentPath] = "m" // m = Medium grid view
+                            storage.set("layout", layout)
                             break;
                         case "Grid View (Small)":
                             files.forEach(file => {
                                 clearLayoutModeClasses(file);
                                 file.classList.add("small-grid-view")
-                                layout[currentPath] = "s" // s = Small grid view
-                                storage.set("layout", layout)
                             })
+                            layout[currentPath] = "s" // s = Small grid view
+                            storage.set("layout", layout)
                             break;
                         case "Detail View":
                             files.forEach(file => {
                                 clearLayoutModeClasses(file);
                                 file.classList.add("detail-view")
-                                layout[currentPath] = "d" // d = Detail view
-                                storage.set("layout", layout)
                             })
+                            layout[currentPath] = "d" // d = Detail view
+                            storage.set("layout", layout)
+                            break;
                             break;
                     }
                 }
