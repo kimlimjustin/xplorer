@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
     contextMenuSubmenus = document.getElementById("contextmenu-submenus");
 })
 
-const ContextMenuInner = (target, coorX, coorY) => {
+const ContextMenuInner = (target, coorX, coorY, openDir) => {
     if (target.classList.contains("home-section")) target = document.getElementById("main") // If context menu target is on home-section, use main element as target instead.
     while (!target.dataset.path) {
         target = target.parentNode
@@ -137,7 +137,6 @@ const ContextMenuInner = (target, coorX, coorY) => {
                     const sort = storage.get('layout')?.data ?? {}
                     const tabs = storage.get("tabs")?.data
                     const currentPath = tabs.tabs[tabs.focus].position
-                    console.log(e.target.innerText)
                     switch (e.target.innerText) {
                         case "Grid View (Large)":
                             files.forEach(file => {
@@ -171,6 +170,35 @@ const ContextMenuInner = (target, coorX, coorY) => {
                             layout[currentPath] = "d" // d = Detail view
                             storage.set("layout", layout)
                             break;
+                        case "A-Z":
+                            sort[currentPath] = "A" // A = A - Z
+                            storage.set("sort", sort)
+                            openDir(currentPath)
+                            break;
+                        case "Z-A":
+                            sort[currentPath] = "Z" // Z = Z - A
+                            storage.set("sort", sort)
+                            openDir(currentPath)
+                            break;
+                        case "Last Modified":
+                            sort[currentPath] = "L" // L = Last Modified
+                            storage.set("sort", sort)
+                            openDir(currentPath)
+                            break;
+                        case "First Modified":
+                            sort[currentPath] = "F" // F = First Modified
+                            storage.set("sort", sort)
+                            openDir(currentPath)
+                            break;
+                        case "Size":
+                            sort[currentPath] = "S" // S = Size
+                            storage.set("sort", sort)
+                            openDir(currentPath)
+                            break;
+                        case "Type":
+                            sort[currentPath] = "T" // T = Type
+                            storage.set("sort", sort)
+                            openDir(currentPath)
                             break;
                     }
                 }
@@ -219,7 +247,7 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
         
         contextMenu.style.left = coorX + "px";
         contextMenu.style.top = coorY + "px";
-        ContextMenuInner(e.target, coorX, coorY)
+        ContextMenuInner(e.target, coorX, coorY, openDir)
 
         contextMenu.querySelectorAll("span").forEach(menu => {
             menu.addEventListener("click", () => {
