@@ -77,6 +77,7 @@ const displayFiles = async (dir) => {
     let getAttributesSync;
     if (process.platform === "win32") getAttributesSync = require("fswin").getAttributesSync;
     const hideSystemFile = storage.get("preference")?.data?.hideSystemFiles ?? true
+    const dirAlongsideFiles = storage.get("preference")?.data?.dirAlongsideFiles ?? false
     const layout = storage.get("layout")?.data?.[dir] ?? storage.get("preference")?.data?.layout ?? "s"
     const sort = storage.get("sort")?.data?.[dir] ?? 'A'
     const MAIN_ELEMENT = document.getElementById("main");
@@ -122,6 +123,9 @@ const displayFiles = async (dir) => {
                 return a.type > b.type ? 1 : -1
         }
     })
+    if (!dirAlongsideFiles) {
+        files = files.sort((a, b) => -(a.isDir - b.isDir))
+    }
     if (!files.length) {
         MAIN_ELEMENT.classList.add('empty-dir-notification')
         MAIN_ELEMENT.innerText = "This folder is empty."

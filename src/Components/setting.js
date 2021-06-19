@@ -72,6 +72,7 @@ const Preference = () => {
     const language = storage.get("preference")?.data?.language
     const hideHiddenFiles = storage.get("preference")?.data?.hideHiddenFiles ?? true
     const hideSystemFiles = storage.get("preference")?.data?.hideSystemFiles ?? true
+    const dirAlongsideFiles = storage.get("preference")?.data?.dirAlongsideFiles ?? false
     let settingsMain = document.querySelector(".settings-main");
     const availableLanguages = JSON.parse(fs.readFileSync(path.join(__dirname, "../Languages/index.json")))?.availableLanguages
     settingsMain.innerHTML = `<h3 class="settings-title">App Language</h3>
@@ -95,6 +96,13 @@ const Preference = () => {
             <span class="toggle-label">Hide System Files</span>
         </label>
     </div>
+    <div class="toggle-box">
+        <label class="toggle">
+            <input type="checkbox" name="dirAlongsideFiles" ${dirAlongsideFiles ? "checked" : ""}>
+            <span class="toggle-slider"></span>
+            <span class="toggle-label">List and sort directories alongside files</span>
+        </label>
+    </div>
 `
     settingsMain.querySelector(`[name="language"]`).addEventListener("change", ({ target: { value } }) => {
         let preference = storage.get("preference")?.data ?? {}
@@ -113,6 +121,13 @@ const Preference = () => {
     settingsMain.querySelector(`[name="hide-system-files"]`).addEventListener("change", ({ target: { checked } }) => {
         let preference = storage.get("preference")?.data ?? {}
         preference.hideSystemFiles = checked
+        storage.set("preference", preference)
+        const { reload } = require("./windowManager");
+        reload()
+    })
+    settingsMain.querySelector(`[name="dirAlongsideFiles"]`).addEventListener("change", ({ target: { checked } }) => {
+        let preference = storage.get("preference")?.data ?? {}
+        preference.dirAlongsideFiles = checked
         storage.set("preference", preference)
         const { reload } = require("./windowManager");
         reload()
