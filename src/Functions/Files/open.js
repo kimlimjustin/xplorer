@@ -30,10 +30,10 @@ function getCommandLine() {
 
 function openFileWithDefaultApp(file) {
     /^win/.test(process.platform) ?
-    require("child_process").exec('start "" "' + file + '"') :
+        require("child_process").exec('start "" "' + file + '"') :
         require("child_process").spawn(getCommandLine(), [file],
             { detached: true, stdio: 'ignore' }).unref();
-        }
+}
 
 const openFileHandler = (e) => {
     let element = e.target
@@ -45,7 +45,7 @@ const openFileHandler = (e) => {
     if (element.dataset.isdir !== "true") {
         let recents = storage.get('recent')?.data;
         openFileWithDefaultApp(filePath)
-        
+
         // Push file into recent files
         if (recents) {
             if (recents.indexOf(filePath) !== -1) {
@@ -74,7 +74,8 @@ const listenOpen = (elements) => {
 }
 
 const displayFiles = async (dir) => {
-    const { getAttributesSync } = require("fswin");
+    let getAttributesSync;
+    if (process.platform === "win32") getAttributesSync = require("fswin").getAttributesSync;
     const hideSystemFile = storage.get("preference")?.data?.hideSystemFiles ?? true
     const layout = storage.get("layout")?.data?.[dir] ?? 's'
     const MAIN_ELEMENT = document.getElementById("main");
@@ -137,7 +138,7 @@ const displayFiles = async (dir) => {
             fileGrid.dataset.path = escape(path.join(dir, dirent.name))
             fileGrid.innerHTML = `
             ${preview}
-            <span class="file-grid-filename" id="file-filename">${dirent.name}</span><span class="file-modifiedAt" id="file-createdAt">${new Date(dirent.modifiedAt).toLocaleString(navigator.language, {hour12: false})}</span>
+            <span class="file-grid-filename" id="file-filename">${dirent.name}</span><span class="file-modifiedAt" id="file-createdAt">${new Date(dirent.modifiedAt).toLocaleString(navigator.language, { hour12: false })}</span>
             ${dirent.size > 0 ? `<span class="file-size" id="file-size">${formatBytes(dirent.size)}</span>` : `<span class="file-size" id="file-size"></span>`}
             <span class="file-type">${type}</span>
             `
