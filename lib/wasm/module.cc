@@ -348,124 +348,14 @@ napi_value extractIcon(napi_env env, napi_callback_info info)
 	}
 }
 
-napi_value readDir(napi_env env, napi_callback_info info)
-{
-	napi_status status;
-
-	size_t argc = 2;
-	napi_value argv[2];
-	throwIfNotSuccess(env, napi_get_cb_info(env, info, &argc, argv, nullptr, nullptr), "unable to read arguments");
-
-	size_t str_size;
-	size_t str_size_read;
-	napi_get_value_string_utf8(env, argv[0], NULL, 0, &str_size);
-	char *path;
-	path = (char *)calloc(str_size + 1, sizeof(char));
-	str_size = str_size + 1;
-	napi_get_value_string_utf8(env, argv[0], path, str_size, &str_size_read);
-
-	napi_value files, files_push_fn, files_item;
-	status = napi_create_array(env, &files);
-	assert(status == napi_ok);
-	status = napi_get_named_property(env, files, "push", &files_push_fn);
-	assert(status == napi_ok);
-
-	DIR *dir;
-	struct dirent *ent;
-	if ((dir = opendir(path)) != NULL)
-	{
-		while ((ent = readdir(dir)) != NULL)
-		{
-			string filepath = path + string(ent->d_name);
-
-			struct stat fileInfo;
-			stat(filepath.c_str(), &fileInfo);
-
-			struct tm *created_timeinfo;
-			char created_buffer[80];
-			created_timeinfo = localtime(&fileInfo.st_ctime);
-			strftime(created_buffer, 80, "%d/%m/%Y %H:%M:%S", created_timeinfo);
-			string created_str(created_buffer);
-
-			struct tm *modified_timeinfo;
-			char modified_buffer[80];
-			modified_timeinfo = localtime(&fileInfo.st_mtime);
-			strftime(modified_buffer, 80, "%d/%m/%Y %H:%M:%S", modified_timeinfo);
-			string modified_str(modified_buffer);
-
-			struct tm *accessed_timeinfo;
-			char accessed_buffer[80];
-			accessed_timeinfo = localtime(&fileInfo.st_atime);
-			strftime(accessed_buffer, 80, "%d/%m/%Y %H:%M:%S", accessed_timeinfo);
-			string accessed_str(accessed_buffer);
-
-			napi_value filename, isHidden, isDir, isSystemFile, createdAt, modifiedAt, accessedAt, size;
-			status = napi_create_object(env, &files_item);
-			assert(status == napi_ok);
-
-			status = napi_create_string_utf8(env, ent->d_name, NAPI_AUTO_LENGTH, &filename);
-			assert(status == napi_ok);
-			status = napi_create_string_utf8(env, created_str.c_str(), NAPI_AUTO_LENGTH, &createdAt);
-			assert(status == napi_ok);
-			status = napi_create_string_utf8(env, modified_str.c_str(), NAPI_AUTO_LENGTH, &modifiedAt);
-			assert(status == napi_ok);
-			status = napi_create_string_utf8(env, accessed_str.c_str(), NAPI_AUTO_LENGTH, &accessedAt);
-			assert(status == napi_ok);
-			status = napi_create_double(env, fileInfo.st_size, &size);
-			assert(status == napi_ok);
-
-			DWORD const result = GetFileAttributesA(filepath.c_str());
-
-			status = napi_get_boolean(env, !!(result & FILE_ATTRIBUTE_HIDDEN), &isHidden);
-			assert(status == napi_ok);
-			status = napi_get_boolean(env, !!(result & FILE_ATTRIBUTE_DIRECTORY), &isDir);
-			assert(status == napi_ok);
-			status = napi_get_boolean(env, !!(result & FILE_ATTRIBUTE_SYSTEM), &isSystemFile);
-			assert(status == napi_ok);
-
-			status = napi_set_named_property(env, files_item, "filename", filename);
-			assert(status == napi_ok);
-			status = napi_set_named_property(env, files_item, "createdAt", createdAt);
-			assert(status == napi_ok);
-			status = napi_set_named_property(env, files_item, "modifiedAt", modifiedAt);
-			assert(status == napi_ok);
-			status = napi_set_named_property(env, files_item, "accessedAt", accessedAt);
-			assert(status == napi_ok);
-			status = napi_set_named_property(env, files_item, "size", size);
-			assert(status == napi_ok);
-			status = napi_set_named_property(env, files_item, "isHidden", isHidden);
-			assert(status == napi_ok);
-			status = napi_set_named_property(env, files_item, "isDir", isDir);
-			assert(status == napi_ok);
-			status = napi_set_named_property(env, files_item, "isSystemFile", isSystemFile);
-			assert(status == napi_ok);
-
-			status = napi_call_function(env, files, files_push_fn, 1, &files_item, NULL);
-			assert(status == napi_ok);
-		}
-	}
-	else
-	{
-		napi_throw_error(env, NULL, "Could not open directory");
-		return 0;
-	}
-
-	return files;
-}
-
-napi_value Init(napi_env env, napi_value exports)
-{
+napi_value Init(napi_env env, napi_value exports) {
 	napi_value fn;
+
 
 	// Arguments 2 and 3 are function name and length respectively
 	// We will leave them as empty for this example
-	throwIfNotSuccess(env, napi_create_function(env, "readDir", sizeof("readDir"), readDir, NULL, &fn),
-					  "Unable to wrap native function");
-
-	throwIfNotSuccess(env, napi_set_named_property(env, exports, "readDir", fn), "Unable to populate exports");
-
 	throwIfNotSuccess(env, napi_create_function(env, "extractIcon", sizeof("extractIcon"), extractIcon, NULL, &fn),
-					  "Unable to wrap native function");
+  	"Unable to wrap native function");
 
 	throwIfNotSuccess(env, napi_set_named_property(env, exports, "extractIcon", fn), "Unable to populate exports");
 

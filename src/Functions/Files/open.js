@@ -1,4 +1,3 @@
-const { getFilesAndDir } = require("../Files/get");
 const getPreview = require("../preview/preview");
 const path = require('path');
 const os = require('os');
@@ -12,6 +11,9 @@ const Recent = require("../../Components/recent");
 const LAZY_LOAD = require("../DOM/lazyLoadingImage");
 const fs = require('fs');
 const { ContextMenu } = require("../../Components/contextMenu");
+const { isHiddenFile } = require("is-hidden-file");
+const formatBytes = require("../Math/filesize");
+const getType = require("./type");
 
 const LINUX_TRASH_FILES_PATH = path.join(os.homedir(), '.local/share/Trash/files')
 const LINUX_TRASH_INFO_PATH = path.join(os.homedir(), '.local/share/Trash/info')
@@ -28,10 +30,10 @@ function getCommandLine() {
 
 function openFileWithDefaultApp(file) {
     /^win/.test(process.platform) ?
-        require("child_process").exec('start "" "' + file + '"') :
+    require("child_process").exec('start "" "' + file + '"') :
         require("child_process").spawn(getCommandLine(), [file],
             { detached: true, stdio: 'ignore' }).unref();
-}
+        }
 
 const openFileHandler = (e) => {
     let element = e.target
@@ -43,7 +45,7 @@ const openFileHandler = (e) => {
     if (element.dataset.isdir !== "true") {
         let recents = storage.get('recent')?.data;
         openFileWithDefaultApp(filePath)
-
+        
         // Push file into recent files
         if (recents) {
             if (recents.indexOf(filePath) !== -1) {
@@ -71,41 +73,81 @@ const listenOpen = (elements) => {
     })
 }
 
-const displayFiles = async (files, dir) => {
+const displayFiles = async (dir) => {
+    const { getAttributesSync } = require("fswin");
+    const hideSystemFile = storage.get("preference")?.data?.hideSystemFiles ?? true
+    const layout = storage.get("layout")?.data?.[dir] ?? 's'
     const MAIN_ELEMENT = document.getElementById("main");
     MAIN_ELEMENT.innerHTML = "";
     if (MAIN_ELEMENT.classList.contains('empty-dir-notification')) MAIN_ELEMENT.classList.remove('empty-dir-notification') // Remove class if exist
+    const files = fs.readdirSync(dir, { withFileTypes: true }).map(dirent => {
+        let result = { name: dirent.name, isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)) }
+        try {
+            const stat = fs.statSync(path.join(dir, dirent.name))
+            result.createdAt = stat.ctime
+            result.modifiedAt = stat.mtime
+            result.accessedAt = stat.atime
+            result.size = stat.size
+        } catch (_) {
+            if (process.platform === "win32" && !hideSystemFile) {
+                const stat = getAttributesSync(path.join(dir, dirent.name));
+                if (stat) {
+                    result.createdAt = stat.CREATION_TIME;
+                    result.modifiedAt = stat.LAST_WRITE_TIME;
+                    result.accessedAt = stat.LAST_ACCESS_TIME;
+                    result.size = stat.SIZE;
+                }
+            }
+            result.isSystemFile = true
+        }
+        return result
+    })
     if (!files.length) {
         MAIN_ELEMENT.classList.add('empty-dir-notification')
         MAIN_ELEMENT.innerText = "This folder is empty."
         stopLoading()
     } else {
-        for (const file of files) {
-            if(IGNORE_FILE.indexOf(file.filename) !== -1) continue
-            const preview = await getPreview(path.join(dir, file.filename), category = file.isDir ? "folder" : "file")
+        await files.forEach(async dirent => {
+            if (hideSystemFile && dirent.isSystemFile) return;
+            if (IGNORE_FILE.indexOf(dirent.name) !== -1) return;
+            const preview = await getPreview(path.join(dir, dirent.name), category = dirent.isDir ? "folder" : "file")
+            const type = dirent.isDir ? "File Folder" : getType(path.join(dir, dirent.name))
             const fileGrid = document.createElement("div")
-            fileGrid.className = "file-grid grid-hover-effect"
+            fileGrid.className = "file-grid grid-hover-effect file"
+            switch (layout) {
+                case "m":
+                    fileGrid.classList.add("medium-grid-view")
+                    break;
+                case "l":
+                    fileGrid.classList.add("large-grid-view")
+                    break;
+                case "d":
+                    fileGrid.classList.add("detail-view")
+                    break;
+                default:
+                    fileGrid.classList.add("small-grid-view")
+                    break;
+
+            }
             fileGrid.setAttribute("draggable", 'true')
             fileGrid.setAttribute("data-listenOpen", '')
             fileGrid.setAttribute("data-tilt", '')
-            fileGrid.dataset.isdir = !!file.isDir
-            if (file.isHidden) fileGrid.dataset.hiddenFile = true
-            fileGrid.dataset.path = escape(path.join(dir, file.filename))
-            fileGrid.dataset.createdAt = file.createdAt
-            fileGrid.dataset.modifiedAt = file.modifiedAt
-            fileGrid.dataset.accessedAt = file.accessedAt
-            fileGrid.dataset.size = file.size
+            fileGrid.dataset.isdir = dirent.isDir
+            if (dirent.isHidden) fileGrid.dataset.hiddenFile = true
+            fileGrid.dataset.path = escape(path.join(dir, dirent.name))
             fileGrid.innerHTML = `
             ${preview}
-            <span class="file-grid-filename" id="file-filename">${file.filename}</span>
+            <span class="file-grid-filename" id="file-filename">${dirent.name}</span><span class="file-modifiedAt" id="file-createdAt">${new Date(dirent.modifiedAt).toLocaleString(navigator.language, {hour12: false})}</span>
+            ${dirent.size > 0 ? `<span class="file-size" id="file-size">${formatBytes(dirent.size)}</span>` : `<span class="file-size" id="file-size"></span>`}
+            <span class="file-type">${type}</span>
             `
             MAIN_ELEMENT.appendChild(fileGrid)
 
             ContextMenu(fileGrid, openFileWithDefaultApp, openDir)
-        }
+        })
 
         updateTheme()
-        nativeDrag(document.querySelectorAll(".file-grid"), dir)
+        nativeDrag(document.querySelectorAll(".file"), dir)
         listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
         LAZY_LOAD()
 
@@ -134,9 +176,25 @@ const openDir = async (dir) => {
             displayFiles(files, LINUX_TRASH_FILES_PATH)
         }
     } else {
-        getFilesAndDir(dir, files => {
-            displayFiles(files, dir)
+        displayFiles(dir)
+        // Watch the directory
+        const watcher = fs.watch(dir, async (eventType, filename) => {
+            // Get files of the dir
+            displayFiles(dir)
         })
+
+        let focusingPath; // Watch if focusing path changes
+        setInterval(() => {
+            const tabs = storage.get('tabs')?.data
+            const _focusingPath = tabs.tabs[tabs.focus]?.position
+            if (focusingPath === undefined) {
+                focusingPath = _focusingPath
+            } else {
+                if (focusingPath !== _focusingPath) {
+                    watcher.close()
+                }
+            }
+        }, 500);
     }
 }
 
