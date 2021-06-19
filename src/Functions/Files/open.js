@@ -77,7 +77,7 @@ const displayFiles = async (dir) => {
     let getAttributesSync;
     if (process.platform === "win32") getAttributesSync = require("fswin").getAttributesSync;
     const hideSystemFile = storage.get("preference")?.data?.hideSystemFiles ?? true
-    const layout = storage.get("layout")?.data?.[dir] ?? 's'
+    const layout = storage.get("layout")?.data?.[dir] ?? storage.get("preference")?.data?.layout ?? "s"
     const sort = storage.get("sort")?.data?.[dir] ?? 'A'
     const MAIN_ELEMENT = document.getElementById("main");
     MAIN_ELEMENT.innerHTML = "";

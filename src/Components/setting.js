@@ -8,6 +8,7 @@ const version = require("../../package.json").version;
 
 const Appearance = () => {
     const theme = storage.get("theme")?.data?.theme
+    const layout = storage.get("preference")?.data?.layout ?? 's'
     const autoPlayPreviewVideo = storage.get("preference")?.data?.autoPlayPreviewVideo
     const extractExeIcon = storage.get("preference")?.data?.extractExeIcon ?? true
     let settingsMain = document.querySelector(".settings-main");
@@ -33,11 +34,23 @@ const Appearance = () => {
             <span class="toggle-slider"></span>
             <span class="toggle-label">Extract exe file icon and make it as preview (Only for windows)</span>
         </label>
-    </div>`
+    </div>
+    <h3 class="settings-title">Default File Layout</h3>
+    <select name="layout">
+        <option ${layout === "s" ? "selected" : ""} value="s">Small Grid View</option>
+        <option ${layout === "m" ? "selected" : ""} value="m">Medium Grid View</option>
+        <option ${layout === "l" ? "selected" : ""} value="l">Large Grid View</option>
+        <option ${layout === "d" ? "selected" : ""} value="d">Detail View</option>
+    </select>`
     settingsMain.querySelector('[name="theme"]').addEventListener("change", ({ target: { value } }) => {
         storage.set("theme", { "theme": value })
         const { reload } = require("./windowManager");
         reload()
+    })
+    settingsMain.querySelector('[name="layout"]').addEventListener("change", ({ target: { value } }) => {
+        let preference = storage.get("preference")?.data ?? {}
+        preference.layout = value;
+        storage.set("preference", preference)
     })
     settingsMain.querySelector(`[name="preview-video"]`).addEventListener("change", ({ target: { checked } }) => {
         let preference = storage.get("preference")?.data ?? {}
