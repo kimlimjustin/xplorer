@@ -13,6 +13,7 @@ const fs = require('fs');
 const { ContextMenu } = require("../../Components/contextMenu");
 const { isHiddenFile } = require("is-hidden-file");
 const formatBytes = require("../Math/filesize");
+const getType = require("./type");
 
 const LINUX_TRASH_FILES_PATH = path.join(os.homedir(), '.local/share/Trash/files')
 const LINUX_TRASH_INFO_PATH = path.join(os.homedir(), '.local/share/Trash/info')
@@ -110,6 +111,7 @@ const displayFiles = async (dir) => {
             if (hideSystemFile && dirent.isSystemFile) return;
             if (IGNORE_FILE.indexOf(dirent.name) !== -1) return;
             const preview = await getPreview(path.join(dir, dirent.name), category = dirent.isDir ? "folder" : "file")
+            const type = dirent.isDir ? "File Folder" : getType(path.join(dir, dirent.name))
             const fileGrid = document.createElement("div")
             fileGrid.className = "file-grid grid-hover-effect file"
             switch (layout) {
@@ -136,7 +138,8 @@ const displayFiles = async (dir) => {
             fileGrid.innerHTML = `
             ${preview}
             <span class="file-grid-filename" id="file-filename">${dirent.name}</span><span class="file-modifiedAt" id="file-createdAt">${new Date(dirent.modifiedAt).toLocaleString(navigator.language, {hour12: false})}</span>
-            ${dirent.size > 0 ? `<span class="file-size" id="file-size">${formatBytes(dirent.size)}</span>` :`<span class="file-size" id="file-size"></span>`}
+            ${dirent.size > 0 ? `<span class="file-size" id="file-size">${formatBytes(dirent.size)}</span>` : `<span class="file-size" id="file-size"></span>`}
+            <span class="file-type">${type}</span>
             `
             MAIN_ELEMENT.appendChild(fileGrid)
 

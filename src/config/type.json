@@ -1,0 +1,66 @@
+[
+    {
+        "extension": ["js"],
+        "type": "JavaScript"
+    },
+    {
+        "extension": ["ts"],
+        "type": "TypeScript"
+    },
+    {
+        "extension": ["html", "htm", "xhtml", "html_vm"],
+        "type": "HyperText Markup Language"
+    },
+    {
+        "extension": ["pdf"],
+        "type": "Portable Document Format"
+    },
+    {
+        "extension": ["doc", "docb", "docm", "dot", "dotm", "docx"],
+        "type": "Word Document"
+    },
+    {
+        "extension": ["xlm", "xls", "xlsx", "xlt"],
+        "type": "Excel Document"
+    },
+    {
+        "extension": ["pot", "potm", "potx", "ppam", "pps", "ppsm", "ppsx", "ppt", "pptn", "pptx"],
+        "type": "Powerpoint Document"
+    },
+    {
+        "extension": ["7z", "brotli", "bzip2", "gz", "gzip", "rar", "tgz", "xz", "zip"],
+        "type": "Archive"
+    },
+    {
+        "extension": ["accdb", "db", "db3", "mdb", "pdb", "pgsql", "pkb", "pks", "postgres", "psql", "sql", "sqlite", "sqlite3"],
+        "type": "Database"
+    },
+    {
+        "extension": ["bat"],
+        "type": "Batch"
+    },
+    {
+        "extension": ["exe"],
+        "type": "Executable"
+    },
+    {
+        "extension": ["c++", "cc", "cpp", "cp"],
+        "type": "C++ Program"
+    },
+    {
+        "extension": ["c"],
+        "type": "C Program"
+    },
+    {
+        "extension": ["h"],
+        "type": "C Header File"
+    },
+    {
+        "extension": ["py", "py3"],
+        "type": "Python Program"
+    },
+    {
+        "extension": ["txt"],
+        "type": "Text Document"
+    }
+]

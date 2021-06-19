@@ -392,7 +392,7 @@ body{
     -webkit-app-region: no-drag;
 }
 
-.file-modifiedAt, .file-size{
+.file-modifiedAt, .file-size, .file-type{
     display: none;
 }
 
@@ -416,10 +416,11 @@ body{
     white-space: nowrap;
 }
 
-.detail-view .file-modifiedAt, .detail-view .file-size{
+.detail-view .file-modifiedAt, .detail-view .file-size, .detail-view .file-type{
     display: block;
     flex:1.2;
     font-size: .8rem;
+    margin: 0 .2rem;
 }
 
 .large-grid-view{
