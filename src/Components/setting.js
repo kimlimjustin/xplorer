@@ -8,6 +8,7 @@ const version = require("../../package.json").version;
 
 const Appearance = () => {
     const theme = storage.get("theme")?.data?.theme
+    const layout = storage.get("preference")?.data?.layout ?? 's'
     const autoPlayPreviewVideo = storage.get("preference")?.data?.autoPlayPreviewVideo
     const extractExeIcon = storage.get("preference")?.data?.extractExeIcon ?? true
     let settingsMain = document.querySelector(".settings-main");
@@ -33,11 +34,23 @@ const Appearance = () => {
             <span class="toggle-slider"></span>
             <span class="toggle-label">Extract exe file icon and make it as preview (Only for windows)</span>
         </label>
-    </div>`
+    </div>
+    <h3 class="settings-title">Default File Layout</h3>
+    <select name="layout">
+        <option ${layout === "s" ? "selected" : ""} value="s">Small Grid View</option>
+        <option ${layout === "m" ? "selected" : ""} value="m">Medium Grid View</option>
+        <option ${layout === "l" ? "selected" : ""} value="l">Large Grid View</option>
+        <option ${layout === "d" ? "selected" : ""} value="d">Detail View</option>
+    </select>`
     settingsMain.querySelector('[name="theme"]').addEventListener("change", ({ target: { value } }) => {
         storage.set("theme", { "theme": value })
         const { reload } = require("./windowManager");
         reload()
+    })
+    settingsMain.querySelector('[name="layout"]').addEventListener("change", ({ target: { value } }) => {
+        let preference = storage.get("preference")?.data ?? {}
+        preference.layout = value;
+        storage.set("preference", preference)
     })
     settingsMain.querySelector(`[name="preview-video"]`).addEventListener("change", ({ target: { checked } }) => {
         let preference = storage.get("preference")?.data ?? {}
@@ -59,6 +72,7 @@ const Preference = () => {
     const language = storage.get("preference")?.data?.language
     const hideHiddenFiles = storage.get("preference")?.data?.hideHiddenFiles ?? true
     const hideSystemFiles = storage.get("preference")?.data?.hideSystemFiles ?? true
+    const dirAlongsideFiles = storage.get("preference")?.data?.dirAlongsideFiles ?? false
     let settingsMain = document.querySelector(".settings-main");
     const availableLanguages = JSON.parse(fs.readFileSync(path.join(__dirname, "../Languages/index.json")))?.availableLanguages
     settingsMain.innerHTML = `<h3 class="settings-title">App Language</h3>
@@ -82,6 +96,13 @@ const Preference = () => {
             <span class="toggle-label">Hide System Files</span>
         </label>
     </div>
+    <div class="toggle-box">
+        <label class="toggle">
+            <input type="checkbox" name="dirAlongsideFiles" ${dirAlongsideFiles ? "checked" : ""}>
+            <span class="toggle-slider"></span>
+            <span class="toggle-label">List and sort directories alongside files</span>
+        </label>
+    </div>
 `
     settingsMain.querySelector(`[name="language"]`).addEventListener("change", ({ target: { value } }) => {
         let preference = storage.get("preference")?.data ?? {}
@@ -100,6 +121,13 @@ const Preference = () => {
     settingsMain.querySelector(`[name="hide-system-files"]`).addEventListener("change", ({ target: { checked } }) => {
         let preference = storage.get("preference")?.data ?? {}
         preference.hideSystemFiles = checked
+        storage.set("preference", preference)
+        const { reload } = require("./windowManager");
+        reload()
+    })
+    settingsMain.querySelector(`[name="dirAlongsideFiles"]`).addEventListener("change", ({ target: { checked } }) => {
+        let preference = storage.get("preference")?.data ?? {}
+        preference.dirAlongsideFiles = checked
         storage.set("preference", preference)
         const { reload } = require("./windowManager");
         reload()

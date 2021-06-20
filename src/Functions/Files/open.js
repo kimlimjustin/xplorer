@@ -77,12 +77,16 @@ const displayFiles = async (dir) => {
     let getAttributesSync;
     if (process.platform === "win32") getAttributesSync = require("fswin").getAttributesSync;
     const hideSystemFile = storage.get("preference")?.data?.hideSystemFiles ?? true
-    const layout = storage.get("layout")?.data?.[dir] ?? 's'
+    const dirAlongsideFiles = storage.get("preference")?.data?.dirAlongsideFiles ?? false
+    const layout = storage.get("layout")?.data?.[dir] ?? storage.get("preference")?.data?.layout ?? "s"
+    const sort = storage.get("sort")?.data?.[dir] ?? 'A'
     const MAIN_ELEMENT = document.getElementById("main");
     MAIN_ELEMENT.innerHTML = "";
     if (MAIN_ELEMENT.classList.contains('empty-dir-notification')) MAIN_ELEMENT.classList.remove('empty-dir-notification') // Remove class if exist
-    const files = fs.readdirSync(dir, { withFileTypes: true }).map(dirent => {
+    let files = fs.readdirSync(dir, { withFileTypes: true }).map(dirent => {
         let result = { name: dirent.name, isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)) }
+        const type = dirent.isDirectory() ? "File Folder" : getType(path.join(dir, dirent.name))
+        result.type = type
         try {
             const stat = fs.statSync(path.join(dir, dirent.name))
             result.createdAt = stat.ctime
@@ -103,6 +107,25 @@ const displayFiles = async (dir) => {
         }
         return result
     })
+    files = files.sort((a, b) => {
+        switch (sort) {
+            case "A": // A-Z
+                return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1
+            case "Z": // Z-A
+                return a.name.toLowerCase() < b.name.toLowerCase() ? 1 : -1
+            case "L": // Last Modified
+                return new Date(a.modifiedAt) < new Date(b.modifiedAt) ? 1 : -1
+            case "F": // First Modified
+                return new Date(a.modifiedAt) > new Date(b.modifiedAt) ? 1 : -1
+            case "S": // Size
+                return a.size > b.size ? 1 : -1
+            case "T":
+                return a.type > b.type ? 1 : -1
+        }
+    })
+    if (!dirAlongsideFiles) {
+        files = files.sort((a, b) => -(a.isDir - b.isDir))
+    }
     if (!files.length) {
         MAIN_ELEMENT.classList.add('empty-dir-notification')
         MAIN_ELEMENT.innerText = "This folder is empty."
@@ -112,7 +135,6 @@ const displayFiles = async (dir) => {
             if (hideSystemFile && dirent.isSystemFile) return;
             if (IGNORE_FILE.indexOf(dirent.name) !== -1) return;
             const preview = await getPreview(path.join(dir, dirent.name), category = dirent.isDir ? "folder" : "file")
-            const type = dirent.isDir ? "File Folder" : getType(path.join(dir, dirent.name))
             const fileGrid = document.createElement("div")
             fileGrid.className = "file-grid grid-hover-effect file"
             switch (layout) {
@@ -140,7 +162,7 @@ const displayFiles = async (dir) => {
             ${preview}
             <span class="file-grid-filename" id="file-filename">${dirent.name}</span><span class="file-modifiedAt" id="file-createdAt">${new Date(dirent.modifiedAt).toLocaleString(navigator.language, { hour12: false })}</span>
             ${dirent.size > 0 ? `<span class="file-size" id="file-size">${formatBytes(dirent.size)}</span>` : `<span class="file-size" id="file-size"></span>`}
-            <span class="file-type">${type}</span>
+            <span class="file-type">${dirent.type}</span>
             `
             MAIN_ELEMENT.appendChild(fileGrid)
 
