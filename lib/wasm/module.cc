@@ -1,9 +1,7 @@
 #include <node_api.h>
-#include <assert.h>
-#include <tchar.h>
 #include <iostream>
 #include <windows.h>
-#include <dirent.h>
+
 using namespace std;
 
 // Check windows
