@@ -62,5 +62,21 @@
     {
         "extension": ["txt"],
         "type": "Text Document"
+    },
+    {
+        "extension": ["jpg", "png", "gif", "bmp", "jpeg", "jpe", "jif", "jfif", "jfi", "webp", "tiff", "tif", "ico", "svg", "webp"],
+        "type": "Image"
+    },
+    {
+        "extension": ["mp4", "webm", "mpg", "mp2", "mpeg", "mpe", "mpv", "ocg", "m4p", "m4v", "avi", "wmv", "mov", "qt", "flv", "swf"],
+        "type": "Video"
+    },
+    {
+        "extension": ["deb", "msi", "snap"],
+        "type": "Installer"
+    },
+    {
+        "extension": ["iso"],
+        "type": "Disk Image File"
     }
 ]
