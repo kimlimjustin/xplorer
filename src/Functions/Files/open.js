@@ -73,9 +73,7 @@ const listenOpen = (elements) => {
     })
 }
 
-const displayFiles = async (dir) => {
-    let getAttributesSync;
-    if (process.platform === "win32") getAttributesSync = require("fswin").getAttributesSync;
+const displayFiles = async (files, dir) => {
     const hideSystemFile = storage.get("preference")?.data?.hideSystemFiles ?? true
     const dirAlongsideFiles = storage.get("preference")?.data?.dirAlongsideFiles ?? false
     const layout = storage.get("layout")?.data?.[dir] ?? storage.get("preference")?.data?.layout ?? "s"
@@ -83,30 +81,6 @@ const displayFiles = async (dir) => {
     const MAIN_ELEMENT = document.getElementById("main");
     MAIN_ELEMENT.innerHTML = "";
     if (MAIN_ELEMENT.classList.contains('empty-dir-notification')) MAIN_ELEMENT.classList.remove('empty-dir-notification') // Remove class if exist
-    let files = fs.readdirSync(dir, { withFileTypes: true }).map(dirent => {
-        let result = { name: dirent.name, isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)) }
-        const type = dirent.isDirectory() ? "File Folder" : getType(path.join(dir, dirent.name))
-        result.type = type
-        try {
-            const stat = fs.statSync(path.join(dir, dirent.name))
-            result.createdAt = stat.ctime
-            result.modifiedAt = stat.mtime
-            result.accessedAt = stat.atime
-            result.size = stat.size
-        } catch (_) {
-            if (process.platform === "win32" && !hideSystemFile) {
-                const stat = getAttributesSync(path.join(dir, dirent.name));
-                if (stat) {
-                    result.createdAt = stat.CREATION_TIME;
-                    result.modifiedAt = stat.LAST_WRITE_TIME;
-                    result.accessedAt = stat.LAST_ACCESS_TIME;
-                    result.size = stat.SIZE;
-                }
-            }
-            result.isSystemFile = true
-        }
-        return result
-    })
     files = files.sort((a, b) => {
         switch (sort) {
             case "A": // A-Z
@@ -194,12 +168,41 @@ const openDir = async (dir) => {
     } else if (dir === path.join(os.homedir(), 'Trash') || dir === "Trash") {
         changePosition('Trash')
         if (process.platform === "linux") {
-            const files = fs.readdirSync(LINUX_TRASH_FILES_PATH, { withFileTypes: true }).map(dirent => { return { "filename": dirent.name, "isDir": dirent.isDirectory(), "isHidden": /(^|\/)\.[^\/\.]/g.test(dirent.name) } })
+            let files = fs.readdirSync(LINUX_TRASH_FILES_PATH, { withFileTypes: true }).map(dirent => {
+                let result = { name: dirent.name, isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)) }
+                return result
+            })
             const filesInfo = fs.readdirSync(LINUX_TRASH_INFO_PATH)
             displayFiles(files, LINUX_TRASH_FILES_PATH)
         }
     } else {
-        displayFiles(dir)
+        let getAttributesSync;
+        if (process.platform === "win32") getAttributesSync = require("fswin").getAttributesSync;
+        let files = fs.readdirSync(dir, { withFileTypes: true }).map(dirent => {
+            let result = { name: dirent.name, isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)) }
+            const type = dirent.isDirectory() ? "File Folder" : getType(path.join(dir, dirent.name))
+            result.type = type
+            try {
+                const stat = fs.statSync(path.join(dir, dirent.name))
+                result.createdAt = stat.ctime
+                result.modifiedAt = stat.mtime
+                result.accessedAt = stat.atime
+                result.size = stat.size
+            } catch (_) {
+                if (process.platform === "win32" && !hideSystemFile) {
+                    const stat = getAttributesSync(path.join(dir, dirent.name));
+                    if (stat) {
+                        result.createdAt = stat.CREATION_TIME;
+                        result.modifiedAt = stat.LAST_WRITE_TIME;
+                        result.accessedAt = stat.LAST_ACCESS_TIME;
+                        result.size = stat.SIZE;
+                    }
+                }
+                result.isSystemFile = true
+            }
+            return result
+        })
+        displayFiles(files, dir)
         // Watch the directory
         const watcher = fs.watch(dir, async (eventType, filename) => {
             // Get files of the dir
