@@ -3,10 +3,10 @@ const storage = require('electron-json-storage-sync')
 const remote = require("@electron/remote")
 const createSidebar = require('./sidebar')
 // Function to reload
-const reload = () => {
+const reload = async () => {
     const tabs = storage.get('tabs')?.data
+    await createSidebar()
     openDir(tabs.tabs[tabs.focus].position);
-    createSidebar()
 }
 
 // Function to minimize window
