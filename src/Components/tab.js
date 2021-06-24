@@ -3,7 +3,11 @@ const remote = require('@electron/remote');
 const storage = require('electron-json-storage-sync');
 const Translate = require('./multilingual');
 
-//  Function to create new tab
+/**
+ * Function to create new tab
+ * @param {any} path - path to be focused on the new tab
+ * @returns {any}
+ */
 const createNewTab = (path) => {
     const createNewTabElement = document.querySelector(".create-new-tab")
     let tabsInfo = storage.get("tabs")?.data // Fetch latest tabs information
@@ -57,6 +61,11 @@ const createNewTab = (path) => {
     return;
 }
 
+/**
+ * Function to switch between tab
+ * @param {any} tabIndex - tab index to be switched into
+ * @returns {any}
+ */
 const SwitchTab = (tabIndex) => {
     const tabs = storage.get('tabs')?.data
     tabs.focus = String(tabIndex)
@@ -67,6 +76,10 @@ const SwitchTab = (tabIndex) => {
     openDir(tabs.tabs[tabIndex].position)
 }
 
+/**
+ * Tab initiliazer function
+ * @returns {any}
+ */
 const Tab = () => {
     let tabsInfo = { focus: "1", tabs: { 1: { position: "Home", history: ["Home"], currentIndex: 0 } }, focusHistory: [1], latestIndex: 1 } // default tabs information
     // Store default tabs information into local storage
@@ -112,7 +125,10 @@ const Tab = () => {
     // Create a new tab event
     createNewTabElement.addEventListener('click', () => createNewTab())
 
-    // Function to navigate backward
+    /**
+     * Function to navigate backward
+     * @returns {any}
+     */
     const goBack = () => {
         const tabs = storage.get('tabs')?.data;
         const { openDir } = require("../Functions/Files/open");
@@ -126,7 +142,10 @@ const Tab = () => {
         }
     }
 
-    // Function to navigate forward
+    /**
+     * Function to navigate forward
+     * @returns {any}
+     */
     const goForward = () => {
         const tabs = storage.get('tabs')?.data;
         const { openDir } = require("../Functions/Files/open");

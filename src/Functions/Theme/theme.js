@@ -6,7 +6,13 @@ const defaultThemeJSON = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../
 let themeJSON; // user preference theme json
 let defaultTheme; // default system theme
 
-// Function to simulate hover effect
+/**
+ * Create a hover effect of an element
+ * @param {any} element
+ * @param {any} before
+ * @param {any} after
+ * @returns {any}
+ */
 const hoverEffect = (element, before, after) => {
     element.addEventListener("mouseover", (e) => {
         element.style.background = after
@@ -16,17 +22,34 @@ const hoverEffect = (element, before, after) => {
     });
 }
 
-// Function to get an element style
+/**
+ * Get style of an element
+ * @param {any} variable
+ * @param {any} theme
+ * @returns {any}
+ */
 const getElementStyle = (variable, theme) => {
     return themeJSON?.[theme]?.[variable] || defaultThemeJSON[theme][variable]
 }
 
-// Function to change an element style
+/**
+ * Change style of an element
+ * @param {any} element
+ * @param {any} variable
+ * @param {any} style
+ * @param {any} theme
+ * @returns {any}
+ */
 const changeElementTheme = (element, variable, style, theme) => {
     if (element) element.style[style] = themeJSON?.[theme]?.[variable] || defaultThemeJSON[theme][variable]
 }
 
-// Change page theme
+/**
+ * Change page theme
+ * @param {any} document
+ * @param {any} theme
+ * @returns {any}
+ */
 const changeTheme = (document, theme) => {
     changeElementTheme(document.body, "mainBackground", "background", theme)
     changeElementTheme(document.body, "textColor", "color", theme)
@@ -151,6 +174,10 @@ const changeTheme = (document, theme) => {
     return;
 }
 
+/**
+ * Update the entire page theme
+ * @returns {any}
+ */
 const updateTheme = async () => {
     const { data } = storage.get("theme")
     // Detect system theme

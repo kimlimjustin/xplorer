@@ -5,6 +5,10 @@ const LAZY_LOAD = require("../Functions/DOM/lazyLoadingImage");
 const { updateTheme } = require("../Functions/Theme/theme");
 const getType = require("../Functions/Files/type");
 
+/**
+ * Recent files handler
+ * @returns {any}
+ */
 const Recent = async () => {
     startLoading()
     // Preference data

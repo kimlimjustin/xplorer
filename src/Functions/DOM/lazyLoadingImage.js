@@ -2,7 +2,11 @@ const storage = require('electron-json-storage-sync');
 const lazy_load_frequency = storage.get('preference')?.data?.lazyLoadFrequency || 500
 const FETCHED_ICONS = [] // Array of fetch icons
 
-const isElementInViewport = el => { // Check if element in viewport
+/**
+ * Check if element in viewport
+ * @returns {boolean} if element in viewport
+ */
+const isElementInViewport = el => {
     var rect = el.getBoundingClientRect();
     return (
         rect.top >= 0 &&
@@ -12,6 +16,10 @@ const isElementInViewport = el => { // Check if element in viewport
     );
 }
 
+/**
+ * Load images only when the images appear on user viewport
+ * @returns {any}
+ */
 const LAZY_LOAD = () => {
     const MAIN_ELEMENT = document.getElementById("main");
     // Only show image when its visible in viewport to reduce latency

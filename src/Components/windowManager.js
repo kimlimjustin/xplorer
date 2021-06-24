@@ -2,25 +2,39 @@ const { openDir } = require('../Functions/Files/open')
 const storage = require('electron-json-storage-sync')
 const remote = require("@electron/remote")
 const createSidebar = require('./sidebar')
-// Function to reload
+
+/**
+ * Reload the page
+ * @returns {any}
+ */
 const reload = async () => {
     const tabs = storage.get('tabs')?.data
     await createSidebar()
     openDir(tabs.tabs[tabs.focus].position);
 }
 
-// Function to minimize window
+/**
+ * Minimize Xplorer window
+ * @returns {any}
+ */
 const minimize = () => {
     const electronWindow = remote.BrowserWindow.getFocusedWindow()
     electronWindow.minimize()
 }
 
-// Function to maximize window
+/**
+ * Maximize Xplorer window
+ * @returns {any}
+ */
 const maximize = () => {
     const electronWindow = remote.BrowserWindow.getFocusedWindow()
     !electronWindow.isMaximized() ? electronWindow.maximize() : electronWindow.unmaximize()
 }
 
+/**
+ * Window manager initializer function
+ * @returns {any}
+ */
 const windowManager = () => {
     // Minimize the screen
     document.querySelector("#minimize").addEventListener("click", minimize)

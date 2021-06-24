@@ -229,6 +229,13 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
     })
 }
 
+/**
+ * Create context menu of an elemnet
+ * @param {any} element - Element you want to create context menu of
+ * @param {any} openFileWithDefaultApp - openFileWithDefaultApp function (optional), pass in the function to avoid circular dependencies
+ * @param {any} openDir - openDir function (optional), pass in the function to avoid circular dependencies
+ * @returns {any}
+ */
 const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
     // Escape circular dependency
     if (!openFileWithDefaultApp) openFileWithDefaultApp = require('../Functions/Files/open').openFileWithDefaultApp
@@ -244,7 +251,7 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
 
         if (contextMenu.offsetHeight + coorY > window.innerHeight && coorY - contextMenu.offsetHeight > TOPBAR_ELEMENT.offsetHeight)
             coorY = coorY - (contextMenu.offsetHeight * .5) + "px";
-        
+
         contextMenu.style.left = coorX + "px";
         contextMenu.style.top = coorY + "px";
         ContextMenuInner(e.target, coorX, coorY, openDir)
@@ -315,6 +322,10 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
     })
 }
 
+/**
+ * Create context menus of elements
+ * @param {any} elements - Elements you want to create context menus on
+ */
 const createContextMenus = (elements) => {
     elements.forEach(element => ContextMenu(element))
 }

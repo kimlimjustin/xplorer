@@ -19,6 +19,10 @@ const LINUX_TRASH_FILES_PATH = path.join(os.homedir(), '.local/share/Trash/files
 const LINUX_TRASH_INFO_PATH = path.join(os.homedir(), '.local/share/Trash/info')
 const IGNORE_FILE = ['.', '..'];
 
+/**
+ * Get command to open a file with default app on various operating systems.
+ * @returns {any}
+ */
 function getCommandLine() {
     switch (process.platform) {
         case 'darwin':
@@ -28,6 +32,11 @@ function getCommandLine() {
     }
 }
 
+/**
+ * Open a file with default app registered
+ * @param {string} file path
+ * @returns {any}
+ */
 function openFileWithDefaultApp(file) {
     /^win/.test(process.platform) ?
         require("child_process").exec('start "" "' + file + '"') :
@@ -35,6 +44,11 @@ function openFileWithDefaultApp(file) {
             { detached: true, stdio: 'ignore' }).unref();
 }
 
+/**
+ * Open file handler
+ * @param {any} e - event
+ * @returns {any}
+ */
 const openFileHandler = (e) => {
     let element = e.target
     while (!element.dataset.path) {
@@ -61,6 +75,11 @@ const openFileHandler = (e) => {
     }
 }
 
+/**
+ * Listen elements and pass it into the handler
+ * @param {Array} elements - array of elements to be listened
+ * @returns {any}
+ */
 const listenOpen = (elements) => {
     elements.forEach(element => {
         if (document.getElementById("main").contains(element)) {
@@ -73,6 +92,12 @@ const listenOpen = (elements) => {
     })
 }
 
+/**
+ * Display files into Xplorer main section
+ * @param {Array} files - array of files of a directory
+ * @param {string} dir - directory base path
+ * @returns {any}
+ */
 const displayFiles = async (files, dir) => {
     const hideSystemFile = storage.get("preference")?.data?.hideSystemFiles ?? true
     const dirAlongsideFiles = storage.get("preference")?.data?.dirAlongsideFiles ?? false
@@ -153,6 +178,11 @@ const displayFiles = async (files, dir) => {
     }
 }
 
+/**
+ * Open a directory on Xplorer
+ * @param {string} dir
+ * @returns {any}
+ */
 const openDir = async (dir) => {
     console.time(dir)
     startLoading()

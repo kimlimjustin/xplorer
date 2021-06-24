@@ -6,6 +6,7 @@ const getPreview = require('../Functions/preview/preview');
 const Translate = require('./multilingual');
 const { updateTheme } = require('../Functions/Theme/theme');
 const Setting = require('./setting');
+const getDriveBasePath = require('../Functions/Files/basePath');
 
 const changeSidebar = newElement => {
     const sidebarElement = document.body.querySelector(".sidebar");
@@ -14,10 +15,10 @@ const changeSidebar = newElement => {
     return;
 }
 
-const getDriveBasePath = mounted => {
-    return process.platform === "win32" ? escape(path.resolve(mounted, "/")) : escape(mounted)
-}
-
+/**
+ * Sidebar initializer function
+ * @returns {any}
+ */
 const createSidebar = () => {
     const { data } = storage.get('sidebar'); // Get user favorites data on sidebar
     // Functions to get favorites element

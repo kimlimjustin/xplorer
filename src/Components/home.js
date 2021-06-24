@@ -13,7 +13,11 @@ const LAZY_LOAD = require('../Functions/DOM/lazyLoadingImage.js');
 const { createContextMenus } = require('./contextMenu.js');
 const { isHiddenFile } = require('is-hidden-file');
 
-// Home files for linux
+/**
+ * Create home files section (only for linux)
+ * @param {any} callback
+ * @returns {any} home file section
+ */
 const homeFiles = (callback) => {
     const readHomeFiles = async () => {
         let result = `<section class='home-section'><h1 class="section-title">Files</h1>`;
@@ -48,7 +52,12 @@ const homeFiles = (callback) => {
         }
     }, 500);
 }
-// Content for home page
+
+/**
+ * Create contents for home page
+ * @param {any} _callback - callback argument
+ * @returns {any}
+ */
 const Home = async (_callback) => {
     startLoading()
     // Get the main element

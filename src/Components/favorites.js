@@ -3,6 +3,10 @@ const os = require('os');
 const Translate = require('./multilingual');
 const getPreview = require('../Functions/preview/preview');
 
+/**
+ * Create favorites section
+ * @returns {string} Favorites section HTML code
+ */
 const Favorites = () => {
     let result = `<section class="home-section">
         <h2 class="section-title">${Translate("Favorites")}</h2>

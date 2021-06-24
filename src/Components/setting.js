@@ -6,6 +6,10 @@ const fs = require("fs");
 const path = require("path");
 const version = require("../../package.json").version;
 
+/**
+ * Create appearence section
+ * @returns {any}
+ */
 const Appearance = () => {
     const theme = storage.get("theme")?.data?.theme
     const layout = storage.get("preference")?.data?.layout ?? 's'
@@ -68,6 +72,10 @@ const Appearance = () => {
     })
 }
 
+/**
+ * Create preference section
+ * @returns {any}
+ */
 const Preference = () => {
     const language = storage.get("preference")?.data?.language
     const hideHiddenFiles = storage.get("preference")?.data?.hideHiddenFiles ?? true
@@ -134,6 +142,10 @@ const Preference = () => {
     })
 }
 
+/**
+ * Create about section
+ * @returns {any}
+ */
 const About = () => {
     let settingsMain = document.querySelector(".settings-main");
     settingsMain.innerHTML = `<h3 class="settings-title">Xplorer</h3>
@@ -145,6 +157,10 @@ const About = () => {
     </ul>`
 }
 
+/**
+ * Setting initializer function
+ * @returns {any}
+ */
 const Setting = () => {
     document.querySelector(".sidebar-setting-btn").addEventListener("click", () => {
         document.querySelector(".settings").style.animation = "open-setting 1s forwards"

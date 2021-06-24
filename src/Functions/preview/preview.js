@@ -18,11 +18,21 @@ const DEFAULT_FOLDER_ICON = path.join(__dirname, "../../icon", defaultIconJSON.d
 
 let DEFAULT_IMAGE = path.join(__dirname, '../../icon', defaultIconJSON.file.image)
 
-// Return image view of preview
+/**
+ * Return image view of preview
+ * @param {string} filename
+ * @param {boolean} isdir - is it directory?
+ * @returns {string} HTML Result
+ */
 const iconPreview = (filename, isdir) => {
     return `<img data-src = "${filename}" class="file-grid-preview" src="${isdir ? DEFAULT_FOLDER_ICON : DEFAULT_FILE_ICON}" onerror="this.onerror=null;this.src='${DEFAULT_IMAGE}'" />`
 }
-// Return video view of preview
+
+/**
+ * Return video view of preview
+ * @param {string} filename
+ * @returns {string} HTML Result
+ */
 const videoPreview = (filename) => {
     const preference = storage.get("preference")?.data
     let alt = path.join(iconJSONPath || __dirname, iconJSON ? '../' : '../../icon', iconJSON?.file?.video || defaultIconJSON.file.video) // Alternative for video if video could not be oaded
@@ -30,6 +40,11 @@ const videoPreview = (filename) => {
     return preference?.autoPlayPreviewVideo ? `<video autoplay loop muted class="file-grid-preview"><source src = "${filename}" /><img src = "${alt}" /></video>` : iconPreview(alt)
 }
 
+/**
+ * Extract EXE icon and return it as preview
+ * @param {string} filename - EXE file name
+ * @returns {any} the path of icon extracted from the EXE file
+ */
 const exePreview = (filename) => {
     const basename = filename.split(/[\\/]/)[filename.split(/[\\/]/).length - 1]
     const electron = require('electron');
@@ -56,6 +71,13 @@ const exePreview = (filename) => {
     }
 }
 
+/**
+ * Get preview of a file/folder
+ * @param {string} filename - name of the file/folder
+ * @param {string} category - category of the file/folder (optional)
+ * @param {boolean} HTMLFormat - return with the HTML format (optional)
+ * @returns {any} the preview of the file/folder
+ */
 const getPreview = (filename, category = "folder", HTMLFormat = true) => {
 
     if (icon.data && fs.existsSync(icon.data.iconJSON)) {
@@ -71,7 +93,7 @@ const getPreview = (filename, category = "folder", HTMLFormat = true) => {
 
     try {
         if (ext === "exe" && preference?.extractExeIcon !== false && process.platform === "win32") return exePreview(filename)
-    }catch(_){}
+    } catch (_) { }
 
     filename = filename.toLowerCase() // Lowercase filename
 
