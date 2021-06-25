@@ -206,6 +206,7 @@ const openDir = async (dir) => {
             displayFiles(files, LINUX_TRASH_FILES_PATH)
         }
     } else {
+        const hideSystemFile = storage.get("preference")?.data?.hideSystemFiles ?? true
         let getAttributesSync;
         if (process.platform === "win32") getAttributesSync = require("fswin").getAttributesSync;
         let files = fs.readdirSync(dir, { withFileTypes: true }).map(dirent => {
