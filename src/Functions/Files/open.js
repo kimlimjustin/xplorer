@@ -209,35 +209,39 @@ const openDir = async (dir) => {
         const hideSystemFile = storage.get("preference")?.data?.hideSystemFiles ?? true
         let getAttributesSync;
         if (process.platform === "win32") getAttributesSync = require("fswin").getAttributesSync;
-        let files = fs.readdirSync(dir, { withFileTypes: true }).map(dirent => {
-            let result = { name: dirent.name, isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)) }
-            const type = dirent.isDirectory() ? "File Folder" : getType(path.join(dir, dirent.name))
-            result.type = type
-            try {
-                const stat = fs.statSync(path.join(dir, dirent.name))
-                result.createdAt = stat.ctime
-                result.modifiedAt = stat.mtime
-                result.accessedAt = stat.atime
-                result.size = stat.size
-            } catch (_) {
-                if (process.platform === "win32" && !hideSystemFile) {
-                    const stat = getAttributesSync(path.join(dir, dirent.name));
-                    if (stat) {
-                        result.createdAt = stat.CREATION_TIME;
-                        result.modifiedAt = stat.LAST_WRITE_TIME;
-                        result.accessedAt = stat.LAST_ACCESS_TIME;
-                        result.size = stat.SIZE;
+        const getFiles = () => {
+            return fs.readdirSync(dir, { withFileTypes: true }).map(dirent => {
+                let result = { name: dirent.name, isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)) }
+                const type = dirent.isDirectory() ? "File Folder" : getType(path.join(dir, dirent.name))
+                result.type = type
+                try {
+                    const stat = fs.statSync(path.join(dir, dirent.name))
+                    result.createdAt = stat.ctime
+                    result.modifiedAt = stat.mtime
+                    result.accessedAt = stat.atime
+                    result.size = stat.size
+                } catch (_) {
+                    if (process.platform === "win32" && !hideSystemFile) {
+                        const stat = getAttributesSync(path.join(dir, dirent.name));
+                        if (stat) {
+                            result.createdAt = stat.CREATION_TIME;
+                            result.modifiedAt = stat.LAST_WRITE_TIME;
+                            result.accessedAt = stat.LAST_ACCESS_TIME;
+                            result.size = stat.SIZE;
+                        }
                     }
+                    result.isSystemFile = true
                 }
-                result.isSystemFile = true
-            }
-            return result
-        })
+                return result
+            })
+        }
+        let files = getFiles()
         displayFiles(files, dir)
         // Watch the directory
         const watcher = fs.watch(dir, async (eventType, filename) => {
+            let files = getFiles()
             // Get files of the dir
-            displayFiles(dir)
+            displayFiles(files, dir)
         })
 
         let focusingPath; // Watch if focusing path changes
