@@ -663,3 +663,8 @@ img{
   -o-user-drag: none;
   user-drag: none;
 }
+
+
+.selected{
+    border: 2px solid blue;
+}
