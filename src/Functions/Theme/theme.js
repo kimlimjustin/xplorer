@@ -58,6 +58,9 @@ const changeTheme = (document, theme) => {
     document.body.style.setProperty("--scrollbar-track", themeJSON ? themeJSON[theme].scrollbarTrackBackground : defaultThemeJSON[theme].scrollbarTrackBackground)
     document.body.style.setProperty("--scrollbar-thumb", themeJSON ? themeJSON[theme].scrollbarThumbBackground : defaultThemeJSON[theme].scrollbarThumbBackground)
     document.body.style.setProperty("--scrollbar-thumb-hover", themeJSON ? themeJSON[theme].scrollbarThumbHoverBackground : defaultThemeJSON[theme].scrollbarThumbHoverBackground)
+    document.body.style.setProperty("--selected-grid-border", themeJSON ? themeJSON[theme].selectedGridBorder : defaultThemeJSON[theme].selectedGridBorder)
+    document.body.style.setProperty("--selected-grid-background", themeJSON ? themeJSON[theme].selectedGridBackground : defaultThemeJSON[theme].selectedGridBackground)
+    document.body.style.setProperty("--selected-grid-color", themeJSON ? themeJSON[theme].selectedGridColor : defaultThemeJSON[theme].selectedGridColor)
 
     changeElementTheme(document.querySelector(".loading-bar"), "loadingBar", "background", theme)
     changeElementTheme(document.querySelector(".loader"), "loader", "background", theme)

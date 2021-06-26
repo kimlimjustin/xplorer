@@ -52,6 +52,9 @@
 
         "gridBackground": "transparent",
         "gridColor": "inherit",
+        "selectedGridBorder": "none",
+        "selectedGridBackground": "#a2b7ff",
+        "selectedGridColor": "#000",
 
         "gridHoverEffectBackground": "rgba(79, 86, 109, 1),rgba(35, 35, 53, .5)",
         "cardHoverEffectBackground": "#c2d0ff,rgba(162, 182, 255, 0.8)",
@@ -116,6 +119,8 @@
 
         "gridBackground": "transparent",
         "gridColor": "#87c1ce",
+        "selectedGridBorder": "2px solid #1e88e5",
+        "selectedGridBackground": "#2893a0",
 
         "gridHoverEffectBackground": "rgba(140, 162, 210 , 0.4),#24283b",
         "cardHoverEffectBackground": "rgba(140, 162, 210 , 0.7),rgba(140, 162, 210, 0.2)",
@@ -180,6 +185,7 @@
 
         "gridBackground": "#e0e0e0",
         "gridColor": "#000",
+        "selectedGridBorder": "2px solid #1e88e5",
 
         "gridHoverEffectBackground": "rgba(187,188,193,255),#c5ccd2",
         "cardHoverEffectBackground": "rgba(187,188,193,255),rgba(224,224,224,255)",
@@ -243,8 +249,10 @@
         "pendriveUsedCapacityBackground": "#8989e2",
 
         "gridBackground": "#dbdbdc",
-        "gridHoverBackground": "#c5ccd2",
         "gridColor": "#000",
+        "selectedGridBorder": "2px solid #1e88e5",
+        "selectedGridBackground": "#dbdbdc",
+        "selectedGridColor": "#000",
 
         "gridHoverEffectBackground": "rgba(234,234,234,255),#c5ccd2",
         "cardHoverEffectBackground": "rgba(234,234,234,255),rgba(215,215,216,255)",

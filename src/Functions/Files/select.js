@@ -84,6 +84,9 @@ const SelectListener = (elements) => {
                 latestSelected = previousSibling
             }
         }
+        if (e.key === "ArrowDown") {
+            e.preventDefault()
+        }
     })
 }
 
