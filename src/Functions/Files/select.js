@@ -1,3 +1,4 @@
+const storage = require("electron-json-storage-sync");
 let latestSelected;
 /**
  * Select a file grid...
@@ -51,6 +52,37 @@ const SelectListener = (elements) => {
     document.getElementById("main").addEventListener("click", e => {
         if (!e.target.className.split(' ').some(function (c) { return /file/.test(c); })) {
             document.querySelectorAll(".selected").forEach(element => element.classList.remove("selected"))
+        }
+    })
+    document.addEventListener("keydown", e => {
+        const hideHiddenFiles = storage.get("preference")?.data?.hideHiddenFiles ?? true
+        if (e.key === "ArrowRight") {
+            e.preventDefault()
+            let nextSibling = latestSelected.nextSibling;
+            if (hideHiddenFiles) {
+                while (nextSibling.dataset.hiddenFile !== undefined) {
+                    nextSibling = nextSibling.nextSibling
+                }
+            }
+            if (nextSibling?.className.split(' ').some(function (c) { return /file/.test(c); })) {
+                latestSelected.classList.remove("selected")
+                nextSibling.classList.add("selected")
+                latestSelected = nextSibling
+            }
+        }
+        if (e.key === "ArrowLeft") {
+            e.preventDefault()
+            let previousSibling = latestSelected.previousSibling;
+            if (hideHiddenFiles) {
+                while (previousSibling.dataset.hiddenFile !== undefined) {
+                    previousSibling = previousSibling.previousSibling
+                }
+            }
+            if (previousSibling?.className.split(' ').some(function (c) { return /file/.test(c); })) {
+                latestSelected.classList.remove("selected")
+                previousSibling.classList.add("selected")
+                latestSelected = previousSibling
+            }
         }
     })
 }
