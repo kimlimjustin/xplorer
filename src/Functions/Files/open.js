@@ -14,6 +14,7 @@ const { ContextMenu } = require("../../Components/contextMenu");
 const { isHiddenFile } = require("is-hidden-file");
 const formatBytes = require("../Math/filesize");
 const getType = require("./type");
+const { SelectListener } = require("./select");
 
 const LINUX_TRASH_FILES_PATH = path.join(os.homedir(), '.local/share/Trash/files')
 const LINUX_TRASH_INFO_PATH = path.join(os.homedir(), '.local/share/Trash/info')
@@ -170,6 +171,7 @@ const displayFiles = async (files, dir) => {
 
         updateTheme()
         nativeDrag(document.querySelectorAll(".file"), dir)
+        SelectListener(document.querySelectorAll(".file"))
         listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
         LAZY_LOAD()
 
@@ -190,6 +192,7 @@ const openDir = async (dir) => {
     if (dir === path.join(os.homedir(), 'Home') || dir === "Home") {
         Home(() => {
             listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
+            SelectListener(document.querySelectorAll(".file"))
             console.timeEnd(dir)
         })
     } else if (dir === path.join(os.homedir(), 'Recent') || dir === "Recent") {

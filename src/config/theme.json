@@ -186,6 +186,8 @@
         "gridBackground": "#e0e0e0",
         "gridColor": "#000",
         "selectedGridBorder": "2px solid #1e88e5",
+        "selectedGridBackground": "#e0e0e0",
+        "selectedGridColor": "#000",
 
         "gridHoverEffectBackground": "rgba(187,188,193,255),#c5ccd2",
         "cardHoverEffectBackground": "rgba(187,188,193,255),rgba(224,224,224,255)",
