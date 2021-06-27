@@ -65,7 +65,7 @@ const SelectListener = (elements) => {
                 }
             }
             if (nextSibling?.className.split(' ').some(function (c) { return /file/.test(c); })) {
-                latestSelected.classList.remove("selected")
+                if (!e.shiftKey) latestSelected.classList.remove("selected")
                 nextSibling.classList.add("selected")
                 latestSelected = nextSibling
             }
@@ -79,7 +79,7 @@ const SelectListener = (elements) => {
                 }
             }
             if (previousSibling?.className.split(' ').some(function (c) { return /file/.test(c); })) {
-                latestSelected.classList.remove("selected")
+                if (!e.shiftKey) latestSelected.classList.remove("selected")
                 previousSibling.classList.add("selected")
                 latestSelected = previousSibling
             }
