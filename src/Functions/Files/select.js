@@ -47,6 +47,7 @@ const Initializer = () => {
     const selectShortcut = (e) => {
         const hideHiddenFiles = storage.get("preference")?.data?.hideHiddenFiles ?? true
         if (e.key === "ArrowRight") {
+            //if(!document.contains(latestSelected)) 
             e.preventDefault()
             let nextSibling = latestSelected.nextSibling;
             if (hideHiddenFiles) {
@@ -60,7 +61,7 @@ const Initializer = () => {
                 latestSelected = nextSibling
             }
         }
-        if (e.key === "ArrowLeft") {
+        else if (e.key === "ArrowLeft") {
             e.preventDefault()
             let previousSibling = latestSelected.previousSibling;
             if (hideHiddenFiles) {
@@ -74,9 +75,27 @@ const Initializer = () => {
                 latestSelected = previousSibling
             }
         }
-        if (e.key === "ArrowDown") {
+        else if (e.key === "ArrowDown") {
             e.preventDefault()
-            console.log(latestSelected.offsetWidth + parseInt(getComputedStyle(latestSelected).marginLeft) * 2, latestSelected.parentNode.offsetWidth, Math.floor(latestSelected.parentNode.offsetWidth / (latestSelected.offsetWidth + parseInt(getComputedStyle(latestSelected).marginLeft) * 2)));
+            let totalGridInArrow = Math.floor(latestSelected.parentNode.offsetWidth / (latestSelected.offsetWidth + parseInt(getComputedStyle(latestSelected).marginLeft) * 2)) // Calculate the total of grids in arrow
+            const siblings = latestSelected.parentNode.children
+            const elementBelow = siblings[Array.from(siblings).indexOf(latestSelected) + totalGridInArrow]
+            if (elementBelow?.className.split(' ').some(function (c) { return /file/.test(c); })) {
+                if (!e.shiftKey) latestSelected.classList.remove("selected")
+                elementBelow.classList.add("selected")
+                latestSelected = elementBelow
+            }
+        }
+        else if (e.key === "ArrowUp") {
+            e.preventDefault()
+            let totalGridInArrow = Math.floor(latestSelected.parentNode.offsetWidth / (latestSelected.offsetWidth + parseInt(getComputedStyle(latestSelected).marginLeft) * 2)) // Calculate the total of grids in arrow
+            const siblings = latestSelected.parentNode.children
+            const elementBelow = siblings[Array.from(siblings).indexOf(latestSelected) - totalGridInArrow]
+            if (elementBelow?.className.split(' ').some(function (c) { return /file/.test(c); })) {
+                if (!e.shiftKey) latestSelected.classList.remove("selected")
+                elementBelow.classList.add("selected")
+                latestSelected = elementBelow
+            }
         }
     }
     document.addEventListener("keydown", selectShortcut)
