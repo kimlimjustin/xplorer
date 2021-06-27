@@ -54,7 +54,7 @@ const SelectListener = (elements) => {
             document.querySelectorAll(".selected").forEach(element => element.classList.remove("selected"))
         }
     })
-    document.addEventListener("keydown", e => {
+    const Shortcut = e => {
         const hideHiddenFiles = storage.get("preference")?.data?.hideHiddenFiles ?? true
         if (e.key === "ArrowRight") {
             e.preventDefault()
@@ -87,7 +87,21 @@ const SelectListener = (elements) => {
         if (e.key === "ArrowDown") {
             e.preventDefault()
         }
-    })
+    }
+    document.addEventListener("keydown", Shortcut)
+
+    let focusingPath; // Watch if focusing path changes
+    setInterval(() => {
+        const tabs = storage.get('tabs')?.data
+        const _focusingPath = tabs.tabs[tabs.focus]?.position
+        if (focusingPath === undefined) {
+            focusingPath = _focusingPath
+        } else {
+            if (focusingPath !== _focusingPath) {
+                document.removeEventListener("keydown", Shortcut)
+            }
+        }
+    }, 500);
 }
 
 const getSelected = () => {
