@@ -1,4 +1,5 @@
 const storage = require("electron-json-storage-sync");
+const { isHiddenFile } = require("is-hidden-file");
 let latestSelected;
 let initialized = false;
 /**
@@ -44,10 +45,19 @@ const Select = (element, ctrl, shift, elements) => {
  * @returns {any}
  */
 const Initializer = () => {
+    /**
+     * Select the first file there in case the latest selected file is not exist
+     * @returns {any}
+     */
+    const selectFirstFile = () => {
+        const firstFileElement = document.getElementById("main").querySelector(`.file${isHiddenFile ? ":not([data-hidden-file])" : ""}`)
+        firstFileElement.classList.add("selected")
+        latestSelected = firstFileElement
+    }
     const selectShortcut = (e) => {
         const hideHiddenFiles = storage.get("preference")?.data?.hideHiddenFiles ?? true
         if (e.key === "ArrowRight") {
-            //if(!document.contains(latestSelected)) 
+            if (!document.contains(latestSelected)) { selectFirstFile(); return; }
             e.preventDefault()
             let nextSibling = latestSelected.nextSibling;
             if (hideHiddenFiles) {
@@ -62,6 +72,7 @@ const Initializer = () => {
             }
         }
         else if (e.key === "ArrowLeft") {
+            if (!document.contains(latestSelected)) { selectFirstFile(); return; }
             e.preventDefault()
             let previousSibling = latestSelected.previousSibling;
             if (hideHiddenFiles) {
@@ -76,6 +87,7 @@ const Initializer = () => {
             }
         }
         else if (e.key === "ArrowDown") {
+            if (!document.contains(latestSelected)) { selectFirstFile(); return; }
             e.preventDefault()
             let totalGridInArrow = Math.floor(latestSelected.parentNode.offsetWidth / (latestSelected.offsetWidth + parseInt(getComputedStyle(latestSelected).marginLeft) * 2)) // Calculate the total of grids in arrow
             const siblings = latestSelected.parentNode.children
@@ -87,6 +99,7 @@ const Initializer = () => {
             }
         }
         else if (e.key === "ArrowUp") {
+            if (!document.contains(latestSelected)) { selectFirstFile(); return; }
             e.preventDefault()
             let totalGridInArrow = Math.floor(latestSelected.parentNode.offsetWidth / (latestSelected.offsetWidth + parseInt(getComputedStyle(latestSelected).marginLeft) * 2)) // Calculate the total of grids in arrow
             const siblings = latestSelected.parentNode.children
