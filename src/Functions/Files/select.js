@@ -1,5 +1,6 @@
 const storage = require("electron-json-storage-sync");
 let latestSelected;
+let initialized = false;
 /**
  * Select a file grid...
  * 
@@ -39,6 +40,49 @@ const Select = (element, ctrl, shift, elements) => {
 }
 
 /**
+ * Select shortcut initializer
+ * @returns {any}
+ */
+const Initializer = () => {
+    const selectShortcut = (e) => {
+        const hideHiddenFiles = storage.get("preference")?.data?.hideHiddenFiles ?? true
+        if (e.key === "ArrowRight") {
+            e.preventDefault()
+            let nextSibling = latestSelected.nextSibling;
+            if (hideHiddenFiles) {
+                while (nextSibling && nextSibling.dataset.hiddenFile !== undefined) {
+                    nextSibling = nextSibling.nextSibling
+                }
+            }
+            if (nextSibling?.className.split(' ').some(function (c) { return /file/.test(c); })) {
+                if (!e.shiftKey) latestSelected.classList.remove("selected")
+                nextSibling.classList.add("selected")
+                latestSelected = nextSibling
+            }
+        }
+        if (e.key === "ArrowLeft") {
+            e.preventDefault()
+            let previousSibling = latestSelected.previousSibling;
+            if (hideHiddenFiles) {
+                while (previousSibling && previousSibling.dataset.hiddenFile !== undefined) {
+                    previousSibling = previousSibling.previousSibling
+                }
+            }
+            if (previousSibling?.className.split(' ').some(function (c) { return /file/.test(c); })) {
+                if (!e.shiftKey) latestSelected.classList.remove("selected")
+                previousSibling.classList.add("selected")
+                latestSelected = previousSibling
+            }
+        }
+        if (e.key === "ArrowDown") {
+            e.preventDefault()
+            console.log(latestSelected.offsetWidth + parseInt(getComputedStyle(latestSelected).marginLeft) * 2, latestSelected.parentNode.offsetWidth, Math.floor(latestSelected.parentNode.offsetWidth / (latestSelected.offsetWidth + parseInt(getComputedStyle(latestSelected).marginLeft) * 2)));
+        }
+    }
+    document.addEventListener("keydown", selectShortcut)
+}
+
+/**
  * Select files listener
  * @param {any} elements
  * @returns {any}
@@ -54,58 +98,20 @@ const SelectListener = (elements) => {
             document.querySelectorAll(".selected").forEach(element => element.classList.remove("selected"))
         }
     })
-    const Shortcut = e => {
-        const hideHiddenFiles = storage.get("preference")?.data?.hideHiddenFiles ?? true
-        if (e.key === "ArrowRight") {
-            e.preventDefault()
-            let nextSibling = latestSelected.nextSibling;
-            if (hideHiddenFiles) {
-                while (nextSibling.dataset.hiddenFile !== undefined) {
-                    nextSibling = nextSibling.nextSibling
-                }
-            }
-            if (nextSibling?.className.split(' ').some(function (c) { return /file/.test(c); })) {
-                if (!e.shiftKey) latestSelected.classList.remove("selected")
-                nextSibling.classList.add("selected")
-                latestSelected = nextSibling
-            }
-        }
-        if (e.key === "ArrowLeft") {
-            e.preventDefault()
-            let previousSibling = latestSelected.previousSibling;
-            if (hideHiddenFiles) {
-                while (previousSibling.dataset.hiddenFile !== undefined) {
-                    previousSibling = previousSibling.previousSibling
-                }
-            }
-            if (previousSibling?.className.split(' ').some(function (c) { return /file/.test(c); })) {
-                if (!e.shiftKey) latestSelected.classList.remove("selected")
-                previousSibling.classList.add("selected")
-                latestSelected = previousSibling
-            }
-        }
-        if (e.key === "ArrowDown") {
-            e.preventDefault()
-        }
-    }
-    document.addEventListener("keydown", Shortcut)
 
-    let focusingPath; // Watch if focusing path changes
-    setInterval(() => {
-        const tabs = storage.get('tabs')?.data
-        const _focusingPath = tabs.tabs[tabs.focus]?.position
-        if (focusingPath === undefined) {
-            focusingPath = _focusingPath
-        } else {
-            if (focusingPath !== _focusingPath) {
-                document.removeEventListener("keydown", Shortcut)
-            }
-        }
-    }, 500);
+    if (!initialized) {
+        Initializer()
+        initialized = true
+    }
+
+}
+const removeSelectListener = () => {
+    document.removeEventListener("keydown", selecthortcut)
+    return;
 }
 
 const getSelected = () => {
     return document.querySelectorAll(".selected")
 }
 
-module.exports = { Select, SelectListener };
+module.exports = { Select, SelectListener, removeSelectListener };
