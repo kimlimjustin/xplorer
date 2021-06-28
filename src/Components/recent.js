@@ -4,12 +4,15 @@ const getPreview = require("../Functions/preview/preview");
 const LAZY_LOAD = require("../Functions/DOM/lazyLoadingImage");
 const { updateTheme } = require("../Functions/Theme/theme");
 const getType = require("../Functions/Files/type");
+const nativeDrag = require("../Functions/DOM/drag");
+const { SelectListener } = require("../Functions/Files/select");
 
 /**
  * Recent files handler
  * @returns {any}
  */
 const Recent = async () => {
+    const { listenOpen } = require("../Functions/Files/open");
     startLoading()
     // Preference data
     const layout = storage.get("layout")?.data?.["Recent"] ?? storage.get("preference")?.data?.layout ?? "s"
@@ -62,8 +65,10 @@ const Recent = async () => {
             `
             MAIN_ELEMENT.appendChild(fileGrid)
         }
-        LAZY_LOAD()
         updateTheme()
+        SelectListener(document.querySelectorAll(".file"))
+        listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
+        LAZY_LOAD()
     }
     stopLoading()
 }

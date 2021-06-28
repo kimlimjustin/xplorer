@@ -58,6 +58,9 @@ const changeTheme = (document, theme) => {
     document.body.style.setProperty("--scrollbar-track", themeJSON ? themeJSON[theme].scrollbarTrackBackground : defaultThemeJSON[theme].scrollbarTrackBackground)
     document.body.style.setProperty("--scrollbar-thumb", themeJSON ? themeJSON[theme].scrollbarThumbBackground : defaultThemeJSON[theme].scrollbarThumbBackground)
     document.body.style.setProperty("--scrollbar-thumb-hover", themeJSON ? themeJSON[theme].scrollbarThumbHoverBackground : defaultThemeJSON[theme].scrollbarThumbHoverBackground)
+    document.body.style.setProperty("--selected-grid-border", themeJSON ? themeJSON[theme].selectedGridBorder : defaultThemeJSON[theme].selectedGridBorder)
+    document.body.style.setProperty("--selected-grid-background", themeJSON ? themeJSON[theme].selectedGridBackground : defaultThemeJSON[theme].selectedGridBackground)
+    document.body.style.setProperty("--selected-grid-color", themeJSON ? themeJSON[theme].selectedGridColor : defaultThemeJSON[theme].selectedGridColor)
 
     changeElementTheme(document.querySelector(".loading-bar"), "loadingBar", "background", theme)
     changeElementTheme(document.querySelector(".loader"), "loader", "background", theme)
@@ -113,7 +116,6 @@ const changeTheme = (document, theme) => {
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
             obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle("cardHoverEffectBackground", theme)} )`;
-            obj.style.borderImage = `radial-gradient(20% 75% at ${x}px ${y}px, ${getElementStyle("cardHoverEffectBorderImage", theme)} ) 1 / 1px / 0px stretch `;
         })
     })
     document.querySelectorAll(".sidebar-hover-effect").forEach(obj => {
@@ -126,7 +128,6 @@ const changeTheme = (document, theme) => {
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
             obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle("sidebarHoverEffectBackground", theme)} )`;
-            obj.style.borderImage = `radial-gradient(20% 75% at ${x}px ${y}px, ${getElementStyle("sidebarHoverEffectBorderImage", theme)} ) 1 / 1px / 0px stretch `;
         })
     })
     document.querySelectorAll(".tab-hover-effect").forEach(obj => {
@@ -139,7 +140,6 @@ const changeTheme = (document, theme) => {
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
             obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle("tabHoverEffectBackground", theme)} )`;
-            obj.style.borderImage = `radial-gradient(20% 75% at ${x}px ${y}px, ${getElementStyle("tabHoverEffectBorderImage", theme)} ) 1 / 1px / 0px stretch `;
         })
     })
     document.querySelectorAll(".grid-hover-effect").forEach(obj => {
@@ -152,7 +152,6 @@ const changeTheme = (document, theme) => {
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
             obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle("gridHoverEffectBackground", theme)} )`;
-            obj.style.borderImage = `radial-gradient(20% 75% at ${x}px ${y}px, ${getElementStyle("gridHoverEffectBorderImage", theme)} ) 1 / 1px / 0px stretch `;
         })
     })
     document.querySelectorAll(".pendrive").forEach(pendrive => {
