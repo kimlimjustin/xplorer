@@ -18,7 +18,7 @@ let initialized = false;
  * @returns {any}
  */
 const Select = (element, ctrl, shift, elements) => {
-    if (!ctrl && !shift) document.querySelectorAll(".selected").forEach(element => element.classList.remove("selected"))
+    if (!ctrl && !shift) unselectAllSelected()
     // add 'selected' class if element classlist does not contain it...
     if (!element.classList.contains("selected")) element.classList.add("selected")
     // ...Otherwise, remove it
@@ -71,8 +71,8 @@ const Initializer = () => {
                 }
             }
             if (nextSibling?.className.split(' ').some(function (c) { return /file/.test(c); })) {
+                unselectAllSelected()
                 if (e.shiftKey) {
-                    document.querySelectorAll(".selected").forEach(element => element.classList.remove("selected"))
                     let start = false
                     for (const sibling of latestSelected.parentNode.children) {
                         if (start || sibling === nextSibling || sibling === latestSelected) sibling.classList.add("selected")
@@ -99,8 +99,8 @@ const Initializer = () => {
             }
             if (previousSibling?.className.split(' ').some(function (c) { return /file/.test(c); })) {
                 let start = false
+                unselectAllSelected()
                 if (e.shiftKey) {
-                    document.querySelectorAll(".selected").forEach(element => element.classList.remove("selected"))
                     for (const sibling of latestSelected.parentNode.children) {
                         if (start || sibling === previousSibling || sibling === latestSelected) sibling.classList.add("selected")
                         if (sibling === previousSibling) start = true
@@ -156,7 +156,7 @@ const SelectListener = (elements) => {
     })
     document.getElementById("main").addEventListener("click", e => {
         if (!e.target.className.split(' ').some(function (c) { return /file/.test(c); })) {
-            document.querySelectorAll(".selected").forEach(element => element.classList.remove("selected"))
+            unselectAllSelected()
         }
     })
 
@@ -166,8 +166,12 @@ const SelectListener = (elements) => {
     }
 
 }
-const removeSelectListener = () => {
-    document.removeEventListener("keydown", selecthortcut)
+/**
+ * Unselect all selected file grids.
+ * @returns {any}
+ */
+const unselectAllSelected = () => {
+    document.querySelectorAll(".selected").forEach(element => element.classList.remove("selected"))
     return;
 }
 
@@ -175,4 +179,4 @@ const getSelected = () => {
     return document.querySelectorAll(".selected")
 }
 
-module.exports = { Select, SelectListener, removeSelectListener };
+module.exports = { Select, SelectListener };
