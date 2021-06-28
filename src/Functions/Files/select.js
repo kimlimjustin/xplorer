@@ -116,27 +116,51 @@ const Initializer = () => {
             }
         }
         else if (e.key === "ArrowDown") {
+            if (Array.from(latestSelected.parentNode.children).indexOf(latestShiftSelected) < Array.from(latestSelected.parentNode.children).indexOf(latestSelected)) latestShiftSelected = latestSelected
             if (!document.contains(latestSelected)) { selectFirstFile(); return; }
             e.preventDefault()
             let totalGridInArrow = Math.floor(latestSelected.parentNode.offsetWidth / (latestSelected.offsetWidth + parseInt(getComputedStyle(latestSelected).marginLeft) * 2)) // Calculate the total of grids in arrow
             const siblings = latestSelected.parentNode.children
-            const elementBelow = siblings[Array.from(siblings).indexOf(latestSelected) + totalGridInArrow]
+            const elementBelow = siblings[Array.from(siblings).indexOf(e.shiftKey ? latestShiftSelected : latestSelected) + totalGridInArrow]
             if (elementBelow?.className.split(' ').some(function (c) { return /file/.test(c); })) {
-                if (!e.shiftKey) latestSelected.classList.remove("selected")
-                elementBelow.classList.add("selected")
-                latestSelected = elementBelow
+                let start = false;
+                unselectAllSelected()
+                if (e.shiftKey) {
+                    for (const sibling of latestSelected.parentNode.children) {
+                        if (start || sibling === elementBelow || sibling === latestSelected) sibling.classList.add("selected")
+                        if (sibling === latestSelected) start = true
+                        if (sibling === elementBelow) break;
+                    }
+                    latestShiftSelected = elementBelow
+                } else {
+                    latestSelected.classList.remove("selected")
+                    latestSelected = elementBelow
+                    elementBelow.classList.add("selected")
+                }
             }
         }
         else if (e.key === "ArrowUp") {
+            if (Array.from(latestSelected.parentNode.children).indexOf(latestShiftSelected) > Array.from(latestSelected.parentNode.children).indexOf(latestSelected)) latestShiftSelected = latestSelected
             if (!document.contains(latestSelected)) { selectFirstFile(); return; }
             e.preventDefault()
             let totalGridInArrow = Math.floor(latestSelected.parentNode.offsetWidth / (latestSelected.offsetWidth + parseInt(getComputedStyle(latestSelected).marginLeft) * 2)) // Calculate the total of grids in arrow
             const siblings = latestSelected.parentNode.children
-            const elementBelow = siblings[Array.from(siblings).indexOf(latestSelected) - totalGridInArrow]
-            if (elementBelow?.className.split(' ').some(function (c) { return /file/.test(c); })) {
-                if (!e.shiftKey) latestSelected.classList.remove("selected")
-                elementBelow.classList.add("selected")
-                latestSelected = elementBelow
+            const elementAbove = siblings[Array.from(siblings).indexOf(e.shiftKey ? latestShiftSelected : latestSelected) - totalGridInArrow]
+            if (elementAbove?.className.split(' ').some(function (c) { return /file/.test(c); })) {
+                let start = false;
+                unselectAllSelected()
+                if (e.shiftKey) {
+                    for (const sibling of latestSelected.parentNode.children) {
+                        if (start || sibling === elementAbove || sibling === latestSelected) sibling.classList.add("selected")
+                        if (sibling === elementAbove) start = true
+                        if (sibling === latestSelected) break;
+                    }
+                    latestShiftSelected = elementAbove
+                } else {
+                    latestSelected.classList.remove("selected")
+                    latestSelected = elementAbove
+                    elementAbove.classList.add("selected")
+                }
             }
         }
     }
