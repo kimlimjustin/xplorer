@@ -9,6 +9,7 @@ const toggleHiddenFiles = require('./Functions/Files/toggleHiddenFiles');
 const optionMenu = require('./Components/optionMenu');
 const { ContextMenu } = require('./Components/contextMenu');
 const { SelectListener } = require('./Functions/Files/select');
+const Shortcut = require('./Components/shortcut');
 
 // Wait DOM Content to be loaded
 document.addEventListener('DOMContentLoaded', async () => {
@@ -38,4 +39,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     optionMenu()
     // Initialize context menu
     ContextMenu(document.getElementById("main"))
+    // Initialize shortcut
+    Shortcut()
 })
