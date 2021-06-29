@@ -59,6 +59,7 @@
   },
   "dependencies": {
     "@electron/remote": "^1.1.0",
+    "clipboardy": "^2.3.0",
     "electron-json-storage-sync": "^1.2.0",
     "fswin": "^3.21.107",
     "is-hidden-file": "1.1.2",

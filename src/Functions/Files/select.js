@@ -213,4 +213,4 @@ const getSelected = () => {
     return document.querySelectorAll(".selected")
 }
 
-module.exports = { Select, SelectListener };
+module.exports = { Select, SelectListener, getSelected };
