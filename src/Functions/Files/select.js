@@ -121,7 +121,12 @@ const Initializer = () => {
             e.preventDefault()
             let totalGridInArrow = Math.floor(latestSelected.parentNode.offsetWidth / (latestSelected.offsetWidth + parseInt(getComputedStyle(latestSelected).marginLeft) * 2)) // Calculate the total of grids in arrow
             const siblings = latestSelected.parentNode.children
-            const elementBelow = siblings[Array.from(siblings).indexOf(e.shiftKey ? latestShiftSelected : latestSelected) + totalGridInArrow]
+            let elementBelow = siblings[Array.from(siblings).indexOf(e.shiftKey ? latestShiftSelected : latestSelected) + totalGridInArrow]
+            if (hideHiddenFiles) {
+                while (elementBelow && elementBelow.dataset.hiddenFile !== undefined) {
+                    elementBelow = siblings[Array.from(siblings).indexOf(elementBelow) + totalGridInArrow]
+                }
+            }
             if (elementBelow?.className.split(' ').some(function (c) { return /file/.test(c); })) {
                 let start = false;
                 unselectAllSelected()
@@ -145,7 +150,12 @@ const Initializer = () => {
             e.preventDefault()
             let totalGridInArrow = Math.floor(latestSelected.parentNode.offsetWidth / (latestSelected.offsetWidth + parseInt(getComputedStyle(latestSelected).marginLeft) * 2)) // Calculate the total of grids in arrow
             const siblings = latestSelected.parentNode.children
-            const elementAbove = siblings[Array.from(siblings).indexOf(e.shiftKey ? latestShiftSelected : latestSelected) - totalGridInArrow]
+            let elementAbove = siblings[Array.from(siblings).indexOf(e.shiftKey ? latestShiftSelected : latestSelected) - totalGridInArrow]
+            if (hideHiddenFiles) {
+                while (elementAbove && elementAbove.dataset.hiddenFile !== undefined) {
+                    elementAbove = siblings[Array.from(siblings).indexOf(elementAbove) - totalGridInArrow]
+                }
+            }
             if (elementAbove?.className.split(' ').some(function (c) { return /file/.test(c); })) {
                 let start = false;
                 unselectAllSelected()
