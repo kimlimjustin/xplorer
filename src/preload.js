@@ -2,12 +2,14 @@ const { Tab } = require('./Components/tab')
 const { updateTheme } = require('./Functions/Theme/theme');
 const Home = require('./Components/home.js');
 const { windowManager } = require('./Components/windowManager');
-const {webFrame} = require('electron');
+const { webFrame } = require('electron');
 const createSidebar = require('./Components/sidebar');
 const { listenOpen } = require('./Functions/Files/open');
 const toggleHiddenFiles = require('./Functions/Files/toggleHiddenFiles');
 const optionMenu = require('./Components/optionMenu');
 const { ContextMenu } = require('./Components/contextMenu');
+const { SelectListener } = require('./Functions/Files/select');
+const Shortcut = require('./Components/shortcut');
 
 // Wait DOM Content to be loaded
 document.addEventListener('DOMContentLoaded', async () => {
@@ -23,10 +25,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!homeExecuted) {
             Home(() => {
                 listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
+                SelectListener(document.querySelectorAll(".file"))
                 homeExecuted = true
             })
         }
-        
+
     })()
     // Update the page theme
     updateTheme()
@@ -36,5 +39,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     optionMenu()
     // Initialize context menu
     ContextMenu(document.getElementById("main"))
+    // Initialize shortcut
+    Shortcut()
 })
-  

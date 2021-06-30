@@ -4,6 +4,7 @@ const { updateTheme } = require("../Functions/Theme/theme");
 const getPreview = require("../Functions/preview/preview");
 const os = require("os");
 const path = require("path");
+const copyLocation = require("../Functions/Files/location")
 let vscodeInstalled = false
 try {
     execSync("code --version")
@@ -37,6 +38,7 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
             { "menu": "Cut", "shortcut": "Ctrl+X", "icon": "cut" },
             { "menu": "Copy", "shortcut": "Ctrl+C", "icon": "copy" },
             { "menu": "Create Shortcut", "shortcut": "Alt+S", "icon": "shortcut" },
+            { "menu": "Copy Location Path", "shortcut": "Alt+Shift+C", "icon": "location", "role": "location" },
         ],
         [
             { "menu": "Rename", "shortcut": "f2", "icon": "rename" },
@@ -54,7 +56,8 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
             { "menu": "Refresh", "role": "refresh", "shortcut": "F5", "icon": "refresh" }
         ],
         [
-            { "menu": "Paste", "shortcut": "Ctrl+V", "icon": "paste" }
+            { "menu": "Paste", "shortcut": "Ctrl+V", "icon": "paste" },
+            { "menu": "Copy Location Path", "shortcut": "Alt+Shift+C", "icon": "location", "role": "location" },
         ],
         [
             { "menu": "Open in terminal", "role": "reveal", "shortcut": "Alt+T", "icon": "terminal" },
@@ -304,6 +307,9 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
                     case "refresh":
                         const { reload } = require("./windowManager");
                         reload()
+                        break;
+                    case "location":
+                        copyLocation(target);
                         break;
                 }
             })

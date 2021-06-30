@@ -52,15 +52,14 @@
 
         "gridBackground": "transparent",
         "gridColor": "inherit",
+        "selectedGridBorder": "none",
+        "selectedGridBackground": "#a2b7ff",
+        "selectedGridColor": "#000",
 
         "gridHoverEffectBackground": "rgba(79, 86, 109, 1),rgba(35, 35, 53, .5)",
-        "gridHoverEffectBorderImage": "rgba(79, 86, 109, 1),rgba(35, 35, 53, .5)",
         "cardHoverEffectBackground": "#c2d0ff,rgba(162, 182, 255, 0.8)",
-        "cardHoverEffectBorderImage": "rgba(255,255,255,0.7),rgba(255,255,255,0.1)",
         "sidebarHoverEffectBackground": "rgba(45, 45, 57, 0.7),rgba(20, 20, 27, 0.8)",
-        "sidebarHoverEffectBorderImage": "rgba(45, 45, 57, 0.7),rgba(255,255,255,0.1)",
         "tabHoverEffectBackground": "#c2d0ff,rgba(162, 182, 255, 0.8)",
-        "tabHoverEffectBorderImage": "rgba(255,255,255,0.1),rgba(45, 45, 57, 0.7)",
 
         "contextMenuBackground": "#1b1e2e",
         "contextMenuColor": "inherit",
@@ -120,15 +119,13 @@
 
         "gridBackground": "transparent",
         "gridColor": "#87c1ce",
+        "selectedGridBorder": "2px solid #1e88e5",
+        "selectedGridBackground": "#2893a0",
 
         "gridHoverEffectBackground": "rgba(140, 162, 210 , 0.4),#24283b",
-        "gridHoverEffectBorderImage": "rgba(140, 162, 210, 0.4),#24283b",
         "cardHoverEffectBackground": "rgba(140, 162, 210 , 0.7),rgba(140, 162, 210, 0.2)",
-        "cardHoverEffectBorderImage": "rgba(140, 162, 210, 0.7),rgba(140, 162, 210, 0.2)",
         "sidebarHoverEffectBackground": "rgba(140, 162, 210, 0.2),rgba(27, 30, 46 , 0.7)",
-        "sidebarHoverEffectBorderImage": "rgba(140, 162, 210, 0.2),rgba(27, 30, 46 , 0.7)",
         "tabHoverEffectBackground": "rgba(140, 162, 210, 0.2),rgba(27, 30, 46 , 0.7)",
-        "tabHoverEffectBorderImage": "rgba(140, 162, 210, 0.2),rgba(27, 30, 46 , 0.7)",
 
         "contextMenuBackground": "#1b1e2e",
         "contextMenuColor": "inherit",
@@ -188,15 +185,14 @@
 
         "gridBackground": "#e0e0e0",
         "gridColor": "#000",
+        "selectedGridBorder": "2px solid #1e88e5",
+        "selectedGridBackground": "#e0e0e0",
+        "selectedGridColor": "#000",
 
         "gridHoverEffectBackground": "rgba(187,188,193,255),#c5ccd2",
-        "gridHoverEffectBorderImage": "rgba(187,188,193,255),#c5ccd2",
         "cardHoverEffectBackground": "rgba(187,188,193,255),rgba(224,224,224,255)",
-        "cardHoverEffectBorderImage": "rgba(187,188, 193,255),rgba(224,224,224,255)",
         "sidebarHoverEffectBackground": "rgba(224,224,224,255),rgba(203,204,209,255)",
-        "sidebarHoverEffectBorderImage": "rgba(157,162,189,255),rgba(203,204,209,255)",
         "tabHoverEffectBackground": "rgba(224,224,224,255),rgba(203,204,209,255)",
-        "tabHoverEffectBorderImage": "rgba(157,162,189,255),rgba(203,204,209,255)",
 
         "contextMenuBackground": "#cbccd1",
         "contextMenuColor": "inherit",
@@ -255,17 +251,15 @@
         "pendriveUsedCapacityBackground": "#8989e2",
 
         "gridBackground": "#dbdbdc",
-        "gridHoverBackground": "#c5ccd2",
         "gridColor": "#000",
+        "selectedGridBorder": "2px solid #1e88e5",
+        "selectedGridBackground": "#dbdbdc",
+        "selectedGridColor": "#000",
 
         "gridHoverEffectBackground": "rgba(234,234,234,255),#c5ccd2",
-        "gridHoverEffectBorderImage": "rgba(234,234,234,255),#c5ccd2",
         "cardHoverEffectBackground": "rgba(234,234,234,255),rgba(215,215,216,255)",
-        "cardHoverEffectBorderImage": "rgba(187,187,188,255),rgba(215,215,216,255)",
         "sidebarHoverEffectBackground": "rgba(234,234,234,255),rgba(203,204,209,255)",
-        "sidebarHoverEffectBorderImage": "rgba(157,162,189,255),rgba(203,204,209,255)",
         "tabHoverEffectBackground": "rgba(234,234,234,255),rgba(203,204,209,255)",
-        "tabHoverEffectBorderImage": "rgba(157,162,189,255),rgba(203,204,209,255)",
 
         "contextMenuBackground": "#d1d1d8",
         "contextMenuColor": "inherit",

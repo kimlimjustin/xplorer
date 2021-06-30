@@ -260,7 +260,8 @@
         "copy": "contextmenu/copy.svg",
         "cut": "contextmenu/cut.svg",
         "shortcut": "contextmenu/shortcut.svg",
-        "rename": "contextmenu/rename.svg"
+        "rename": "contextmenu/rename.svg",
+        "location": "contextmenu/location.svg"
     },
     "settings": {
         "about": "settings/about.svg",

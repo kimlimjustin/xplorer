@@ -25,7 +25,7 @@ const homeFiles = (callback) => {
             .map(async dirent => {
                 const stat = fs.statSync(path.join(os.homedir(), dirent.name))
                 const preview = await getPreview(path.join(os.homedir(), dirent.name), category = dirent.isDirectory() ? "folder" : "file")
-                result += `<div class="file-grid grid-hover-effect" draggable="true" data-isdir=${dirent.isDirectory()} data-path = "${escape(path.join(os.homedir(), dirent.name))}" data-listenOpen ${isHiddenFile(path.join(os.homedir(), dirent.name)) ? "data-hidden-file" : ""} data-tilt data-size="${stat.size}" data-created-at="${stat.ctime}" data-modified-at="${stat.mtime}" data-accessed-at="${stat.atime}">
+                result += `<div class="file file-grid grid-hover-effect" draggable="true" data-isdir=${dirent.isDirectory()} data-path = "${escape(path.join(os.homedir(), dirent.name))}" data-listenOpen ${isHiddenFile(path.join(os.homedir(), dirent.name)) ? "data-hidden-file" : ""} data-tilt data-size="${stat.size}" data-created-at="${stat.ctime}" data-modified-at="${stat.mtime}" data-accessed-at="${stat.atime}">
                 ${preview}
                 <span class="file-grid-filename" id="file-filename">${Translate(dirent.name)}</span>
                 </div>`
@@ -67,7 +67,6 @@ const Home = async (_callback) => {
     const drives = await Drives();
     if (process.platform === "linux") {
         homeFiles(files => {
-            console.log('a')
             // Update the content in the main page ...
             MAIN_ELEMENT.innerHTML = favorites + drives + files
 
