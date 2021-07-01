@@ -39,6 +39,8 @@ const Select = (element, ctrl, shift, elements) => {
         }
     }
     else {
+        const { getSelectedStatus } = require("../../Components/shortcut");
+        if (getSelectedStatus() && ctrl) return;
         latestSelected = element
         latestShiftSelected = element
     }
