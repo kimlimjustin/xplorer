@@ -63,8 +63,8 @@ const Initializer = () => {
     const selectShortcut = (e) => {
         const hideHiddenFiles = storage.get("preference")?.data?.hideHiddenFiles ?? true
         if (e.key === "ArrowRight") {
-            if (Array.from(latestSelected.parentNode.children).indexOf(latestShiftSelected) < Array.from(latestSelected.parentNode.children).indexOf(latestSelected)) latestShiftSelected = latestSelected
             if (!document.contains(latestSelected)) { selectFirstFile(); return; }
+            if (Array.from(latestSelected.parentNode.children).indexOf(latestShiftSelected) < Array.from(latestSelected.parentNode.children).indexOf(latestSelected)) latestShiftSelected = latestSelected
             e.preventDefault()
             let nextSibling = e.shiftKey ? latestShiftSelected.nextSibling : latestSelected.nextSibling;
             if (hideHiddenFiles) {
@@ -90,8 +90,8 @@ const Initializer = () => {
             }
         }
         else if (e.key === "ArrowLeft") {
-            if (Array.from(latestSelected.parentNode.children).indexOf(latestShiftSelected) > Array.from(latestSelected.parentNode.children).indexOf(latestSelected)) latestShiftSelected = latestSelected
             if (!document.contains(latestSelected)) { selectFirstFile(); return; }
+            if (Array.from(latestSelected.parentNode.children).indexOf(latestShiftSelected) > Array.from(latestSelected.parentNode.children).indexOf(latestSelected)) latestShiftSelected = latestSelected
             e.preventDefault()
             let previousSibling = e.shiftKey ? latestShiftSelected.previousSibling : latestSelected.previousSibling;
             if (hideHiddenFiles) {
@@ -118,8 +118,8 @@ const Initializer = () => {
             }
         }
         else if (e.key === "ArrowDown") {
-            if (Array.from(latestSelected.parentNode.children).indexOf(latestShiftSelected) < Array.from(latestSelected.parentNode.children).indexOf(latestSelected)) latestShiftSelected = latestSelected
             if (!document.contains(latestSelected)) { selectFirstFile(); return; }
+            if (Array.from(latestSelected.parentNode.children).indexOf(latestShiftSelected) < Array.from(latestSelected.parentNode.children).indexOf(latestSelected)) latestShiftSelected = latestSelected
             e.preventDefault()
             let totalGridInArrow = Math.floor(latestSelected.parentNode.offsetWidth / (latestSelected.offsetWidth + parseInt(getComputedStyle(latestSelected).marginLeft) * 2)) // Calculate the total of grids in arrow
             const siblings = latestSelected.parentNode.children
@@ -147,8 +147,8 @@ const Initializer = () => {
             }
         }
         else if (e.key === "ArrowUp") {
-            if (Array.from(latestSelected.parentNode.children).indexOf(latestShiftSelected) > Array.from(latestSelected.parentNode.children).indexOf(latestSelected)) latestShiftSelected = latestSelected
             if (!document.contains(latestSelected)) { selectFirstFile(); return; }
+            if (Array.from(latestSelected.parentNode.children).indexOf(latestShiftSelected) > Array.from(latestSelected.parentNode.children).indexOf(latestSelected)) latestShiftSelected = latestSelected
             e.preventDefault()
             let totalGridInArrow = Math.floor(latestSelected.parentNode.offsetWidth / (latestSelected.offsetWidth + parseInt(getComputedStyle(latestSelected).marginLeft) * 2)) // Calculate the total of grids in arrow
             const siblings = latestSelected.parentNode.children
