@@ -1,5 +1,5 @@
 const storage = require("electron-json-storage-sync");
-const { execSync } = require('child_process');
+const { execSync, exec } = require('child_process');
 const { updateTheme } = require("../Functions/Theme/theme");
 const getPreview = require("../Functions/preview/preview");
 const os = require("os");
@@ -302,7 +302,7 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
                         break;
                     case "code":
                         if (process.platform === "linux" && (filePath === "Home" || filePath === path.join(os.homedir(), "Home"))) execSync(`code ${os.homedir()}`)
-                        else execSync(`code ${filePath}`)
+                        else exec(`code "${filePath.replaceAll('"', "\\\"")}"`)
                         break;
                     case "refresh":
                         const { reload } = require("./windowManager");

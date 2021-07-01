@@ -1,5 +1,11 @@
 const copyLocation = require("../Functions/Files/location");
-const { getSelected } = require("../Functions/Files/select")
+const { getSelected } = require("../Functions/Files/select");
+const { execSync, exec } = require('child_process');
+let vscodeInstalled = false
+try {
+   execSync("code --version")
+   vscodeInstalled = true
+} catch (_) { }
 
 let selectedAll = true;
 
@@ -32,11 +38,15 @@ const Shortcut = () => {
          } else document.querySelectorAll(".file").forEach(element => element.classList.remove("selected"))
       }
       if (e.key === "Enter" && selectedFilePath) {
-         const { openDir, openFileWithDefaultApp } = require("../Functions/Files/open");
-         if (isDir) {
-            openDir(selectedFilePath)
+         if (e.shiftKey && vscodeInstalled) {
+            exec(`code "${selectedFilePath.replaceAll('"', "\\\"")}"`)
          } else {
-            openFileWithDefaultApp(selectedFilePath)
+            const { openDir, openFileWithDefaultApp } = require("../Functions/Files/open");
+            if (isDir) {
+               openDir(selectedFilePath)
+            } else {
+               openFileWithDefaultApp(selectedFilePath)
+            }
          }
       }
       // Copy location path (Alt + Shift + C)
