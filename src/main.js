@@ -12,7 +12,7 @@ console.log(process.argv)
 
 // Create a new window
 function createWindow() {
-   const {width, height} = screen.getPrimaryDisplay().workAreaSize
+   const { width, height } = screen.getPrimaryDisplay().workAreaSize
    const win = new BrowserWindow({
       title: "xplorer",
       frame: false,
@@ -27,6 +27,18 @@ function createWindow() {
    })
 
    win.loadFile('src/public/index.html')
+   win.webContents.on('new-window', (event, url, frameName, disposition, options, additionalFeatures) => {
+      if (frameName === "newFile") {
+         event.preventDefault()
+         Object.assign(options, {
+            modal: true,
+         })
+         const newWindow = new BrowserWindow(options)
+         newWindow.loadFile(path.join(__dirname, "Popup/newFile.html"))
+         newWindow.removeMenu()
+         event.newGuest = newWindow
+      }
+   })
 }
 
 app.allowRendererProcessReuse = false
@@ -47,9 +59,9 @@ app.on('window-all-closed', () => {
       app.quit()
    }
 })
- ipcMain.on('ondragstart', (event, filePath, options) => {
-    event.sender.startDrag({
-       file: filePath,
-       icon: options.isDir ? path.join(__dirname, "icon/folder.png") : path.join(__dirname, "icon/file.png")
-    })
- })
+ipcMain.on('ondragstart', (event, filePath, options) => {
+   event.sender.startDrag({
+      file: filePath,
+      icon: options.isDir ? path.join(__dirname, "icon/folder.png") : path.join(__dirname, "icon/file.png")
+   })
+})
