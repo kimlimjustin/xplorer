@@ -15,7 +15,7 @@ const Popup = (frameName) => {
             .then((r) => {
                 if (r) {
                     const tabs = storage.get('tabs')?.data
-                    const focusingPath = tabs.tabs[String(tabs.focus)].position === "Home" || path.join(os.homedir(), 'Home') ? os.homedir() : tabs.tabs[String(tabs.focus)].position
+                    const focusingPath = tabs.tabs[String(tabs.focus)].position === "Home" || tabs.tabs[String(tabs.focus)].position === path.join(os.homedir(), 'Home') ? os.homedir() : tabs.tabs[String(tabs.focus)].position
                     if (fs.existsSync(path.join(focusingPath, r))) {
                         dialog.showMessageBoxSync({ message: "A file with that name already exists.", type: "error" })
                     }
