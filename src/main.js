@@ -27,18 +27,6 @@ function createWindow() {
    })
 
    win.loadFile('src/public/index.html')
-   win.webContents.on('new-window', (event, url, frameName, disposition, options, additionalFeatures) => {
-      if (frameName === "newFile") {
-         event.preventDefault()
-         Object.assign(options, {
-            modal: true,
-         })
-         const newWindow = new BrowserWindow(options)
-         newWindow.loadFile(path.join(__dirname, "Popup/newFile.html"))
-         newWindow.removeMenu()
-         event.newGuest = newWindow
-      }
-   })
 }
 
 app.allowRendererProcessReuse = false
