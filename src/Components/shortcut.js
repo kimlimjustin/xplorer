@@ -56,6 +56,10 @@ const Shortcut = () => {
       if (e.key === "n" && e.altKey && !e.shiftKey) {
          Popup("new file")
       }
+      // New folder shortcut (Shift + N)
+      if (e.key === "N" && !e.altKey && e.shiftKey) {
+         Popup("new folder")
+      }
       // Copy location path (Alt + Shift + C)
       if (e.key === "C" && e.altKey && e.shiftKey) {
          copyLocation(getSelected()[0])

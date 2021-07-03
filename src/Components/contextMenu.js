@@ -142,7 +142,7 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
                     const sort = storage.get('layout')?.data ?? {}
                     const tabs = storage.get("tabs")?.data
                     const currentPath = tabs.tabs[tabs.focus].position
-                    switch (e.target.innerText) {
+                    switch (e.target.innerHTML) {
                         case "Grid View (Large)":
                             files.forEach(file => {
                                 clearLayoutModeClasses(file);
@@ -205,9 +205,11 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
                             storage.set("sort", sort)
                             openDir(currentPath)
                             break;
-                        case "File":
-                            Popup("new file")
-                            break;
+                    }
+                    if (e.target.innerHTML.startsWith("File")) {
+                        Popup("new file")
+                    } else if (e.target.innerHTML.startsWith("Folder")) {
+                        Popup("new folder")
                     }
                 }
             }
