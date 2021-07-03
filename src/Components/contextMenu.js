@@ -63,7 +63,7 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
         [
             { "menu": "Open in terminal", "role": "reveal", "shortcut": "Alt+T", "icon": "terminal" },
             { "menu": "Open in vscode", "role": "code", "visible": vscodeInstalled, "shortcut": "Shift+Enter", "icon": "vscode" },
-            { "menu": "New", "submenu": ["Folder", "File"], "icon": "new", "role": "new" }
+            { "menu": "New", "submenu": [{ "name": "Folder", "shortcut": "Shift+N" }, { "name": "File", "shortcut": "Alt+N" }], "icon": "new", "role": "new" }
         ],
         [
             { "menu": "Pin to Sidebar", "shortcut": "Alt+P", "icon": "pin" },
@@ -100,7 +100,8 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
                         item.submenu.forEach(submenuItem => {
                             const submenuItemElement = document.createElement("span");
                             submenuItemElement.classList.add("contextmenu-item")
-                            submenuItemElement.innerHTML = submenuItem
+                            if (submenuItem.shortcut) submenuItemElement.innerHTML = `${submenuItem.name ?? submenuItem}<span class="contextmenu-item-shortcut">${submenuItem.shortcut}</span>`
+                            else submenuItemElement.innerHTML = submenuItem.name ?? submenuItem
                             if (item?.role) submenuItemElement.setAttribute("role", item?.role)
                             submenu.appendChild(submenuItemElement)
                         })

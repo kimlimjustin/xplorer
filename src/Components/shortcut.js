@@ -1,6 +1,7 @@
 const copyLocation = require("../Functions/Files/location");
 const { getSelected } = require("../Functions/Files/select");
 const { execSync, exec } = require('child_process');
+const Popup = require("./popup");
 let vscodeInstalled = false
 try {
    execSync("code --version")
@@ -37,7 +38,9 @@ const Shortcut = () => {
             document.querySelectorAll(".file").forEach(element => element.classList.add("selected"))
          } else document.querySelectorAll(".file").forEach(element => element.classList.remove("selected"))
       }
+      // Open file shorcut (Enter)
       if (e.key === "Enter" && selectedFilePath) {
+         // Open file in vscode (Shift + Enter)
          if (e.shiftKey && vscodeInstalled) {
             exec(`code "${selectedFilePath.replaceAll('"', "\\\"")}"`)
          } else {
@@ -48,6 +51,10 @@ const Shortcut = () => {
                openFileWithDefaultApp(selectedFilePath)
             }
          }
+      }
+      // New file shortcut (Alt + N)
+      if (e.key === "n" && e.altKey && !e.shiftKey) {
+         Popup("new file")
       }
       // Copy location path (Alt + Shift + C)
       if (e.key === "C" && e.altKey && e.shiftKey) {
