@@ -12,7 +12,7 @@ console.log(process.argv)
 
 // Create a new window
 function createWindow() {
-   const {width, height} = screen.getPrimaryDisplay().workAreaSize
+   const { width, height } = screen.getPrimaryDisplay().workAreaSize
    const win = new BrowserWindow({
       title: "xplorer",
       frame: false,
@@ -47,9 +47,9 @@ app.on('window-all-closed', () => {
       app.quit()
    }
 })
- ipcMain.on('ondragstart', (event, filePath, options) => {
-    event.sender.startDrag({
-       file: filePath,
-       icon: options.isDir ? path.join(__dirname, "icon/folder.png") : path.join(__dirname, "icon/file.png")
-    })
- })
+ipcMain.on('ondragstart', (event, filePath, options) => {
+   event.sender.startDrag({
+      file: filePath,
+      icon: options.isDir ? path.join(__dirname, "icon/folder.png") : path.join(__dirname, "icon/file.png")
+   })
+})
