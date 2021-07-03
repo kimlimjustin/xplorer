@@ -4,7 +4,8 @@ const { updateTheme } = require("../Functions/Theme/theme");
 const getPreview = require("../Functions/preview/preview");
 const os = require("os");
 const path = require("path");
-const copyLocation = require("../Functions/Files/location")
+const copyLocation = require("../Functions/Files/location");
+const Popup = require("./popup");
 let vscodeInstalled = false
 try {
     execSync("code --version")
@@ -62,7 +63,7 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
         [
             { "menu": "Open in terminal", "role": "reveal", "shortcut": "Alt+T", "icon": "terminal" },
             { "menu": "Open in vscode", "role": "code", "visible": vscodeInstalled, "shortcut": "Shift+Enter", "icon": "vscode" },
-            { "menu": "New", "submenu": ["folder", "file"], "icon": "new" }
+            { "menu": "New", "submenu": ["Folder", "File"], "icon": "new", "role": "new" }
         ],
         [
             { "menu": "Pin to Sidebar", "shortcut": "Alt+P", "icon": "pin" },
@@ -202,6 +203,9 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
                             sort[currentPath] = "T" // T = Type
                             storage.set("sort", sort)
                             openDir(currentPath)
+                            break;
+                        case "File":
+                            Popup("new file")
                             break;
                     }
                 }
