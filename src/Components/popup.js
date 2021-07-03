@@ -20,6 +20,11 @@ const Popup = (frameName) => {
                         dialog.showMessageBoxSync({ message: "A file with that name already exists.", type: "error" })
                     }
                     else {
+                        for (let i = 1; i < r.split("/").length; i++) {
+                            if (!fs.existsSync(path.join(focusingPath, r.split("/").splice(0, i).join("/")))) {
+                                fs.mkdirSync(path.join(focusingPath, r.split("/").splice(0, i).join("/")))
+                            }
+                        }
                         fs.writeFile(path.join(focusingPath, r), "", err => {
                             if (err) dialog.showMessageBoxSync({ message: "Something went wrong, please try again or open an issue on GitHub.", type: "error" })
                         })
