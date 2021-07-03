@@ -6,14 +6,13 @@ const fs = require("fs");
 const { dialog } = require('@electron/remote');
 /**
  * Function to create popup window
- * @param {string} frameName - what type of popup you want to create?
+ * @param {string} type - is it a file or folder
  * @returns {any}
  */
-const Popup = (frameName) => {
-    console.log(frameName)
-    switch (frameName) {
+const NewFile = (type) => {
+    switch (type) {
         case "new file":
-            prompt({ title: 'New File', label: 'File Name:', inputAttrs: { type: 'text' }, type: 'input' })
+            prompt({ title: 'New File', label: 'File Name:', inputAttrs: { type: 'text', required: true }, type: 'input' })
                 .then((r) => {
                     if (r) {
                         const tabs = storage.get('tabs')?.data
@@ -36,7 +35,7 @@ const Popup = (frameName) => {
                 .catch(console.error);
             break;
         case "new folder":
-            prompt({ title: 'New Folder', label: 'Folder Name:', inputAttrs: { type: 'text' }, type: 'input' })
+            prompt({ title: 'New Folder', label: 'Folder Name:', inputAttrs: { type: 'text', required: true }, type: 'input' })
                 .then((r) => {
                     if (r) {
                         const tabs = storage.get('tabs')?.data
@@ -61,4 +60,4 @@ const Popup = (frameName) => {
     }
 }
 
-module.exports = Popup
+module.exports = NewFile

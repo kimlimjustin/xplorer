@@ -5,7 +5,8 @@ const getPreview = require("../Functions/preview/preview");
 const os = require("os");
 const path = require("path");
 const copyLocation = require("../Functions/Files/location");
-const Popup = require("./popup");
+const NewFile = require("../Functions/Files/new");
+const Rename = require("../Functions/Files/rename");
 let vscodeInstalled = false
 try {
     execSync("code --version")
@@ -42,7 +43,7 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
             { "menu": "Copy Location Path", "shortcut": "Alt+Shift+C", "icon": "location", "role": "location" },
         ],
         [
-            { "menu": "Rename", "shortcut": "f2", "icon": "rename" },
+            { "menu": "Rename", "shortcut": "F2", "icon": "rename", "role": "rename" },
             { "menu": "Delete", "shortcut": "Del", "icon": "delete" },
             { "menu": "Pin to Sidebar", "shortcut": "Alt+P", "icon": "pin" }
         ],
@@ -207,9 +208,9 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
                             break;
                     }
                     if (e.target.innerHTML.startsWith("File")) {
-                        Popup("new file")
+                        NewFile("new file")
                     } else if (e.target.innerHTML.startsWith("Folder")) {
-                        Popup("new folder")
+                        NewFile("new folder")
                     }
                 }
             }
@@ -317,6 +318,9 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
                         break;
                     case "location":
                         copyLocation(target);
+                        break;
+                    case "rename":
+                        Rename(filePath)
                         break;
                 }
             })

@@ -1,7 +1,8 @@
 const copyLocation = require("../Functions/Files/location");
 const { getSelected } = require("../Functions/Files/select");
 const { execSync, exec } = require('child_process');
-const Popup = require("./popup");
+const NewFile = require("../Functions/Files/new");
+const Rename = require("../Functions/Files/rename");
 let vscodeInstalled = false
 try {
    execSync("code --version")
@@ -38,6 +39,17 @@ const Shortcut = () => {
             document.querySelectorAll(".file").forEach(element => element.classList.add("selected"))
          } else document.querySelectorAll(".file").forEach(element => element.classList.remove("selected"))
       }
+      // New file shortcut (Alt + N)
+      if (e.key === "n" && e.altKey && !e.shiftKey) {
+         NewFile("new file")
+      }
+      // New folder shortcut (Shift + N)
+      if (e.key === "N" && !e.altKey && e.shiftKey) {
+         NewFile("new folder")
+      }
+      if (e.key === "F2") {
+         if (getSelected()[0]) Rename(getSelected()[0].dataset.path)
+      }
       // Open file shorcut (Enter)
       if (e.key === "Enter" && selectedFilePath) {
          // Open file in vscode (Shift + Enter)
@@ -51,14 +63,6 @@ const Shortcut = () => {
                openFileWithDefaultApp(selectedFilePath)
             }
          }
-      }
-      // New file shortcut (Alt + N)
-      if (e.key === "n" && e.altKey && !e.shiftKey) {
-         Popup("new file")
-      }
-      // New folder shortcut (Shift + N)
-      if (e.key === "N" && !e.altKey && e.shiftKey) {
-         Popup("new folder")
       }
       // Copy location path (Alt + Shift + C)
       if (e.key === "C" && e.altKey && e.shiftKey) {
