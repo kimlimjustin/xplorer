@@ -160,32 +160,6 @@ const Tab = () => {
         }
     }
 
-    // shortcuts for tabs
-    const shortcut = e => {
-        if (e.ctrlKey && e.key === "t") { // Shortcut for new tab
-            createNewTab()
-            updateTheme()
-        } else if (e.ctrlKey && e.key === "e") { // Shortcut for exit tab
-            const tabs = storage.get('tabs')?.data
-            if (document.querySelectorAll(".tab").length === 1) {
-                const electronWindow = remote.BrowserWindow.getFocusedWindow()
-                electronWindow.close()
-            } else {
-                const tab = document.getElementById(`tab${tabs.focus}`)
-                tab.parentElement.removeChild(tab)
-                tabs.focusHistory = tabs.focusHistory.filter(tabIndex => String(tabIndex) !== tabs.focus)
-                tabs.focus = String(tabs.focusHistory[tabs.focusHistory.length - 1])
-                delete tabs.tabs[tabs.focus]
-                storage.set("tabs", tabs)
-            }
-        } else if (e.altKey && e.key === "ArrowLeft") {
-            goBack()
-        } else if (e.altKey && e.key === "ArrowRight") {
-            goForward()
-        }
-    }
-    document.addEventListener("keydown", shortcut, false)
-
     // Scroll the tabs
     document.querySelector(".tabs-manager").addEventListener("wheel", e => {
         e.deltaY > 0 ? document.querySelector(".tabs-manager").scrollLeft += 25 : document.querySelector(".tabs-manager").scrollLeft -= 25;
