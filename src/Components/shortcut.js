@@ -64,7 +64,8 @@ const Shortcut = () => {
       else if (e.key === "Enter" && selectedFilePath) {
          // Open file in vscode (Shift + Enter)
          if (e.shiftKey && vscodeInstalled) {
-            exec(`code "${selectedFilePath.replaceAll('"', "\\\"")}"`)
+            const targetPath = selectedFilePath === "undefined" ? focusingPath : selectedFilePath
+            exec(`code "${targetPath.replaceAll('"', "\\\"")}"`)
          } else {
             const { openDir, openFileWithDefaultApp } = require("../Functions/Files/open");
             if (isDir) {
