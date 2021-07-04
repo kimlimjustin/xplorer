@@ -62,7 +62,7 @@ const Initializer = () => {
     }
     const selectShortcut = (e) => {
         const hideHiddenFiles = storage.get("preference")?.data?.hideHiddenFiles ?? true
-        if (e.key === "ArrowRight") {
+        if (e.key === "ArrowRight" && !e.altKey) {
             if (!document.contains(latestSelected)) { selectFirstFile(); return; }
             if (Array.from(latestSelected.parentNode.children).indexOf(latestShiftSelected) < Array.from(latestSelected.parentNode.children).indexOf(latestSelected)) latestShiftSelected = latestSelected
             e.preventDefault()
@@ -89,7 +89,7 @@ const Initializer = () => {
                 }
             }
         }
-        else if (e.key === "ArrowLeft") {
+        else if (e.key === "ArrowLeft" && !e.altKey) {
             if (!document.contains(latestSelected)) { selectFirstFile(); return; }
             if (Array.from(latestSelected.parentNode.children).indexOf(latestShiftSelected) > Array.from(latestSelected.parentNode.children).indexOf(latestSelected)) latestShiftSelected = latestSelected
             e.preventDefault()
@@ -117,7 +117,7 @@ const Initializer = () => {
                 }
             }
         }
-        else if (e.key === "ArrowDown") {
+        else if (e.key === "ArrowDown" && !e.altKey) {
             if (!document.contains(latestSelected)) { selectFirstFile(); return; }
             if (Array.from(latestSelected.parentNode.children).indexOf(latestShiftSelected) < Array.from(latestSelected.parentNode.children).indexOf(latestSelected)) latestShiftSelected = latestSelected
             e.preventDefault()
@@ -146,7 +146,7 @@ const Initializer = () => {
                 }
             }
         }
-        else if (e.key === "ArrowUp") {
+        else if (e.key === "ArrowUp" && !e.altKey) {
             if (!document.contains(latestSelected)) { selectFirstFile(); return; }
             if (Array.from(latestSelected.parentNode.children).indexOf(latestShiftSelected) > Array.from(latestSelected.parentNode.children).indexOf(latestSelected)) latestShiftSelected = latestSelected
             e.preventDefault()

@@ -77,6 +77,40 @@ const SwitchTab = (tabIndex) => {
 }
 
 /**
+     * Function to navigate backward
+     * @returns {any}
+     */
+const goBack = () => {
+    const tabs = storage.get('tabs')?.data;
+    const { openDir } = require("../Functions/Files/open");
+    const _focusingTab = tabs.tabs[tabs.focus]
+    if (_focusingTab.currentIndex > 0) {
+        tabs.tabs[tabs.focus].currentIndex -= 1
+        tabs.tabs[tabs.focus].position = _focusingTab.history[_focusingTab.currentIndex]
+
+        storage.set("tabs", tabs)
+        openDir(_focusingTab.history[_focusingTab.currentIndex])
+    }
+}
+
+/**
+ * Function to navigate forward
+ * @returns {any}
+ */
+const goForward = () => {
+    const tabs = storage.get('tabs')?.data;
+    const { openDir } = require("../Functions/Files/open");
+    const _focusingTab = tabs.tabs[tabs.focus]
+    if (_focusingTab.currentIndex >= 0 && _focusingTab.history?.[_focusingTab.currentIndex + 1]) {
+        tabs.tabs[tabs.focus].currentIndex += 1
+        tabs.tabs[tabs.focus].position = _focusingTab.history[_focusingTab.currentIndex]
+
+        storage.set("tabs", tabs)
+        openDir(_focusingTab.history[_focusingTab.currentIndex])
+        storage.set("tabs", tabs)
+    }
+}
+/**
  * Tab initiliazer function
  * @returns {any}
  */
@@ -125,41 +159,6 @@ const Tab = () => {
     // Create a new tab event
     createNewTabElement.addEventListener('click', () => createNewTab())
 
-    /**
-     * Function to navigate backward
-     * @returns {any}
-     */
-    const goBack = () => {
-        const tabs = storage.get('tabs')?.data;
-        const { openDir } = require("../Functions/Files/open");
-        const _focusingTab = tabs.tabs[tabs.focus]
-        if (_focusingTab.currentIndex > 0) {
-            tabs.tabs[tabs.focus].currentIndex -= 1
-            tabs.tabs[tabs.focus].position = _focusingTab.history[_focusingTab.currentIndex]
-
-            storage.set("tabs", tabs)
-            openDir(_focusingTab.history[_focusingTab.currentIndex])
-        }
-    }
-
-    /**
-     * Function to navigate forward
-     * @returns {any}
-     */
-    const goForward = () => {
-        const tabs = storage.get('tabs')?.data;
-        const { openDir } = require("../Functions/Files/open");
-        const _focusingTab = tabs.tabs[tabs.focus]
-        if (_focusingTab.currentIndex >= 0 && _focusingTab.history?.[_focusingTab.currentIndex + 1]) {
-            tabs.tabs[tabs.focus].currentIndex += 1
-            tabs.tabs[tabs.focus].position = _focusingTab.history[_focusingTab.currentIndex]
-
-            storage.set("tabs", tabs)
-            openDir(_focusingTab.history[_focusingTab.currentIndex])
-            storage.set("tabs", tabs)
-        }
-    }
-
     // Scroll the tabs
     document.querySelector(".tabs-manager").addEventListener("wheel", e => {
         e.deltaY > 0 ? document.querySelector(".tabs-manager").scrollLeft += 25 : document.querySelector(".tabs-manager").scrollLeft -= 25;
@@ -169,4 +168,4 @@ const Tab = () => {
     document.getElementById("go-forward").addEventListener("click", () => goForward())
 }
 
-module.exports = { Tab, createNewTab }
+module.exports = { Tab, createNewTab, goBack, goForward }

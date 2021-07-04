@@ -35,7 +35,7 @@ const changeSelectedStatus = () => {
  */
 const Shortcut = () => {
    const { reload, minimize, maximize } = require("./windowManager");
-   const { createNewTab } = require("./tab");
+   const { createNewTab, goBack, goForward } = require("./tab");
    const ShortcutHandler = e => {
       e.preventDefault()
       const selectedFilePath = unescape(getSelected()?.[0]?.dataset?.path)
