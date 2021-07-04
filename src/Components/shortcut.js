@@ -6,6 +6,8 @@ const Rename = require("../Functions/Files/rename");
 const { updateTheme } = require("../Functions/Theme/theme");
 const storage = require("electron-json-storage-sync");
 const { toggleHideHiddenFilesValue, getHideHiddenFilesValue } = require("../Functions/Files/toggleHiddenFiles")
+const path = require('path');
+const os = require("os");
 let vscodeInstalled = false
 try {
    execSync("code --version")
@@ -38,6 +40,8 @@ const Shortcut = () => {
       e.preventDefault()
       const selectedFilePath = unescape(getSelected()?.[0]?.dataset?.path)
       const isDir = getSelected()?.[0]?.dataset.isdir === "true"
+      const tabs = storage.get('tabs')?.data
+      const focusingPath = tabs.tabs[tabs.focus].position === "Home" || tabs.tabs[tabs.focus].position === path.join(os.homedir(), "Home") ? os.homedir() : tabs.tabs[tabs.focus].position
       // Select all shortcut (Ctrl + A)
       if (e.key === "a" && e.ctrlKey) {
          selectedAll = !selectedAll
@@ -117,7 +121,17 @@ const Shortcut = () => {
          document.getElementById("main").dataset.hideHiddenFiles = hideHiddenFiles
          document.getElementById("show-hidden-files").checked = !hideHiddenFiles
       }
-      // Toggle hidden files shortcut (Ctrl+H)
+      // Open in terminal shortcut (Alt + T)
+      else if (e.altKey && e.key === "t") {
+         if (process.platform === "win32") {
+            execSync(`${filePath.split("\\")[0]} && cd ${selectedFilePath === "undefined" ? focusingPath : selectedFilePath} && start cmd`)
+         } else if (process.platform === "linux") {
+            console.log(selectedFilePath === "undefined" ? focusingPath : selectedFilePath)
+            execSync(`gnome-terminal --working-directory="${selectedFilePath === "undefined" ? focusingPath : selectedFilePath}"`)
+         } else {
+            execSync(`open -a Terminal ${selectedFilePath === "undefined" ? focusingPath : selectedFilePath}`)
+         }
+      }
 
    }
    document.addEventListener("keyup", ShortcutHandler)
