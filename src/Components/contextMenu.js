@@ -7,6 +7,8 @@ const path = require("path");
 const copyLocation = require("../Functions/Files/location");
 const NewFile = require("../Functions/Files/new");
 const Rename = require("../Functions/Files/rename");
+const Copy = require("../Functions/Files/copy");
+const Paste = require("../Functions/Files/paste");
 let vscodeInstalled = false
 try {
     execSync("code --version")
@@ -38,7 +40,7 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
         ],
         [
             { "menu": "Cut", "shortcut": "Ctrl+X", "icon": "cut" },
-            { "menu": "Copy", "shortcut": "Ctrl+C", "icon": "copy" },
+            { "menu": "Copy", "shortcut": "Ctrl+C", "icon": "copy", "role": "copy" },
             { "menu": "Create Shortcut", "shortcut": "Alt+S", "icon": "shortcut" },
             { "menu": "Copy Location Path", "shortcut": "Alt+Shift+C", "icon": "location", "role": "location" },
         ],
@@ -58,7 +60,7 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
             { "menu": "Refresh", "role": "refresh", "shortcut": "F5", "icon": "refresh" }
         ],
         [
-            { "menu": "Paste", "shortcut": "Ctrl+V", "icon": "paste" },
+            { "menu": "Paste", "shortcut": "Ctrl+V", "icon": "paste", "role": "paste" },
             { "menu": "Copy Location Path", "shortcut": "Alt+Shift+C", "icon": "location", "role": "location" },
         ],
         [
@@ -273,6 +275,8 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
                 while (!target.dataset.path) {
                     target = target.parentNode
                 }
+                const tabs = storage.get("tabs")?.data
+                const focusingPath = tabs.tabs[tabs.focus].position === "Home" || tabs.tabs[tabs.focus].position === path.join(os.homedir(), "Home") ? os.homedir() : tabs.tabs[tabs.focus].position
                 const filePath = unescape(target.dataset.path)
                 switch (menu.getAttribute("role")) {
                     case "open":
@@ -321,6 +325,12 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
                         break;
                     case "rename":
                         Rename(filePath)
+                        break;
+                    case "copy":
+                        Copy([filePath])
+                        break;
+                    case "paste":
+                        Paste(focusingPath)
                         break;
                 }
             })
