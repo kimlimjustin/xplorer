@@ -1,6 +1,7 @@
 const clipboardy = require('clipboardy');
-const fs = require('fs');
 const path = require('path');
+const fs = require('fs');
+const cpy = require('cpy');
 /**
  * Paste copied files into a folder
  * @param {any} target - Folder you want to paste copied files into
@@ -18,9 +19,10 @@ const Paste = (target) => {
             filePaths.push(clipboard.split("\n")[i])
         }
         for (const filePath of filePaths) {
-            fs.copyFile(filePath, path.join(target, path.basename(filePath)), (err) => {
-                if (err) console.log(err)
-            })
+            if (commandType === "COPY") {
+                if (fs.lstatSync(filePath).isDirectory()) cpy(filePath, path.join(target, path.basename(filePath)))
+                else cpy(filePath, target)
+            }
         }
     }
 }
