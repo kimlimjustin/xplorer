@@ -8,6 +8,8 @@ const storage = require("electron-json-storage-sync");
 const { toggleHideHiddenFilesValue, getHideHiddenFilesValue } = require("../Functions/Files/toggleHiddenFiles")
 const path = require('path');
 const os = require("os");
+const Copy = require("../Functions/Files/copy");
+const Paste = require("../Functions/Files/paste");
 let vscodeInstalled = false
 try {
    execSync("code --version")
@@ -132,6 +134,18 @@ const Shortcut = () => {
          } else {
             execSync(`open -a Terminal ${selectedFilePath === "undefined" ? focusingPath : selectedFilePath}`)
          }
+      }
+      // Copy file shortcut (Ctrl+C)
+      else if (e.ctrlKey && e.key === "c") {
+         const filePaths = []
+         for (const element of getSelected()) {
+            filePaths.push(element.dataset.path)
+         }
+         Copy(filePaths)
+      }
+      // Paste file shortcut (Ctrl+V)
+      else if (e.ctrlKey && e.key === "v") {
+         Paste(focusingPath)
       }
 
    }
