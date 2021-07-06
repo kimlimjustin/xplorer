@@ -140,14 +140,14 @@ const Shortcut = () => {
       else if (e.ctrlKey && e.key === "c") {
          const filePaths = []
          for (const element of getSelected()) {
-            filePaths.push(element.dataset.path)
+            filePaths.push(unescape(element.dataset.path))
          }
          Copy(filePaths)
       }
       else if (e.ctrlKey && e.key === "x") {
          const filePaths = []
          for (const element of getSelected()) {
-            filePaths.push(element.dataset.path)
+            filePaths.push(unescape(element.dataset.path))
          }
          Cut(filePaths)
       }
