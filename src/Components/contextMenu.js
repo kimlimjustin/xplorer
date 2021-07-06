@@ -9,6 +9,7 @@ const NewFile = require("../Functions/Files/new");
 const Rename = require("../Functions/Files/rename");
 const Copy = require("../Functions/Files/copy");
 const Paste = require("../Functions/Files/paste");
+const Cut = require("../Functions/Files/cut");
 let vscodeInstalled = false
 try {
     execSync("code --version")
@@ -39,7 +40,7 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
             { "menu": "Preview", "visible": target?.dataset?.isdir !== "false", "shortcut": "Ctrl+P", "icon": "preview" }
         ],
         [
-            { "menu": "Cut", "shortcut": "Ctrl+X", "icon": "cut" },
+            { "menu": "Cut", "shortcut": "Ctrl+X", "icon": "cut", "role": "cut" },
             { "menu": "Copy", "shortcut": "Ctrl+C", "icon": "copy", "role": "copy" },
             { "menu": "Create Shortcut", "shortcut": "Alt+S", "icon": "shortcut" },
             { "menu": "Copy Location Path", "shortcut": "Alt+Shift+C", "icon": "location", "role": "location" },
@@ -325,6 +326,9 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
                         break;
                     case "rename":
                         Rename(filePath)
+                        break;
+                    case "cut":
+                        Cut([filePath])
                         break;
                     case "copy":
                         Copy([filePath])

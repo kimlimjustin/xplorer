@@ -9,6 +9,7 @@ const { toggleHideHiddenFilesValue, getHideHiddenFilesValue } = require("../Func
 const path = require('path');
 const os = require("os");
 const Copy = require("../Functions/Files/copy");
+const Cut = require("../Functions/Files/cut");
 const Paste = require("../Functions/Files/paste");
 let vscodeInstalled = false
 try {
@@ -139,9 +140,16 @@ const Shortcut = () => {
       else if (e.ctrlKey && e.key === "c") {
          const filePaths = []
          for (const element of getSelected()) {
-            filePaths.push(element.dataset.path)
+            filePaths.push(unescape(element.dataset.path))
          }
          Copy(filePaths)
+      }
+      else if (e.ctrlKey && e.key === "x") {
+         const filePaths = []
+         for (const element of getSelected()) {
+            filePaths.push(unescape(element.dataset.path))
+         }
+         Cut(filePaths)
       }
       // Paste file shortcut (Ctrl+V)
       else if (e.ctrlKey && e.key === "v") {

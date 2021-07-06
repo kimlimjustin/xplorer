@@ -670,3 +670,7 @@ img{
     background: var(--selected-grid-background) !important;
     color: var(--selected-grid-color) !important;
 }
+
+.cut{
+    opacity: .75;
+}
