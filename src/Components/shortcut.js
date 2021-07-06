@@ -64,17 +64,19 @@ const Shortcut = () => {
          if (getSelected()[0]) Rename(getSelected()[0].dataset.path)
       }
       // Open file shorcut (Enter)
-      else if (e.key === "Enter" && selectedFilePath) {
-         // Open file in vscode (Shift + Enter)
-         if (e.shiftKey && vscodeInstalled) {
-            const targetPath = selectedFilePath === "undefined" ? focusingPath : selectedFilePath
-            exec(`code "${targetPath.replaceAll('"', "\\\"")}"`)
-         } else {
-            const { openDir, openFileWithDefaultApp } = require("../Functions/Files/open");
-            if (isDir) {
-               openDir(selectedFilePath)
+      else if (e.key === "Enter") {
+         for (const selected of getSelected()) {
+            // Open file in vscode (Shift + Enter)
+            if (e.shiftKey && vscodeInstalled) {
+               const targetPath = unescape(selected.dataset.path) === "undefined" ? focusingPath : unescape(selected.dataset.path)
+               exec(`code "${targetPath.replaceAll('"', "\\\"")}"`)
             } else {
-               openFileWithDefaultApp(selectedFilePath)
+               const { openDir, openFileWithDefaultApp } = require("../Functions/Files/open");
+               if (isDir) {
+                  openDir(selectedFilePath)
+               } else {
+                  openFileWithDefaultApp(selectedFilePath)
+               }
             }
          }
       }
