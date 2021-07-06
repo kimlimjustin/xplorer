@@ -10,6 +10,7 @@ const Rename = require("../Functions/Files/rename");
 const Copy = require("../Functions/Files/copy");
 const Paste = require("../Functions/Files/paste");
 const Cut = require("../Functions/Files/cut");
+const { getSelected } = require("../Functions/Files/select");
 let vscodeInstalled = false
 try {
     execSync("code --version")
@@ -74,6 +75,19 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
             { "menu": "Properties", "shortcut": "Ctrl+P", "icon": target?.dataset?.isdir ? "folder property" : "file property" }
         ]
     ]
+    const MultipleSelectedMenu = [
+        [
+            { "menu": "Open in new tab", 'role': "openMultipleTabs", "icon": "open in new tab" },
+            { "menu": "Open in vscode", "role": "codes", "shortcut": "Shift+Enter", "icon": "vscode" }
+        ],
+        [
+            { "menu": "Cut", "shortcut": "Ctrl+X", "icon": "cut", "role": "cuts" },
+            { "menu": "Copy", "shortcut": "Ctrl+C", "icon": "copy", "role": "copies" },
+        ],
+        [
+            { "menu": "Pin to Sidebar", "shortcut": "Alt+P", "icon": "pin" }
+        ]
+    ]
     const MenuToElements = menu => {
         menu.forEach((section, index) => {
             section.forEach(item => {
@@ -115,8 +129,12 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
             if (index !== menu.length - 1) contextMenu.innerHTML += `<hr />`
         })
     }
-    if (target === document.getElementById("main")) MenuToElements(BodyMenu)
-    else if (target?.dataset?.path) MenuToElements(FileMenu)
+    if (getSelected().length > 1) {
+        MenuToElements(MultipleSelectedMenu)
+    } else {
+        if (target === document.getElementById("main")) MenuToElements(BodyMenu)
+        else if (target?.dataset?.path) MenuToElements(FileMenu)
+    }
 
     updateTheme()
 
@@ -279,6 +297,8 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
                 const tabs = storage.get("tabs")?.data
                 const focusingPath = tabs.tabs[tabs.focus].position === "Home" || tabs.tabs[tabs.focus].position === path.join(os.homedir(), "Home") ? os.homedir() : tabs.tabs[tabs.focus].position
                 const filePath = unescape(target.dataset.path)
+                const { reload } = require("./windowManager");
+                let paths;
                 switch (menu.getAttribute("role")) {
                     case "open":
                     case "openInNewTab":
@@ -304,6 +324,15 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
                             openDir(filePath)
                         }
                         break;
+                    case "openMultipleTabs":
+                        const { createNewTab } = require('./tab');
+                        for (const element of getSelected()) {
+                            if (element.dataset.isdir === 'true') {
+                                createNewTab(unescape(element.dataset.path))
+                                if (element === getSelected()[getSelected().length - 1]) reload()
+                            }
+                        }
+                        break;
                     case "reveal":
                         if (process.platform === "win32") {
                             execSync(`${filePath.split("\\")[0]} && cd ${filePath} && start cmd`)
@@ -317,8 +346,14 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
                         if (process.platform === "linux" && (filePath === "Home" || filePath === path.join(os.homedir(), "Home"))) execSync(`code ${os.homedir()}`)
                         else exec(`code "${filePath.replaceAll('"', "\\\"")}"`)
                         break;
+                    case "codes":
+                        for (const element of getSelected()) {
+                            const selectedPath = unescape(element.dataset.path)
+                            if (process.platform === "linux" && (selectedPath === "Home" || selectedPath === path.join(os.homedir(), "Home"))) execSync(`code ${os.homedir()}`)
+                            else exec(`code "${selectedPath.replaceAll('"', "\\\"")}"`)
+                        }
+                        break;
                     case "refresh":
-                        const { reload } = require("./windowManager");
                         reload()
                         break;
                     case "location":
@@ -330,8 +365,22 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
                     case "cut":
                         Cut([filePath])
                         break;
+                    case "cuts":
+                        paths = []
+                        for (const element of getSelected()) {
+                            paths.push(unescape(element.dataset.path))
+                        }
+                        Cut(paths)
+                        break;
                     case "copy":
                         Copy([filePath])
+                        break;
+                    case "copies":
+                        paths = []
+                        for (const element of getSelected()) {
+                            paths.push(unescape(element.dataset.path))
+                        }
+                        Copy(paths)
                         break;
                     case "paste":
                         Paste(focusingPath)
