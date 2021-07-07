@@ -21,7 +21,8 @@
     "build": "electron-builder",
     "build-wml": "electron-builder -wml",
     "native_build": "node-gyp rebuild",
-    "install": "node install.js"
+    "install": "node install.js",
+    "postinstall": "patch-package"
   },
   "build": {
     "directories": {
@@ -65,6 +66,8 @@
     "electron-prompt": "^1.6.2",
     "fswin": "^3.21.107",
     "is-hidden-file": "1.1.2",
-    "jest": "^27.0.4"
+    "jest": "^27.0.4",
+    "patch-package": "^6.4.7",
+    "postinstall-postinstall": "^2.1.0"
   }
 }

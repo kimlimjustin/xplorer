@@ -1,0 +1,15 @@
+diff --git a/node_modules/cp-file/index.js b/node_modules/cp-file/index.js
+index b049482..e86f439 100644
+--- a/node_modules/cp-file/index.js
++++ b/node_modules/cp-file/index.js
+@@ -12,7 +12,9 @@ const cpFileAsync = async (source, destination, options, progressEmitter) => {
+ 	progressEmitter.size = stat.size;
+ 
+ 	const read = await fs.createReadStream(source);
+-	await fs.makeDir(path.dirname(destination));
++	if(!(process.platform === "win32" && /\w:\\/.test(path.resolve(path.dirname(destination), "/")))){
++        await fs.makeDir(path.dirname(destination), {mode: options.directoryMode});
++    }
+ 	const write = fs.createWriteStream(destination, {flags: options.overwrite ? 'w' : 'wx'});
+ 	read.on('data', () => {
+ 		progressEmitter.written = write.bytesWritten;
