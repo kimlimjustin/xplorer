@@ -2,7 +2,8 @@ const clipboardy = require('clipboardy');
 const path = require('path');
 const fs = require('fs');
 const cpy = require('cpy');
-const { dialog } = require('@electron/remote')
+const { dialog } = require('@electron/remote');
+const { ErrorLog, InfoLog } = require('../Logs/log');
 
 const COPY = (filePaths, target) => {
     return new Promise((resolve, reject) => {
@@ -60,6 +61,7 @@ const Paste = async (target) => {
         }
         if (commandType === "COPY") {
             await COPY(filePaths, target)
+            InfoLog(`Copy ${filePaths.length} into ${target}`)
         } else if (commandType === "CUT") {
             await COPY(filePaths, target)
                 .then(() => {
@@ -68,10 +70,14 @@ const Paste = async (target) => {
                             fs.rmdirSync(filePath, { recursive: true })
                         } else {
                             fs.unlink(filePath, (err) => {
-                                if (err) dialog.showMessageBoxSync({ message: "Something went wrong, please try again or open an issue on GitHub.", type: "error" })
+                                if (err) {
+                                    dialog.showMessageBoxSync({ message: "Something went wrong, please try again or open an issue on GitHub.", type: "error" })
+                                    ErrorLog(err)
+                                }
                             })
                         }
                     }
+                    InfoLog(`Cut ${filePaths.length} into ${target}`)
                 })
         }
     }

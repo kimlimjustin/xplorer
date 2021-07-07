@@ -4,6 +4,7 @@ const path = require("path");
 const os = require("os");
 const fs = require("fs");
 const { dialog } = require('@electron/remote');
+const { ErrorLog } = require('../Logs/log');
 /**
  * Function to create popup window
  * @param {string} type - is it a file or folder
@@ -27,7 +28,10 @@ const NewFile = (type) => {
                                 }
                             }
                             fs.writeFile(path.join(focusingPath, r), "", err => {
-                                if (err) dialog.showMessageBoxSync({ message: "Something went wrong, please try again or open an issue on GitHub.", type: "error" })
+                                if (err) {
+                                    dialog.showMessageBoxSync({ message: "Something went wrong, please try again or open an issue on GitHub.", type: "error" })
+                                    ErrorLog(err)
+                                }
                             })
                         }
                     }
@@ -50,7 +54,10 @@ const NewFile = (type) => {
                                 }
                             }
                             fs.mkdir(path.join(focusingPath, r), err => {
-                                if (err) dialog.showMessageBoxSync({ message: "Something went wrong, please try again or open an issue on GitHub.", type: "error" })
+                                if (err) {
+                                    dialog.showMessageBoxSync({ message: "Something went wrong, please try again or open an issue on GitHub.", type: "error" })
+                                    ErrorLog(err)
+                                }
                             })
                         }
                     }

@@ -18,7 +18,6 @@ const Cut = (files) => {
     (function detectClipboardChange() {
         if (clipboardy.readSync() !== commands) {
             clearTimeout(detectClipboardChange)
-            console.log(document.querySelectorAll(".file.cut"))
             document.querySelectorAll(".file.cut").forEach(file => {
                 if (files.indexOf(escape(file.dataset.path)) !== -1) file.classList.remove("cut")
             })

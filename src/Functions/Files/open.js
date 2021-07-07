@@ -15,10 +15,13 @@ const { isHiddenFile } = require("is-hidden-file");
 const formatBytes = require("../Math/filesize");
 const getType = require("./type");
 const { SelectListener } = require("./select");
+const { InfoLog } = require("../Logs/log");
 
 const LINUX_TRASH_FILES_PATH = path.join(os.homedir(), '.local/share/Trash/files')
 const LINUX_TRASH_INFO_PATH = path.join(os.homedir(), '.local/share/Trash/info')
 const IGNORE_FILE = ['.', '..'];
+
+let timeStarted;
 
 /**
  * Get command to open a file with default app on various operating systems.
@@ -176,7 +179,8 @@ const displayFiles = async (files, dir) => {
         LAZY_LOAD()
 
         console.timeEnd(dir)
-        stopLoading()
+        InfoLog(`Open ${dir} within ${(Date.now() - timeStarted) / 1000}s`)
+        stopLoading(`Open ${dir} within ${(Date.now() - timeStarted) / 1000}s`)
     }
 }
 
@@ -186,14 +190,15 @@ const displayFiles = async (files, dir) => {
  * @returns {any}
  */
 const openDir = async (dir) => {
-    console.time(dir)
+    timeStarted = Date.now()
     startLoading()
     await changePosition(dir)
     if (dir === path.join(os.homedir(), 'Home') || dir === "Home") {
         Home(() => {
             listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
             SelectListener(document.querySelectorAll(".file"))
-            console.timeEnd(dir)
+            InfoLog(`Open ${dir} within ${(Date.now() - timeStarted) / 1000}s`)
+            console.log(`Open ${dir} within ${(Date.now() - timeStarted) / 1000}s`)
         })
     } else if (dir === path.join(os.homedir(), 'Recent') || dir === "Recent") {
         Recent()

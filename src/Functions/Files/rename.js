@@ -10,7 +10,10 @@ const Rename = (filePath) => {
     prompt({ title: 'New File Name', label: 'New Name:', inputAttrs: { type: 'text', required: true }, type: 'input', value: path.basename(filePath) })
         .then(newName => {
             fs.rename(filePath, path.join(path.dirname(filePath), newName), err => {
-                if (err) dialog.showMessageBoxSync({ message: "Something went wrong, please try again or open an issue on GitHub.", type: "error" })
+                if (err) {
+                    dialog.showMessageBoxSync({ message: "Something went wrong, please try again or open an issue on GitHub.", type: "error" })
+                    ErrorLog(err)
+                }
             })
         })
     console.log(path)
