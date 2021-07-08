@@ -11,6 +11,7 @@ const Copy = require("../Functions/Files/copy");
 const Paste = require("../Functions/Files/paste");
 const Cut = require("../Functions/Files/cut");
 const { getSelected } = require("../Functions/Files/select");
+const Pin = require("../Functions/Files/pin");
 let vscodeInstalled = false
 try {
     execSync("code --version")
@@ -49,7 +50,7 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
         [
             { "menu": "Rename", "shortcut": "F2", "icon": "rename", "role": "rename" },
             { "menu": "Delete", "shortcut": "Del", "icon": "delete" },
-            { "menu": "Pin to Sidebar", "shortcut": "Alt+P", "icon": "pin" }
+            { "menu": "Pin to Sidebar", "shortcut": "Alt+P", "icon": "pin", "role": "pin" }
         ],
         [
             { "menu": "Properties", "shortcut": "Ctrl+P", "icon": target?.dataset?.isdir ? "folder property" : "file property" }
@@ -71,7 +72,7 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
             { "menu": "New", "submenu": [{ "name": "Folder", "shortcut": "Shift+N" }, { "name": "File", "shortcut": "Alt+N" }], "icon": "new", "role": "new" }
         ],
         [
-            { "menu": "Pin to Sidebar", "shortcut": "Alt+P", "icon": "pin" },
+            { "menu": "Pin to Sidebar", "shortcut": "Alt+P", "icon": "pin", "role": "pin" },
             { "menu": "Properties", "shortcut": "Ctrl+P", "icon": target?.dataset?.isdir ? "folder property" : "file property" }
         ]
     ]
@@ -85,7 +86,7 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
             { "menu": "Copy", "shortcut": "Ctrl+C", "icon": "copy", "role": "copies" },
         ],
         [
-            { "menu": "Pin to Sidebar", "shortcut": "Alt+P", "icon": "pin" }
+            { "menu": "Pin to Sidebar", "shortcut": "Alt+P", "icon": "pin", "role": "pins" }
         ]
     ]
     const MenuToElements = menu => {
@@ -384,6 +385,18 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
                         break;
                     case "paste":
                         Paste(focusingPath)
+                        break;
+                    case "pin":
+                        const os = require("os");
+                        console.log(filePath, focusingPath)
+                        Pin([filePath === "Home" ? os.homedir() : filePath ?? focusingPath])
+                        break;
+                    case "pins":
+                        paths = []
+                        for (const element of getSelected()) {
+                            paths.push(unescape(element.dataset.path))
+                        }
+                        Pin(paths)
                         break;
                 }
             })
