@@ -75,7 +75,7 @@ const Drives = async () => {
     const tabs = storage.get('tabs')?.data
     const focusingPath = tabs.tabs[tabs.focus].position
 
-    if (focusingPath === "Home" || focusingPath === path.join(os.homedir(), 'Home')) {
+    if (focusingPath === "Home" || focusingPath === path.join(os.homedir(), 'Home') || focusingPath === "xplorer://Home") {
         switch (process.platform) {
             case "win32":
                 return `<section class="home-section" id="drives">${drivesToElements(drives)}</section>`
@@ -84,7 +84,7 @@ const Drives = async () => {
             default:
                 return `<section class="home-section" id="drives">${drivesToElements(drives, kBlockFormat = true)}</section>`
         }
-    }
+    } else return ''
 }
 
 module.exports = { Drives, getDrives, getUniqueDrives, drivesToElements }
