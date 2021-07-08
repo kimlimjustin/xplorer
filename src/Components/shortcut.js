@@ -11,6 +11,7 @@ const os = require("os");
 const Copy = require("../Functions/Files/copy");
 const Cut = require("../Functions/Files/cut");
 const Paste = require("../Functions/Files/paste");
+const Pin = require("../Functions/Files/pin");
 let vscodeInstalled = false
 try {
    execSync("code --version")
@@ -146,6 +147,7 @@ const Shortcut = () => {
          }
          Copy(filePaths)
       }
+      // Cut file shortcut (Ctrl+X)
       else if (e.ctrlKey && e.key === "x") {
          const filePaths = []
          for (const element of getSelected()) {
@@ -156,6 +158,15 @@ const Shortcut = () => {
       // Paste file shortcut (Ctrl+V)
       else if (e.ctrlKey && e.key === "v") {
          Paste(focusingPath)
+      }
+      // Pin to sidebar shortcut (Alt+P)
+      else if (e.altKey && e.key === "p") {
+         let filePaths = []
+         for (const element of getSelected()) {
+            filePaths.push(unescape(element.dataset.path))
+         }
+         if (!filePaths.length) filePaths = [focusingPath]
+         Pin(filePaths)
       }
 
    }

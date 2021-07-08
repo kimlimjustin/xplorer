@@ -1,6 +1,7 @@
 const storage = require("electron-json-storage-sync");
 const path = require("path");
 const os = require("os");
+const createSidebar = require("../../Components/sidebar");
 /**
  * Pin file(s) into sidebar
  * @param {any} filePaths - array of file path you want to pin into sidebar
@@ -23,6 +24,7 @@ const Pin = (filePaths) => {
         favorites.push({ name: path.basename(filePath), path: filePath })
     }
     storage.set('sidebar', { favorites })
+    createSidebar()
 }
 
 module.exports = Pin
