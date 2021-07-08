@@ -193,18 +193,16 @@ const openDir = async (dir) => {
     timeStarted = Date.now()
     startLoading()
     await changePosition(dir)
-    if (dir === path.join(os.homedir(), 'Home') || dir === "Home") {
+    if (dir === path.join(os.homedir(), 'Home') || dir === "Home" || dir === "xplorer://Home") {
         Home(() => {
             listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
             SelectListener(document.querySelectorAll(".file"))
             InfoLog(`Open ${dir} within ${(Date.now() - timeStarted) / 1000}s`)
             console.log(`Open ${dir} within ${(Date.now() - timeStarted) / 1000}s`)
         })
-    } else if (dir === path.join(os.homedir(), 'Recent') || dir === "Recent") {
+    } else if (dir === path.join(os.homedir(), 'Recent') || dir === "Recent" || dir === "xplorer://Recent") {
         Recent()
-        changePosition('Recent')
-    } else if (dir === path.join(os.homedir(), 'Trash') || dir === "Trash") {
-        changePosition('Trash')
+    } else if (dir === path.join(os.homedir(), 'Trash') || dir === "Trash" || dir === "xplorer://Trash") {
         if (process.platform === "linux") {
             let files = fs.readdirSync(LINUX_TRASH_FILES_PATH, { withFileTypes: true }).map(dirent => {
                 let result = { name: dirent.name, isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)) }

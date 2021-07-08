@@ -25,7 +25,7 @@ const createSidebar = () => {
     const getFavoritesElement = favorites => {
         let favoritesElement = ""
         for (const favorite of favorites) {
-            favoritesElement += `<span data-listenOpen data-path = "${path.join(os.homedir(), favorite)}" data-isdir="true" class="sidebar-hover-effect"><img src="${getPreview(favorite, category = 'sidebar', HTMLFormat = false)}" alt="${favorite} icon"><span class="sidebar-text">${Translate(favorite)}</span></span>`
+            favoritesElement += `<span data-listenOpen data-path = "${favorite.path}" data-isdir="true" class="sidebar-hover-effect"><img src="${getPreview(favorite.name, category = 'sidebar', HTMLFormat = false)}" alt="${favorite.name} icon"><span class="sidebar-text">${Translate(favorite.name)}</span></span>`
         }
         let result = `<div class="sidebar-nav-item ${data?.hideSection?.favorites ? "nav-hide-item" : ''}">
         <div class="sidebar-hover-effect">
@@ -60,14 +60,17 @@ const createSidebar = () => {
         }
     }
 
-    let _favorites = ['Home', 'Recent', 'Desktop', 'Documents', 'Downloads', 'Pictures', 'Music', 'Videos', 'Trash']
-    // If user has no preference sidebar item
-    if (!data || !Object.keys(data).length || !data.favorites.length) {
-        storage.set('sidebar', { favorites: _favorites })
-    }
-    else {
-        _favorites = data.favorites
-    }
+    let _favorites = data?.favorites ?? [
+        { name: 'Home', path: 'xplorer://Home' },
+        { name: 'Recent', path: 'xplorer://Recent' },
+        { name: 'Desktop', path: `${path.join(os.homedir(), 'Desktop')}` },
+        { name: 'Documents', path: `${path.join(os.homedir(), 'Documents')}` },
+        { name: 'Downloads', path: `${path.join(os.homedir(), 'Downloads')}` },
+        { name: 'Pictures', path: `${path.join(os.homedir(), 'Pictures')}` },
+        { name: 'Music', path: `${path.join(os.homedir(), 'Music')}` },
+        { name: 'Videos', path: `${path.join(os.homedir(), 'Videos')}` },
+        { name: 'Trash', path: 'xplorer://Trash' }
+    ]
 
     getDrivesElement().then(drivesElement => { // get drives element
         let sidebarElement = document.createElement("div");
