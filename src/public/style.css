@@ -81,7 +81,7 @@ body{
 }
 
 .sidebar-nav-item-dropdown-container span{
-    display: block;
+    display: flex;
     cursor: pointer;
     padding: .2rem;
 }
@@ -654,6 +654,9 @@ input:checked + .toggle-slider:before {
     display: inline-block !important;
     margin: 0 .2rem;
     padding: 0 !important;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 img{
