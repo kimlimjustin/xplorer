@@ -8,6 +8,7 @@ const createSidebar = require("../../Components/sidebar");
  * @returns {any}
  */
 const Pin = (filePaths) => {
+    const { listenOpen } = require("./open");
     const { data } = storage.get("sidebar");
     let favorites = data?.favorites ?? [
         { name: 'Home', path: 'xplorer://Home' },
@@ -21,9 +22,13 @@ const Pin = (filePaths) => {
         { name: 'Trash', path: 'xplorer://Trash' }
     ]
     for (const filePath of filePaths) {
-        favorites.push({ name: path.basename(filePath), path: filePath })
+        if (favorites.filter(favorite => favorite.path === filePath).length) {
+            favorites = favorites.filter(favorite => favorite.path !== filePath)
+        } else {
+            favorites.push({ name: path.basename(filePath), path: filePath })
+        }
     }
-    storage.set('sidebar', { favorites })
+    storage.set('sidebar', { favorites });
     createSidebar()
 }
 

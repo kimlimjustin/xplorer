@@ -9,9 +9,11 @@ const Setting = require('./setting');
 const getDriveBasePath = require('../Functions/Files/basePath');
 
 const changeSidebar = newElement => {
+    const { listenOpen } = require('../Functions/Files/open');
     const sidebarElement = document.body.querySelector(".sidebar");
     sidebarElement.parentElement.replaceChild(newElement, sidebarElement);
     updateTheme()
+    listenOpen(document.querySelector(".sidebar-nav").querySelectorAll("[data-listenOpen]")) // Listen to open the file
     return;
 }
 

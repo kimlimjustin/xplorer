@@ -33,6 +33,8 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
     // Reset context menu contents
     contextMenu.innerHTML = ""
     contextMenuSubmenus.innerHTML = ""
+    const favorites = storage.get("sidebar")?.data?.favorites
+    const isPinned = !!favorites.filter(favorite => favorite.path === target.dataset.path).length
     const FileMenu = [
         [
             { "menu": "Open", "role": "open", "shortcut": "Enter", "icon": "open" },
@@ -50,7 +52,7 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
         [
             { "menu": "Rename", "shortcut": "F2", "icon": "rename", "role": "rename" },
             { "menu": "Delete", "shortcut": "Del", "icon": "delete" },
-            { "menu": "Pin to Sidebar", "shortcut": "Alt+P", "icon": "pin", "role": "pin" }
+            { "menu": isPinned ? "Unpin from Sidebar" : "Pin to Sidebar", "shortcut": "Alt+P", "icon": "pin", "role": "pin" }
         ],
         [
             { "menu": "Properties", "shortcut": "Ctrl+P", "icon": target?.dataset?.isdir ? "folder property" : "file property" }
@@ -72,7 +74,7 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
             { "menu": "New", "submenu": [{ "name": "Folder", "shortcut": "Shift+N" }, { "name": "File", "shortcut": "Alt+N" }], "icon": "new", "role": "new" }
         ],
         [
-            { "menu": "Pin to Sidebar", "shortcut": "Alt+P", "icon": "pin", "role": "pin" },
+            { "menu": isPinned ? "Unpin from Sidebar" : "Pin to Sidebar", "shortcut": "Alt+P", "icon": "pin", "role": "pin" },
             { "menu": "Properties", "shortcut": "Ctrl+P", "icon": target?.dataset?.isdir ? "folder property" : "file property" }
         ]
     ]
@@ -388,7 +390,6 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
                         break;
                     case "pin":
                         const os = require("os");
-                        console.log(filePath, focusingPath)
                         Pin([filePath === "Home" ? os.homedir() : filePath ?? focusingPath])
                         break;
                     case "pins":
