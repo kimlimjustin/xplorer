@@ -27,12 +27,13 @@ const createSidebar = () => {
     // Functions to get favorites element
     const getFavoritesElement = favorites => {
         let favoritesElement = ""
+        const sidebarElementFavorites = ["Home", "Recent", "Documents", "Desktop", "Downloads", "Pictures", "Music", "Videos", "Trash"]
         for (const favorite of favorites) {
             let isdir;
             try {
                 isdir = fs.lstatSync(favorite.path).isDirectory()
             } catch (_) { isdir = true }
-            favoritesElement += `<span data-listenOpen data-path = "${favorite.path}" data-isdir="${isdir}" class="sidebar-hover-effect"><img src="${getPreview(favorite.name, category = 'sidebar', HTMLFormat = false)}" alt="${favorite.name} icon"><span class="sidebar-text">${Translate(favorite.name)}</span></span>`
+            favoritesElement += `<span data-listenOpen data-path = "${favorite.path}" data-isdir="${isdir}" class="sidebar-hover-effect"><img src="${getPreview(favorite.name, category = sidebarElementFavorites.indexOf(favorite.name) === -1 ? isdir ? "folder" : "file" : 'sidebar', HTMLFormat = false)}" alt="${favorite.name} icon"><span class="sidebar-text">${Translate(favorite.name)}</span></span>`
         }
         let result = `<div class="sidebar-nav-item ${data?.hideSection?.favorites ? "nav-hide-item" : ''}">
         <div class="sidebar-hover-effect">
