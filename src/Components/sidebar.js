@@ -6,6 +6,7 @@ const getPreview = require('../Functions/preview/preview');
 const Translate = require('./multilingual');
 const { updateTheme } = require('../Functions/Theme/theme');
 const Setting = require('./setting');
+const fs = require("fs");
 const getDriveBasePath = require('../Functions/Files/basePath');
 
 const changeSidebar = newElement => {
@@ -27,7 +28,11 @@ const createSidebar = () => {
     const getFavoritesElement = favorites => {
         let favoritesElement = ""
         for (const favorite of favorites) {
-            favoritesElement += `<span data-listenOpen data-path = "${favorite.path}" data-isdir="true" class="sidebar-hover-effect"><img src="${getPreview(favorite.name, category = 'sidebar', HTMLFormat = false)}" alt="${favorite.name} icon"><span class="sidebar-text">${Translate(favorite.name)}</span></span>`
+            let isdir;
+            try {
+                isdir = fs.lstatSync(favorite.path).isDirectory()
+            } catch (_) { isdir = true }
+            favoritesElement += `<span data-listenOpen data-path = "${favorite.path}" data-isdir="${isdir}" class="sidebar-hover-effect"><img src="${getPreview(favorite.name, category = 'sidebar', HTMLFormat = false)}" alt="${favorite.name} icon"><span class="sidebar-text">${Translate(favorite.name)}</span></span>`
         }
         let result = `<div class="sidebar-nav-item ${data?.hideSection?.favorites ? "nav-hide-item" : ''}">
         <div class="sidebar-hover-effect">
