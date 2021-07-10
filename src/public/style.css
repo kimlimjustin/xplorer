@@ -651,7 +651,6 @@ input:checked + .toggle-slider:before {
 }
 
 .sidebar-text{
-    display: inline-block !important;
     margin: 0 .2rem;
     padding: 0 !important;
     text-overflow: ellipsis;

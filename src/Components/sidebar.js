@@ -23,6 +23,7 @@ const changeSidebar = newElement => {
  * @returns {any}
  */
 const createSidebar = () => {
+    const { ContextMenu } = require('./contextMenu');
     const { data } = storage.get('sidebar'); // Get user favorites data on sidebar
     // Functions to get favorites element
     const getFavoritesElement = favorites => {
@@ -33,7 +34,7 @@ const createSidebar = () => {
             try {
                 isdir = fs.lstatSync(favorite.path).isDirectory()
             } catch (_) { isdir = true }
-            favoritesElement += `<span data-listenOpen data-path = "${favorite.path}" data-isdir="${isdir}" class="sidebar-hover-effect"><img src="${getPreview(favorite.name, category = sidebarElementFavorites.indexOf(favorite.name) === -1 ? isdir ? "folder" : "file" : 'sidebar', HTMLFormat = false)}" alt="${favorite.name} icon"><span class="sidebar-text">${Translate(favorite.name)}</span></span>`
+            favoritesElement += `<span data-listenOpen data-path = "${favorite.path}" data-isdir="${isdir}" class="sidebar-hover-effect sidebar-item"><img src="${getPreview(favorite.name, category = sidebarElementFavorites.indexOf(favorite.name) === -1 ? isdir ? "folder" : "file" : 'sidebar', HTMLFormat = false)}" alt="${favorite.name} icon"><span class="sidebar-text">${Translate(favorite.name)}</span></span>`
         }
         let result = `<div class="sidebar-nav-item ${data?.hideSection?.favorites ? "nav-hide-item" : ''}">
         <div class="sidebar-hover-effect">
@@ -109,7 +110,9 @@ const createSidebar = () => {
             })
         })
         changeSidebar(sidebarElement)
-
+        document.body.querySelector(".sidebar").querySelectorAll(".sidebar-item").forEach(item => {
+            ContextMenu(item)
+        })
         Setting()
     })
     let _prevDrives;

@@ -35,6 +35,15 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
     contextMenuSubmenus.innerHTML = ""
     const favorites = storage.get("sidebar")?.data?.favorites
     const isPinned = !!favorites.filter(favorite => favorite.path === target.dataset.path).length
+    const SidebarMenu = [
+        [
+            { "menu": "Open", "role": "open", "icon": "open" },
+            { "menu": "Open in new tab", "visible": target?.dataset?.isdir === 'true', "icon": "open in new tab" },
+        ],
+        [
+            { "menu": "Unpin from Sidebar", "icon": "pin", "role": "pin" }
+        ]
+    ]
     const FileMenu = [
         [
             { "menu": "Open", "role": "open", "shortcut": "Enter", "icon": "open" },
@@ -134,6 +143,8 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
     }
     if (getSelected().length > 1) {
         MenuToElements(MultipleSelectedMenu)
+    } else if (target.classList.contains("sidebar-item")) {
+        MenuToElements(SidebarMenu)
     } else {
         if (target === document.getElementById("main")) MenuToElements(BodyMenu)
         else if (target?.dataset?.path) MenuToElements(FileMenu)
@@ -267,7 +278,7 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
 }
 
 /**
- * Create context menu of an elemnet
+ * Create context menu of an elememt
  * @param {any} element - Element you want to create context menu of
  * @param {any} openFileWithDefaultApp - openFileWithDefaultApp function (optional), pass in the function to avoid circular dependencies
  * @param {any} openDir - openDir function (optional), pass in the function to avoid circular dependencies
