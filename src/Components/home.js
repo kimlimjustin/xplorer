@@ -12,6 +12,8 @@ const storage = require('electron-json-storage-sync');
 const LAZY_LOAD = require('../Functions/DOM/lazyLoadingImage.js');
 const { createContextMenus } = require('./contextMenu.js');
 const { isHiddenFile } = require('is-hidden-file');
+const getType = require('../Functions/Files/type.js');
+const formatBytes = require('../Functions/Math/filesize.js');
 
 /**
  * Create home files section (only for linux)
@@ -20,16 +22,64 @@ const { isHiddenFile } = require('is-hidden-file');
  */
 const homeFiles = (callback) => {
     const readHomeFiles = async () => {
+        const dirAlongsideFiles = storage.get("preference")?.data?.dirAlongsideFiles ?? false
+        const layout = storage.get("layout")?.data?.[os.homedir()] ?? storage.get("preference")?.data?.layout ?? "s"
+        const sort = storage.get("sort")?.data?.[os.homedir()] ?? 'A'
         let result = `<section class='home-section'><h1 class="section-title">Files</h1>`;
-        await fs.readdirSync(os.homedir(), { withFileTypes: true })
-            .map(async dirent => {
-                const stat = fs.statSync(path.join(os.homedir(), dirent.name))
-                const preview = await getPreview(path.join(os.homedir(), dirent.name), category = dirent.isDirectory() ? "folder" : "file")
-                result += `<div class="file file-grid grid-hover-effect" draggable="true" data-isdir=${dirent.isDirectory()} data-path = "${escape(path.join(os.homedir(), dirent.name))}" data-listenOpen ${isHiddenFile(path.join(os.homedir(), dirent.name)) ? "data-hidden-file" : ""} data-tilt data-size="${stat.size}" data-created-at="${stat.ctime}" data-modified-at="${stat.mtime}" data-accessed-at="${stat.atime}">
-                ${preview}
-                <span class="file-grid-filename" id="file-filename">${Translate(dirent.name)}</span>
-                </div>`
-            })
+        let files = fs.readdirSync(os.homedir(), { withFileTypes: true }).map(dirent => {
+            let result = { name: dirent.name, isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(os.homedir(), dirent.name)) }
+            const type = dirent.isDirectory() ? "File Folder" : getType(path.join(os.homedir(), dirent.name))
+            result.type = type
+            const stat = fs.statSync(path.join(os.homedir(), dirent.name))
+            result.createdAt = stat.ctime
+            result.modifiedAt = stat.mtime
+            result.accessedAt = stat.atime
+            result.size = stat.size
+            return result
+        })
+        files = files.sort((a, b) => {
+            switch (sort) {
+                case "A": // A-Z
+                    return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1
+                case "Z": // Z-A
+                    return a.name.toLowerCase() < b.name.toLowerCase() ? 1 : -1
+                case "L": // Last Modified
+                    return new Date(a.modifiedAt) < new Date(b.modifiedAt) ? 1 : -1
+                case "F": // First Modified
+                    return new Date(a.modifiedAt) > new Date(b.modifiedAt) ? 1 : -1
+                case "S": // Size
+                    return a.size > b.size ? 1 : -1
+                case "T":
+                    return a.type > b.type ? 1 : -1
+            }
+        })
+        if (!dirAlongsideFiles) {
+            files = files.sort((a, b) => -(a.isDir - b.isDir))
+        }
+        await files.forEach(async file => {
+            const preview = await getPreview(path.join(os.homedir(), file.name), category = file.isDir ? "folder" : "file")
+            let className = "file-grid grid-hover-effect file"
+            switch (layout) {
+                case "m":
+                    className += " medium-grid-view"
+                    break;
+                case "l":
+                    className += " large-grid-view"
+                    break;
+                case "d":
+                    className += " detail-view"
+                    break;
+                default:
+                    className += "small-grid-view"
+                    break;
+            }
+            result += `<div class="${className}" draggable="true" data-isdir=${file.isDir} data-path = "${escape(path.join(os.homedir(), file.name))}" data-listenOpen ${isHiddenFile(path.join(os.homedir(), file.name)) ? "data-hidden-file" : ""} data-tilt data-size="${file.size}" data-created-at="${file.createdAt}" data-modified-at="${file.modifiedAt}" data-accessed-at="${file.accessedAt}">
+            ${preview}
+            <span class="file-grid-filename" id="file-filename">${Translate(file.name)}</span><span class="file-modifiedAt" id="file-createdAt">${new Date(file.modifiedAt).toLocaleString(navigator.language, { hour12: false })}</span>
+            ${file.size > 0 ? `<span class="file-size" id="file-size">${formatBytes(file.size)}</span>` : `<span class="file-size" id="file-size"></span>`}
+            </div>`
+
+        })
         callback(result + "</section>")
     }
     readHomeFiles()

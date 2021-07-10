@@ -178,9 +178,9 @@ const displayFiles = async (files, dir) => {
         listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
         LAZY_LOAD()
 
-        console.timeEnd(dir)
         InfoLog(`Open ${dir} within ${(Date.now() - timeStarted) / 1000}s`)
-        stopLoading(`Open ${dir} within ${(Date.now() - timeStarted) / 1000}s`)
+        stopLoading()
+        console.log(`Open ${dir} within ${(Date.now() - timeStarted) / 1000}s`)
     }
 }
 

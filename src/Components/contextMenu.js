@@ -166,7 +166,9 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
                     const layout = storage.get('layout')?.data ?? {}
                     const sort = storage.get('layout')?.data ?? {}
                     const tabs = storage.get("tabs")?.data
-                    const currentPath = tabs.tabs[tabs.focus].position
+                    let currentPath = tabs.tabs[tabs.focus].position
+                    if (currentPath === path.join(os.homedir(), "Home") || currentPath === "xplorer://Home" || currentPath === "Home") currentPath = os.homedir()
+                    console.log(currentPath)
                     switch (e.target.innerHTML) {
                         case "Grid View (Large)":
                             files.forEach(file => {
