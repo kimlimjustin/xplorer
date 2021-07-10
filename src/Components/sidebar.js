@@ -118,9 +118,12 @@ const createSidebar = () => {
             if (_prevDrives === undefined) _prevDrives = _drives
             else {
                 if (_drives !== _prevDrives) {
+                    const { listenOpen } = require('../Functions/Files/open');
                     const _newElement = document.createElement("div")
                     _newElement.innerHTML = _drives.trim()
                     document.getElementById("sidebar-drives").parentNode.replaceChild(_newElement.firstChild, document.getElementById("sidebar-drives"))
+                    updateTheme()
+                    listenOpen(document.getElementById("sidebar-drives").querySelectorAll("[data-listenOpen]"))
                 }
                 _prevDrives = _drives
             }
