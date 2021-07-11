@@ -38,7 +38,7 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
     const SidebarMenu = [
         [
             { "menu": "Open", "role": "open", "icon": "open" },
-            { "menu": "Open in new tab", "visible": target?.dataset?.isdir === 'true', "icon": "open in new tab" },
+            { "menu": "Open in new tab", "visible": target?.dataset?.isdir === 'true', "icon": "open in new tab", "role": "openInNewTab" },
         ],
         [
             { "menu": "Unpin from Sidebar", "icon": "pin", "role": "pin" }
