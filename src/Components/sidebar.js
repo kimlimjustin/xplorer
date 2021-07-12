@@ -55,7 +55,7 @@ const createSidebar = () => {
             let drivesElement = ""
             for (const drive of drives) {
                 let driveName = process.platform === "win32" ? `${drive._volumename || drive._filesystem} (${drive._mounted})` : drive._mounted.split("/")[drive._mounted.split("/").length - 1] // Get name of drive
-                drivesElement += `<span data-listenOpen data-path = "${getDriveBasePath(drive._mounted)}" data-isdir="true" class="sidebar-hover-effect"><img src="${getPreview(drive._filesystem === "Removable Disk" ? 'usb' : 'hard-disk', category = 'favorites', HTMLFormat = false)}" alt="${driveName}"><span class="sidebar-text">${driveName}</span></span>`
+                drivesElement += `<span data-listenOpen data-path = "${getDriveBasePath(drive._mounted)}" data-isdir="true" class="sidebar-hover-effect drive-item"><img src="${getPreview(drive._filesystem === "Removable Disk" ? 'usb' : 'hard-disk', category = 'favorites', HTMLFormat = false)}" alt="${driveName}"><span class="sidebar-text">${driveName}</span></span>`
             }
             let result = `<div class="sidebar-nav-item ${data?.hideSection?.drives ? "nav-hide-item" : ''}" id="sidebar-drives">
                 <div class="sidebar-hover-effect">
@@ -111,6 +111,9 @@ const createSidebar = () => {
         })
         changeSidebar(sidebarElement)
         document.body.querySelector(".sidebar").querySelectorAll(".sidebar-item").forEach(item => {
+            ContextMenu(item)
+        })
+        document.body.querySelector(".sidebar").querySelectorAll(".drive-item").forEach(item => {
             ContextMenu(item)
         })
         Setting()

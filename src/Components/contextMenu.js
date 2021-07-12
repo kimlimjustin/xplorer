@@ -44,6 +44,12 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
             { "menu": "Unpin from Sidebar", "icon": "pin", "role": "pin" }
         ]
     ]
+    const SidebarDriveMenu = [
+        [
+            { "menu": "Open", "role": "open", "icon": "open" },
+            { "menu": "Open in new tab", "visible": target?.dataset?.isdir === 'true', "icon": "open in new tab", "role": "openInNewTab" },
+        ],
+    ]
     const FileMenu = [
         [
             { "menu": "Open", "role": "open", "shortcut": "Enter", "icon": "open" },
@@ -145,7 +151,9 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
         MenuToElements(MultipleSelectedMenu)
     } else if (target.classList.contains("sidebar-item")) {
         MenuToElements(SidebarMenu)
-    } else {
+    } else if (target.classList.contains("drive-item")) {
+        MenuToElements(SidebarDriveMenu)
+    }  else {
         if (target === document.getElementById("main")) MenuToElements(BodyMenu)
         else if (target?.dataset?.path) MenuToElements(FileMenu)
     }
