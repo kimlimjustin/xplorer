@@ -34,7 +34,7 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
     contextMenu.innerHTML = ""
     contextMenuSubmenus.innerHTML = ""
     const favorites = storage.get("sidebar")?.data?.favorites
-    const isPinned = !!favorites.filter(favorite => favorite.path === target.dataset.path).length
+    const isPinned = !!favorites?.filter(favorite => favorite.path === target.dataset.path).length ?? false
     const SidebarMenu = [
         [
             { "menu": "Open", "role": "open", "icon": "open" },
