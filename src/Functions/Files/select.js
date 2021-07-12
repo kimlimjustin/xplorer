@@ -47,6 +47,29 @@ const Select = (element, ctrl, shift, elements) => {
 }
 
 /**
+ * Check if element in viewport
+ * @returns {boolean} if element in viewport
+ */
+ const isElementInViewport = el => {
+    var rect = el.getBoundingClientRect();
+    return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /* or $(window).height() */
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */
+    );
+}
+
+/**
+ * Ensure an element in view port
+ * @param {any} element - element you want to ensure
+ * @returns {any}
+ */
+const ensureElementInViewPort = (element) => {
+    if(!isElementInViewport(element)) element.scrollIntoView()
+}
+
+/**
  * Select shortcut initializer
  * @returns {any}
  */
@@ -73,6 +96,7 @@ const Initializer = () => {
                 }
             }
             if (nextSibling?.className.split(' ').some(function (c) { return /file/.test(c); })) {
+                ensureElementInViewPort(nextSibling)
                 unselectAllSelected()
                 if (e.shiftKey) {
                     let start = false
@@ -100,6 +124,7 @@ const Initializer = () => {
                 }
             }
             if (previousSibling?.className.split(' ').some(function (c) { return /file/.test(c); })) {
+                ensureElementInViewPort(previousSibling)
                 let start = false
                 unselectAllSelected()
                 if (e.shiftKey) {
@@ -130,6 +155,7 @@ const Initializer = () => {
                 }
             }
             if (elementBelow?.className.split(' ').some(function (c) { return /file/.test(c); })) {
+                ensureElementInViewPort(elementBelow)
                 let start = false;
                 unselectAllSelected()
                 if (e.shiftKey) {
@@ -159,6 +185,7 @@ const Initializer = () => {
                 }
             }
             if (elementAbove?.className.split(' ').some(function (c) { return /file/.test(c); })) {
+                ensureElementInViewPort(elementAbove)
                 let start = false;
                 unselectAllSelected()
                 if (e.shiftKey) {
