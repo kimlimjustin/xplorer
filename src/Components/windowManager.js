@@ -48,6 +48,10 @@ const windowManager = () => {
 
     // Refresh the page
     document.querySelector("#refresh").addEventListener("click", reload)
+
+    document.querySelector(".path-navigator").addEventListener("change", ({ target: { value } }) => {
+        openDir(value)
+    })
 }
 
 module.exports = { windowManager, reload, minimize, maximize }
