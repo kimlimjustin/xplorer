@@ -130,6 +130,9 @@ const createSidebar = () => {
                     document.getElementById("sidebar-drives").parentNode.replaceChild(_newElement.firstChild, document.getElementById("sidebar-drives"))
                     updateTheme()
                     listenOpen(document.getElementById("sidebar-drives").querySelectorAll("[data-listenOpen]"))
+                    document.body.querySelector(".sidebar").querySelectorAll(".drive-item").forEach(item => {
+                        ContextMenu(item)
+                    })
                 }
                 _prevDrives = _drives
             }
