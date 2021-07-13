@@ -212,6 +212,12 @@ const openDir = async (dir) => {
             displayFiles(files, LINUX_TRASH_FILES_PATH)
         }
     } else {
+        if (!fs.existsSync(dir)) {
+            const MAIN_ELEMENT = document.getElementById("main");
+            MAIN_ELEMENT.classList.add('empty-dir-notification')
+            MAIN_ELEMENT.innerText = `no such directory, ${dir}`
+            stopLoading()
+        }
         const hideSystemFile = storage.get("preference")?.data?.hideSystemFiles ?? true
         let getAttributesSync;
         if (process.platform === "win32") getAttributesSync = require("fswin").getAttributesSync;
