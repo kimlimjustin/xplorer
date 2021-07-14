@@ -220,6 +220,8 @@ const SelectListener = (elements) => {
     document.getElementById("main").addEventListener("click", e => {
         if (!e.target.className.split(' ').some(function (c) { return /file/.test(c); })) {
             unselectAllSelected()
+            latestSelected = null;
+            latestShiftSelected = null;
         }
     })
 
