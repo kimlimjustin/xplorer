@@ -50,7 +50,7 @@ const Select = (element, ctrl, shift, elements) => {
  * Check if element in viewport
  * @returns {boolean} if element in viewport
  */
- const isElementInViewport = el => {
+const isElementInViewport = el => {
     var rect = el.getBoundingClientRect();
     return (
         rect.top >= 0 &&
@@ -66,7 +66,7 @@ const Select = (element, ctrl, shift, elements) => {
  * @returns {any}
  */
 const ensureElementInViewPort = (element) => {
-    if(!isElementInViewport(element)) element.scrollIntoView()
+    if (!isElementInViewport(element)) element.scrollIntoView()
 }
 
 /**

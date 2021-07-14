@@ -58,7 +58,7 @@ const homeFiles = (callback) => {
         }
         await files.forEach(async file => {
             const preview = await getPreview(path.join(os.homedir(), file.name), category = file.isDir ? "folder" : "file")
-            let className = "file-grid grid-hover-effect file"
+            let className = "file file-grid grid-hover-effect"
             switch (layout) {
                 case "m":
                     className += " medium-grid-view"
@@ -70,7 +70,7 @@ const homeFiles = (callback) => {
                     className += " detail-view"
                     break;
                 default:
-                    className += "small-grid-view"
+                    className += " small-grid-view"
                     break;
             }
             result += `<div class="${className}" draggable="true" data-isdir=${file.isDir} data-path = "${escape(path.join(os.homedir(), file.name))}" data-listenOpen ${isHiddenFile(path.join(os.homedir(), file.name)) ? "data-hidden-file" : ""} data-tilt data-size="${file.size}" data-created-at="${file.createdAt}" data-modified-at="${file.modifiedAt}" data-accessed-at="${file.accessedAt}">
