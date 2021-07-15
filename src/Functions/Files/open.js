@@ -163,7 +163,7 @@ const displayFiles = async (files, dir) => {
             fileGrid.dataset.path = escape(path.join(dir, dirent.name))
             fileGrid.innerHTML = `
             ${preview}
-            <span class="file-grid-filename" id="file-filename">${dirent.name}</span><span class="file-modifiedAt" id="file-createdAt">${new Date(dirent.modifiedAt).toLocaleString(navigator.language, { hour12: false })}</span>
+            <span class="file-grid-filename" id="file-filename">${dirent.name}</span><span class="file-modifiedAt" id="file-createdAt">${new Date(dirent.modifiedAt ?? dirent.trashDeletionDate).toLocaleString(navigator.language, { hour12: false })}</span>
             ${dirent.size > 0 ? `<span class="file-size" id="file-size">${formatBytes(dirent.size)}</span>` : `<span class="file-size" id="file-size"></span>`}
             <span class="file-type">${dirent.type}</span>
             `
@@ -205,19 +205,18 @@ const openDir = async (dir) => {
     } else if (dir === path.join(os.homedir(), 'Trash') || dir === "Trash" || dir === "xplorer://Trash") {
         if (process.platform === "linux") {
             let files = fs.readdirSync(LINUX_TRASH_FILES_PATH, { withFileTypes: true }).map(dirent => {
-                let result = { name: dirent.name, isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)) }
-                return result
+                let fileInfo = fs.readFileSync(path.join(LINUX_TRASH_INFO_PATH, dirent.name + '.trashinfo'), 'utf8').split("\n")
+                let trashPath, trashDeletionDate;
+                const type = dirent.isDirectory() ? "File Folder" : getType(path.join(dir, dirent.name))
+                if (fileInfo[0] === "[Trash Info]") {
+                    trashPath = fileInfo[1].split('=')[1]
+                    trashDeletionDate = fileInfo[2].split("=")[1]
+                }
+                return { name: dirent.name, isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)), trashPath, trashDeletionDate, type };
             })
-            const filesInfo = fs.readdirSync(LINUX_TRASH_INFO_PATH)
             displayFiles(files, LINUX_TRASH_FILES_PATH)
         }
     } else {
-        if (!fs.existsSync(dir)) {
-            const MAIN_ELEMENT = document.getElementById("main");
-            MAIN_ELEMENT.classList.add('empty-dir-notification')
-            MAIN_ELEMENT.innerText = `no such directory, ${dir}`
-            stopLoading()
-        }
         const hideSystemFile = storage.get("preference")?.data?.hideSystemFiles ?? true
         let getAttributesSync;
         if (process.platform === "win32") getAttributesSync = require("fswin").getAttributesSync;
