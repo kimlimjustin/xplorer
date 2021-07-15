@@ -140,6 +140,7 @@ const displayFiles = async (files, dir) => {
             const preview = await getPreview(path.join(dir, dirent.name), category = dirent.isDir ? "folder" : "file")
             const fileGrid = document.createElement("div")
             fileGrid.className = "file-grid grid-hover-effect file"
+            if (dirent.isTrash) fileGrid.dataset.isTrash = true
             switch (layout) {
                 case "m":
                     fileGrid.classList.add("medium-grid-view")
@@ -212,7 +213,7 @@ const openDir = async (dir) => {
                     trashPath = fileInfo[1].split('=')[1]
                     trashDeletionDate = fileInfo[2].split("=")[1]
                 }
-                return { name: dirent.name, isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)), trashPath, trashDeletionDate, type };
+                return { name: dirent.name, isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)), trashPath, trashDeletionDate, type, isTrash: true };
             })
             displayFiles(files, LINUX_TRASH_FILES_PATH)
         }

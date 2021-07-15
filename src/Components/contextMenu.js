@@ -35,6 +35,7 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
     contextMenuSubmenus.innerHTML = ""
     const favorites = storage.get("sidebar")?.data?.favorites
     const isPinned = !!favorites?.filter(favorite => favorite.path === target.dataset.path).length ?? false
+    const isTrash = !!target.dataset.isTrash
     const SidebarMenu = [
         [
             { "menu": "Open", "role": "open", "icon": "open" },
@@ -67,6 +68,30 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
         [
             { "menu": "Rename", "shortcut": "F2", "icon": "rename", "role": "rename" },
             { "menu": "Delete", "shortcut": "Del", "icon": "delete" },
+            { "menu": isPinned ? "Unpin from Sidebar" : "Pin to Sidebar", "shortcut": "Alt+P", "icon": "pin", "role": "pin" }
+        ],
+        [
+            { "menu": "Properties", "shortcut": "Ctrl+P", "icon": target?.dataset?.isdir ? "folder property" : "file property" }
+        ]
+    ]
+    const TrashMenu = [
+        [
+            { "menu": "Open", "role": "open", "shortcut": "Enter", "icon": "open" },
+            { "menu": "Open in new tab", "visible": target?.dataset?.isdir === 'true', "role": "openInNewTab", "icon": "open in new tab" },
+            { "menu": "Open in terminal", "visible": target?.dataset?.isdir === "true", "role": "reveal", "shortcut": "Alt+T", "icon": "terminal" },
+            { "menu": "Open in vscode", "role": "code", "visible": vscodeInstalled, "shortcut": "Shift+Enter", "icon": "vscode" },
+            { "menu": "Preview", "visible": target?.dataset?.isdir !== "false", "shortcut": "Ctrl+P", "icon": "preview" }
+        ],
+        [
+            { "menu": "Cut", "shortcut": "Ctrl+X", "icon": "cut", "role": "cut" },
+            { "menu": "Copy", "shortcut": "Ctrl+C", "icon": "copy", "role": "copy" },
+            { "menu": "Create Shortcut", "shortcut": "Alt+S", "icon": "shortcut" },
+            { "menu": "Copy Location Path", "shortcut": "Alt+Shift+C", "icon": "location", "role": "location" },
+        ],
+        [
+            { "menu": "Rename", "shortcut": "F2", "icon": "rename", "role": "rename" },
+            { "menu": "Restore", "icon": "delete" },
+            { "menu": "Permanent Delete", "shortcut": "Del", "icon": "delete" },
             { "menu": isPinned ? "Unpin from Sidebar" : "Pin to Sidebar", "shortcut": "Alt+P", "icon": "pin", "role": "pin" }
         ],
         [
@@ -153,7 +178,9 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
         MenuToElements(SidebarMenu)
     } else if (target.classList.contains("drive-item")) {
         MenuToElements(SidebarDriveMenu)
-    }  else {
+    } else if (isTrash) {
+        MenuToElements(TrashMenu)
+    } else {
         if (target === document.getElementById("main")) MenuToElements(BodyMenu)
         else if (target?.dataset?.path) MenuToElements(FileMenu)
     }
