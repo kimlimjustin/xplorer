@@ -205,17 +205,26 @@ const openDir = async (dir) => {
         Recent()
     } else if (dir === path.join(os.homedir(), 'Trash') || dir === "Trash" || dir === "xplorer://Trash") {
         if (process.platform === "linux") {
-            let files = fs.readdirSync(LINUX_TRASH_FILES_PATH, { withFileTypes: true }).map(dirent => {
-                let fileInfo = fs.readFileSync(path.join(LINUX_TRASH_INFO_PATH, dirent.name + '.trashinfo'), 'utf8').split("\n")
-                let trashPath, trashDeletionDate;
-                const type = dirent.isDirectory() ? "File Folder" : getType(path.join(dir, dirent.name))
-                if (fileInfo[0] === "[Trash Info]") {
-                    trashPath = fileInfo[1].split('=')[1]
-                    trashDeletionDate = fileInfo[2].split("=")[1]
-                }
-                return { name: dirent.name, isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)), trashPath, trashDeletionDate, type, isTrash: true };
-            })
+            const getFiles = () => {
+                return fs.readdirSync(LINUX_TRASH_FILES_PATH, { withFileTypes: true }).map(dirent => {
+                    let fileInfo = fs.readFileSync(path.join(LINUX_TRASH_INFO_PATH, dirent.name + '.trashinfo'), 'utf8').split("\n")
+                    let trashPath, trashDeletionDate;
+                    const type = dirent.isDirectory() ? "File Folder" : getType(path.join(dir, dirent.name))
+                    if (fileInfo[0] === "[Trash Info]") {
+                        trashPath = fileInfo[1].split('=')[1]
+                        trashDeletionDate = fileInfo[2].split("=")[1]
+                    }
+                    return { name: dirent.name, isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)), trashPath, trashDeletionDate, type, isTrash: true };
+                })
+            }
+            let files = getFiles()
             displayFiles(files, LINUX_TRASH_FILES_PATH)
+            // Watch the directory
+            const watcher = fs.watch(LINUX_TRASH_FILES_PATH, async (eventType, filename) => {
+                let files = getFiles()
+                // Get files of the dir
+                displayFiles(files, LINUX_TRASH_FILES_PATH)
+            })
         }
     } else {
         const hideSystemFile = storage.get("preference")?.data?.hideSystemFiles ?? true
