@@ -5,6 +5,7 @@ const LAZY_LOAD = require("../Functions/DOM/lazyLoadingImage");
 const { updateTheme } = require("../Functions/Theme/theme");
 const getType = require("../Functions/Files/type");
 const nativeDrag = require("../Functions/DOM/drag");
+const fs = require("fs");
 const { SelectListener } = require("../Functions/Files/select");
 
 /**
@@ -31,6 +32,7 @@ const Recent = async () => {
                 return a.split('\\').pop().split('/').pop().toLowerCase() < b.split('\\').pop().split('/').pop().toLowerCase() ? 1 : -1
         }
     })
+    recents = recents.filter(recent => fs.existsSync(recent))
     if (!recents) {
         MAIN_ELEMENT.classList.add('empty-dir-notification')
         MAIN_ELEMENT.innerText = "This folder is empty."
