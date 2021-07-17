@@ -12,6 +12,7 @@ const Copy = require("../Functions/Files/copy");
 const Cut = require("../Functions/Files/cut");
 const Paste = require("../Functions/Files/paste");
 const Pin = require("../Functions/Files/pin");
+const { Trash } = require("../Functions/Files/trash");
 let vscodeInstalled = false
 try {
    execSync("code --version")
@@ -167,6 +168,13 @@ const Shortcut = () => {
          }
          if (!filePaths.length) filePaths = [focusingPath]
          Pin(filePaths)
+      }
+      else if (e.key === "Delete") {
+         let filePaths = []
+         for (const element of getSelected()) {
+            filePaths.push(unescape(element.dataset.path))
+         }
+         Trash(filePaths)
       }
 
    }
