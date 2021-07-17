@@ -225,6 +225,18 @@ const openDir = async (dir) => {
                 // Get files of the dir
                 displayFiles(files, LINUX_TRASH_FILES_PATH)
             })
+            let focusingPath; // Watch if focusing path changes
+            setInterval(() => {
+                const tabs = storage.get('tabs')?.data
+                const _focusingPath = tabs.tabs[tabs.focus]?.position
+                if (focusingPath === undefined) {
+                    focusingPath = _focusingPath
+                } else {
+                    if (focusingPath !== _focusingPath) {
+                        watcher.close()
+                    }
+                }
+            }, 500);
         }
     } else {
         const hideSystemFile = storage.get("preference")?.data?.hideSystemFiles ?? true
