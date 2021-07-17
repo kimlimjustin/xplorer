@@ -161,7 +161,7 @@ const displayFiles = async (files, dir) => {
             fileGrid.setAttribute("data-tilt", '')
             fileGrid.dataset.isdir = dirent.isDir
             if (dirent.isHidden) fileGrid.dataset.hiddenFile = true
-            fileGrid.dataset.path = escape(path.join(dir, dirent.name))
+            fileGrid.dataset.path = escape(dirent.path ?? path.join(dir, dirent.name))
             fileGrid.innerHTML = `
             ${preview}
             <span class="file-grid-filename" id="file-filename">${dirent.name}</span><span class="file-modifiedAt" id="file-createdAt">${new Date(dirent.modifiedAt ?? dirent.trashDeletionDate).toLocaleString(navigator.language, { hour12: false })}</span>
@@ -213,8 +213,8 @@ const openDir = async (dir) => {
                         trashPath = fileInfo[1].split('=')[1]
                         trashDeletionDate = fileInfo[2].split("=")[1]
                     }
-                    const type = dirent.isDirectory() ? "File Folder" : getType(trashPath ?? path.join(dir, dirent.name))
-                    return { name: trashPath, isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)), trashPath, trashDeletionDate, type, isTrash: true };
+                    const type = dirent.isDirectory() ? "File Folder" : getType(unescape(trashPath) ?? path.join(dir, dirent.name))
+                    return { name: unescape(trashPath), isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)), trashPath, trashDeletionDate, type, isTrash: true, path: unescape(trashPath) };
                 })
             }
             let files = getFiles()

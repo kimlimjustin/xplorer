@@ -12,12 +12,23 @@ const LINUX_TRASH_INFO_PATH = path.join(os.homedir(), '.local/share/Trash/info')
  * @returns {any}
  */
 const Restore = (filePath) => {
-    const fileInfo = fs.readFileSync(path.join(LINUX_TRASH_INFO_PATH, path.basename(filePath) + '.trashinfo'), "utf8")
+    let fileInfo;
+    let __uuid;
+    if (fs.existsSync(path.join(LINUX_TRASH_INFO_PATH, path.basename(filePath) + '.trashinfo'))) {
+        fileInfo = fs.readFileSync(path.join(LINUX_TRASH_INFO_PATH, path.basename(filePath) + '.trashinfo'), "utf8")
+    } else {
+        fs.readdirSync(LINUX_TRASH_INFO_PATH).forEach(info => {
+            if (unescape(fs.readFileSync(path.join(LINUX_TRASH_INFO_PATH, info), "utf-8").split("\n")[1].split("=")[1]) === filePath) {
+                fileInfo = fs.readFileSync(path.join(LINUX_TRASH_INFO_PATH, info), "utf-8")
+                __uuid = info.split(".").splice(0, info.split(".").length - 1).join(".");
+            }
+        })
+    }
     const trashSourcePath = fileInfo.split("\n")[1].split("=")[1]
-    fs.rename(filePath, trashSourcePath, (err) => {
+    fs.rename(path.join(LINUX_TRASH_FILES_PATH, __uuid ?? path.basename(filePath)), unescape(trashSourcePath), (err) => {
         if (err) ErrorLog(err)
     })
-    fs.unlink(path.join(LINUX_TRASH_INFO_PATH, path.basename(filePath) + '.trashinfo'), (err) => {
+    fs.unlink(path.join(LINUX_TRASH_INFO_PATH, __uuid ? __uuid + '.trashinfo' : path.basename(filePath) + '.trashinfo'), (err) => {
         if (err) ErrorLog(err)
     })
 }
@@ -30,21 +41,6 @@ const Restore = (filePath) => {
 const Trash = (filePaths) => {
     for (const filePath of filePaths) {
         let target;
-        /*fs.readdirSync(LINUX_TRASH_INFO_PATH).forEach(info => {
-            if (info.startsWith(path.basename(filePath))) {
-                const __extension = info.split(".")
-                let __sameNameCount = 0
-                if (String(parseInt(__extension[__extension.length - 2])) === __extension[__extension.length - 2]) {
-                    __sameNameCount = __extension[__extension.length - 2]
-                }
-                console.log(__sameNameCount)
-                target = __extension.splice(0, __extension.length - 2).join(".")
-                console.log(target, info)
-            }
-        })*/
-        /*fs.rename(filePath, LINUX_TRASH_FILES_PATH, (err) => {
-            if (err) ErrorLog(err)
-        })*/
         trash(filePath)
     }
 }
