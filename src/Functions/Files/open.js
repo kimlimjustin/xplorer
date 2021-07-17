@@ -209,12 +209,12 @@ const openDir = async (dir) => {
                 return fs.readdirSync(LINUX_TRASH_FILES_PATH, { withFileTypes: true }).map(dirent => {
                     let fileInfo = fs.readFileSync(path.join(LINUX_TRASH_INFO_PATH, dirent.name + '.trashinfo'), 'utf8').split("\n")
                     let trashPath, trashDeletionDate;
-                    const type = dirent.isDirectory() ? "File Folder" : getType(path.join(dir, dirent.name))
                     if (fileInfo[0] === "[Trash Info]") {
                         trashPath = fileInfo[1].split('=')[1]
                         trashDeletionDate = fileInfo[2].split("=")[1]
                     }
-                    return { name: dirent.name, isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)), trashPath, trashDeletionDate, type, isTrash: true };
+                    const type = dirent.isDirectory() ? "File Folder" : getType(trashPath ?? path.join(dir, dirent.name))
+                    return { name: trashPath, isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)), trashPath, trashDeletionDate, type, isTrash: true };
                 })
             }
             let files = getFiles()

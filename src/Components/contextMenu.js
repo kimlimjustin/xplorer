@@ -12,7 +12,7 @@ const Paste = require("../Functions/Files/paste");
 const Cut = require("../Functions/Files/cut");
 const { getSelected } = require("../Functions/Files/select");
 const Pin = require("../Functions/Files/pin");
-const { Restore } = require("../Functions/Files/trash");
+const { Restore, Trash } = require("../Functions/Files/trash");
 let vscodeInstalled = false
 try {
     execSync("code --version")
@@ -68,7 +68,7 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
         ],
         [
             { "menu": "Rename", "shortcut": "F2", "icon": "rename", "role": "rename" },
-            { "menu": "Delete", "shortcut": "Del", "icon": "delete" },
+            { "menu": "Delete", "shortcut": "Del", "icon": "delete", "role": "delete" },
             { "menu": isPinned ? "Unpin from Sidebar" : "Pin to Sidebar", "shortcut": "Alt+P", "icon": "pin", "role": "pin" }
         ],
         [
@@ -127,6 +127,7 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
         [
             { "menu": "Cut", "shortcut": "Ctrl+X", "icon": "cut", "role": "cuts" },
             { "menu": "Copy", "shortcut": "Ctrl+C", "icon": "copy", "role": "copies" },
+            { "menu": "Delete", "shortcut": "Del", "icon": "delete" },
         ],
         [
             { "menu": "Pin to Sidebar", "shortcut": "Alt+P", "icon": "pin", "role": "pins" }
@@ -450,6 +451,9 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
                         break;
                     case "restore":
                         Restore(filePath)
+                        break;
+                    case "delete":
+                        Trash([filePath])
                         break;
                 }
             })
