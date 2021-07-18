@@ -17,6 +17,8 @@ const getType = require("./type");
 const { SelectListener } = require("./select");
 const { InfoLog } = require("../Logs/log");
 
+const WINDOWS_TRASH_FILES_PATH = "C:\\Trash/files";
+const WINDOWS_TRASH_INFO_PATH = "C:\\Trash/info";
 const LINUX_TRASH_FILES_PATH = path.join(os.homedir(), '.local/share/Trash/files')
 const LINUX_TRASH_INFO_PATH = path.join(os.homedir(), '.local/share/Trash/info')
 const IGNORE_FILE = ['.', '..'];
@@ -204,8 +206,10 @@ const openDir = async (dir) => {
     } else if (dir === path.join(os.homedir(), 'Recent') || dir === "Recent" || dir === "xplorer://Recent") {
         Recent()
     } else if (dir === path.join(os.homedir(), 'Trash') || dir === "Trash" || dir === "xplorer://Trash") {
-        if (process.platform === "linux") {
-            const getFiles = () => {
+        const getFiles = () => {
+            if (process.platform === "win32") {
+                if(!fs.existsSync(WINDOWS_TRASH_FILES_PATH)) return []
+            }else{
                 return fs.readdirSync(LINUX_TRASH_FILES_PATH, { withFileTypes: true }).map(dirent => {
                     let fileInfo = fs.readFileSync(path.join(LINUX_TRASH_INFO_PATH, dirent.name + '.trashinfo'), 'utf8').split("\n")
                     let trashPath, trashDeletionDate;
@@ -217,27 +221,28 @@ const openDir = async (dir) => {
                     return { name: unescape(trashPath), isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)), trashPath, trashDeletionDate, type, isTrash: true, path: unescape(trashPath) };
                 })
             }
-            let files = getFiles()
-            displayFiles(files, LINUX_TRASH_FILES_PATH)
-            // Watch the directory
-            const watcher = fs.watch(LINUX_TRASH_FILES_PATH, async (eventType, filename) => {
-                let files = getFiles()
-                // Get files of the dir
-                displayFiles(files, LINUX_TRASH_FILES_PATH)
-            })
-            let focusingPath; // Watch if focusing path changes
-            setInterval(() => {
-                const tabs = storage.get('tabs')?.data
-                const _focusingPath = tabs.tabs[tabs.focus]?.position
-                if (focusingPath === undefined) {
-                    focusingPath = _focusingPath
-                } else {
-                    if (focusingPath !== _focusingPath) {
-                        watcher.close()
-                    }
-                }
-            }, 500);
         }
+        let files = getFiles()
+        displayFiles(files, LINUX_TRASH_FILES_PATH)
+        // Watch the directory
+        const watcher = fs.watch(LINUX_TRASH_FILES_PATH, async (eventType, filename) => {
+            let files = getFiles()
+            // Get files of the dir
+            displayFiles(files, LINUX_TRASH_FILES_PATH)
+        })
+        let focusingPath; // Watch if focusing path changes
+        setInterval(() => {
+            const tabs = storage.get('tabs')?.data
+            const _focusingPath = tabs.tabs[tabs.focus]?.position
+            if (focusingPath === undefined) {
+                focusingPath = _focusingPath
+            } else {
+                if (focusingPath !== _focusingPath) {
+                    watcher.close()
+                }
+            }
+        }, 500);
+        
     } else {
         const hideSystemFile = storage.get("preference")?.data?.hideSystemFiles ?? true
         let getAttributesSync;
