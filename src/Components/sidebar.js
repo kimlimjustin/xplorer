@@ -1,6 +1,4 @@
 const storage = require('electron-json-storage-sync');
-const path = require("path");
-const os = require('os');
 const { getDrives } = require('./drives');
 const getPreview = require('../Functions/preview/preview');
 const Translate = require('./multilingual');
@@ -8,6 +6,7 @@ const { updateTheme } = require('../Functions/Theme/theme');
 const Setting = require('./setting');
 const fs = require("fs");
 const getDriveBasePath = require('../Functions/Files/basePath');
+const { default: getPath } = require('platform-folders');
 
 const changeSidebar = newElement => {
     const { listenOpen } = require('../Functions/Files/open');
@@ -72,12 +71,12 @@ const createSidebar = () => {
     let _favorites = data?.favorites ?? [
         { name: 'Home', path: 'xplorer://Home' },
         { name: 'Recent', path: 'xplorer://Recent' },
-        { name: 'Desktop', path: `${path.join(os.homedir(), 'Desktop')}` },
-        { name: 'Documents', path: `${path.join(os.homedir(), 'Documents')}` },
-        { name: 'Downloads', path: `${path.join(os.homedir(), 'Downloads')}` },
-        { name: 'Pictures', path: `${path.join(os.homedir(), 'Pictures')}` },
-        { name: 'Music', path: `${path.join(os.homedir(), 'Music')}` },
-        { name: 'Videos', path: `${path.join(os.homedir(), 'Videos')}` },
+        { name: 'Desktop', path: `${getPath('desktop')}` },
+        { name: 'Documents', path: `${getPath('documents')}` },
+        { name: 'Downloads', path: `${getPath('downloads')}` },
+        { name: 'Pictures', path: `${getPath('pictures')}` },
+        { name: 'Music', path: `${getPath('music')}` },
+        { name: 'Videos', path: `${getPath('videos')}` },
         { name: 'Trash', path: 'xplorer://Trash' }
     ]
 

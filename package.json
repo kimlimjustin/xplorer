@@ -69,6 +69,7 @@
     "is-hidden-file": "1.1.2",
     "jest": "^27.0.4",
     "patch-package": "^6.4.7",
+    "platform-folders": "^0.5.4",
     "postinstall-postinstall": "^2.1.0",
     "trash": "^7.2.0"
   }
