@@ -139,7 +139,7 @@ const displayFiles = async (files, dir) => {
         await files.forEach(async dirent => {
             if (hideSystemFile && dirent.isSystemFile) return;
             if (IGNORE_FILE.indexOf(dirent.name) !== -1) return;
-            const preview = await getPreview(path.join(dir, dirent.name), category = dirent.isDir ? "folder" : "file")
+            const preview = await getPreview(dirent.type === "Image" ? dirent.realPath :path.join(dir, dirent.name), category = dirent.isDir ? "folder" : "file")
             const fileGrid = document.createElement("div")
             fileGrid.className = "file-grid grid-hover-effect file"
             if (dirent.isTrash) fileGrid.dataset.isTrash = true
@@ -218,7 +218,7 @@ const openDir = async (dir) => {
                             trashDeletionDate = fileInfo[2].split("=")[1]
                         }
                         const type = dirent.isDirectory() ? "File Folder" : getType(unescape(trashPath) ?? path.join(dir, dirent.name))
-                        return { name: unescape(trashPath), isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)), trashPath, trashDeletionDate, type, isTrash: true, path: unescape(trashPath) };
+                        return { name: unescape(trashPath), isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)), trashPath, trashDeletionDate, type, isTrash: true, path: unescape(trashPath), realPath: path.join(WINDOWS_TRASH_FILES_PATH, dirent.name) };
                     })
                 }
             }else{
@@ -230,7 +230,7 @@ const openDir = async (dir) => {
                         trashDeletionDate = fileInfo[2].split("=")[1]
                     }
                     const type = dirent.isDirectory() ? "File Folder" : getType(unescape(trashPath) ?? path.join(dir, dirent.name))
-                    return { name: unescape(trashPath), isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)), trashPath, trashDeletionDate, type, isTrash: true, path: unescape(trashPath) };
+                    return { name: unescape(trashPath), isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)), trashPath, trashDeletionDate, type, isTrash: true, path: unescape(trashPath), realPath: path.join(LINUX_TRASH_FILES_PATH, dirent.name) };
                 })
             }
         }
