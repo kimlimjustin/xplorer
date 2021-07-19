@@ -92,7 +92,7 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
         [
             { "menu": "Rename", "shortcut": "F2", "icon": "rename", "role": "rename" },
             { "menu": "Restore", "icon": "delete", "role": "restore" },
-            { "menu": "Permanent Delete", "shortcut": "Del", "icon": "delete" },
+            { "menu": "Permanent Delete", "shortcut": "Shift+Del", "icon": "delete", "role": "unlink" },
             { "menu": isPinned ? "Unpin from Sidebar" : "Pin to Sidebar", "shortcut": "Alt+P", "icon": "pin", "role": "pin" }
         ],
         [
@@ -127,7 +127,7 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
         [
             { "menu": "Cut", "shortcut": "Ctrl+X", "icon": "cut", "role": "cuts" },
             { "menu": "Copy", "shortcut": "Ctrl+C", "icon": "copy", "role": "copies" },
-            { "menu": "Delete", "shortcut": "Del", "icon": "delete" },
+            { "menu": "Delete", "shortcut": "Del", "icon": "delete", "role": "deletes" },
         ],
         [
             { "menu": "Pin to Sidebar", "shortcut": "Alt+P", "icon": "pin", "role": "pins" }
@@ -454,6 +454,13 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
                         break;
                     case "delete":
                         Trash([filePath])
+                        break;
+                    case "deletes":
+                        paths = []
+                        for (const element of getSelected()) {
+                            paths.push(unescape(element.dataset.path))
+                        }
+                        Trash(paths)
                         break;
                 }
             })
