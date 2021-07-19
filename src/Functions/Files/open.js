@@ -139,7 +139,7 @@ const displayFiles = async (files, dir) => {
         await files.forEach(async dirent => {
             if (hideSystemFile && dirent.isSystemFile) return;
             if (IGNORE_FILE.indexOf(dirent.name) !== -1) return;
-            const preview = await getPreview(dirent.type === "Image" ? dirent.realPath :path.join(dir, dirent.name), category = dirent.isDir ? "folder" : "file")
+            const preview = await getPreview(dirent.type === "Image" && dirent.isTrash ? dirent.realPath :path.join(dir, dirent.name), category = dirent.isDir ? "folder" : "file")
             const fileGrid = document.createElement("div")
             fileGrid.className = "file-grid grid-hover-effect file"
             if (dirent.isTrash) fileGrid.dataset.isTrash = true
