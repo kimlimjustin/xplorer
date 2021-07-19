@@ -102,7 +102,7 @@ const createSidebar = () => {
                 e.target.parentNode.parentNode.classList.toggle('nav-hide-item')
 
                 // Save preference into local storage
-                const sidebar = storage.get("sidebar")?.data
+                const sidebar = storage.get("sidebar")?.data ?? {}
                 if (!sidebar.hideSection) sidebar.hideSection = {} // Initialize if it's not exist
                 sidebar.hideSection[e.target.dataset.section] = e.target.parentNode.parentNode.classList.contains('nav-hide-item')
                 storage.set("sidebar", sidebar)
