@@ -209,6 +209,18 @@ const openDir = async (dir) => {
         const getFiles = () => {
             if (process.platform === "win32") {
                 if(!fs.existsSync(WINDOWS_TRASH_FILES_PATH)) return []
+                else {
+                    return fs.readdirSync(WINDOWS_TRASH_FILES_PATH, { withFileTypes: true }).map(dirent => {
+                        let fileInfo = fs.readFileSync(path.join(WINDOWS_TRASH_INFO_PATH, dirent.name + '.trashinfo'), 'utf8').split("\n")
+                        let trashPath, trashDeletionDate;
+                        if (fileInfo[0] === "[Trash Info]") {
+                            trashPath = fileInfo[1].split('=')[1]
+                            trashDeletionDate = fileInfo[2].split("=")[1]
+                        }
+                        const type = dirent.isDirectory() ? "File Folder" : getType(unescape(trashPath) ?? path.join(dir, dirent.name))
+                        return { name: unescape(trashPath), isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)), trashPath, trashDeletionDate, type, isTrash: true, path: unescape(trashPath) };
+                    })
+                }
             }else{
                 return fs.readdirSync(LINUX_TRASH_FILES_PATH, { withFileTypes: true }).map(dirent => {
                     let fileInfo = fs.readFileSync(path.join(LINUX_TRASH_INFO_PATH, dirent.name + '.trashinfo'), 'utf8').split("\n")
@@ -223,12 +235,12 @@ const openDir = async (dir) => {
             }
         }
         let files = getFiles()
-        displayFiles(files, LINUX_TRASH_FILES_PATH)
+        displayFiles(files, process.platform === "win32" ? WINDOWS_TRASH_FILES_PATH : LINUX_TRASH_FILES_PATH)
         // Watch the directory
-        const watcher = fs.watch(LINUX_TRASH_FILES_PATH, async (eventType, filename) => {
+        const watcher = fs.watch(process.platform === "win32" ? WINDOWS_TRASH_FILES_PATH : LINUX_TRASH_FILES_PATH, async (eventType, filename) => {
             let files = getFiles()
             // Get files of the dir
-            displayFiles(files, LINUX_TRASH_FILES_PATH)
+            displayFiles(files, process.platform === "win32" ? WINDOWS_TRASH_FILES_PATH : LINUX_TRASH_FILES_PATH)
         })
         let focusingPath; // Watch if focusing path changes
         setInterval(() => {

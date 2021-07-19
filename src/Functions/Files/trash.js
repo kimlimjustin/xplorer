@@ -5,6 +5,9 @@ const { ErrorLog } = require('../Logs/log');
 const trash = require("trash");
 const LINUX_TRASH_FILES_PATH = path.join(os.homedir(), '.local/share/Trash/files')
 const LINUX_TRASH_INFO_PATH = path.join(os.homedir(), '.local/share/Trash/info');
+const WINDOWS_TRASH_FILES_PATH = "C:\\Trash/files";
+const WINDOWS_TRASH_INFO_PATH = "C:\\Trash/info";
+const uuid = require("uuid");
 
 /**
  * Restore file/folder from trash
@@ -33,6 +36,16 @@ const Restore = (filePath) => {
     })
 }
 
+const pad = number => number < 10 ? '0' + number : number;
+
+const getDeletionDate = date => date.getFullYear() +
+	'-' + pad(date.getMonth() + 1) +
+	'-' + pad(date.getDate()) +
+	'T' + pad(date.getHours()) +
+	':' + pad(date.getMinutes()) +
+	':' + pad(date.getSeconds());
+
+
 /**
  * Move file/folder into trash
  * @param {any} filePath - file you want to delete
@@ -40,8 +53,24 @@ const Restore = (filePath) => {
  */
 const Trash = (filePaths) => {
     for (const filePath of filePaths) {
-        let target;
-        trash(filePath)
+        if (process.platform === "win32") {
+            const name = uuid.v4()
+            const destination = path.join(WINDOWS_TRASH_FILES_PATH, name);
+	        const trashInfoPath = path.join(WINDOWS_TRASH_INFO_PATH, `${name}.trashinfo`);
+            if (!fs.existsSync(WINDOWS_TRASH_FILES_PATH)) {
+                fs.mkdirSync(WINDOWS_TRASH_FILES_PATH, {recursive: true})
+            }
+            if (!fs.existsSync(WINDOWS_TRASH_INFO_PATH)) {
+                fs.mkdirSync(WINDOWS_TRASH_INFO_PATH, {recursive: true})
+            }
+            fs.rename(filePath, destination, (err) => {
+                if (err) ErrorLog(err)
+            })
+            const trashInfoData = `[Trash Info]\nPath=${filePath.replace(/\s/g, '%20')}\nDeletionDate=${getDeletionDate(new Date())}`;
+            fs.writeFileSync(trashInfoPath, trashInfoData)
+        } else {
+            trash(filePath)
+        }
     }
 }
 
