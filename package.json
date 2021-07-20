@@ -17,8 +17,10 @@
   ],
   "scripts": {
     "start": "electron .",
+    "docs": "yarn --cwd ./docs start",
     "test": "jest",
     "build": "electron-builder",
+    "build:docs": "yarn --cwd ./docs build",
     "build-wml": "electron-builder -wml",
     "native_build": "node-gyp rebuild",
     "install": "node install.js",
