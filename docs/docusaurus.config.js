@@ -4,9 +4,9 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 module.exports = {
   title: 'Xplorer',
-  tagline: 'a customizable, modern file manager.',
+  tagline: 'An easy-to-use, customizable, modern file manager',
   url: 'https://kimlimjustin.github.com/',
-  baseUrl: process.env.BASE_URL || '/',
+  baseUrl: '/xplorer/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
