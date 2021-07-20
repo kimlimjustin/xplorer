@@ -5,39 +5,54 @@ import styles from './HomepageFeatures.module.css';
 const FeatureList = [
   {
     title: 'Easy to Use',
-    Svg: require('../../static/img/undraw_docusaurus_mountain.svg').default,
+    Svg: require('../../static/img/octocat.svg').default,
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        Xplorer was designed to manage your files easily, and you can preview the file natively inside Xplorer!
       </>
     ),
   },
   {
-    title: 'Focus on What Matters',
-    Svg: require('../../static/img/undraw_docusaurus_tree.svg').default,
+    title: 'Customizable',
+    Svg: require('../../static/img/octocat.svg').default,
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        Xplorer allows you to design your own theme, and you can turn on/off any feature through settings easily!
       </>
     ),
   },
   {
-    title: 'Powered by React',
-    Svg: require('../../static/img/undraw_docusaurus_react.svg').default,
+    title: 'Modern',
+    Svg: require('../../static/img/octocat.svg').default,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        Xplorer was designed to be fully functional and easy to use with a modern looks!.
       </>
     ),
   },
+  {
+    title: 'Cross Platform',
+    Svg: require('../../static/img/octocat.svg').default,
+    description: (
+      <>
+        Being built using Electron technology, you can run Xplorer on Windows, Linux, and macOS! (macOS haven't been tested)
+      </>
+    )
+  },
+  {
+    title: "It's FOSS (Free And Open Source)",
+    Svg: require('../../static/img/octocat.svg').default,
+    description: (
+      <>
+        Xplorer is an open source project which is hosted publicly on GitHub.
+      </>
+    )
+  }
 ];
 
-function Feature({Svg, title, description}) {
+function Feature({ Svg, title, description, idx }) {
   return (
-    <div className={clsx('col col--4')}>
+    <div className={idx < 3 ? clsx('col col--4') : clsx('col col--6')}>
       <div className="text--center">
         <Svg className={styles.featureSvg} alt={title} />
       </div>
@@ -54,9 +69,10 @@ export default function HomepageFeatures() {
     <section className={styles.features}>
       <div className="container">
         <div className="row">
-          {FeatureList.map((props, idx) => (
-            <Feature key={idx} {...props} />
-          ))}
+          {FeatureList.map((props, idx) => {
+            props.idx = idx
+            return <Feature key={idx} {...props} />
+          })}
         </div>
       </div>
     </section>
