@@ -17,6 +17,7 @@
   ],
   "scripts": {
     "start": "electron .",
+    "docs": "yarn --cwd 'docs' start",
     "test": "jest",
     "build": "electron-builder",
     "build-wml": "electron-builder -wml",
