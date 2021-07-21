@@ -21,6 +21,7 @@
     "test": "jest",
     "build": "electron-builder",
     "build:docs": "yarn --cwd ./docs build",
+    "deploy": "yarn --cwd ./docs deploy",
     "build-wml": "electron-builder -wml",
     "native_build": "node-gyp rebuild",
     "install": "node install.js",

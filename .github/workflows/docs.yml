@@ -9,6 +9,10 @@ on:
       - 'docs/**'
     branches: [master]
 
+defaults:
+  run:
+    working-directory: docs
+
 jobs:
   checks:
     if: github.event_name != 'push'
