@@ -47,4 +47,11 @@ jobs:
           else
           npm i
           fi
+          cd docs
+          if [ -e yarn.lock ]; then
+          yarn install --frozen-lockfile
+          elif [ -e package-lock.json ]; then
+          npm ci
+          else
+          npm i
           npm run deploy
