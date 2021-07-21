@@ -4,6 +4,9 @@ on:
   pull_request:
     branches: [master]
   push:
+    paths:
+      - '.github/**'
+      - 'docs/**'
     branches: [master]
 
 jobs:
@@ -28,6 +31,8 @@ jobs:
   gh-release:
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
+    env:
+      working-directory: './docs'
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
@@ -47,11 +52,4 @@ jobs:
           else
           npm i
           fi
-          cd docs
-          if [ -e yarn.lock ]; then
-          yarn install --frozen-lockfile
-          elif [ -e package-lock.json ]; then
-          npm ci
-          else
-          npm i
           npm run deploy
