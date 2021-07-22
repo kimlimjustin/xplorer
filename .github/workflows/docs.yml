@@ -44,8 +44,8 @@ jobs:
           node-version: '14.x'
       - name: Release to GitHub Pages
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAGES_DEPLOY }}
-          GIT_USER: git
+          GIT_PASS: ${{ secrets.GH_PAGES_DEPLOY }}
+          GIT_USER: kimlimjustin
         run: |
           git config --global user.email "kimlimjustin@gmail.com"
           git config --global user.name "kimlimjustin"
