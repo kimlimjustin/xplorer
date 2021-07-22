@@ -45,7 +45,7 @@ jobs:
       - name: Release to GitHub Pages
         env:
           GIT_PASS: ${{ secrets.GH_PAGES_DEPLOY }}
-          GIT_USER: kimlimjustin
+          GIT_USER: git
         run: |
           git config --global user.email "kimlimjustin@gmail.com"
           git config --global user.name "kimlimjustin"
