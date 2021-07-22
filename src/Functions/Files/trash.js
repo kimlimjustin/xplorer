@@ -11,6 +11,7 @@ const FILES_PATH = process.platform === "win32" ? WINDOWS_TRASH_FILES_PATH : LIN
 const INFO_PATH = process.platform === "win32" ? WINDOWS_TRASH_INFO_PATH : LINUX_TRASH_INFO_PATH
 const uuid = require("uuid");
 const mv = require("mv");
+const { dialog } = require("@electron/remote");
 
 /**
  * Restore file/folder from trash
@@ -51,7 +52,7 @@ const getDeletionDate = date => date.getFullYear() +
 
 /**
  * Move file/folder into trash
- * @param {any} filePath - file you want to delete
+ * @param {any} filePaths - files you want to delete
  * @returns {any}
  */
 const Trash = (filePaths) => {
@@ -77,4 +78,27 @@ const Trash = (filePaths) => {
     }
 }
 
-module.exports = { Restore, Trash }
+/**
+ * Permanently delete files/folders
+ * @param {any} filePaths - files you want to permanently delete
+ * @returns {any}
+ */
+const PermanentDelete = (filePaths) => {
+    const options = {
+        buttons: ["Yes", "No"],
+        message: `Are you sure to permanently delete ${filePaths.length > 1 ? "these folders" :"this folder"}?`,
+        title: `Delete folder`
+    }
+    if (dialog.showMessageBoxSync(options) === 0) {
+        for (const filePath of filePaths) {
+            fs.unlink(filePath, (err) => {
+                if (err) ErrorLog(err)
+            })
+            fs.unlink(path.join(INFO_PATH, path.basename(filePath) + '.trashinfo'), (err) => {
+                if (err) ErrorLog(err)
+            })
+        }
+    }
+}
+
+module.exports = { Restore, Trash, PermanentDelete }

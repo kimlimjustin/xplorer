@@ -12,7 +12,7 @@ const Paste = require("../Functions/Files/paste");
 const Cut = require("../Functions/Files/cut");
 const { getSelected } = require("../Functions/Files/select");
 const Pin = require("../Functions/Files/pin");
-const { Restore, Trash } = require("../Functions/Files/trash");
+const { Restore, Trash, PermanentDelete } = require("../Functions/Files/trash");
 let vscodeInstalled = false
 try {
     execSync("code --version")
@@ -461,6 +461,10 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
                             paths.push(unescape(element.dataset.path))
                         }
                         Trash(paths)
+                        break;
+                    case "unlink":
+                        console.log(target)
+                        PermanentDelete([unescape(target.dataset.realPath)])
                         break;
                 }
             })

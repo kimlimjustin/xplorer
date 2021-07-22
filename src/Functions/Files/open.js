@@ -163,6 +163,7 @@ const displayFiles = async (files, dir) => {
             fileGrid.setAttribute("data-tilt", '')
             fileGrid.dataset.isdir = dirent.isDir
             if (dirent.isHidden) fileGrid.dataset.hiddenFile = true
+            if (dirent.realPath) fileGrid.dataset.realPath = escape(dirent.realPath ?? path.join(dir, dirent.name))
             fileGrid.dataset.path = escape(dirent.path ?? path.join(dir, dirent.name))
             fileGrid.innerHTML = `
             ${preview}
