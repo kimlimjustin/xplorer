@@ -12,6 +12,7 @@ module.exports = {
   favicon: 'img/favicon.ico',
   organizationName: 'kimlimjustin', // Usually your GitHub org/user name.
   projectName: 'xplorer', // Usually your repo name.
+  trailingSlash: true,
   themeConfig: {
     navbar: {
       title: 'Xplorer',
