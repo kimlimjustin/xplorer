@@ -10,6 +10,7 @@ const WINDOWS_TRASH_INFO_PATH = "C:\\Trash/info";
 const FILES_PATH = process.platform === "win32" ? WINDOWS_TRASH_FILES_PATH : LINUX_TRASH_FILES_PATH
 const INFO_PATH = process.platform === "win32" ? WINDOWS_TRASH_INFO_PATH : LINUX_TRASH_INFO_PATH
 const uuid = require("uuid");
+const mv = require("mv");
 
 /**
  * Restore file/folder from trash
@@ -30,7 +31,7 @@ const Restore = (filePath) => {
         })
     }
     const trashSourcePath = fileInfo.split("\n")[1].split("=")[1]
-    fs.rename(path.join(FILES_PATH, __uuid ?? path.basename(filePath)), unescape(trashSourcePath), (err) => {
+    mv(path.join(FILES_PATH, __uuid ?? path.basename(filePath)), unescape(trashSourcePath), (err) => {
         if (err) ErrorLog(err)
     })
     fs.unlink(path.join(INFO_PATH, __uuid ? __uuid + '.trashinfo' : path.basename(filePath) + '.trashinfo'), (err) => {
@@ -65,7 +66,7 @@ const Trash = (filePaths) => {
             if (!fs.existsSync(WINDOWS_TRASH_INFO_PATH)) {
                 fs.mkdirSync(WINDOWS_TRASH_INFO_PATH, {recursive: true})
             }
-            fs.rename(filePath, destination, (err) => {
+            mv(filePath, destination, (err) => {
                 if (err) ErrorLog(err)
             })
             const trashInfoData = `[Trash Info]\nPath=${filePath.replace(/\s/g, '%20')}\nDeletionDate=${getDeletionDate(new Date())}`;
