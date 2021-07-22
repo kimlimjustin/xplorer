@@ -42,9 +42,12 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '14.x'
+      - uses: webfactory/ssh-agent@v0.5.0
+        with:
+          ssh-private-key: ${{ secrets.GH_PAGES_DEPLOY }}
       - name: Release to GitHub Pages
         env:
-          GIT_PASS: ${{ secrets.GH_PAGES_DEPLOY }}
+          USE_SSH: true
           GIT_USER: git
         run: |
           git config --global user.email "kimlimjustin@gmail.com"
