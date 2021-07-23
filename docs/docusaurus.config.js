@@ -14,6 +14,12 @@ module.exports = {
   projectName: 'xplorer', // Usually your repo name.
   trailingSlash: true,
   themeConfig: {
+    announcementBar: {
+      id: 'support_us',
+      content: '⭐️ If you like Xplorer, give it a star on <a href="https://github.com/kimlimjustin/xplorer">GitHub!</a> ⭐',
+      backgroundColor: "#fafbfc",
+      textColor: "#091E42"
+    },
     navbar: {
       title: 'Xplorer',
       logo: {
