@@ -63,6 +63,7 @@ module.exports = {
       theme: lightCodeTheme,
       darkTheme: darkCodeTheme,
     },
+    zoomSelector: '.markdown :not(em) > img'
   },
   presets: [
     [
@@ -83,5 +84,8 @@ module.exports = {
         },
       },
     ],
+  ],
+  plugins: [
+    'plugin-image-zoom'
   ],
 };
