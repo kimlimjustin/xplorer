@@ -16,4 +16,4 @@ So to summary, Xplorer's features contain:
 - Easy to use
 - Cross-platform
 - File Preview, even videos!
-- Most importantly, FOSS, Free and Open Source, which mean you can change components inside if you see fit
+- Most importantly, it's Free and Open Source! Which mean you can change components inside if you see fit and you also don't make your wallet go dry
