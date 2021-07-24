@@ -86,8 +86,8 @@ const Trash = (filePaths) => {
 const PermanentDelete = (filePaths) => {
     const options = {
         buttons: ["Yes", "No"],
-        message: `Are you sure to permanently delete ${filePaths.length > 1 ? "these folders" :"this folder"}?`,
-        title: `Delete folder`
+        message: `Are you sure to permanently delete ${filePaths.length > 1 ? "these files/folders" :"this file/folder"}?`,
+        title: `Delete file/folder`
     }
     if (dialog.showMessageBoxSync(options) === 0) {
         for (const filePath of filePaths) {
