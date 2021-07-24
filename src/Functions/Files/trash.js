@@ -94,9 +94,11 @@ const PermanentDelete = (filePaths) => {
             fs.unlink(filePath, (err) => {
                 if (err) ErrorLog(err)
             })
-            fs.unlink(path.join(INFO_PATH, path.basename(filePath) + '.trashinfo'), (err) => {
-                if (err) ErrorLog(err)
-            })
+            if (fs.existsSync(path.join(INFO_PATH, path.basename(filePath) + '.trashinfo'))) {
+                fs.unlink(path.join(INFO_PATH, path.basename(filePath) + '.trashinfo'), (err) => {
+                    if (err) ErrorLog(err)
+                })
+            }
         }
     }
 }
