@@ -11,7 +11,7 @@ const getDriveBasePath = require('../Functions/Files/basePath');
  */
 const getDrives = async () => {
     // Get all Physical disks Detected on the system
-    const drives = await nodeDiskInfo.getDiskInfoSync()
+    const drives = await nodeDiskInfo.getDiskInfoSync().filter(drive => drive.available > 0)
     // Get all USB Stick (for Linux and macOS)
     const USBStick = []
     drives.forEach(drive => {
