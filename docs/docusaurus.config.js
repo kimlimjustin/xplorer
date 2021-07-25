@@ -34,6 +34,7 @@ module.exports = {
           label: 'Tutorial',
         },
         { to: '/blog', label: 'Blog', position: 'left' },
+        { to: '/community/support', label: 'Community', position: 'left' },
         {
           href: 'https://github.com/kimlimjustin/xplorer',
           label: 'GitHub',
@@ -92,6 +93,14 @@ module.exports = {
     ],
   ],
   plugins: [
-    'plugin-image-zoom'
+    'plugin-image-zoom',
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        path: 'community',
+        id: 'community',
+        routeBasePath: 'community'
+      }
+    ]
   ],
 };
