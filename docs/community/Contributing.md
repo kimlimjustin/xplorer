@@ -33,7 +33,7 @@ Great Feature Requests tend to have:
 ## Working on Xplorer code
 ### Prerequisite
 
-- [node js]((https://nodejs.org/en/))
+- [node js](https://nodejs.org/en/)
 - [git](https://git-scm.com/)
 - [yarn](https://yarnpkg.com/)
 - [gcc compiler](https://gcc.gnu.org/)
