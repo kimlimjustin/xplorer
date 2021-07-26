@@ -13,6 +13,7 @@ const Cut = require("../Functions/Files/cut");
 const Paste = require("../Functions/Files/paste");
 const Pin = require("../Functions/Files/pin");
 const { Trash, PermanentDelete } = require("../Functions/Files/trash");
+const Preview = require("../Functions/Files/preview");
 let vscodeInstalled = false
 try {
    execSync("code --version")
@@ -126,7 +127,7 @@ const Shortcut = () => {
          toggleHideHiddenFilesValue()
          const hideHiddenFiles = getHideHiddenFilesValue()
          storage.set('preference', Object.assign({}, userPreference, { hideHiddenFiles }))
-         document.getElementById("main").dataset.hideHiddenFiles = hideHiddenFiles
+         document.getElementById("workspace").dataset.hideHiddenFiles = hideHiddenFiles
          document.getElementById("show-hidden-files").checked = !hideHiddenFiles
       }
       // Open in terminal shortcut (Alt + T)
@@ -184,7 +185,9 @@ const Shortcut = () => {
             Trash(filePaths)
          }
       }
-
+      else if (e.ctrlKey && e.key === "o") {
+         Preview(selectedFilePath)
+      }
    }
    document.addEventListener("keyup", ShortcutHandler)
    window.addEventListener("beforeunload", () => {

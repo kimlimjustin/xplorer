@@ -9,7 +9,7 @@ const { changeSelectedStatus } = require('../../Components/shortcut')
  */
 const changePosition = (newPath) => {
     document.querySelector(".path-navigator").value = newPath
-    document.getElementById("main").dataset.path = escape(newPath)
+    document.getElementById("workspace").dataset.path = escape(newPath)
 
     const tabs = storage.get('tabs')?.data
     const _focusingTab = tabs.tabs[String(tabs.focus)]

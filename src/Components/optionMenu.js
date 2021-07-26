@@ -12,7 +12,7 @@ const optionMenu = () => {
     document.getElementById("show-hidden-files").addEventListener("change", e => {
         let hideHiddenFiles = !e.target.checked;
         storage.set('preference', Object.assign({}, userPreference, { hideHiddenFiles }))
-        document.getElementById("main").dataset.hideHiddenFiles = hideHiddenFiles
+        document.getElementById("workspace").dataset.hideHiddenFiles = hideHiddenFiles
     })
 }
 

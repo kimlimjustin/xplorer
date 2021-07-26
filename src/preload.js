@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Initialize option menu feature
     optionMenu()
     // Initialize context menu
-    ContextMenu(document.getElementById("main"))
+    ContextMenu(document.getElementById("workspace"))
     // Initialize shortcut
     Shortcut()
 })

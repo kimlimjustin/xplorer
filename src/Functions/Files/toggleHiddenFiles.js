@@ -3,7 +3,7 @@ const userPreference = storage.get('preference')?.data // Read user preference
 let hideHiddenFiles = userPreference ? userPreference?.hideHiddenFiles : true // Hide hidden files as default
 
 const __init__ = () => {
-    document.getElementById("main").dataset.hideHiddenFiles = hideHiddenFiles
+    document.getElementById("workspace").dataset.hideHiddenFiles = hideHiddenFiles
 }
 
 const getHideHiddenFilesValue = () => hideHiddenFiles
