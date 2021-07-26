@@ -13,7 +13,7 @@ const Cut = require("../Functions/Files/cut");
 const Paste = require("../Functions/Files/paste");
 const Pin = require("../Functions/Files/pin");
 const { Trash, PermanentDelete } = require("../Functions/Files/trash");
-const Preview = require("../Functions/Files/preview");
+const { Preview, FILE_TYPES_AVAILABLE_FOR_PREVIEW } = require("../Functions/Files/preview");
 let vscodeInstalled = false
 try {
    execSync("code --version")
@@ -186,7 +186,9 @@ const Shortcut = () => {
          }
       }
       else if (e.ctrlKey && e.key === "o") {
-         Preview(selectedFilePath)
+         if (FILE_TYPES_AVAILABLE_FOR_PREVIEW.indexOf(path.extname(selectedFilePath)) !== -1) {
+            Preview(selectedFilePath)
+         }
       }
    }
    document.addEventListener("keyup", ShortcutHandler)

@@ -13,6 +13,7 @@ const Cut = require("../Functions/Files/cut");
 const { getSelected } = require("../Functions/Files/select");
 const Pin = require("../Functions/Files/pin");
 const { Restore, Trash, PermanentDelete } = require("../Functions/Files/trash");
+const { FILE_TYPES_AVAILABLE_FOR_PREVIEW, Preview } = require("../Functions/Files/preview");
 let vscodeInstalled = false
 try {
     execSync("code --version")
@@ -58,7 +59,7 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
             { "menu": "Open in new tab", "visible": target?.dataset?.isdir === 'true', "role": "openInNewTab", "icon": "open in new tab" },
             { "menu": "Open in terminal", "visible": target?.dataset?.isdir === "true", "role": "reveal", "shortcut": "Alt+T", "icon": "terminal" },
             { "menu": "Open in vscode", "role": "code", "visible": vscodeInstalled, "shortcut": "Shift+Enter", "icon": "vscode" },
-            { "menu": "Preview", "visible": target?.dataset?.isdir !== "false", "shortcut": "Ctrl+P", "icon": "preview" }
+            { "menu": "Preview", "visible": FILE_TYPES_AVAILABLE_FOR_PREVIEW.indexOf(path.extname(target?.dataset?.path)) !== -1, "shortcut": "Ctrl+P", "icon": "preview", "role": "preview" }
         ],
         [
             { "menu": "Cut", "shortcut": "Ctrl+X", "icon": "cut", "role": "cut" },
@@ -463,8 +464,10 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
                         Trash(paths)
                         break;
                     case "unlink":
-                        console.log(target)
                         PermanentDelete([unescape(target.dataset.realPath)])
+                        break;
+                    case "preview":
+                        Preview(filePath)
                         break;
                 }
             })
