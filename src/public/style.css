@@ -228,8 +228,7 @@ body{
     margin-left: 2rem;
 }
 
-#main{
-    padding: 1rem;
+.main-box{
     overflow-x: hidden;
     overflow-y: auto;
     height: 100%;
@@ -675,4 +674,27 @@ img{
 
 .cut{
     opacity: .75;
+}
+
+.main-box{
+    display: flex;
+    flex-direction: row;
+    box-sizing: border-box;
+}
+
+.preview-object{
+    width: 100%;
+    height: 100%;
+    align-items: stretch;
+}
+
+
+#workspace{
+    padding: 1rem;
+}
+
+#workspace, .preview{
+    flex: 1;
+    height: 100%;
+    align-items: stretch;
 }

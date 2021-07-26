@@ -88,7 +88,7 @@ const openFileHandler = (e) => {
  */
 const listenOpen = (elements) => {
     elements.forEach(element => {
-        if (document.getElementById("main").contains(element)) {
+        if (document.getElementById("workspace").contains(element)) {
             element.removeEventListener("dblclick", openFileHandler)
             element.addEventListener("dblclick", openFileHandler)
         } else {
@@ -109,7 +109,7 @@ const displayFiles = async (files, dir) => {
     const dirAlongsideFiles = storage.get("preference")?.data?.dirAlongsideFiles ?? false
     const layout = storage.get("layout")?.data?.[dir] ?? storage.get("preference")?.data?.layout ?? "s"
     const sort = storage.get("sort")?.data?.[dir] ?? 'A'
-    const MAIN_ELEMENT = document.getElementById("main");
+    const MAIN_ELEMENT = document.getElementById("workspace");
     MAIN_ELEMENT.innerHTML = "";
     if (MAIN_ELEMENT.classList.contains('empty-dir-notification')) MAIN_ELEMENT.classList.remove('empty-dir-notification') // Remove class if exist
     files = files.sort((a, b) => {
@@ -139,7 +139,7 @@ const displayFiles = async (files, dir) => {
         await files.forEach(async dirent => {
             if (hideSystemFile && dirent.isSystemFile) return;
             if (IGNORE_FILE.indexOf(dirent.name) !== -1) return;
-            const preview = await getPreview(dirent.type === "Image" && dirent.isTrash ? dirent.realPath :path.join(dir, dirent.name), category = dirent.isDir ? "folder" : "file")
+            const preview = await getPreview(dirent.type === "Image" && dirent.isTrash ? dirent.realPath : path.join(dir, dirent.name), category = dirent.isDir ? "folder" : "file")
             const fileGrid = document.createElement("div")
             fileGrid.className = "file-grid grid-hover-effect file"
             if (dirent.isTrash) fileGrid.dataset.isTrash = true
@@ -209,7 +209,7 @@ const openDir = async (dir) => {
     } else if (dir === path.join(os.homedir(), 'Trash') || dir === "Trash" || dir === "xplorer://Trash") {
         const getFiles = () => {
             if (process.platform === "win32") {
-                if(!fs.existsSync(WINDOWS_TRASH_FILES_PATH)) return []
+                if (!fs.existsSync(WINDOWS_TRASH_FILES_PATH)) return []
                 else {
                     return fs.readdirSync(WINDOWS_TRASH_FILES_PATH, { withFileTypes: true }).map(dirent => {
                         let fileInfo = fs.readFileSync(path.join(WINDOWS_TRASH_INFO_PATH, dirent.name + '.trashinfo'), 'utf8').split("\n")
@@ -222,7 +222,7 @@ const openDir = async (dir) => {
                         return { name: unescape(trashPath), isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)), trashPath, trashDeletionDate, type, isTrash: true, path: unescape(trashPath), realPath: path.join(WINDOWS_TRASH_FILES_PATH, dirent.name) };
                     })
                 }
-            }else{
+            } else {
                 return fs.readdirSync(LINUX_TRASH_FILES_PATH, { withFileTypes: true }).map(dirent => {
                     let fileInfo = fs.readFileSync(path.join(LINUX_TRASH_INFO_PATH, dirent.name + '.trashinfo'), 'utf8').split("\n")
                     let trashPath, trashDeletionDate;
@@ -255,7 +255,7 @@ const openDir = async (dir) => {
                 }
             }
         }, 500);
-        
+
     } else {
         const hideSystemFile = storage.get("preference")?.data?.hideSystemFiles ?? true
         let getAttributesSync;

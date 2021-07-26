@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
 })
 
 const ContextMenuInner = (target, coorX, coorY, openDir) => {
-    if (target.classList.contains("home-section")) target = document.getElementById("main") // If context menu target is on home-section, use main element as target instead.
+    if (target.classList.contains("home-section")) target = document.getElementById("workspace") // If context menu target is on home-section, use main element as target instead.
     while (!target.dataset.path) {
         target = target.parentNode
     }
@@ -183,7 +183,7 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
     } else if (isTrash) {
         MenuToElements(TrashMenu)
     } else {
-        if (target === document.getElementById("main")) MenuToElements(BodyMenu)
+        if (target === document.getElementById("workspace")) MenuToElements(BodyMenu)
         else if (target?.dataset?.path) MenuToElements(FileMenu)
     }
 
@@ -328,7 +328,7 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
 
     element.addEventListener("contextmenu", e => {
         // Disable context menu if current path is home and on windows
-        if (window.platform === "win32" && (!document.getElementById("main").dataset?.path || document.getElementById("main").dataset?.path === "Home")) return;
+        if (window.platform === "win32" && (!document.getElementById("workspace").dataset?.path || document.getElementById("workspace").dataset?.path === "Home")) return;
         let coorX = e.pageX;
         let coorY = e.pageY;
 

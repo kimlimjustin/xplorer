@@ -123,7 +123,7 @@ const Preference = () => {
         let preference = storage.get("preference")?.data ?? {}
         preference.hideHiddenFiles = checked
         storage.set("preference", preference)
-        document.getElementById("main").dataset.hideHiddenFiles = checked
+        document.getElementById("workspace").dataset.hideHiddenFiles = checked
         document.getElementById("show-hidden-files").checked = !checked
     })
     settingsMain.querySelector(`[name="hide-system-files"]`).addEventListener("change", ({ target: { checked } }) => {

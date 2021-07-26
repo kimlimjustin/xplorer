@@ -111,7 +111,7 @@ const homeFiles = (callback) => {
 const Home = async (_callback) => {
     startLoading()
     // Get the main element
-    const MAIN_ELEMENT = document.getElementById("main");
+    const MAIN_ELEMENT = document.getElementById("workspace");
     if (MAIN_ELEMENT.classList.contains('empty-dir-notification')) MAIN_ELEMENT.classList.remove('empty-dir-notification') // Remove class if exist
     const favorites = Favorites();
     const drives = await Drives();
