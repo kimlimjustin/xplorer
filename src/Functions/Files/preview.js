@@ -11,6 +11,8 @@ const Preview = (filePath) => {
     if (path.extname(filePath) === ".pdf") {
         previewElement.innerHTML = `<object data="${filePath}" type="application/pdf" class="preview-object"><embed src="${filePath}" type="application/pdf" /></object>`
     }
+    document.getElementById("workspace").classList.toggle("workspace-split")
+    document.querySelector(".main-box").style.overflowY = "hidden";
     document.querySelector(".main-box").appendChild(previewElement)
 }
 
