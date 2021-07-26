@@ -677,9 +677,8 @@ img{
 }
 
 .main-box{
-    display: flex;
-    flex-direction: row;
     box-sizing: border-box;
+    position: relative;
 }
 
 .preview-object{
@@ -687,14 +686,20 @@ img{
     height: 100%;
     align-items: stretch;
 }
+.workspace-split{
+    height: 100%;
+    width: 50%;
+    overflow: auto;
+}
 
+.preview{
+    right: 0;
+    top: 0;
+    position:absolute;
+    height: 100%;
+    width: 50%
+}
 
 #workspace{
     padding: 1rem;
-}
-
-#workspace, .preview{
-    flex: 1;
-    height: 100%;
-    align-items: stretch;
 }
