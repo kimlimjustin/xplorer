@@ -90,6 +90,10 @@ const changeTheme = (document, theme) => {
     changeElementTheme(document.querySelector(".sidebar-setting-btn"), "settingButtonColor", "color", theme)
     changeElementTheme(document.querySelector(".contextmenu"), "contextMenuBackground", "background", theme)
     changeElementTheme(document.querySelector(".contextmenu"), "contextMenuColor", "color", theme)
+    changeElementTheme(document.querySelector(".preview"), "previewFileBackground", "background", theme)
+    changeElementTheme(document.querySelector(".preview"), "previewFileColor", "color", theme)
+    changeElementTheme(document.querySelector(".preview-exit-btn"), "previewExitButtonBackground", "background", theme)
+    changeElementTheme(document.querySelector(".preview-exit-btn"), "previewExitButtonColor", "color", theme)
     document.querySelectorAll(".contextmenu-submenu").forEach(submenu => {
         changeElementTheme(submenu, "contextMenuSubmenuBackground", "background", theme)
         changeElementTheme(submenu, "contextMenuSubmenuColor", "color", theme)
