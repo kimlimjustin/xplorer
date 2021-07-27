@@ -246,12 +246,12 @@ body{
 
 .loading-bar{
     height: 5px;
-    visibility: hidden;
+    display: none;
     overflow: hidden;
 }
 
 .loading-bar[data-loading="true"]{
-    visibility: inherit;
+    display: block;
 }
 
 .loader{
@@ -699,9 +699,32 @@ img{
     position:absolute;
     height: 100%;
     width: 50%;
-    padding-top: 1rem;
 }
 
 #workspace{
     padding: 1rem;
+}
+
+.preview-path{
+    overflow-wrap: break-word;
+    -webkit-line-clamp: initial;
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    overflow: hidden;
+    height: fit-content;
+    white-space: nowrap;
+    padding-left: 1rem;
+}
+
+.preview-exit-btn{
+    cursor: pointer;
+    width: 1.5rem;
+    text-align: center;
+    margin-left: auto;
+    border-radius: 5px;
+}
+
+.preview-header{
+    display: flex;
 }

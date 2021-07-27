@@ -1,4 +1,5 @@
 const path = require("path");
+const { updateTheme } = require("../Theme/theme");
 const FILE_TYPES_AVAILABLE_FOR_PREVIEW = ['.pdf']
 
 /**
@@ -22,8 +23,10 @@ const Preview = (filePath) => {
     previewElement.classList.add("preview")
     if (path.extname(filePath) === ".pdf") {
         previewElement.innerHTML = `
-        <span class="preview-path">${filePath}</span>
-        <span class="preview-exit-btn">&times;</span>
+        <div class="preview-header">
+            <span class="preview-path">${path.basename(filePath)}</span>
+            <span class="preview-exit-btn">&times;</span>
+        </div>
         <object data="${filePath}" type="application/pdf" class="preview-object"><embed src="${filePath}" type="application/pdf" /></object>`
     }
     document.querySelector(".main-box").scrollTop = "0"
@@ -32,6 +35,7 @@ const Preview = (filePath) => {
     document.querySelector(`[data-path="${escape(filePath)}"]`).scrollIntoView()
     document.querySelector(".main-box").appendChild(previewElement)
     previewElement.querySelector(".preview-exit-btn").addEventListener("click", () => closePreviewFile())
+    updateTheme()
 }
 
 module.exports = { Preview, FILE_TYPES_AVAILABLE_FOR_PREVIEW, closePreviewFile }

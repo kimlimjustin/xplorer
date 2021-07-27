@@ -64,7 +64,12 @@
         "contextMenuBackground": "#1b1e2e",
         "contextMenuColor": "inherit",
         "contextMenuSubmenuBackground": "#1b1e2e",
-        "contextMenuSubmenuColor": "inherit"
+        "contextMenuSubmenuColor": "inherit",
+        
+        "previewFileBackground": "#a2b7ff",
+        "previewFileColor": "#000",
+        "previewExitButtonBackground": "rgb(198, 203, 228)",
+        "previewExitButtonColor": "inherit"
     },
     "dark": {
         "textColor": "#87c1ce",
@@ -130,7 +135,12 @@
         "contextMenuBackground": "#1b1e2e",
         "contextMenuColor": "inherit",
         "contextMenuSubmenuBackground": "#1b1e2e",
-        "contextMenuSubmenuColor": "inherit"
+        "contextMenuSubmenuColor": "inherit",
+        
+        "previewFileBackground": "#39496a",
+        "previewFileColor": "inherit",
+        "previewExitButtonBackground": "#3e537d",
+        "previewExitButtonColor": "#000"
     },
     "light": {
         "textColor": "#000",
@@ -197,7 +207,12 @@
         "contextMenuBackground": "#cbccd1",
         "contextMenuColor": "inherit",
         "contextMenuSubmenuBackground": "#cbccd1",
-        "contextMenuSubmenuColor": "inherit"
+        "contextMenuSubmenuColor": "inherit",
+
+        "previewFileBackground": "#cbccd1",
+        "previewFileColor": "#000",
+        "previewExitButtonBackground": "rgb(226, 227, 232)",
+        "previewExitButtonColor": "#000"
     },
     "light+": {
         "textColor": "#000",
@@ -264,6 +279,11 @@
         "contextMenuBackground": "#d1d1d8",
         "contextMenuColor": "inherit",
         "contextMenuSubmenuBackground": "#d1d1d8",
-        "contextMenuSubmenuColor": "inherit"
+        "contextMenuSubmenuColor": "inherit",
+        
+        "previewFileBackground": "#eeeeee",
+        "previewFileColor": "#000",
+        "previewExitButtonBackground": "#dedede",
+        "previewExitButtonColor": "#000"
     }
 }
