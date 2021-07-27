@@ -688,8 +688,9 @@ img{
 }
 .workspace-split{
     height: 100%;
-    width: 50%;
+    width: calc(50% - 2rem);
     overflow: auto;
+    padding: 2rem 1rem;
 }
 
 .preview{
@@ -697,7 +698,8 @@ img{
     top: 0;
     position:absolute;
     height: 100%;
-    width: 50%
+    width: 50%;
+    padding-top: 1rem;
 }
 
 #workspace{
