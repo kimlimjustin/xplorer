@@ -16,6 +16,7 @@ const formatBytes = require("../Math/filesize");
 const getType = require("./type");
 const { SelectListener } = require("./select");
 const { InfoLog } = require("../Logs/log");
+const { closePreviewFile } = require("./preview");
 
 const WINDOWS_TRASH_FILES_PATH = "C:\\Trash/files";
 const WINDOWS_TRASH_INFO_PATH = "C:\\Trash/info";
@@ -194,6 +195,7 @@ const displayFiles = async (files, dir) => {
  * @returns {any}
  */
 const openDir = async (dir) => {
+    closePreviewFile()
     timeStarted = Date.now()
     startLoading()
     await changePosition(dir)
