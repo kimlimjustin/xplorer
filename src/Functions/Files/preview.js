@@ -1,6 +1,6 @@
 const path = require("path");
 const { updateTheme } = require("../Theme/theme");
-const FILE_TYPES_AVAILABLE_FOR_PREVIEW = ['.pdf', , '.html', '.docx']
+const FILE_TYPES_AVAILABLE_FOR_PREVIEW = ['.pdf', , '.html', '.docx', '.htm']
 const mammoth = require("mammoth")
 
 /**
@@ -29,7 +29,7 @@ const Preview = (filePath) => {
             <span class="preview-exit-btn">&times;</span>
         </div>
         <object data="${filePath}" type="application/pdf" class="preview-object"><embed src="${filePath}" type="application/pdf" /></object>`
-    } else if (path.extname(filePath) === ".html") {
+    } else if (path.extname(filePath) === ".html" || path.extname(filePath) === ".htm") {
         previewElement.innerHTML = `
         <div class="preview-header">
             <span class="preview-path">${path.basename(filePath)}</span>
@@ -67,7 +67,7 @@ const Preview = (filePath) => {
         document.querySelector(`[data-path="${escape(filePath)}"]`).scrollIntoView()
         previewElement.querySelector(".preview-exit-btn").addEventListener("click", () => closePreviewFile())
     }
-    if (path.extname(filePath) === ".pdf" || path.extname(filePath) === ".html") {
+    if (path.extname(filePath) === ".pdf" || path.extname(filePath) === ".html" || path.extname(filePath) === ".htm") {
         chng()
     }
     updateTheme()
