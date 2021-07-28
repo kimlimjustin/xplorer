@@ -42,6 +42,7 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
         [
             { "menu": "Open", "role": "open", "icon": "open" },
             { "menu": "Open in new tab", "visible": target?.dataset?.isdir === 'true', "icon": "open in new tab", "role": "openInNewTab" },
+            { "menu": "Preview", "visible": FILE_TYPES_AVAILABLE_FOR_PREVIEW.indexOf(path.extname(target?.dataset?.path)) !== -1, "shortcut": "Ctrl+P", "icon": "preview", "role": "preview" }
         ],
         [
             { "menu": "Unpin from Sidebar", "icon": "pin", "role": "pin" }
