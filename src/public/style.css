@@ -725,3 +725,8 @@ img{
 .preview-header{
     display: flex;
 }
+
+.preview-object[data-type="docx"]{
+    overflow: auto;
+    padding: 10px;
+}
