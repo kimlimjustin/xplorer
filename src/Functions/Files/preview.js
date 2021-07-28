@@ -1,6 +1,7 @@
 const path = require("path");
 const { updateTheme } = require("../Theme/theme");
-const FILE_TYPES_AVAILABLE_FOR_PREVIEW = ['.pdf', , '.html']
+const FILE_TYPES_AVAILABLE_FOR_PREVIEW = ['.pdf', , '.html', '.docx']
+const mammoth = require("mammoth")
 
 /**
  * Close the preview file
@@ -35,13 +36,40 @@ const Preview = (filePath) => {
             <span class="preview-exit-btn">&times;</span>
         </div>
         <iframe src="${filePath}" title="${filePath}" class="preview-object"></iframe>`
+    } else if (path.extname(filePath) === ".docx") {
+        previewElement.innerHTML = `
+        <div class="preview-header">
+            <span class="preview-path">${path.basename(filePath)}</span>
+            <span class="preview-exit-btn">&times;</span>
+        </div>
+        <iframe src="${filePath}" title="${filePath}" class="preview-object"></iframe>`
+        mammoth.convertToHtml({path: filePath})
+            .then(({ value }) => {
+                console.log(value)
+                previewElement.innerHTML = `
+                <div class="preview-header">
+                    <span class="preview-path">${path.basename(filePath)}</span>
+                    <span class="preview-exit-btn">&times;</span>
+                </div>
+                <div class='preview-object' data-type="docx">${value}</div>`
+                /*let doc = previewElement.preview.open("text/html", "replace");
+                doc.write(value)
+                doc.close();*/
+                chng()
+            })
+            .done();
     }
-    document.querySelector(".main-box").scrollTop = "0"
-    document.querySelector(".main-box").style.overflowY = "hidden";
-    document.getElementById("workspace").classList.toggle("workspace-split")
-    document.querySelector(".main-box").appendChild(previewElement)
-    document.querySelector(`[data-path="${escape(filePath)}"]`).scrollIntoView()
-    previewElement.querySelector(".preview-exit-btn").addEventListener("click", () => closePreviewFile())
+    const chng = () => {
+        document.querySelector(".main-box").scrollTop = "0"
+        document.querySelector(".main-box").style.overflowY = "hidden";
+        document.getElementById("workspace").classList.toggle("workspace-split")
+        document.querySelector(".main-box").appendChild(previewElement)
+        document.querySelector(`[data-path="${escape(filePath)}"]`).scrollIntoView()
+        previewElement.querySelector(".preview-exit-btn").addEventListener("click", () => closePreviewFile())
+    }
+    if (path.extname(filePath) === ".pdf" || path.extname(filePath) === ".html") {
+        chng()
+    }
     updateTheme()
 }
 
