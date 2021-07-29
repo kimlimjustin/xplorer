@@ -730,3 +730,7 @@ img{
     overflow: auto;
     padding: 10px;
 }
+
+.preview-object table{
+    width: max-content;
+}
