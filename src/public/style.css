@@ -10,7 +10,7 @@ body{
     scroll-behavior: smooth;
 }
 
-::-webkit-scrollbar{ width: 5px; }
+::-webkit-scrollbar{ width: 8px; height: 5px; }
 ::-webkit-scrollbar-track{background: var(--scrollbar-track);}
 ::-webkit-scrollbar-thumb{background: var(--scrollbar-thumb);}
 ::-webkit-scrollbar-thumb:hover{background: var(--scrollbar-thumb-hover);}
@@ -679,11 +679,10 @@ img{
 .main-box{
     box-sizing: border-box;
     display: flex;
-    padding-top: 2rem;
 }
 
 .preview-object{
-    width: 100%;
+    width: calc(100% - 20px);
     height: 100%;
     align-items: stretch;
 }
@@ -694,8 +693,12 @@ img{
 
 .preview{
     flex: 1;
+    max-width: 50%;
     height: 100%;
+    display: flex;
+    flex-direction: column;
 }
+
 
 #workspace{
     padding: 1rem;
@@ -732,5 +735,5 @@ img{
 }
 
 .preview-object table{
-    width: max-content;
+    width: auto;
 }
