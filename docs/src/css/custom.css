@@ -26,6 +26,8 @@
 html[data-theme="dark"]{
   --ifm-navbar-background-color: #1b1e2e;
   --ifm-footer-background-color: #1b1e2e;
+  --ifm-table-background: #1b1e2e;
+  --ifm-table-head-background: #1b1e2e;
   background: #24283b;
 }
 
