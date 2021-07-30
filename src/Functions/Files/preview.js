@@ -1,6 +1,6 @@
 const path = require("path");
 const { updateTheme } = require("../Theme/theme");
-const FILE_TYPES_AVAILABLE_FOR_PREVIEW = ['.pdf', , '.html', '.docx', '.htm', '.xlsx']
+const FILE_TYPES_AVAILABLE_FOR_PREVIEW = ['.pdf', , '.html', '.docx', '.htm', '.xlsx', '.xls', '.xlsb', 'xls', '.ods', '.fods', '.csv']
 const mammoth = require("mammoth")
 const fs = require('fs');
 const XLSX = require('xlsx');
@@ -39,7 +39,7 @@ const Preview = (filePath) => {
             <span class="preview-exit-btn">&times;</span>
         </div>
         <iframe src="${filePath}" title="${filePath}" class="preview-object"></iframe>`
-    } else if (path.extname(filePath) === ".xlsx") {
+    } else if (['.xlsx', '.xls', '.xlsb', 'xls', '.ods', '.fods', '.csv'].indexOf(path.extname(filePath)) !== -1) {
         const xlsxData = XLSX.readFile(filePath)
         let _res = XLSX.utils.sheet_to_html(xlsxData.Sheets[xlsxData.SheetNames[0]])
         previewElement.innerHTML = `
@@ -79,7 +79,7 @@ const Preview = (filePath) => {
         document.querySelector(`[data-path="${escape(filePath)}"]`).scrollIntoView()
         previewElement.querySelector(".preview-exit-btn").addEventListener("click", () => closePreviewFile())
     }
-    if (path.extname(filePath) === ".pdf" || path.extname(filePath) === ".html" || path.extname(filePath) === ".htm" || path.extname(filePath) === ".xlsx") {
+    if (['.pdf', '.html', '.htm', '.xlsx', 'xls', '.xlsb', 'xls', '.ods', '.fods', '.csv'].indexOf(path.extname(filePath)) !== -1) {
         chng()
     }
     updateTheme()
