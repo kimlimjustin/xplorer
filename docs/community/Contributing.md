@@ -4,7 +4,7 @@ sidebar_position: 2
 # Contribute
 👍🎉 First off, thanks for taking the time to contribute! 🎉👍
 
-Xplorer is currently under development. We are welcoming contributors to collborate on Xplorer.
+Xplorer is currently under development. We are welcoming contributors to collaborate on Xplorer.
 
 ## Get involved
 There are many ways to contribute to Xplorer, and many of them do not involve writing any code. Here are few ideas to get started:
@@ -28,7 +28,7 @@ We use [GitHub Discussion](https://github.com/kimlimjustin/xplorer/discussions) 
 Great Feature Requests tend to have:
 - A quick idea summary.
 - What & why you wanted to add the specific feature.
-- Additional context like images, links to resources to implement the feature, etc.
+- Additional references like images, links of resources about the feature, etc.
 
 ## Working on Xplorer code
 ### Prerequisite
@@ -142,7 +142,7 @@ You can add an icon by doing these steps:
 - Paste the new icon in `src/icon`
 - Edit value of [`src/config/icon.json`](https://github.com/kimlimjustin/xplorer/tree/master/src/config/icon.json)
 
-### File type library
+### File Type library
 Files type library is available on [`src/config/type.json`](https://github.com/kimlimjustin/xplorer/tree/master/src/config/type.json).
 
 You can add type of a file extension by adding value on the file.
