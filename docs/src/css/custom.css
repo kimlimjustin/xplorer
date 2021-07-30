@@ -7,6 +7,15 @@
   --ifm-color-primary-lighter: rgb(102, 212, 189);
   --ifm-color-primary-lightest: rgb(146, 224, 208);
   --ifm-navbar-background-color: #cbccd1;
+  --ifm-footer-background-color: #cbccd1;
+  --link-active-color: #477dad;
+  --ifm-link-color: var(--link-active-color);
+  --ifm-navbar-link-hover-color: var(--link-active-color);
+  --ifm-menu-color-active: var(--link-active-color);
+  --ifm-color-emphasis-300: #9cbfdd;
+  --ifm-table-background: #cbccd1;
+  --ifm-table-head-background: #d5d6db;
+  --ifm-pre-background: #fff;
   background: #d5d6db;
 }
 
@@ -16,6 +25,7 @@
 
 html[data-theme="dark"]{
   --ifm-navbar-background-color: #1b1e2e;
+  --ifm-footer-background-color: #1b1e2e;
   background: #24283b;
 }
 
