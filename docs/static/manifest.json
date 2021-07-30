@@ -1,0 +1,22 @@
+{
+    "name": "Xplorer Documentation",
+    "short_name": "Xplorer Docs",
+    "theme_color": "#2196f3",
+    "background_color": "#424242",
+    "display": "standalone",
+    "scope": "./",
+    "start_url": "./index.html",
+    "related_applications": [
+      {
+        "platform": "webapp",
+        "url": "https://xplorer-docs.vercel.app/manifest.json"
+      }
+    ],
+    "icons": [
+      {
+        "src": "img/icons/icon-512x512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ]
+  }
