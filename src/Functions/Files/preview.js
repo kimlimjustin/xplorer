@@ -3,7 +3,8 @@ const { updateTheme } = require("../Theme/theme");
 const FILE_TYPES_AVAILABLE_FOR_PREVIEW = ['.pdf', , '.html', '.docx', '.htm', '.xlsx']
 const mammoth = require("mammoth")
 const fs = require('fs');
-const XLSX = require('xlsx')
+const XLSX = require('xlsx');
+const URLify = require("../DOM/urlify");
 
 /**
  * Close the preview file
@@ -46,7 +47,7 @@ const Preview = (filePath) => {
             <span class="preview-path">${path.basename(filePath)}</span>
             <span class="preview-exit-btn">&times;</span>
         </div>
-        <div class='preview-object' data-type="docx">${_res}</div>`
+        <div class='preview-object' data-type="docx">${URLify(_res)}</div>`
     }else if (path.extname(filePath) === ".docx") {
         previewElement.innerHTML = `
         <div class="preview-header">
