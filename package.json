@@ -5,7 +5,7 @@
   "author": "Justin Maximillian Kimlim <kimlimjustin@gmail.com>",
   "main": "src/main.js",
   "icon": "build/icon.icns",
-  "homepage": "https://github.com/kimlimjustin/xplorer#readme",
+  "homepage": "https://xplorer.vercel.app",
   "repository": {
     "type": "git",
     "url": "https://github.com/kimlimjustin/xplorer.git"
