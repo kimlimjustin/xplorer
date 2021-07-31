@@ -37,6 +37,7 @@ Great Feature Requests tend to have:
 - [git](https://git-scm.com/)
 - [yarn](https://yarnpkg.com/)
 - [gcc compiler](https://gcc.gnu.org/)
+- Code Editor, recommended [vscode](https://code.visualstudio.com/)
 ### Installation
 1. After cloning the repository, run `yarn` in the root of the repository and run `yarn` in the `docs` folder (if you want to working on Xplorer Docs).
 2. To start Xplorer locally, run `yarn start` in the root of the repository.
@@ -102,6 +103,22 @@ Use lower case not title case!
 │   └── public          // Basic HTML and CSS files
 └── test                // Testing code
 ```
+
+## Working on Xplorer docs
+Xplorer documentation website is built using [Docusaurus 2](https://docusaurus.io/), and its code is located is located at [`docs`](https://github.com/kimlimjustin/xplorer/tree/master/docs) folder.
+### Prerequisite
+
+- [node js](https://nodejs.org/en/)
+- [git](https://git-scm.com/downloads)
+- [yarn](https://yarnpkg.com/getting-started/install#about-global-installs)
+- Code Editor, recommended [vscode](https://code.visualstudio.com/)
+
+### Installation
+After cloning the repository, run `yarn` in the `docs` folder (you can go into the `docs` folder by running `cd docs` command).
+
+### Local development
+1. Run `yarn start` command in the `docs` folder.
+2. Edit some markdown texts in the `docs` folder and the website will be hot reloaded.
 
 ## Pull requests
 ### Your first pull request. {#first-pull-request}
