@@ -69,7 +69,15 @@
         "previewFileBackground": "#a2b7ff",
         "previewFileColor": "#000",
         "previewExitButtonBackground": "rgb(198, 203, 228)",
-        "previewExitButtonColor": "inherit"
+        "previewExitButtonColor": "inherit",
+        "previewObjectBackground": "#1a1b26",
+        "previewObjectColor": "inherit",
+        "previewObjectTableBorder": "1px solid #ddd",
+        "previewObjectTableRowEvenBackground": "#a2b7ff",
+        "previewObjectTableRowEvenColor": "inherit",
+        "previewObjectTableRowOddBackground": "inherit",
+        "previewObjectTableRowOddColor": "#a2b7ff"
+
     },
     "dark": {
         "textColor": "#87c1ce",
@@ -140,7 +148,15 @@
         "previewFileBackground": "#39496a",
         "previewFileColor": "inherit",
         "previewExitButtonBackground": "#3e537d",
-        "previewExitButtonColor": "#000"
+        "previewExitButtonColor": "#000",
+        "previewObjectBackground": "#24283b",
+        "previewObjectColor": "inherit",
+        "previewObjectTableBorder": "1px solid #ddd",
+        "previewObjectTableRowEvenBackground": "#283d6b",
+        "previewObjectTableRowEvenColor": "inherit",
+        "previewObjectTableRowOddBackground": "inherit",
+        "previewObjectTableRowOddColor": "inherit"
+
     },
     "light": {
         "textColor": "#000",
@@ -212,7 +228,15 @@
         "previewFileBackground": "#cbccd1",
         "previewFileColor": "#000",
         "previewExitButtonBackground": "rgb(226, 227, 232)",
-        "previewExitButtonColor": "#000"
+        "previewExitButtonColor": "#000",
+        "previewObjectBackground": "#c3c3c3",
+        "previewObjectColor": "inherit",
+        "previewObjectTableBorder": "1px solid #ddd",
+        "previewObjectTableRowEvenBackground": "#ddd",
+        "previewObjectTableRowEvenColor": "inherit",
+        "previewObjectTableRowOddBackground": "inherit",
+        "previewObjectTableRowOddColor": "inherit"
+
     },
     "light+": {
         "textColor": "#000",
@@ -284,6 +308,13 @@
         "previewFileBackground": "#eeeeee",
         "previewFileColor": "#000",
         "previewExitButtonBackground": "#dedede",
-        "previewExitButtonColor": "#000"
+        "previewExitButtonColor": "#000",
+        "previewObjectBackground": "#f3f3f3",
+        "previewObjectColor": "inherit",
+        "previewObjectTableBorder": "1px solid #ddd",
+        "previewObjectTableRowEvenBackground": "#ddd",
+        "previewObjectTableRowEvenColor": "inherit",
+        "previewObjectTableRowOddBackground": "inherit",
+        "previewObjectTableRowOddColor": "inherit"
     }
 }

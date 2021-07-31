@@ -94,6 +94,13 @@ const changeTheme = (document, theme) => {
     changeElementTheme(document.querySelector(".preview"), "previewFileColor", "color", theme)
     changeElementTheme(document.querySelector(".preview-exit-btn"), "previewExitButtonBackground", "background", theme)
     changeElementTheme(document.querySelector(".preview-exit-btn"), "previewExitButtonColor", "color", theme)
+    changeElementTheme(document.querySelector(".preview-object"), "previewObjectBackground", "background", theme)
+    changeElementTheme(document.querySelector(".preview-object"), "previewObjectColor", "color", theme)
+    document.querySelector(".preview-object")?.style?.setProperty("--preview-object-table-border", themeJSON ? themeJSON[theme].previewObjectTableBorder : defaultThemeJSON[theme].previewObjectTableBorder)
+    document.querySelector(".preview-object")?.style?.setProperty("--preview-object-table-row-even-bg", themeJSON ? themeJSON[theme].previewObjectTableRowEvenBackground : defaultThemeJSON[theme].previewObjectTableRowEvenBackground)
+    document.querySelector(".preview-object")?.style?.setProperty("--preview-object-table-row-even-color", themeJSON ? themeJSON[theme].previewObjectTableRowEvenColor : defaultThemeJSON[theme].previewObjectTableRowEvenColor)
+    document.querySelector(".preview-object")?.style?.setProperty("--preview-object-table-row-odd-bg", themeJSON ? themeJSON[theme].previewObjectTableRowOddBackground : defaultThemeJSON[theme].previewObjectTableRowOddBackground)
+    document.querySelector(".preview-object")?.style?.setProperty("--preview-object-table-row-odd-color", themeJSON ? themeJSON[theme].previewObjectTableRowOddColor : defaultThemeJSON[theme].previewObjectTableRowOddColor)
     document.querySelectorAll(".contextmenu-submenu").forEach(submenu => {
         changeElementTheme(submenu, "contextMenuSubmenuBackground", "background", theme)
         changeElementTheme(submenu, "contextMenuSubmenuColor", "color", theme)
