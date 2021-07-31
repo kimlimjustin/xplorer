@@ -697,6 +697,11 @@ img{
     height: 100%;
     display: flex;
     flex-direction: column;
+    -webkit-user-select: text;
+     -khtml-user-select: text;
+       -moz-user-select: text;
+        -ms-user-select: text;
+            user-select: text;
 }
 
 
@@ -736,4 +741,17 @@ img{
 
 .preview-object table{
     width: auto;
+}
+
+.preview-object table td, .preview-object table th{
+    border: var(--preview-object-table-border);
+}
+
+.preview-object table tr:nth-child(even){
+    background: var(--preview-object-table-row-even-bg);
+    color: var(--preview-object-table-row-even-color);
+}
+.preview-object table tr:nth-child(odd){
+    background: var(--preview-object-table-row-odd-bg);
+    color: var(--preview-object-table-row-odd-color);
 }
