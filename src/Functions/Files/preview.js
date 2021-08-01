@@ -1,6 +1,6 @@
 const path = require("path");
 const { updateTheme } = require("../Theme/theme");
-const FILE_TYPES_AVAILABLE_FOR_PREVIEW = ['.pdf', , '.html', '.docx', '.htm', '.xlsx', '.xls', '.xlsb', 'xls', '.ods', '.fods', '.csv', '.txt', '.py', '.js']
+const FILE_TYPES_AVAILABLE_FOR_PREVIEW = ['.pdf', , '.html', '.docx', '.htm', '.xlsx', '.xls', '.xlsb', 'xls', '.ods', '.fods', '.csv', '.txt', '.py', '.js', '.bat', '.css', '.c++', '.cpp', '.cc', '.c', '.diff', '.patch', '.go', '.java', '.json', '.php', '.ts', '.tsx', '.jsx']
 const mammoth = require("mammoth")
 const fs = require('fs');
 const XLSX = require('xlsx');
@@ -49,7 +49,13 @@ const Preview = (filePath) => {
         changePreview(`<div class='preview-object' data-type="xlsx">${URLify(parsedData)}</div>`)
     } else if (path.extname(filePath) === ".txt") {
         changePreview(`<div class='preview-object' data-type="txt">${fs.readFileSync(filePath, "utf8").replaceAll("\n", "<br />")}</div>`)
-    } else if (['.py', '.js'].indexOf(path.extname(filePath)) !== -1) {
+    } else if (path.extname(filePath) === ".docx") {
+        mammoth.convertToHtml({path: filePath})
+            .then(({ value }) => {
+                changePreview(`<div class='preview-object' data-type="docx">${value}</div>`)
+            })
+            .done();
+    } else {
         let language;
         switch (path.extname(filePath)) {
             case ".py":
@@ -58,15 +64,31 @@ const Preview = (filePath) => {
             case ".js":
                 language = "javascript"
                 break;
+            case ".tx":
+                language = "typescript"
+                break;
+            case ".css":
+                language = "css";
+                break;
+            case ".cpp":
+            case ".c++":
+            case ".cc":
+                language = "c++"
+                break;
+            case ".c":
+                language = "c"
+                break;
+            case ".diff":
+            case ".patch":
+                language = "diff"
+                break;
+            case ".json":
+                language = "json"
+                break;
+            
         }
         const highlightedCode = language ? hljs.highlight(fs.readFileSync(filePath, "utf8"), {language: language}).value : hljs.highlightAuto(fs.readFileSync(filePath, "utf8")).value
         changePreview(`<pre class='preview-object' data-type="code"><code>${highlightedCode}</code></pre>`)
-    } else if (path.extname(filePath) === ".docx") {
-        mammoth.convertToHtml({path: filePath})
-            .then(({ value }) => {
-                changePreview(`<div class='preview-object' data-type="docx">${value}</div>`)
-            })
-            .done();
     }
     updateTheme()
 }
