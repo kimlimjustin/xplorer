@@ -101,6 +101,7 @@ const changeTheme = (document, theme) => {
     document.querySelector(".preview-object")?.style?.setProperty("--preview-object-table-row-even-color", themeJSON ? themeJSON[theme].previewObjectTableRowEvenColor : defaultThemeJSON[theme].previewObjectTableRowEvenColor)
     document.querySelector(".preview-object")?.style?.setProperty("--preview-object-table-row-odd-bg", themeJSON ? themeJSON[theme].previewObjectTableRowOddBackground : defaultThemeJSON[theme].previewObjectTableRowOddBackground)
     document.querySelector(".preview-object")?.style?.setProperty("--preview-object-table-row-odd-color", themeJSON ? themeJSON[theme].previewObjectTableRowOddColor : defaultThemeJSON[theme].previewObjectTableRowOddColor)
+    document.querySelector(".preview-object")?.setAttribute("data-theme-category", themeJSON ? themeJSON[theme].themeCategory : defaultThemeJSON[theme].themeCategory)
     document.querySelectorAll(".contextmenu-submenu").forEach(submenu => {
         changeElementTheme(submenu, "contextMenuSubmenuBackground", "background", theme)
         changeElementTheme(submenu, "contextMenuSubmenuColor", "color", theme)

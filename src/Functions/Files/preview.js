@@ -1,10 +1,11 @@
 const path = require("path");
 const { updateTheme } = require("../Theme/theme");
-const FILE_TYPES_AVAILABLE_FOR_PREVIEW = ['.pdf', , '.html', '.docx', '.htm', '.xlsx', '.xls', '.xlsb', 'xls', '.ods', '.fods', '.csv']
+const FILE_TYPES_AVAILABLE_FOR_PREVIEW = ['.pdf', , '.html', '.docx', '.htm', '.xlsx', '.xls', '.xlsb', 'xls', '.ods', '.fods', '.csv', '.txt', '.py', '.js']
 const mammoth = require("mammoth")
 const fs = require('fs');
 const XLSX = require('xlsx');
 const URLify = require("../DOM/urlify");
+const hljs = require('highlight.js');
 
 /**
  * Close the preview file
@@ -12,7 +13,6 @@ const URLify = require("../DOM/urlify");
  */
 const closePreviewFile = () => {
     document.getElementById("workspace").classList.remove("workspace-split")
-    console.log(document.querySelectorAll(".preview"))
     document.querySelectorAll(".preview").forEach(element => element.parentNode.removeChild(element))
     document.querySelector(".main-box").style.overflowY = "auto";
 }
@@ -25,62 +25,48 @@ const Preview = (filePath) => {
     closePreviewFile()
     const previewElement = document.createElement("div")
     previewElement.classList.add("preview")
-    if (path.extname(filePath) === ".pdf") {
+    const changePreview = (html) => {
         previewElement.innerHTML = `
-        <div class="preview-header">
-            <span class="preview-path">${path.basename(filePath)}</span>
-            <span class="preview-exit-btn">&times;</span>
-        </div>
-        <object data="${filePath}" type="application/pdf" class="preview-object"><embed src="${filePath}" type="application/pdf" /></object>`
-    } else if (path.extname(filePath) === ".html" || path.extname(filePath) === ".htm") {
-        previewElement.innerHTML = `
-        <div class="preview-header">
-            <span class="preview-path">${path.basename(filePath)}</span>
-            <span class="preview-exit-btn">&times;</span>
-        </div>
-        <iframe src="${filePath}" title="${filePath}" class="preview-object"></iframe>`
-    } else if (['.xlsx', '.xls', '.xlsb', 'xls', '.ods', '.fods', '.csv'].indexOf(path.extname(filePath)) !== -1) {
-        const xlsxData = XLSX.readFile(filePath)
-        let _res = XLSX.utils.sheet_to_html(xlsxData.Sheets[xlsxData.SheetNames[0]])
-        previewElement.innerHTML = `
-        <div class="preview-header">
-            <span class="preview-path">${path.basename(filePath)}</span>
-            <span class="preview-exit-btn">&times;</span>
-        </div>
-        <div class='preview-object' data-type="docx">${URLify(_res)}</div>`
-    }else if (path.extname(filePath) === ".docx") {
-        previewElement.innerHTML = `
-        <div class="preview-header">
-            <span class="preview-path">${path.basename(filePath)}</span>
-            <span class="preview-exit-btn">&times;</span>
-        </div>
-        <iframe src="${filePath}" title="${filePath}" class="preview-object"></iframe>`
-        mammoth.convertToHtml({path: filePath})
-            .then(({ value }) => {
-                console.log(value)
-                previewElement.innerHTML = `
                 <div class="preview-header">
                     <span class="preview-path">${path.basename(filePath)}</span>
                     <span class="preview-exit-btn">&times;</span>
                 </div>
-                <div class='preview-object' data-type="docx">${value}</div>`
-                /*let doc = previewElement.preview.open("text/html", "replace");
-                doc.write(value)
-                doc.close();*/
-                chng()
-            })
-            .done();
-    }
-    const chng = () => {
+                ${html}
+                `
         document.querySelector(".main-box").scrollTop = "0"
         document.querySelector(".main-box").style.overflowY = "hidden";
         document.getElementById("workspace").classList.toggle("workspace-split")
         document.querySelector(".main-box").appendChild(previewElement)
-        document.querySelector(`[data-path="${escape(filePath)}"]`).scrollIntoView()
         previewElement.querySelector(".preview-exit-btn").addEventListener("click", () => closePreviewFile())
     }
-    if (['.pdf', '.html', '.htm', '.xlsx', 'xls', '.xlsb', 'xls', '.ods', '.fods', '.csv'].indexOf(path.extname(filePath)) !== -1) {
-        chng()
+    if (path.extname(filePath) === ".pdf") {
+        changePreview(`<object data="${filePath}" type="application/pdf" class="preview-object"><embed src="${filePath}" type="application/pdf" /></object>`)
+    } else if (path.extname(filePath) === ".html" || path.extname(filePath) === ".htm") {
+        changePreview(`<iframe src="${filePath}" title="${filePath}" class="preview-object"></iframe>`)
+    } else if (['.xlsx', '.xls', '.xlsb', 'xls', '.ods', '.fods', '.csv'].indexOf(path.extname(filePath)) !== -1) {
+        const xlsxData = XLSX.readFile(filePath)
+        let parsedData = XLSX.utils.sheet_to_html(xlsxData.Sheets[xlsxData.SheetNames[0]])
+        changePreview(`<div class='preview-object' data-type="xlsx">${URLify(parsedData)}</div>`)
+    } else if (path.extname(filePath) === ".txt") {
+        changePreview(`<div class='preview-object' data-type="txt">${fs.readFileSync(filePath, "utf8").replaceAll("\n", "<br />")}</div>`)
+    } else if (['.py', '.js'].indexOf(path.extname(filePath)) !== -1) {
+        let language;
+        switch (path.extname(filePath)) {
+            case ".py":
+                language = "python"
+                break;
+            case ".js":
+                language = "javascript"
+                break;
+        }
+        const highlightedCode = language ? hljs.highlight(fs.readFileSync(filePath, "utf8"), {language: language}).value : hljs.highlightAuto(fs.readFileSync(filePath, "utf8")).value
+        changePreview(`<pre class='preview-object' data-type="code"><code>${highlightedCode}</code></pre>`)
+    } else if (path.extname(filePath) === ".docx") {
+        mammoth.convertToHtml({path: filePath})
+            .then(({ value }) => {
+                changePreview(`<div class='preview-object' data-type="docx">${value}</div>`)
+            })
+            .done();
     }
     updateTheme()
 }

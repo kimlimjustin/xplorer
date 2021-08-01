@@ -734,13 +734,15 @@ img{
     display: flex;
 }
 
-.preview-object[data-type="docx"]{
+.preview-object{
     overflow: auto;
     padding: 10px;
+    margin: 0;
 }
 
 .preview-object table{
     width: auto;
+    min-width: 100%;
 }
 
 .preview-object table td, .preview-object table th{
