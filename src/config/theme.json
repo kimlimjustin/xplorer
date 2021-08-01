@@ -1,5 +1,6 @@
 {
     "dark+": {
+        "themeCategory": "dark",
         "textColor": "#4fe0be",
         "fontSize": "18px",
         "fontFamily": "system-ui",
@@ -71,15 +72,16 @@
         "previewExitButtonBackground": "rgb(198, 203, 228)",
         "previewExitButtonColor": "inherit",
         "previewObjectBackground": "#1a1b26",
-        "previewObjectColor": "inherit",
+        "previewObjectColor": "#4fe0be",
         "previewObjectTableBorder": "1px solid #ddd",
         "previewObjectTableRowEvenBackground": "#a2b7ff",
-        "previewObjectTableRowEvenColor": "inherit",
+        "previewObjectTableRowEvenColor": "#1a1b26",
         "previewObjectTableRowOddBackground": "inherit",
         "previewObjectTableRowOddColor": "#a2b7ff"
 
     },
     "dark": {
+        "themeCategory": "dark",
         "textColor": "#87c1ce",
         "fontSize": "18px",
         "fontFamily": "system-ui",
@@ -159,6 +161,7 @@
 
     },
     "light": {
+        "themeCategory": "light",
         "textColor": "#000",
         "fontSize": "18px",
         "fontFamily": "system-ui",
@@ -239,6 +242,7 @@
 
     },
     "light+": {
+        "themeCategory": "light",
         "textColor": "#000",
         "fontSize": "18px",
         "fontFamily": "system-ui",
