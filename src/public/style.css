@@ -758,3 +758,7 @@ img{
     background: var(--preview-object-table-row-odd-bg);
     color: var(--preview-object-table-row-odd-color);
 }
+
+.preview-object[data-type="img"] img{
+    max-width: -webkit-fill-available;
+}
