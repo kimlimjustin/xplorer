@@ -43,11 +43,11 @@ const Restore = (filePath) => {
 const pad = number => number < 10 ? '0' + number : number;
 
 const getDeletionDate = date => date.getFullYear() +
-	'-' + pad(date.getMonth() + 1) +
-	'-' + pad(date.getDate()) +
-	'T' + pad(date.getHours()) +
-	':' + pad(date.getMinutes()) +
-	':' + pad(date.getSeconds());
+    '-' + pad(date.getMonth() + 1) +
+    '-' + pad(date.getDate()) +
+    'T' + pad(date.getHours()) +
+    ':' + pad(date.getMinutes()) +
+    ':' + pad(date.getSeconds());
 
 
 /**
@@ -60,12 +60,12 @@ const Trash = (filePaths) => {
         if (process.platform === "win32") {
             const name = uuid.v4()
             const destination = path.join(WINDOWS_TRASH_FILES_PATH, name);
-	        const trashInfoPath = path.join(WINDOWS_TRASH_INFO_PATH, `${name}.trashinfo`);
+            const trashInfoPath = path.join(WINDOWS_TRASH_INFO_PATH, `${name}.trashinfo`);
             if (!fs.existsSync(WINDOWS_TRASH_FILES_PATH)) {
-                fs.mkdirSync(WINDOWS_TRASH_FILES_PATH, {recursive: true})
+                fs.mkdirSync(WINDOWS_TRASH_FILES_PATH, { recursive: true })
             }
             if (!fs.existsSync(WINDOWS_TRASH_INFO_PATH)) {
-                fs.mkdirSync(WINDOWS_TRASH_INFO_PATH, {recursive: true})
+                fs.mkdirSync(WINDOWS_TRASH_INFO_PATH, { recursive: true })
             }
             mv(filePath, destination, (err) => {
                 if (err) ErrorLog(err)
@@ -86,14 +86,18 @@ const Trash = (filePaths) => {
 const PermanentDelete = (filePaths) => {
     const options = {
         buttons: ["Yes", "No"],
-        message: `Are you sure to permanently delete ${filePaths.length > 1 ? "these files/folders" :"this file/folder"}?`,
+        message: `Are you sure to permanently delete ${filePaths.length > 1 ? "these files/folders" : "this file/folder"}?`,
         title: `Delete file/folder`
     }
     if (dialog.showMessageBoxSync(options) === 0) {
         for (const filePath of filePaths) {
-            fs.unlink(filePath, (err) => {
-                if (err) ErrorLog(err)
-            })
+            if (fs.statSync(filePath).isDirectory()) {
+                fs.rmdirSync(filePath, { recursive: true })
+            } else {
+                fs.unlink(filePath, (err) => {
+                    if (err) ErrorLog(err)
+                })
+            }
             if (fs.existsSync(path.join(INFO_PATH, path.basename(filePath) + '.trashinfo'))) {
                 fs.unlink(path.join(INFO_PATH, path.basename(filePath) + '.trashinfo'), (err) => {
                     if (err) ErrorLog(err)
