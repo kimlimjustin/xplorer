@@ -1,6 +1,6 @@
 const path = require("path");
 const { updateTheme } = require("../Theme/theme");
-const FILE_TYPES_AVAILABLE_FOR_PREVIEW = ['.pdf', , '.html', '.docx', '.htm', '.xlsx', '.xls', '.xlsb', 'xls', '.ods', '.fods', '.csv', '.txt', '.py', '.js', '.bat', '.css', '.c++', '.cpp', '.cc', '.c', '.diff', '.patch', '.go', '.java', '.json', '.php', '.ts', '.tsx', '.jsx']
+const FILE_TYPES_AVAILABLE_FOR_PREVIEW = ['.pdf', , '.html', '.docx', '.htm', '.xlsx', '.xls', '.xlsb', 'xls', '.ods', '.fods', '.csv', '.txt', '.py', '.js', '.bat', '.css', '.c++', '.cpp', '.cc', '.c', '.diff', '.patch', '.go', '.java', '.json', '.php', '.ts', '.tsx', '.jsx', '.jpg', '.png', '.gif', '.bmp', '.jpeg', '.jpe', '.jif', '.jfif', '.jfi', '.webp', '.tiff', '.tif', '.ico', '.svg', '.webp']
 const mammoth = require("mammoth")
 const fs = require('fs');
 const XLSX = require('xlsx');
@@ -50,11 +50,13 @@ const Preview = (filePath) => {
     } else if (path.extname(filePath) === ".txt") {
         changePreview(`<div class='preview-object' data-type="txt">${fs.readFileSync(filePath, "utf8").replaceAll("\n", "<br />")}</div>`)
     } else if (path.extname(filePath) === ".docx") {
-        mammoth.convertToHtml({path: filePath})
+        mammoth.convertToHtml({ path: filePath })
             .then(({ value }) => {
                 changePreview(`<div class='preview-object' data-type="docx">${value}</div>`)
             })
             .done();
+    } else if (['.jpg', '.png', '.gif', '.bmp', '.jpeg', '.jpe', '.jif', '.jfif', '.jfi', '.webp', '.tiff', '.tif', '.ico', '.svg', '.webp'].indexOf(path.extname(filePath)) !== -1) {
+        changePreview(`<div class="preview-object" data-type="img"><img src="${filePath}" /></div>`)
     } else {
         let language;
         switch (path.extname(filePath)) {
