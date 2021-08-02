@@ -708,6 +708,7 @@ img{
 #workspace{
     padding: 1rem;
     height: calc(100% - 2rem);
+    width: -webkit-fill-available;
 }
 
 .preview-path{
