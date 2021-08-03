@@ -15,8 +15,9 @@ const { isHiddenFile } = require("is-hidden-file");
 const formatBytes = require("../Math/filesize");
 const getType = require("./type");
 const { SelectListener } = require("./select");
-const { InfoLog } = require("../Logs/log");
+const { InfoLog, ErrorLog } = require("../Logs/log");
 const { closePreviewFile } = require("./preview");
+const { dialog } = require("@electron/remote");
 
 const WINDOWS_TRASH_FILES_PATH = "C:\\Trash/files";
 const WINDOWS_TRASH_INFO_PATH = "C:\\Trash/info";
@@ -259,6 +260,12 @@ const openDir = async (dir) => {
         }, 500);
 
     } else {
+        if (!fs.existsSync(dir)) {
+            dialog.showMessageBoxSync({ message: `Xplorer can't find '${dir}'. Check the spelling and try again.`, type: "error" })
+            ErrorLog(`${dir} does not exist.`)
+            stopLoading()
+            return;
+        }
         const hideSystemFile = storage.get("preference")?.data?.hideSystemFiles ?? true
         let getAttributesSync;
         if (process.platform === "win32") getAttributesSync = require("fswin").getAttributesSync;
