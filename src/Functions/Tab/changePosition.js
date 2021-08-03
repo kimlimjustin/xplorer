@@ -36,8 +36,7 @@ const changePosition = (newPath) => {
         tabs.tabs[String(tabs.focus)].history.slice(0, tabs.tabs[String(tabs.focus)].currentIndex - 1)
         tabs.tabs[String(tabs.focus)].currentIndex += 1
     }
-
-    document.getElementById(`tab${tabs.focus}`).querySelector("#tab-position").innerText = Translate(path.basename(newPath))
+    document.getElementById(`tab${tabs.focus}`).querySelector("#tab-position").innerText = Translate(path.basename(newPath) === "" ? newPath : path.basename(newPath))
     storage.set('tabs', tabs)
     changeSelectedStatus()
     return
