@@ -22,6 +22,7 @@ const closePreviewFile = () => {
  * @returns {any}
  */
 const Preview = (filePath) => {
+    const { listenOpen } = require("./open");
     closePreviewFile()
     const previewElement = document.createElement("div")
     previewElement.classList.add("preview")
@@ -33,6 +34,8 @@ const Preview = (filePath) => {
                 </div>
                 ${html}
                 `
+
+        listenOpen(previewElement.querySelectorAll("[data-listenOpen]"))
         document.querySelector(".main-box").scrollTop = "0"
         document.querySelector(".main-box").style.overflowY = "hidden";
         document.getElementById("workspace").classList.toggle("workspace-split")
@@ -56,7 +59,7 @@ const Preview = (filePath) => {
             })
             .done();
     } else if (['.jpg', '.png', '.gif', '.bmp', '.jpeg', '.jpe', '.jif', '.jfif', '.jfi', '.webp', '.tiff', '.tif', '.ico', '.svg', '.webp'].indexOf(path.extname(filePath)) !== -1) {
-        changePreview(`<div class="preview-object" data-type="img"><img src="${filePath}" /></div>`)
+        changePreview(`<div class="preview-object" data-type="img"><img src="${filePath}" data-listenOpen data-path="${filePath}" /></div>`)
     } else {
         let language;
         switch (path.extname(filePath)) {
