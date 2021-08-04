@@ -461,6 +461,7 @@ body{
 .empty-dir-notification{
     margin: 0 auto;
     font-weight: bold;
+    text-align: center;
 }
 
 [data-hide-hidden-files="true"] [data-hidden-file]{
