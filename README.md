@@ -4,6 +4,7 @@
 
 <p align="center"><span><b>Xplorer</b>, a customizable, modern and cross-platform file explorer.</span></p>
 <h4 align="center"><span><a href="https://xplorer.vercel.app/community/support/">Support</a></span> • <span><a href="https://github.com/kimlimjustin/xplorer/discussions">Discussion</a></span> • <span><a href="https://xplorer.vercel.app">Documentation</a></span></h4>
+
 ---
 
 ## What is Xplorer?
@@ -21,7 +22,7 @@ So to summary, Xplorer's features contain:
 Xplorer is currently on development progress. Suggest improvement on Xplorer [Discussion](https://github.com/kimlimjustin/xplorer/discussions/) or [contribute into it](https://xplorer.vercel.app/community/Contributing/)!
 
 ### Installation
-Xplorer is still on development progress right now, you'll need to build it by yourself. We will provide binary installer after releasing the alpha version! Stay tuned!
+Xplorer is still on development progress right now, however, you can download the installer [here](https://drive.google.com/drive/folders/1n3V-bznvXg-lVZS_5UHMQybGIOamlSUE?usp=sharing) or by developing it locally. We will provide binary installer after releasing the alpha version! Stay tuned!
 
 ### LICENSE
 [Apache-2.0](https://github.com/kimlimjustin/xplorer/blob/master/LICENSE)
