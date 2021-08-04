@@ -761,4 +761,5 @@ img{
 
 .preview-object[data-type="img"] img{
     max-width: -webkit-fill-available;
+    cursor: pointer;
 }
