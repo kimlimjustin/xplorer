@@ -73,6 +73,7 @@
     "is-hidden-file": "1.1.2",
     "jest": "^27.0.4",
     "mammoth": "^1.4.17",
+    "marked": "^2.1.3",
     "mv": "^2.1.1",
     "patch-package": "^6.4.7",
     "platform-folders": "^0.5.4",
