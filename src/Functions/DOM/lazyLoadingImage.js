@@ -21,7 +21,7 @@ const isElementInViewport = el => {
  * @returns {any}
  */
 const LAZY_LOAD = () => {
-    const MAIN_ELEMENT = document.getElementById("main");
+    const MAIN_ELEMENT = document.getElementById("workspace");
     // Only show image when its visible in viewport to reduce latency
     MAIN_ELEMENT.querySelectorAll("img").forEach(img => {
 

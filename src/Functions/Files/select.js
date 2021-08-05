@@ -79,7 +79,7 @@ const Initializer = () => {
      * @returns {any}
      */
     const selectFirstFile = () => {
-        const firstFileElement = document.getElementById("main").querySelector(`.file${isHiddenFile ? ":not([data-hidden-file])" : ""}`)
+        const firstFileElement = document.getElementById("workspace").querySelector(`.file${isHiddenFile ? ":not([data-hidden-file])" : ""}`)
         firstFileElement.classList.add("selected")
         latestSelected = firstFileElement
     }
@@ -217,7 +217,7 @@ const SelectListener = (elements) => {
             Select(element, e.ctrlKey, e.shiftKey, elements)
         })
     })
-    document.getElementById("main").addEventListener("click", e => {
+    document.getElementById("workspace").addEventListener("click", e => {
         if (!e.target.className.split(' ').some(function (c) { return /file/.test(c); })) {
             unselectAllSelected()
             latestSelected = null;

@@ -14,6 +14,12 @@ module.exports = {
   projectName: 'xplorer', // Usually your repo name.
   trailingSlash: true,
   themeConfig: {
+    announcementBar: {
+      id: 'support_us',
+      content: '⭐️ If you like Xplorer, give it a star on <a href="https://github.com/kimlimjustin/xplorer">GitHub!</a> ⭐',
+      backgroundColor: "#fafbfc",
+      textColor: "#091E42"
+    },
     navbar: {
       title: 'Xplorer',
       logo: {
@@ -28,6 +34,7 @@ module.exports = {
           label: 'Tutorial',
         },
         { to: '/blog', label: 'Blog', position: 'left' },
+        { to: '/community/support', label: 'Community', position: 'left' },
         {
           href: 'https://github.com/kimlimjustin/xplorer',
           label: 'GitHub',
@@ -36,7 +43,6 @@ module.exports = {
       ],
     },
     footer: {
-      style: 'dark',
       links: [
         {
           title: 'Docs',
@@ -86,6 +92,42 @@ module.exports = {
     ],
   ],
   plugins: [
-    'plugin-image-zoom'
+    'plugin-image-zoom',
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        path: 'community',
+        id: 'community',
+        routeBasePath: 'community'
+      }
+    ],
+    [
+      '@docusaurus/plugin-pwa',
+      {
+        debug: true,
+        offlineModeActivationStrategies: [
+          'appInstalled',
+          'standalone',
+          'queryString',
+        ],
+        pwaHead: [
+          {
+            tagName: 'link',
+            rel: 'icon',
+            href: '/img/icon.png',
+          },
+          {
+            tagName: 'link',
+            rel: 'manifest',
+            href: '/manifest.json', // your PWA manifest
+          },
+          {
+            tagName: 'meta',
+            name: 'theme-color',
+            content: 'rgb(37, 194, 160)',
+          },
+        ],
+      }
+    ],
   ],
 };

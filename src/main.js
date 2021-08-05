@@ -27,6 +27,10 @@ function createWindow() {
    })
 
    win.loadFile('src/public/index.html')
+   win.webContents.on('new-window', (e, url) => {
+      e.preventDefault()
+      require('electron').shell.openExternal(url);
+   })
 }
 
 app.allowRendererProcessReuse = false
