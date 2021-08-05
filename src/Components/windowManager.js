@@ -2,6 +2,7 @@ const { openDir } = require('../Functions/Files/open')
 const storage = require('electron-json-storage-sync')
 const remote = require("@electron/remote")
 const createSidebar = require('./sidebar')
+const { closePreviewFile } = require('../Functions/Files/preview')
 
 /**
  * Reload the page
@@ -11,6 +12,7 @@ const reload = async () => {
     const tabs = storage.get('tabs')?.data
     await createSidebar()
     openDir(tabs.tabs[tabs.focus].position);
+    closePreviewFile()
 }
 
 /**

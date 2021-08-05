@@ -13,6 +13,7 @@ const Cut = require("../Functions/Files/cut");
 const { getSelected } = require("../Functions/Files/select");
 const Pin = require("../Functions/Files/pin");
 const { Restore, Trash, PermanentDelete } = require("../Functions/Files/trash");
+const { FILE_TYPES_AVAILABLE_FOR_PREVIEW, Preview } = require("../Functions/Files/preview");
 let vscodeInstalled = false
 try {
     execSync("code --version")
@@ -27,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
 })
 
 const ContextMenuInner = (target, coorX, coorY, openDir) => {
-    if (target.classList.contains("home-section")) target = document.getElementById("main") // If context menu target is on home-section, use main element as target instead.
+    if (target.classList.contains("home-section")) target = document.getElementById("workspace") // If context menu target is on home-section, use main element as target instead.
     while (!target.dataset.path) {
         target = target.parentNode
     }
@@ -41,6 +42,7 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
         [
             { "menu": "Open", "role": "open", "icon": "open" },
             { "menu": "Open in new tab", "visible": target?.dataset?.isdir === 'true', "icon": "open in new tab", "role": "openInNewTab" },
+            { "menu": "Preview", "visible": FILE_TYPES_AVAILABLE_FOR_PREVIEW.indexOf(path.extname(target?.dataset?.path)) !== -1, "shortcut": "Ctrl+P", "icon": "preview", "role": "preview" }
         ],
         [
             { "menu": "Unpin from Sidebar", "icon": "pin", "role": "pin" }
@@ -58,7 +60,7 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
             { "menu": "Open in new tab", "visible": target?.dataset?.isdir === 'true', "role": "openInNewTab", "icon": "open in new tab" },
             { "menu": "Open in terminal", "visible": target?.dataset?.isdir === "true", "role": "reveal", "shortcut": "Alt+T", "icon": "terminal" },
             { "menu": "Open in vscode", "role": "code", "visible": vscodeInstalled, "shortcut": "Shift+Enter", "icon": "vscode" },
-            { "menu": "Preview", "visible": target?.dataset?.isdir !== "false", "shortcut": "Ctrl+P", "icon": "preview" }
+            { "menu": "Preview", "visible": FILE_TYPES_AVAILABLE_FOR_PREVIEW.indexOf(path.extname(target?.dataset?.path)) !== -1, "shortcut": "Ctrl+P", "icon": "preview", "role": "preview" }
         ],
         [
             { "menu": "Cut", "shortcut": "Ctrl+X", "icon": "cut", "role": "cut" },
@@ -183,7 +185,7 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
     } else if (isTrash) {
         MenuToElements(TrashMenu)
     } else {
-        if (target === document.getElementById("main")) MenuToElements(BodyMenu)
+        if (target === document.getElementById("workspace")) MenuToElements(BodyMenu)
         else if (target?.dataset?.path) MenuToElements(FileMenu)
     }
 
@@ -328,7 +330,7 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
 
     element.addEventListener("contextmenu", e => {
         // Disable context menu if current path is home and on windows
-        if (window.platform === "win32" && (!document.getElementById("main").dataset?.path || document.getElementById("main").dataset?.path === "Home")) return;
+        if (window.platform === "win32" && (!document.getElementById("workspace").dataset?.path || document.getElementById("workspace").dataset?.path === "Home")) return;
         let coorX = e.pageX;
         let coorY = e.pageY;
 
@@ -463,8 +465,10 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
                         Trash(paths)
                         break;
                     case "unlink":
-                        console.log(target)
                         PermanentDelete([unescape(target.dataset.realPath)])
+                        break;
+                    case "preview":
+                        Preview(filePath)
                         break;
                 }
             })

@@ -19,7 +19,7 @@ const Recent = async () => {
     const layout = storage.get("layout")?.data?.["Recent"] ?? storage.get("preference")?.data?.layout ?? "s"
     const sort = storage.get("sort")?.data?.["Recent"] ?? 'A'
     // Get the main element
-    const MAIN_ELEMENT = document.getElementById("main");
+    const MAIN_ELEMENT = document.getElementById("workspace");
     MAIN_ELEMENT.innerHTML = "";
     if (MAIN_ELEMENT.classList.contains('empty-dir-notification')) MAIN_ELEMENT.classList.remove('empty-dir-notification') // Remove class if exist
     // Get recent files list

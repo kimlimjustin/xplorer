@@ -12,7 +12,8 @@ const Copy = require("../Functions/Files/copy");
 const Cut = require("../Functions/Files/cut");
 const Paste = require("../Functions/Files/paste");
 const Pin = require("../Functions/Files/pin");
-const { Trash } = require("../Functions/Files/trash");
+const { Trash, PermanentDelete } = require("../Functions/Files/trash");
+const { Preview, FILE_TYPES_AVAILABLE_FOR_PREVIEW } = require("../Functions/Files/preview");
 let vscodeInstalled = false
 try {
    execSync("code --version")
@@ -126,7 +127,7 @@ const Shortcut = () => {
          toggleHideHiddenFilesValue()
          const hideHiddenFiles = getHideHiddenFilesValue()
          storage.set('preference', Object.assign({}, userPreference, { hideHiddenFiles }))
-         document.getElementById("main").dataset.hideHiddenFiles = hideHiddenFiles
+         document.getElementById("workspace").dataset.hideHiddenFiles = hideHiddenFiles
          document.getElementById("show-hidden-files").checked = !hideHiddenFiles
       }
       // Open in terminal shortcut (Alt + T)
@@ -170,13 +171,25 @@ const Shortcut = () => {
          Pin(filePaths)
       }
       else if (e.key === "Delete") {
-         let filePaths = []
-         for (const element of getSelected()) {
-            filePaths.push(unescape(element.dataset.path))
+         if (e.shiftKey) {
+            let filePaths = []
+            for (const element of getSelected()) {
+               filePaths.push(unescape(element.dataset.path))
+            }
+            PermanentDelete(filePaths)
+         } else {
+            let filePaths = []
+            for (const element of getSelected()) {
+               filePaths.push(unescape(element.dataset.path))
+            }
+            Trash(filePaths)
          }
-         Trash(filePaths)
       }
-
+      else if (e.ctrlKey && e.key === "o") {
+         if (FILE_TYPES_AVAILABLE_FOR_PREVIEW.indexOf(path.extname(selectedFilePath)) !== -1) {
+            Preview(selectedFilePath)
+         }
+      }
    }
    document.addEventListener("keyup", ShortcutHandler)
    window.addEventListener("beforeunload", () => {

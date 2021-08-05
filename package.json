@@ -5,7 +5,7 @@
   "author": "Justin Maximillian Kimlim <kimlimjustin@gmail.com>",
   "main": "src/main.js",
   "icon": "build/icon.icns",
-  "homepage": "https://github.com/kimlimjustin/xplorer#readme",
+  "homepage": "https://xplorer.vercel.app",
   "repository": {
     "type": "git",
     "url": "https://github.com/kimlimjustin/xplorer.git"
@@ -69,13 +69,16 @@
     "electron-log": "^4.3.5",
     "electron-prompt": "^1.6.2",
     "fswin": "^3.21.107",
+    "highlight.js": "^11.1.0",
     "is-hidden-file": "1.1.2",
     "jest": "^27.0.4",
+    "mammoth": "^1.4.17",
     "mv": "^2.1.1",
     "patch-package": "^6.4.7",
     "platform-folders": "^0.5.4",
     "postinstall-postinstall": "^2.1.0",
     "trash": "^7.2.0",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "xlsx": "^0.17.0"
   }
 }
