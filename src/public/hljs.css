@@ -109,7 +109,7 @@
     color: #d8d8d8;
 }
 [data-theme-category = "light"] .hljs-comment {
-    color: #b8b8b8;
+    color: #9b5ad6;
 }
 [data-theme-category = "light"] .hljs-tag {
     color: #585858;
@@ -165,7 +165,7 @@
 [data-theme-category = "light"] .hljs-section,
 [data-theme-category = "light"] .hljs-title.function_,
 [data-theme-category = "light"] .ruby .hljs-property {
-    color: #7cafc2;
+    color: #5b0af9;
 }
 [data-theme-category = "light"] .diff .hljs-meta,
 [data-theme-category = "light"] .hljs-keyword,
