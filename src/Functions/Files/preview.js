@@ -1,11 +1,12 @@
 const path = require("path");
 const { updateTheme } = require("../Theme/theme");
-const FILE_TYPES_AVAILABLE_FOR_PREVIEW = ['.pdf', , '.html', '.docx', '.htm', '.xlsx', '.xls', '.xlsb', 'xls', '.ods', '.fods', '.csv', '.txt', '.py', '.js', '.bat', '.css', '.c++', '.cpp', '.cc', '.c', '.diff', '.patch', '.go', '.java', '.json', '.php', '.ts', '.tsx', '.jsx', '.jpg', '.png', '.gif', '.bmp', '.jpeg', '.jpe', '.jif', '.jfif', '.jfi', '.webp', '.tiff', '.tif', '.ico', '.svg', '.webp']
+const FILE_TYPES_AVAILABLE_FOR_PREVIEW = ['.pdf', , '.html', '.docx', '.htm', '.xlsx', '.xls', '.xlsb', 'xls', '.ods', '.fods', '.csv', '.txt', '.py', '.js', '.bat', '.css', '.c++', '.cpp', '.cc', '.c', '.diff', '.patch', '.go', '.java', '.json', '.php', '.ts', '.tsx', '.jsx', '.jpg', '.png', '.gif', '.bmp', '.jpeg', '.jpe', '.jif', '.jfif', '.jfi', '.webp', '.tiff', '.tif', '.ico', '.svg', '.webp', '.md']
 const mammoth = require("mammoth")
 const fs = require('fs');
 const XLSX = require('xlsx');
 const { URLify, eURLify } = require("../DOM/urlify");
 const hljs = require('highlight.js');
+const marked = require("marked");
 
 /**
  * Close the preview file
@@ -22,6 +23,7 @@ const closePreviewFile = () => {
  * @returns {any}
  */
 const Preview = (filePath) => {
+    console.log(filePath)
     const { listenOpen } = require("./open");
     closePreviewFile()
     const previewElement = document.createElement("div")
@@ -60,6 +62,9 @@ const Preview = (filePath) => {
             .done();
     } else if (['.jpg', '.png', '.gif', '.bmp', '.jpeg', '.jpe', '.jif', '.jfif', '.jfi', '.webp', '.tiff', '.tif', '.ico', '.svg', '.webp'].indexOf(path.extname(filePath)) !== -1) {
         changePreview(`<div class="preview-object" data-type="img"><img src="${filePath}" data-listenOpen data-path="${filePath}" /></div>`)
+    } else if (path.extname(filePath) === ".md") {
+        const parsedData = marked(fs.readFileSync(filePath, 'utf8'))
+        changePreview(`<div class="preview-object" data-type="md">${parsedData}</div>`)
     } else {
         let language;
         switch (path.extname(filePath)) {
