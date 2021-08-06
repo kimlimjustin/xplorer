@@ -760,7 +760,7 @@ img{
     color: var(--preview-object-table-row-odd-color);
 }
 
-.preview-object[data-type="img"] img{
+.preview-object[data-type="img"] img, .preview-object[data-type="md"] img{
     max-width: -webkit-fill-available;
     cursor: pointer;
 }
