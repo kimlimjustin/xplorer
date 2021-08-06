@@ -760,6 +760,14 @@ img{
     color: var(--preview-object-table-row-odd-color);
 }
 
+.preview-object[data-type="img"], .preview-object[data-type="video"]{
+    display: flex;
+}
+
+.preview-object[data-type="img"] img, .preview-object[data-type="video"] video{
+    align-self: center;
+}
+
 .preview-object[data-type="img"] img, .preview-object[data-type="md"] img{
     max-width: -webkit-fill-available;
     cursor: pointer;
