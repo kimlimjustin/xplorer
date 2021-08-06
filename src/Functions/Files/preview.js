@@ -4,7 +4,7 @@ const FILE_TYPES_AVAILABLE_FOR_PREVIEW = ['.pdf', , '.html', '.docx', '.htm', '.
 const mammoth = require("mammoth")
 const fs = require('fs');
 const XLSX = require('xlsx');
-const URLify = require("../DOM/urlify");
+const { URLify, eURLify } = require("../DOM/urlify");
 const hljs = require('highlight.js');
 
 /**
@@ -54,8 +54,8 @@ const Preview = (filePath) => {
         changePreview(`<div class='preview-object' data-type="txt">${fs.readFileSync(filePath, "utf8").replaceAll("\n", "<br />")}</div>`)
     } else if (path.extname(filePath) === ".docx") {
         mammoth.convertToHtml({ path: filePath })
-            .then(({ value }) => {
-                changePreview(`<div class='preview-object' data-type="docx">${value}</div>`)
+        .then(({ value }) => {
+                changePreview(eURLify(`<div class='preview-object' data-type="docx">${value}</div>`))
             })
             .done();
     } else if (['.jpg', '.png', '.gif', '.bmp', '.jpeg', '.jpe', '.jif', '.jfif', '.jfi', '.webp', '.tiff', '.tif', '.ico', '.svg', '.webp'].indexOf(path.extname(filePath)) !== -1) {
