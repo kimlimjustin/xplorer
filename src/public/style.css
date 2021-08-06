@@ -764,3 +764,7 @@ img{
     max-width: -webkit-fill-available;
     cursor: pointer;
 }
+
+.preview-object[data-type="video"] video{
+    max-width: -webkit-fill-available;
+}
