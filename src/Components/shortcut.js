@@ -14,6 +14,7 @@ const Paste = require("../Functions/Files/paste");
 const Pin = require("../Functions/Files/pin");
 const { Trash, PermanentDelete } = require("../Functions/Files/trash");
 const { Preview, FILE_TYPES_AVAILABLE_FOR_PREVIEW } = require("../Functions/Files/preview");
+const windowGUID = require("../Constants/windowGUID");
 let vscodeInstalled = false
 try {
    execSync("code --version")
@@ -46,7 +47,7 @@ const Shortcut = () => {
       e.preventDefault()
       const selectedFilePath = unescape(getSelected()?.[0]?.dataset?.path)
       const isDir = getSelected()?.[0]?.dataset.isdir === "true"
-      const tabs = storage.get('tabs')?.data
+      const tabs = storage.get(`tabs-${windowGUID}`)?.data
       const focusingPath = tabs.tabs[tabs.focus].position === "Home" || tabs.tabs[tabs.focus].position === path.join(os.homedir(), "Home") ? os.homedir() : tabs.tabs[tabs.focus].position
       // Select all shortcut (Ctrl + A)
       if (e.key === "a" && e.ctrlKey) {
@@ -100,7 +101,7 @@ const Shortcut = () => {
       }
       // Exit tab shortcut (Ctrl+E)
       else if (e.ctrlKey && e.key === "e") {
-         const tabs = storage.get('tabs')?.data
+         const tabs = storage.get(`tabs-${windowGUID}`)?.data
          if (document.querySelectorAll(".tab").length === 1) {
             const electronWindow = remote.BrowserWindow.getFocusedWindow()
             electronWindow.close()
@@ -110,7 +111,7 @@ const Shortcut = () => {
             tabs.focusHistory = tabs.focusHistory.filter(tabIndex => String(tabIndex) !== tabs.focus)
             tabs.focus = String(tabs.focusHistory[tabs.focusHistory.length - 1])
             delete tabs.tabs[tabs.focus]
-            storage.set("tabs", tabs)
+            storage.set(`tabs-${windowGUID}`, tabs)
          }
       }
       // Previous tab shortcut (Alt+Arrow Left)

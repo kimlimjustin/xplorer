@@ -2,6 +2,7 @@ const storage = require('electron-json-storage-sync')
 const Translate = require('../../Components/multilingual')
 const { changeSelectedStatus } = require('../../Components/shortcut')
 const path = require("path");
+const windowGUID = require('../../Constants/windowGUID');
 
 /**
  * Change current tab position
@@ -12,7 +13,7 @@ const changePosition = (newPath) => {
     document.querySelector(".path-navigator").value = newPath
     document.getElementById("workspace").dataset.path = escape(newPath)
 
-    const tabs = storage.get('tabs')?.data
+    const tabs = storage.get(`tabs-${windowGUID}`)?.data
     const _focusingTab = tabs.tabs[String(tabs.focus)]
     tabs.tabs[String(tabs.focus)].position = newPath
 
@@ -37,7 +38,7 @@ const changePosition = (newPath) => {
         tabs.tabs[String(tabs.focus)].currentIndex += 1
     }
     document.getElementById(`tab${tabs.focus}`).querySelector("#tab-position").innerText = Translate(path.basename(newPath) === "" ? newPath : path.basename(newPath))
-    storage.set('tabs', tabs)
+    storage.set(`tabs-${windowGUID}`, tabs)
     changeSelectedStatus()
     return
 }
