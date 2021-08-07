@@ -1,7 +1,9 @@
 const { app, BrowserWindow, Menu, screen, ipcMain } = require('electron')
 const path = require('path')
 const storage = require('electron-json-storage-sync')
+const windowGUID = require('./Constants/windowGUID')
 require('@electron/remote/main').initialize()
+
 
 try {
    require('electron-reloader')(module)
@@ -46,7 +48,7 @@ app.whenReady().then(() => {
 })
 
 app.on('window-all-closed', () => {
-   storage.remove('tabs')
+   storage.remove(`tabs-${windowGUID}`)
    if (process.platform !== 'darwin') {
       app.quit()
    }

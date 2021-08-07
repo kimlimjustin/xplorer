@@ -18,6 +18,7 @@ const { SelectListener } = require("./select");
 const { InfoLog, ErrorLog } = require("../Logs/log");
 const { closePreviewFile } = require("./preview");
 const { dialog } = require("@electron/remote");
+const windowGUID = require("../../Constants/windowGUID");
 
 const WINDOWS_TRASH_FILES_PATH = "C:\\Trash/files";
 const WINDOWS_TRASH_INFO_PATH = "C:\\Trash/info";
@@ -248,7 +249,7 @@ const openDir = async (dir) => {
         })
         let focusingPath; // Watch if focusing path changes
         setInterval(() => {
-            const tabs = storage.get('tabs')?.data
+            const tabs = storage.get(`tabs-${windowGUID}`)?.data
             const _focusingPath = tabs.tabs[tabs.focus]?.position
             if (focusingPath === undefined) {
                 focusingPath = _focusingPath
@@ -306,7 +307,7 @@ const openDir = async (dir) => {
 
         let focusingPath; // Watch if focusing path changes
         setInterval(() => {
-            const tabs = storage.get('tabs')?.data
+            const tabs = storage.get(`tabs-${windowGUID}`)?.data
             const _focusingPath = tabs.tabs[tabs.focus]?.position
             if (focusingPath === undefined) {
                 focusingPath = _focusingPath
