@@ -1,7 +1,6 @@
 const { app, BrowserWindow, Menu, screen, ipcMain } = require('electron')
 const path = require('path')
 const storage = require('electron-json-storage-sync')
-const windowGUID = require('./Constants/windowGUID')
 require('@electron/remote/main').initialize()
 
 
@@ -11,6 +10,11 @@ try {
 
 
 console.log(process.argv)
+
+let id;
+ipcMain.on('GUID', (e, arg) => {
+   id = arg;
+})
 
 // Create a new window
 function createWindow() {
@@ -48,7 +52,7 @@ app.whenReady().then(() => {
 })
 
 app.on('window-all-closed', () => {
-   storage.remove(`tabs-${windowGUID}`)
+   storage.remove(`tabs-${id}`)
    if (process.platform !== 'darwin') {
       app.quit()
    }
