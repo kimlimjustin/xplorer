@@ -14,6 +14,7 @@ const { getSelected } = require("../Functions/Files/select");
 const Pin = require("../Functions/Files/pin");
 const { Restore, Trash, PermanentDelete } = require("../Functions/Files/trash");
 const { FILE_TYPES_AVAILABLE_FOR_PREVIEW, Preview } = require("../Functions/Files/preview");
+const windowGUID = require("../Constants/windowGUID");
 let vscodeInstalled = false
 try {
     execSync("code --version")
@@ -215,7 +216,7 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
                     const files = document.querySelectorAll(".file")
                     const layout = storage.get('layout')?.data ?? {}
                     const sort = storage.get('layout')?.data ?? {}
-                    const tabs = storage.get("tabs")?.data
+                    const tabs = storage.get(`tabs-${windowGUID}`)?.data
                     let currentPath = tabs.tabs[tabs.focus].position
                     if (currentPath === path.join(os.homedir(), "Home") || currentPath === "xplorer://Home" || currentPath === "Home") currentPath = os.homedir()
                     console.log(currentPath)
@@ -349,7 +350,7 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
                 while (!target.dataset.path) {
                     target = target.parentNode
                 }
-                const tabs = storage.get("tabs")?.data
+                const tabs = storage.get(`tabs-${windowGUID}`)?.data
                 const focusingPath = tabs.tabs[tabs.focus].position === "Home" || tabs.tabs[tabs.focus].position === path.join(os.homedir(), "Home") ? os.homedir() : tabs.tabs[tabs.focus].position
                 const filePath = unescape(target.dataset.path)
                 const { reload } = require("./windowManager");

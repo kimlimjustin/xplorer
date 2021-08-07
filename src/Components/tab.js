@@ -2,15 +2,17 @@ const { updateTheme } = require('../Functions/Theme/theme');
 const remote = require('@electron/remote');
 const storage = require('electron-json-storage-sync');
 const Translate = require('./multilingual');
+const windowGUID = require('../Constants/windowGUID');
 
 /**
  * Function to create new tab
  * @param {any} path - path to be focused on the new tab
  * @returns {any}
  */
+
 const createNewTab = (path) => {
     const createNewTabElement = document.querySelector(".create-new-tab")
-    let tabsInfo = storage.get("tabs")?.data // Fetch latest tabs information
+    let tabsInfo = storage.get(`tabs-${windowGUID}`)?.data // Fetch latest tabs information
 
     const newTab = document.createElement("div");
     newTab.classList.add('tab');
@@ -29,11 +31,11 @@ const createNewTab = (path) => {
             const electronWindow = remote.BrowserWindow.getFocusedWindow()
             electronWindow.close()
         } else {
-            const tabs = storage.get("tabs")?.data
+            const tabs = storage.get(`tabs-${windowGUID}`)?.data
             tabs.focusHistory = tabs.focusHistory.filter(tabIndex => String(tabIndex) !== String(newTab.dataset.tabIndex))
             if (String(tabsInfo.focus) === String(newTab.dataset.tabIndex)) tabs.focus = String(tabs.focusHistory[tabs.focusHistory.length - 1])
             delete tabs.tabs[newTab.dataset.tabIndex]
-            storage.set("tabs", tabs)
+            storage.set(`tabs-${windowGUID}`, tabs)
             newTab.parentElement.removeChild(newTab)
 
             const { openDir } = require("../Functions/Files/open");
@@ -50,7 +52,7 @@ const createNewTab = (path) => {
     tabsInfo.tabs[String(tabsInfo.latestIndex)] = { position: path || "Home", history: ["Home"], currentIndex: -1 }
     tabsInfo.focus = String(tabsInfo.latestIndex)
     tabsInfo.focusHistory.push(tabsInfo.latestIndex)
-    storage.set('tabs', tabsInfo)
+    storage.set(`tabs-${windowGUID}`, tabsInfo)
 
     const { openDir } = require("../Functions/Files/open");
     openDir(path || "Home")
@@ -67,11 +69,11 @@ const createNewTab = (path) => {
  * @returns {any}
  */
 const SwitchTab = (tabIndex) => {
-    const tabs = storage.get('tabs')?.data
+    const tabs = storage.get(`tabs-${windowGUID}`)?.data
     tabs.focus = String(tabIndex)
     tabs.focusHistory.push(parseInt(tabIndex))
     tabs.tabs[tabs.focus].currentIndex -= 1
-    storage.set('tabs', tabs)
+    storage.set(`tabs-${windowGUID}`, tabs)
     const { openDir } = require("../Functions/Files/open");
     openDir(tabs.tabs[tabIndex].position)
 }
@@ -81,14 +83,14 @@ const SwitchTab = (tabIndex) => {
      * @returns {any}
      */
 const goBack = () => {
-    const tabs = storage.get('tabs')?.data;
+    const tabs = storage.get(`tabs-${windowGUID}`)?.data;
     const { openDir } = require("../Functions/Files/open");
     const _focusingTab = tabs.tabs[tabs.focus]
     if (_focusingTab.currentIndex > 0) {
         tabs.tabs[tabs.focus].currentIndex -= 1
         tabs.tabs[tabs.focus].position = _focusingTab.history[_focusingTab.currentIndex]
 
-        storage.set("tabs", tabs)
+        storage.set(`tabs-${windowGUID}`, tabs)
         openDir(_focusingTab.history[_focusingTab.currentIndex])
     }
 }
@@ -98,16 +100,16 @@ const goBack = () => {
  * @returns {any}
  */
 const goForward = () => {
-    const tabs = storage.get('tabs')?.data;
+    const tabs = storage.get(`tabs-${windowGUID}`)?.data;
     const { openDir } = require("../Functions/Files/open");
     const _focusingTab = tabs.tabs[tabs.focus]
     if (_focusingTab.currentIndex >= 0 && _focusingTab.history?.[_focusingTab.currentIndex + 1]) {
         tabs.tabs[tabs.focus].currentIndex += 1
         tabs.tabs[tabs.focus].position = _focusingTab.history[_focusingTab.currentIndex]
 
-        storage.set("tabs", tabs)
+        storage.set(`tabs-${windowGUID}`, tabs)
         openDir(_focusingTab.history[_focusingTab.currentIndex])
-        storage.set("tabs", tabs)
+        storage.set(`tabs-${windowGUID}`, tabs)
     }
 }
 /**
@@ -117,7 +119,7 @@ const goForward = () => {
 const Tab = () => {
     let tabsInfo = { focus: "1", tabs: { 1: { position: "Home", history: ["Home"], currentIndex: 0 } }, focusHistory: [1], latestIndex: 1 } // default tabs information
     // Store default tabs information into local storage
-    storage.set("tabs", tabsInfo)
+    storage.set(`tabs-${windowGUID}`, tabsInfo)
 
     // Add close tab button
     document.querySelectorAll(".tab").forEach((tab, index) => {
@@ -134,11 +136,11 @@ const Tab = () => {
                 electronWindow.close()
             } else {
                 tab.parentElement.removeChild(tab)
-                const tabs = storage.get('tabs')?.data
+                const tabs = storage.get(`tabs-${windowGUID}`)?.data
                 tabs.focusHistory = tabs.focusHistory.filter(tabIndex => tabIndex !== index + 1)
                 tabs.focus = String(tabs.focusHistory[tabs.focusHistory.length - 1])
                 delete tabs.tabs[index + 1]
-                storage.set("tabs", tabs)
+                storage.set(`tabs-${windowGUID}`, tabs)
 
                 const { openDir } = require("../Functions/Files/open");
                 openDir(tabs.tabs[tabs.focus].position)

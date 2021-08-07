@@ -4,6 +4,7 @@ const formatBytes = require('../Functions/Math/filesize.js');
 const Translate = require("../Components/multilingual");
 const getPreview = require('../Functions/preview/preview');
 const getDriveBasePath = require('../Functions/Files/basePath');
+const windowGUID = require('../Constants/windowGUID')
 
 /**
  * Function to get array of drives detected on the system
@@ -72,7 +73,7 @@ const Drives = async () => {
 
     const drives = await getDrives()
 
-    const tabs = storage.get('tabs')?.data
+    const tabs = storage.get(`tabs-${windowGUID}`)?.data
     const focusingPath = tabs.tabs[tabs.focus].position
 
     if (focusingPath === "Home" || focusingPath === path.join(os.homedir(), 'Home') || focusingPath === "xplorer://Home") {
