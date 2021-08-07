@@ -3,12 +3,18 @@ const path = require('path')
 const storage = require('electron-json-storage-sync')
 require('@electron/remote/main').initialize()
 
+
 try {
    require('electron-reloader')(module)
 } catch (_) { }
 
 
 console.log(process.argv)
+
+let id;
+ipcMain.on('GUID', (e, arg) => {
+   id = arg;
+})
 
 // Create a new window
 function createWindow() {
@@ -46,7 +52,7 @@ app.whenReady().then(() => {
 })
 
 app.on('window-all-closed', () => {
-   storage.remove('tabs')
+   storage.remove(`tabs-${id}`)
    if (process.platform !== 'darwin') {
       app.quit()
    }

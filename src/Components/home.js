@@ -14,6 +14,7 @@ const { createContextMenus } = require('./contextMenu.js');
 const { isHiddenFile } = require('is-hidden-file');
 const getType = require('../Functions/Files/type.js');
 const formatBytes = require('../Functions/Math/filesize.js');
+const windowGUID = require('../Constants/windowGUID')
 
 /**
  * Create home files section (only for linux)
@@ -91,7 +92,7 @@ const homeFiles = (callback) => {
 
     let focusingPath; // Watch if focusing path changes
     setInterval(() => {
-        const tabs = storage.get('tabs')?.data
+        const tabs = storage.get(`tabs-${windowGUID}`)?.data
         const _focusingPath = tabs.tabs[tabs.focus]?.position
         if (focusingPath === undefined) {
             focusingPath = _focusingPath
@@ -151,7 +152,7 @@ const Home = async (_callback) => {
                 updateTheme()
             }
         }
-        const tabs = storage.get('tabs')?.data
+        const tabs = storage.get(`tabs-${windowGUID}`)?.data
         const focusingPath = tabs.tabs[tabs.focus]?.position
         if (focusingPath !== "Home" && focusingPath !== path.join(os.homedir(), 'Home')) {
             clearInterval(listenDrives)

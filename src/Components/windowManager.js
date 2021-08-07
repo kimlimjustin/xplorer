@@ -3,13 +3,14 @@ const storage = require('electron-json-storage-sync')
 const remote = require("@electron/remote")
 const createSidebar = require('./sidebar')
 const { closePreviewFile } = require('../Functions/Files/preview')
+const windowGUID = require('../Constants/windowGUID')
 
 /**
  * Reload the page
  * @returns {any}
  */
 const reload = async () => {
-    const tabs = storage.get('tabs')?.data
+    const tabs = storage.get(`tabs-${windowGUID}`)?.data
     await createSidebar()
     openDir(tabs.tabs[tabs.focus].position);
     closePreviewFile()
