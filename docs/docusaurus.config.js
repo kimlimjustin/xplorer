@@ -13,6 +13,10 @@ module.exports = {
   organizationName: 'kimlimjustin', // Usually your GitHub org/user name.
   projectName: 'xplorer', // Usually your repo name.
   trailingSlash: true,
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en', 'id'],
+  },
   themeConfig: {
     announcementBar: {
       id: 'support_us',
@@ -35,6 +39,7 @@ module.exports = {
         },
         { to: '/blog', label: 'Blog', position: 'left' },
         { to: '/community/support', label: 'Community', position: 'left' },
+        { type: 'localeDropdown', position: 'right' },
         {
           href: 'https://github.com/kimlimjustin/xplorer',
           label: 'GitHub',
