@@ -1,35 +1,35 @@
-# Shortcuts
+# Jalan Pintas
 
-Key | Shortcut
+Key | Jalan Pintas
 --- | --- 
-`Ctrl + W` | Exit Xplorer
-`Ctrl + E` | Close Tab
-`Ctrl + C` | Copy
-`Ctrl + V` | Paste
-`Ctrl + X` | Cut
-`Ctrl + A` | Select All
+`Ctrl + W` | Keluar dari Xplorer
+`Ctrl + E` | Tutup tab
+`Ctrl + C` | Salin
+`Ctrl + V` | Tempel
+`Ctrl + X` | Potong
+`Ctrl + A` | Seleksi Semua
 `Ctrl + H` | Toggle Hidden Files
-`Ctrl + O` | Preview file
-`Ctrl + R` | Refresh
-`Ctrl + P` | Files/Folders Properties
-`Ctrl + F` | Find Files/Folders
-`Ctrl + T` | New Tab
-`Alt + O` | Open with
-`Alt + N` | New Files (docx, pptx, xlsx, psd, etc...)
-`Alt + S` | Create Shortcut
-`Alt + Left Arrow` | Go Back
-`Alt + Right Arrow` | Go Forward
+`Ctrl + O` | Melihat (_Preview_) file
+`Ctrl + R` | Muat Ulang
+`Ctrl + P` | Properti file/folder
+`Ctrl + F` | Cari Files/Folders
+`Ctrl + T` | Tab Baru
+`Alt + O` | Buka Dengan
+`Alt + N` | File Baru
+`Alt + S` | Buat Shortcut
+`Alt + Left Arrow` | Balik ke halaman sebelumnya
+`Alt + Right Arrow` | Lanjut ke halmana selanjutnya
 `Alt + Up Arrow` | maximize
 `Alt + Down Arrow` | minimize
-`Alt + T` | Open in terminal
-`Alt + P` | Pin to sidebar
-`Alt + Shift + C` | Copy location path
-`F2` | Rename
-`F5` | Refresh
+`Alt + T` | Buka di terminal
+`Alt + P` | Pin ke _sidebar_
+`Alt + Shift + C` | Salin lokasi
+`F2` | Ganti nama
+`F5` | Muat Ulang
 `F10` | Minimize
 `F11` | Maximize
-`Shift + N` | New Folders
-`Shift + Del` | Permanent Delete
-`Shift + Enter` | Open in vscode
-`Enter` | Open
+`Shift + N` | Folder Baru
+`Shift + Del` | Delete Secara Permanent
+`Shift + Enter` | Buka di vscode
+`Enter` | Buka
 `Del` | Delete file

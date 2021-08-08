@@ -1,3 +1,3 @@
-# FIle Operations
+# Operasi File
 
-## Copy file
+## Duplikasi File
