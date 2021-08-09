@@ -88,7 +88,7 @@ module.exports = {
         blog: {
           showReadingTime: true,
           editUrl:
-            'https://github.com/kimlimjustin/xplorer/edit/master/website/blog/',
+            'https://github.com/kimlimjustin/xplorer/edit/master/docs',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
