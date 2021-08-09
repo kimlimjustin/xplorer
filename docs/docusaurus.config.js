@@ -82,8 +82,15 @@ module.exports = {
       {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl:
-            'https://github.com/kimlimjustin/xplorer/edit/master/docs/',
+          editUrl: ({ locale, docPath }) => {
+            switch (locale) {
+              case "id":
+                return `https://github.com/kimlimjustin/xplorer/edit/master/docs/i18n/id/docusaurus-plugin-content-docs/current/${docPath}`;
+              default:
+                return `https://github.com/kimlimjustin/xplorer/edit/master/docs/${docPath}`;
+              }
+            
+          }
         },
         blog: {
           showReadingTime: true,
