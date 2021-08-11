@@ -15,7 +15,7 @@ module.exports = {
   trailingSlash: true,
   i18n: {
     defaultLocale: 'en',
-    locales: ['en', 'id'],
+    locales: ['en', 'id', 'ja'],
   },
   themeConfig: {
     announcementBar: {
