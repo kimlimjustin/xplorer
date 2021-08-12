@@ -10,14 +10,15 @@ module.exports = {
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
-  organizationName: 'kimlimjustin', // Usually your GitHub org/user name.
-  projectName: 'xplorer', // Usually your repo name.
+  organizationName: 'kimlimjustin',
+  projectName: 'xplorer',
   trailingSlash: true,
   i18n: {
     defaultLocale: 'en',
     locales: ['en', 'id', 'ja'],
   },
   themeConfig: {
+    hideableSidebar: true,
     announcementBar: {
       id: 'support_us',
       content: '⭐️ If you like Xplorer, give it a star on <a href="https://github.com/kimlimjustin/xplorer">GitHub!</a> ⭐',
@@ -25,6 +26,7 @@ module.exports = {
       textColor: "#091E42"
     },
     navbar: {
+      hideOnScroll: true,
       title: 'Xplorer',
       logo: {
         alt: 'Xplorer Logo',
@@ -68,7 +70,7 @@ module.exports = {
           ],
         }
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Justin Maximillian Kimlim. Website Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Justin Maximillian Kimlim. Website Built with <a href="https://docusaurus.io" target="_blank">Docusaurus</a>.`,
     },
     prism: {
       theme: lightCodeTheme,
@@ -83,12 +85,11 @@ module.exports = {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl: ({ locale, docPath }) => {
-            switch (locale) {
-              case "id":
-                return `https://github.com/kimlimjustin/xplorer/edit/master/docs/i18n/id/docusaurus-plugin-content-docs/current/${docPath}`;
-              default:
-                return `https://github.com/kimlimjustin/xplorer/edit/master/docs/${docPath}`;
-              }
+            if (locale === "en") {
+              return `https://github.com/kimlimjustin/xplorer/edit/master/docs/${docPath}`;
+            } else {
+              return `https://github.com/kimlimjustin/xplorer/edit/master/docs/i18n/${locale}/docusaurus-plugin-content-docs/current/${docPath}`
+            }
             
           }
         },
