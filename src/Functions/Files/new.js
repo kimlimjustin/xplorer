@@ -5,6 +5,7 @@ const os = require("os");
 const fs = require("fs");
 const { dialog } = require('@electron/remote');
 const { ErrorLog } = require('../Logs/log');
+const windowGUID = require('../../Constants/windowGUID');
 /**
  * Function to create popup window
  * @param {string} type - is it a file or folder
@@ -16,7 +17,7 @@ const NewFile = (type) => {
             prompt({ title: 'New File', label: 'File Name:', inputAttrs: { type: 'text', required: true }, type: 'input' })
                 .then((r) => {
                     if (r) {
-                        const tabs = storage.get('tabs')?.data
+                        const tabs = storage.get(`tabs-${windowGUID}`)?.data
                         const focusingPath = tabs.tabs[String(tabs.focus)].position === "Home" || tabs.tabs[String(tabs.focus)].position === path.join(os.homedir(), 'Home') ? os.homedir() : tabs.tabs[String(tabs.focus)].position
                         if (fs.existsSync(path.join(focusingPath, r))) {
                             dialog.showMessageBoxSync({ message: "A file with that name already exists.", type: "error" })
@@ -42,7 +43,7 @@ const NewFile = (type) => {
             prompt({ title: 'New Folder', label: 'Folder Name:', inputAttrs: { type: 'text', required: true }, type: 'input' })
                 .then((r) => {
                     if (r) {
-                        const tabs = storage.get('tabs')?.data
+                        const tabs = storage.get(`tabs-${windowGUID}`)?.data
                         const focusingPath = tabs.tabs[String(tabs.focus)].position === "Home" || tabs.tabs[String(tabs.focus)].position === path.join(os.homedir(), 'Home') ? os.homedir() : tabs.tabs[String(tabs.focus)].position
                         if (fs.existsSync(path.join(focusingPath, r))) {
                             dialog.showMessageBoxSync({ message: "A folder with that name already exists.", type: "error" })
