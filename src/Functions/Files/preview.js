@@ -1,11 +1,12 @@
 const path = require("path");
 const { updateTheme } = require("../Theme/theme");
-const FILE_TYPES_AVAILABLE_FOR_PREVIEW = ['.pdf', , '.html', '.docx', '.htm', '.xlsx', '.xls', '.xlsb', 'xls', '.ods', '.fods', '.csv', '.txt', '.py', '.js', '.bat', '.css', '.c++', '.cpp', '.cc', '.c', '.diff', '.patch', '.go', '.java', '.json', '.php', '.ts', '.tsx', '.jsx', '.jpg', '.png', '.gif', '.bmp', '.jpeg', '.jpe', '.jif', '.jfif', '.jfi', '.webp', '.tiff', '.tif', '.ico', '.svg', '.webp']
+const FILE_TYPES_AVAILABLE_FOR_PREVIEW = ['.pdf', , '.html', '.docx', '.htm', '.xlsx', '.xls', '.xlsb', 'xls', '.ods', '.fods', '.csv', '.txt', '.py', '.js', '.bat', '.css', '.c++', '.cpp', '.cc', '.c', '.diff', '.patch', '.go', '.java', '.json', '.php', '.ts', '.tsx', '.jsx', '.jpg', '.png', '.gif', '.bmp', '.jpeg', '.jpe', '.jif', '.jfif', '.jfi', '.webp', '.tiff', '.tif', '.ico', '.svg', '.webp', '.mp4', '.webm', '.mpg', '.mp2', '.mpeg', '.mpe', '.mpv', '.ocg', '.m4p', '.m4v', '.avi', '.wmv', '.mov', '.qt', '.flv', '.swf', '.md']
 const mammoth = require("mammoth")
 const fs = require('fs');
 const XLSX = require('xlsx');
-const URLify = require("../DOM/urlify");
+const { URLify, eURLify } = require("../DOM/urlify");
 const hljs = require('highlight.js');
+const marked = require("marked");
 
 /**
  * Close the preview file
@@ -22,6 +23,7 @@ const closePreviewFile = () => {
  * @returns {any}
  */
 const Preview = (filePath) => {
+    console.log(filePath)
     const { listenOpen } = require("./open");
     closePreviewFile()
     const previewElement = document.createElement("div")
@@ -54,12 +56,17 @@ const Preview = (filePath) => {
         changePreview(`<div class='preview-object' data-type="txt">${fs.readFileSync(filePath, "utf8").replaceAll("\n", "<br />")}</div>`)
     } else if (path.extname(filePath) === ".docx") {
         mammoth.convertToHtml({ path: filePath })
-            .then(({ value }) => {
-                changePreview(`<div class='preview-object' data-type="docx">${value}</div>`)
+        .then(({ value }) => {
+                changePreview(eURLify(`<div class='preview-object' data-type="docx">${value}</div>`))
             })
             .done();
     } else if (['.jpg', '.png', '.gif', '.bmp', '.jpeg', '.jpe', '.jif', '.jfif', '.jfi', '.webp', '.tiff', '.tif', '.ico', '.svg', '.webp'].indexOf(path.extname(filePath)) !== -1) {
         changePreview(`<div class="preview-object" data-type="img"><img src="${filePath}" data-listenOpen data-path="${filePath}" /></div>`)
+    } else if (['.mp4', '.webm', '.mpg', '.mp2', '.mpeg', '.mpe', '.mpv', '.ocg', '.m4p', '.m4v', '.avi', '.wmv', '.mov', '.qt', '.flv', '.swf'].indexOf(path.extname(filePath)) !== -1) {
+        changePreview(`<div class="preview-object" data-type="video"><video controls=""><source src="${filePath}"></video></div>`)
+    } else if (path.extname(filePath) === ".md") {
+        const parsedData = marked(fs.readFileSync(filePath, 'utf8'))
+        changePreview(`<div class="preview-object" data-type="md">${parsedData}</div>`)
     } else {
         let language;
         switch (path.extname(filePath)) {

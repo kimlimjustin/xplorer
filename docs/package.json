@@ -11,9 +11,13 @@
     "clear": "docusaurus clear",
     "serve": "docusaurus serve",
     "write-translations": "docusaurus write-translations",
-    "write-heading-ids": "docusaurus write-heading-ids"
+    "write-heading-ids": "docusaurus write-heading-ids",
+    "crowdin": "crowdin",
+    "crowdin:sync": "docusaurus write-translations && crowdin upload && crowdin download",
+    "build:all": "yarn build && yarn crowdin:sync"
   },
   "dependencies": {
+    "@crowdin/cli": "3",
     "@docusaurus/core": "2.0.0-beta.4",
     "@docusaurus/plugin-content-docs": "2.0.0-beta.4",
     "@docusaurus/plugin-pwa": "^2.0.0-beta.4",
