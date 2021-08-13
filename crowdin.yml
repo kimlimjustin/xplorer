@@ -13,7 +13,7 @@ files: [
       translation: '/docs/i18n/%locale%/docusaurus-plugin-content-blog/**/%original_file_name%',
     },
     {
-      source: '/src/Languages/base.json',
-      translation: '/src/Languages/%locale%.json'
+      source: '/src/Locales/base.json',
+      translation: '/src/Locales/%locale%.json'
     }
   ]
