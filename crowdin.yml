@@ -2,12 +2,14 @@ project_id: '469422'
 api_token_env: 'CROWDIN_PERSONAL_TOKEN'
 preserve_hierarchy: true
 files: [
-    # Docs Markdown files
+    {
+      source: '/docs/community/**/*',
+      translation: '/docs/i18n/%locale%/docusaurus-plugin-content-docs-community/current/**/%original_file_name%'
+    },
     {
       source: '/docs/docs/**/*',
       translation: '/docs/i18n/%locale%/docusaurus-plugin-content-docs/current/**/%original_file_name%',
     },
-    # Blog Markdown files
     {
       source: '/docs/blog/**/*',
       translation: '/docs/i18n/%locale%/docusaurus-plugin-content-blog/**/%original_file_name%',
