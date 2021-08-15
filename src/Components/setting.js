@@ -82,7 +82,7 @@ const Preference = () => {
     const hideSystemFiles = storage.get("preference")?.data?.hideSystemFiles ?? true
     const dirAlongsideFiles = storage.get("preference")?.data?.dirAlongsideFiles ?? false
     let settingsMain = document.querySelector(".settings-main");
-    const availableLanguages = JSON.parse(fs.readFileSync(path.join(__dirname, "../Languages/index.json")))?.availableLanguages
+    const availableLanguages = JSON.parse(fs.readFileSync(path.join(__dirname, "../Locales/index.json")))?.availableLanguages
     settingsMain.innerHTML = `<h3 class="settings-title">App Language</h3>
     <select name="language">
     ${Object.keys(availableLanguages).map(lang => {
