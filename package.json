@@ -30,6 +30,10 @@
     "crowdin:sync": "yarn --cwd ./docs write-translations && crowdin upload && crowdin download"
   },
   "build": {
+    "files": [
+      "**/*",
+      "!docs/${/*}"
+    ],
     "directories": {
       "buildResources": "icons"
     },
