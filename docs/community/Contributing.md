@@ -144,14 +144,23 @@ make sure the PR does only one thing, otherwise please split it. It is recommend
 3. Open a [PR](https://github.com/kimlimjustin/xplorer/pulls) and ensure to describe your pull request clearly.
 
 ## Working on Xplorer resources
-### Multilingual Resources
-Multilingual resources are available on [`src/Languages`](https://github.com/kimlimjustin/xplorer/tree/master/src/Languages).
-You can add your language by doing these steps:
-- Create a new file with `<Language Code>.json` file name format.
-- Copy the JSON code from one of those languages available there.
-- Paste in your language JSON and edit the value.
-- Add a value on `availableLanguages` inside `index.json` which your language code as key, and the language name as value.
-- Open a [Pull Request.](#pull-requests)
+### Locales
+We host our locales on the [crowdin](https://crwd.in/xplorer). To translate it, please follow these steps:
+* SIgn up on [Crowdin](https://crowdin.com) and Join our project [here](https://crwd.in/xplorer).
+* Make sure your locale exists there, if it does not exist, leave a comment in [this discussion](https://github.com/kimlimjustin/xplorer/discussions/30) and I'll add the language option :)
+* Get familiar with the Crowdin translation UI, as you will need to use it to translate JSON and Markdown files
+* Translate the content!
+
+#### Priority Files to translate on Crowdin
+1. `src/Locales` files
+2. `docs/docs` files
+3. `docs/i18n/en` files
+4. `docs/community` files
+
+#### Production
+Once the files on `src/Locales` have been translated for more than 80%, we will add it into Xplorer app, and for the docs, we will add it into production once the translation looks good!
+
+Please comment [here](https://github.com/kimlimjustin/xplorer/discussions/30) if you have any questions!
 
 ### Files Icon
 Files icons are available on [`src/icon`](https://github.com/kimlimjustin/xplorer/tree/master/src/icon).
