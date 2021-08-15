@@ -25,7 +25,9 @@
     "build-wml": "electron-builder -wml",
     "native_build": "node-gyp rebuild",
     "install": "node install.js",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "crowdin": "crowdin",
+    "crowdin:sync": "yarn --cwd ./docs write-translations && crowdin upload && crowdin download"
   },
   "build": {
     "directories": {
@@ -62,6 +64,7 @@
     "electron-reloader": "^1.2.1"
   },
   "dependencies": {
+    "@crowdin/cli": "3",
     "@electron/remote": "^1.1.0",
     "clipboardy": "^2.3.0",
     "cpy": "^8.1.2",
