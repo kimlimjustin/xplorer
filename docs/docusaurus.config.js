@@ -15,7 +15,7 @@ module.exports = {
   trailingSlash: true,
   i18n: {
     defaultLocale: 'en',
-    locales: ['en', 'id', 'ja'],
+    locales: ['en', 'id-ID', 'ja-JP', 'zh-CN'],
   },
   themeConfig: {
     hideableSidebar: true,
@@ -41,7 +41,14 @@ module.exports = {
         },
         { to: '/blog', label: 'Blog', position: 'left' },
         { to: '/community/support', label: 'Community', position: 'left' },
-        { type: 'localeDropdown', position: 'right' },
+        {
+          type: 'localeDropdown',
+          position: 'right',
+          dropdownItemsAfter: [{
+            href: 'https://github.com/kimlimjustin/xplorer/discussions/30',
+            label: 'Help Us Translate'
+          }]
+        },
         {
           href: 'https://github.com/kimlimjustin/xplorer',
           label: 'GitHub',

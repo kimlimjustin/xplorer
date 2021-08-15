@@ -1,0 +1,14 @@
+{
+  "version.label": {
+    "message": "Selanjutnya",
+    "description": "The label for version current"
+  },
+  "sidebar.tutorialSidebar.category.Installation": {
+    "message": "Instalasi",
+    "description": "The label for category Installation in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Guides": {
+    "message": "Panduan",
+    "description": "The label for category Guides in sidebar tutorialSidebar"
+  }
+}
