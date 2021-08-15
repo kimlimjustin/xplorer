@@ -7,6 +7,10 @@ files: [
       translation: '/docs/i18n/%locale%/docusaurus-plugin-content-docs-community/current/**/%original_file_name%'
     },
     {
+      source: '/docs/i18n/en/**/*',
+      translation: '/docs/i18n/%locale%/**/%original_file_name%',
+    },
+    {
       source: '/docs/docs/**/*',
       translation: '/docs/i18n/%locale%/docusaurus-plugin-content-docs/current/**/%original_file_name%',
     },

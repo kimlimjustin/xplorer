@@ -4,15 +4,15 @@
     "description": "The title in the navbar"
   },
   "item.label.Tutorial": {
-    "message": "Tutorial",
+    "message": "ガイド",
     "description": "Navbar item with label Tutorial"
   },
   "item.label.Blog": {
-    "message": "Blog",
+    "message": "ブログ",
     "description": "Navbar item with label Blog"
   },
   "item.label.Community": {
-    "message": "Community",
+    "message": "コミュニティ",
     "description": "Navbar item with label Community"
   },
   "item.label.GitHub": {

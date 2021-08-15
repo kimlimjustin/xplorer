@@ -4,7 +4,7 @@
     "description": "The title in the navbar"
   },
   "item.label.Tutorial": {
-    "message": "Panduan",
+    "message": "Tutorial",
     "description": "Navbar item with label Tutorial"
   },
   "item.label.Blog": {
@@ -12,7 +12,7 @@
     "description": "Navbar item with label Blog"
   },
   "item.label.Community": {
-    "message": "Komunitas",
+    "message": "Community",
     "description": "Navbar item with label Community"
   },
   "item.label.GitHub": {
