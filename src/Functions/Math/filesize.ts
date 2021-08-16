@@ -4,7 +4,7 @@
  * @param {boolean} kBlockFormat - is input bytes on k block format?
  * @returns {Float32Array} Human readable file size
 */
-const formatBytes = (bytes, kBlockFormat = false) => { // kBlockFormat = 1024-blocks format byte
+const formatBytes = (bytes:number, kBlockFormat = false) => { // kBlockFormat = 1024-blocks format byte
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
     const dm = 2; // Decimal digit

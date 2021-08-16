@@ -1,6 +1,6 @@
 const nodeDiskInfo = require('../../lib/node-disk-info/index');
 const path = require('path');
-const formatBytes = require('../Functions/Math/filesize.js');
+const formatBytes = require('../Functions/Math/filesize');
 const Translate = require("../Components/multilingual");
 const getPreview = require('../Functions/preview/preview');
 const getDriveBasePath = require('../Functions/Files/basePath');

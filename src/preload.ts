@@ -1,4 +1,7 @@
-const { Tab } = require('./Components/tab')
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log("Hello World from Typescript")
+})
+/*const { Tab } = require('./Components/tab')
 const { updateTheme } = require('./Functions/Theme/theme');
 const Home = require('./Components/home.js');
 const { windowManager } = require('./Components/windowManager');
@@ -42,3 +45,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Initialize shortcut
     Shortcut()
 })
+*/
