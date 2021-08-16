@@ -95,7 +95,7 @@ module.exports = {
             if (locale === "en") {
               return `https://github.com/kimlimjustin/xplorer/edit/master/docs/${docPath}`;
             } else {
-              return `https://github.com/kimlimjustin/xplorer/edit/master/docs/i18n/${locale}/docusaurus-plugin-content-docs/current/${docPath}`
+              return `https://crowdin.com/project/xplorer/${locale}`
             }
             
           }
