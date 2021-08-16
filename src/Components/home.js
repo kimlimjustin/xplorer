@@ -13,7 +13,7 @@ const LAZY_LOAD = require('../Functions/DOM/lazyLoadingImage.js');
 const { createContextMenus } = require('./contextMenu.js');
 const { isHiddenFile } = require('is-hidden-file');
 const getType = require('../Functions/Files/type.js');
-const formatBytes = require('../Functions/Math/filesize.js');
+const formatBytes = require('../Functions/Math/filesize');
 const windowGUID = require('../Constants/windowGUID')
 
 /**

@@ -16,7 +16,8 @@
     "linux"
   ],
   "scripts": {
-    "start": "electron .",
+    "start:ts": "electron ./outs/main.js",
+    "start": "yarn compile && concurrently \"yarn compile:watch\" \"yarn start:ts\"",
     "docs": "yarn --cwd ./docs start",
     "test": "jest",
     "build": "electron-builder",
@@ -27,7 +28,9 @@
     "install": "node install.js",
     "postinstall": "patch-package",
     "crowdin": "crowdin",
-    "crowdin:sync": "yarn --cwd ./docs write-translations && crowdin upload && crowdin download"
+    "crowdin:sync": "yarn --cwd ./docs write-translations && crowdin upload && crowdin download",
+    "compile": "tsc",
+    "compile:watch": "tsc -w"
   },
   "build": {
     "files": [
@@ -63,9 +66,12 @@
   ],
   "license": "Apache-2.0",
   "devDependencies": {
+    "concurrently": "^6.2.1",
     "electron": "^13.1.3",
     "electron-builder": "^22.10.5",
-    "electron-reloader": "^1.2.1"
+    "electron-reloader": "^1.2.1",
+    "eslint": "^7.32.0",
+    "typescript": "^4.3.5"
   },
   "dependencies": {
     "@crowdin/cli": "3",
