@@ -2,7 +2,6 @@ interface myObject {
     [key:string]: any
 }
 import fs from 'fs';
-import path from 'path';
 const VanillaTilt = require('../../../lib/tilt/tilt');
 const storage = require("electron-json-storage-sync")
 let themeJSON:any; // user preference theme json
