@@ -1,19 +1,23 @@
-const fs = require('fs');
-const path = require('path');
+interface myObject {
+    [key:string]: any
+}
+import fs from 'fs';
+import path from 'path';
 const VanillaTilt = require('../../../lib/tilt/tilt');
 const storage = require("electron-json-storage-sync")
-const defaultThemeJSON = JSON.parse(fs.readFileSync(path.resolve(__dirname, "../../", "config/theme.json")));
-let themeJSON; // user preference theme json
+let themeJSON:any; // user preference theme json
 let defaultTheme; // default system theme
+import * as defaultThemeData from "../../config/theme.json"
+const defaultThemeJSON:myObject = defaultThemeData;
 
 /**
  * Create a hover effect of an element
- * @param {any} element
- * @param {any} before
- * @param {any} after
+ * @param {HTMLElement} element
+ * @param {string} before
+ * @param {string} after
  * @returns {any}
  */
-const hoverEffect = (element, before, after) => {
+const hoverEffect = (element:HTMLElement, before:string, after:string): any => {
     element.addEventListener("mouseover", (e) => {
         element.style.background = after
         element.addEventListener("mouseout", () => {
@@ -24,33 +28,33 @@ const hoverEffect = (element, before, after) => {
 
 /**
  * Get style of an element
- * @param {any} variable
- * @param {any} theme
+ * @param {string} variable
+ * @param {string} theme
  * @returns {any}
  */
-const getElementStyle = (variable, theme) => {
+const getElementStyle = (variable:string, theme:string): string => {
     return themeJSON?.[theme]?.[variable] || defaultThemeJSON[theme][variable]
 }
 
 /**
  * Change style of an element
- * @param {any} element
- * @param {any} variable
+ * @param {HTMLElement} element
+ * @param {string} variable
  * @param {any} style
- * @param {any} theme
+ * @param {string} theme
  * @returns {any}
  */
-const changeElementTheme = (element, variable, style, theme) => {
+const changeElementTheme = (element:HTMLElement, variable:string, style:any, theme:string): any => {
     if (element) element.style[style] = themeJSON?.[theme]?.[variable] || defaultThemeJSON[theme][variable]
 }
 
 /**
  * Change page theme
- * @param {any} document
- * @param {any} theme
+ * @param {Document} document
+ * @param {string} theme
  * @returns {any}
  */
-const changeTheme = (document, theme) => {
+const changeTheme = (document:Document, theme:string): any => {
     changeElementTheme(document.body, "mainBackground", "background", theme)
     changeElementTheme(document.body, "textColor", "color", theme)
     changeElementTheme(document.body, "fontSize", "fontSize", theme)
@@ -96,88 +100,88 @@ const changeTheme = (document, theme) => {
     changeElementTheme(document.querySelector(".preview-exit-btn"), "previewExitButtonColor", "color", theme)
     changeElementTheme(document.querySelector(".preview-object"), "previewObjectBackground", "background", theme)
     changeElementTheme(document.querySelector(".preview-object"), "previewObjectColor", "color", theme)
-    document.querySelector(".preview-object")?.style?.setProperty("--preview-object-table-border", themeJSON ? themeJSON[theme].previewObjectTableBorder : defaultThemeJSON[theme].previewObjectTableBorder)
-    document.querySelector(".preview-object")?.style?.setProperty("--preview-object-table-row-even-bg", themeJSON ? themeJSON[theme].previewObjectTableRowEvenBackground : defaultThemeJSON[theme].previewObjectTableRowEvenBackground)
-    document.querySelector(".preview-object")?.style?.setProperty("--preview-object-table-row-even-color", themeJSON ? themeJSON[theme].previewObjectTableRowEvenColor : defaultThemeJSON[theme].previewObjectTableRowEvenColor)
-    document.querySelector(".preview-object")?.style?.setProperty("--preview-object-table-row-odd-bg", themeJSON ? themeJSON[theme].previewObjectTableRowOddBackground : defaultThemeJSON[theme].previewObjectTableRowOddBackground)
-    document.querySelector(".preview-object")?.style?.setProperty("--preview-object-table-row-odd-color", themeJSON ? themeJSON[theme].previewObjectTableRowOddColor : defaultThemeJSON[theme].previewObjectTableRowOddColor)
-    document.querySelector(".preview-object")?.setAttribute("data-theme-category", themeJSON ? themeJSON[theme].themeCategory : defaultThemeJSON[theme].themeCategory)
-    document.querySelectorAll(".contextmenu-submenu").forEach(submenu => {
+    document.querySelector<HTMLElement>(".preview-object")?.style?.setProperty("--preview-object-table-border", themeJSON ? themeJSON[theme].previewObjectTableBorder : defaultThemeJSON[theme].previewObjectTableBorder)
+    document.querySelector<HTMLElement>(".preview-object")?.style?.setProperty("--preview-object-table-row-even-bg", themeJSON ? themeJSON[theme].previewObjectTableRowEvenBackground : defaultThemeJSON[theme].previewObjectTableRowEvenBackground)
+    document.querySelector<HTMLElement>(".preview-object")?.style?.setProperty("--preview-object-table-row-even-color", themeJSON ? themeJSON[theme].previewObjectTableRowEvenColor : defaultThemeJSON[theme].previewObjectTableRowEvenColor)
+    document.querySelector<HTMLElement>(".preview-object")?.style?.setProperty("--preview-object-table-row-odd-bg", themeJSON ? themeJSON[theme].previewObjectTableRowOddBackground : defaultThemeJSON[theme].previewObjectTableRowOddBackground)
+    document.querySelector<HTMLElement>(".preview-object")?.style?.setProperty("--preview-object-table-row-odd-color", themeJSON ? themeJSON[theme].previewObjectTableRowOddColor : defaultThemeJSON[theme].previewObjectTableRowOddColor)
+    document.querySelector<HTMLElement>(".preview-object")?.setAttribute("data-theme-category", themeJSON ? themeJSON[theme].themeCategory : defaultThemeJSON[theme].themeCategory)
+    document.querySelectorAll<HTMLElement>(".contextmenu-submenu").forEach(submenu => {
         changeElementTheme(submenu, "contextMenuSubmenuBackground", "background", theme)
         changeElementTheme(submenu, "contextMenuSubmenuColor", "color", theme)
     })
-    document.querySelector(".tabs-manager").style.setProperty("--tabs-scrollbar-track", themeJSON ? themeJSON[theme].tabsScrollbarTrack : defaultThemeJSON[theme].tabsScrollbarTrack)
-    document.querySelector(".tabs-manager").style.setProperty("--tabs-scrollbar-thumb", themeJSON ? themeJSON[theme].tabsScrollbarThumb : defaultThemeJSON[theme].tabsScrollbarThumb)
-    document.querySelector(".tabs-manager").style.setProperty("--tabs-scrollbar-thumb-hover", themeJSON ? themeJSON[theme].tabsScrollbarThumbHover : defaultThemeJSON[theme].tabsScrollbarThumbHover)
-    document.querySelectorAll(".tab").forEach(tab => {
+    document.querySelector<HTMLElement>(".tabs-manager").style.setProperty("--tabs-scrollbar-track", themeJSON ? themeJSON[theme].tabsScrollbarTrack : defaultThemeJSON[theme].tabsScrollbarTrack)
+    document.querySelector<HTMLElement>(".tabs-manager").style.setProperty("--tabs-scrollbar-thumb", themeJSON ? themeJSON[theme].tabsScrollbarThumb : defaultThemeJSON[theme].tabsScrollbarThumb)
+    document.querySelector<HTMLElement>(".tabs-manager").style.setProperty("--tabs-scrollbar-thumb-hover", themeJSON ? themeJSON[theme].tabsScrollbarThumbHover : defaultThemeJSON[theme].tabsScrollbarThumbHover)
+    document.querySelectorAll<HTMLElement>(".tab").forEach(tab => {
         changeElementTheme(tab, "tabBackground", "background", theme)
         changeElementTheme(tab, "tabColor", "color", theme)
     })
-    document.querySelectorAll(".favorite").forEach(favorite => {
+    document.querySelectorAll<HTMLElement>(".favorite").forEach(favorite => {
         changeElementTheme(favorite, "favoriteBackground", "background", theme)
         changeElementTheme(favorite, "favoriteColor", "color", theme)
         hoverEffect(favorite, themeJSON ? themeJSON[theme].favoriteBackground : defaultThemeJSON[theme].favoriteBackground, themeJSON ? themeJSON[theme].favoriteHoverBackground : defaultThemeJSON[theme].favoriteHoverBackground)
     })
-    document.querySelectorAll(".card-hover-effect").forEach(obj => {
+    document.querySelectorAll<HTMLElement>(".card-hover-effect").forEach(obj => {
         obj.onmouseleave = (e) => {
             obj.style.background = getElementStyle("pendriveBackground", theme);
             obj.style.borderImage = null;
         }
         obj.addEventListener("mousemove", (e) => {
-            const rect = e.target.getBoundingClientRect();
+            const rect = (e.target as Element).getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
             obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle("cardHoverEffectBackground", theme)} )`;
         })
     })
-    document.querySelectorAll(".sidebar-hover-effect").forEach(obj => {
+    document.querySelectorAll<HTMLElement>(".sidebar-hover-effect").forEach(obj => {
         obj.onmouseleave = (e) => {
             obj.style.background = getElementStyle("sidebarBackground", theme);
             obj.style.borderImage = null;
         }
         obj.addEventListener("mousemove", (e) => {
-            const rect = e.target.getBoundingClientRect();
+            const rect = (e.target as Element).getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
             obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle("sidebarHoverEffectBackground", theme)} )`;
         })
     })
-    document.querySelectorAll(".tab-hover-effect").forEach(obj => {
+    document.querySelectorAll<HTMLElement>(".tab-hover-effect").forEach(obj => {
         obj.onmouseleave = (e) => {
             obj.style.background = getElementStyle("tabBackground", theme);
             obj.style.borderImage = null;
         }
         obj.addEventListener("mousemove", (e) => {
-            const rect = e.target.getBoundingClientRect();
+            const rect = (e.target as Element).getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
             obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle("tabHoverEffectBackground", theme)} )`;
         })
     })
-    document.querySelectorAll(".grid-hover-effect").forEach(obj => {
+    document.querySelectorAll<HTMLElement>(".grid-hover-effect").forEach(obj => {
         obj.onmouseleave = (e) => {
             obj.style.background = getElementStyle("gridBackground", theme);
             obj.style.borderImage = null;
         }
         obj.addEventListener("mousemove", (e) => {
-            const rect = e.target.getBoundingClientRect();
+            const rect = (e.target as Element).getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
             obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle("gridHoverEffectBackground", theme)} )`;
         })
     })
-    document.querySelectorAll(".pendrive").forEach(pendrive => {
+    document.querySelectorAll<HTMLElement>(".pendrive").forEach(pendrive => {
         changeElementTheme(pendrive, "pendriveBackground", "background", theme)
         changeElementTheme(pendrive, "pendriveColor", "color", theme)
         hoverEffect(pendrive, themeJSON ? themeJSON[theme].pendriveBackground : defaultThemeJSON[theme].pendriveBackground, themeJSON ? themeJSON[theme].pendriveHoverBackground : defaultThemeJSON[theme].pendriveHoverBackground)
     })
-    document.querySelectorAll(".pendrive-total-capacity").forEach(bar => {
+    document.querySelectorAll<HTMLElement>(".pendrive-total-capacity").forEach(bar => {
         changeElementTheme(bar, "pendriveTotalCapacityBackground", "background", theme)
     })
-    document.querySelectorAll(".pendrive-used-capacity").forEach(bar => {
+    document.querySelectorAll<HTMLElement>(".pendrive-used-capacity").forEach(bar => {
         changeElementTheme(bar, "pendriveUsedCapacityBackground", "background", theme)
     })
-    document.querySelectorAll(".file-grid").forEach(grid => {
+    document.querySelectorAll<HTMLElement>(".file-grid").forEach(grid => {
         changeElementTheme(grid, "gridBackground", "background", theme)
         changeElementTheme(grid, "gridColor", "color", theme)
     })
@@ -207,7 +211,7 @@ const updateTheme = async () => {
         }
         else { // Otherwise read user theme json file
             if (data.themeJSON) {
-                themeJSON = JSON.parse(fs.readFileSync(data.themeJSON))
+                themeJSON = JSON.parse(fs.readFileSync(data.themeJSON, 'utf-8'))
                 await changeTheme(document, data.theme)
             } else {
                 await changeTheme(document, defaultTheme)
@@ -217,4 +221,4 @@ const updateTheme = async () => {
     return;
 }
 
-module.exports = { changeTheme, updateTheme }
+export { changeTheme, updateTheme }
