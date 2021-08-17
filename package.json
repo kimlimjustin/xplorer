@@ -1,104 +1,107 @@
 {
-  "name": "xplorer",
-  "description": "Xplorer, a customizable, modern file manager",
-  "version": "0.1.0",
-  "author": "Justin Maximillian Kimlim <kimlimjustin@gmail.com>",
-  "main": "src/main.js",
-  "icon": "build/icon.icns",
-  "homepage": "https://xplorer.vercel.app",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/kimlimjustin/xplorer.git"
-  },
-  "os": [
-    "darwin",
-    "win32",
-    "linux"
-  ],
-  "scripts": {
-    "start:ts": "electron ./outs/main.js",
-    "start": "yarn compile && concurrently \"yarn compile:watch\" \"yarn start:ts\"",
-    "docs": "yarn --cwd ./docs start",
-    "test": "jest",
-    "build": "electron-builder",
-    "build:docs": "yarn --cwd ./docs build",
-    "deploy": "yarn --cwd ./docs deploy",
-    "build-wml": "electron-builder -wml",
-    "native_build": "node-gyp rebuild",
-    "install": "node install.js",
-    "postinstall": "patch-package",
-    "crowdin": "crowdin",
-    "crowdin:sync": "yarn --cwd ./docs write-translations && crowdin upload && crowdin download",
-    "copyfiles": "copyfiles \"src/**/* !src/**/*.ts !src/**/*.js\" outs",
-    "compile": "rimraf outs && tsc && yarn copyfiles",
-    "compile:watch": "tsc -w",
-    "lint": "eslint -c .eslintrc.yml --ext .ts ./src"
-  },
-  "build": {
-    "files": [
-      "**/*",
-      "!docs/${/*}"
+    "name": "xplorer",
+    "description": "Xplorer, a customizable, modern file manager",
+    "version": "0.1.0",
+    "author": "Justin Maximillian Kimlim <kimlimjustin@gmail.com>",
+    "main": "src/main.js",
+    "icon": "build/icon.icns",
+    "homepage": "https://xplorer.vercel.app",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/kimlimjustin/xplorer.git"
+    },
+    "os": [
+        "darwin",
+        "win32",
+        "linux"
     ],
-    "directories": {
-      "buildResources": "icons"
+    "scripts": {
+        "start:ts": "electron ./outs/main.js",
+        "start": "yarn compile && concurrently \"yarn compile:watch\" \"yarn start:ts\"",
+        "docs": "yarn --cwd ./docs start",
+        "test": "jest",
+        "build": "electron-builder",
+        "build:docs": "yarn --cwd ./docs build",
+        "deploy": "yarn --cwd ./docs deploy",
+        "build-wml": "electron-builder -wml",
+        "native_build": "node-gyp rebuild",
+        "install": "node install.js",
+        "postinstall": "patch-package",
+        "crowdin": "crowdin",
+        "crowdin:sync": "yarn --cwd ./docs write-translations && crowdin upload && crowdin download",
+        "copyfiles": "copyfiles \"src/**/* !src/**/*.ts !src/**/*.js\" outs",
+        "compile": "rimraf outs && tsc && yarn copyfiles",
+        "compile:watch": "tsc -w",
+        "lint": "eslint -c .eslintrc.yml --ext .ts ./src",
+        "prettier": "prettier --write src"
     },
-    "win": {
-      "target": [
-        "nsis"
-      ]
+    "build": {
+        "files": [
+            "**/*",
+            "!docs/${/*}"
+        ],
+        "directories": {
+            "buildResources": "icons"
+        },
+        "win": {
+            "target": [
+                "nsis"
+            ]
+        },
+        "nsis": {
+            "license": "LICENSE",
+            "runAfterFinish": true
+        },
+        "linux": {
+            "target": [
+                "AppImage",
+                "deb"
+            ]
+        }
     },
-    "nsis": {
-      "license": "LICENSE",
-      "runAfterFinish": true
+    "keywords": [
+        "Xplorer",
+        "File explorer",
+        "File",
+        "File manager",
+        "Folders",
+        "Directory"
+    ],
+    "license": "Apache-2.0",
+    "devDependencies": {
+        "@typescript-eslint/eslint-plugin": "^4.29.2",
+        "@typescript-eslint/parser": "^4.29.2",
+        "concurrently": "^6.2.1",
+        "copyfiles": "^2.4.1",
+        "electron": "^13.1.3",
+        "electron-builder": "^22.10.5",
+        "electron-reloader": "^1.2.1",
+        "eslint": "^7.32.0",
+        "eslint-config-prettier": "^8.3.0",
+        "prettier": "2.3.2",
+        "rimraf": "^3.0.2",
+        "typescript": "^4.3.5"
     },
-    "linux": {
-      "target": [
-        "AppImage",
-        "deb"
-      ]
+    "dependencies": {
+        "@crowdin/cli": "3",
+        "@electron/remote": "^1.1.0",
+        "clipboardy": "^2.3.0",
+        "cpy": "^8.1.2",
+        "electron-json-storage-sync": "^1.2.0",
+        "electron-log": "^4.3.5",
+        "electron-prompt": "^1.6.2",
+        "fswin": "^3.21.107",
+        "highlight.js": "^11.1.0",
+        "is-hidden-file": "1.1.2",
+        "jest": "^27.0.4",
+        "mammoth": "^1.4.17",
+        "marked": "^2.1.3",
+        "mv": "^2.1.1",
+        "patch-package": "^6.4.7",
+        "platform-folders": "^0.5.4",
+        "postinstall-postinstall": "^2.1.0",
+        "trash": "^7.2.0",
+        "uuid": "^8.3.2",
+        "xlsx": "^0.17.0"
     }
-  },
-  "keywords": [
-    "Xplorer",
-    "File explorer",
-    "File",
-    "File manager",
-    "Folders",
-    "Directory"
-  ],
-  "license": "Apache-2.0",
-  "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.29.2",
-    "@typescript-eslint/parser": "^4.29.2",
-    "concurrently": "^6.2.1",
-    "copyfiles": "^2.4.1",
-    "electron": "^13.1.3",
-    "electron-builder": "^22.10.5",
-    "electron-reloader": "^1.2.1",
-    "eslint": "^7.32.0",
-    "rimraf": "^3.0.2",
-    "typescript": "^4.3.5"
-  },
-  "dependencies": {
-    "@crowdin/cli": "3",
-    "@electron/remote": "^1.1.0",
-    "clipboardy": "^2.3.0",
-    "cpy": "^8.1.2",
-    "electron-json-storage-sync": "^1.2.0",
-    "electron-log": "^4.3.5",
-    "electron-prompt": "^1.6.2",
-    "fswin": "^3.21.107",
-    "highlight.js": "^11.1.0",
-    "is-hidden-file": "1.1.2",
-    "jest": "^27.0.4",
-    "mammoth": "^1.4.17",
-    "marked": "^2.1.3",
-    "mv": "^2.1.1",
-    "patch-package": "^6.4.7",
-    "platform-folders": "^0.5.4",
-    "postinstall-postinstall": "^2.1.0",
-    "trash": "^7.2.0",
-    "uuid": "^8.3.2",
-    "xlsx": "^0.17.0"
-  }
 }
