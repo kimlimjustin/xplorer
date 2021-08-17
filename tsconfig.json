@@ -3,8 +3,12 @@
     "module": "commonjs",
     "noImplicitAny": true,
     "sourceMap": true,
+    "declaration": true,
+    "removeComments": true,
     "outDir": "outs",
     "baseUrl": ".",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
     "paths": {
       "*": ["node_modules/*"]
     }

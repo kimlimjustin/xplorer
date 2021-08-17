@@ -1,8 +1,5 @@
-document.addEventListener('DOMContentLoaded', async () => {
-    console.log("Hello World from Typescript")
-})
+import { updateTheme } from "./Functions/Theme/theme";
 /*const { Tab } = require('./Components/tab')
-const { updateTheme } = require('./Functions/Theme/theme');
 const Home = require('./Components/home.js');
 const { windowManager } = require('./Components/windowManager');
 const { webFrame } = require('electron');
@@ -12,11 +9,11 @@ const { toggleHiddenFiles } = require('./Functions/Files/toggleHiddenFiles');
 const optionMenu = require('./Components/optionMenu');
 const { ContextMenu } = require('./Components/contextMenu');
 const { SelectListener } = require('./Functions/Files/select');
-const { Shortcut } = require('./Components/shortcut');
+const { Shortcut } = require('./Components/shortcut');*/
 
 // Wait DOM Content to be loaded
 document.addEventListener('DOMContentLoaded', async () => {
-    webFrame.setZoomFactor(1)
+    /*webFrame.setZoomFactor(1)
     await createSidebar()
     // Listen to minimze, maximize, exit and reload button
     windowManager()
@@ -43,6 +40,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Initialize context menu
     ContextMenu(document.getElementById("workspace"))
     // Initialize shortcut
-    Shortcut()
+    Shortcut()*/
+    updateTheme()
 })
-*/

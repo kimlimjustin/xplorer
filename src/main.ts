@@ -1,6 +1,6 @@
-const { app, BrowserWindow, Menu, ipcMain } = require('electron')
-const path = require('path')
-const storage = require('electron-json-storage-sync')
+import { app, BrowserWindow, Menu, ipcMain, screen } from 'electron'
+const path = require("path");
+const storage = require("electron-json-storage-sync");
 require('@electron/remote/main').initialize()
 
 
@@ -18,9 +18,12 @@ ipcMain.on('GUID', (e:any, arg:any) => {
 
 // Create a new window
 function createWindow() {
+   const { width, height } = screen.getPrimaryDisplay().workAreaSize
    const win = new BrowserWindow({
       title: "xplorer",
       frame: false,
+      width: Math.floor(width * .8),
+      height: Math.floor(height * .8),
       minWidth: 600,
       minHeight: 400,
       webPreferences: {
@@ -29,7 +32,7 @@ function createWindow() {
       }
    })
 
-   win.loadFile('../src/public/index.html')
+   win.loadFile('src/public/index.html')
    win.webContents.on('new-window', (e:any, url:string) => {
       e.preventDefault()
       require('electron').shell.openExternal(url);
