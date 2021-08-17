@@ -31,7 +31,8 @@
     "crowdin:sync": "yarn --cwd ./docs write-translations && crowdin upload && crowdin download",
     "copyfiles": "copyfiles \"src/**/* !src/**/*.ts !src/**/*.js\" outs",
     "compile": "rimraf outs && tsc && yarn copyfiles",
-    "compile:watch": "tsc -w"
+    "compile:watch": "tsc -w",
+    "lint": "eslint -c .eslintrc.yml --ext .ts ./src"
   },
   "build": {
     "files": [
@@ -67,6 +68,8 @@
   ],
   "license": "Apache-2.0",
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.29.2",
+    "@typescript-eslint/parser": "^4.29.2",
     "concurrently": "^6.2.1",
     "copyfiles": "^2.4.1",
     "electron": "^13.1.3",
