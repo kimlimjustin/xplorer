@@ -32,7 +32,7 @@ function createWindow() {
       }
    })
 
-   win.loadFile('src/public/index.html')
+   win.loadFile('./public/index.html')
    win.webContents.on('new-window', (e:any, url:string) => {
       e.preventDefault()
       require('electron').shell.openExternal(url);
