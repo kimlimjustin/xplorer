@@ -1,10 +1,19 @@
-const fs = require('fs');
-const path = require('path');
-const storage = require('electron-json-storage-sync');
+import fs from "fs";
+import path from "path";
+import storage from 'electron-json-storage-sync';
+import electron from "electron";
+import * as defaultIconData from "../../config/icon.json";
+import { extractIcon } from "../../../lib/wasm/bindings";
 
-const defaultIconJSON = JSON.parse(fs.readFileSync(path.join(__dirname, "../../config/icon.json")))
-let iconJSON = null;
-let iconJSONPath = null;
+interface Icon{
+    [key:string]: {
+        [key:string]: string
+    }
+}
+
+let iconJSON:Icon = null;
+let iconJSONPath:string = null;
+const defaultIconJSON:Icon = defaultIconData;
 
 // Get user preference
 const preference = storage.get("preference")?.data
@@ -20,11 +29,11 @@ let DEFAULT_IMAGE = path.join(__dirname, '../../icon', defaultIconJSON.file.imag
 
 /**
  * Return image view of preview
- * @param {string} filename
+ * @param {string} filename - the file name
  * @param {boolean} isdir - is it directory?
  * @returns {string} HTML Result
  */
-const iconPreview = (filename, isdir) => {
+const iconPreview = (filename:string, isdir?:boolean) => {
     return `<img data-src = "${filename}" class="file-grid-preview" src="${isdir ? DEFAULT_FOLDER_ICON : DEFAULT_FILE_ICON}" onerror="this.onerror=null;this.src='${DEFAULT_IMAGE}'" />`
 }
 
@@ -33,11 +42,11 @@ const iconPreview = (filename, isdir) => {
  * @param {string} filename
  * @returns {string} HTML Result
  */
-const videoPreview = (filename) => {
+const videoPreview = (filename:string) => {
     const preference = storage.get("preference")?.data
     let alt = path.join(iconJSONPath || __dirname, iconJSON ? '../' : '../../icon', iconJSON?.file?.video || defaultIconJSON.file.video) // Alternative for video if video could not be oaded
     if (!fs.existsSync(alt)) alt = path.join(__dirname, '../../icon/', defaultIconJSON.default.file)
-    return preference?.autoPlayPreviewVideo ? `<video autoplay loop muted class="file-grid-preview"><source src = "${filename}" /><img src = "${alt}" /></video>` : iconPreview(alt)
+    return preference?.autoPlayPreviewVideo ? `<video autoplay loop muted class="file-grid-preview"><source src = "${filename}" /><img src = "${alt}" /></video>` : iconPreview(alt, false)
 }
 
 /**
@@ -45,9 +54,9 @@ const videoPreview = (filename) => {
  * @param {string} filename - EXE file name
  * @returns {any} the path of icon extracted from the EXE file
  */
-const exePreview = (filename) => {
+const exePreview = (filename:string) => {
     const basename = filename.split(/[\\/]/)[filename.split(/[\\/]/).length - 1]
-    const electron = require('electron');
+    //import electron from "electron";
     const app = electron.app || (electron.remote && electron.remote.app) || null;
     const EXE_ICON_CACHE_DIR = path.join(app.getPath('userData'), 'Cache/Exe Icon');
 
@@ -64,7 +73,6 @@ const exePreview = (filename) => {
     if (fs.existsSync(ICON_FILE_NAME)) {
         return iconPreview(ICON_FILE_NAME)
     } else {
-        const { extractIcon } = require('../../../lib/wasm/bindings');
         const buffer = extractIcon(filename, 'large');
         fs.writeFileSync(ICON_FILE_NAME, buffer);
         return iconPreview(ICON_FILE_NAME)
@@ -76,30 +84,31 @@ const exePreview = (filename) => {
  * @param {string} filename - name of the file/folder
  * @param {string} category - category of the file/folder (optional)
  * @param {boolean} HTMLFormat - return with the HTML format (optional)
- * @returns {any} the preview of the file/folder
+ * @returns {string} the preview of the file/folder
  */
-const getPreview = (filename, category = "folder", HTMLFormat = true) => {
+const getPreview = (filename:string, category = "folder", HTMLFormat = true):string => {
 
     if (icon.data && fs.existsSync(icon.data.iconJSON)) {
-        iconJSON = JSON.parse(fs.readFileSync(icon.data.iconJSON))
+        iconJSON = JSON.parse(fs.readFileSync(icon.data.iconJSON, 'utf-8'))
         iconJSONPath = icon.data.iconJSON
     }
 
     const ext = filename.split('.').pop().toLowerCase() // Get extension of filename
-    let source = iconJSON || defaultIconJSON
+    const source = iconJSON || defaultIconJSON
 
-    if (IMAGE.indexOf(ext) !== -1) return HTMLFormat ? iconPreview(filename, isdir = false) : filename // Show the image itself if the file is image
+    if (IMAGE.indexOf(ext) !== -1) return HTMLFormat ? iconPreview(filename, false) : filename // Show the image itself if the file is image
     else if (VIDEO.indexOf(ext) !== -1) return HTMLFormat ? videoPreview(filename) : filename // Show the video itself if the file is video
 
     try {
         if (ext === "exe" && preference?.extractExeIcon !== false && process.platform === "win32") return exePreview(filename)
+    // eslint-disable-next-line no-empty
     } catch (_) { }
 
     filename = filename.toLowerCase() // Lowercase filename
 
-    const folderName = filename.split(/[\\\/]/).pop()
+    const folderName = filename.split(/[\\/]/).pop()
 
-    let categoryObj = category === "file" ? ext : folderName
+    const categoryObj = category === "file" ? ext : folderName
 
     if (fs.existsSync(iconJSON?.file?.image)) DEFAULT_IMAGE = path.join(icon?.data?.iconJSON, '../', iconJSON.file.image)
 
@@ -110,11 +119,11 @@ const getPreview = (filename, category = "folder", HTMLFormat = true) => {
         if (category in source) {
             fileLoc = (source?.[category][categoryObj][0] === "/") ? source[category][categoryObj] : path.join(icon?.data?.iconJSON || __dirname, iconJSON ? '../' : '../../icon/', source[category][categoryObj])
         }
-        if (fs.existsSync(fileLoc)) return HTMLFormat ? iconPreview(fileLoc, isdir = category === "folder") : fileLoc
+        if (fs.existsSync(fileLoc)) return HTMLFormat ? iconPreview(fileLoc, category === "folder") : fileLoc
         else {
             fileLoc = iconJSON?.default?.[category === "file" ? "file" : "folder"] && fs.existsSync(iconJSON?.default?.[category === "file" ? "file" : "folder"]) ? path.join(iconJSONPath, '../', iconJSON?.default?.[category === "file" ? "file" : "folder"]) : path.join(__dirname, '../../icon/', defaultIconJSON.default[category === "file" ? "file" : "folder"])
             console.log(fileLoc, fs.existsSync(fileLoc))
-            return HTMLFormat ? iconPreview(fileLoc, isdir = category === "folder") : fileLoc
+            return HTMLFormat ? iconPreview(fileLoc, category === "folder") : fileLoc
         }
     } else {
         let fileLoc;
@@ -122,10 +131,10 @@ const getPreview = (filename, category = "folder", HTMLFormat = true) => {
         if ("default" in source) {
             fileLoc = (source.default[category === "file" ? "file" : "folder"][0] === "/") ? source.default[category === "file" ? "file" : "folder"] : path.join(icon?.data?.iconJSON || __dirname, iconJSON ? '../' : '../../icon/', source.default[category === "file" ? "file" : "folder"])
         }
-        if (fs.existsSync(fileLoc)) return HTMLFormat ? iconPreview(fileLoc, isdir = category === "folder") : fileLoc
-        else return HTMLFormat ? iconPreview(path.join(__dirname, "../../icon/", iconJSON?.default?.[category === "file" ? "file" : "folder"] || defaultIconJSON.default[category === "file" ? "file" : "folder"]), isdir = category === "folder") : path.join(__dirname, "../../icon/", iconJSON?.default?.[category === "file" ? "file" : "folder"] || defaultIconJSON.default[category === "file" ? "file" : "folder"])
+        if (fs.existsSync(fileLoc)) return HTMLFormat ? iconPreview(fileLoc, category === "folder") : fileLoc
+        else return HTMLFormat ? iconPreview(path.join(__dirname, "../../icon/", iconJSON?.default?.[category === "file" ? "file" : "folder"] || defaultIconJSON.default[category === "file" ? "file" : "folder"]), category === "folder") : path.join(__dirname, "../../icon/", iconJSON?.default?.[category === "file" ? "file" : "folder"] || defaultIconJSON.default[category === "file" ? "file" : "folder"])
 
     }
 }
 
-module.exports = getPreview
+export default getPreview

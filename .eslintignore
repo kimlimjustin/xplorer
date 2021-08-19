@@ -1,0 +1,3 @@
+test/*
+src/Typings/*
+lib/wasm/*
