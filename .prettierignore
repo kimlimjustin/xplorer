@@ -2,3 +2,5 @@ build
 dist
 outs
 node_modules
+src/Functions/theme/theme.ts
+src/Functions/preview/preview.ts

@@ -1,8 +1,9 @@
-import { updateTheme } from "./Functions/Theme/theme";
+import { updateTheme } from './Functions/Theme/theme'
+import { webFrame } from 'electron'
+import createSidebar from './Components/sidebar'
 /*const { Tab } = require('./Components/tab')
 const Home = require('./Components/home.js');
 const { windowManager } = require('./Components/windowManager');
-const { webFrame } = require('electron');
 const createSidebar = require('./Components/sidebar');
 const { listenOpen } = require('./Functions/Files/open');
 const { toggleHiddenFiles } = require('./Functions/Files/toggleHiddenFiles');
@@ -13,9 +14,9 @@ const { Shortcut } = require('./Components/shortcut');*/
 
 // Wait DOM Content to be loaded
 document.addEventListener('DOMContentLoaded', async () => {
-    /*webFrame.setZoomFactor(1)
+    webFrame.setZoomFactor(1)
     await createSidebar()
-    // Listen to minimze, maximize, exit and reload button
+    /*// Listen to minimze, maximize, exit and reload button
     windowManager()
     // Tab listener
     Tab()

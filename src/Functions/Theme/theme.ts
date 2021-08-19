@@ -1,23 +1,25 @@
-interface myObject {
-    [key:string]: any
-}
 import fs from 'fs';
-const VanillaTilt = require('../../../lib/tilt/tilt');
-const storage = require("electron-json-storage-sync")
-let themeJSON:any; // user preference theme json
+import storage from "electron-json-storage-sync";
+import VanillaTilt from "../../../lib/tilt/tilt";
+interface Theme{
+    [key:string]: {
+        [key:string]: string
+    }
+}
+let themeJSON:Theme; // user preference theme json
 let defaultTheme; // default system theme
 import * as defaultThemeData from "../../config/theme.json"
-const defaultThemeJSON:myObject = defaultThemeData;
+const defaultThemeJSON:Theme = defaultThemeData;
 
 /**
  * Create a hover effect of an element
- * @param {HTMLElement} element
- * @param {string} before
- * @param {string} after
- * @returns {any}
+ * @param {HTMLElement} element - Element you wanna to give hover effect
+ * @param {string} before - Style before hover
+ * @param {string} after - Style on hover
+ * @returns {void}
  */
-const hoverEffect = (element:HTMLElement, before:string, after:string): any => {
-    element.addEventListener("mouseover", (e) => {
+const hoverEffect = (element:HTMLElement, before:string, after:string): void => {
+    element.addEventListener("mouseover", () => {
         element.style.background = after
         element.addEventListener("mouseout", () => {
             element.style.background = before
@@ -27,9 +29,9 @@ const hoverEffect = (element:HTMLElement, before:string, after:string): any => {
 
 /**
  * Get style of an element
- * @param {string} variable
- * @param {string} theme
- * @returns {any}
+ * @param {string} variable - What style you wanna get?
+ * @param {string} theme - the current theme
+ * @returns {string} style of the [variable] of the element
  */
 const getElementStyle = (variable:string, theme:string): string => {
     return themeJSON?.[theme]?.[variable] || defaultThemeJSON[theme][variable]
@@ -37,23 +39,23 @@ const getElementStyle = (variable:string, theme:string): string => {
 
 /**
  * Change style of an element
- * @param {HTMLElement} element
- * @param {string} variable
- * @param {any} style
- * @param {string} theme
- * @returns {any}
+ * @param {HTMLElement} element - Element you want to change the theme style
+ * @param {string} variable - The style you wanna change
+ * @param {any} key - CSS key of the style
+ * @param {string} theme - current theme
+ * @returns {void}
  */
-const changeElementTheme = (element:HTMLElement, variable:string, style:any, theme:string): any => {
-    if (element) element.style[style] = themeJSON?.[theme]?.[variable] || defaultThemeJSON[theme][variable]
+const changeElementTheme = (element:HTMLElement, variable:string, key:string, theme:string): void => {
+    if (element) (<any>element.style)[key] = themeJSON?.[theme]?.[variable] || defaultThemeJSON[theme][variable]
 }
 
 /**
  * Change page theme
- * @param {Document} document
- * @param {string} theme
- * @returns {any}
+ * @param {Document} document - The HTML Document
+ * @param {string} theme - The current theme
+ * @returns {void}
  */
-const changeTheme = (document:Document, theme:string): any => {
+const changeTheme = (document:Document, theme:string): void => {
     changeElementTheme(document.body, "mainBackground", "background", theme)
     changeElementTheme(document.body, "textColor", "color", theme)
     changeElementTheme(document.body, "fontSize", "fontSize", theme)
@@ -122,7 +124,7 @@ const changeTheme = (document:Document, theme:string): any => {
         hoverEffect(favorite, themeJSON ? themeJSON[theme].favoriteBackground : defaultThemeJSON[theme].favoriteBackground, themeJSON ? themeJSON[theme].favoriteHoverBackground : defaultThemeJSON[theme].favoriteHoverBackground)
     })
     document.querySelectorAll<HTMLElement>(".card-hover-effect").forEach(obj => {
-        obj.onmouseleave = (e) => {
+        obj.onmouseleave = () => {
             obj.style.background = getElementStyle("pendriveBackground", theme);
             obj.style.borderImage = null;
         }
@@ -134,7 +136,7 @@ const changeTheme = (document:Document, theme:string): any => {
         })
     })
     document.querySelectorAll<HTMLElement>(".sidebar-hover-effect").forEach(obj => {
-        obj.onmouseleave = (e) => {
+        obj.onmouseleave = () => {
             obj.style.background = getElementStyle("sidebarBackground", theme);
             obj.style.borderImage = null;
         }
@@ -146,7 +148,7 @@ const changeTheme = (document:Document, theme:string): any => {
         })
     })
     document.querySelectorAll<HTMLElement>(".tab-hover-effect").forEach(obj => {
-        obj.onmouseleave = (e) => {
+        obj.onmouseleave = () => {
             obj.style.background = getElementStyle("tabBackground", theme);
             obj.style.borderImage = null;
         }
@@ -158,7 +160,7 @@ const changeTheme = (document:Document, theme:string): any => {
         })
     })
     document.querySelectorAll<HTMLElement>(".grid-hover-effect").forEach(obj => {
-        obj.onmouseleave = (e) => {
+        obj.onmouseleave = () => {
             obj.style.background = getElementStyle("gridBackground", theme);
             obj.style.borderImage = null;
         }
@@ -190,7 +192,7 @@ const changeTheme = (document:Document, theme:string): any => {
 
 /**
  * Update the entire page theme
- * @returns {any}
+ * @returns {void}
  */
 const updateTheme = async () => {
     const { data } = storage.get("theme")
