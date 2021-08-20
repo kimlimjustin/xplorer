@@ -1,4 +1,4 @@
-const formatBytes = require("../outs/Functions/Math/filesize");
+const formatBytes = require("../outs/src/Functions/Math/filesize").default;
 
 test("Format Bytes", () => {
     expect(formatBytes(1024)).toBe("1 KB")
