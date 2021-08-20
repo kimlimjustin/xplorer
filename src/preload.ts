@@ -1,10 +1,9 @@
-import { updateTheme } from './Functions/Theme/theme'
-import { webFrame } from 'electron'
-import createSidebar from './Components/sidebar'
+import { updateTheme } from './Functions/Theme/theme';
+import { webFrame } from 'electron';
+import createSidebar from './Components/sidebar';
+import { windowManager } from './Components/windowManager';
 /*const { Tab } = require('./Components/tab')
 const Home = require('./Components/home.js');
-const { windowManager } = require('./Components/windowManager');
-const createSidebar = require('./Components/sidebar');
 const { listenOpen } = require('./Functions/Files/open');
 const { toggleHiddenFiles } = require('./Functions/Files/toggleHiddenFiles');
 const optionMenu = require('./Components/optionMenu');
@@ -14,11 +13,11 @@ const { Shortcut } = require('./Components/shortcut');*/
 
 // Wait DOM Content to be loaded
 document.addEventListener('DOMContentLoaded', async () => {
-    webFrame.setZoomFactor(1)
-    await createSidebar()
-    /*// Listen to minimze, maximize, exit and reload button
-    windowManager()
-    // Tab listener
+    webFrame.setZoomFactor(1);
+    await createSidebar();
+    // Listen to minimze, maximize, exit and reload button
+    windowManager();
+    /*// Tab listener
     Tab()
     // Home Component as default view
     var _ = (function () {
@@ -42,5 +41,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     ContextMenu(document.getElementById("workspace"))
     // Initialize shortcut
     Shortcut()*/
-    updateTheme()
-})
+    updateTheme();
+});

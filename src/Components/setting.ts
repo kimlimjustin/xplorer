@@ -1,10 +1,11 @@
-const Translate = require("./multilingual")
-const getPreview = require("../Functions/preview/preview");
-const { updateTheme } = require("../Functions/Theme/theme");
-const storage = require("electron-json-storage-sync");
-const fs = require("fs");
-const path = require("path");
-const version = require("../../package.json").version;
+import Translate from "./multilingual";
+import getPreview from "../Functions/preview/preview";
+import {updateTheme} from "../Functions/Theme/theme";
+import storage from "electron-json-storage-sync";
+import fs from "fs";
+import path from "path";
+import {version} from "../../package.json"
+import {reload} from "./windowManager";
 
 /**
  * Create appearence section
@@ -15,7 +16,7 @@ const Appearance = () => {
     const layout = storage.get("preference")?.data?.layout ?? 's'
     const autoPlayPreviewVideo = storage.get("preference")?.data?.autoPlayPreviewVideo
     const extractExeIcon = storage.get("preference")?.data?.extractExeIcon ?? true
-    let settingsMain = document.querySelector(".settings-main");
+    const settingsMain = document.querySelector(".settings-main");
     settingsMain.innerHTML = `<h3 class="settings-title">App Theme</h3>
     <select name="theme">
         <option>System Default</option>
@@ -46,28 +47,25 @@ const Appearance = () => {
         <option ${layout === "l" ? "selected" : ""} value="l">Large Grid View</option>
         <option ${layout === "d" ? "selected" : ""} value="d">Detail View</option>
     </select>`
-    settingsMain.querySelector('[name="theme"]').addEventListener("change", ({ target: { value } }) => {
-        storage.set("theme", { "theme": value })
-        const { reload } = require("./windowManager");
+    settingsMain.querySelector('[name="theme"]').addEventListener("change", (event: Event & { target: HTMLInputElement}) => {
+        storage.set("theme", { "theme": event.target.value})
         reload()
     })
-    settingsMain.querySelector('[name="layout"]').addEventListener("change", ({ target: { value } }) => {
-        let preference = storage.get("preference")?.data ?? {}
-        preference.layout = value;
+    settingsMain.querySelector('[name="layout"]').addEventListener("change", (event: Event & { target: HTMLInputElement}) => {
+        const preference = storage.get("preference")?.data ?? {}
+        preference.layout = event.target.value;
         storage.set("preference", preference)
     })
-    settingsMain.querySelector(`[name="preview-video"]`).addEventListener("change", ({ target: { checked } }) => {
-        let preference = storage.get("preference")?.data ?? {}
-        preference.autoPlayPreviewVideo = checked
+    settingsMain.querySelector(`[name="preview-video"]`).addEventListener("change", (event: Event & { target: HTMLInputElement}) => {
+        const preference = storage.get("preference")?.data ?? {}
+        preference.autoPlayPreviewVideo = event.target.checked;
         storage.set("preference", preference)
-        const { reload } = require("./windowManager");
         reload()
     })
-    settingsMain.querySelector(`[name="extract-exe-icon"]`).addEventListener("change", ({ target: { checked } }) => {
-        let preference = storage.get("preference")?.data ?? {}
-        preference.extractExeIcon = checked
+    settingsMain.querySelector(`[name="extract-exe-icon"]`).addEventListener("change", (event: Event & { target: HTMLInputElement}) => {
+        const preference = storage.get("preference")?.data ?? {}
+        preference.extractExeIcon = event.target.checked;
         storage.set("preference", preference)
-        const { reload } = require("./windowManager");
         reload()
     })
 }
@@ -81,8 +79,8 @@ const Preference = () => {
     const hideHiddenFiles = storage.get("preference")?.data?.hideHiddenFiles ?? true
     const hideSystemFiles = storage.get("preference")?.data?.hideSystemFiles ?? true
     const dirAlongsideFiles = storage.get("preference")?.data?.dirAlongsideFiles ?? false
-    let settingsMain = document.querySelector(".settings-main");
-    const availableLanguages = JSON.parse(fs.readFileSync(path.join(__dirname, "../Locales/index.json")))?.availableLanguages
+    const settingsMain = document.querySelector(".settings-main");
+    const availableLanguages = JSON.parse(fs.readFileSync(path.join(__dirname, "../Locales/index.json"), 'utf-8'))?.availableLanguages
     settingsMain.innerHTML = `<h3 class="settings-title">App Language</h3>
     <select name="language">
     ${Object.keys(availableLanguages).map(lang => {
@@ -112,32 +110,29 @@ const Preference = () => {
         </label>
     </div>
 `
-    settingsMain.querySelector(`[name="language"]`).addEventListener("change", ({ target: { value } }) => {
-        let preference = storage.get("preference")?.data ?? {}
-        preference.language = value
+    settingsMain.querySelector(`[name="language"]`).addEventListener("change", (event: Event & { target: HTMLInputElement}) => {
+        const preference = storage.get("preference")?.data ?? {}
+        preference.language = event.target.value
         storage.set("preference", preference)
-        const { reload } = require("./windowManager");
         reload()
     })
-    settingsMain.querySelector(`[name="hide-hidden-files"]`).addEventListener("change", ({ target: { checked } }) => {
-        let preference = storage.get("preference")?.data ?? {}
-        preference.hideHiddenFiles = checked
-        storage.set("preference", preference)
-        document.getElementById("workspace").dataset.hideHiddenFiles = checked
-        document.getElementById("show-hidden-files").checked = !checked
+    settingsMain.querySelector(`[name="hide-hidden-files"]`).addEventListener("change", (event: Event & { target: HTMLInputElement}) => {
+        const preference = storage.get("preference")?.data ?? {};
+        preference.hideHiddenFiles = event.target.checked;
+        storage.set("preference", preference);
+        document.getElementById("workspace").dataset.hideHiddenFiles = String(event.target.checked);
+        (document.getElementById("show-hidden-files") as HTMLInputElement).checked = !event.target.checked;
     })
-    settingsMain.querySelector(`[name="hide-system-files"]`).addEventListener("change", ({ target: { checked } }) => {
-        let preference = storage.get("preference")?.data ?? {}
-        preference.hideSystemFiles = checked
+    settingsMain.querySelector(`[name="hide-system-files"]`).addEventListener("change", (event: Event & { target: HTMLInputElement}) => {
+        const preference = storage.get("preference")?.data ?? {}
+        preference.hideSystemFiles = event.target.checked;
         storage.set("preference", preference)
-        const { reload } = require("./windowManager");
         reload()
     })
-    settingsMain.querySelector(`[name="dirAlongsideFiles"]`).addEventListener("change", ({ target: { checked } }) => {
-        let preference = storage.get("preference")?.data ?? {}
-        preference.dirAlongsideFiles = checked
+    settingsMain.querySelector(`[name="dirAlongsideFiles"]`).addEventListener("change", (event: Event & { target: HTMLInputElement}) => {
+        const preference = storage.get("preference")?.data ?? {}
+        preference.dirAlongsideFiles = event.target.checked;
         storage.set("preference", preference)
-        const { reload } = require("./windowManager");
         reload()
     })
 }
@@ -147,7 +142,7 @@ const Preference = () => {
  * @returns {any}
  */
 const About = () => {
-    let settingsMain = document.querySelector(".settings-main");
+    const settingsMain = document.querySelector(".settings-main");
     settingsMain.innerHTML = `<h3 class="settings-title">Xplorer</h3>
     <h6 class="settings-about-version">Version ${version}</h6>
     <ul>
@@ -159,11 +154,11 @@ const About = () => {
 
 /**
  * Setting initializer function
- * @returns {any}
+ * @returns {void}
  */
-const Setting = () => {
+const Setting = ():void => {
     document.querySelector(".sidebar-setting-btn").addEventListener("click", () => {
-        document.querySelector(".settings").style.animation = "open-setting 1s forwards"
+        document.querySelector<HTMLElement>(".settings").style.animation = "open-setting 1s forwards"
 
         document.querySelector(".settings-sidebar-heading").innerHTML = Translate(document.querySelector(".settings-sidebar-heading").innerHTML)
         const settingsSidebarItems = document.querySelector(".settings-sidebar-items")
@@ -195,9 +190,9 @@ const Setting = () => {
         Appearance()
 
         document.querySelector(".exit-setting-btn").addEventListener("click", () => {
-            document.querySelector(".settings").style.animation = "close-setting 1s forwards"
+            document.querySelector<HTMLElement>(".settings").style.animation = "close-setting 1s forwards"
         })
     })
 }
 
-module.exports = Setting
+export default Setting

@@ -1,11 +1,11 @@
 import fs from 'fs';
 import storage from 'electron-json-storage-sync';
 import getPreview from '../Functions/preview/preview';
-const { getDrives } = require('./drives');
-const Translate = require('./multilingual');
-const { updateTheme } = require('../Functions/Theme/theme');
-const Setting = require('./setting');
-const getDriveBasePath = require('../Functions/Files/basePath');
+import { getDrives } from './drives';
+import getDriveBasePath from '../Functions/Files/basePath';
+import { updateTheme } from '../Functions/Theme/theme';
+import Translate from './multilingual';
+import Setting from './setting';
 import { default as getPath } from 'platform-folders';
 
 interface Favorites {
@@ -100,18 +100,16 @@ const createSidebar = (): void => {
             for (const drive of drives) {
                 const driveName =
                     process.platform === 'win32'
-                        ? `${drive._volumename || drive._filesystem} (${
-                              drive._mounted
+                        ? `${drive.volumename || drive.filesystem} (${
+                              drive.mounted
                           })`
-                        : drive._mounted.split('/')[
-                              drive._mounted.split('/').length - 1
+                        : drive.mounted.split('/')[
+                              drive.mounted.split('/').length - 1
                           ]; // Get name of drive
                 drivesElement += `<span data-listenOpen data-path = "${getDriveBasePath(
-                    drive._mounted
+                    drive.mounted
                 )}" data-isdir="true" class="sidebar-hover-effect drive-item"><img src="${getPreview(
-                    drive._filesystem === 'Removable Disk'
-                        ? 'usb'
-                        : 'hard-disk',
+                    drive.filesystem === 'Removable Disk' ? 'usb' : 'hard-disk',
                     'favorites',
                     false
                 )}" alt="${driveName}"><span class="sidebar-text">${driveName}</span></span>`;
