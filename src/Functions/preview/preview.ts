@@ -2,9 +2,8 @@ import fs from "fs";
 import path from "path";
 import storage from 'electron-json-storage-sync';
 import electron from "electron";
-import * as defaultIconData from "../../config/icon.json";
+import defaultIconData from "../../config/icon.json";
 import { extractIcon } from "../../../lib/wasm/bindings";
-
 interface Icon{
     [key:string]: {
         [key:string]: string

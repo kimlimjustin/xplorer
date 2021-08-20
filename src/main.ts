@@ -1,65 +1,79 @@
-import { app, BrowserWindow, Menu, ipcMain, screen } from 'electron'
-const path = require("path");
-const storage = require("electron-json-storage-sync");
-require('@electron/remote/main').initialize()
-
+import { app, BrowserWindow, ipcMain, screen, shell } from 'electron';
+import path from 'path';
+import storage from 'electron-json-storage-sync';
+import * as remoteInit from '@electron/remote/main';
+import electronReloader from 'electron-reloader';
+remoteInit.initialize();
 
 try {
-   require('electron-reloader')(module)
-} catch (_) { }
+    electronReloader(module);
+    // eslint-disable-next-line no-empty
+} catch (_) {}
 
+console.log(process.argv);
 
-console.log(process.argv)
-
-let id:string;
-ipcMain.on('GUID', (e:any, arg:any) => {
-   id = arg;
-})
+let id: string;
+ipcMain.on('GUID', (_, arg: string) => {
+    id = arg;
+});
 
 // Create a new window
 function createWindow() {
-   const { width, height } = screen.getPrimaryDisplay().workAreaSize
-   const win = new BrowserWindow({
-      title: "xplorer",
-      frame: false,
-      width: Math.floor(width * .8),
-      height: Math.floor(height * .8),
-      minWidth: 600,
-      minHeight: 400,
-      webPreferences: {
-         preload: path.join(__dirname, 'preload.js'),
-         enableRemoteModule: true
-      }
-   })
+    const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+    const win = new BrowserWindow({
+        title: 'xplorer',
+        frame: false,
+        width: Math.floor(width * 0.8),
+        height: Math.floor(height * 0.8),
+        minWidth: 600,
+        minHeight: 400,
+        webPreferences: {
+            preload: path.join(__dirname, 'preload.js'),
+            enableRemoteModule: true,
+        },
+    });
 
-   win.loadFile('./public/index.html')
-   win.webContents.on('new-window', (e:any, url:string) => {
-      e.preventDefault()
-      require('electron').shell.openExternal(url);
-   })
+    win.loadFile('./public/index.html');
+    win.webContents.on(
+        'new-window',
+        (e: Electron.NewWindowWebContentsEvent, url: string) => {
+            e.preventDefault();
+            shell.openExternal(url);
+        }
+    );
 }
 
-app.allowRendererProcessReuse = false
+app.allowRendererProcessReuse = false;
 
 app.whenReady().then(() => {
-   createWindow()
+    createWindow();
 
-   app.on('activate', () => {
-      if (BrowserWindow.getAllWindows().length === 0) {
-         createWindow()
-      }
-   })
-})
+    app.on('activate', () => {
+        if (BrowserWindow.getAllWindows().length === 0) {
+            createWindow();
+        }
+    });
+});
 
 app.on('window-all-closed', () => {
-   storage.remove(`tabs-${id}`)
-   if (process.platform !== 'darwin') {
-      app.quit()
-   }
-})
-ipcMain.on('ondragstart', (event:any, filePath:string, options:any) => {
-   event.sender.startDrag({
-      file: filePath,
-      icon: options.isDir ? path.join(__dirname, "icon/folder.png") : path.join(__dirname, "icon/file.png")
-   })
-})
+    storage.remove(`tabs-${id}`);
+    if (process.platform !== 'darwin') {
+        app.quit();
+    }
+});
+
+interface dragOptions {
+    [key: string]: string;
+}
+
+ipcMain.on(
+    'ondragstart',
+    (event: Electron.IpcMainEvent, filePath: string, options: dragOptions) => {
+        event.sender.startDrag({
+            file: filePath,
+            icon: options.isDir
+                ? path.join(__dirname, 'icon/folder.png')
+                : path.join(__dirname, 'icon/file.png'),
+        });
+    }
+);
