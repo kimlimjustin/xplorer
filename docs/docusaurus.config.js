@@ -77,7 +77,7 @@ module.exports = {
           ],
         }
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Justin Maximillian Kimlim. Website Built with <a href="https://docusaurus.io" target="_blank">Docusaurus</a>.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Justin Maximillian Kimlim and <a href="https://github.com/kimlimjustin/xplorer/graphs/contributors" target="_blank">contributors</a>. Website Built with <a href="https://docusaurus.io" target="_blank">Docusaurus</a>.`,
     },
     prism: {
       theme: lightCodeTheme,
@@ -93,17 +93,27 @@ module.exports = {
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl: ({ locale, docPath }) => {
             if (locale === "en") {
-              return `https://github.com/kimlimjustin/xplorer/edit/master/docs/${docPath}`;
+              return `https://github.com/kimlimjustin/xplorer/edit/master/docs/docs/${docPath}`;
             } else {
-              return `https://crowdin.com/project/xplorer/${locale}`
+              return `https://crowdin.com/project/xplorer`
             }
-            
-          }
+          },
+          showLastUpdateAuthor: true,
+          showLastUpdateTime: true
         },
         blog: {
           showReadingTime: true,
-          editUrl:
-            'https://github.com/kimlimjustin/xplorer/edit/master/docs',
+          editUrl: ({ locale, blogPath }) => {
+            if (locale === "en") {
+              return `https://github.com/kimlimjustin/xplorer/edit/master/docs/blog/${blogPath}`;
+            } else {
+              return `https://crowdin.com/project/xplorer`
+            }
+          },
+          feedOptions: {
+            type: 'all',
+            copyright: `Copyright © ${new Date().getFullYear()} Justin Maximillian Kimlim and <a href="https://github.com/kimlimjustin/xplorer/graphs/contributors" target="_blank">contributors</a>.`,
+          },
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
@@ -118,7 +128,16 @@ module.exports = {
       {
         path: 'community',
         id: 'community',
-        routeBasePath: 'community'
+        routeBasePath: 'community',
+        editUrl: ({ locale, docPath }) => {
+          if (locale === "en") {
+            return `https://github.com/kimlimjustin/xplorer/edit/master/docs/community/${docPath}`;
+          } else {
+            return `https://crowdin.com/project/xplorer`
+          }
+        },
+        showLastUpdateAuthor: true,
+        showLastUpdateTime: true
       }
     ],
     [
