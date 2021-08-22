@@ -22,7 +22,7 @@ Saya merancang Xplorer untuk beberapa alasan berikut:
 * Lintas Platform
 * Menunjang pratinjau secara langsung di dalam Xplorer
 * Terlihat modern
-* Yang terpenting, _FOSS_, </em">Gratis dan terbuka bagi sumber perangkat lunak </em>, yang mana anda dapat mengganti komponen software yang anda mau
+* Yang terpenting, _FOSS_, Gratis dan terbuka bagi sumber perangkat lunak, yang mana anda dapat mengganti komponen software yang anda mau
 
 Xplorer ialah aplikasi yang dirancang untuk pengguna mengatur data/berangkas secara mudah dengan menunjang banyak tab, pratinjau data dan sebagainya. Dan juga terlihat modern! Anda bisa mengkustomisasi aplikasi dengan mengubah tema, ikon dan juga memasukan fitur kustom ke Xplorer (Meskipun disaat saya menulis dokumentasi ini, masih belum selesai, tapi akan segera selesai)!
 
