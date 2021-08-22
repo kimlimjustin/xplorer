@@ -18,4 +18,4 @@ Secara ringkas, Xplorer memiliki fitur seperti:
 - Mudah dipakai
 - Lintas Platform
 - Melihat (_preview_) file secara _native_ langsung didalam aplikasi.
-- Yang terpenting, _FOSS_, _Free and Open Source Software_, yang dimana anda dapat mengganti komponen software yang anda mau.
+- Most importantly, it's Free and Open Source! Which mean you can change components inside if you see fit and you also don't make your wallet go dry
