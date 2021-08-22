@@ -18,4 +18,4 @@ Xplorer 是一个从基础构建的文件浏览器，可客制化，且无需客
 - 简单易用
 - 跨平台
 - 文件预览，甚至视频！
-- 最重要的是，自由开放源码，自由开放源码，这意味着如果你认为合适，你可以更改组件内部。
+- Most importantly, it's Free and Open Source! Which mean you can change components inside if you see fit and you also don't make your wallet go dry

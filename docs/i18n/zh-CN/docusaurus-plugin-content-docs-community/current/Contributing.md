@@ -1,16 +1,16 @@
 ---
 sidebar_position: 2
 ---
-# Contribute
-👍🎉 First off, thanks for taking the time to contribute! 🎉👍
+# 参与贡献
+👍🎉 首先, 感谢您花时间来贡献! 🎉👍
 
-Xplorer is currently under development. We are welcoming contributors to collaborate on Xplorer.
+Xplorer目前正在开发中。 我们欢迎您参与 Xplorer 的开发。
 
-## Get involved
-There are many ways to contribute to Xplorer, and many of them do not involve writing any code. Here are few ideas to get started:
-- Start using Xplorer! Go trough the Tutorial guides. Does anything work as expected? If not, we're always looking for improvements. Let us know by opening an issue.
-- Look through the [Xplorer issues](https://github.com/kimlimjustin/xplorer/issues). If you find an issue you would like to fix, [open a pull request](#first-pull-request). Issues tagged as [good first issue](https://github.com/kimlimjustin/xplorer/labels/good%20first%20issue) are a good place to get started.
-- Help us making the docs better. File an issue if you find anything that is confusing, any grammatical error, or can be improved.
+## 参与
+您有诸多方式可以为 Xplorer 做出贡献，其中大多数无需您撰写甚至一行代码。 您可以从这些想法开始：
+- 开始使用 Xplorer ！ 请转到入门指南。 每一步都如教程所写的能正常工作吗？ 如果没有，我们总是在寻求改进。 通过提出一个 Issues，让我们了解情况。
+- 查看 [Xplorer Issues](https://github.com/kimlimjustin/xplorer/issues)。 若您有想修复的Issues，请[提交合并请求](#your-first-pull-request)。 标记为 [_头号好议题 (Good first issue)_](https://github.com/facebook/docusaurus/labels/Good%20first%20issue) 的都是好出发点。
+- 帮助我们改进文档。 如果您发现任何令人困惑的语文，或者任何语法错误，或者可以改进，请提交问题。
 - Take a look at the [GitHub Discussion](https://github.com/kimlimjustin/xplorer/discussions) and give your opinion into a discussion or consider opening a pull request if you see something you want to work on.
 
 Contributions are very welcome!
@@ -143,13 +143,23 @@ make sure the PR does only one thing, otherwise please split it. It is recommend
 3. Open a [PR](https://github.com/kimlimjustin/xplorer/pulls) and ensure to describe your pull request clearly.
 
 ## Working on Xplorer resources
-### Multilingual Resources
-Multilingual resources are available on [`src/Languages`](https://github.com/kimlimjustin/xplorer/tree/master/src/Languages). You can add your language by doing these steps:
-- Create a new file with `<Language Code>.json` file name format.
-- Copy the JSON code from one of those languages available there.
-- Paste in your language JSON and edit the value.
-- Add a value on `availableLanguages` inside `index.json` which your language code as key, and the language name as value.
-- Open a [Pull Request.](#pull-requests)
+### Locales
+We host our locales on the [crowdin](https://crwd.in/xplorer). To translate it, please follow these steps:
+* SIgn up on [Crowdin](https://crowdin.com) and Join our project [here](https://crwd.in/xplorer).
+* Make sure your locale exists there, if it does not exist, leave a comment in [this discussion](https://github.com/kimlimjustin/xplorer/discussions/30) and I'll add the language option :)
+* Get familiar with the Crowdin translation UI, as you will need to use it to translate JSON and Markdown files
+* Translate the content!
+
+#### Priority Files to translate on Crowdin
+1. `src/Locales` files
+2. `docs/docs` files
+3. `docs/i18n/en` files
+4. `docs/community` files
+
+#### Production
+Once the files on `src/Locales` have been translated for more than 80%, we will add it into Xplorer app, and for the docs, we will add it into production once the translation looks good!
+
+Please comment [here](https://github.com/kimlimjustin/xplorer/discussions/30) if you have any questions!
 
 ### Files Icon
 Files icons are available on [`src/icon`](https://github.com/kimlimjustin/xplorer/tree/master/src/icon). You can add an icon by doing these steps:

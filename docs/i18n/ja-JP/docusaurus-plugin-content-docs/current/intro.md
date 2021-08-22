@@ -18,4 +18,4 @@ Xplorer　のは、完全にカスタマイズができるようにゼロから�
 - 使いやすい
 - クロスプラットフォーム
 - 直接にファイルをプレビュー、ビデオでさえ！
-- 最も重要な事は、FOSS（フリー、オープンソース）です。 つまり、適切と思われる場合は、内部のコンポーネントを変更できます。
+- Most importantly, it's Free and Open Source! Which mean you can change components inside if you see fit and you also don't make your wallet go dry
