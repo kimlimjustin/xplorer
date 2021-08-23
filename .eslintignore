@@ -2,3 +2,4 @@ test/*
 src/Typings/*
 lib/wasm/*
 outs/**/*
+scripts/*
