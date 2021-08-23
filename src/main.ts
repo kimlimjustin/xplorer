@@ -2,13 +2,19 @@ import { app, BrowserWindow, ipcMain, screen, shell } from 'electron';
 import path from 'path';
 import storage from 'electron-json-storage-sync';
 import * as remoteInit from '@electron/remote/main';
-import electronReloader from 'electron-reloader';
+import isDev from 'electron-is-dev';
+if (isDev) {
+    try {
+        const electronReloader = require('electron-reloader');
+        electronReloader(module);
+    } catch (_) {}
+}
 remoteInit.initialize();
 
-try {
+/*try {
     electronReloader(module);
     // eslint-disable-next-line no-empty
-} catch (_) {}
+} catch (_) {}*/
 
 console.log(process.argv);
 

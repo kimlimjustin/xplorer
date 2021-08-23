@@ -7,7 +7,7 @@ index b049482..e86f439 100644
  
  	const read = await fs.createReadStream(source);
 -	await fs.makeDir(path.dirname(destination));
-+	if(!(process.platform === "win32" && /\w:\\/.test(path.resolve(path.dirname(destination), "/")))){
++	if(!(process.platform === "win32" && /^\w:(\\{1,2}|(\/{1,2}))$/.test(path.dirname(destination)))){
 +        await fs.makeDir(path.dirname(destination), {mode: options.directoryMode});
 +    }
  	const write = fs.createWriteStream(destination, {flags: options.overwrite ? 'w' : 'wx'});
