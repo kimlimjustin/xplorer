@@ -39,7 +39,7 @@ function createWindow() {
         },
     });
 
-    win.loadFile('./public/index.html');
+    win.loadFile('src/public/index.html');
     win.webContents.on(
         'new-window',
         (e: Electron.NewWindowWebContentsEvent, url: string) => {
