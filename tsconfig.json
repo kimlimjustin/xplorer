@@ -7,6 +7,7 @@
         "removeComments": true,
         "outDir": "outs",
         "baseUrl": ".",
+        "moduleResolution": "node",
         "resolveJsonModule": true,
         "esModuleInterop": true,
         "paths": {

@@ -17,29 +17,31 @@
     ],
     "scripts": {
         "start:ts": "electron ./outs/src/main.js",
-        "start": "yarn compile && concurrently \"yarn compile:watch\" \"yarn start:ts\"",
+        "start": "yarn compile && electron-forge start",
         "docs": "yarn --cwd ./docs start",
         "pretest": "yarn compile",
         "test": "jest",
+        "prebuild": "yarn compile",
         "build": "electron-builder",
         "build:docs": "yarn --cwd ./docs build",
         "deploy": "yarn --cwd ./docs deploy",
         "build-wml": "electron-builder -wml",
         "native_build": "node-gyp rebuild",
-        "install": "node install.js",
+        "install": "node scripts/install.js",
         "postinstall": "patch-package",
         "crowdin": "crowdin",
         "crowdin:sync": "yarn --cwd ./docs write-translations && crowdin upload && crowdin download",
-        "copyfiles": "cpy '**/*' '!**/*.ts' ../outs/src --cwd=src --no-overwrite --parents",
+        "copyfiles": "node scripts/copyfiles",
         "compile": "rimraf outs && tsc && yarn copyfiles",
         "compile:watch": "tsc -w",
         "lint": "eslint -c .eslintrc.yml --ext .ts ./src",
-        "prettier": "prettier --write src"
+        "prettier": "prettier --write src",
+        "package": "electron-forge package",
+        "make": "electron-forge make"
     },
     "build": {
         "files": [
-            "**/*",
-            "!docs/${/*}"
+            "outs/**/*"
         ],
         "directories": {
             "buildResources": "icons"
@@ -70,12 +72,15 @@
     ],
     "license": "Apache-2.0",
     "devDependencies": {
+        "@electron-forge/cli": "^6.0.0-beta.59",
+        "@electron-forge/maker-deb": "^6.0.0-beta.59",
+        "@electron-forge/maker-rpm": "^6.0.0-beta.59",
+        "@electron-forge/maker-squirrel": "^6.0.0-beta.59",
+        "@electron-forge/maker-zip": "^6.0.0-beta.59",
         "@typescript-eslint/eslint-plugin": "^4.29.2",
         "@typescript-eslint/parser": "^4.29.2",
         "concurrently": "^6.2.1",
-        "cpy-cli": "^3.1.1",
         "electron": "^13.1.3",
-        "electron-builder": "^22.10.5",
         "electron-reloader": "^1.2.1",
         "eslint": "^7.32.0",
         "eslint-config-prettier": "^8.3.0",
@@ -88,9 +93,11 @@
         "@electron/remote": "^1.1.0",
         "clipboardy": "^2.3.0",
         "cpy": "^8.1.2",
+        "electron-is-dev": "^2.0.0",
         "electron-json-storage-sync": "^1.2.0",
         "electron-log": "^4.3.5",
         "electron-prompt": "^1.6.2",
+        "electron-squirrel-startup": "^1.0.0",
         "fswin": "^3.21.107",
         "highlight.js": "^11.1.0",
         "is-hidden-file": "1.1.2",
@@ -104,5 +111,32 @@
         "trash": "^7.2.0",
         "uuid": "^8.3.2",
         "xlsx": "^0.17.0"
+    },
+    "config": {
+        "forge": {
+            "packagerConfig": {},
+            "makers": [
+                {
+                    "name": "@electron-forge/maker-squirrel",
+                    "config": {
+                        "name": "xplorer"
+                    }
+                },
+                {
+                    "name": "@electron-forge/maker-zip",
+                    "platforms": [
+                        "darwin"
+                    ]
+                },
+                {
+                    "name": "@electron-forge/maker-deb",
+                    "config": {}
+                },
+                {
+                    "name": "@electron-forge/maker-rpm",
+                    "config": {}
+                }
+            ]
+        }
     }
 }
