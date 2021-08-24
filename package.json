@@ -1,142 +1,115 @@
 {
-    "name": "xplorer",
-    "description": "Xplorer, a customizable, modern file manager",
-    "version": "0.1.0",
-    "author": "Justin Maximillian Kimlim <kimlimjustin@gmail.com>",
-    "main": "outs/src/main.js",
-    "icon": "build/icon.icns",
-    "homepage": "https://xplorer.vercel.app",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/kimlimjustin/xplorer.git"
-    },
-    "os": [
-        "darwin",
-        "win32",
-        "linux"
-    ],
-    "scripts": {
-        "start:ts": "electron ./outs/src/main.js",
-        "start": "yarn compile && electron-forge start",
-        "docs": "yarn --cwd ./docs start",
-        "pretest": "yarn compile",
-        "test": "jest",
-        "prebuild": "yarn compile",
-        "build": "electron-builder",
-        "build:docs": "yarn --cwd ./docs build",
-        "deploy": "yarn --cwd ./docs deploy",
-        "build-wml": "electron-builder -wml",
-        "native_build": "node-gyp rebuild",
-        "install": "node scripts/install.js",
-        "postinstall": "patch-package",
-        "crowdin": "crowdin",
-        "crowdin:sync": "yarn --cwd ./docs write-translations && crowdin upload && crowdin download",
-        "copyfiles": "node scripts/copyfiles",
-        "compile": "rimraf outs && tsc && yarn copyfiles",
-        "compile:watch": "tsc -w",
-        "lint": "eslint -c .eslintrc.yml --ext .ts ./src",
-        "prettier": "prettier --write src",
-        "package": "electron-forge package",
-        "make": "electron-forge make"
-    },
-    "build": {
-        "files": [
-            "outs/**/*"
-        ],
-        "directories": {
-            "buildResources": "icons"
-        },
-        "win": {
-            "target": [
-                "nsis"
-            ]
-        },
-        "nsis": {
-            "license": "LICENSE",
-            "runAfterFinish": true
-        },
-        "linux": {
-            "target": [
-                "AppImage",
-                "deb"
-            ]
-        }
-    },
-    "keywords": [
-        "Xplorer",
-        "File explorer",
-        "File",
-        "File manager",
-        "Folders",
-        "Directory"
-    ],
-    "license": "Apache-2.0",
-    "devDependencies": {
-        "@electron-forge/cli": "^6.0.0-beta.59",
-        "@electron-forge/maker-deb": "^6.0.0-beta.59",
-        "@electron-forge/maker-rpm": "^6.0.0-beta.59",
-        "@electron-forge/maker-squirrel": "^6.0.0-beta.59",
-        "@electron-forge/maker-zip": "^6.0.0-beta.59",
-        "@typescript-eslint/eslint-plugin": "^4.29.2",
-        "@typescript-eslint/parser": "^4.29.2",
-        "concurrently": "^6.2.1",
-        "electron": "^13.1.3",
-        "electron-reloader": "^1.2.1",
-        "eslint": "^7.32.0",
-        "eslint-config-prettier": "^8.3.0",
-        "prettier": "2.3.2",
-        "rimraf": "^3.0.2",
-        "typescript": "^4.3.5"
-    },
-    "dependencies": {
-        "@crowdin/cli": "3",
-        "@electron/remote": "^1.1.0",
-        "clipboardy": "^2.3.0",
-        "cpy": "^8.1.2",
-        "electron-is-dev": "^2.0.0",
-        "electron-json-storage-sync": "^1.2.0",
-        "electron-log": "^4.3.5",
-        "electron-prompt": "^1.6.2",
-        "electron-squirrel-startup": "^1.0.0",
-        "fswin": "^3.21.107",
-        "highlight.js": "^11.1.0",
-        "is-hidden-file": "1.1.2",
-        "jest": "^27.0.4",
-        "mammoth": "^1.4.17",
-        "marked": "^2.1.3",
-        "mv": "^2.1.1",
-        "patch-package": "^6.4.7",
-        "platform-folders": "^0.5.4",
-        "postinstall-postinstall": "^2.1.0",
-        "trash": "^7.2.0",
-        "uuid": "^8.3.2",
-        "xlsx": "^0.17.0"
-    },
-    "config": {
-        "forge": {
-            "packagerConfig": {},
-            "makers": [
-                {
-                    "name": "@electron-forge/maker-squirrel",
-                    "config": {
-                        "name": "xplorer"
-                    }
-                },
-                {
-                    "name": "@electron-forge/maker-zip",
-                    "platforms": [
-                        "darwin"
-                    ]
-                },
-                {
-                    "name": "@electron-forge/maker-deb",
-                    "config": {}
-                },
-                {
-                    "name": "@electron-forge/maker-rpm",
-                    "config": {}
-                }
-            ]
-        }
-    }
+	"name": "xplorer",
+	"description": "Xplorer, a customizable, modern file manager",
+	"version": "0.1.0",
+	"author": "Justin Maximillian Kimlim <kimlimjustin@gmail.com>",
+	"main": "outs/src/main.js",
+	"icon": "build/icon.icns",
+	"homepage": "https://xplorer.vercel.app",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/kimlimjustin/xplorer.git"
+	},
+	"os": [
+		"darwin",
+		"win32",
+		"linux"
+	],
+	"scripts": {
+		"start:ts": "yarn compile && electron ./outs/src/main.js",
+		"start": "yarn compile && concurrently \"yarn compile:watch\" \"yarn start:ts\"",
+		"docs": "yarn --cwd ./docs start",
+		"pretest": "yarn compile",
+		"test": "jest",
+		"prebuild": "yarn compile",
+		"build": "electron-builder",
+		"build:docs": "yarn --cwd ./docs build",
+		"deploy": "yarn --cwd ./docs deploy",
+		"build-wml": "electron-builder -wml",
+		"native_build": "node-gyp rebuild",
+		"install": "node scripts/install.js",
+		"postinstall": "patch-package",
+		"crowdin": "crowdin",
+		"crowdin:sync": "yarn --cwd ./docs write-translations && crowdin upload && crowdin download",
+		"copyfiles": "node scripts/copyfiles",
+		"compile": "rimraf outs && tsc && yarn copyfiles",
+		"compile:watch": "tsc -w",
+		"lint": "eslint -c .eslintrc.yml --ext .ts ./src",
+		"prettier": "prettier --write src"
+	},
+	"build": {
+		"files": [
+			"**/*",
+			"!docs/**/*",
+			"!src/**/*.ts",
+			"!scripts/**/*",
+			"!paths/**/*",
+			"!.vscode/**/*",
+			".github/**/*"
+		],
+		"directories": {
+			"buildResources": "icons"
+		},
+		"win": {
+			"target": [
+				"nsis"
+			]
+		},
+		"nsis": {
+			"license": "LICENSE",
+			"runAfterFinish": true
+		},
+		"linux": {
+			"target": [
+				"AppImage",
+				"deb"
+			]
+		}
+	},
+	"keywords": [
+		"Xplorer",
+		"File explorer",
+		"File",
+		"File manager",
+		"Folders",
+		"Directory"
+	],
+	"license": "Apache-2.0",
+	"devDependencies": {
+		"@typescript-eslint/eslint-plugin": "^4.29.2",
+		"@typescript-eslint/parser": "^4.29.2",
+		"concurrently": "^6.2.1",
+		"electron": "^13.1.3",
+		"electron-builder": "^22.11.7",
+		"electron-reloader": "^1.2.1",
+		"eslint": "^7.32.0",
+		"eslint-config-prettier": "^8.3.0",
+		"prettier": "2.3.2",
+		"rimraf": "^3.0.2",
+		"typescript": "^4.3.5"
+	},
+	"dependencies": {
+		"@crowdin/cli": "3",
+		"@electron/remote": "^1.1.0",
+		"clipboardy": "^2.3.0",
+		"cpy": "^8.1.2",
+		"electron-is-dev": "^2.0.0",
+		"electron-json-storage-sync": "^1.2.0",
+		"electron-log": "^4.3.5",
+		"electron-prompt": "^1.6.2",
+		"electron-squirrel-startup": "^1.0.0",
+		"fswin": "^3.21.107",
+		"highlight.js": "^11.1.0",
+		"is-hidden-file": "1.1.2",
+		"jest": "^27.0.4",
+		"mammoth": "^1.4.17",
+		"marked": "^2.1.3",
+		"mv": "^2.1.1",
+		"patch-package": "^6.4.7",
+		"platform-folders": "^0.5.4",
+		"postinstall-postinstall": "^2.1.0",
+		"trash": "^7.2.0",
+		"uuid": "^8.3.2",
+		"xlsx": "^0.17.0"
+	}
 }
