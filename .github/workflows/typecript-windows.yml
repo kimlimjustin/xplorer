@@ -1,4 +1,4 @@
-name: Compile TypeScript
+name: Compile TypeScript (Windows)
 
 on:
     push:
@@ -8,17 +8,11 @@ on:
 
 jobs:
     build:
-        steps:
-        - uses: actions/checkout@v1
-        - run: echo ${{matrix.TARGET}}
+        runs-on: windows-latest
 
         strategy:
             matrix:
-                os: [windows-latest, ubuntu-latest]
                 node-version: [14.x, 15.x]
-                include:
-                    - os: windows-latest
-                    - os: ubuntu-latest
 
         steps:
             - uses: actions/checkout@v2

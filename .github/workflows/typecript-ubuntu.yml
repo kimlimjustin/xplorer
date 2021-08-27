@@ -1,4 +1,4 @@
-name: Lint
+name: Compile TypeScript (Ubuntu)
 
 on:
     push:
@@ -21,4 +21,4 @@ jobs:
               with:
                   node-version: ${{ matrix.node-version }}
             - run: rm -rf node_modules && yarn install --frozen-lockfile
-            - run: yarn lint
+            - run: yarn compile
