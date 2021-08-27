@@ -1,8 +1,8 @@
-const { openDir } = require('../Functions/Files/open');
+import { openDir } from '../Functions/Files/open';
 import storage from 'electron-json-storage-sync';
 import { BrowserWindow } from '@electron/remote';
 import createSidebar from './sidebar';
-const { closePreviewFile } = require('../Functions/Files/preview');
+import { closePreviewFile } from '../Functions/Files/preview';
 import windowGUID from '../Constants/windowGUID';
 
 /**
@@ -10,10 +10,10 @@ import windowGUID from '../Constants/windowGUID';
  * @returns {void}
  */
 const reload = async () => {
-    const tabs = storage.get(`tabs-${windowGUID}`)?.data;
-    await createSidebar();
-    openDir(tabs.tabs[tabs.focus].position);
-    closePreviewFile();
+	const tabs = storage.get(`tabs-${windowGUID}`)?.data;
+	await createSidebar();
+	openDir(tabs.tabs[tabs.focus].position);
+	closePreviewFile();
 };
 
 /**
@@ -21,8 +21,8 @@ const reload = async () => {
  * @returns {void}
  */
 const minimize = (): void => {
-    const electronWindow = BrowserWindow.getFocusedWindow();
-    electronWindow.minimize();
+	const electronWindow = BrowserWindow.getFocusedWindow();
+	electronWindow.minimize();
 };
 
 /**
@@ -30,10 +30,10 @@ const minimize = (): void => {
  * @returns {void}
  */
 const maximize = (): void => {
-    const electronWindow = BrowserWindow.getFocusedWindow();
-    !electronWindow.isMaximized()
-        ? electronWindow.maximize()
-        : electronWindow.unmaximize();
+	const electronWindow = BrowserWindow.getFocusedWindow();
+	!electronWindow.isMaximized()
+		? electronWindow.maximize()
+		: electronWindow.unmaximize();
 };
 
 /**
@@ -41,27 +41,27 @@ const maximize = (): void => {
  * @returns {void}
  */
 const windowManager = (): void => {
-    // Minimize the screen
-    document.querySelector('#minimize').addEventListener('click', minimize);
-    // Maximize the screen
-    document.querySelector('#maximize').addEventListener('click', maximize);
-    // Exit window
-    document.querySelector('#exit').addEventListener('click', () => {
-        const electronWindow = BrowserWindow.getFocusedWindow();
-        electronWindow.close();
-    });
+	// Minimize the screen
+	document.querySelector('#minimize').addEventListener('click', minimize);
+	// Maximize the screen
+	document.querySelector('#maximize').addEventListener('click', maximize);
+	// Exit window
+	document.querySelector('#exit').addEventListener('click', () => {
+		const electronWindow = BrowserWindow.getFocusedWindow();
+		electronWindow.close();
+	});
 
-    // Refresh the page
-    document.querySelector('#refresh').addEventListener('click', reload);
+	// Refresh the page
+	document.querySelector('#refresh').addEventListener('click', reload);
 
-    document
-        .querySelector('.path-navigator')
-        .addEventListener(
-            'change',
-            (event: Event & { target: HTMLInputElement }) => {
-                openDir(event.target.value);
-            }
-        );
+	document
+		.querySelector('.path-navigator')
+		.addEventListener(
+			'change',
+			(event: Event & { target: HTMLInputElement }) => {
+				openDir(event.target.value);
+			}
+		);
 };
 
 export { windowManager, reload, minimize, maximize };

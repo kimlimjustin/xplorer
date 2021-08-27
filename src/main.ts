@@ -5,9 +5,11 @@ import * as remoteInit from '@electron/remote/main';
 import isDev from 'electron-is-dev';
 if (isDev) {
 	try {
-		const electronReloader = require('electron-reloader');
+		const electronReloader = require('electron-reloader'); //eslint-disable-line
 		electronReloader(module);
-	} catch (_) {}
+	} catch (err) {
+		console.log('Err: ' + err);
+	}
 }
 remoteInit.initialize();
 

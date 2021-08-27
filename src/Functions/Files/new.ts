@@ -1,21 +1,21 @@
-const prompt = require('electron-prompt');
-const storage = require("electron-json-storage-sync");
-const path = require("path");
-const os = require("os");
-const fs = require("fs");
-const { dialog } = require('@electron/remote');
-const { ErrorLog } = require('../Logs/log');
-const windowGUID = require('../../Constants/windowGUID');
+import prompt from "electron-prompt";
+import storage from "electron-json-storage-sync";
+import path from "path";
+import os from "os";
+import fs from "fs";
+import { dialog } from "@electron/remote";
+import { ErrorLog } from "../Logs/log";
+import windowGUID from "../../Constants/windowGUID";
 /**
  * Function to create popup window
  * @param {string} type - is it a file or folder
- * @returns {any}
+ * @returns {void}
  */
-const NewFile = (type) => {
+const NewFile = (type: string): void => {
     switch (type) {
         case "new file":
             prompt({ title: 'New File', label: 'File Name:', inputAttrs: { type: 'text', required: true }, type: 'input' })
-                .then((r) => {
+                .then((r:any) => { //eslint-disable-line
                     if (r) {
                         const tabs = storage.get(`tabs-${windowGUID}`)?.data
                         const focusingPath = tabs.tabs[String(tabs.focus)].position === "Home" || tabs.tabs[String(tabs.focus)].position === path.join(os.homedir(), 'Home') ? os.homedir() : tabs.tabs[String(tabs.focus)].position
@@ -41,7 +41,7 @@ const NewFile = (type) => {
             break;
         case "new folder":
             prompt({ title: 'New Folder', label: 'Folder Name:', inputAttrs: { type: 'text', required: true }, type: 'input' })
-                .then((r) => {
+                .then((r:any) => { //eslint-disable-line
                     if (r) {
                         const tabs = storage.get(`tabs-${windowGUID}`)?.data
                         const focusingPath = tabs.tabs[String(tabs.focus)].position === "Home" || tabs.tabs[String(tabs.focus)].position === path.join(os.homedir(), 'Home') ? os.homedir() : tabs.tabs[String(tabs.focus)].position
@@ -68,4 +68,4 @@ const NewFile = (type) => {
     }
 }
 
-module.exports = NewFile
+export default NewFile

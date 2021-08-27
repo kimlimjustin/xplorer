@@ -131,4 +131,4 @@ const Drives = async () => {
     } else return '';
 };
 
-export { Drives, getDrives, getUniqueDrives, drivesToElements };
+export { Drives, getDrives, getUniqueDrives, drivesToElements, uniqueDrives };

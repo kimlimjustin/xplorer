@@ -3,3 +3,4 @@ src/Typings/*
 lib/wasm/*
 outs/**/*
 scripts/*
+src/Functions/Logs/log.ts

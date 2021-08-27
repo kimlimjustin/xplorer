@@ -1,42 +1,63 @@
-const storage = require("electron-json-storage-sync");
-const { execSync, exec } = require('child_process');
-const { updateTheme } = require("../Functions/Theme/theme");
-const getPreview = require("../Functions/preview/preview");
-const os = require("os");
-const path = require("path");
-const copyLocation = require("../Functions/Files/location");
-const NewFile = require("../Functions/Files/new");
-const Rename = require("../Functions/Files/rename");
-const Copy = require("../Functions/Files/copy");
-const Paste = require("../Functions/Files/paste");
-const Cut = require("../Functions/Files/cut");
-const { getSelected } = require("../Functions/Files/select");
-const Pin = require("../Functions/Files/pin");
-const { Restore, Trash, PermanentDelete } = require("../Functions/Files/trash");
-const { FILE_TYPES_AVAILABLE_FOR_PREVIEW, Preview } = require("../Functions/Files/preview");
-const windowGUID = require("../Constants/windowGUID");
+import storage from "electron-json-storage-sync";
+import { execSync, exec } from 'child_process';
+import { updateTheme } from "../Functions/Theme/theme";
+import getPreview from "../Functions/preview/preview";
+import os from "os";
+import path from "path";
+import copyLocation from "../Functions/Files/location";
+import NewFile from "../Functions/Files/new";
+import Rename from "../Functions/Files/rename";
+import Copy from "../Functions/Files/copy"; 
+import Paste from "../Functions/Files/paste";
+import Cut from "../Functions/Files/cut";
+import { getSelected } from "../Functions/Files/select";
+import Pin from "../Functions/Files/pin";
+import { Restore, Trash, PermanentDelete } from "../Functions/Files/trash";
+import { FILE_TYPES_AVAILABLE_FOR_PREVIEW, Preview } from "../Functions/Files/preview";
+import windowGUID from "../Constants/windowGUID";
 let vscodeInstalled = false
 try {
     execSync("code --version")
     vscodeInstalled = true
-} catch (_) { }
+} catch (err) {console.log(`INFO: vscode not installed`,err)}
 
-let contextMenu = document.querySelector(".contextmenu");
+let contextMenu = document.querySelector(".contextmenu") as HTMLElement;
 let contextMenuSubmenus = document.getElementById("contextmenu-submenus");
 document.addEventListener("DOMContentLoaded", () => {
-    contextMenu = document.querySelector(".contextmenu");
+    contextMenu = document.querySelector(".contextmenu") as HTMLElement;
     contextMenuSubmenus = document.getElementById("contextmenu-submenus");
 })
 
-const ContextMenuInner = (target, coorX, coorY, openDir) => {
+interface Favorites {
+	name: string;
+	path: string;
+}
+
+interface MenuItem{
+    menu: string;
+    role?: string;
+    visible?: boolean;
+    icon?: string;
+    shortcut?: string;
+    submenu?: {
+        shortcut?: string;
+        name?: string;
+    }[];
+}
+type Menu = MenuItem[][];
+
+type openFileWithDefaultApp = (file: string) => void;
+type openDir = (dir:string) => void;
+
+const ContextMenuInner = (target: HTMLElement, coorX:number, coorY:number, openDir:openDir) => {
     if (target.classList.contains("home-section")) target = document.getElementById("workspace") // If context menu target is on home-section, use main element as target instead.
     while (!target.dataset.path) {
-        target = target.parentNode
+        target = target.parentNode as HTMLElement
     }
     // Reset context menu contents
     contextMenu.innerHTML = ""
     contextMenuSubmenus.innerHTML = ""
-    const favorites = storage.get("sidebar")?.data?.favorites
+    const favorites:Favorites[] = storage.get("sidebar")?.data?.favorites
     const isPinned = !!favorites?.filter(favorite => favorite.path === target.dataset.path).length ?? false
     const isTrash = !!target.dataset.isTrash
     const SidebarMenu = [
@@ -104,8 +125,8 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
     ]
     const BodyMenu = [
         [
-            { "menu": "Layout Mode", "submenu": ["Grid View (Large)", "Grid View (Medium)", "Grid View (Small)", "Detail View"], "icon": "layout", "role": "layout" },
-            { "menu": "Sort by", "submenu": ["A-Z", "Z-A", "Last Modified", "First Modified", "Size", "Type"], "icon": "sort", "role": "sort" },
+            { "menu": "Layout Mode", "submenu": [{"name":"Grid View (Large)"}, {"name":"Grid View (Medium)"}, {"name":"Grid View (Small)"}, {"name":"Detail View"}], "icon": "layout", "role": "layout" },
+            { "menu": "Sort by", "submenu": [{"name":"A-Z"}, {"name":"Z-A"}, {"name":"Last Modified"}, {"name":"First Modified"}, {"name":"Size"}, {"name":"Type"}], "icon": "sort", "role": "sort" },
             { "menu": "Refresh", "role": "refresh", "shortcut": "F5", "icon": "refresh" }
         ],
         [
@@ -136,18 +157,18 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
             { "menu": "Pin to Sidebar", "shortcut": "Alt+P", "icon": "pin", "role": "pins" }
         ]
     ]
-    const MenuToElements = menu => {
+    const MenuToElements = (menu:Menu) => {
         menu.forEach((section, index) => {
             section.forEach(item => {
                 if (item.visible || item.visible === undefined) {
                     const menu = document.createElement('span')
                     menu.classList.add("contextmenu-item");
                     if (item.icon) {
-                        if (item.shortcut) menu.innerHTML = `<img src = "${getPreview(item.icon, 'contextmenu', false)}">${item?.menu.trim() ?? item.trim()}<span class="contextmenu-item-shortcut">${item.shortcut}</span>`
-                        else menu.innerHTML = `<img src = "${getPreview(item.icon, 'contextmenu', false)}" >${item?.menu?.trim() ?? item.trim()}`
+                        if (item.shortcut) menu.innerHTML = `<img src = "${getPreview(item.icon, 'contextmenu', false)}">${item?.menu.trim()}<span class="contextmenu-item-shortcut">${item.shortcut}</span>`
+                        else menu.innerHTML = `<img src = "${getPreview(item.icon, 'contextmenu', false)}" >${item?.menu?.trim()}`
                     } else {
-                        if (item.shortcut) menu.innerHTML = `${item?.menu?.trim() || item.trim()}<span class="contextmenu-item-shortcut">${item.shortcut}</span>`
-                        else menu.innerHTML = item?.menu?.trim() ?? item.trim()
+                        if (item.shortcut) menu.innerHTML = `${item?.menu?.trim()}<span class="contextmenu-item-shortcut">${item.shortcut}</span>`
+                        else menu.innerHTML = item?.menu?.trim()
                     }
                     menu.setAttribute("role", item?.role)
                     contextMenu.appendChild(menu)
@@ -156,7 +177,7 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
 
                     // Create submenu element for context menu
                     if (item.submenu) {
-                        let submenu = document.createElement("div");
+                        const submenu = document.createElement("div");
                         submenu.classList.add("contextmenu-submenu")
 
                         menu.dataset.submenu = submenuId
@@ -167,7 +188,7 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
                             const submenuItemElement = document.createElement("span");
                             submenuItemElement.classList.add("contextmenu-item")
                             if (submenuItem.shortcut) submenuItemElement.innerHTML = `${submenuItem.name ?? submenuItem}<span class="contextmenu-item-shortcut">${submenuItem.shortcut}</span>`
-                            else submenuItemElement.innerHTML = submenuItem.name ?? submenuItem
+                            else submenuItemElement.innerHTML = submenuItem.name
                             if (item?.role) submenuItemElement.setAttribute("role", item?.role)
                             submenu.appendChild(submenuItemElement)
                         })
@@ -192,35 +213,35 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
 
     updateTheme()
 
-    document.querySelectorAll(".contextmenu-item").forEach(menu => {
+    document.querySelectorAll<HTMLElement>(".contextmenu-item").forEach(menu => {
         if (menu.dataset.submenu) {
             const submenu = document.getElementById(menu.dataset.submenu)
-            const submenuItems = submenu.childNodes;
             let submenuCoorX = coorX + contextMenu.offsetWidth
-            let submenuCoorY = coorY + menu.offsetTop
+            const submenuCoorY = coorY + menu.offsetTop
 
             if (coorX + contextMenu.offsetWidth > window.innerWidth) submenuCoorX = coorX - contextMenu.offsetWidth
 
             submenu.style.left = submenuCoorX + "px"
             submenu.style.top = submenuCoorY + "px"
 
-            const clearLayoutModeClasses = element => {
+            const clearLayoutModeClasses = (element:HTMLElement) => {
                 element.classList.remove("large-grid-view")
                 element.classList.remove("medium-grid-view")
                 element.classList.remove("small-grid-view")
                 element.classList.remove("detail-view")
             }
 
-            const clickSubmenuEvent = (e) => {
-                if (e.target.getAttribute("role")) {
-                    const files = document.querySelectorAll(".file")
+            const clickSubmenuEvent = (e:Event) => {
+                const target = e.target as HTMLElement;
+                if (target.getAttribute("role")) {
+                    const files = document.querySelectorAll<HTMLElement>(".file")
                     const layout = storage.get('layout')?.data ?? {}
                     const sort = storage.get('layout')?.data ?? {}
                     const tabs = storage.get(`tabs-${windowGUID}`)?.data
                     let currentPath = tabs.tabs[tabs.focus].position
                     if (currentPath === path.join(os.homedir(), "Home") || currentPath === "xplorer://Home" || currentPath === "Home") currentPath = os.homedir()
                     console.log(currentPath)
-                    switch (e.target.innerHTML) {
+                    switch (target.innerHTML) {
                         case "Grid View (Large)":
                             files.forEach(file => {
                                 clearLayoutModeClasses(file);
@@ -284,22 +305,22 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
                             openDir(currentPath)
                             break;
                     }
-                    if (e.target.innerHTML.startsWith("File")) {
+                    if (target.innerHTML.startsWith("File")) {
                         NewFile("new file")
-                    } else if (e.target.innerHTML.startsWith("Folder")) {
+                    } else if (target.innerHTML.startsWith("Folder")) {
                         NewFile("new folder")
                     }
                 }
             }
 
             const onhover = () => {
-                document.querySelectorAll(".contextmenu-submenu").forEach(submenu => submenu.style.display = "none")
+                document.querySelectorAll<HTMLElement>(".contextmenu-submenu").forEach(submenu => submenu.style.display = "none")
                 submenu.style.display = "block"
                 submenu.addEventListener("click", clickSubmenuEvent)
             }
             const onstophover = () => {
-                const trackMousePosition = e => {
-                    if (!e.target === menu.parentElement) {
+                const trackMousePosition = (e:Event) => {
+                    if (e.target !== menu.parentElement) {
                         submenu.style.display = "none"
                         document.removeEventListener("mouseover", trackMousePosition)
                     }
@@ -319,51 +340,52 @@ const ContextMenuInner = (target, coorX, coorY, openDir) => {
 
 /**
  * Create context menu of an elememt
- * @param {any} element - Element you want to create context menu of
- * @param {any} openFileWithDefaultApp - openFileWithDefaultApp function (optional), pass in the function to avoid circular dependencies
- * @param {any} openDir - openDir function (optional), pass in the function to avoid circular dependencies
- * @returns {any}
+ * @param {HTMLElement} element - Element you want to create context menu of
+ * @param {openFileWithDefaultApp} openFileWithDefaultApp - openFileWithDefaultApp function (optional), pass in the function to avoid circular dependencies
+ * @param {openDir} openDir - openDir function (optional), pass in the function to avoid circular dependencies
+ * @returns {void}
  */
-const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
+const ContextMenu = (element:HTMLElement, openFileWithDefaultApp?: openFileWithDefaultApp, openDir?: openDir):void => {
     // Escape circular dependency
-    if (!openFileWithDefaultApp) openFileWithDefaultApp = require('../Functions/Files/open').openFileWithDefaultApp
-    if (!openDir) openDir = require("../Functions/Files/open").openDir
+    if (!openFileWithDefaultApp) openFileWithDefaultApp = require('../Functions/Files/open').openFileWithDefaultApp //eslint-disable-line @typescript-eslint/no-var-requires
+    if (!openDir) openDir = require("../Functions/Files/open").openDir //eslint-disable-line @typescript-eslint/no-var-requires
+
+    const { reload } = require("./windowManager"); //eslint-disable-line @typescript-eslint/no-var-requires
 
     element.addEventListener("contextmenu", e => {
         // Disable context menu if current path is home and on windows
-        if (window.platform === "win32" && (!document.getElementById("workspace").dataset?.path || document.getElementById("workspace").dataset?.path === "Home")) return;
-        let coorX = e.pageX;
+        if (process.platform === "win32" && (!document.getElementById("workspace").dataset?.path || document.getElementById("workspace").dataset?.path === "Home")) return;
+        const coorX = e.pageX;
         let coorY = e.pageY;
 
-        const TOPBAR_ELEMENT = document.querySelector(".topbar");
+        const TOPBAR_ELEMENT = document.querySelector<HTMLElement>(".topbar");
 
         if (contextMenu.offsetHeight + coorY > window.innerHeight && coorY - contextMenu.offsetHeight > TOPBAR_ELEMENT.offsetHeight)
-            coorY = coorY - (contextMenu.offsetHeight * .5) + "px";
+            coorY = coorY - (contextMenu.offsetHeight * .5);
 
         contextMenu.style.left = coorX + "px";
         contextMenu.style.top = coorY + "px";
-        ContextMenuInner(e.target, coorX, coorY, openDir)
+        ContextMenuInner(e.target as HTMLElement, coorX, coorY, openDir)
 
         contextMenu.querySelectorAll("span").forEach(menu => {
             menu.addEventListener("click", () => {
-                let target = e.target;
+                let target = e.target as HTMLElement;
                 while (!target.dataset.path) {
-                    target = target.parentNode
+                    target = target.parentNode as HTMLElement
                 }
                 const tabs = storage.get(`tabs-${windowGUID}`)?.data
                 const focusingPath = tabs.tabs[tabs.focus].position === "Home" || tabs.tabs[tabs.focus].position === path.join(os.homedir(), "Home") ? os.homedir() : tabs.tabs[tabs.focus].position
                 const filePath = unescape(target.dataset.path)
-                const { reload } = require("./windowManager");
                 let paths;
                 switch (menu.getAttribute("role")) {
                     case "open":
                     case "openInNewTab":
                         if (menu.getAttribute("role") === "openInNewTab") {
-                            const { createNewTab } = require('./tab');
+                            const { createNewTab } = require('./tab');//eslint-disable-line @typescript-eslint/no-var-requires
                             createNewTab(filePath)
                         }
                         if (target.dataset.isdir !== 'true') {
-                            let recents = storage.get('recent')?.data;
+                            const recents = storage.get('recent')?.data;
                             openFileWithDefaultApp(filePath)
 
                             // Push file into recent files
@@ -381,7 +403,7 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
                         }
                         break;
                     case "openMultipleTabs":
-                        const { createNewTab } = require('./tab');
+                        const { createNewTab } = require('./tab');//eslint-disable-line
                         for (const element of getSelected()) {
                             if (element.dataset.isdir === 'true') {
                                 createNewTab(unescape(element.dataset.path))
@@ -442,7 +464,6 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
                         Paste(focusingPath)
                         break;
                     case "pin":
-                        const os = require("os");
                         Pin([filePath === "Home" ? os.homedir() : filePath ?? focusingPath])
                         break;
                     case "pins":
@@ -476,8 +497,8 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
         })
 
 
-        const exitContextMenu = e => {
-            if (!e.target.classList.contains("contextmenu-item")) {
+        const exitContextMenu = (e:Event) => {
+            if (!(e.target as HTMLElement).classList.contains("contextmenu-item")) {
                 contextMenu.style.left = "-100vw";
                 contextMenu.style.top = "-100vh";
                 contextMenuSubmenus.innerHTML = ""
@@ -490,10 +511,11 @@ const ContextMenu = (element, openFileWithDefaultApp, openDir) => {
 
 /**
  * Create context menus of elements
- * @param {any} elements - Elements you want to create context menus on
+ * @param {NodeListOf<Element>} elements - Elements you want to create context menus on
+ * @returns {void}
  */
-const createContextMenus = (elements) => {
-    elements.forEach(element => ContextMenu(element))
+const createContextMenus = (elements:NodeListOf<Element>):void => {
+    elements.forEach(element => ContextMenu(element as HTMLElement))
 }
 
-module.exports = { ContextMenu, createContextMenus }
+export { ContextMenu, createContextMenus }
