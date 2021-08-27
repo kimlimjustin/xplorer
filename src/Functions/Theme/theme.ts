@@ -46,7 +46,7 @@ const getElementStyle = (variable:string, theme:string): string => {
  * @returns {void}
  */
 const changeElementTheme = (element:HTMLElement, variable:string, key:string, theme:string): void => {
-    if (element) (<any>element.style)[key] = themeJSON?.[theme]?.[variable] || defaultThemeJSON[theme][variable]
+    if (element) (<any>element.style)[key] = themeJSON?.[theme]?.[variable] || defaultThemeJSON[theme][variable] //eslint-disable-line
 }
 
 /**
@@ -192,9 +192,9 @@ const changeTheme = (document:Document, theme:string): void => {
 
 /**
  * Update the entire page theme
- * @returns {void}
+ * @returns {Promise<void>}
  */
-const updateTheme = async () => {
+const updateTheme = async ():Promise<void> => {
     const { data } = storage.get("theme")
     // Detect system theme
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {

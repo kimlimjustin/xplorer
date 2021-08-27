@@ -9,7 +9,7 @@ import windowGUID from '../Constants/windowGUID';
  * Reload the page
  * @returns {void}
  */
-const reload = async () => {
+const reload = async (): Promise<void> => {
 	const tabs = storage.get(`tabs-${windowGUID}`)?.data;
 	await createSidebar();
 	openDir(tabs.tabs[tabs.focus].position);
