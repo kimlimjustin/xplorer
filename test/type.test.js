@@ -1,4 +1,5 @@
-const getType = require("../src/Functions/Files/type");
+const getType = require("../outs/src/Functions/Files/type").default;
+console.log(getType)
 
 test("Get type of js", () => {
     expect(getType("hello.js")).toBe("JavaScript")
