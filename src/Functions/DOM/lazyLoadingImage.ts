@@ -27,26 +27,27 @@ const isElementInViewport = (el: HTMLElement): boolean => {
 const LAZY_LOAD = (): void => {
 	const MAIN_ELEMENT = document.getElementById('workspace');
 	// Only show image when its visible in viewport to reduce latency
-	/*MAIN_ELEMENT.querySelectorAll('img').forEach((img) => {
+	MAIN_ELEMENT.querySelectorAll('img').forEach((img) => {
 		(function _detectImg() {
+			let n: NodeJS.Timeout;
 			if (img.dataset.src) {
 				if (isElementInViewport(img)) {
 					img.src = img.dataset.src;
 					if (FETCHED_ICONS.indexOf(img.dataset.src) === -1)
 						FETCHED_ICONS.push(img.dataset.src);
 					img.removeAttribute('data-src');
-					clearTimeout(_detectImg);
+					global.clearTimeout(n);
 				} else {
 					// Directly show icons if it was fetched before
 					if (FETCHED_ICONS.indexOf(img.dataset.src) !== -1) {
 						img.src = img.dataset.src;
-						clearTimeout(_detectImg);
+						global.clearTimeout(n);
 					}
 				}
 			}
-			setTimeout(_detectImg, lazy_load_frequency);
+			n = setTimeout(_detectImg, lazy_load_frequency);
 		})();
-	});*/
+	});
 };
 
 export default LAZY_LOAD;

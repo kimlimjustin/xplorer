@@ -17,9 +17,11 @@ const Cut = (files: Array<string>): void => {
 	}
 	clipboardy.writeSync(commands);
 
-	/*(function detectClipboardChange() {
+	(function detectClipboardChange() {
+		let n: NodeJS.Timeout; //eslint-disable-line
 		if (clipboardy.readSync() !== commands) {
-			clearTimeout(detectClipboardChange);
+			global.clearTimeout(n);
+			//clearTimeout(detectClipboardChange);
 			document
 				.querySelectorAll<HTMLElement>('.file.cut')
 				.forEach((file) => {
@@ -28,8 +30,8 @@ const Cut = (files: Array<string>): void => {
 				});
 			return;
 		}
-		setTimeout(detectClipboardChange, 100);
-	})();*/
+		n = setTimeout(detectClipboardChange, 100);
+	})();
 	return;
 };
 
