@@ -8,11 +8,17 @@ on:
 
 jobs:
     build:
-        runs-on: [ubuntu-latest, windows-latest]
+        steps:
+        - uses: actions/checkout@v1
+        - run: echo ${{matrix.TARGET}}
 
         strategy:
             matrix:
+                os: [windows-latest, ubuntu-latest]
                 node-version: [14.x, 15.x]
+                include:
+                - os: windows-latest
+                - os: ubuntu-latest
 
         steps:
             - uses: actions/checkout@v2
