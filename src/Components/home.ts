@@ -158,10 +158,10 @@ type homecb = () => void;
 
 /**
  * Create contents for home page
- * @param {any} _callback - callback argument
- * @returns {any}
+ * @param {homecb} _callback - callback argument
+ * @returns {Promise<void>}
  */
-const Home = async (_callback: homecb) => {
+const Home = async (_callback: homecb): Promise<void> => {
 	startLoading();
 	// Get the main element
 	const MAIN_ELEMENT = document.getElementById('workspace');

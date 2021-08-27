@@ -9,9 +9,9 @@ import { SelectListener } from '../Functions/Files/select';
 
 /**
  * Recent files handler
- * @returns {any}
+ * @returns {Promise<void>}
  */
-const Recent = async () => {
+const Recent = async (): Promise<void> => {
 	const { listenOpen } = require('../Functions/Files/open'); //eslint-disable-line
 	startLoading();
 	// Preference data

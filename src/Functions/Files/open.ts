@@ -197,9 +197,9 @@ const displayFiles = async (files: fileData[], dir:string) => {
 /**
  * Open a directory on Xplorer
  * @param {string} dir
- * @returns {void}
+ * @returns {Promise<void>}
  */
-const openDir = async (dir:string) => {
+const openDir = async (dir:string):Promise<void> => {
     closePreviewFile()
     timeStarted = Date.now()
     startLoading()
