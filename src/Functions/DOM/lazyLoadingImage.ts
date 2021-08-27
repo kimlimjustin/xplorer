@@ -29,7 +29,7 @@ const LAZY_LOAD = (): void => {
 	// Only show image when its visible in viewport to reduce latency
 	MAIN_ELEMENT.querySelectorAll('img').forEach((img) => {
 		(function _detectImg() {
-			let n: NodeJS.Timeout;
+			let n: NodeJS.Timeout; //eslint-disable-line
 			if (img.dataset.src) {
 				if (isElementInViewport(img)) {
 					img.src = img.dataset.src;
