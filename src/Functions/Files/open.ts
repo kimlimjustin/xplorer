@@ -1,24 +1,25 @@
-const getPreview = require("../preview/preview");
-const path = require('path');
-const os = require('os');
-const Home = require('../../Components/home');
-const changePosition = require("../Tab/changePosition");
-const { updateTheme } = require("../Theme/theme");
-const nativeDrag = require("../DOM/drag");
-const { startLoading, stopLoading } = require("../DOM/loading");
-const storage = require('electron-json-storage-sync');
-const Recent = require("../../Components/recent");
-const LAZY_LOAD = require("../DOM/lazyLoadingImage");
-const fs = require('fs');
-const { ContextMenu } = require("../../Components/contextMenu");
-const { isHiddenFile } = require("is-hidden-file");
-const formatBytes = require("../Math/filesize");
-const getType = require("./type");
-const { SelectListener } = require("./select");
-const { InfoLog, ErrorLog } = require("../Logs/log");
-const { closePreviewFile } = require("./preview");
-const { dialog } = require("@electron/remote");
-const windowGUID = require("../../Constants/windowGUID");
+import getPreview from "../preview/preview";
+import path from "path";
+import os from "os";
+import Home from '../../Components/home';
+import changePosition from "../Tab/changePosition";
+import { updateTheme } from "../Theme/theme";
+import nativeDrag from "../DOM/drag";
+import { startLoading, stopLoading } from "../DOM/loading";
+import storage from "electron-json-storage-sync";
+import Recent from "../../Components/recent";
+import LAZY_LOAD from "../DOM/lazyLoadingImage";
+import fs from "fs";
+import {isHiddenFile} from "is-hidden-file";
+import { ContextMenu } from "../../Components/contextMenu";
+import formatBytes from "../Math/filesize";
+import getType from "./type";
+import { SelectListener } from "./select";
+import { InfoLog, ErrorLog } from "../Logs/log";
+import { closePreviewFile } from "./preview";
+import {dialog} from "@electron/remote";
+import windowGUID from "../../Constants/windowGUID";
+import type fileData from "../../Typings/fileData";
 
 const WINDOWS_TRASH_FILES_PATH = "C:\\Trash/files";
 const WINDOWS_TRASH_INFO_PATH = "C:\\Trash/info";
@@ -26,7 +27,8 @@ const LINUX_TRASH_FILES_PATH = path.join(os.homedir(), '.local/share/Trash/files
 const LINUX_TRASH_INFO_PATH = path.join(os.homedir(), '.local/share/Trash/info')
 const IGNORE_FILE = ['.', '..'];
 
-let timeStarted;
+let timeStarted:number;
+
 
 /**
  * Get command to open a file with default app on various operating systems.
@@ -44,29 +46,30 @@ function getCommandLine() {
 /**
  * Open a file with default app registered
  * @param {string} file path
- * @returns {any}
+ * @returns {void}
  */
-function openFileWithDefaultApp(file) {
+function openFileWithDefaultApp(file:string) :void{
+    const child_process = require("child_process"); //eslint-disable-line
     /^win/.test(process.platform) ?
-        require("child_process").exec('start "" "' + file + '"') :
-        require("child_process").spawn(getCommandLine(), [file],
+        child_process.exec('start "" "' + file + '"') :
+        child_process.spawn(getCommandLine(), [file],
             { detached: true, stdio: 'ignore' }).unref();
 }
 
 /**
  * Open file handler
  * @param {any} e - event
- * @returns {any}
+ * @returns {void}
  */
-const openFileHandler = (e) => {
-    let element = e.target
+const openFileHandler = (e:Event):void => {
+    let element = e.target as HTMLElement;
     while (!element.dataset.path) {
-        element = element.parentNode
+        element = element.parentNode as HTMLElement
     }
     const filePath = unescape(element.dataset.path)
     // Open the file if it's not directory
     if (element.dataset.isdir !== "true") {
-        let recents = storage.get('recent')?.data;
+        const recents = storage.get('recent')?.data;
         openFileWithDefaultApp(filePath)
 
         // Push file into recent files
@@ -86,10 +89,10 @@ const openFileHandler = (e) => {
 
 /**
  * Listen elements and pass it into the handler
- * @param {Array} elements - array of elements to be listened
- * @returns {any}
+ * @param {NodeListOf<HTMLElement>} elements - array of elements to be listened
+ * @returns {void}
  */
-const listenOpen = (elements) => {
+const listenOpen = (elements: NodeListOf<HTMLElement>):void => {
     elements.forEach(element => {
         if (document.getElementById("workspace").contains(element)) {
             element.removeEventListener("dblclick", openFileHandler)
@@ -103,11 +106,11 @@ const listenOpen = (elements) => {
 
 /**
  * Display files into Xplorer main section
- * @param {Array} files - array of files of a directory
+ * @param {fileData[]} files - array of files of a directory
  * @param {string} dir - directory base path
- * @returns {any}
+ * @returns {void}
  */
-const displayFiles = async (files, dir) => {
+const displayFiles = async (files: fileData[], dir:string) => {
     const hideSystemFile = storage.get("preference")?.data?.hideSystemFiles ?? true
     const dirAlongsideFiles = storage.get("preference")?.data?.dirAlongsideFiles ?? false
     const layout = storage.get("layout")?.data?.[dir] ?? storage.get("preference")?.data?.layout ?? "s"
@@ -132,7 +135,7 @@ const displayFiles = async (files, dir) => {
         }
     })
     if (!dirAlongsideFiles) {
-        files = files.sort((a, b) => -(a.isDir - b.isDir))
+        files = files.sort((a, b) => -(Number(a.isDir) - Number(b.isDir)))
     }
     if (!files.length) {
         MAIN_ELEMENT.classList.add('empty-dir-notification')
@@ -142,10 +145,10 @@ const displayFiles = async (files, dir) => {
         await files.forEach(async dirent => {
             if (hideSystemFile && dirent.isSystemFile) return;
             if (IGNORE_FILE.indexOf(dirent.name) !== -1) return;
-            const preview = await getPreview(dirent.type === "Image" && dirent.isTrash ? dirent.realPath : path.join(dir, dirent.name), category = dirent.isDir ? "folder" : "file")
+            const preview = await getPreview(dirent.type === "Image" && dirent.isTrash ? dirent.realPath : path.join(dir, dirent.name), dirent.isDir ? "folder" : "file")
             const fileGrid = document.createElement("div")
             fileGrid.className = "file-grid grid-hover-effect file"
-            if (dirent.isTrash) fileGrid.dataset.isTrash = true
+            if (dirent.isTrash) fileGrid.dataset.isTrash = "true"
             switch (layout) {
                 case "m":
                     fileGrid.classList.add("medium-grid-view")
@@ -164,8 +167,8 @@ const displayFiles = async (files, dir) => {
             fileGrid.setAttribute("draggable", 'true')
             fileGrid.setAttribute("data-listenOpen", '')
             fileGrid.setAttribute("data-tilt", '')
-            fileGrid.dataset.isdir = dirent.isDir
-            if (dirent.isHidden) fileGrid.dataset.hiddenFile = true
+            fileGrid.dataset.isdir = String(dirent.isDir)
+            if (dirent.isHidden) fileGrid.dataset.hiddenFile = "true"
             if (dirent.realPath) fileGrid.dataset.realPath = escape(dirent.realPath ?? path.join(dir, dirent.name))
             fileGrid.dataset.path = escape(dirent.path ?? path.join(dir, dirent.name))
             fileGrid.innerHTML = `
@@ -194,9 +197,9 @@ const displayFiles = async (files, dir) => {
 /**
  * Open a directory on Xplorer
  * @param {string} dir
- * @returns {any}
+ * @returns {void}
  */
-const openDir = async (dir) => {
+const openDir = async (dir:string) => {
     closePreviewFile()
     timeStarted = Date.now()
     startLoading()
@@ -216,7 +219,7 @@ const openDir = async (dir) => {
                 if (!fs.existsSync(WINDOWS_TRASH_FILES_PATH)) return []
                 else {
                     return fs.readdirSync(WINDOWS_TRASH_FILES_PATH, { withFileTypes: true }).map(dirent => {
-                        let fileInfo = fs.readFileSync(path.join(WINDOWS_TRASH_INFO_PATH, dirent.name + '.trashinfo'), 'utf8').split("\n")
+                        const fileInfo = fs.readFileSync(path.join(WINDOWS_TRASH_INFO_PATH, dirent.name + '.trashinfo'), 'utf8').split("\n")
                         let trashPath, trashDeletionDate;
                         if (fileInfo[0] === "[Trash Info]") {
                             trashPath = fileInfo[1].split('=')[1]
@@ -228,7 +231,7 @@ const openDir = async (dir) => {
                 }
             } else {
                 return fs.readdirSync(LINUX_TRASH_FILES_PATH, { withFileTypes: true }).map(dirent => {
-                    let fileInfo = fs.readFileSync(path.join(LINUX_TRASH_INFO_PATH, dirent.name + '.trashinfo'), 'utf8').split("\n")
+                    const fileInfo = fs.readFileSync(path.join(LINUX_TRASH_INFO_PATH, dirent.name + '.trashinfo'), 'utf8').split("\n")
                     let trashPath, trashDeletionDate;
                     if (fileInfo[0] === "[Trash Info]") {
                         trashPath = fileInfo[1].split('=')[1]
@@ -239,15 +242,15 @@ const openDir = async (dir) => {
                 })
             }
         }
-        let files = getFiles()
+        const files = getFiles()
         displayFiles(files, process.platform === "win32" ? WINDOWS_TRASH_FILES_PATH : LINUX_TRASH_FILES_PATH)
         // Watch the directory
-        const watcher = fs.watch(process.platform === "win32" ? WINDOWS_TRASH_FILES_PATH : LINUX_TRASH_FILES_PATH, async (eventType, filename) => {
-            let files = getFiles()
+        const watcher = fs.watch(process.platform === "win32" ? WINDOWS_TRASH_FILES_PATH : LINUX_TRASH_FILES_PATH, async () => {
+            const files = getFiles()
             // Get files of the dir
             displayFiles(files, process.platform === "win32" ? WINDOWS_TRASH_FILES_PATH : LINUX_TRASH_FILES_PATH)
         })
-        let focusingPath; // Watch if focusing path changes
+        let focusingPath:string; // Watch if focusing path changes
         setInterval(() => {
             const tabs = storage.get(`tabs-${windowGUID}`)?.data
             const _focusingPath = tabs.tabs[tabs.focus]?.position
@@ -268,11 +271,11 @@ const openDir = async (dir) => {
             return;
         }
         const hideSystemFile = storage.get("preference")?.data?.hideSystemFiles ?? true
-        let getAttributesSync;
-        if (process.platform === "win32") getAttributesSync = require("fswin").getAttributesSync;
+        let getAttributesSync:any; //eslint-disable-line
+        if (process.platform === "win32") getAttributesSync = require("fswin").getAttributesSync; //eslint-disable-line
         const getFiles = () => {
             return fs.readdirSync(dir, { withFileTypes: true }).map(dirent => {
-                let result = { name: dirent.name, isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)) }
+                const result:fileData = { name: dirent.name, isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)) }
                 const type = dirent.isDirectory() ? "File Folder" : getType(path.join(dir, dirent.name))
                 result.type = type
                 try {
@@ -296,16 +299,16 @@ const openDir = async (dir) => {
                 return result
             })
         }
-        let files = getFiles()
+        const files = getFiles()
         displayFiles(files, dir)
         // Watch the directory
-        const watcher = fs.watch(dir, async (eventType, filename) => {
-            let files = getFiles()
+        const watcher = fs.watch(dir, async () => {
+            const files = getFiles()
             // Get files of the dir
             displayFiles(files, dir)
         })
 
-        let focusingPath; // Watch if focusing path changes
+        let focusingPath:string; // Watch if focusing path changes
         setInterval(() => {
             const tabs = storage.get(`tabs-${windowGUID}`)?.data
             const _focusingPath = tabs.tabs[tabs.focus]?.position
@@ -320,4 +323,4 @@ const openDir = async (dir) => {
     }
 }
 
-module.exports = { listenOpen, openDir, openFileWithDefaultApp }
+export { listenOpen, openDir, openFileWithDefaultApp }
