@@ -14,7 +14,7 @@ import windowGUID from "../../Constants/windowGUID";
 const NewFile = (type: string): void => {
     switch (type) {
         case "new file":
-            prompt({ title: 'New File', label: 'File Name:', inputAttrs: { type: 'text', required: true }, type: 'input' })
+            prompt({ title: 'New File', label: 'File Name:', inputAttrs: { type: 'text', required: true }, type: 'input', icon: path.join(__dirname,'../../../../icons/icon.png') })
                 .then((r:any) => { //eslint-disable-line
                     if (r) {
                         const tabs = storage.get(`tabs-${windowGUID}`)?.data
@@ -40,7 +40,7 @@ const NewFile = (type: string): void => {
                 .catch(console.error);
             break;
         case "new folder":
-            prompt({ title: 'New Folder', label: 'Folder Name:', inputAttrs: { type: 'text', required: true }, type: 'input' })
+            prompt({ title: 'New Folder', label: 'Folder Name:', inputAttrs: { type: 'text', required: true }, type: 'input', icon: path.join(__dirname,'../../../../icons/icon.png') })
                 .then((r:any) => { //eslint-disable-line
                     if (r) {
                         const tabs = storage.get(`tabs-${windowGUID}`)?.data
