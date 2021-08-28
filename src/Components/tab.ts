@@ -1,5 +1,5 @@
 import { updateTheme } from '../Functions/Theme/theme';
-import remote from '@electron/remote';
+import { BrowserWindow } from '@electron/remote';
 import storage from 'electron-json-storage-sync';
 import Translate from './multilingual';
 import windowGUID from '../Constants/windowGUID';
@@ -30,7 +30,7 @@ const createNewTab = (path?: string): void => {
 		e.stopPropagation();
 		// Close the window if user close the only tab
 		if (document.querySelectorAll('.tab').length === 1) {
-			const electronWindow = remote.BrowserWindow.getFocusedWindow();
+			const electronWindow = BrowserWindow.getFocusedWindow();
 			electronWindow.close();
 		} else {
 			const tabs = storage.get(`tabs-${windowGUID}`)?.data;
@@ -159,7 +159,7 @@ const Tab = (): void => {
 			e.stopPropagation();
 			// Close the window if user close the only tab
 			if (document.querySelectorAll('.tab').length === 1) {
-				const electronWindow = remote.BrowserWindow.getFocusedWindow();
+				const electronWindow = BrowserWindow.getFocusedWindow();
 				electronWindow.close();
 			} else {
 				tab.parentElement.removeChild(tab);
