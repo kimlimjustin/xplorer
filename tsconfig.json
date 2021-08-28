@@ -1,0 +1,19 @@
+{
+	"compilerOptions": {
+		"module": "commonjs",
+		"noImplicitAny": true,
+		"sourceMap": true,
+		"declaration": true,
+		"removeComments": true,
+		"outDir": "outs",
+		"target": "ES2021",
+		"baseUrl": ".",
+		"moduleResolution": "node",
+		"resolveJsonModule": true,
+		"esModuleInterop": true,
+		"paths": {
+			"*": ["node_modules/*"]
+		}
+	},
+	"include": ["src/**/*", "src/Typings/**/*"]
+}
