@@ -1,0 +1,11 @@
+build
+dist
+outs
+node_modules
+src/Functions/theme/theme.ts
+src/Functions/preview/preview.ts
+src/Components/setting.ts
+src/Functions/Files/open.ts
+src/Components/favorites.ts
+src/Components/contextmenu.ts
+src/Functions/Files/new.ts
