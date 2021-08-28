@@ -16,6 +16,7 @@ const Rename = (filePath: string): void => {
 		inputAttrs: { type: 'text', required: true },
 		type: 'input',
 		value: path.basename(filePath),
+		icon: path.join(__dirname, '../../../../icons/icon.png'),
 	}).then((newName: string) => {
 		fs.rename(
 			filePath,
