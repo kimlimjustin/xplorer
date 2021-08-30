@@ -20,10 +20,10 @@ const Appearance = () => {
     settingsMain.innerHTML = `<h3 class="settings-title">App Theme</h3>
     <select name="theme">
         <option>System Default</option>
-        <option ${theme === "light" ? "selected" : ""} value="light">Light</option>
-        <option ${theme === "dark" ? "selected" : ""} value="dark">Dark</option>
-        <option ${theme === "light+" ? "selected" : ""} value="light+">Light+</option>
-        <option ${theme === "dark+" ? "selected" : ""} value="dark+">Dark+</option>
+        <option ${theme === "light" ? "selected" : ""} value="light" data-category="light">Light</option>
+        <option ${theme === "dark" ? "selected" : ""} value="dark" data-category="dark">Dark</option>
+        <option ${theme === "light+" ? "selected" : ""} value="light+" data-category="light">Light+</option>
+        <option ${theme === "dark+" ? "selected" : ""} value="dark+" data-category="dark">Dark+</option>
     </select>
     <h3 class="settings-title">File Preview</h3>
     <div class="toggle-box">
@@ -48,7 +48,8 @@ const Appearance = () => {
         <option ${layout === "d" ? "selected" : ""} value="d">Detail View</option>
     </select>`
     settingsMain.querySelector('[name="theme"]').addEventListener("change", (event: Event & { target: HTMLInputElement}) => {
-        storage.set("theme", { "theme": event.target.value})
+        const category = (event.target as unknown as HTMLSelectElement).options[(event.target as unknown as HTMLSelectElement).selectedIndex].dataset.category
+        storage.set("theme", { "theme": event.target.value, "category": category})
         reload()
     })
     settingsMain.querySelector('[name="layout"]').addEventListener("change", (event: Event & { target: HTMLInputElement}) => {

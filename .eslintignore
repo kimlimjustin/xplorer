@@ -1,6 +1,6 @@
 test/*
 src/Typings/*
-lib/wasm/*
+lib/**/*
 outs/**/*
 scripts/*
 src/Functions/Logs/log.ts
