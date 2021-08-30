@@ -3,6 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import { ErrorLog } from '../Logs/log';
 import { dialog } from '@electron/remote';
+import storage from 'electron-json-storage-sync';
 
 /**
  * Rename file/folder name
@@ -10,12 +11,22 @@ import { dialog } from '@electron/remote';
  * @returns {void}
  */
 const Rename = (filePath: string): void => {
+	const themeCategory = storage.get('theme')?.data.category;
+	const customStylesheet = path.join(
+		__dirname,
+		`../../public/${
+			themeCategory === 'light' ? 'prompt-light.css' : 'prompt-dark.css'
+		}`
+	);
 	prompt({
 		title: 'New File Name',
 		label: 'New Name:',
 		inputAttrs: { type: 'text', required: true },
 		type: 'input',
 		value: path.basename(filePath),
+		icon: path.join(__dirname, '../../../../icons/icon.png'),
+		alwaysOnTop: true,
+		customStylesheet,
 	}).then((newName: string) => {
 		fs.rename(
 			filePath,
