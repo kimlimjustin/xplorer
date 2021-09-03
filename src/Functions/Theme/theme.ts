@@ -6,8 +6,20 @@ interface Theme{
         [key:string]: string
     }
 }
+
+/**
+ * Detect system theme
+ * @returns {string}
+ */
+const detectDefaultTheme = ():string => {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        return "dark"
+    } else {
+        return "light"
+    }
+}
 let themeJSON:Theme; // user preference theme json
-let defaultTheme; // default system theme
+const defaultTheme = detectDefaultTheme(); // default system theme
 import * as defaultThemeData from "../../config/theme.json"
 const defaultThemeJSON:Theme = defaultThemeData;
 
@@ -196,12 +208,6 @@ const changeTheme = (document:Document, theme:string): void => {
  */
 const updateTheme = async ():Promise<void> => {
     const { data } = storage.get("theme")
-    // Detect system theme
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        defaultTheme = "dark"
-    } else {
-        defaultTheme = "light"
-    }
     // If user has no preference theme
     if (!data || !Object.keys(data).length) {
         await changeTheme(document, defaultTheme)
@@ -222,4 +228,4 @@ const updateTheme = async ():Promise<void> => {
     return;
 }
 
-export { changeTheme, updateTheme }
+export { changeTheme, updateTheme, detectDefaultTheme }
