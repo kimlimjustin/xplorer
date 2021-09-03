@@ -4,6 +4,7 @@ import fs from 'fs';
 import { ErrorLog } from '../Logs/log';
 import { dialog } from '@electron/remote';
 import storage from 'electron-json-storage-sync';
+import { detectDefaultTheme } from '../Theme/theme';
 
 /**
  * Rename file/folder name
@@ -11,7 +12,8 @@ import storage from 'electron-json-storage-sync';
  * @returns {void}
  */
 const Rename = (filePath: string): void => {
-	const themeCategory = storage.get('theme')?.data.category;
+	const themeCategory =
+		storage.get('theme')?.data?.category ?? detectDefaultTheme();
 	const customStylesheet = path.join(
 		__dirname,
 		`../../public/${
