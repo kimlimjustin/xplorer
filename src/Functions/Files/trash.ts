@@ -3,7 +3,7 @@ import fs from 'fs';
 import os from 'os';
 import { ErrorLog } from '../Logs/log';
 import trash from 'trash';
-import uuid from 'uuid';
+import { v4 } from 'uuid';
 import mv from 'mv';
 import { dialog } from '@electron/remote';
 const LINUX_TRASH_FILES_PATH = path.join(
@@ -104,7 +104,7 @@ const getDeletionDate = (date: Date) =>
 const Trash = (filePaths: string[]): void => {
 	for (const filePath of filePaths) {
 		if (process.platform === 'win32') {
-			const name = uuid.v4();
+			const name = v4();
 			const destination = path.join(WINDOWS_TRASH_FILES_PATH, name);
 			const trashInfoPath = path.join(
 				WINDOWS_TRASH_INFO_PATH,
