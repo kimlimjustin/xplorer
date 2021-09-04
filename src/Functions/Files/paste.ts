@@ -1,5 +1,4 @@
 import { clipboard } from 'electron';
-import clipboardEx from 'electron-clipboard-ex';
 import path from 'path';
 import fs from 'fs';
 import cpy from 'cpy';
@@ -76,8 +75,12 @@ const COPY = (filePaths: Array<string>, target: string): Promise<void> => {
  */
 const Paste = async (target: string): Promise<void> => {
 	const clipboardText = clipboard.readText();
-	const clipboardExFilePaths = clipboardEx.readFilePaths();
-	if (clipboardExFilePaths.length) {
+	let clipboardExFilePaths;
+	if (process.platform !== 'linux') {
+		const clipboardEx = require('electron-clipboard-ex'); //eslint-disable-line
+		clipboardExFilePaths = clipboardEx.readFilePaths();
+	}
+	if (clipboardExFilePaths?.length) {
 		await COPY(clipboardExFilePaths, target);
 	}
 	// CHeck if the copied text is Xplorer command
