@@ -1,18 +1,21 @@
-import clipboardy from 'clipboardy';
+import { clipboard } from 'electron';
 /**
  * Copy (a) file/s
- *
- * Make the file path(s) as a command string and copy into clipboard and use it then while pasting file
  *
  * @param {Array<string>} files - Array of file paths.
  * @returns {void}
  */
 const Copy = (files: Array<string>): void => {
-	let commands = `Xplorer command - COPY`;
-	for (const file of files) {
-		commands += '\n' + file;
+	if (process.platform === 'linux') {
+		let commands = `Xplorer command - COPY`;
+		for (const file of files) {
+			commands += '\n' + file;
+		}
+		clipboard.writeText(commands);
+	} else {
+		const clipboardEx = require('electron-clipboard-ex'); //eslint-disable-line
+		clipboardEx.writeFilePaths(files);
 	}
-	clipboardy.writeSync(commands);
 	return;
 };
 
