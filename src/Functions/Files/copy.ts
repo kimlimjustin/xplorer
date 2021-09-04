@@ -1,4 +1,3 @@
-import clipboardEx from 'electron-clipboard-ex';
 import { clipboard } from 'electron';
 /**
  * Copy (a) file/s
@@ -13,7 +12,10 @@ const Copy = (files: Array<string>): void => {
 			commands += '\n' + file;
 		}
 		clipboard.writeText(commands);
-	} else clipboardEx.writeFilePaths(files);
+	} else {
+		const clipboardEx = require('electron-clipboard-ex'); //eslint-disable-line
+		clipboardEx.writeFilePaths(files);
+	}
 	return;
 };
 
