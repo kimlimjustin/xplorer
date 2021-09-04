@@ -6,13 +6,14 @@ import fs from "fs";
 import { dialog } from "@electron/remote";
 import { ErrorLog } from "../Logs/log";
 import windowGUID from "../../Constants/windowGUID";
+import { detectDefaultTheme } from "../Theme/theme";
 /**
  * Function to create popup window
  * @param {string} type - is it a file or folder
  * @returns {void}
  */
 const NewFile = (type: string): void => {
-    const themeCategory = storage.get("theme")?.data.category;
+    const themeCategory = storage.get("theme")?.data?.category ?? detectDefaultTheme();
     const customStylesheet = path.join(__dirname, `../../public/${themeCategory === "light"? "prompt-light.css": "prompt-dark.css"}`)
     switch (type) {
         case "new file":

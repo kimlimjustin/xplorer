@@ -1,4 +1,4 @@
-import clipboardy from 'clipboardy';
+import { clipboard } from 'electron';
 /**
  * Cut (a) file/s
  *
@@ -15,18 +15,19 @@ const Cut = (files: Array<string>): void => {
 			.querySelector(`.file[data-path="${escape(file)}"]`)
 			.classList.add('cut');
 	}
-	clipboardy.writeSync(commands);
+	clipboard.writeText(commands);
 
 	(function detectClipboardChange() {
 		let n: NodeJS.Timeout; //eslint-disable-line
-		if (clipboardy.readSync() !== commands) {
+		if (clipboard.readText() !== commands) {
 			global.clearTimeout(n);
 			//clearTimeout(detectClipboardChange);
 			document
 				.querySelectorAll<HTMLElement>('.file.cut')
 				.forEach((file) => {
-					if (files.indexOf(escape(file.dataset.path)) !== -1)
+					if (files.indexOf(unescape(file.dataset.path)) !== -1) {
 						file.classList.remove('cut');
+					}
 				});
 			return;
 		}

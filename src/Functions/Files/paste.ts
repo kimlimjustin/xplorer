@@ -1,4 +1,4 @@
-import clipboardy from 'clipboardy';
+import { clipboard } from 'electron';
 import path from 'path';
 import fs from 'fs';
 import cpy from 'cpy';
@@ -9,9 +9,9 @@ import { ErrorLog, InfoLog } from '../Logs/log';
  * copy a file
  * @param {Array<string>} filePaths - array of file paths to be copied
  * @param {string} target - desitnation of copying file
- * @returns {any}
+ * @returns {Promise<void>}
  */
-const COPY = (filePaths: Array<string>, target: string) => {
+const COPY = (filePaths: Array<string>, target: string): Promise<void> => {
 	return new Promise<void>((resolve) => {
 		for (const filePath of filePaths) {
 			if (fs.lstatSync(filePath).isDirectory()) {
@@ -74,17 +74,25 @@ const COPY = (filePaths: Array<string>, target: string) => {
  * @returns {void}
  */
 const Paste = async (target: string): Promise<void> => {
-	const clipboard = clipboardy.readSync();
+	const clipboardText = clipboard.readText();
+	let clipboardExFilePaths;
+	if (process.platform !== 'linux') {
+		const clipboardEx = require('electron-clipboard-ex'); //eslint-disable-line
+		clipboardExFilePaths = clipboardEx.readFilePaths();
+	}
+	if (clipboardExFilePaths?.length) {
+		await COPY(clipboardExFilePaths, target);
+	}
 	// CHeck if the copied text is Xplorer command
-	if (!clipboard.startsWith('Xplorer command')) {
+	else if (!clipboardText.startsWith('Xplorer command')) {
 		return;
 	} else {
-		const commandType = clipboard
+		const commandType = clipboardText
 			.split('\n')[0]
 			.replace('Xplorer command - ', '');
 		const filePaths: string[] = [];
-		for (let i = 1; i < clipboard.split('\n').length; i++) {
-			filePaths.push(clipboard.split('\n')[i]);
+		for (let i = 1; i < clipboardText.split('\n').length; i++) {
+			filePaths.push(clipboardText.split('\n')[i]);
 		}
 		if (commandType === 'COPY') {
 			await COPY(filePaths, target);
