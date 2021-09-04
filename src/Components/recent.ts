@@ -27,6 +27,12 @@ const Recent = async (): Promise<void> => {
 		MAIN_ELEMENT.classList.remove('empty-dir-notification'); // Remove class if exist
 	// Get recent files list
 	let recents = storage.get('recent')?.data;
+	if (!recents) {
+		MAIN_ELEMENT.classList.add('empty-dir-notification');
+		MAIN_ELEMENT.innerText = 'This folder is empty.';
+		stopLoading();
+		return;
+	}
 	recents = recents.sort((a: string, b: string) => {
 		switch (sort) {
 			case 'A': // A-Z
