@@ -27,7 +27,7 @@ const Rename = (filePath: string): void => {
 		label: 'New Name:',
 		inputAttrs: { type: 'text', required: true },
 		type: 'input',
-		value: unescape(path.basename(filePath)),
+		value: path.basename(unescape(filePath)),
 		icon: path.join(__dirname, '../../../../icons/icon.png'),
 		alwaysOnTop: true,
 		customStylesheet,
