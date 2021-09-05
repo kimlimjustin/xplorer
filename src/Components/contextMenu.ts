@@ -15,6 +15,7 @@ import Pin from "../Functions/Files/pin";
 import { Restore, Trash, PermanentDelete } from "../Functions/Files/trash";
 import { FILE_TYPES_AVAILABLE_FOR_PREVIEW, Preview } from "../Functions/Files/preview";
 import windowGUID from "../Constants/windowGUID";
+import focusingPath from "../Functions/DOM/focusingPath";
 let vscodeInstalled = false
 try {
     execSync("code --version")
@@ -373,8 +374,6 @@ const ContextMenu = (element:HTMLElement, openFileWithDefaultApp?: openFileWithD
                 while (!target.dataset.path) {
                     target = target.parentNode as HTMLElement
                 }
-                const tabs = storage.get(`tabs-${windowGUID}`)?.data
-                const focusingPath = tabs.tabs[tabs.focus].position === "Home" || tabs.tabs[tabs.focus].position === path.join(os.homedir(), "Home") ? os.homedir() : tabs.tabs[tabs.focus].position
                 const filePath = unescape(target.dataset.path)
                 let paths;
                 switch (menu.getAttribute("role")) {
@@ -461,10 +460,10 @@ const ContextMenu = (element:HTMLElement, openFileWithDefaultApp?: openFileWithD
                         Copy(paths)
                         break;
                     case "paste":
-                        Paste(focusingPath)
+                        Paste(focusingPath())
                         break;
                     case "pin":
-                        Pin([filePath === "Home" ? os.homedir() : filePath ?? focusingPath])
+                        Pin([filePath === "Home" ? os.homedir() : filePath ?? focusingPath()])
                         break;
                     case "pins":
                         paths = []
