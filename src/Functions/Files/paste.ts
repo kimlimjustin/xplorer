@@ -1,9 +1,10 @@
-import { clipboard } from 'electron';
+import { clipboard, ipcRenderer } from 'electron';
 import path from 'path';
 import fs from 'fs';
 import cpy from 'cpy';
 import { dialog } from '@electron/remote';
 import { ErrorLog, InfoLog } from '../Logs/log';
+import { reload } from '../../Components/windowManager';
 
 /**
  * copy a file
@@ -12,14 +13,28 @@ import { ErrorLog, InfoLog } from '../Logs/log';
  * @returns {Promise<void>}
  */
 const COPY = (filePaths: Array<string>, target: string): Promise<void> => {
+	const operationDone = (filePath: string) => {
+		ipcRenderer.sendSync(
+			'operation-done',
+			path.join(target, path.basename(filePath))
+		);
+		reload();
+	};
 	return new Promise<void>((resolve) => {
 		for (const filePath of filePaths) {
+			ipcRenderer.send(
+				'operation',
+				path.join(target, path.basename(filePath))
+			);
 			if (fs.lstatSync(filePath).isDirectory()) {
 				if (target === path.dirname(filePath)) {
 					cpy(
 						filePath,
 						path.join(target, path.basename(filePath) + ' - Copy')
-					).then(() => resolve());
+					).then(() => {
+						operationDone(filePath);
+						resolve();
+					});
 				} else if (
 					fs.existsSync(path.join(target, path.basename(filePath)))
 				) {
@@ -32,12 +47,18 @@ const COPY = (filePaths: Array<string>, target: string): Promise<void> => {
 						cpy(
 							filePath,
 							path.join(target, path.basename(filePath))
-						);
+						).then(() => {
+							operationDone(filePath);
+							resolve();
+						});
 				} else {
 					cpy(
 						filePath,
 						path.join(target, path.basename(filePath))
-					).then(() => resolve());
+					).then(() => {
+						operationDone(filePath);
+						resolve();
+					});
 				}
 			} else {
 				if (target === path.dirname(filePath)) {
@@ -49,7 +70,10 @@ const COPY = (filePaths: Array<string>, target: string): Promise<void> => {
 								.join('.')} - Copy.${basename
 								.split('.')
 								.splice(basename.split('.').length - 1)}`,
-					}).then(() => resolve());
+					}).then(() => {
+						operationDone(filePath);
+						resolve();
+					});
 				} else if (
 					fs.existsSync(path.join(target, path.basename(filePath)))
 				) {
@@ -59,9 +83,15 @@ const COPY = (filePaths: Array<string>, target: string): Promise<void> => {
 						title: `Replace file ${path.basename(filePath)}`,
 					};
 					if (dialog.showMessageBoxSync(options) === 0)
-						cpy(filePath, target).then(() => resolve());
+						cpy(filePath, target).then(() => {
+							operationDone(filePath);
+							resolve();
+						});
 				} else {
-					cpy(filePath, target).then(() => resolve());
+					cpy(filePath, target).then(() => {
+						operationDone(filePath);
+						resolve();
+					});
 				}
 			}
 		}

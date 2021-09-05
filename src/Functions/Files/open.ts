@@ -20,6 +20,7 @@ import { closePreviewFile } from "./preview";
 import {dialog} from "@electron/remote";
 import windowGUID from "../../Constants/windowGUID";
 import type fileData from "../../Typings/fileData";
+import { ipcRenderer } from "electron";
 
 const WINDOWS_TRASH_FILES_PATH = "C:\\Trash/files";
 const WINDOWS_TRASH_INFO_PATH = "C:\\Trash/info";
@@ -302,10 +303,13 @@ const openDir = async (dir:string):Promise<void> => {
         const files = getFiles()
         displayFiles(files, dir)
         // Watch the directory
-        const watcher = fs.watch(dir, async () => {
-            const files = getFiles()
-            // Get files of the dir
-            displayFiles(files, dir)
+        const watcher = fs.watch(dir, async (_, filePath) => {
+            // Check if the file is under operation on Xplorer
+            if(!ipcRenderer.sendSync('under-operation', path.join(dir, filePath))){
+                const files = getFiles()
+                // Get files of the dir
+                displayFiles(files, dir)
+            }
         })
 
         let focusingPath:string; // Watch if focusing path changes
