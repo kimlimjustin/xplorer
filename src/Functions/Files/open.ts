@@ -231,16 +231,19 @@ const openDir = async (dir:string):Promise<void> => {
                     })
                 }
             } else {
-                return fs.readdirSync(LINUX_TRASH_FILES_PATH, { withFileTypes: true }).map(dirent => {
-                    const fileInfo = fs.readFileSync(path.join(LINUX_TRASH_INFO_PATH, dirent.name + '.trashinfo'), 'utf8').split("\n")
-                    let trashPath, trashDeletionDate;
-                    if (fileInfo[0] === "[Trash Info]") {
-                        trashPath = fileInfo[1].split('=')[1]
-                        trashDeletionDate = fileInfo[2].split("=")[1]
-                    }
-                    const type = dirent.isDirectory() ? "File Folder" : getType(unescape(trashPath) ?? path.join(dir, dirent.name))
-                    return { name: unescape(trashPath), isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)), trashPath, trashDeletionDate, type, isTrash: true, path: unescape(trashPath), realPath: path.join(LINUX_TRASH_FILES_PATH, dirent.name) };
-                })
+                if (!fs.existsSync(LINUX_TRASH_FILES_PATH)) return []
+                else {
+                    return fs.readdirSync(LINUX_TRASH_FILES_PATH, { withFileTypes: true }).map(dirent => {
+                        const fileInfo = fs.readFileSync(path.join(LINUX_TRASH_INFO_PATH, dirent.name + '.trashinfo'), 'utf8').split("\n")
+                        let trashPath, trashDeletionDate;
+                        if (fileInfo[0] === "[Trash Info]") {
+                            trashPath = fileInfo[1].split('=')[1]
+                            trashDeletionDate = fileInfo[2].split("=")[1]
+                        }
+                        const type = dirent.isDirectory() ? "File Folder" : getType(unescape(trashPath) ?? path.join(dir, dirent.name))
+                        return { name: unescape(trashPath), isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)), trashPath, trashDeletionDate, type, isTrash: true, path: unescape(trashPath), realPath: path.join(LINUX_TRASH_FILES_PATH, dirent.name) };
+                    })
+                }
             }
         }
         const files = getFiles()
