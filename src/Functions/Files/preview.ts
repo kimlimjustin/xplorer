@@ -6,6 +6,7 @@ import XLSX from 'xlsx';
 import { URLify, eURLify } from '../DOM/urlify';
 import hljs from 'highlight.js';
 import marked from 'marked';
+import storage from 'electron-json-storage-sync';
 
 //prettier-ignore
 const FILE_TYPES_AVAILABLE_FOR_PREVIEW = ['.pdf', '.html', '.docx', '.htm', '.xlsx', '.xls', '.xlsb', 'xls', '.ods', '.fods', '.csv', '.txt', '.py', '.js', '.bat', '.css', '.c++', '.cpp', '.cc', '.c', '.diff', '.patch', '.go', '.java', '.json', '.php', '.ts', '.tsx', '.jsx', '.jpg', '.png', '.gif', '.bmp', '.jpeg', '.jpe', '.jif', '.jfif', '.jfi', '.webp', '.tiff', '.tif', '.ico', '.svg', '.webp', '.mp4', '.webm', '.mpg', '.mp2', '.mpeg', '.mpe', '.mpv', '.ocg', '.m4p', '.m4v', '.avi', '.wmv', '.mov', '.qt', '.flv', '.swf', '.md']
@@ -31,7 +32,6 @@ const closePreviewFile = (): void => {
  * @returns {void}
  */
 const Preview = (filePath: string): void => {
-	console.log(filePath);
 	const { listenOpen } = require('./open'); //eslint-disable-line
 	closePreviewFile();
 	const previewElement = document.createElement('div');
@@ -149,6 +149,17 @@ const Preview = (filePath: string): void => {
 			`<pre class='preview-object' data-type="code"><code>${highlightedCode}</code></pre>`
 		);
 	}
+	const recents = storage.get('recent')?.data;
+
+	// Push file into recent files
+	if (recents) {
+		if (recents.indexOf(filePath) !== -1) {
+			recents.push(recents.splice(recents.indexOf(filePath), 1)[0]);
+			storage.set('recent', recents);
+		} else {
+			storage.set('recent', [...recents, filePath]);
+		}
+	} else storage.set('recent', [filePath]);
 	updateTheme();
 };
 
