@@ -13,16 +13,25 @@ if (isDev) {
 }
 remoteInit.initialize();
 
-/*try {
-    electronReloader(module);
-    // eslint-disable-next-line no-empty
-} catch (_) {}*/
-
 console.log(process.argv);
 
+const FILES_ON_OPERATION: string[] = [];
 let id: string;
+
 ipcMain.on('GUID', (_, arg: string) => {
 	id = arg;
+});
+ipcMain.on('operation', (_, arg: string) => {
+	FILES_ON_OPERATION.push(arg);
+	console.log(FILES_ON_OPERATION);
+});
+ipcMain.on('operation-done', (e, arg: string) => {
+	const index = FILES_ON_OPERATION.indexOf(arg);
+	if (index > -1) FILES_ON_OPERATION.splice(index, 1);
+	e.returnValue = true;
+});
+ipcMain.on('under-operation', (e, arg: string) => {
+	e.returnValue = FILES_ON_OPERATION.indexOf(arg) !== -1;
 });
 
 // Create a new window
