@@ -5,8 +5,7 @@ import { ErrorLog } from '../Logs/log';
 import { dialog } from '@electron/remote';
 import storage from 'electron-json-storage-sync';
 import { detectDefaultTheme } from '../Theme/theme';
-import windowGUID from '../../Constants/windowGUID';
-import os from 'os';
+import focusingPath from '../DOM/focusingPath';
 
 /**
  * Rename file/folder name
@@ -32,15 +31,9 @@ const Rename = (filePath: string): void => {
 		alwaysOnTop: true,
 		customStylesheet,
 	}).then((newName: string) => {
-		const tabs = storage.get(`tabs-${windowGUID}`)?.data;
-		const focusingPath =
-			tabs.tabs[tabs.focus].position === 'Home' ||
-			tabs.tabs[tabs.focus].position === path.join(os.homedir(), 'Home')
-				? os.homedir()
-				: tabs.tabs[tabs.focus].position;
 		const target =
 			path.dirname(newName) === '.'
-				? path.join(focusingPath, newName)
+				? path.join(focusingPath(), newName)
 				: path.join(path.dirname(filePath), newName);
 		fs.rename(unescape(filePath), target, (err) => {
 			if (err) {

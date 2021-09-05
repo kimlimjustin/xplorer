@@ -10,7 +10,6 @@ import {
 	getHideHiddenFilesValue,
 } from '../Functions/Files/toggleHiddenFiles';
 import path from 'path';
-import os from 'os';
 import Copy from '../Functions/Files/copy';
 import Cut from '../Functions/Files/cut';
 import Paste from '../Functions/Files/paste';
@@ -22,6 +21,7 @@ import {
 } from '../Functions/Files/preview';
 import windowGUID from '../Constants/windowGUID';
 import remote from '@electron/remote';
+import focusingPath from '../Functions/DOM/focusingPath';
 let vscodeInstalled = false;
 try {
 	execSync('code --version');
@@ -56,12 +56,6 @@ const Shortcut = (): void => {
 		e.preventDefault();
 		const selectedFilePath = unescape(getSelected()?.[0]?.dataset?.path);
 		const isDir = getSelected()?.[0]?.dataset.isdir === 'true';
-		const tabs = storage.get(`tabs-${windowGUID}`)?.data;
-		const focusingPath =
-			tabs.tabs[tabs.focus].position === 'Home' ||
-			tabs.tabs[tabs.focus].position === path.join(os.homedir(), 'Home')
-				? os.homedir()
-				: tabs.tabs[tabs.focus].position;
 		// Select all shortcut (Ctrl + A)
 		if (e.key === 'a' && e.ctrlKey) {
 			selectedAll = !selectedAll;
@@ -91,7 +85,7 @@ const Shortcut = (): void => {
 				if (e.shiftKey && vscodeInstalled) {
 					const targetPath =
 						unescape(selected.dataset.path) === 'undefined'
-							? focusingPath
+							? focusingPath()
 							: unescape(selected.dataset.path);
 					exec(`code "${targetPath.replaceAll('"', '\\"')}"`);
 				} else {
@@ -168,25 +162,25 @@ const Shortcut = (): void => {
 		}
 		// Open in terminal shortcut (Alt + T)
 		else if (e.altKey && e.key === 't') {
-			const filePath = selectedFilePath ?? focusingPath;
+			const filePath = selectedFilePath ?? focusingPath();
 			if (process.platform === 'win32') {
 				execSync(
 					`${filePath.split('\\')[0]} && cd ${
 						selectedFilePath === 'undefined'
-							? focusingPath
+							? focusingPath()
 							: selectedFilePath
 					} && start cmd`
 				);
 			} else if (process.platform === 'linux') {
 				console.log(
 					selectedFilePath === 'undefined'
-						? focusingPath
+						? focusingPath()
 						: selectedFilePath
 				);
 				execSync(
 					`gnome-terminal --working-directory="${
 						selectedFilePath === 'undefined'
-							? focusingPath
+							? focusingPath()
 							: selectedFilePath
 					}"`
 				);
@@ -194,7 +188,7 @@ const Shortcut = (): void => {
 				execSync(
 					`open -a Terminal ${
 						selectedFilePath === 'undefined'
-							? focusingPath
+							? focusingPath()
 							: selectedFilePath
 					}`
 				);
@@ -218,7 +212,7 @@ const Shortcut = (): void => {
 		}
 		// Paste file shortcut (Ctrl+V)
 		else if (e.ctrlKey && e.key === 'v') {
-			Paste(focusingPath);
+			Paste(focusingPath());
 		}
 		// Pin to sidebar shortcut (Alt+P)
 		else if (e.altKey && e.key === 'p') {
@@ -226,7 +220,7 @@ const Shortcut = (): void => {
 			for (const element of getSelected()) {
 				filePaths.push(unescape(element.dataset.path));
 			}
-			if (!filePaths.length) filePaths = [focusingPath];
+			if (!filePaths.length) filePaths = [focusingPath()];
 			Pin(filePaths);
 		} else if (e.key === 'Delete') {
 			if (e.shiftKey) {
