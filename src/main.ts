@@ -1,8 +1,33 @@
-import { app, BrowserWindow, ipcMain, screen, shell } from 'electron';
+import {
+	BrowserWindow as ElectronBrowserWindow,
+	app,
+	ipcMain,
+	screen,
+	shell,
+	nativeTheme,
+} from 'electron';
+//import { BrowserWindow as ArcylicWindow, Vibrancy } from 'electron-acrylic-window';
 import path from 'path';
 import storage from 'electron-json-storage-sync';
 import * as remoteInit from '@electron/remote/main';
 import isDev from 'electron-is-dev';
+import os from 'os';
+
+/**
+ * Initialize Acrylic's BrowserWindow if available
+ */
+let BrowserWindow: any; //eslint-disable-line
+if (
+	process.platform === 'linux' ||
+	!(storage.get('theme')?.data?.acrylic ?? true)
+) {
+	BrowserWindow = ElectronBrowserWindow;
+} else {
+	BrowserWindow = require('electron-acrylic-window').BrowserWindow; //eslint-disable-line
+}
+/**
+ * Initialize electron reloader
+ */
 if (isDev) {
 	try {
 		const electronReloader = require('electron-reloader'); //eslint-disable-line
@@ -11,10 +36,16 @@ if (isDev) {
 		console.log('Err: ' + err);
 	}
 }
+/**
+ * Initialize electron's remote
+ */
 remoteInit.initialize();
 
-console.log(process.argv);
+/**
+ * Communication between main and prelaod
+ */
 
+let win: any; //eslint-disable-line
 const FILES_ON_OPERATION: string[] = [];
 let id: string;
 
@@ -33,17 +64,56 @@ ipcMain.on('operation-done', (e, arg: string) => {
 ipcMain.on('under-operation', (e, arg: string) => {
 	e.returnValue = FILES_ON_OPERATION.indexOf(arg) !== -1;
 });
+ipcMain.on('update-theme', () => {
+	win.setVibrancy(
+		isVibrancySupported()
+			? vibrancy()
+			: storage.get('theme')?.data?.category ?? 'white'
+	);
+});
+
+function isVibrancySupported() {
+	// Windows 10 or greater
+	return (
+		process.platform === 'win32' &&
+		parseInt(os.release().split('.')[0]) >= 10
+	);
+}
+const detectDefaultTheme = (): string => {
+	if (nativeTheme.shouldUseDarkColors) {
+		return 'dark';
+	} else {
+		return 'light';
+	}
+};
+
+const vibrancy = () => {
+	return {
+		disableOnBlur: false,
+		theme: storage.get('theme')?.data?.category
+			? storage.get('theme')?.data?.category === 'dark'
+				? '#1b1e2e88'
+				: '#ffffff88'
+			: detectDefaultTheme(),
+		effect: 'acrylic',
+		useCustomWindowRefreshMethod: true,
+		debug: false,
+	};
+};
 
 // Create a new window
 function createWindow() {
 	const { width, height } = screen.getPrimaryDisplay().workAreaSize;
-	const win = new BrowserWindow({
+	win = new BrowserWindow({
 		title: 'xplorer',
 		frame: false,
 		width: Math.floor(width * 0.8),
 		height: Math.floor(height * 0.8),
 		minWidth: 600,
 		minHeight: 400,
+		vibrancy: isVibrancySupported()
+			? vibrancy()
+			: storage.get('theme')?.data?.category ?? 'white',
 		webPreferences: {
 			preload: path.join(__dirname, 'preload.js'),
 			enableRemoteModule: true,
@@ -51,6 +121,7 @@ function createWindow() {
 	});
 
 	win.loadFile(isDev ? './public/index.html' : 'src/public/index.html');
+	//win.webContents.openDevTools({ mode: 'detach' });
 	win.webContents.on(
 		'new-window',
 		(e: Electron.NewWindowWebContentsEvent, url: string) => {
