@@ -6,6 +6,7 @@ import fs from "fs";
 import path from "path";
 import {version} from "../../package.json"
 import {reload} from "./windowManager";
+import { ipcRenderer } from "electron";
 
 /**
  * Create appearence section
@@ -13,6 +14,7 @@ import {reload} from "./windowManager";
  */
 const Appearance = () => {
     const theme = storage.get("theme")?.data?.theme
+    const acrylic = storage.get("theme")?.data?.acrylic ?? true
     const layout = storage.get("preference")?.data?.layout ?? 's'
     const autoPlayPreviewVideo = storage.get("preference")?.data?.autoPlayPreviewVideo
     const extractExeIcon = storage.get("preference")?.data?.extractExeIcon ?? true
@@ -25,6 +27,13 @@ const Appearance = () => {
         <option ${theme === "light+" ? "selected" : ""} value="light+" data-category="light">Light+</option>
         <option ${theme === "dark+" ? "selected" : ""} value="dark+" data-category="dark">Dark+</option>
     </select>
+    <div class="toggle-box">
+        <label class="toggle">
+            <input type="checkbox" name="acrylic" ${acrylic ? "checked" : ""} ${process.platform !== "win32" ? "disabled" : ""}>
+            <span class="toggle-slider"></span>
+            <span class="toggle-label">Acrylic Effect</span>
+        </label>
+    </div>
     <h3 class="settings-title">File Preview</h3>
     <div class="toggle-box">
         <label class="toggle">
@@ -50,6 +59,7 @@ const Appearance = () => {
     settingsMain.querySelector('[name="theme"]').addEventListener("change", (event: Event & { target: HTMLInputElement}) => {
         const category = (event.target as unknown as HTMLSelectElement).options[(event.target as unknown as HTMLSelectElement).selectedIndex].dataset.category
         storage.set("theme", { "theme": event.target.value, "category": category})
+        ipcRenderer.send('update-theme')
         reload()
     })
     settingsMain.querySelector('[name="layout"]').addEventListener("change", (event: Event & { target: HTMLInputElement}) => {
@@ -67,6 +77,12 @@ const Appearance = () => {
         const preference = storage.get("preference")?.data ?? {}
         preference.extractExeIcon = event.target.checked;
         storage.set("preference", preference)
+        reload()
+    })
+    settingsMain.querySelector(`[name="acrylic"]`).addEventListener("change", (event: Event & { target: HTMLInputElement}) => {
+        const theme = storage.get("theme")?.data;
+        theme.acrylic = event.target.checked;
+        storage.set("theme", theme);
         reload()
     })
 }

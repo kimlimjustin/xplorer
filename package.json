@@ -95,6 +95,7 @@
 		"@crowdin/cli": "3",
 		"@electron/remote": "^1.1.0",
 		"cpy": "^8.1.2",
+		"electron-acrylic-window": "^0.5.8",
 		"electron-is-dev": "^2.0.0",
 		"electron-json-storage-sync": "^1.2.0",
 		"electron-log": "^4.3.5",
