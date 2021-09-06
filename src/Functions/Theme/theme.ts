@@ -1,9 +1,10 @@
 import fs from 'fs';
 import storage from "electron-json-storage-sync";
 import VanillaTilt from "../../../lib/tilt/tilt";
+import os from "os";
 interface Theme{
     [key:string]: {
-        [key:string]: string
+        [key:string]: any //eslint-disable-line
     }
 }
 
@@ -39,14 +40,17 @@ const hoverEffect = (element:HTMLElement, before:string, after:string): void => 
     });
 }
 
+const IS_VIBRANCY_SUPPORTED = () => process.platform === 'win32' && parseInt(os.release().split('.')[0]) >= 10 && (storage.get("theme")?.data?.acrylic ?? true)
+
 /**
  * Get style of an element
  * @param {string} variable - What style you wanna get?
  * @param {string} theme - the current theme
- * @returns {string} style of the [variable] of the element
+ * @returns {string|null} style of the [variable] of the element
  */
-const getElementStyle = (variable:string, theme:string): string => {
-    return themeJSON?.[theme]?.[variable] || defaultThemeJSON[theme][variable]
+const getElementStyle = (variable:string, theme:string): string|null => {
+    const isAcrylicElement = (themeJSON?.[theme]?.acrylicEffect || defaultThemeJSON?.[theme]?.acrylicEffect).indexOf(variable) !== -1 && IS_VIBRANCY_SUPPORTED()
+    return isAcrylicElement? null : themeJSON?.[theme]?.[variable] || defaultThemeJSON[theme][variable]
 }
 
 /**
@@ -58,7 +62,8 @@ const getElementStyle = (variable:string, theme:string): string => {
  * @returns {void}
  */
 const changeElementTheme = (element:HTMLElement, variable:string, key:string, theme:string): void => {
-    if (element) (<any>element.style)[key] = themeJSON?.[theme]?.[variable] || defaultThemeJSON[theme][variable] //eslint-disable-line
+    const isAcrylicElement = (themeJSON?.[theme]?.acrylicEffect || defaultThemeJSON?.[theme]?.acrylicEffect).indexOf(variable) !== -1 && IS_VIBRANCY_SUPPORTED()
+    if (element && !isAcrylicElement) (<any>element.style)[key] = themeJSON?.[theme]?.[variable] || defaultThemeJSON[theme][variable] //eslint-disable-line
 }
 
 /**
@@ -68,7 +73,7 @@ const changeElementTheme = (element:HTMLElement, variable:string, key:string, th
  * @returns {void}
  */
 const changeTheme = (document:Document, theme:string): void => {
-    changeElementTheme(document.body, "mainBackground", "background", theme)
+    changeElementTheme(document.querySelector(".main-box"), "mainBackground", "background", theme)
     changeElementTheme(document.body, "textColor", "color", theme)
     changeElementTheme(document.body, "fontSize", "fontSize", theme)
     changeElementTheme(document.body, "fontFamily", "fontFamily", theme)
