@@ -56,8 +56,7 @@ const videoPreview = (filename:string) => {
  */
 const exePreview = (filename:string) => {
     const basename = filename.split(/[\\/]/)[filename.split(/[\\/]/).length - 1]
-    //import electron from "electron";
-    const app = electron.app || (remote && remote.app) || null;
+    const app = electron.app || (electron.remote && electron.remote.app) || null;
     const EXE_ICON_CACHE_DIR = path.join(app.getPath('userData'), 'Cache/Exe Icon');
 
     // Create cache directory if not exist
