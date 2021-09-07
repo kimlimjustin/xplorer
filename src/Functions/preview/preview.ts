@@ -4,6 +4,7 @@ import storage from 'electron-json-storage-sync';
 import electron from "electron";
 import defaultIconData from "../../config/icon.json";
 import { extractIcon } from "../../../lib/wasm/bindings";
+import remote from "@electron/remote";
 interface Icon{
     [key:string]: {
         [key:string]: string
@@ -56,7 +57,7 @@ const videoPreview = (filename:string) => {
 const exePreview = (filename:string) => {
     const basename = filename.split(/[\\/]/)[filename.split(/[\\/]/).length - 1]
     //import electron from "electron";
-    const app = electron.app || (electron.remote && electron.remote.app) || null;
+    const app = electron.app || (remote && remote.app) || null;
     const EXE_ICON_CACHE_DIR = path.join(app.getPath('userData'), 'Cache/Exe Icon');
 
     // Create cache directory if not exist
