@@ -118,6 +118,7 @@ const changeTheme = (document:Document, theme:string): void => {
     changeElementTheme(document.querySelector(".preview-exit-btn"), "previewExitButtonColor", "color", theme)
     changeElementTheme(document.querySelector(".preview-object"), "previewObjectBackground", "background", theme)
     changeElementTheme(document.querySelector(".preview-object"), "previewObjectColor", "color", theme)
+    changeElementTheme(document.querySelector(".properties"), "propertiesBackground", "background", theme)
     document.querySelector<HTMLElement>(".preview-object")?.style?.setProperty("--preview-object-table-border", themeJSON ? themeJSON[theme].previewObjectTableBorder : defaultThemeJSON[theme].previewObjectTableBorder)
     document.querySelector<HTMLElement>(".preview-object")?.style?.setProperty("--preview-object-table-row-even-bg", themeJSON ? themeJSON[theme].previewObjectTableRowEvenBackground : defaultThemeJSON[theme].previewObjectTableRowEvenBackground)
     document.querySelector<HTMLElement>(".preview-object")?.style?.setProperty("--preview-object-table-row-even-color", themeJSON ? themeJSON[theme].previewObjectTableRowEvenColor : defaultThemeJSON[theme].previewObjectTableRowEvenColor)

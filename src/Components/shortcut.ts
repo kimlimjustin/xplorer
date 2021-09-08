@@ -22,6 +22,7 @@ import {
 import windowGUID from '../Constants/windowGUID';
 import remote from '@electron/remote';
 import focusingPath from '../Functions/DOM/focusingPath';
+import Properties from './properties';
 let vscodeInstalled = false;
 try {
 	execSync('code --version');
@@ -244,6 +245,12 @@ const Shortcut = (): void => {
 			) {
 				Preview(selectedFilePath);
 			}
+		} else if (e.ctrlKey && e.key === 'p') {
+			Properties(
+				selectedFilePath === 'undefined'
+					? focusingPath()
+					: selectedFilePath
+			);
 		}
 	};
 	document.addEventListener('keyup', ShortcutHandler);

@@ -14,6 +14,8 @@ const reload = async (): Promise<void> => {
 	await createSidebar();
 	openDir(tabs.tabs[tabs.focus].position);
 	closePreviewFile();
+	document.querySelector<HTMLElement>('.properties').style.animation =
+		'close-properties 1s forwards';
 };
 
 /**

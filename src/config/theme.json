@@ -79,6 +79,8 @@
 		"previewObjectTableRowOddBackground": "inherit",
 		"previewObjectTableRowOddColor": "#a2b7ff",
 
+		"propertiesBackground": "#0a0f19",
+
 		"acrylicEffect": ["sidebarBackground"]
 	},
 	"dark": {
@@ -159,6 +161,8 @@
 		"previewObjectTableRowEvenColor": "inherit",
 		"previewObjectTableRowOddBackground": "inherit",
 		"previewObjectTableRowOddColor": "inherit",
+
+		"propertiesBackground": "#39496a",
 
 		"acrylicEffect": ["sidebarBackground"]
 	},
@@ -242,6 +246,8 @@
 		"previewObjectTableRowOddBackground": "inherit",
 		"previewObjectTableRowOddColor": "inherit",
 
+		"propertiesBackground": "#e0e0e0",
+
 		"acrylicEffect": ["sidebarBackground"]
 	},
 	"light+": {
@@ -323,6 +329,8 @@
 		"previewObjectTableRowEvenColor": "inherit",
 		"previewObjectTableRowOddBackground": "inherit",
 		"previewObjectTableRowOddColor": "inherit",
+
+		"propertiesBackground": "#dbdbdc",
 
 		"acrylicEffect": ["sidebarBackground"]
 	}
