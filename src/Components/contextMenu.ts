@@ -16,6 +16,7 @@ import { Restore, Trash, PermanentDelete } from "../Functions/Files/trash";
 import { FILE_TYPES_AVAILABLE_FOR_PREVIEW, Preview } from "../Functions/Files/preview";
 import windowGUID from "../Constants/windowGUID";
 import focusingPath from "../Functions/DOM/focusingPath";
+import Properties from "./properties";
 let vscodeInstalled = false
 try {
     execSync("code --version")
@@ -97,7 +98,7 @@ const ContextMenuInner = (target: HTMLElement, coorX:number, coorY:number, openD
             { "menu": isPinned ? "Unpin from Sidebar" : "Pin to Sidebar", "shortcut": "Alt+P", "icon": "pin", "role": "pin" }
         ],
         [
-            { "menu": "Properties", "shortcut": "Ctrl+P", "icon": target?.dataset?.isdir ? "folder property" : "file property" }
+            { "menu": "Properties", "shortcut": "Ctrl+P", "icon": target?.dataset?.isdir ? "folder property" : "file property", "role": "properties" }
         ]
     ]
     const TrashMenu = [
@@ -141,7 +142,7 @@ const ContextMenuInner = (target: HTMLElement, coorX:number, coorY:number, openD
         ],
         [
             { "menu": isPinned ? "Unpin from Sidebar" : "Pin to Sidebar", "shortcut": "Alt+P", "icon": "pin", "role": "pin" },
-            { "menu": "Properties", "shortcut": "Ctrl+P", "icon": target?.dataset?.isdir ? "folder property" : "file property" }
+            { "menu": "Properties", "shortcut": "Ctrl+P", "icon": target?.dataset?.isdir ? "folder property" : "file property", "role": "properties" }
         ]
     ]
     const MultipleSelectedMenu = [
@@ -491,6 +492,9 @@ const ContextMenu = (element:HTMLElement, openFileWithDefaultApp?: openFileWithD
                     case "preview":
                         Preview(filePath)
                         break;
+                    case "properties":
+                        console.log(filePath)
+                        Properties(filePath)
                 }
             })
         })
