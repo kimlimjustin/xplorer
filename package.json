@@ -21,7 +21,7 @@
 		"docs": "yarn --cwd ./docs start",
 		"pretest": "yarn compile",
 		"test": "jest",
-		"prebuild": "yarn compile",
+		"prebuild": "yarn compile && yarn grunt",
 		"build": "electron-builder",
 		"build:docs": "yarn --cwd ./docs build",
 		"deploy": "yarn --cwd ./docs deploy",
@@ -35,11 +35,16 @@
 		"compile": "rimraf outs && tsc && yarn copyfiles",
 		"compile:watch": "tsc -w",
 		"lint": "eslint -c .eslintrc.yml --ext .ts ./src",
-		"prettier": "prettier --write src"
+		"prettier": "prettier --write src",
+		"grunt": "grunt"
 	},
 	"build": {
 		"files": [
 			"**/*",
+			"!test/**/*",
+			"!dist/**/*",
+			"!patches/**/*",
+			"!scripts/**/*",
 			"!docs/**/*",
 			"!src/**/*.ts",
 			"!scripts/**/*",
@@ -76,6 +81,7 @@
 	],
 	"license": "Apache-2.0",
 	"devDependencies": {
+		"@crowdin/cli": "^3.6.5",
 		"@types/marked": "^3.0.0",
 		"@types/mv": "^2.1.2",
 		"@types/uuid": "^8.3.1",
@@ -87,12 +93,17 @@
 		"electron-reloader": "^1.2.1",
 		"eslint": "^7.32.0",
 		"eslint-config-prettier": "^8.3.0",
+		"grunt": "^1.4.1",
+		"grunt-cli": "^1.4.3",
+		"grunt-contrib-uglify": "^5.0.1",
+		"grunt-contrib-watch": "^1.1.0",
+		"patch-package": "^6.4.7",
+		"postinstall-postinstall": "^2.1.0",
 		"prettier": "2.3.2",
 		"rimraf": "^3.0.2",
 		"typescript": "^4.4.2"
 	},
 	"dependencies": {
-		"@crowdin/cli": "3.6.5",
 		"@electron/remote": "^1.2.1",
 		"cpy": "^8.1.2",
 		"electron-acrylic-window": "^0.5.8",
@@ -107,9 +118,7 @@
 		"mammoth": "^1.4.18",
 		"marked": "^3.0.2",
 		"mv": "^2.1.1",
-		"patch-package": "^6.4.7",
 		"platform-folders": "^0.5.4",
-		"postinstall-postinstall": "^2.1.0",
 		"trash": "^7.2.0",
 		"uuid": "^8.3.2",
 		"xlsx": "^0.17.1"
