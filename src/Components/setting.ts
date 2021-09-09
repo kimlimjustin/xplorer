@@ -58,7 +58,7 @@ const Appearance = () => {
     </select>`
     settingsMain.querySelector('[name="theme"]').addEventListener("change", (event: Event & { target: HTMLInputElement}) => {
         const category = (event.target as unknown as HTMLSelectElement).options[(event.target as unknown as HTMLSelectElement).selectedIndex].dataset.category
-        storage.set("theme", { "theme": event.target.value, "category": category})
+        storage.set("theme", { "theme": event.target.value, "category": category, acrylic: document.querySelector<HTMLInputElement>('[name="acrylic"]').checked })
         ipcRenderer.send('update-theme')
         reload()
     })
