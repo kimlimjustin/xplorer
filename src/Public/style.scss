@@ -1,0 +1,41 @@
+@import '../Components/Layout/layout.scss';
+@import '../Components/Drives/drives.scss';
+@import '../Components/Favorites/favorites.scss';
+@import '../Components/Functions/Loading/loading.scss';
+@import '../Components/Files/files.scss';
+@import '../Components/Context\ Menu/contextMenu.scss';
+@import '../Components/Setting/setting.scss';
+@import '../Components/Files/File\ Preview/preview.scss';
+@import '../Components/Properties/properties.scss';
+body {
+	margin: 0;
+	padding: 0;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	scroll-behavior: smooth;
+}
+
+::-webkit-scrollbar {
+	width: 8px;
+	height: 5px;
+}
+::-webkit-scrollbar-track {
+	background: var(--scrollbar-track);
+}
+::-webkit-scrollbar-thumb {
+	background: var(--scrollbar-thumb);
+}
+::-webkit-scrollbar-thumb:hover {
+	background: var(--scrollbar-thumb-hover);
+}
+
+img {
+	-webkit-user-drag: none;
+	-khtml-user-drag: none;
+	-moz-user-drag: none;
+	-o-user-drag: none;
+}

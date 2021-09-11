@@ -3,9 +3,9 @@ import storage from "electron-json-storage-sync";
 import path from "path";
 import fs from "fs";
 import { dialog } from "@electron/remote";
-import { ErrorLog } from "../Functions/log";
-import { detectDefaultTheme } from "../Theme/theme";
-import focusingPath from "../Functions/focusingPath";
+import { ErrorLog } from "../../Functions/log";
+import { detectDefaultTheme } from "../../Theme/theme";
+import focusingPath from "../../Functions/focusingPath";
 /**
  * Function to create popup window
  * @param {string} type - is it a file or folder
@@ -13,7 +13,7 @@ import focusingPath from "../Functions/focusingPath";
  */
 const NewFile = (type: string): void => {
     const themeCategory = storage.get("theme")?.data?.category ?? detectDefaultTheme();
-    const customStylesheet = path.join(__dirname, `../../Public/${themeCategory === "light"? "prompt-light.css": "prompt-dark.css"}`)
+    const customStylesheet = path.join(__dirname, `../../Patches/${themeCategory === "light"? "prompt-light.css": "prompt-dark.css"}`)
     switch (type) {
         case "new file":
             prompt({ title: 'New File', label: 'File Name:', inputAttrs: { type: 'text', required: true }, type: 'input', icon: path.join(__dirname,'../../../../icons/icon.png'), alwaysOnTop: true, customStylesheet })

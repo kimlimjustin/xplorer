@@ -120,7 +120,7 @@ function createWindow() {
 		},
 	});
 
-	win.loadFile(isDev ? './Public/index.html' : 'src/Public/index.html');
+	win.loadFile(isDev ? './Public/index.html' : 'outs/src/Public/index.html');
 	//win.webContents.openDevTools({ mode: 'detach' });
 	win.webContents.on(
 		'new-window',

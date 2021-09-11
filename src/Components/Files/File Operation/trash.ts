@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
-import { ErrorLog } from '../Functions/log';
+import { ErrorLog } from '../../Functions/log';
 import trash from 'trash';
 import { v4 } from 'uuid';
 import mv from 'mv';

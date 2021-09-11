@@ -1,11 +1,11 @@
 import prompt from 'electron-prompt';
 import path from 'path';
 import fs from 'fs';
-import { ErrorLog } from '../Functions/log';
+import { ErrorLog } from '../../Functions/log';
 import { dialog } from '@electron/remote';
 import storage from 'electron-json-storage-sync';
-import { detectDefaultTheme } from '../Theme/theme';
-import focusingPath from '../Functions/focusingPath';
+import { detectDefaultTheme } from '../../Theme/theme';
+import focusingPath from '../../Functions/focusingPath';
 
 /**
  * Rename file/folder name
@@ -17,7 +17,7 @@ const Rename = (filePath: string): void => {
 		storage.get('theme')?.data?.category ?? detectDefaultTheme();
 	const customStylesheet = path.join(
 		__dirname,
-		`../../Public/${
+		`../../Patches/${
 			themeCategory === 'light' ? 'prompt-light.css' : 'prompt-dark.css'
 		}`
 	);

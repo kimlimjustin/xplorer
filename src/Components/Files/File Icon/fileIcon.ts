@@ -3,7 +3,7 @@ import path from "path";
 import storage from 'electron-json-storage-sync';
 import electron from "electron";
 import defaultIconData from "./icon.json";
-import { extractIcon } from "../../Lib/extracticon/bindings";
+import { extractIcon } from "../../../Lib/extracticon/bindings";
 interface Icon{
     [key:string]: {
         [key:string]: string
@@ -21,10 +21,10 @@ const icon = storage.get('icon')
 const IMAGE = ['jpg', 'png', 'gif', 'bmp', 'jpeg', 'jpe', 'jif', 'jfif', 'jfi', 'webp', 'tiff', 'tif', 'ico', 'svg', 'webp'];
 const VIDEO = ['mp4', 'webm', 'mpg', 'mp2', 'mpeg', 'mpe', 'mpv', 'ocg', 'm4p', 'm4v', 'avi', 'wmv', 'mov', 'qt', 'flv', 'swf'];
 
-const DEFAULT_FILE_ICON = path.join(__dirname, "../../icon", defaultIconJSON.default.file)
-const DEFAULT_FOLDER_ICON = path.join(__dirname, "../../icon", defaultIconJSON.default.folder)
+const DEFAULT_FILE_ICON = path.join(__dirname, "../../../icon", defaultIconJSON.default.file)
+const DEFAULT_FOLDER_ICON = path.join(__dirname, "../../../icon", defaultIconJSON.default.folder)
 
-let DEFAULT_IMAGE = path.join(__dirname, '../../icon', defaultIconJSON.file.image)
+let DEFAULT_IMAGE = path.join(__dirname, '../../../icon', defaultIconJSON.file.image)
 
 /**
  * Return image view of preview
@@ -43,7 +43,7 @@ const iconPreview = (filename:string, isdir?:boolean) => {
  */
 const videoPreview = (filename:string) => {
     const preference = storage.get("preference")?.data
-    let alt = path.join(iconJSONPath || __dirname, iconJSON ? '../' : '../../icon', iconJSON?.file?.video || defaultIconJSON.file.video) // Alternative for video if video could not be oaded
+    let alt = path.join(iconJSONPath || __dirname, iconJSON ? '../' : '../../../icon', iconJSON?.file?.video || defaultIconJSON.file.video) // Alternative for video if video could not be oaded
     if (!fs.existsSync(alt)) alt = path.join(__dirname, '../../Icon/', defaultIconJSON.default.file)
     return preference?.autoPlayPreviewVideo ? `<video autoplay loop muted class="file-grid-preview"><source src = "${filename}" /><img src = "${alt}" /></video>` : iconPreview(alt, false)
 }
@@ -115,11 +115,11 @@ const fileIcon = (filename:string, category = "folder", HTMLFormat = true):strin
         let fileLoc;
         // Check if category exist in user preference JSON file
         if (category in source) {
-            fileLoc = (source?.[category][categoryObj][0] === "/") ? source[category][categoryObj] : path.join(icon?.data?.iconJSON || __dirname, iconJSON ? '../' : '../../Icon/', source[category][categoryObj])
+            fileLoc = (source?.[category][categoryObj][0] === "/") ? source[category][categoryObj] : path.join(icon?.data?.iconJSON || __dirname, iconJSON ? '../' : '../../../Icon/', source[category][categoryObj])
         }
         if (fs.existsSync(fileLoc)) return HTMLFormat ? iconPreview(fileLoc, category === "folder") : fileLoc
         else {
-            fileLoc = iconJSON?.default?.[category === "file" ? "file" : "folder"] && fs.existsSync(iconJSON?.default?.[category === "file" ? "file" : "folder"]) ? path.join(iconJSONPath, '../', iconJSON?.default?.[category === "file" ? "file" : "folder"]) : path.join(__dirname, '../../icon/', defaultIconJSON.default[category === "file" ? "file" : "folder"])
+            fileLoc = iconJSON?.default?.[category === "file" ? "file" : "folder"] && fs.existsSync(iconJSON?.default?.[category === "file" ? "file" : "folder"]) ? path.join(iconJSONPath, '../', iconJSON?.default?.[category === "file" ? "file" : "folder"]) : path.join(__dirname, '../../../icon/', defaultIconJSON.default[category === "file" ? "file" : "folder"])
             console.log(fileLoc, fs.existsSync(fileLoc))
             return HTMLFormat ? iconPreview(fileLoc, category === "folder") : fileLoc
         }
@@ -127,10 +127,10 @@ const fileIcon = (filename:string, category = "folder", HTMLFormat = true):strin
         let fileLoc;
         // Check if category exist in user preference JSON file
         if ("default" in source) {
-            fileLoc = (source.default[category === "file" ? "file" : "folder"][0] === "/") ? source.default[category === "file" ? "file" : "folder"] : path.join(icon?.data?.iconJSON || __dirname, iconJSON ? '../' : '../../Icon/', source.default[category === "file" ? "file" : "folder"])
+            fileLoc = (source.default[category === "file" ? "file" : "folder"][0] === "/") ? source.default[category === "file" ? "file" : "folder"] : path.join(icon?.data?.iconJSON || __dirname, iconJSON ? '../' : '../../../Icon/', source.default[category === "file" ? "file" : "folder"])
         }
         if (fs.existsSync(fileLoc)) return HTMLFormat ? iconPreview(fileLoc, category === "folder") : fileLoc
-        else return HTMLFormat ? iconPreview(path.join(__dirname, "../../Icon/", iconJSON?.default?.[category === "file" ? "file" : "folder"] || defaultIconJSON.default[category === "file" ? "file" : "folder"]), category === "folder") : path.join(__dirname, "../../Icon/", iconJSON?.default?.[category === "file" ? "file" : "folder"] || defaultIconJSON.default[category === "file" ? "file" : "folder"])
+        else return HTMLFormat ? iconPreview(path.join(__dirname, "../../../Icon/", iconJSON?.default?.[category === "file" ? "file" : "folder"] || defaultIconJSON.default[category === "file" ? "file" : "folder"]), category === "folder") : path.join(__dirname, "../../../Icon/", iconJSON?.default?.[category === "file" ? "file" : "folder"] || defaultIconJSON.default[category === "file" ? "file" : "folder"])
 
     }
 }

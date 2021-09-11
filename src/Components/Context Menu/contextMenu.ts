@@ -1,19 +1,19 @@
 import storage from "electron-json-storage-sync";
 import { execSync, exec } from 'child_process';
 import { updateTheme } from "../Theme/theme";
-import fileIcon from "../File Icon/fileIcon";
+import fileIcon from "../Files/File Icon/fileIcon";
 import os from "os";
 import path from "path";
-import copyLocation from "../File Operation/location";
-import NewFile from "../File Operation/new";
-import Rename from "../File Operation/rename";
-import Copy from "../File Operation/copy"; 
-import Paste from "../File Operation/paste";
-import Cut from "../File Operation/cut";
-import { getSelected } from "../File Operation/select";
-import Pin from "../File Operation/pin";
-import { Restore, Trash, PermanentDelete } from "../File Operation/trash";
-import { FILE_TYPES_AVAILABLE_FOR_PREVIEW, Preview } from "../File Operation/preview";
+import copyLocation from "../Files/File Operation/location";
+import NewFile from "../Files/File Operation/new";
+import Rename from "../Files/File Operation/rename";
+import Copy from "../Files/File Operation/copy"; 
+import Paste from "../Files/File Operation/paste";
+import Cut from "../Files/File Operation/cut";
+import { getSelected } from "../Files/File Operation/select";
+import Pin from "../Files/File Operation/pin";
+import { Restore, Trash, PermanentDelete } from "../Files/File Operation/trash";
+import { FILE_TYPES_AVAILABLE_FOR_PREVIEW, Preview } from "../Files/File Preview/preview";
 import windowGUID from "../Constants/windowGUID";
 import focusingPath from "../Functions/focusingPath";
 import Properties from "../Properties/properties";
@@ -349,10 +349,10 @@ const ContextMenuInner = (target: HTMLElement, coorX:number, coorY:number, openD
  */
 const ContextMenu = (element:HTMLElement, openFileWithDefaultApp?: openFileWithDefaultApp, openDir?: openDir):void => {
     // Escape circular dependency
-    if (!openFileWithDefaultApp) openFileWithDefaultApp = require('../File Operation/open').openFileWithDefaultApp //eslint-disable-line @typescript-eslint/no-var-requires
-    if (!openDir) openDir = require('../File Operation/open').openDir //eslint-disable-line @typescript-eslint/no-var-requires
+    if (!openFileWithDefaultApp) openFileWithDefaultApp = require('../Files/File Operation/open').openFileWithDefaultApp //eslint-disable-line @typescript-eslint/no-var-requires
+    if (!openDir) openDir = require('../Files/File Operation/open').openDir //eslint-disable-line @typescript-eslint/no-var-requires
 
-    const { reload } = require("../layout/windowManager"); //eslint-disable-line @typescript-eslint/no-var-requires
+    const { reload } = require("../Layout/windowManager"); //eslint-disable-line @typescript-eslint/no-var-requires
 
     element.addEventListener("contextmenu", e => {
         // Disable context menu if current path is home and on windows

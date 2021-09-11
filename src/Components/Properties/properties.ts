@@ -1,5 +1,5 @@
 import fs from 'fs';
-import getType from '../File Type/type';
+import getType from '../Files/File Type/type';
 import storage from 'electron-json-storage-sync';
 import { isHiddenFile as checkIsHiddenFile } from 'is-hidden-file';
 /**

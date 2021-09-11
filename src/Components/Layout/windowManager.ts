@@ -1,8 +1,8 @@
-import { openDir } from '../File Operation/open';
+import { openDir } from '../Files/File Operation/open';
 import storage from 'electron-json-storage-sync';
 import { BrowserWindow } from '@electron/remote';
 import createSidebar from './sidebar';
-import { closePreviewFile } from '../File Operation/preview';
+import { closePreviewFile } from '../Files/File Preview/preview';
 import windowGUID from '../Constants/windowGUID';
 
 /**

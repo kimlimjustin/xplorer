@@ -1,6 +1,6 @@
 import fs from 'fs';
 import storage from 'electron-json-storage-sync';
-import fileIcon from '../File Icon/fileIcon';
+import fileIcon from '../Files/File Icon/fileIcon';
 import { getDrives } from '../Drives/drives';
 import getDriveBasePath from '../Functions/basePath';
 import { updateTheme } from '../Theme/theme';
@@ -14,7 +14,7 @@ interface Favorites {
 }
 
 const changeSidebar = (newElement: HTMLElement) => {
-	const { listenOpen } = require('../File Operation/open'); //eslint-disable-line
+	const { listenOpen } = require('../Files/File Operation/open'); //eslint-disable-line
 	const sidebarElement = document.body.querySelector('.sidebar');
 	sidebarElement.parentElement.replaceChild(newElement, sidebarElement);
 	updateTheme();
@@ -212,7 +212,9 @@ const createSidebar = (): void => {
 			if (_prevDrives === undefined) _prevDrives = _drives;
 			else {
 				if (_drives !== _prevDrives) {
-					const { listenOpen } = require('../File Operation/open'); //eslint-disable-line
+					const {
+						listenOpen,
+					} = require('../Files/File Operation/open'); //eslint-disable-line
 					const _newElement = document.createElement('div');
 					_newElement.innerHTML = _drives.trim();
 					document

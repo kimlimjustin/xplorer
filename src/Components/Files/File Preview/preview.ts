@@ -1,9 +1,9 @@
 import path from 'path';
-import { updateTheme } from '../Theme/theme';
+import { updateTheme } from '../../Theme/theme';
 import mammoth from 'mammoth';
 import fs from 'fs';
 import XLSX from 'xlsx';
-import { URLify, eURLify } from '../Functions/urlify';
+import { URLify, eURLify } from '../../Functions/urlify';
 import hljs from 'highlight.js';
 import marked from 'marked';
 import storage from 'electron-json-storage-sync';
@@ -32,7 +32,7 @@ const closePreviewFile = (): void => {
  * @returns {void}
  */
 const Preview = (filePath: string): void => {
-	const { listenOpen } = require('./open'); //eslint-disable-line
+	const { listenOpen } = require('../File Operation/open'); //eslint-disable-line
 	closePreviewFile();
 	const previewElement = document.createElement('div');
 	previewElement.classList.add('preview');
