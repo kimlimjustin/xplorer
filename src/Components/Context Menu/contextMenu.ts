@@ -403,7 +403,7 @@ const ContextMenu = (element:HTMLElement, openFileWithDefaultApp?: openFileWithD
                         }
                         break;
                     case "openMultipleTabs":
-                        const { createNewTab } = require('../Tab/tab');//eslint-disable-line
+                        const { createNewTab } = require('../Layout/tab');//eslint-disable-line
                         for (const element of getSelected()) {
                             if (element.dataset.isdir === 'true') {
                                 createNewTab(unescape(element.dataset.path))

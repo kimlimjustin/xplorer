@@ -93,7 +93,7 @@ const Shortcut = (): void => {
 					const {
 						openDir,
 						openFileWithDefaultApp,
-					} = require('../Functions/Files/open'); //eslint-disable-line
+					} = require('../Files/File Operation/open'); //eslint-disable-line
 					if (isDir) {
 						openDir(selectedFilePath);
 					} else {
