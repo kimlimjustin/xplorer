@@ -1,5 +1,5 @@
 import Translate from "../I18n/i18n";
-import fileIcon from "../File Icon/fileIcon";
+import fileIcon from "../Files/File Icon/fileIcon";
 import getPath from "platform-folders"
 
 /**

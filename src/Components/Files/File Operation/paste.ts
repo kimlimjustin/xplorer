@@ -3,8 +3,8 @@ import path from 'path';
 import fs from 'fs';
 import cpy from 'cpy';
 import { dialog } from '@electron/remote';
-import { ErrorLog, InfoLog } from '../Functions/log';
-import { reload } from '../Layout/windowManager';
+import { ErrorLog, InfoLog } from '../../Functions/log';
+import { reload } from '../../Layout/windowManager';
 
 /**
  * copy a file

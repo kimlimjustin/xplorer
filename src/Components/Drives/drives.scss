@@ -1,0 +1,39 @@
+.pendrive {
+	width: 250px;
+	display: inline-flex !important;
+
+	.pendrive-icon {
+		width: 3.5rem;
+		display: inline-block;
+		vertical-align: middle;
+		transition: all 0.3s ease;
+	}
+
+	.pendrive-info {
+		display: inline-block;
+		margin: 0;
+		vertical-align: middle;
+		font-size: 0.8rem;
+		transition: all 0.3s ease;
+		flex: 1;
+		p {
+			margin: 0.1rem 0;
+		}
+
+		.pendrive-total-capacity {
+			width: 100%;
+			height: 7px;
+			border-radius: 3px;
+			transition: all 0.3s ease;
+		}
+		.pendrive-used-capacity {
+			height: inherit;
+			display: block;
+			transition: all 0.3s ease;
+		}
+	}
+	.pendrive-title {
+		margin: 0.1rem 0 0.5rem 0;
+		transition: all 0.3s ease;
+	}
+}

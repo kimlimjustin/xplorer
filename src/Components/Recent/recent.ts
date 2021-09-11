@@ -1,18 +1,18 @@
-import { startLoading, stopLoading } from '../Functions/loading';
+import { startLoading, stopLoading } from '../Functions/Loading/loading';
 import storage from 'electron-json-storage-sync';
-import fileIcon from '../File Icon/fileIcon';
+import fileIcon from '../Files/File Icon/fileIcon';
 import LAZY_LOAD from '../Functions/lazyLoadingImage';
 import { updateTheme } from '../Theme/theme';
-import getType from '../File Type/type';
+import getType from '../Files/File Type/type';
 import fs from 'fs';
-import { SelectListener } from '../File Operation/select';
+import { SelectListener } from '../Files/File Operation/select';
 
 /**
  * Recent files handler
  * @returns {Promise<void>}
  */
 const Recent = async (): Promise<void> => {
-	const { listenOpen } = require('../File Operation/open'); //eslint-disable-line
+	const { listenOpen } = require('../Files/File Operation/open'); //eslint-disable-line
 	startLoading();
 	// Preference data
 	const layout =

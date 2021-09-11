@@ -5,7 +5,7 @@ import os from 'os';
 import storage from 'electron-json-storage-sync';
 import getDriveBasePath from '../Functions/basePath';
 import Translate from '../I18n/i18n';
-import fileIcon from '../File Icon/fileIcon';
+import fileIcon from '../Files/File Icon/fileIcon';
 import windowGUID from '../Constants/windowGUID';
 import type Drive from '../../Lib/node-disk-info/classes/drive';
 

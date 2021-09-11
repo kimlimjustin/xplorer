@@ -1,0 +1,27 @@
+.loading-bar {
+	height: 5px;
+	display: none;
+	overflow: hidden;
+	&[data-loading='true'] {
+		display: block;
+	}
+	.loader {
+		width: 20px;
+		height: 5px;
+		display: block;
+		animation: loading 5s infinite;
+		position: relative;
+	}
+}
+
+@keyframes loading {
+	0% {
+		left: -2%;
+	}
+	50% {
+		left: 100%;
+	}
+	100% {
+		left: -2%;
+	}
+}

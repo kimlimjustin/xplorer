@@ -1,7 +1,7 @@
 import storage from 'electron-json-storage-sync';
 import path from 'path';
 import os from 'os';
-import createSidebar from '../Layout/sidebar';
+import createSidebar from '../../Layout/sidebar';
 
 interface Favorites {
 	name: string;

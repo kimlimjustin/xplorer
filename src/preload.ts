@@ -3,12 +3,12 @@ import { webFrame } from 'electron';
 import createSidebar from './Components/Layout/sidebar';
 import { windowManager } from './Components/Layout/windowManager';
 import Home from './Components/Layout/home';
-import { listenOpen } from './Components/File Operation/open';
+import { listenOpen } from './Components/Files/File Operation/open';
 import { ContextMenu } from './Components/Context Menu/contextMenu';
 import { Tab } from './Components/Layout/tab';
 import { toggleHiddenFiles } from './Components/Functions/toggleHiddenFiles';
 import optionMenu from './Components/Layout/optionMenu';
-import { SelectListener } from './Components/File Operation/select';
+import { SelectListener } from './Components/Files/File Operation/select';
 import { Shortcut } from './Components/Shortcut/shortcut';
 
 // Wait DOM Content to be loaded

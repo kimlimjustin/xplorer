@@ -3,7 +3,13 @@ const process = require('process');
 
 (async () => {
 	await cpy(
-		['src/**/*', '!src/**/*.ts', 'src/lib/**/*', 'build/**/*'],
+		[
+			'src/**/*',
+			'!src/**/*.ts',
+			'src/lib/**/*',
+			'build/**/*',
+			'!src/**/*.scss',
+		],
 		'outs',
 		{
 			parents: true,

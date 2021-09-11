@@ -1,5 +1,5 @@
 import Translate from "../I18n/i18n";
-import fileIcon from "../File Icon/fileIcon";
+import fileIcon from "../Files/File Icon/fileIcon";
 import {updateTheme} from "../Theme/theme";
 import storage from "electron-json-storage-sync";
 import fs from "fs";
@@ -92,12 +92,12 @@ const Appearance = () => {
  * @returns {any}
  */
 const Preference = () => {
-    const language = storage.get("preference")?.data?.language
+    const language = storage.get("preference")?.data?.language ?? navigator.language
     const hideHiddenFiles = storage.get("preference")?.data?.hideHiddenFiles ?? true
     const hideSystemFiles = storage.get("preference")?.data?.hideSystemFiles ?? true
     const dirAlongsideFiles = storage.get("preference")?.data?.dirAlongsideFiles ?? false
     const settingsMain = document.querySelector(".settings-main");
-    const availableLanguages = JSON.parse(fs.readFileSync(path.join(__dirname, "../Locales/index.json"), 'utf-8'))?.availableLanguages
+    const availableLanguages = JSON.parse(fs.readFileSync(path.join(__dirname, "../../Locales/index.json"), 'utf-8'))?.availableLanguages
     settingsMain.innerHTML = `<h3 class="settings-title">App Language</h3>
     <select name="language">
     ${Object.keys(availableLanguages).map(lang => {

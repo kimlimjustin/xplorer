@@ -43,7 +43,7 @@ const Select = (
 			}
 		}
 	} else {
-		const { getSelectedStatus } = require('../Shortcut/shortcut'); //eslint-disable-line
+		const { getSelectedStatus } = require('../../Shortcut/shortcut'); //eslint-disable-line
 		if (getSelectedStatus() && ctrl) return;
 		latestSelected = element;
 		latestShiftSelected = element;

@@ -1,8 +1,8 @@
-import copyLocation from '../File Operation/location';
-import { getSelected } from '../File Operation/select';
+import copyLocation from '../Files/File Operation/location';
+import { getSelected } from '../Files/File Operation/select';
 import { execSync, exec } from 'child_process';
-import NewFile from '../File Operation/new';
-import Rename from '../File Operation/rename';
+import NewFile from '../Files/File Operation/new';
+import Rename from '../Files/File Operation/rename';
 import { updateTheme } from '../Theme/theme';
 import storage from 'electron-json-storage-sync';
 import {
@@ -10,15 +10,15 @@ import {
 	getHideHiddenFilesValue,
 } from '../Functions/toggleHiddenFiles';
 import path from 'path';
-import Copy from '../File Operation/copy';
-import Cut from '../File Operation/cut';
-import Paste from '../File Operation/paste';
-import Pin from '../File Operation/pin';
-import { Trash, PermanentDelete } from '../File Operation/trash';
+import Copy from '../Files/File Operation/copy';
+import Cut from '../Files/File Operation/cut';
+import Paste from '../Files/File Operation/paste';
+import Pin from '../Files/File Operation/pin';
+import { Trash, PermanentDelete } from '../Files/File Operation/trash';
 import {
 	Preview,
 	FILE_TYPES_AVAILABLE_FOR_PREVIEW,
-} from '../File Operation/preview';
+} from '../Files/File Preview/preview';
 import windowGUID from '../Constants/windowGUID';
 import remote from '@electron/remote';
 import focusingPath from '../Functions/focusingPath';
