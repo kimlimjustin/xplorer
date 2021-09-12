@@ -1,0 +1,40 @@
+<h3 class="settings-title">App Theme</h3>
+<select name="theme">
+    <option>System Default</option>
+    <% for (let i = 0; i < availableThemes.length; i++){ %>
+        <option <%= theme === availableThemes[i].identifier ? "selected" : "" %> value="<%=availableThemes[i].identifier %>" data-category="<%=availableThemes[i].category %>"><%=availableThemes[i].name %></option>
+    <% } %>
+</select>
+<%if (process.platform === "win32"){ %>
+<div class="toggle-box">
+    <label class="toggle">
+        <input type="checkbox" name="acrylic" <%= acrylicEnabled ? "checked" : "" %>>
+        <span class="toggle-slider"></span>
+        <span class="toggle-label">Acrylic Effect</span>
+    </label>
+</div>
+<% } %>
+<h3 class="settings-title">File Preview</h3>
+<div class="toggle-box">
+    <label class="toggle">
+        <input type="checkbox" name="preview-video" <%= autoPlayPreviewVideo ? "checked" : "" %>>
+        <span class="toggle-slider"></span>
+        <span class="toggle-label">Auto play video file as preview (May consume high amount of RAM)</span>
+    </label>
+</div>
+<%if (process.platform === "win32"){ %>
+<div class="toggle-box">
+    <label class="toggle">
+        <input type="checkbox" name="extract-exe-icon" <%= extractExeIcon ? "checked" : "" %>>
+        <span class="toggle-slider"></span>
+        <span class="toggle-label">Extract exe file icon and make it as preview</span>
+    </label>
+</div>
+<% } %>
+<h3 class="settings-title">Default File Layout</h3>
+<select name="layout">
+    <option <%= layout === "s" ? "selected" : "" %> value="s">Small Grid View</option>
+    <option <%= layout === "m" ? "selected" : "" %> value="m">Medium Grid View</option>
+    <option <%= layout === "l" ? "selected" : "" %> value="l">Large Grid View</option>
+    <option <%= layout === "d" ? "selected" : "" %> value="d">Detail View</option>
+</select>

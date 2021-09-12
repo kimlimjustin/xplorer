@@ -2,8 +2,6 @@
 	"compilerOptions": {
 		"module": "commonjs",
 		"noImplicitAny": true,
-		"sourceMap": true,
-		"declaration": true,
 		"removeComments": true,
 		"outDir": "outs",
 		"target": "ES2021",

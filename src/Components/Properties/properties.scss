@@ -1,0 +1,34 @@
+.properties {
+	border-radius: 0.5rem;
+	position: fixed;
+	bottom: 2rem;
+	right: -100vw;
+	padding: 0.5rem;
+	.properties-heading {
+		display: flex;
+		border-bottom: 1px solid #b9b9b9;
+		.properties-heading-exit {
+			cursor: pointer;
+			width: 1rem;
+			margin-left: auto;
+		}
+	}
+}
+
+@keyframes properties {
+	from {
+		right: -50vw;
+	}
+	to {
+		right: 2rem;
+	}
+}
+
+@keyframes close-properties {
+	from {
+		right: 2rem;
+	}
+	to {
+		right: -50vw;
+	}
+}

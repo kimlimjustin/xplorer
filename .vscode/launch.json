@@ -10,7 +10,7 @@
 			"name": "Launch Xplorer Development",
 			"runtimeExecutable": "yarn",
 			"cwd": "${workspaceFolder}",
-			"runtimeArgs": ["start"],
+			"runtimeArgs": ["dev"],
 			"port": 5858
 		}
 	]

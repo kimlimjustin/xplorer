@@ -3,7 +3,7 @@
     {
       "target_name": "module",
       "product_extension": "node",
-      "include_dirs" : [ "lib/wasm" ],
+      "include_dirs" : [ "src/Lib/extracticon" ],
       "conditions": [
         ['OS=="win"', {
           'cflags': [
@@ -12,7 +12,7 @@
         },],
       ],
       "sources": [
-        "lib/wasm/module.cc"
+        "src/Lib/extracticon/module.cc"
       ]
     }
   ]
