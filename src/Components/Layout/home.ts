@@ -169,7 +169,7 @@ const Home = async (_callback: homecb): Promise<void> => {
 		MAIN_ELEMENT.classList.remove('empty-dir-notification'); // Remove class if exist
 	const favorites = Favorites();
 	const drives = await Drives();
-	if (process.platform === 'linux') {
+	if (process.platform !== 'win32') {
 		homeFiles((files) => {
 			// Update the content in the main page ...
 			MAIN_ELEMENT.innerHTML = favorites + drives + files;

@@ -18,7 +18,7 @@ import os from 'os';
  */
 let BrowserWindow: any; //eslint-disable-line
 if (
-	process.platform === 'linux' ||
+	process.platform !== 'win32' ||
 	!(storage.get('theme')?.data?.acrylic ?? true)
 ) {
 	BrowserWindow = ElectronBrowserWindow;
