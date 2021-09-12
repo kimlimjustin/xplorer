@@ -1,5 +1,4 @@
 const getType = require('../outs/src/Components/Files/File Type/type').default;
-console.log(getType);
 
 test('Get type of js', () => {
 	expect(getType('hello.js')).toBe('JavaScript');
