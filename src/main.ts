@@ -49,6 +49,9 @@ let win: any; //eslint-disable-line
 const FILES_ON_OPERATION: string[] = [];
 let id: string;
 
+ipcMain.on('args', (e) => {
+	e.returnValue = isDev ? process.argv.slice(2) : process.argv.slice(1);
+});
 ipcMain.on('GUID', (_, arg: string) => {
 	id = arg;
 });
