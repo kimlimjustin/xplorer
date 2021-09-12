@@ -86,6 +86,7 @@
 	"license": "Apache-2.0",
 	"devDependencies": {
 		"@crowdin/cli": "^3.6.5",
+		"@types/ejs": "^3.1.0",
 		"@types/marked": "^3.0.0",
 		"@types/mv": "^2.1.2",
 		"@types/uuid": "^8.3.1",
@@ -112,6 +113,7 @@
 	"dependencies": {
 		"@electron/remote": "^1.2.1",
 		"cpy": "^8.1.2",
+		"ejs": "^3.1.6",
 		"electron-acrylic-window": "^0.5.8",
 		"electron-is-dev": "^2.0.0",
 		"electron-json-storage-sync": "^1.2.0",

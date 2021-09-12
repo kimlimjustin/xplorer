@@ -110,10 +110,15 @@
 	.settings-title {
 		margin: 1.5rem 0 0.5rem 0;
 	}
+	.settings-subtitle {
+		font-family: sans-serif;
+		margin: 1rem 0;
+	}
 
-	.settings-about-version {
+	.settings-about {
 		margin: 0;
 		font-weight: normal;
+		display: block;
 	}
 
 	.sidebar-text {
