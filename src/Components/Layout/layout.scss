@@ -1,0 +1,257 @@
+.xplorer-brand {
+	font-size: 1.5rem;
+	text-align: center;
+	display: block;
+	padding: 15px;
+}
+
+.container {
+	display: flex;
+	#drag-region {
+		width: 100%;
+		height: 100%;
+	}
+}
+
+.sidebar {
+	flex: 1;
+	min-width: 250px;
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+	overflow: auto;
+	.sidebar-nav {
+		flex-grow: 1;
+		margin: 1rem 0;
+		padding: 15px 20px;
+		overflow: auto;
+		width: -webkit-fill-available;
+		.sidebar-nav-item {
+			margin: 1rem 0.5rem;
+			.sidebar-nav-item-dropdown-btn {
+				cursor: pointer;
+				font-size: 1.3rem;
+				img {
+					width: 1.5rem;
+					vertical-align: bottom;
+				}
+				&::after {
+					content: '▲';
+					float: right;
+					padding-left: 1.75rem;
+				}
+			}
+			.sidebar-nav-item-dropdown-container {
+				span {
+					display: flex;
+					cursor: pointer;
+					padding: 0.2rem;
+					img {
+						width: 1.5rem;
+						height: 1.5rem;
+						display: inline-block;
+						vertical-align: bottom;
+					}
+					.sidebar-text {
+						margin: 0 0.2rem;
+						padding: 0 !important;
+						text-overflow: ellipsis;
+						overflow: hidden;
+						white-space: nowrap;
+					}
+				}
+			}
+		}
+		.nav-hide-item {
+			.sidebar-nav-item-dropdown-btn::after {
+				content: '▼' !important;
+			}
+			.sidebar-nav-item-dropdown-container {
+				display: none !important;
+			}
+		}
+	}
+	.sidebar-setting-btn {
+		text-align: center;
+		cursor: pointer;
+		padding: 15px;
+		transition: 0.5s;
+		.sidebar-setting-btn-inner:hover {
+			transform: scale(0.95);
+		}
+		.sidebar-setting-btn-icon {
+			width: 2rem;
+			vertical-align: middle;
+		}
+
+		.sidebar-setting-btn-text {
+			vertical-align: middle;
+			margin: 0 0.2rem;
+		}
+	}
+}
+
+.main {
+	height: 100vh;
+	flex: 4;
+	overflow: auto;
+	display: flex;
+	flex-direction: column;
+	.home-section {
+		margin: 2rem 0;
+	}
+	.topbar {
+		padding: 15px;
+		-webkit-app-region: drag;
+		&:focus {
+			cursor: grabbing;
+		}
+
+		.tabs-manager {
+			flex: 1;
+			overflow: auto;
+			display: flex;
+			width: 100%;
+			margin: 0 1rem;
+			-webkit-app-region: no-drag;
+			&::webkit-scrollbar {
+				height: 3px;
+			}
+			&::-webkit-scrollbar-track {
+				background: var(--tabs-scrollbar-track);
+			}
+			&::-webkit-scrollbar-thumb {
+				background: var(--tabs-scrollbar-thumb);
+			}
+			&::-webkit-scrollbar-thumb:hover {
+				background: var(--tabs-scrollbar-thumb-hover);
+			}
+			.tab {
+				width: fit-content;
+				padding: 5px 5rem;
+				cursor: pointer;
+				border-radius: 5px;
+				position: relative;
+				-webkit-app-region: no-drag;
+				margin: 0 1rem;
+				display: inline-block;
+				#tab-position {
+					white-space: nowrap;
+					text-overflow: ellipsis;
+					overflow: hidden;
+					width: 100px;
+					text-align: center;
+					display: inline-grid;
+				}
+				.close-tab-btn {
+					position: absolute;
+					right: 1rem;
+					font-size: 1rem;
+					cursor: pointer;
+				}
+			}
+			.create-new-tab {
+				padding: 5px;
+				cursor: pointer;
+				-webkit-app-region: no-drag;
+				display: inline-block;
+				width: calc(1rem + 5px);
+				text-align: center;
+				border-radius: 5px;
+				font-size: 1rem;
+			}
+		}
+		.window-manager {
+			margin-left: auto;
+			span {
+				border-radius: 50%;
+				padding: 5px;
+				width: 8px;
+				height: 8px;
+				display: inline-block;
+				cursor: pointer;
+				vertical-align: middle;
+				top: -1rem;
+				-webkit-app-region: no-drag;
+			}
+		}
+		.row {
+			display: flex;
+			padding: 0.5rem 0;
+			.navigator {
+				display: inline-block;
+				#go-back,
+				#go-forward,
+				#refresh {
+					margin: 0.2rem;
+					padding: 0.2rem;
+					cursor: pointer;
+					-webkit-app-region: no-drag;
+					border-radius: 5px;
+					width: 1rem;
+					height: 1rem;
+					font-size: 1.1rem;
+					vertical-align: middle;
+				}
+				#go-back {
+					margin-left: 2rem;
+				}
+			}
+			.path-navigator {
+				flex: 1;
+				margin: 0 1rem;
+				-webkit-app-region: no-drag;
+				border: none;
+				border-radius: 5px;
+				padding: 0.5rem;
+				vertical-align: middle;
+			}
+		}
+	}
+	.main-box {
+		overflow-x: hidden;
+		overflow-y: auto;
+		height: 100%;
+		box-sizing: border-box;
+		display: flex;
+
+		#workspace {
+			padding: 1rem;
+			height: calc(100% - 2rem);
+			width: -webkit-fill-available;
+		}
+	}
+}
+
+.menu {
+	vertical-align: middle;
+	width: 1rem;
+	-webkit-app-region: no-drag;
+	position: relative;
+	.menu-dropdown {
+		display: none;
+		position: absolute;
+		right: 0;
+		z-index: 1;
+		padding: 5px 8px;
+		width: max-content;
+		-webkit-app-region: no-drag;
+	}
+	&:active .menu-dropdown,
+	&:hover .menu-dropdown,
+	&:hover .menu-dropdown {
+		display: block;
+	}
+	.menu-svg {
+		vertical-align: sub;
+		width: 1rem;
+		fill: inherit;
+		cursor: pointer;
+		-webkit-app-region: no-drag;
+	}
+}
+
+.workspace-split {
+	overflow: auto;
+	flex: 1;
+}

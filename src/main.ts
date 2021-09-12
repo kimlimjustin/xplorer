@@ -120,7 +120,7 @@ function createWindow() {
 		},
 	});
 
-	win.loadFile(isDev ? './public/index.html' : 'src/public/index.html');
+	win.loadFile(isDev ? './Public/index.html' : 'outs/src/Public/index.html');
 	//win.webContents.openDevTools({ mode: 'detach' });
 	win.webContents.on(
 		'new-window',
@@ -160,8 +160,8 @@ ipcMain.on(
 		event.sender.startDrag({
 			file: filePath,
 			icon: options.isDir
-				? path.join(__dirname, 'icon/folder.png')
-				: path.join(__dirname, 'icon/file.png'),
+				? path.join(__dirname, 'Icon/folder.png')
+				: path.join(__dirname, 'Icon/file.png'),
 		});
 	}
 );

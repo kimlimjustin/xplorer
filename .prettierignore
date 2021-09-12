@@ -2,10 +2,9 @@ build
 dist
 outs
 node_modules
-src/Functions/theme/theme.ts
-src/Functions/preview/preview.ts
-src/Components/setting.ts
-src/Functions/Files/open.ts
-src/Components/favorites.ts
-src/Components/contextmenu.ts
-src/Functions/Files/new.ts
+src/Components/Theme/theme.ts
+src/Components/Files/File Icon/fileIcon.ts
+src/Components/Files/File Operation/open.ts
+src/Components/Favorites/favorites.ts
+src/Components/Context Menu/contextmenu.ts
+src/Components/Files/File Operation/new.ts

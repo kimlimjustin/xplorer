@@ -1,0 +1,8 @@
+<svg version="1.2" baseProfile="tiny-ps" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+	<title>folder-music-svg</title>
+	<style>
+		tspan { white-space:pre }
+		.shp0 { fill: #ffda08 } 
+	</style>
+	<path id="Layer" class="shp0" d="M10 4L4 4C2.89 4 2 4.89 2 6L2 18C2 19.1 2.9 20 4 20L20 20C21.1 20 22 19.1 22 18L22 8C22 6.89 21.1 6 20 6L12 6L10 4Z" />
+</svg>

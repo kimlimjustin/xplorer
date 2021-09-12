@@ -1,6 +1,7 @@
 test/*
 src/Typings/*
-lib/**/*
+src/Lib/**/*
 outs/**/*
 scripts/*
-src/Functions/Logs/log.ts
+src/Components/Functions/log.ts
+gruntfile.js

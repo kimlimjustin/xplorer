@@ -1,15 +1,15 @@
-import { updateTheme } from './Functions/Theme/theme';
+import { updateTheme } from './Components/Theme/theme';
 import { webFrame } from 'electron';
-import createSidebar from './Components/sidebar';
-import { windowManager } from './Components/windowManager';
-import Home from './Components/home';
-import { listenOpen } from './Functions/Files/open';
-import { ContextMenu } from './Components/contextMenu';
-import { Tab } from './Components/tab';
-import { toggleHiddenFiles } from './Functions/Files/toggleHiddenFiles';
-import optionMenu from './Components/optionMenu';
-import { SelectListener } from './Functions/Files/select';
-import { Shortcut } from './Components/shortcut';
+import createSidebar from './Components/Layout/sidebar';
+import { windowManager } from './Components/Layout/windowManager';
+import Home from './Components/Layout/home';
+import { listenOpen } from './Components/Files/File Operation/open';
+import { ContextMenu } from './Components/Context Menu/contextMenu';
+import { Tab } from './Components/Layout/tab';
+import { toggleHiddenFiles } from './Components/Functions/toggleHiddenFiles';
+import optionMenu from './Components/Layout/optionMenu';
+import { SelectListener } from './Components/Files/File Operation/select';
+import { Shortcut } from './Components/Shortcut/shortcut';
 
 // Wait DOM Content to be loaded
 document.addEventListener('DOMContentLoaded', async () => {
