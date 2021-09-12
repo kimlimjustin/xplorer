@@ -114,7 +114,7 @@
 	},
 	"dependencies": {
 		"@electron/remote": "^1.2.1",
-		"cpy": "^8.1.2",
+		"cpy": "^6.0.0",
 		"ejs": "^3.1.6",
 		"electron-acrylic-window": "^0.5.8",
 		"electron-is-dev": "^2.0.0",
