@@ -1,4 +1,4 @@
-name: Build
+name: Build (Windows)
 
 on:
     push:
@@ -20,5 +20,7 @@ jobs:
               uses: actions/setup-node@v2
               with:
                   node-version: ${{ matrix.node-version }}
-            - run: rm -rf node_modules && yarn install --frozen-lockfile
+            - run: npm install --global node-gyp@latest
+            - run: npm prefix -g | % {npm config set node_gyp "$_\node_modules\node-gyp\bin\node-gyp.js"}
+            - run: yarn install --frozen-lockfile
             - run: yarn build --publish=never
