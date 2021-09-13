@@ -1,4 +1,4 @@
-name: Build
+name: Jest (MacOS)
 
 on:
     push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
     build:
-        runs-on: ubuntu-latest
+        runs-on: macos-latest
 
         strategy:
             matrix:
@@ -20,5 +20,5 @@ jobs:
               uses: actions/setup-node@v2
               with:
                   node-version: ${{ matrix.node-version }}
-            - run: rm -rf node_modules && yarn install --frozen-lockfile
-            - run: yarn build --publish=never
+            - run: yarn install --frozen-lockfile
+            - run: yarn test

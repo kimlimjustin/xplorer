@@ -1,4 +1,4 @@
-name: Jest (Windows)
+name: Build (Windows)
 
 on:
     push:
@@ -23,4 +23,4 @@ jobs:
             - run: npm install --global node-gyp@latest
             - run: npm prefix -g | % {npm config set node_gyp "$_\node_modules\node-gyp\bin\node-gyp.js"}
             - run: yarn install --frozen-lockfile
-            - run: yarn test
+            - run: yarn build --publish=never

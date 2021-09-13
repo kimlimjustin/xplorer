@@ -104,12 +104,7 @@ const goBack = (): void => {
 	const { openDir } = require('../Files/File Operation/open'); //eslint-disable-line
 	const _focusingTab = tabs.tabs[tabs.focus];
 	if (_focusingTab.currentIndex > 0) {
-		tabs.tabs[tabs.focus].currentIndex -= 1;
-		tabs.tabs[tabs.focus].position =
-			_focusingTab.history[_focusingTab.currentIndex];
-
-		storage.set(`tabs-${windowGUID}`, tabs);
-		openDir(_focusingTab.history[_focusingTab.currentIndex]);
+		openDir(_focusingTab.history[_focusingTab.currentIndex - 1]);
 	}
 };
 
@@ -125,13 +120,7 @@ const goForward = (): void => {
 		_focusingTab.currentIndex >= 0 &&
 		_focusingTab.history?.[_focusingTab.currentIndex + 1]
 	) {
-		tabs.tabs[tabs.focus].currentIndex += 1;
-		tabs.tabs[tabs.focus].position =
-			_focusingTab.history[_focusingTab.currentIndex];
-
-		storage.set(`tabs-${windowGUID}`, tabs);
-		openDir(_focusingTab.history[_focusingTab.currentIndex]);
-		storage.set(`tabs-${windowGUID}`, tabs);
+		openDir(_focusingTab.history[_focusingTab.currentIndex + 1]);
 	}
 };
 /**
