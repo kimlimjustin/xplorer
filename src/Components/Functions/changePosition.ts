@@ -14,40 +14,30 @@ const changePosition = (newPath: string): void => {
 	document.getElementById('workspace').dataset.path = escape(newPath);
 
 	const tabs = storage.get(`tabs-${windowGUID}`)?.data;
+	console.log(tabs);
 	const _focusingTab = tabs.tabs[String(tabs.focus)];
-	tabs.tabs[String(tabs.focus)].position = newPath;
+	_focusingTab.position = newPath;
+	console.log(_focusingTab.history, _focusingTab.currentIndex);
 
-	if (newPath !== _focusingTab.history[_focusingTab.history.length - 1]) {
-		if (_focusingTab.currentIndex + 1 === _focusingTab.history.length) {
-			tabs.tabs[String(tabs.focus)].currentIndex += 1;
-			tabs.tabs[String(tabs.focus)].history.push(newPath);
-		} else if (
-			_focusingTab.history[_focusingTab.currentIndex + 1] === newPath
-		) {
-			tabs.tabs[String(tabs.focus)].currentIndex += 1;
-		} else {
-			if (_focusingTab.history[_focusingTab.currentIndex] !== newPath) {
-				tabs.tabs[String(tabs.focus)].history = tabs.tabs[
-					String(tabs.focus)
-				].history.slice(
-					0,
-					tabs.tabs[String(tabs.focus)].currentIndex - 1
-				);
-				tabs.tabs[String(tabs.focus)].history.push(newPath);
-				tabs.tabs[String(tabs.focus)].currentIndex -= 1;
-			}
-		}
+	if (newPath === _focusingTab.history[_focusingTab.currentIndex]) {
+		return;
 	} else if (
-		_focusingTab.history[_focusingTab.currentIndex + 1] === newPath
+		newPath === _focusingTab.history[_focusingTab.currentIndex + 1]
 	) {
-		tabs.tabs[String(tabs.focus)].currentIndex += 1;
+		_focusingTab.currentIndex += 1;
+	} else if (
+		newPath === _focusingTab.history[_focusingTab.currentIndex - 1]
+	) {
+		_focusingTab.currentIndex -= 1;
 	} else {
-		tabs.tabs[String(tabs.focus)].history.slice(
+		_focusingTab.history = _focusingTab.history.slice(
 			0,
-			tabs.tabs[String(tabs.focus)].currentIndex - 1
+			_focusingTab.currentIndex + 1
 		);
-		tabs.tabs[String(tabs.focus)].currentIndex += 1;
+		_focusingTab.history.push(newPath);
+		_focusingTab.currentIndex += 1;
 	}
+	tabs.tabs[String(tabs.focus)] = _focusingTab;
 	document
 		.getElementById(`tab${tabs.focus}`)
 		.querySelector<HTMLInputElement>('#tab-position').innerText = Translate(
