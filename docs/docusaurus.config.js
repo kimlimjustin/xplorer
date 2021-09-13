@@ -22,7 +22,7 @@ module.exports = {
 		announcementBar: {
 			id: 'support_us',
 			content:
-				'⭐️ If you like Xplorer, give it a star on <a href="https://github.com/kimlimjustin/xplorer">GitHub!</a> ⭐',
+				'Xplorer is still under heavy development, docs here may not up to date.',
 			backgroundColor: '#fafbfc',
 			textColor: '#091E42',
 		},
