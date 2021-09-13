@@ -107,7 +107,9 @@ const Preview = (filePath: string): void => {
 	} else if (path.extname(filePath) === '.md') {
 		const parsedData = marked(fs.readFileSync(filePath, 'utf8'));
 		changePreview(
-			`<div class="preview-object" data-type="md">${parsedData}</div>`
+			`<div class="preview-object" data-type="md">${eURLify(
+				parsedData
+			)}</div>`
 		);
 	} else {
 		let language;
