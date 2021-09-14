@@ -1,4 +1,6 @@
 import log from 'electron-log';
+import storage from 'electron-json-storage-sync';
+import windowGUID from '../Constants/windowGUID';
 
 /**
  * Write an error log
@@ -18,4 +20,40 @@ const InfoLog = (info: any): void => {
 	log.info(info);
 };
 
-export { ErrorLog, InfoLog };
+/**
+ * Write down operation logs
+ * @param {string} operationType - type of the operation
+ * @param {string|string[]} sources - files being operated
+ * @param {string} destination - destination of the file operation (optional)
+ * @returns {void}
+ */
+const OperationLog = (
+	operationType: 'copy' | 'cut' | 'delete' | 'new',
+	sources?: string | string[],
+	destination?: string
+): void => {
+	const operationLogs = storage.get(`operations-${windowGUID}`)?.data ?? {
+		operations: [],
+		currentIndex: -1,
+	};
+	console.log(
+		JSON.stringify(
+			operationLogs.operations[operationLogs.currentIndex + 1]
+		),
+		JSON.stringify({ operationType, sources, destination })
+	);
+	if (
+		JSON.stringify(
+			operationLogs.operations[operationLogs.currentIndex + 1]
+		) !== JSON.stringify({ operationType, sources, destination })
+	)
+		operationLogs.operations = operationLogs.operations.slice(
+			0,
+			operationLogs.currentIndex + 1
+		);
+	operationLogs.currentIndex += 1;
+	operationLogs.operations.push({ operationType, sources, destination });
+	storage.set(`operations-${windowGUID}`, operationLogs);
+};
+
+export { ErrorLog, InfoLog, OperationLog };

@@ -14,10 +14,8 @@ const changePosition = (newPath: string): void => {
 	document.getElementById('workspace').dataset.path = escape(newPath);
 
 	const tabs = storage.get(`tabs-${windowGUID}`)?.data;
-	console.log(tabs);
 	const _focusingTab = tabs.tabs[String(tabs.focus)];
 	_focusingTab.position = newPath;
-	console.log(_focusingTab.history, _focusingTab.currentIndex);
 
 	if (newPath === _focusingTab.history[_focusingTab.currentIndex]) {
 		return;

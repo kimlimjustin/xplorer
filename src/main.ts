@@ -148,6 +148,7 @@ app.whenReady().then(() => {
 
 app.on('window-all-closed', () => {
 	storage.remove(`tabs-${id}`);
+	storage.remove(`operations-${id}`);
 	if (process.platform !== 'darwin') {
 		app.quit();
 	}
