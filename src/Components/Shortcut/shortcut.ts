@@ -23,6 +23,8 @@ import windowGUID from '../Constants/windowGUID';
 import remote from '@electron/remote';
 import focusingPath from '../Functions/focusingPath';
 import Properties from '../Properties/properties';
+import Undo from '../Files/File Operation/undo';
+import Redo from '../Files/File Operation/redo';
 let vscodeInstalled = false;
 try {
 	execSync('code --version');
@@ -223,7 +225,9 @@ const Shortcut = (): void => {
 			}
 			if (!filePaths.length) filePaths = [focusingPath()];
 			Pin(filePaths);
-		} else if (e.key === 'Delete') {
+		}
+		// Delete file shortcut (Del)
+		else if (e.key === 'Delete') {
 			if (e.shiftKey) {
 				const filePaths = [];
 				for (const element of getSelected()) {
@@ -237,7 +241,9 @@ const Shortcut = (): void => {
 				}
 				Trash(filePaths);
 			}
-		} else if (e.ctrlKey && e.key === 'o') {
+		}
+		// Preview file shortcut (Ctrl+O)
+		else if (e.ctrlKey && e.key === 'o') {
 			if (
 				FILE_TYPES_AVAILABLE_FOR_PREVIEW.indexOf(
 					path.extname(selectedFilePath)
@@ -245,12 +251,25 @@ const Shortcut = (): void => {
 			) {
 				Preview(selectedFilePath);
 			}
-		} else if (e.ctrlKey && e.key === 'p') {
+		}
+		// File properties (Ctrl+P)
+		else if (e.ctrlKey && e.key === 'p') {
 			Properties(
 				selectedFilePath === 'undefined'
 					? focusingPath()
 					: selectedFilePath
 			);
+		}
+		// Undo file action (Ctrl+Z)
+		else if (e.ctrlKey && e.key === 'z') {
+			Undo();
+		}
+		// Redo file action (Ctrl+Shift+Z OR Ctrl+Y)
+		else if (
+			(e.ctrlKey && e.shiftKey && e.key === 'z') ||
+			(e.ctrlKey && e.key === 'y')
+		) {
+			Redo();
 		}
 	};
 	document.addEventListener('keyup', ShortcutHandler);

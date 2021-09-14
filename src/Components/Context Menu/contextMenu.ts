@@ -17,6 +17,7 @@ import { FILE_TYPES_AVAILABLE_FOR_PREVIEW, Preview } from "../Files/File Preview
 import windowGUID from "../Constants/windowGUID";
 import focusingPath from "../Functions/focusingPath";
 import Properties from "../Properties/properties";
+import Undo from "../Files/File Operation/undo";
 let vscodeInstalled = false
 try {
     execSync("code --version")
@@ -107,7 +108,7 @@ const ContextMenuInner = (target: HTMLElement, coorX:number, coorY:number, openD
             { "menu": "Open in new tab", "visible": target?.dataset?.isdir === 'true', "role": "openInNewTab", "icon": "open in new tab" },
             { "menu": "Open in terminal", "visible": target?.dataset?.isdir === "true", "role": "reveal", "shortcut": "Alt+T", "icon": "terminal" },
             { "menu": "Open in vscode", "role": "code", "visible": vscodeInstalled, "shortcut": "Shift+Enter", "icon": "vscode" },
-            { "menu": "Preview", "visible": target?.dataset?.isdir !== "false", "shortcut": "Ctrl+P", "icon": "preview" }
+            { "menu": "Preview", "visible": target?.dataset?.isdir !== "false", "shortcut": "Ctrl+O", "icon": "preview" }
         ],
         [
             { "menu": "Cut", "shortcut": "Ctrl+X", "icon": "cut", "role": "cut" },
@@ -133,6 +134,7 @@ const ContextMenuInner = (target: HTMLElement, coorX:number, coorY:number, openD
         ],
         [
             { "menu": "Paste", "shortcut": "Ctrl+V", "icon": "paste", "role": "paste" },
+            { "menu": "Undo Action", "shortcut": "Ctrl+Z", "icon": "paste", "role": "undo" },
             { "menu": "Copy Location Path", "shortcut": "Alt+Shift+C", "icon": "location", "role": "location" },
         ],
         [
@@ -493,8 +495,11 @@ const ContextMenu = (element:HTMLElement, openFileWithDefaultApp?: openFileWithD
                         Preview(filePath)
                         break;
                     case "properties":
-                        console.log(filePath)
                         Properties(filePath)
+                        break;
+                    case "undo":
+                        Undo()
+                        break
                 }
             })
         })

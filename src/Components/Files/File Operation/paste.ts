@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import cpy from 'cpy';
 import { dialog } from '@electron/remote';
-import { ErrorLog, InfoLog } from '../../Functions/log';
+import { ErrorLog, InfoLog, OperationLog } from '../../Functions/log';
 import { reload } from '../../Layout/windowManager';
 
 /**
@@ -22,6 +22,13 @@ const COPY = (filePaths: Array<string>, target: string): Promise<void> => {
 	};
 	return new Promise<void>((resolve) => {
 		for (const filePath of filePaths) {
+			const copyAFileDone = (file: string) => {
+				operationDone(filePath);
+				if (file !== filePaths[filePaths.length - 1]) return;
+				else {
+					resolve();
+				}
+			};
 			ipcRenderer.send(
 				'operation',
 				path.join(target, path.basename(filePath))
@@ -32,8 +39,7 @@ const COPY = (filePaths: Array<string>, target: string): Promise<void> => {
 						filePath,
 						path.join(target, path.basename(filePath) + ' - Copy')
 					).then(() => {
-						operationDone(filePath);
-						resolve();
+						copyAFileDone(filePath);
 					});
 				} else if (
 					fs.existsSync(path.join(target, path.basename(filePath)))
@@ -48,16 +54,14 @@ const COPY = (filePaths: Array<string>, target: string): Promise<void> => {
 							filePath,
 							path.join(target, path.basename(filePath))
 						).then(() => {
-							operationDone(filePath);
-							resolve();
+							copyAFileDone(filePath);
 						});
 				} else {
 					cpy(
 						filePath,
 						path.join(target, path.basename(filePath))
 					).then(() => {
-						operationDone(filePath);
-						resolve();
+						copyAFileDone(filePath);
 					});
 				}
 			} else {
@@ -71,8 +75,7 @@ const COPY = (filePaths: Array<string>, target: string): Promise<void> => {
 								.split('.')
 								.splice(basename.split('.').length - 1)}`,
 					}).then(() => {
-						operationDone(filePath);
-						resolve();
+						copyAFileDone(filePath);
 					});
 				} else if (
 					fs.existsSync(path.join(target, path.basename(filePath)))
@@ -84,13 +87,11 @@ const COPY = (filePaths: Array<string>, target: string): Promise<void> => {
 					};
 					if (dialog.showMessageBoxSync(options) === 0)
 						cpy(filePath, target).then(() => {
-							operationDone(filePath);
-							resolve();
+							copyAFileDone(filePath);
 						});
 				} else {
 					cpy(filePath, target).then(() => {
-						operationDone(filePath);
-						resolve();
+						copyAFileDone(filePath);
 					});
 				}
 			}
@@ -112,6 +113,8 @@ const Paste = async (target: string): Promise<void> => {
 	}
 	if (clipboardExFilePaths?.length) {
 		await COPY(clipboardExFilePaths, target);
+		InfoLog(`Copy ${clipboardExFilePaths.length} files into ${target}`);
+		OperationLog('copy', clipboardExFilePaths, target);
 	}
 	// CHeck if the copied text is Xplorer command
 	else if (!clipboardText.startsWith('Xplorer command')) {
@@ -126,7 +129,8 @@ const Paste = async (target: string): Promise<void> => {
 		}
 		if (commandType === 'COPY') {
 			await COPY(filePaths, target);
-			InfoLog(`Copy ${filePaths.length} into ${target}`);
+			InfoLog(`Copy ${filePaths.length} files into ${target}`);
+			OperationLog('copy', filePaths, target);
 		} else if (commandType === 'CUT') {
 			await COPY(filePaths, target).then(() => {
 				for (const filePath of filePaths) {
@@ -145,7 +149,8 @@ const Paste = async (target: string): Promise<void> => {
 						});
 					}
 				}
-				InfoLog(`Cut ${filePaths.length} into ${target}`);
+				InfoLog(`Cut ${filePaths.length} files into ${target}`);
+				OperationLog('cut', filePaths, target);
 			});
 		}
 	}
