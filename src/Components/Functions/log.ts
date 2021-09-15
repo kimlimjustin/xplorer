@@ -36,12 +36,6 @@ const OperationLog = (
 		operations: [],
 		currentIndex: -1,
 	};
-	console.log(
-		JSON.stringify(
-			operationLogs.operations[operationLogs.currentIndex + 1]
-		),
-		JSON.stringify({ operationType, sources, destination })
-	);
 	if (
 		JSON.stringify(
 			operationLogs.operations[operationLogs.currentIndex + 1]

@@ -64,7 +64,6 @@ const Properties = (filePath: string): void => {
 			accessedAt = stat.atime;
 			size = stat.size;
 		} catch (_) {
-			console.log('a');
 			if (process.platform === 'win32' && !hideSystemFile) {
 				const stat = getAttributesSync(filePath);
 				if (stat) {

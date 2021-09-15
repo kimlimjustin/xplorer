@@ -3,6 +3,7 @@ import Translate from '../I18n/i18n';
 import { changeSelectedStatus } from '../Shortcut/shortcut';
 import path from 'path';
 import windowGUID from '../Constants/windowGUID';
+import { closeWatcher } from '../Files/File Operation/open';
 
 /**
  * Change current tab position
@@ -10,6 +11,7 @@ import windowGUID from '../Constants/windowGUID';
  * @returns {void}
  */
 const changePosition = (newPath: string): void => {
+	closeWatcher();
 	document.querySelector<HTMLInputElement>('.path-navigator').value = newPath;
 	document.getElementById('workspace').dataset.path = escape(newPath);
 
