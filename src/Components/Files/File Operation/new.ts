@@ -3,7 +3,7 @@ import storage from "electron-json-storage-sync";
 import path from "path";
 import fs from "fs";
 import { dialog } from "@electron/remote";
-import { ErrorLog } from "../../Functions/log";
+import { ErrorLog, OperationLog } from "../../Functions/log";
 import { detectDefaultTheme } from "../../Theme/theme";
 import focusingPath from "../../Functions/focusingPath";
 /**
@@ -34,6 +34,7 @@ const NewFile = (type: string): void => {
                                     ErrorLog(err)
                                 }
                             })
+                            OperationLog('newfile', null, path.join(focusingPath(), r))
                         }
                     }
                 })
@@ -58,6 +59,7 @@ const NewFile = (type: string): void => {
                                     ErrorLog(err)
                                 }
                             })
+                            OperationLog('newfolder', null, path.join(focusingPath(), r))
                         }
                     }
                 })

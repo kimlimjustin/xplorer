@@ -30,6 +30,12 @@ const Undo = (): void => {
 				fs.unlinkSync(copiedFile);
 			}
 			break;
+		case 'newfile':
+			fs.unlinkSync(latestOperation.destination);
+			break;
+		case 'newfolder':
+			fs.rmdirSync(latestOperation.destination);
+			break;
 	}
 	operationLogs.currentIndex -= 1;
 	storage.set(`operations-${windowGUID}`, operationLogs);
