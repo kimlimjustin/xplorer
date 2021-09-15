@@ -28,7 +28,7 @@ const InfoLog = (info: any): void => {
  * @returns {void}
  */
 const OperationLog = (
-	operationType: 'copy' | 'cut' | 'delete' | 'new',
+	operationType: 'copy' | 'cut' | 'delete' | 'newfile' | 'newfolder',
 	sources?: string | string[],
 	destination?: string
 ): void => {
