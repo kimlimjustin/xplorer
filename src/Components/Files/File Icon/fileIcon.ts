@@ -120,7 +120,6 @@ const fileIcon = (filename:string, category = "folder", HTMLFormat = true):strin
         if (fs.existsSync(fileLoc)) return HTMLFormat ? iconPreview(fileLoc, category === "folder") : fileLoc
         else {
             fileLoc = iconJSON?.default?.[category === "file" ? "file" : "folder"] && fs.existsSync(iconJSON?.default?.[category === "file" ? "file" : "folder"]) ? path.join(iconJSONPath, '../', iconJSON?.default?.[category === "file" ? "file" : "folder"]) : path.join(__dirname, '../../../icon/', defaultIconJSON.default[category === "file" ? "file" : "folder"])
-            console.log(fileLoc, fs.existsSync(fileLoc))
             return HTMLFormat ? iconPreview(fileLoc, category === "folder") : fileLoc
         }
     } else {

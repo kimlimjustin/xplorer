@@ -18,9 +18,9 @@ import { SelectListener } from "./select";
 import { InfoLog, ErrorLog } from "../../Functions/log";
 import { closePreviewFile } from "../File Preview/preview";
 import {dialog} from "@electron/remote";
-import windowGUID from "../../Constants/windowGUID";
 import type fileData from "../../../Typings/fileData";
 import { ipcRenderer } from "electron";
+import { FSWatcher } from "original-fs";
 
 const WINDOWS_TRASH_FILES_PATH = "C:\\Trash/files";
 const WINDOWS_TRASH_INFO_PATH = "C:\\Trash/info";
@@ -29,13 +29,22 @@ const LINUX_TRASH_INFO_PATH = path.join(os.homedir(), '.local/share/Trash/info')
 const IGNORE_FILE = ['.', '..'];
 
 let timeStarted:number;
+let watcher:undefined|FSWatcher;
 
 
 /**
- * Get command to open a file with default app on various operating systems.
- * @returns {any}
+ * Close dir watcher
+ * @returns {void}
  */
-function getCommandLine() {
+const closeWatcher = ():void => {
+    watcher?.close()
+}
+
+/**
+ * Get command to open a file with default app on various operating systems.
+ * @returns {string}
+ */
+const getCommandLine =():string => {
     switch (process.platform) {
         case 'darwin':
             return 'open';
@@ -253,23 +262,12 @@ const openDir = async (dir:string):Promise<void> => {
         const files = getFiles()
         displayFiles(files, process.platform === "win32" ? WINDOWS_TRASH_FILES_PATH : LINUX_TRASH_FILES_PATH)
         // Watch the directory
-        const watcher = fs.watch(process.platform === "win32" ? WINDOWS_TRASH_FILES_PATH : LINUX_TRASH_FILES_PATH, async () => {
+        watcher?.close()
+        fs.watch(process.platform === "win32" ? WINDOWS_TRASH_FILES_PATH : LINUX_TRASH_FILES_PATH, async () => {
             const files = getFiles()
             // Get files of the dir
             displayFiles(files, process.platform === "win32" ? WINDOWS_TRASH_FILES_PATH : LINUX_TRASH_FILES_PATH)
         })
-        let focusingPath:string; // Watch if focusing path changes
-        setInterval(() => {
-            const tabs = storage.get(`tabs-${windowGUID}`)?.data
-            const _focusingPath = tabs.tabs[tabs.focus]?.position
-            if (focusingPath === undefined) {
-                focusingPath = _focusingPath
-            } else {
-                if (focusingPath !== _focusingPath) {
-                    watcher.close()
-                }
-            }
-        }, 500);
 
     } else {
         if (!fs.existsSync(dir)) {
@@ -310,7 +308,8 @@ const openDir = async (dir:string):Promise<void> => {
         const files = getFiles()
         displayFiles(files, dir)
         // Watch the directory
-        const watcher = fs.watch(dir, async (_, filePath) => {
+        watcher?.close()
+        watcher = fs.watch(dir, async (_, filePath) => {
             // Check if the file is under operation on Xplorer
             if(!ipcRenderer.sendSync('under-operation', path.join(dir, filePath))){
                 const files = getFiles()
@@ -318,20 +317,7 @@ const openDir = async (dir:string):Promise<void> => {
                 displayFiles(files, dir)
             }
         })
-
-        let focusingPath:string; // Watch if focusing path changes
-        setInterval(() => {
-            const tabs = storage.get(`tabs-${windowGUID}`)?.data
-            const _focusingPath = tabs.tabs[tabs.focus]?.position
-            if (focusingPath === undefined) {
-                focusingPath = _focusingPath
-            } else {
-                if (focusingPath !== _focusingPath) {
-                    watcher.close()
-                }
-            }
-        }, 500);
     }
 }
 
-export { listenOpen, openDir, openFileWithDefaultApp }
+export { listenOpen, openDir, openFileWithDefaultApp, closeWatcher }

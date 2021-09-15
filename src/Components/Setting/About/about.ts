@@ -7,7 +7,6 @@ import os from 'os';
  * @returns {any}
  */
 const About = (): void => {
-	console.log(os.release());
 	const settingsMain = document.querySelector('.settings-main');
 	ejs.renderFile(path.join(__dirname, 'about.ejs'), {
 		version,

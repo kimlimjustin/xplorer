@@ -175,11 +175,6 @@ const Shortcut = (): void => {
 					} && start cmd`
 				);
 			} else if (process.platform === 'linux') {
-				console.log(
-					selectedFilePath === 'undefined'
-						? focusingPath()
-						: selectedFilePath
-				);
 				execSync(
 					`gnome-terminal --working-directory="${
 						selectedFilePath === 'undefined'

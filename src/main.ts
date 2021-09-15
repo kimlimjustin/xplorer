@@ -57,7 +57,6 @@ ipcMain.on('GUID', (_, arg: string) => {
 });
 ipcMain.on('operation', (_, arg: string) => {
 	FILES_ON_OPERATION.push(arg);
-	console.log(FILES_ON_OPERATION);
 });
 ipcMain.on('operation-done', (e, arg: string) => {
 	const index = FILES_ON_OPERATION.indexOf(arg);

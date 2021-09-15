@@ -9,7 +9,6 @@ import Paste from './paste';
 const Redo = (): void => {
 	const operationLogs = storage.get(`operations-${windowGUID}`)?.data;
 	//operationLogs.currentIndex++;
-	console.log(operationLogs);
 	const latestOperation =
 		operationLogs.operations[operationLogs.currentIndex + 1];
 	switch (latestOperation.operationType) {
