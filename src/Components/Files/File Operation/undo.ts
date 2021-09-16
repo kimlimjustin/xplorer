@@ -2,6 +2,9 @@ import storage from 'electron-json-storage-sync';
 import windowGUID from '../../Constants/windowGUID';
 import path from 'path';
 import fs from 'fs';
+import { ErrorLog } from '../../Functions/log';
+import mv from 'mv';
+import { dialog } from '@electron/remote';
 
 /**
  * Undo the latest operation
@@ -28,6 +31,27 @@ const Undo = (): void => {
 					? filenameWithCopySuffix
 					: filename;
 				fs.unlinkSync(copiedFile);
+			}
+			break;
+		case 'cut':
+			for (const source of latestOperation.sources) {
+				mv(
+					path.join(
+						latestOperation.destination,
+						path.basename(source)
+					),
+					source,
+					(err) => {
+						if (err) {
+							dialog.showMessageBoxSync({
+								message:
+									'Something went wrong, please try again or open an issue on GitHub.',
+								type: 'error',
+							});
+							ErrorLog(err);
+						}
+					}
+				);
 			}
 			break;
 		case 'newfile':
