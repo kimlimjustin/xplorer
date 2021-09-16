@@ -243,7 +243,7 @@ const ContextMenuInner = (target: HTMLElement, coorX:number, coorY:number, openD
                     const sort = storage.get('layout')?.data ?? {}
                     const tabs = storage.get(`tabs-${windowGUID}`)?.data
                     let currentPath = tabs.tabs[tabs.focus].position
-                    if (currentPath === path.join(os.homedir(), "Home") || currentPath === "xplorer://Home" || currentPath === "Home") currentPath = os.homedir()
+                    if ( currentPath === "xplorer://Home") currentPath = os.homedir()
                     switch (target.innerHTML) {
                         case "Grid View (Large)":
                             files.forEach(file => {
@@ -357,7 +357,7 @@ const ContextMenu = (element:HTMLElement, openFileWithDefaultApp?: openFileWithD
 
     element.addEventListener("contextmenu", e => {
         // Disable context menu if current path is home and on windows
-        if (process.platform === "win32" && (!document.getElementById("workspace").dataset?.path || document.getElementById("workspace").dataset?.path === "Home")) return;
+        if (process.platform === "win32" && (!document.getElementById("workspace").dataset?.path || document.getElementById("workspace").dataset?.path === "xplorer://Home")) return;
         const coorX = e.pageX;
         let coorY = e.pageY;
 
@@ -422,13 +422,13 @@ const ContextMenu = (element:HTMLElement, openFileWithDefaultApp?: openFileWithD
                         }
                         break;
                     case "code":
-                        if (process.platform === "linux" && (filePath === "Home" || filePath === path.join(os.homedir(), "Home"))) execSync(`code ${os.homedir()}`)
+                        if (process.platform === "linux" && (filePath === "xplorer://Home")) execSync(`code ${os.homedir()}`)
                         else exec(`code "${filePath.replaceAll('"', "\\\"")}"`)
                         break;
                     case "codes":
                         for (const element of getSelected()) {
                             const selectedPath = unescape(element.dataset.path)
-                            if (process.platform === "linux" && (selectedPath === "Home" || selectedPath === path.join(os.homedir(), "Home"))) execSync(`code ${os.homedir()}`)
+                            if (process.platform === "linux" && (filePath === "xplorer://Home")) execSync(`code ${os.homedir()}`)
                             else exec(`code "${selectedPath.replaceAll('"', "\\\"")}"`)
                         }
                         break;
@@ -465,7 +465,7 @@ const ContextMenu = (element:HTMLElement, openFileWithDefaultApp?: openFileWithD
                         Paste(focusingPath())
                         break;
                     case "pin":
-                        Pin([filePath === "Home" ? os.homedir() : filePath ?? focusingPath()])
+                        Pin([filePath === "xplorer://Home" ? os.homedir() : filePath ?? focusingPath()])
                         break;
                     case "pins":
                         paths = []
