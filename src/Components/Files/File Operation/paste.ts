@@ -5,6 +5,7 @@ import cpy from 'cpy';
 import { dialog } from '@electron/remote';
 import { ErrorLog, InfoLog, OperationLog } from '../../Functions/log';
 import { reload } from '../../Layout/windowManager';
+import mv from 'mv';
 
 /**
  * copy a file
@@ -132,26 +133,25 @@ const Paste = async (target: string): Promise<void> => {
 			InfoLog(`Copy ${filePaths.length} files into ${target}`);
 			OperationLog('copy', filePaths, target);
 		} else if (commandType === 'CUT') {
-			await COPY(filePaths, target).then(() => {
-				for (const filePath of filePaths) {
-					if (fs.lstatSync(filePath).isDirectory()) {
-						fs.rmdirSync(filePath, { recursive: true });
-					} else {
-						fs.unlink(filePath, (err) => {
-							if (err) {
-								dialog.showMessageBoxSync({
-									message:
-										'Something went wrong, please try again or open an issue on GitHub.',
-									type: 'error',
-								});
-								ErrorLog(err);
-							}
-						});
+			for (const filePath of filePaths) {
+				console.log(filePath);
+				mv(
+					filePath,
+					path.join(target, path.basename(filePath)),
+					(err) => {
+						if (err) {
+							dialog.showMessageBoxSync({
+								message:
+									'Something went wrong, please try again or open an issue on GitHub.',
+								type: 'error',
+							});
+							ErrorLog(err);
+						}
 					}
-				}
-				InfoLog(`Cut ${filePaths.length} files into ${target}`);
-				OperationLog('cut', filePaths, target);
-			});
+				);
+			}
+			InfoLog(`Cut ${filePaths.length} files into ${target}`);
+			OperationLog('cut', filePaths, target);
 		}
 	}
 };
