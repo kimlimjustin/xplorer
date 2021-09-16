@@ -218,16 +218,16 @@ const openDir = async (dir:string):Promise<void> => {
     timeStarted = Date.now()
     startLoading()
     await changePosition(dir)
-    if (dir === path.join(os.homedir(), 'Home') || dir === "Home" || dir === "xplorer://Home") {
+    if (dir === "xplorer://Home") {
         Home(() => {
             listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
             SelectListener(document.querySelectorAll(".file"))
             InfoLog(`Open ${dir} within ${(Date.now() - timeStarted) / 1000}s`)
             console.log(`Open ${dir} within ${(Date.now() - timeStarted) / 1000}s`)
         })
-    } else if (dir === path.join(os.homedir(), 'Recent') || dir === "Recent" || dir === "xplorer://Recent") {
+    } else if ( dir === "xplorer://Recent") {
         Recent()
-    } else if (dir === path.join(os.homedir(), 'Trash') || dir === "Trash" || dir === "xplorer://Trash") {
+    } else if ( dir === "xplorer://Trash") {
         const getFiles = () => {
             if (process.platform === "win32") {
                 if (!fs.existsSync(WINDOWS_TRASH_FILES_PATH)) return []

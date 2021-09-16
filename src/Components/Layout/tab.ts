@@ -63,8 +63,8 @@ const createNewTab = (path?: string): void => {
 
 	// Edit tabs information
 	tabsInfo.tabs[String(tabsInfo.latestIndex)] = {
-		position: path || 'Home',
-		history: ['Home'],
+		position: path || 'xplorer://Home',
+		history: ['xplorer://Home'],
 		currentIndex: -1,
 	};
 	tabsInfo.focus = String(tabsInfo.latestIndex);
@@ -72,7 +72,7 @@ const createNewTab = (path?: string): void => {
 	storage.set(`tabs-${windowGUID}`, tabsInfo);
 
 	const { openDir } = require('../Files/File Operation/open'); //eslint-disable-line
-	openDir(path || 'Home');
+	openDir(path || 'xplorer://Home');
 
 	newTab.addEventListener('click', () => {
 		SwitchTab(newTab.dataset.tabIndex);
@@ -130,7 +130,13 @@ const goForward = (): void => {
 const Tab = (): void => {
 	const tabsInfo = {
 		focus: '1',
-		tabs: { 1: { position: 'Home', history: ['Home'], currentIndex: 0 } },
+		tabs: {
+			1: {
+				position: 'xplorer://Home',
+				history: ['xplorer://Home'],
+				currentIndex: 0,
+			},
+		},
 		focusHistory: [1],
 		latestIndex: 1,
 	}; // default tabs information

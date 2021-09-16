@@ -216,10 +216,7 @@ const Home = async (_callback: homecb): Promise<void> => {
 		}
 		const tabs = storage.get(`tabs-${windowGUID}`)?.data;
 		const focusingPath = tabs.tabs[tabs.focus]?.position;
-		if (
-			focusingPath !== 'Home' &&
-			focusingPath !== path.join(os.homedir(), 'Home')
-		) {
+		if (focusingPath !== 'xplorer://Home') {
 			clearInterval(listenDrives);
 		}
 		previousDrive = _uniqueDrive;

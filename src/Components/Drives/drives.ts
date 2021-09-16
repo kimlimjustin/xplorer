@@ -110,11 +110,7 @@ const Drives = async (): Promise<string> => {
 	const tabs = storage.get(`tabs-${windowGUID}`)?.data;
 	const focusingPath = tabs.tabs[tabs.focus].position;
 
-	if (
-		focusingPath === 'Home' ||
-		focusingPath === path.join(os.homedir(), 'Home') ||
-		focusingPath === 'xplorer://Home'
-	) {
+	if (focusingPath === 'xplorer://Home') {
 		switch (process.platform) {
 			case 'win32':
 				return `<section class="home-section" id="drives">${drivesToElements(
