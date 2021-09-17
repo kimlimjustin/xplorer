@@ -226,7 +226,11 @@ const Shortcut = (): void => {
 			if (e.shiftKey) {
 				const filePaths = [];
 				for (const element of getSelected()) {
-					filePaths.push(unescape(element.dataset.path));
+					filePaths.push(
+						focusingPath() === 'xplorer://Trash'
+							? unescape(element.dataset.realPath)
+							: unescape(element.dataset.path)
+					);
 				}
 				PermanentDelete(filePaths);
 			} else {
