@@ -12,6 +12,7 @@ import storage from 'electron-json-storage-sync';
 import * as remoteInit from '@electron/remote/main';
 import isDev from 'electron-is-dev';
 import os from 'os';
+import windowStateKeeper from 'electron-window-state';
 
 /**
  * Initialize Acrylic's BrowserWindow if available
@@ -105,12 +106,29 @@ const vibrancy = () => {
 
 // Create a new window
 function createWindow() {
-	const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+	const windowState = windowStateKeeper({
+		defaultWidth: Math.floor(
+			screen.getPrimaryDisplay().workAreaSize.width * 0.8
+		),
+		defaultHeight: Math.floor(
+			screen.getPrimaryDisplay().workAreaSize.height * 0.8
+		),
+	});
+	/*if (storage.get('preference')?.data?.saveWindowSize ?? true) {
+		width =
+			storage.get('preference')?.data?.windowSize?.[0] ??
+			defaultWinSize.width;
+		height =
+			storage.get('preference')?.data?.windowSize?.[1] ??
+			defaultWinSize.height;
+	}*/
 	win = new BrowserWindow({
 		title: 'xplorer',
 		frame: false,
-		width: Math.floor(width * 0.8),
-		height: Math.floor(height * 0.8),
+		width: windowState.width,
+		height: windowState.height,
+		x: windowState.x,
+		y: windowState.y,
 		minWidth: 600,
 		minHeight: 400,
 		vibrancy: isVibrancySupported()
@@ -131,6 +149,17 @@ function createWindow() {
 			shell.openExternal(url);
 		}
 	);
+	windowState.manage(win);
+	/*win.on('resize', () => {
+		if (storage.get('preference')?.data?.saveWindowSize ?? true) {
+			storage.set(
+				'preference',
+				Object.assign({}, storage.get('preference')?.data, {
+					windowSize: win.getSize(),
+				})
+			);
+		}
+	});*/
 }
 
 app.allowRendererProcessReuse = false;
