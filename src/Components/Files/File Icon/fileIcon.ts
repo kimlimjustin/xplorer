@@ -43,8 +43,8 @@ const iconPreview = (filename:string, isdir?:boolean) => {
  */
 const videoPreview = (filename:string) => {
     const preference = storage.get("preference")?.data
-    let alt = path.join(iconJSONPath || __dirname, iconJSON ? '../' : '../../../icon', iconJSON?.file?.video || defaultIconJSON.file.video) // Alternative for video if video could not be oaded
-    if (!fs.existsSync(alt)) alt = path.join(__dirname, '../../Icon/', defaultIconJSON.default.file)
+    let alt = path.join(iconJSONPath || __dirname, iconJSON ? '../' : '../../../Icon', iconJSON?.file?.video || defaultIconJSON.file.video) // Alternative for video if video could not be oaded
+    if (!fs.existsSync(alt)) alt = path.join(__dirname, '../../../Icon/', defaultIconJSON.default.file)
     return preference?.autoPlayPreviewVideo ? `<video autoplay loop muted class="file-grid-preview"><source src = "${filename}" /><img src = "${alt}" /></video>` : iconPreview(alt, false)
 }
 
