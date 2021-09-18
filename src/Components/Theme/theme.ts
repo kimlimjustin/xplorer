@@ -2,6 +2,8 @@ import fs from 'fs';
 import storage from "electron-json-storage-sync";
 import VanillaTilt from "../../Lib/tilt/tilt";
 import os from "os";
+import { nativeTheme } from '@electron/remote';
+import { ipcRenderer } from 'electron';
 interface Theme{
     [key:string]: {
         [key:string]: any //eslint-disable-line
@@ -12,15 +14,22 @@ interface Theme{
  * Detect system theme
  * @returns {string}
  */
-const detectDefaultTheme = ():string => {
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        return "dark"
-    } else {
-        return "light"
-    }
-}
+ const detectDefaultTheme = (): string => {
+	if (nativeTheme.shouldUseDarkColors) {
+		return 'dark';
+	} else {
+		return 'light';
+	}
+};
+
+let defaultTheme = detectDefaultTheme(); // default system theme
+// Watch native theme to be updated
+nativeTheme.on('updated', () => {
+    defaultTheme = detectDefaultTheme()
+    ipcRenderer.send('update-theme');
+    updateTheme()
+})
 let themeJSON:Theme; // user preference theme json
-const defaultTheme = detectDefaultTheme(); // default system theme
 import * as defaultThemeData from "./theme.json"
 const defaultThemeJSON:Theme = defaultThemeData;
 
