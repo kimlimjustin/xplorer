@@ -5,6 +5,7 @@ import fs from 'fs';
 import { ErrorLog } from '../../Functions/log';
 import mv from 'mv';
 import { dialog } from '@electron/remote';
+import { Restore } from './trash';
 
 /**
  * Undo the latest operation
@@ -13,8 +14,8 @@ import { dialog } from '@electron/remote';
 const Undo = (): void => {
 	const operationLogs = storage.get(`operations-${windowGUID}`)?.data;
 	const latestOperation =
-		operationLogs.operations[operationLogs.currentIndex];
-	switch (latestOperation.operationType) {
+		operationLogs?.operations[operationLogs?.currentIndex];
+	switch (latestOperation?.operationType) {
 		case 'copy':
 			for (const source of latestOperation.sources) {
 				const filename = path.join(
@@ -59,6 +60,11 @@ const Undo = (): void => {
 			break;
 		case 'newfolder':
 			fs.rmdirSync(latestOperation.destination);
+			break;
+		case 'delete':
+			for (const source of latestOperation.sources) {
+				Restore(source);
+			}
 			break;
 	}
 	operationLogs.currentIndex -= 1;

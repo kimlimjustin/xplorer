@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
-import { ErrorLog } from '../../Functions/log';
+import { ErrorLog, OperationLog } from '../../Functions/log';
 import trash from 'trash';
 import { v4 } from 'uuid';
 import mv from 'mv';
@@ -31,6 +31,7 @@ const INFO_PATH =
  * @returns {void}
  */
 const Restore = (filePath: string): void => {
+	console.log(filePath);
 	let fileInfo;
 	let __uuid;
 	if (
@@ -128,6 +129,7 @@ const Trash = (filePaths: string[]): void => {
 			trash(filePath);
 		}
 	}
+	OperationLog('delete', filePaths);
 };
 
 /**
