@@ -18,6 +18,7 @@ import windowGUID from "../Constants/windowGUID";
 import focusingPath from "../Functions/focusingPath";
 import Properties from "../Properties/properties";
 import Undo from "../Files/File Operation/undo";
+import Redo from "../Files/File Operation/redo";
 let vscodeInstalled = false
 try {
     execSync("code --version")
@@ -134,7 +135,8 @@ const ContextMenuInner = (target: HTMLElement, coorX:number, coorY:number, openD
         ],
         [
             { "menu": "Paste", "shortcut": "Ctrl+V", "icon": "paste", "role": "paste" },
-            { "menu": "Undo Action", "shortcut": "Ctrl+Z", "icon": "paste", "role": "undo" },
+            { "menu": "Undo Action", "shortcut": "Ctrl+Z", "icon": "undo", "role": "undo" },
+            { "menu": "Redo Action", "shortcut": "Ctrl+Y", "icon": "redo", "role": "redo" },
             { "menu": "Copy Location Path", "shortcut": "Alt+Shift+C", "icon": "location", "role": "location" },
         ],
         [
@@ -498,6 +500,9 @@ const ContextMenu = (element:HTMLElement, openFileWithDefaultApp?: openFileWithD
                         break;
                     case "undo":
                         Undo()
+                        break
+                    case "redo":
+                        Redo()
                         break
                 }
             })
