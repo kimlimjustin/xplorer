@@ -66,8 +66,24 @@ const Undo = (): void => {
 				Restore(source);
 			}
 			break;
+		case 'rename':
+			fs.rename(
+				latestOperation.destination,
+				latestOperation.sources,
+				(err) => {
+					if (err) {
+						dialog.showMessageBoxSync({
+							message:
+								'Something went wrong, please try again or open an issue on GitHub.',
+							type: 'error',
+						});
+						ErrorLog(err);
+					}
+				}
+			);
+			break;
 	}
-	operationLogs.currentIndex -= 1;
+	if (operationLogs.currentIndex > -1) operationLogs.currentIndex -= 1;
 	storage.set(`operations-${windowGUID}`, operationLogs);
 };
 
