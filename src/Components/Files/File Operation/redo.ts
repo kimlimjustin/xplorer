@@ -7,6 +7,7 @@ import mv from 'mv';
 import { dialog } from '@electron/remote';
 import { ErrorLog } from '../../Functions/log';
 import path from 'path';
+import { Trash } from './trash';
 /**
  * The the _undo_ed Operation
  * @returns {any}
@@ -47,8 +48,11 @@ const Redo = (): void => {
 			operationLogs.currentIndex++;
 			break;
 		case 'newfolder':
-			console.log(latestOperation.destination);
 			fs.mkdirSync(latestOperation.destination);
+			operationLogs.currentIndex++;
+			break;
+		case 'delete':
+			Trash(latestOperation.sources);
 			operationLogs.currentIndex++;
 			break;
 	}
