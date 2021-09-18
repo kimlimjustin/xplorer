@@ -1,7 +1,7 @@
 import prompt from 'electron-prompt';
 import path from 'path';
 import fs from 'fs';
-import { ErrorLog } from '../../Functions/log';
+import { ErrorLog, OperationLog } from '../../Functions/log';
 import { dialog } from '@electron/remote';
 import storage from 'electron-json-storage-sync';
 import { detectDefaultTheme } from '../../Theme/theme';
@@ -13,6 +13,7 @@ import focusingPath from '../../Functions/focusingPath';
  * @returns {void}
  */
 const Rename = (filePath: string): void => {
+	console.log(filePath);
 	const themeCategory =
 		storage.get('theme')?.data?.category ?? detectDefaultTheme();
 	const customStylesheet = path.join(
@@ -45,6 +46,7 @@ const Rename = (filePath: string): void => {
 				ErrorLog(err);
 			}
 		});
+		OperationLog('rename', unescape(filePath), target);
 	});
 };
 

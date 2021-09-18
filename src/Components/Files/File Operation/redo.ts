@@ -16,6 +16,10 @@ const Redo = (): void => {
 	const operationLogs = storage.get(`operations-${windowGUID}`)?.data;
 	const latestOperation =
 		operationLogs.operations[operationLogs.currentIndex + 1];
+	const increaseIndex = () => {
+		if (operationLogs.currentIndex + 1 > operationLogs.operations.length)
+			operationLogs.currentIndex++;
+	};
 	switch (latestOperation.operationType) {
 		case 'copy':
 			Copy(latestOperation.sources);
@@ -41,19 +45,36 @@ const Redo = (): void => {
 					}
 				);
 			}
-			operationLogs.currentIndex++;
+			increaseIndex();
 			break;
 		case 'newfile':
 			fs.writeFileSync(latestOperation.destination, '');
-			operationLogs.currentIndex++;
+			increaseIndex();
 			break;
 		case 'newfolder':
 			fs.mkdirSync(latestOperation.destination);
-			operationLogs.currentIndex++;
+			increaseIndex();
 			break;
 		case 'delete':
 			Trash(latestOperation.sources);
-			operationLogs.currentIndex++;
+			increaseIndex();
+			break;
+		case 'rename':
+			fs.rename(
+				latestOperation.sources,
+				latestOperation.destination,
+				(err) => {
+					if (err) {
+						dialog.showMessageBoxSync({
+							message:
+								'Something went wrong, please try again or open an issue on GitHub.',
+							type: 'error',
+						});
+						ErrorLog(err);
+					}
+				}
+			);
+			increaseIndex();
 			break;
 	}
 	storage.set(`operations-${windowGUID}`, operationLogs);
