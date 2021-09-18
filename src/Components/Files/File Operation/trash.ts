@@ -6,24 +6,21 @@ import trash from 'trash';
 import { v4 } from 'uuid';
 import mv from 'mv';
 import { dialog } from '@electron/remote';
-const LINUX_TRASH_FILES_PATH = path.join(
+const UNIX_TRASH_FILES_PATH = path.join(
 	os.homedir(),
 	'.local/share/Trash/files'
 );
-const LINUX_TRASH_INFO_PATH = path.join(
-	os.homedir(),
-	'.local/share/Trash/info'
-);
+const UNIX_TRASH_INFO_PATH = path.join(os.homedir(), '.local/share/Trash/info');
 const WINDOWS_TRASH_FILES_PATH = 'C:\\Trash/files';
 const WINDOWS_TRASH_INFO_PATH = 'C:\\Trash/info';
 const FILES_PATH =
 	process.platform === 'win32'
 		? WINDOWS_TRASH_FILES_PATH
-		: LINUX_TRASH_FILES_PATH;
+		: UNIX_TRASH_FILES_PATH;
 const INFO_PATH =
 	process.platform === 'win32'
 		? WINDOWS_TRASH_INFO_PATH
-		: LINUX_TRASH_INFO_PATH;
+		: UNIX_TRASH_INFO_PATH;
 
 /**
  * Restore file/folder from trash
@@ -126,7 +123,28 @@ const Trash = (filePaths: string[]): void => {
 			)}\nDeletionDate=${getDeletionDate(new Date())}`;
 			fs.writeFileSync(trashInfoPath, trashInfoData);
 		} else {
-			trash(filePath);
+			if (process.platform === 'darwin') {
+				const name = v4();
+				const destination = path.join(UNIX_TRASH_FILES_PATH, name);
+				const trashInfoPath = path.join(
+					UNIX_TRASH_INFO_PATH,
+					`${name}.trashinfo`
+				);
+				if (!fs.existsSync(UNIX_TRASH_FILES_PATH)) {
+					fs.mkdirSync(UNIX_TRASH_FILES_PATH, { recursive: true });
+				}
+				if (!fs.existsSync(UNIX_TRASH_INFO_PATH)) {
+					fs.mkdirSync(UNIX_TRASH_INFO_PATH, { recursive: true });
+				}
+				mv(filePath, destination, (err) => {
+					if (err) ErrorLog(err);
+				});
+				const trashInfoData = `[Trash Info]\nPath=${filePath.replace(
+					/\s/g,
+					'%20'
+				)}\nDeletionDate=${getDeletionDate(new Date())}`;
+				fs.writeFileSync(trashInfoPath, trashInfoData);
+			} else trash(filePath);
 		}
 	}
 	OperationLog('delete', filePaths);
