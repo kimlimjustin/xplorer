@@ -114,14 +114,6 @@ function createWindow() {
 			screen.getPrimaryDisplay().workAreaSize.height * 0.8
 		),
 	});
-	/*if (storage.get('preference')?.data?.saveWindowSize ?? true) {
-		width =
-			storage.get('preference')?.data?.windowSize?.[0] ??
-			defaultWinSize.width;
-		height =
-			storage.get('preference')?.data?.windowSize?.[1] ??
-			defaultWinSize.height;
-	}*/
 	win = new BrowserWindow({
 		title: 'xplorer',
 		frame: false,
@@ -150,16 +142,6 @@ function createWindow() {
 		}
 	);
 	windowState.manage(win);
-	/*win.on('resize', () => {
-		if (storage.get('preference')?.data?.saveWindowSize ?? true) {
-			storage.set(
-				'preference',
-				Object.assign({}, storage.get('preference')?.data, {
-					windowSize: win.getSize(),
-				})
-			);
-		}
-	});*/
 }
 
 app.allowRendererProcessReuse = false;
