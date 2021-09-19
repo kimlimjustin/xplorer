@@ -74,7 +74,10 @@
 				"AppImage",
 				"deb"
 			]
-		}
+		},
+		"appId": "app.vercel.xplorer",
+		"productName": "Xplorer",
+		"copyright": "Copyright 2021 Justin Maximillian Kimlim and the Xplorer Contributors"
 	},
 	"keywords": [
 		"Xplorer",
