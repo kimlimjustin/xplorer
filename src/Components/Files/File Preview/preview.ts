@@ -59,7 +59,7 @@ const Preview = (filePath: string): void => {
 	};
 	if (path.extname(filePath) === '.pdf') {
 		changePreview(
-			`<object data="${filePath}" type="application/pdf" class="preview-object"><embed src="${filePath}" type="application/pdf" /></object>`
+			`<object data="${filePath}#toolbar=0" type="application/pdf" class="preview-object"><embed src="${filePath}#toolbar=0" type="application/pdf" /></object>`
 		);
 	} else if (
 		path.extname(filePath) === '.html' ||
