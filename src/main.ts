@@ -13,6 +13,10 @@ import * as remoteInit from '@electron/remote/main';
 import isDev from 'electron-is-dev';
 import os from 'os';
 import windowStateKeeper from 'electron-window-state';
+import log from 'electron-log';
+import { autoUpdater } from 'electron-updater';
+
+autoUpdater.logger = log;
 
 /**
  * Initialize Acrylic's BrowserWindow if available
@@ -154,6 +158,7 @@ app.whenReady().then(() => {
 			createWindow();
 		}
 	});
+	autoUpdater.checkForUpdatesAndNotify();
 });
 
 app.on('window-all-closed', () => {

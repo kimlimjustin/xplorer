@@ -124,6 +124,7 @@
 		"electron-json-storage-sync": "^1.2.0",
 		"electron-log": "^4.4.1",
 		"electron-prompt": "^1.6.2",
+		"electron-updater": "^4.3.9",
 		"electron-window-state": "^5.0.3",
 		"fswin": "^3.21.905",
 		"highlight.js": "^11.2.0",
