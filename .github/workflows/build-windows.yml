@@ -20,6 +20,9 @@ jobs:
               uses: actions/setup-node@v2
               with:
                   node-version: ${{ matrix.node-version }}
+            - uses: actions/labeler@v2
+              with:
+                  GH_TOKEN: ${{ secrets.GH_TOKEN }}
             - run: npm install --global node-gyp@latest
             - run: npm prefix -g | % {npm config set node_gyp "$_\node_modules\node-gyp\bin\node-gyp.js"}
             - run: yarn install --frozen-lockfile
