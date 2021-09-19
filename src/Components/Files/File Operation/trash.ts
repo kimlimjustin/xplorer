@@ -28,7 +28,6 @@ const INFO_PATH =
  * @returns {void}
  */
 const Restore = (filePath: string): void => {
-	console.log(filePath);
 	let fileInfo;
 	let __uuid;
 	if (

@@ -134,7 +134,6 @@ const Paste = async (target: string): Promise<void> => {
 			OperationLog('copy', filePaths, target);
 		} else if (commandType === 'CUT') {
 			for (const filePath of filePaths) {
-				console.log(filePath);
 				mv(
 					filePath,
 					path.join(target, path.basename(filePath)),

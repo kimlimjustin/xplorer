@@ -13,7 +13,6 @@ import focusingPath from '../../Functions/focusingPath';
  * @returns {void}
  */
 const Rename = (filePath: string): void => {
-	console.log(filePath);
 	const themeCategory =
 		storage.get('theme')?.data?.category ?? detectDefaultTheme();
 	const customStylesheet = path.join(
