@@ -8,7 +8,7 @@
     "description": "The first paragraph of the 404 page"
   },
   "theme.NotFound.p2": {
-    "message": "Tolong hubungi admin website yang menautkan ke halaman ini dan memberitahunya bahwa tautannya rusak.",
+    "message": "Mohon untuk menghubungi admin website yang menautkan ke halaman ini dan memberitahukan kepadanya bahwa tautannya rusak.",
     "description": "The 2nd paragraph of the 404 page"
   },
   "theme.AnnouncementBar.closeButtonAriaLabel": {
@@ -24,7 +24,7 @@
     "description": "The label used to navigate to the newer blog posts page (previous page)"
   },
   "theme.blog.paginator.olderEntries": {
-    "message": "Halaman yang lebih lama",
+    "message": "Halaman lawas",
     "description": "The label used to navigate to the older blog posts page (next page)"
   },
   "theme.blog.post.readingTime.plurals": {
@@ -48,7 +48,7 @@
     "description": "The blog post button label to navigate to the newer/previous post"
   },
   "theme.blog.post.paginator.olderPost": {
-    "message": "Post Lebih Lama",
+    "message": "Post Lawas",
     "description": "The blog post button label to navigate to the older/next post"
   },
   "theme.blog.sidebar.navAriaLabel": {
@@ -68,11 +68,11 @@
     "description": "The title of the page for a blog tag"
   },
   "theme.tags.tagsPageLink": {
-    "message": "Liat semua tag",
+    "message": "Lihat semua tag",
     "description": "The label of the link targeting the tag list page"
   },
   "theme.CodeBlock.copyButtonAriaLabel": {
-    "message": "Salin code ke papan klip",
+    "message": "Salin kode ke papan klip",
     "description": "The ARIA label for copy code blocks button"
   },
   "theme.CodeBlock.copied": {
@@ -104,23 +104,23 @@
     "description": "The label used to navigate to the next doc"
   },
   "theme.docs.sidebar.collapseButtonTitle": {
-    "message": "Tutup bilah sisi",
+    "message": "Tutup sidebar",
     "description": "The title attribute for collapse button of doc sidebar"
   },
   "theme.docs.sidebar.collapseButtonAriaLabel": {
-    "message": "Tutup bilah sisi",
+    "message": "Tutup sidebar",
     "description": "The title attribute for collapse button of doc sidebar"
   },
   "theme.docs.versions.unreleasedVersionLabel": {
-    "message": "Ini adalah dokumentasi {siteTitle} {versionLabel} version yang tidak dipublikasi.",
+    "message": "Ini adalah dokumentasi {siteTitle} {versionLabel} yang tidak dipublikasi.",
     "description": "The label used to tell the user that he's browsing an unreleased doc version"
   },
   "theme.docs.versions.unmaintainedVersionLabel": {
-    "message": "Ini adalah dokumentasi {siteTitle} {versionLabel} yang tidak lagi dipelihara.",
+    "message": "Ini adalah dokumentasi {siteTitle} {versionLabel} yang sudah tidak disegarkan.",
     "description": "The label used to tell the user that he's browsing an unmaintained doc version"
   },
   "theme.docs.versions.latestVersionSuggestionLabel": {
-    "message": "Untuk dokumentasi yang terkini, liat {latestVersionLink} ({versionLabel}).",
+    "message": "Untuk dokumentasi yang terkini, lihat {latestVersionLink} ({versionLabel}).",
     "description": "The label used to tell the user to check the latest version"
   },
   "theme.docs.versions.latestVersionLinkLabel": {
