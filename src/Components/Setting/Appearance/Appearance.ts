@@ -34,7 +34,7 @@ const Appearance = (): void => {
 		settingsMain.innerHTML = result;
 		settingsMain
 			.querySelector('[name="theme"]')
-			.addEventListener(
+			?.addEventListener(
 				'change',
 				(event: Event & { target: HTMLInputElement }) => {
 					const category = (
@@ -49,7 +49,7 @@ const Appearance = (): void => {
 						acrylic:
 							document.querySelector<HTMLInputElement>(
 								'[name="acrylic"]'
-							).checked,
+							)?.checked ?? true,
 					});
 					ipcRenderer.send('update-theme');
 					reload();
@@ -57,7 +57,7 @@ const Appearance = (): void => {
 			);
 		settingsMain
 			.querySelector('[name="layout"]')
-			.addEventListener(
+			?.addEventListener(
 				'change',
 				(event: Event & { target: HTMLInputElement }) => {
 					const preference = storage.get('preference')?.data ?? {};
@@ -67,7 +67,7 @@ const Appearance = (): void => {
 			);
 		settingsMain
 			.querySelector(`[name="preview-video"]`)
-			.addEventListener(
+			?.addEventListener(
 				'change',
 				(event: Event & { target: HTMLInputElement }) => {
 					const preference = storage.get('preference')?.data ?? {};
@@ -78,7 +78,7 @@ const Appearance = (): void => {
 			);
 		settingsMain
 			.querySelector(`[name="extract-exe-icon"]`)
-			.addEventListener(
+			?.addEventListener(
 				'change',
 				(event: Event & { target: HTMLInputElement }) => {
 					const preference = storage.get('preference')?.data ?? {};
@@ -89,7 +89,7 @@ const Appearance = (): void => {
 			);
 		settingsMain
 			.querySelector(`[name="acrylic"]`)
-			.addEventListener(
+			?.addEventListener(
 				'change',
 				(event: Event & { target: HTMLInputElement }) => {
 					const theme = storage.get('theme')?.data;
