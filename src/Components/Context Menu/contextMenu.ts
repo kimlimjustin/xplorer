@@ -91,7 +91,6 @@ const ContextMenuInner = (target: HTMLElement, coorX:number, coorY:number, openD
         [
             { "menu": "Cut", "shortcut": "Ctrl+X", "icon": "cut", "role": "cut" },
             { "menu": "Copy", "shortcut": "Ctrl+C", "icon": "copy", "role": "copy" },
-            { "menu": "Create Shortcut", "shortcut": "Alt+S", "icon": "shortcut" },
             { "menu": "Copy Location Path", "shortcut": "Alt+Shift+C", "icon": "location", "role": "location" },
         ],
         [
@@ -114,7 +113,6 @@ const ContextMenuInner = (target: HTMLElement, coorX:number, coorY:number, openD
         [
             { "menu": "Cut", "shortcut": "Ctrl+X", "icon": "cut", "role": "cut" },
             { "menu": "Copy", "shortcut": "Ctrl+C", "icon": "copy", "role": "copy" },
-            { "menu": "Create Shortcut", "shortcut": "Alt+S", "icon": "shortcut" },
             { "menu": "Copy Location Path", "shortcut": "Alt+Shift+C", "icon": "location", "role": "location" },
         ],
         [
