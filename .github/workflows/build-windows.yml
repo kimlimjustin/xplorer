@@ -23,4 +23,4 @@ jobs:
             - run: npm install --global node-gyp@latest
             - run: npm prefix -g | % {npm config set node_gyp "$_\node_modules\node-gyp\bin\node-gyp.js"}
             - run: yarn install --frozen-lockfile
-            - run: yarn build --publish=always
+            - run: yarn build --publish=never
