@@ -22,7 +22,7 @@ module.exports = {
 		announcementBar: {
 			id: 'support_us',
 			content:
-				'Xplorer is still under heavy development, docs here may not up to date.',
+				'Xplorer is still under heavy development, any features might change anytime.',
 			backgroundColor: '#fafbfc',
 			textColor: '#091E42',
 		},
