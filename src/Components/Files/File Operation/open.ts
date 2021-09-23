@@ -14,7 +14,7 @@ import {isHiddenFile} from "is-hidden-file";
 import { ContextMenu } from "../../Context Menu/contextMenu";
 import formatBytes from "../../Functions/filesize";
 import getType from "../File Type/type";
-import { SelectListener } from "./select";
+import { SelectListener, Select } from "./select";
 import { InfoLog, ErrorLog } from "../../Functions/log";
 import { closePreviewFile } from "../File Preview/preview";
 import {dialog} from "@electron/remote";
@@ -93,7 +93,7 @@ const openFileHandler = (e:Event):void => {
         }
         else storage.set('recent', [filePath])
     } else {
-        openDir(filePath)
+        open(filePath)
     }
 }
 
@@ -120,7 +120,7 @@ const listenOpen = (elements: NodeListOf<HTMLElement>):void => {
  * @param {string} dir - directory base path
  * @returns {void}
  */
-const displayFiles = async (files: fileData[], dir:string) => {
+const displayFiles = async (files: fileData[], dir:string, options?: {reveal: boolean, initialDirToOpen: string}) => {
     const hideSystemFile = storage.get("preference")?.data?.hideSystemFiles ?? true
     const dirAlongsideFiles = storage.get("preference")?.data?.dirAlongsideFiles ?? false
     const layout = storage.get("layout")?.data?.[dir] ?? storage.get("preference")?.data?.layout ?? "s"
@@ -193,8 +193,13 @@ const displayFiles = async (files: fileData[], dir:string) => {
             `
             MAIN_ELEMENT.appendChild(fileGrid)
 
-            ContextMenu(fileGrid, openFileWithDefaultApp, openDir)
+            ContextMenu(fileGrid, openFileWithDefaultApp, open)
         })
+        if(options.reveal || !fs.statSync(dir)?.isDirectory()){
+            Select(document.querySelector<HTMLElement>(
+                `[data-path="${escape(options.initialDirToOpen)}"]`
+            ), false, false, document.querySelectorAll(".file"))
+        }
 
         updateTheme()
         nativeDrag(document.querySelectorAll(".file"), dir)
@@ -211,9 +216,14 @@ const displayFiles = async (files: fileData[], dir:string) => {
 /**
  * Open a directory on Xplorer
  * @param {string} dir
+ * @param {boolean} boolean - Open the parent directory and select the file/dir
  * @returns {Promise<void>}
  */
-const openDir = async (dir:string):Promise<void> => {
+const open = async (dir:string, reveal?:boolean):Promise<void> => {
+    const initialDirToOpen = dir;
+    if(reveal || !fs.statSync(dir)?.isDirectory()){
+        dir = path.dirname(dir)
+    }
     closePreviewFile()
     timeStarted = Date.now()
     startLoading()
@@ -306,7 +316,7 @@ const openDir = async (dir:string):Promise<void> => {
             })
         }
         const files = getFiles()
-        displayFiles(files, dir)
+        displayFiles(files, dir, {reveal, initialDirToOpen})
         // Watch the directory
         watcher?.close()
         watcher = fs.watch(dir, async (_, filePath) => {
@@ -319,5 +329,6 @@ const openDir = async (dir:string):Promise<void> => {
         })
     }
 }
+   
 
-export { listenOpen, openDir, openFileWithDefaultApp, closeWatcher }
+export { listenOpen, open, openFileWithDefaultApp, closeWatcher }
