@@ -142,8 +142,16 @@ const Initializer = () => {
 							start ||
 							sibling === nextSibling ||
 							sibling === latestSelected
-						)
-							sibling.classList.add('selected');
+						) {
+							if (
+								!(
+									hideHiddenFiles &&
+									(sibling as HTMLElement).dataset
+										.hiddenFile === 'true'
+								)
+							)
+								sibling.classList.add('selected');
+						}
 						if (sibling === latestSelected) start = true;
 						if (sibling === nextSibling) break;
 					}
@@ -197,8 +205,16 @@ const Initializer = () => {
 							start ||
 							sibling === previousSibling ||
 							sibling === latestSelected
-						)
-							sibling.classList.add('selected');
+						) {
+							if (
+								!(
+									hideHiddenFiles &&
+									(sibling as HTMLElement).dataset
+										.hiddenFile === 'true'
+								)
+							)
+								sibling.classList.add('selected');
+						}
 						if (sibling === previousSibling) start = true;
 						if (sibling === latestSelected) break;
 					}
@@ -261,8 +277,16 @@ const Initializer = () => {
 							start ||
 							sibling === elementBelow ||
 							sibling === latestSelected
-						)
-							sibling.classList.add('selected');
+						) {
+							if (
+								!(
+									hideHiddenFiles &&
+									(sibling as HTMLElement).dataset
+										.hiddenFile === 'true'
+								)
+							)
+								sibling.classList.add('selected');
+						}
 						if (sibling === latestSelected) start = true;
 						if (sibling === elementBelow) break;
 					}
@@ -325,8 +349,16 @@ const Initializer = () => {
 							start ||
 							sibling === elementAbove ||
 							sibling === latestSelected
-						)
-							sibling.classList.add('selected');
+						) {
+							if (
+								!(
+									hideHiddenFiles &&
+									(sibling as HTMLElement).dataset
+										.hiddenFile === 'true'
+								)
+							)
+								sibling.classList.add('selected');
+						}
 						if (sibling === elementAbove) start = true;
 						if (sibling === latestSelected) break;
 					}
