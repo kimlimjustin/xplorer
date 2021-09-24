@@ -195,9 +195,9 @@ const displayFiles = async (files: fileData[], dir:string, options?: {reveal: bo
 
             ContextMenu(fileGrid, openFileWithDefaultApp, open)
         })
-        if(options.reveal || !fs.statSync(dir)?.isDirectory()){
+        if(options?.reveal || !fs.statSync(dir)?.isDirectory()){
             Select(document.querySelector<HTMLElement>(
-                `[data-path="${escape(options.initialDirToOpen)}"]`
+                `[data-path="${escape(options?.initialDirToOpen)}"]`
             ), false, false, document.querySelectorAll(".file"))
         }
 
