@@ -15,7 +15,15 @@ import os from 'os';
 import windowStateKeeper from 'electron-window-state';
 import log from 'electron-log';
 import { autoUpdater } from 'electron-updater';
+import yargs from 'yargs/yargs';
 
+const args = yargs(process.argv.slice(isDev ? 2 : 1))
+	.usage('Usage: $0 <options> <dir1> <dir2> <dir3>')
+	.alias('h', 'help')
+	.command('reveal', 'Open the containing folder and select the file')
+	.alias('r', 'reveal')
+	.alias('v', 'version').argv;
+console.log(args);
 autoUpdater.logger = log;
 
 /**
@@ -55,7 +63,7 @@ const FILES_ON_OPERATION: string[] = [];
 let id: string;
 
 ipcMain.on('args', (e) => {
-	e.returnValue = isDev ? process.argv.slice(2) : process.argv.slice(1);
+	e.returnValue = args;
 });
 ipcMain.on('GUID', (_, arg: string) => {
 	id = arg;

@@ -3,7 +3,7 @@ import { ipcRenderer, webFrame } from 'electron';
 import createSidebar from './Components/Layout/sidebar';
 import { windowManager } from './Components/Layout/windowManager';
 import Home from './Components/Layout/home';
-import { listenOpen, openDir } from './Components/Files/File Operation/open';
+import { listenOpen, open } from './Components/Files/File Operation/open';
 import { ContextMenu } from './Components/Context Menu/contextMenu';
 import { createNewTab, Tab } from './Components/Layout/tab';
 import { toggleHiddenFiles } from './Components/Functions/toggleHiddenFiles';
@@ -12,7 +12,8 @@ import { SelectListener } from './Components/Files/File Operation/select';
 import { Shortcut } from './Components/Shortcut/shortcut';
 import path from 'path';
 
-const requestedOpen = ipcRenderer.sendSync('args');
+const args = ipcRenderer.sendSync('args');
+const requestedOpen = args._;
 
 // Wait DOM Content to be loaded
 document.addEventListener('DOMContentLoaded', async () => {
@@ -35,7 +36,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 			}
 		})();
 	} else {
-		openDir(path.resolve(requestedOpen[0]));
+		open(path.resolve(requestedOpen[0]), args.r);
 		for (let i = 1; i < requestedOpen.length; i++) {
 			createNewTab(path.resolve(requestedOpen[i]));
 		}
