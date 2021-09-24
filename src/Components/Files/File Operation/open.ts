@@ -221,9 +221,6 @@ const displayFiles = async (files: fileData[], dir:string, options?: {reveal: bo
  */
 const open = async (dir:string, reveal?:boolean):Promise<void> => {
     const initialDirToOpen = dir;
-    if(reveal || !fs.statSync(dir)?.isDirectory()){
-        dir = path.dirname(dir)
-    }
     closePreviewFile()
     timeStarted = Date.now()
     startLoading()
@@ -280,6 +277,9 @@ const open = async (dir:string, reveal?:boolean):Promise<void> => {
         })
 
     } else {
+        if(reveal || !fs.statSync(dir)?.isDirectory()){
+            dir = path.dirname(dir)
+        }
         if (!fs.existsSync(dir)) {
             dialog.showMessageBoxSync({ message: `Xplorer can't find '${dir}'. Check the spelling and try again.`, type: "error" })
             ErrorLog(`${dir} does not exist.`)
