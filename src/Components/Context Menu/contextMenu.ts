@@ -51,9 +51,9 @@ interface MenuItem{
 type Menu = MenuItem[][];
 
 type openFileWithDefaultApp = (file: string) => void;
-type openDir = (dir:string) => void;
+type open = (dir:string) => void;
 
-const ContextMenuInner = (target: HTMLElement, coorX:number, coorY:number, openDir:openDir) => {
+const ContextMenuInner = (target: HTMLElement, coorX:number, coorY:number, open:open) => {
     if (target.classList.contains("home-section")) target = document.getElementById("workspace") // If context menu target is on home-section, use main element as target instead.
     while (!target.dataset.path) {
         target = target.parentNode as HTMLElement
@@ -280,32 +280,32 @@ const ContextMenuInner = (target: HTMLElement, coorX:number, coorY:number, openD
                         case "A-Z":
                             sort[currentPath] = "A" // A = A - Z
                             storage.set("sort", sort)
-                            openDir(currentPath)
+                            open(currentPath)
                             break;
                         case "Z-A":
                             sort[currentPath] = "Z" // Z = Z - A
                             storage.set("sort", sort)
-                            openDir(currentPath)
+                            open(currentPath)
                             break;
                         case "Last Modified":
                             sort[currentPath] = "L" // L = Last Modified
                             storage.set("sort", sort)
-                            openDir(currentPath)
+                            open(currentPath)
                             break;
                         case "First Modified":
                             sort[currentPath] = "F" // F = First Modified
                             storage.set("sort", sort)
-                            openDir(currentPath)
+                            open(currentPath)
                             break;
                         case "Size":
                             sort[currentPath] = "S" // S = Size
                             storage.set("sort", sort)
-                            openDir(currentPath)
+                            open(currentPath)
                             break;
                         case "Type":
                             sort[currentPath] = "T" // T = Type
                             storage.set("sort", sort)
-                            openDir(currentPath)
+                            open(currentPath)
                             break;
                     }
                     if (target.innerHTML.startsWith("File")) {
@@ -345,13 +345,13 @@ const ContextMenuInner = (target: HTMLElement, coorX:number, coorY:number, openD
  * Create context menu of an elememt
  * @param {HTMLElement} element - Element you want to create context menu of
  * @param {openFileWithDefaultApp} openFileWithDefaultApp - openFileWithDefaultApp function (optional), pass in the function to avoid circular dependencies
- * @param {openDir} openDir - openDir function (optional), pass in the function to avoid circular dependencies
+ * @param {open} open - open function (optional), pass in the function to avoid circular dependencies
  * @returns {void}
  */
-const ContextMenu = (element:HTMLElement, openFileWithDefaultApp?: openFileWithDefaultApp, openDir?: openDir):void => {
+const ContextMenu = (element:HTMLElement, openFileWithDefaultApp?: openFileWithDefaultApp, open?: open):void => {
     // Escape circular dependency
     if (!openFileWithDefaultApp) openFileWithDefaultApp = require('../Files/File Operation/open').openFileWithDefaultApp //eslint-disable-line @typescript-eslint/no-var-requires
-    if (!openDir) openDir = require('../Files/File Operation/open').openDir //eslint-disable-line @typescript-eslint/no-var-requires
+    if (!open) open = require('../Files/File Operation/open').open //eslint-disable-line @typescript-eslint/no-var-requires
 
     const { reload } = require("../Layout/windowManager"); //eslint-disable-line @typescript-eslint/no-var-requires
 
@@ -368,7 +368,7 @@ const ContextMenu = (element:HTMLElement, openFileWithDefaultApp?: openFileWithD
 
         contextMenu.style.left = coorX + "px";
         contextMenu.style.top = coorY + "px";
-        ContextMenuInner(e.target as HTMLElement, coorX, coorY, openDir)
+        ContextMenuInner(e.target as HTMLElement, coorX, coorY, open)
 
         contextMenu.querySelectorAll("span").forEach(menu => {
             menu.addEventListener("click", () => {
@@ -400,7 +400,7 @@ const ContextMenu = (element:HTMLElement, openFileWithDefaultApp?: openFileWithD
                             }
                             else storage.set('recent', [filePath])
                         } else {
-                            openDir(filePath)
+                            open(filePath)
                         }
                         break;
                     case "openMultipleTabs":

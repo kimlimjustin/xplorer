@@ -93,11 +93,11 @@ const Shortcut = (): void => {
 					exec(`code "${targetPath.replaceAll('"', '\\"')}"`);
 				} else {
 					const {
-						openDir,
+						open,
 						openFileWithDefaultApp,
 					} = require('../Files/File Operation/open'); //eslint-disable-line
 					if (isDir) {
-						openDir(selectedFilePath);
+						open(selectedFilePath);
 					} else {
 						openFileWithDefaultApp(selectedFilePath);
 					}

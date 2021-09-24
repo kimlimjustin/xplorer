@@ -46,8 +46,8 @@ const createNewTab = (path?: string): void => {
 			storage.set(`tabs-${windowGUID}`, tabs);
 			newTab.parentElement.removeChild(newTab);
 
-			const { openDir } = require('../Files/File Operation/open'); //eslint-disable-line
-			openDir(tabs.tabs[tabs.focus].position);
+			const { open } = require('../Files/File Operation/open'); //eslint-disable-line
+			open(tabs.tabs[tabs.focus].position);
 		}
 	});
 	createNewTabElement.parentElement.insertBefore(newTab, createNewTabElement); // Insert the new tab
@@ -71,8 +71,8 @@ const createNewTab = (path?: string): void => {
 	tabsInfo.focusHistory.push(tabsInfo.latestIndex);
 	storage.set(`tabs-${windowGUID}`, tabsInfo);
 
-	const { openDir } = require('../Files/File Operation/open'); //eslint-disable-line
-	openDir(path || 'xplorer://Home');
+	const { open } = require('../Files/File Operation/open'); //eslint-disable-line
+	open(path || 'xplorer://Home');
 
 	newTab.addEventListener('click', () => {
 		SwitchTab(newTab.dataset.tabIndex);
@@ -91,8 +91,8 @@ const SwitchTab = (tabIndex: number | string): void => {
 	tabs.focusHistory.push(parseInt(String(tabIndex)));
 	tabs.tabs[tabs.focus].currentIndex -= 1;
 	storage.set(`tabs-${windowGUID}`, tabs);
-	const { openDir } = require('../Files/File Operation/open'); //eslint-disable-line
-	openDir(tabs.tabs[tabIndex].position);
+	const { open } = require('../Files/File Operation/open'); //eslint-disable-line
+	open(tabs.tabs[tabIndex].position);
 };
 
 /**
@@ -101,10 +101,10 @@ const SwitchTab = (tabIndex: number | string): void => {
  */
 const goBack = (): void => {
 	const tabs = storage.get(`tabs-${windowGUID}`)?.data;
-	const { openDir } = require('../Files/File Operation/open'); //eslint-disable-line
+	const { open } = require('../Files/File Operation/open'); //eslint-disable-line
 	const _focusingTab = tabs.tabs[tabs.focus];
 	if (_focusingTab.currentIndex > 0) {
-		openDir(_focusingTab.history[_focusingTab.currentIndex - 1]);
+		open(_focusingTab.history[_focusingTab.currentIndex - 1]);
 	}
 };
 
@@ -114,13 +114,13 @@ const goBack = (): void => {
  */
 const goForward = (): void => {
 	const tabs = storage.get(`tabs-${windowGUID}`)?.data;
-	const { openDir } = require('../Files/File Operation/open'); //eslint-disable-line
+	const { open } = require('../Files/File Operation/open'); //eslint-disable-line
 	const _focusingTab = tabs.tabs[tabs.focus];
 	if (
 		_focusingTab.currentIndex >= 0 &&
 		_focusingTab.history?.[_focusingTab.currentIndex + 1]
 	) {
-		openDir(_focusingTab.history[_focusingTab.currentIndex + 1]);
+		open(_focusingTab.history[_focusingTab.currentIndex + 1]);
 	}
 };
 /**
@@ -168,8 +168,8 @@ const Tab = (): void => {
 				delete tabs.tabs[index + 1];
 				storage.set(`tabs-${windowGUID}`, tabs);
 
-				const { openDir } = require('../Files/File Operation/open'); //eslint-disable-line
-				openDir(tabs.tabs[tabs.focus].position);
+				const { open } = require('../Files/File Operation/open'); //eslint-disable-line
+				open(tabs.tabs[tabs.focus].position);
 			}
 		});
 		tab.appendChild(closeTab);

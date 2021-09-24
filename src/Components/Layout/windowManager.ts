@@ -1,4 +1,4 @@
-import { openDir } from '../Files/File Operation/open';
+import { open } from '../Files/File Operation/open';
 import storage from 'electron-json-storage-sync';
 import { BrowserWindow } from '@electron/remote';
 import createSidebar from './sidebar';
@@ -12,7 +12,7 @@ import windowGUID from '../Constants/windowGUID';
 const reload = async (): Promise<void> => {
 	const tabs = storage.get(`tabs-${windowGUID}`)?.data;
 	await createSidebar();
-	openDir(tabs.tabs[tabs.focus].position);
+	open(tabs.tabs[tabs.focus].position);
 	closePreviewFile();
 	document.querySelector<HTMLElement>('.properties').style.animation =
 		'close-properties 1s forwards';
@@ -61,7 +61,7 @@ const windowManager = (): void => {
 		.addEventListener(
 			'change',
 			(event: Event & { target: HTMLInputElement }) => {
-				openDir(event.target.value);
+				open(event.target.value);
 			}
 		);
 };

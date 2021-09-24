@@ -9,10 +9,18 @@ This feature hasn't optimized yet. It works but it might be laggy. Will be optim
 Xplorer CLI:
 
 ```bash
-xplorer [dir1] [dir2] [dir3]
+xplorer <options> [dir1] [dir2] [dir3]
 ```
 
 Xplorer will open `dir`, `dir2`, `dir3` as tabs on Xplorer. If there's no any dir passed into the command, Xplorer will starts at Home page.
+
+Options:
+
+| Command     | Alias | Description                                    |
+| ----------- | ----- | ---------------------------------------------- |
+| `--help`    | `-h`  | Show help                                      |
+| `--version` | `-v`  | Show version number                            |
+| `--reveal`  | `-r`  | Open the containing folder and select the file |
 
 <details>
 <summary>
