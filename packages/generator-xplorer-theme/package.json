@@ -1,0 +1,52 @@
+{
+	"name": "generator-xplorer-theme",
+	"version": "0.0.0",
+	"description": "Theme generator for Xplorer",
+	"private": "true",
+	"author": "Justin Maximillian Kimlim",
+	"files": [
+		"generators"
+	],
+	"main": "generators/index.js",
+	"scripts": {
+		"build": "rimraf generators && tsc && yarn run copydeps && yarn run lint",
+		"copydeps": "copyfiles src/app/templates/** generators/app --up 2",
+		"lint": "eslint ./src --ext .js,.ts",
+		"clean": "rimraf -rf ./generators",
+		"watch": "yarn run watch-tsc --silent & yarn run watch-deps --silent",
+		"watch-deps": "onchange 'src/*/templates/**' --initial -- yarn run copydeps --silent",
+		"watch-tsc": "tsc-watch --onSuccess 'yarn run lint --silent'"
+	},
+	"dependencies": {
+		"@crowdin/cli": "^3.7.0",
+		"@electron/remote": "^2.0.1",
+		"chalk": "4.1.0",
+		"electron": "15.0.0",
+		"electron-acrylic-window": "^0.5.9",
+		"electron-prompt": "^1.7.0",
+		"fswin": "^3.21.914",
+		"jest": "^27.2.1",
+		"marked": "^3.0.4",
+		"node-watch": "^0.7.2",
+		"prettier": "2.4.1",
+		"xlsx": "^0.17.2",
+		"yeoman-generator": "4.12.0",
+		"yosay": "2.0.2"
+	},
+	"devDependencies": {
+		"@types/marked": "^3.0.1",
+		"@types/node": "14.14.19",
+		"@types/yeoman-generator": "4.11.3",
+		"@types/yosay": "0.0.29",
+		"@typescript-eslint/eslint-plugin": "4.12.0",
+		"@typescript-eslint/parser": "4.12.0",
+		"copyfiles": "2.4.1",
+		"eslint": "6.6.0",
+		"onchange": "7.1.0",
+		"rimraf": "^3.0.2",
+		"tsc-watch": "4.2.9",
+		"typescript": "4.1.3",
+		"yeoman-assert": "3.1.0",
+		"yeoman-test": "1.7.0"
+	}
+}

@@ -5,6 +5,7 @@
 	"author": "Justin Maximillian Kimlim <kimlimjustin@gmail.com>",
 	"main": "outs/src/main.js",
 	"icon": "build/icon.icns",
+	"private": "true",
 	"homepage": "https://xplorer.vercel.app",
 	"repository": {
 		"type": "git",
@@ -55,7 +56,9 @@
 			"!scripts/**/*",
 			"!paths/**/*",
 			"!.vscode/**/*",
-			".github/**/*"
+			"!packages/**/*",
+			"!.github/**/*",
+			"!.git/**/*"
 		],
 		"directories": {
 			"buildResources": "icons"
@@ -87,9 +90,13 @@
 		"Folders",
 		"Directory"
 	],
+	"workspaces": [
+		"packages/*"
+	],
 	"license": "Apache-2.0",
 	"devDependencies": {
 		"@crowdin/cli": "^3.6.5",
+		"@electron/remote": "1.2.1",
 		"@types/ejs": "^3.1.0",
 		"@types/marked": "^3.0.0",
 		"@types/mv": "^2.1.2",
@@ -107,6 +114,7 @@
 		"grunt-cli": "^1.4.3",
 		"grunt-contrib-uglify": "^5.0.1",
 		"grunt-contrib-watch": "^1.1.0",
+		"lerna": "^4.0.0",
 		"node-sass": "^6.0.1",
 		"node-watch": "^0.7.1",
 		"patch-package": "^6.4.7",
@@ -116,19 +124,18 @@
 		"typescript": "^4.4.2"
 	},
 	"dependencies": {
-		"@electron/remote": "^1.2.1",
 		"cpy": "^8.1.2",
 		"ejs": "^3.1.6",
 		"electron-acrylic-window": "^0.5.8",
 		"electron-is-dev": "^2.0.0",
 		"electron-json-storage-sync": "^1.2.0",
 		"electron-log": "^4.4.1",
-		"electron-prompt": "^1.6.2",
+		"electron-prompt": "^1.7.0",
 		"electron-updater": "^4.3.9",
 		"electron-window-state": "^5.0.3",
 		"fswin": "^3.21.905",
 		"highlight.js": "^11.2.0",
-		"is-hidden-file": "1.1.2",
+		"is-hidden-file": "^1.1.2",
 		"jest": "^27.1.0",
 		"mammoth": "^1.4.18",
 		"marked": "^3.0.2",
