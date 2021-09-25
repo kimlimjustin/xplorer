@@ -1,0 +1,14 @@
+{
+	"compilerOptions": {
+		"target": "ESNext",
+		"module": "commonjs",
+		"outDir": "generators",
+		"esModuleInterop": true,
+		"rootDir": "src",
+		"sourceMap": true,
+		"declaration": true,
+		"declarationMap": true
+	},
+	"include": ["src"],
+	"exclude": ["node_modules", "src/*/templates"]
+}

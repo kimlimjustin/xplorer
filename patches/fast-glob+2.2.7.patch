@@ -1,0 +1,12 @@
+diff --git a/node_modules/fast-glob/index.d.ts b/node_modules/fast-glob/index.d.ts
+index e08a6c3..bcfc709 100644
+--- a/node_modules/fast-glob/index.d.ts
++++ b/node_modules/fast-glob/index.d.ts
+@@ -7,6 +7,7 @@ declare namespace FastGlob {
+ 	type Options<T = EntryItem> = IPartialOptions<T>;
+ 	type TransformFunction<T> = Transform<T>;
+ 	type Task = ITask;
++	type Entry = EntryItem;
+ 
+ 	interface IApi {
+ 		<T = EntryItem>(patterns: Pattern | Pattern[], options?: IPartialOptions<T>): Promise<T[]>;

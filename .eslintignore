@@ -6,3 +6,4 @@ scripts/*
 src/Components/Functions/log.ts
 gruntfile.js
 docs/**/*
+packages/**/*
