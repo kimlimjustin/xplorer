@@ -37,7 +37,7 @@ Xplorer is currently on development progress. Suggest improvement on Xplorer [Di
 
 ### Installation
 
-You can access the insider version [here](https://github.com/kimlimjustin/xplorer/releases). Please not that this is not stable yet. Use it on your own risk.
+You can access the insider version [here](https://github.com/kimlimjustin/xplorer/releases). Please note that it is not stable yet. Use it on your own risk.
 
 ### LICENSE
 
