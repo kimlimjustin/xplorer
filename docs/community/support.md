@@ -2,9 +2,9 @@
 sidebar_position: 1
 ---
 # Support
-Xplorer is an open source project which you can freely join and seek support 😊.
+Xplorer is an open-source project which you can freely join and seek support 😊.
 
-On this page we've listed some communites/forums you can participate in to seek support or help others.
+On this page, we've listed some communities/forums you can participate in to seek support or help others.
 
 Before participating in Xplorer's communities, please read our [Code Of Conduct](../CODE_OF_CONDUCT).
 
@@ -21,7 +21,7 @@ Great Feature Requests tend to have:
 - What & why you wanted to add the specific feature.
 - Additional context like images, links to resources to implement the feature, etc.
 ### Help
-You can ask help using [GitHub Discussion](https://github.com/kimlimjustin/xplorer/discussions) and others will answer you, just like Stackoverflow!
+You can ask for help using [GitHub Discussion](https://github.com/kimlimjustin/xplorer/discussions) and others will answer you, just like Stackoverflow!
 
 ## News
-FOr the latest news about Xplorer, you can see through the [official Xplorer blog](/blog) on this website.
+For the latest news about Xplorer, you can see it through the [official Xplorer blog](/blog) on this website.
