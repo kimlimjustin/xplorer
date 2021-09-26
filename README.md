@@ -21,11 +21,11 @@ More Screenshots
 
 </details>
 
-Xplorer is a file explorer built from ground-up to be fully customizable and without customization, it also looks modern!
+Xplorer is a file explorer built from ground-up to be fully customizable. And even without customization, it also looks modern!
 It is cross-platform, built using Electron Technology that allowed our File Explorer to be run not only in Windows, but also Linux and MacOS alike.
 It also allowed file preview directly inside it, not only pictures or documents, but also videos!
 
-So to summary, Xplorer's features contain:
+To summarize, Xplorer's features contain:
 
 -   Looks modern
 -   Easy to use
@@ -33,7 +33,7 @@ So to summary, Xplorer's features contain:
 -   File Preview, even videos!
 -   Most importantly, FOSS, Free and Open Source, which mean you can change components inside if you see fit
 
-Xplorer is currently on development progress. Suggest improvement on Xplorer [Discussion](https://github.com/kimlimjustin/xplorer/discussions/) or [contribute into it](https://xplorer.vercel.app/community/Contributing/)!
+Xplorer is currently in development. Suggest improvements in Xplorer [Discussions](https://github.com/kimlimjustin/xplorer/discussions/) or [contribute to it](https://xplorer.vercel.app/community/Contributing/)!
 
 ### Installation
 
