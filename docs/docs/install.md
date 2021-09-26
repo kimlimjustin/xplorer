@@ -6,7 +6,7 @@ sidebar_position: 2
 
 ## Installer
 
-You can acess the installer [here](https://github.com/kimlimjustin/xplorer/releases).
+You can access the installer [here](https://github.com/kimlimjustin/xplorer/releases).
 
 ## Common Problems
 
@@ -15,7 +15,7 @@ You can acess the installer [here](https://github.com/kimlimjustin/xplorer/relea
 Faced Windows Defender?
 </summary>
 
-This is actually not an error, it's a design choice by Microsoft to protect those of us who are not tech-savvy (i.e. potentially your friends) from virus. You don't need to worry the safety of Xplorer in this case, since it's [open source](https://github.com/kimlimjustin/xplorer) and you can inspect the code or even build your own version!
+This is actually not an error, it's a design choice by Microsoft to protect those of us who are not tech-savvy (i.e. potentially your friends) from a virus. You don't need to worry about the safety of Xplorer in this case since it's [open source](https://github.com/kimlimjustin/xplorer) and you can inspect the code or even build your own version!
 
 To Handle this, you can just click the `More Info` button, then, just click Run Anyway.
 
@@ -34,7 +34,7 @@ Adopted from [Stack Overflow](https://stackoverflow.com/questions/65488839/how-c
 How to install in Arch OS?
 </summary>
 
-Run following command:
+Run the following command:
 
 ```bash
 sudo pacman -u [installer file name]
