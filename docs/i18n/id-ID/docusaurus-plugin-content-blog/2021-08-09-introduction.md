@@ -15,35 +15,35 @@ tags:
 
 Saya sangat bahagia untuk memperkenalkan [Xplorer](https://xplorer.vercel.app) pada anda untuk mengatur data/berangkas anda.
 
-Saya merancang Xplorer untuk beberapa alasan berikut:
+I created Xplorer for the following reasons:
 * Menunjang banyak tab
 * Mudah digunakan
-* Bisa di kustomisasi (seperti VsCode)
+* Highly customizable (just like VSCode)
 * Lintas Platform
-* Menunjang pratinjau secara langsung di dalam Xplorer
+* Supports previewing apps directly inside Xplorer
 * Terlihat modern
-* Yang terpenting, _FOSS_, Gratis dan terbuka bagi sumber perangkat lunak, yang mana anda dapat mengganti komponen software yang anda mau
+* Most importantly, FOSS, Free and Open Source, which means you can change components inside if you see it fit
 
-Xplorer ialah aplikasi yang dirancang untuk pengguna mengatur data/berangkas secara mudah dengan menunjang banyak tab, pratinjau data dan sebagainya. Dan juga terlihat modern! Anda bisa mengkustomisasi aplikasi dengan mengubah tema, ikon dan juga memasukan fitur kustom ke Xplorer (Meskipun disaat saya menulis dokumentasi ini, masih belum selesai, tapi akan segera selesai)!
+Xplorer is an app designed to let users manage files/folders easily by supporting multiple tabs, previewing files and so on. Dan juga terlihat modern! You can customize the application by changing the theme, icon and also plugin a custom function into Xplorer (though by the time I write this documentation, it's not done yet, but it will be soon)!
 
-## Mengapa Saya Membuat Ini?
+## Why did I build this?
 
-Kembali saat dulu, Saya diajarkan Python di sekolah dan saya merasa tertarik saat membuat program "Hello World" dan saya menulusuri youtube dan menonton tutorial tentang membuat sesuatu seperti kalkulator dan memamerkannya pada temanku XD. Segera setelah, Covid 19 datang dan saya merasa bosan dengan memiliki banyak waktu, saya membuka Youtube dan belajar pemograman menggunakan PHP yang pada akhirnya saya ganti dengan JavaScript dan menemukan JavaScript adalah yang terbaik.
+Back then, I was taught Python at my school and I found it interesting when I created the “Hello World” program and I posted  some tutorials on making things like Calculator and showoff to my friends XD. Soon after, Covid 19 came and I was bored and got a lot of time, I went to YouTube and learned how to program using PHP, then I switched to JavaScript and found its better.
 
-Suatu hari, saya menemukan [Files](https://files-community.github.io/) yang sangat menakjubkan, saya menggunakannya sebagai file explorerku. Namun suatu hari, saya menemukan Files ini agak lamban di beberapa versi tertentu, dan tidak bisa berjalan dengan baik di laptopku. Saya melaporkan masalah ini tapi mereka menyuruhku untuk mengunduh ulang windows 10 dan mereka malah menutup[ kasus itu](https://github.com/files-community/Files/issues/4287) Pada saat yang sama, saya juga mencoba menggunakan Linux sebagi sistem operasi kedua saya dan menemukan file manager Linux yang membosankan dan saya yang tidak bisa menggunakan fitur-fitur yang tersedia di file manager lain di luar sana.
+One day, I found out the [Files](https://files-community.github.io/) and it’s awesome, I use it as my default file explorer. Namun suatu hari, saya menemukan Files ini agak lamban di beberapa versi tertentu, dan tidak bisa berjalan dengan baik di laptopku. Saya melaporkan masalah ini tapi mereka menyuruhku untuk mengunduh ulang windows 10 dan mereka malah menutup[ kasus itu](https://github.com/files-community/Files/issues/4287) Pada saat yang sama, saya juga mencoba menggunakan Linux sebagi sistem operasi kedua saya dan menemukan file manager Linux yang membosankan dan saya yang tidak bisa menggunakan fitur-fitur yang tersedia di file manager lain di luar sana.
 
-Jadi, saya menanyakan pada diri sendiri, kenapa saya tidak membuat 1 file manager yang dapat digunakan di berbagai perangkat, dapat di kustomisasi dan terlihat modern. Selain itu, Saya akan menambahkan beberapa fitur menakjubkan yang tidak ada di file explorer lain. Aha, Xplorer lahir!
+Jadi, saya menanyakan pada diri sendiri, kenapa saya tidak membuat 1 file manager yang dapat digunakan di berbagai perangkat, dapat di kustomisasi dan terlihat modern. Besides, I would add some awesome features that other file explorers doesn’t support. Aha, Xplorer lahir!
 
-### Mengapa merancang menggunakan JavaScript?
-- JavaScript sudah menjadi bahasa pemograman yang paling banyak digunakan.
-- JavaScript memliki komunitas yang sangat kuat.
+### Why was it built using JavaScript?
+- JavaScript has become the most used language.
+- JavaScript has a very strong community.
 - Anda bisa dengan mudah menulis dan menambahkan fitur menggunakan JavaScript
-- JavaScript dapat dijalankan di berbagai OS.
-- Tampilan yang modern dapat di buat menggunakan HTML dan CSS.
-- Saya tidak menguasai C/C++
+- JavaScript can be run in various OSes.
+- Modern layouts can be built using the HTML and CSS from Electron.
+- I'm bad at C/C++
 
 ## Komunitas
 Kami menerima [kontribusimu](https://xplorer.vercel.app/community/Contributing/) pada Xplorer, tergantung apakah kamu ingin menggunakannya sebagai file managermu, kamu ingin berkontribusi pada inti Xplorer atau hanya memberikan pertanyaan. Ikuti saya di [GitHub](https://github.com/kimlimjustin).
 
-## Sampai jumpa lagi!
+## See ya'll soon!
 Xplorer saat ini sedang dalam proses pengembangan (kamu bisa mencobanya mengaturnya [ secara manual ](https://xplorer.vercel.app/community/Contributing/#working-on-xplorer-code)) Namun, tetap tunggulah sampai versi beta dirilis!
