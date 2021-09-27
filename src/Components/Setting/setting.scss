@@ -11,13 +11,13 @@
 		min-width: 250px;
 		.settings-sidebar-header {
 			padding: 1rem;
-			text-align: center;
+			text-align: left;
 		}
 
 		.settings-sidebar-item {
 			display: block;
 			margin: 0.5rem;
-			padding: 0.5rem;
+			padding: 0.7rem;
 			cursor: pointer;
 			img {
 				width: 1.5rem;
@@ -104,8 +104,10 @@
 	}
 
 	.exit-setting-btn {
-		font-size: 1.5rem;
 		cursor: pointer;
+	}
+	.exit-setting-icon {
+		font-size: 1.5rem;
 	}
 	.settings-title {
 		margin: 1.5rem 0 0.5rem 0;

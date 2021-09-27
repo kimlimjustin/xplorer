@@ -16,7 +16,7 @@ import fileIcon from '../Files/File Icon/fileIcon';
 import { startLoading, stopLoading } from '../Functions/Loading/loading';
 import storage from 'electron-json-storage-sync';
 import LAZY_LOAD from '../Functions/lazyLoadingImage';
-import { createContextMenus } from '../Context Menu/contextMenu';
+import { createContextMenus } from '../ContextMenu/contextMenu';
 import { isHiddenFile } from 'is-hidden-file';
 import getType from '../Files/File Type/type';
 import formatBytes from '../Functions/filesize';
