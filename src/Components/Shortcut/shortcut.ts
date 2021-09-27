@@ -59,6 +59,13 @@ const Shortcut = (): void => {
 		e.preventDefault();
 		const selectedFilePath = unescape(getSelected()?.[0]?.dataset?.path);
 		const isDir = getSelected()?.[0]?.dataset.isdir === 'true';
+
+		// Check if file navigator input is in focus, if it is then ignore key shortcuts
+		if (
+			document.querySelector('.path-navigator') === document.activeElement
+		)
+			return;
+
 		// Select all shortcut (Ctrl + A)
 		if (e.key === 'a' && e.ctrlKey) {
 			selectedAll = !selectedAll;
