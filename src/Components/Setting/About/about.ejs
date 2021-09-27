@@ -1,35 +1,45 @@
-<h2 class="settings-title">Xplorer</h2>
-<h3 class="settings-subtitle"><%= description %></h3>
-<span class="settings-about">Version: <%= version %> </span>
-<span class="settings-about">Electron: <%= versions.electron %> </span>
-<span class="settings-about">Chrome: <%= versions.chrome %> </span>
-<span class="settings-about">Node.js: <%= versions.node %> </span>
-<span class="settings-about">Chrome: <%= versions.chrome %> </span>
-<span class="settings-about">V8: <%= versions.v8 %> </span>
-<span class="settings-about">OS: <%= os %> </span>
-
-<h3 class="settings-subtitle">Links:</h3>
-<ul>
-	<li>
-		<a href="https://github.com/kimlimjustin/xplorer" target="_blank"
+<div class="settings-about">
+	<div class="settings-about-header">
+		<img src="../Icon/icon.png" />
+		<h1>Xplorer</h1>
+		<span class="settings-about-caption"><%= description %></span>
+	</div>
+	<div class="settings-about-content">
+		<ul>
+			<li><span>Version: </span><span><%= version %></span></li>
+			<li>
+				<span>Electron: </span><span><%= versions.electron %></span>
+			</li>
+			<li><span>Chrome: </span><span><%= versions.chrome %></span></li>
+			<li><span>Node.js: </span><span><%= versions.node %></span></li>
+			<li><span>V8: </span><span><%= versions.v8 %></span></li>
+			<li><span>OS: </span><span><%= os %></span></li>
+		</ul>
+	</div>
+	<div class="settings-about-footer">
+		<a
+			class="settings-about-link-btn"
+			href="https://github.com/kimlimjustin/xplorer"
+			target="_blank"
 			>GitHub</a
 		>
-	</li>
-	<li>
-		<a href="https://xplorer.vercel.app" target="_blank">Documentation</a>
-	</li>
-	<li>
 		<a
+			class="settings-about-link-btn"
+			href="https://xplorer.vercel.app"
+			target="_blank"
+			>Documentation</a
+		>
+		<a
+			class="settings-about-link-btn"
 			href="https://github.com/kimlimjustin/xplorer/blob/master/LICENSE"
 			target="_blank"
 			>License</a
 		>
-	</li>
-	<li>
 		<a
+			class="settings-about-link-btn"
 			href="https://github.com/kimlimjustin/xplorer/graphs/contributors"
 			target="_blank"
 			>Contributors</a
 		>
-	</li>
-</ul>
+	</div>
+</div>
