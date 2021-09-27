@@ -48,6 +48,14 @@ This will parse and cache the icon from a `exe` file and make it a preview. Only
 
 ![Extract Exe file icon](/img/docs/extract-exe-icon.png)
 
+:::warning This might causes Xplorer crashes.
+
+This is because Xplorer parse the icon from the exe and if the hexadecimal of the exe file broken, Xplorer crashes.
+
+Way to fix it: disable this setting
+
+:::
+
 ## Default file layout
 
 Default file layout of a directory. Just give it a try :)
