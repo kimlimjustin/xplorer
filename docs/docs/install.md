@@ -31,6 +31,14 @@ Adopted from [Stack Overflow](https://stackoverflow.com/questions/65488839/how-c
 </details>
 <details>
 <summary>
+`“Xplorer” cannot be opened because the developer cannot be verified. ` Error on macOS
+</summary>
+
+Please try [this official docs](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unidentified-developer-mh40616/mac) by Apple.
+
+</details>
+<details>
+<summary>
 How to install in Arch OS?
 </summary>
 
