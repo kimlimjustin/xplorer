@@ -1,7 +1,7 @@
 {
 	"name": "xplorer",
 	"description": "Xplorer, a customizable, modern file manager",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"author": "Justin Maximillian Kimlim <kimlimjustin@gmail.com>",
 	"main": "outs/src/main.js",
 	"icon": "build/icon.icns",

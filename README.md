@@ -39,6 +39,26 @@ Xplorer is currently in development. Suggest improvements in Xplorer [Discussion
 
 You can access the insider version [here](https://github.com/kimlimjustin/xplorer/releases). Please note that it is not stable yet. Use it on your own risk.
 
+### Common Problems
+
+**NB: For installation common problems, please open [here](https://xplorer.vercel.app/docs/install/#common-problems)**
+
+<details>
+<summary>
+Opening folder like `Documents`, `Desktop`, `Downloads` make Xplorer crashes
+</summary>
+
+Disable the [`Extract exe file icon and make it as preview`](https://xplorer.vercel.app/docs/guides/setting/#extract-exe-file-icon-and-make-it-a-preview) setting
+
+</details>
+<details>
+<summary>
+Xplorer is unstable after installing it.
+</summary>
+Simply restart it will fix it, if it doesn't, please address an issue.
+
+</details>
+
 ### LICENSE
 
 [Apache-2.0](https://github.com/kimlimjustin/xplorer/blob/master/LICENSE)

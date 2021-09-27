@@ -23,6 +23,10 @@
 	background: #d5d6db;
 }
 
+summary h3 {
+	margin: 0 !important;
+}
+
 .menu {
 	background: #cbccd1;
 }

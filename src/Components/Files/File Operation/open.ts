@@ -11,7 +11,7 @@ import Recent from "../../Recent/recent";
 import LAZY_LOAD from "../../Functions/lazyLoadingImage";
 import fs from "fs";
 import {isHiddenFile} from "is-hidden-file";
-import { ContextMenu } from "../../Context Menu/contextMenu";
+import { ContextMenu } from "../../ContextMenu/contextMenu";
 import formatBytes from "../../Functions/filesize";
 import getType from "../File Type/type";
 import { SelectListener, Select } from "./select";
