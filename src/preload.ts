@@ -4,7 +4,7 @@ import createSidebar from './Components/Layout/sidebar';
 import { windowManager } from './Components/Layout/windowManager';
 import Home from './Components/Layout/home';
 import { listenOpen, open } from './Components/Files/File Operation/open';
-import { ContextMenu } from './Components/Context Menu/contextMenu';
+import { ContextMenu } from './Components/ContextMenu/contextMenu';
 import { createNewTab, Tab } from './Components/Layout/tab';
 import { toggleHiddenFiles } from './Components/Functions/toggleHiddenFiles';
 import optionMenu from './Components/Layout/optionMenu';

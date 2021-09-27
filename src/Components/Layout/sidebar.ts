@@ -31,7 +31,7 @@ const changeSidebar = (newElement: HTMLElement) => {
  * @returns {void}
  */
 const createSidebar = (): void => {
-	const { ContextMenu } = require('../Context Menu/contextMenu'); //eslint-disable-line
+	const { ContextMenu } = require('../ContextMenu/contextMenu'); //eslint-disable-line
 	const { data } = storage.get('sidebar'); // Get user favorites data on sidebar
 	// Functions to get favorites element
 	const getFavoritesElement = (favorites: Favorites[]) => {
@@ -80,7 +80,7 @@ const createSidebar = (): void => {
 				false
 			)}" alt="Favorites icon"><span class="sidebar-text">${Translate(
 			'Favorites'
-		)}</span></span>
+		)}</span><div class="sidebar-nav-item-dropdown-spacer"></div></span>
         </div>
         <div class="sidebar-nav-item-dropdown-container">
             ${favoritesElement}
@@ -112,7 +112,7 @@ const createSidebar = (): void => {
 					false
 				)}" alt="${driveName}"><span class="sidebar-text">${driveName}</span></span>`;
 			}
-			const result = `<div class="sidebar-nav-item ${
+			const result = `<div class="sidebar-nav-item sidebar-nav-drives ${
 				data?.hideSection?.drives ? 'nav-hide-item' : ''
 			}" id="sidebar-drives">
                 <div class="sidebar-hover-effect">
@@ -124,7 +124,7 @@ const createSidebar = (): void => {
 				process.platform === 'win32'
 					? Translate('Drives')
 					: Translate('Pendrives')
-			}</span></span>
+			}</span><div class="sidebar-nav-item-dropdown-spacer"></div></span>
                 </div>
                 <div class="sidebar-nav-item-dropdown-container">
                     ${drivesElement}
