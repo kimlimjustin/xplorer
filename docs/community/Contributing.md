@@ -56,6 +56,12 @@ Great Feature Requests tend to have:
 
     To start a local development server serving the Docusaurus docs, go into the `docs` directory and run `yarn start`
 
+### Gitpod
+Gitpod is a Ready-to-Code environment in which you can get started immediately. Gitpod offers all dependencies pre-installed so you can just click and get started.
+
+To get started with Gitpod, click the button below and log in with your GitHub account.
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/kimlimjustin/xplorer)
+
 ### Semantic commit messages {#commit-msg}
 
 See how a minor change to your commit message style can make you a better programmer.
