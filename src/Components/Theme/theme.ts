@@ -152,7 +152,7 @@ const changeTheme = (document:Document, theme:string): void => {
     })
     document.querySelectorAll<HTMLElement>(".card-hover-effect").forEach(obj => {
         obj.onmouseleave = () => {
-            obj.style.background = getElementStyle("pendriveBackground", theme);
+            obj.style.background = null;
             obj.style.borderImage = null;
         }
         obj.addEventListener("mousemove", (e) => {
