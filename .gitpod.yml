@@ -4,10 +4,17 @@ image:
 
 # Now, there are specific tasks for dependencies, servers, noVNC, ports and even pre-builds so that you start without delay.
 tasks:
-  - name: Yarn Server
-    init: echo "Starting server"
+  - name: Yarn App Server
+    init: echo "Starting app server"
     command: |
-          sudo sh .gitpod/server.sh
+          yarn
+          yarn start
+  - name: Yarn Docs Server
+    init: echo "Starting docs server"
+    command: |
+          cd docs
+          yarn
+          yarn start
 
 vscode:
   extensions:
