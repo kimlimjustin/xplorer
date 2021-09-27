@@ -1,0 +1,10 @@
+# The image is needed so that every Gitpod Workspace comes with gitpod/workspace-full-vnc whenever they start it.
+image:
+  file: .gitpod.Dockerfile
+
+# Now, there are specific tasks for dependencies, servers, noVNC, ports and even pre-builds so that you start without delay.
+tasks:
+  - name: Yarn Server
+    init: echo "Starting server"
+    command: |
+          sudo sh .gitpod/server.sh
