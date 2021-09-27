@@ -1,5 +1,5 @@
 #!/bin/sh
-# Whenever you are starting a new thing, you must ask a question like this.
+# A simple confirmation of which server the contributor wants to start
 echo "Do you want to develop the app or the site?"
 # This is needed since the shell script responds to only those keywords.
 echo "Respond with 'app' or 'site'"
@@ -10,3 +10,10 @@ if ["$yarn1" = "app"]; then
     yarn
     yarn start
 fi
+if ["$yarn1" = "site"]; then
+	cd docs
+	yarn
+	yarn start
+fi
+echo "Exiting Server since you hit Ctrl+C... If you want the server to start again, type this: 'sudo sh .gitpod/server.sh' from the root directory."
+exit
