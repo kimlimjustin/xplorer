@@ -19,6 +19,7 @@ import focusingPath from "../Functions/focusingPath";
 import Properties from "../Properties/properties";
 import Undo from "../Files/File Operation/undo";
 import Redo from "../Files/File Operation/redo";
+import { reload } from "../Layout/windowManager";
 let vscodeInstalled = false
 try {
     execSync("code --version")
@@ -252,6 +253,7 @@ const ContextMenuInner = (target: HTMLElement, coorX:number, coorY:number, open:
                             })
                             layout[currentPath] = "l" // l = Large grid view
                             storage.set("layout", layout)
+                            reload()
                             break;
                         case "Grid View (Medium)":
                             files.forEach(file => {
@@ -260,6 +262,7 @@ const ContextMenuInner = (target: HTMLElement, coorX:number, coorY:number, open:
                             })
                             layout[currentPath] = "m" // m = Medium grid view
                             storage.set("layout", layout)
+                            reload()
                             break;
                         case "Grid View (Small)":
                             files.forEach(file => {
@@ -268,6 +271,7 @@ const ContextMenuInner = (target: HTMLElement, coorX:number, coorY:number, open:
                             })
                             layout[currentPath] = "s" // s = Small grid view
                             storage.set("layout", layout)
+                            reload()
                             break;
                         case "Detail View":
                             files.forEach(file => {
@@ -276,6 +280,7 @@ const ContextMenuInner = (target: HTMLElement, coorX:number, coorY:number, open:
                             })
                             layout[currentPath] = "d" // d = Detail view
                             storage.set("layout", layout)
+                            reload()
                             break;
                         case "A-Z":
                             sort[currentPath] = "A" // A = A - Z
