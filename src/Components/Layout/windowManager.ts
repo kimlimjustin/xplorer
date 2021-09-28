@@ -61,7 +61,7 @@ const windowManager = (): void => {
 		.addEventListener(
 			'change',
 			(event: Event & { target: HTMLInputElement }) => {
-				if (event.target.value) open(event.target.value);
+				open(event.target.value);
 			}
 		);
 };

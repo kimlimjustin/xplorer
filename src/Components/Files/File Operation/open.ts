@@ -231,6 +231,8 @@ const displayFiles = async (files: fileData[], dir:string, options?: {reveal: bo
  * @returns {Promise<void>}
  */
 const open = async (dir:string, reveal?:boolean):Promise<void> => {
+    if (!dir) return
+
     const initialDirToOpen = dir;
     closePreviewFile()
     timeStarted = Date.now()
