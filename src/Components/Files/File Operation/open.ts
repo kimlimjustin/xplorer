@@ -176,7 +176,6 @@ const displayFiles = async (files: fileData[], dir:string, options?: {reveal: bo
             }
             fileGrid.setAttribute("draggable", 'true')
             fileGrid.setAttribute("data-listenOpen", '')
-            fileGrid.setAttribute("data-tilt", '')
             fileGrid.dataset.modifiedAt = String(dirent.modifiedAt);
             fileGrid.dataset.createdAt = String(dirent.createdAt);
             fileGrid.dataset.accessedAt = String(dirent.accessedAt);
