@@ -41,11 +41,11 @@ You can access the insider version [here](https://github.com/kimlimjustin/xplore
 
 ### Common Problems
 
-**NB: For installation common problems, please open [here](https://xplorer.vercel.app/docs/install/#common-problems)**
+**NB: For installation common problems, please visit this page [here](https://xplorer.vercel.app/docs/install/#common-problems)**
 
 <details>
 <summary>
-Opening folder like `Documents`, `Desktop`, `Downloads` make Xplorer crashes
+Opening folder like `Documents`, `Desktop`, `Downloads` make Xplorer crash
 </summary>
 
 Disable the [`Extract exe file icon and make it as preview`](https://xplorer.vercel.app/docs/guides/setting/#extract-exe-file-icon-and-make-it-a-preview) setting
@@ -55,7 +55,7 @@ Disable the [`Extract exe file icon and make it as preview`](https://xplorer.ver
 <summary>
 Xplorer is unstable after installing it.
 </summary>
-Simply restart it will fix it, if it doesn't, please address an issue.
+Simply restart, Xplorer will fix itself, if it doesn't, please address an issue over h[here](https://github.com/kimlimjustin/xplorer/issues)
 
 </details>
 
@@ -63,7 +63,7 @@ Simply restart it will fix it, if it doesn't, please address an issue.
 
 For more info, visit [Xplorer's Contributing guide](https://xplorer.vercel.app/community/Contributing)
 
-#### Gitpod
+#### Gitpod for Xplorer's development
 
 Gitpod is a Ready-to-Code environment in which you don't need to worry about dependency errors or lagging your computer. Hit the button below and log in to GitHub with your GitHub account. Then, after it loads, you end up with a VS Code-like environment where you can start developing and pushing your changes.
 
