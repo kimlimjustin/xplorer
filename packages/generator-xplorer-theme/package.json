@@ -13,9 +13,7 @@
 		"copydeps": "copyfiles src/app/templates/** generators/app --up 2",
 		"lint": "eslint ./src --ext .js,.ts",
 		"clean": "rimraf -rf ./generators",
-		"watch": "yarn run watch-tsc --silent & yarn run watch-deps --silent",
-		"watch-deps": "onchange 'src/*/templates/**' --initial -- yarn run copydeps --silent",
-		"watch-tsc": "tsc-watch --onSuccess 'yarn run lint --silent'"
+		"watch": "tsc --watch"
 	},
 	"dependencies": {
 		"@crowdin/cli": "^3.7.0",

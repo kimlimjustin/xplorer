@@ -1,59 +1,71 @@
 import Generator from 'yeoman-generator';
 import { green } from 'chalk';
 import yosay from 'yosay';
-
-interface Answers {
-	answer1: string;
-}
-
 interface Arguments {
-	arg1: string;
-	arg2: string;
-	argRest: string[];
-	option1: boolean;
-	option2: string;
+	themeName: string;
 }
 
-module.exports = class extends Generator<Arguments> {
+interface Answers extends Arguments {
+	themeCategory: 'light' | 'dark';
+	packageName: 'string';
+	gitInit: boolean;
+}
+
+module.exports = class extends Generator {
 	answers: Answers;
 	constructor(args, opts: Arguments) {
 		super(args, opts);
-
-		this.argument('arg1', {
+		this.argument('themeName', {
 			type: String,
 			required: false,
-			default: 'arg1default',
-			description: 'Argument 1',
-		});
-		this.argument('arg2', {
-			type: String,
-			required: false,
-			default: 'arg2default',
-			description: 'Argument 2',
-		});
-		this.argument('argRest', {
-			type: Array,
-			required: false,
-			default: [],
-			description: 'Rest arguments',
-		});
-
-		this.option('option1', {
-			type: Boolean,
-			default: false,
-			description: 'Option 1',
-			alias: 'o',
-		});
-		this.option('option2', {
-			type: String,
-			default: 'opt2default',
-			description: 'Option 2',
-			alias: 'p',
+			description: 'Your theme name',
 		});
 	}
 
 	async prompting() {
-		this.log(yosay(`Welcome to  ${green("Xplorer's theme")} generator !`));
+		this.log(
+			yosay(`Welcome to  ${green("Xplorer's theme package")} generator !`)
+		);
+		const answers = this.answers ?? {};
+		if (!this.options['themeName']) {
+			const { themeName } = await this.prompt([
+				{
+					type: 'input',
+					name: 'themeName',
+					message: 'Your theme name:',
+					loop: false,
+					validate: (name) => name.length > 0,
+				},
+			]);
+			answers['themeName'] = themeName;
+			answers['packageName'] = themeName
+				.toLowerCase()
+				.replace(/[\W]/, '-');
+		} else {
+			answers['packageName'] = this.options['themeName']
+				.toLowerCase()
+				.replace(/[\W]/, '-');
+		}
+		const { themeCategory, gitInit } = await this.prompt([
+			{
+				type: 'list',
+				name: 'themeCategory',
+				message: 'Theme category',
+				choices: [
+					{ name: 'light', value: 'light' },
+					{ name: 'dark', value: 'dark' },
+				],
+			},
+
+			{
+				type: 'confirm',
+				name: 'gitInit',
+				message: 'Initialize a git repo',
+			},
+		]);
+		answers['themeCategory'] = themeCategory;
+		answers['gitInit'] = gitInit;
+		this.answers = answers as Answers;
 	}
 
 	writing() {
@@ -62,13 +74,17 @@ module.exports = class extends Generator<Arguments> {
 			...this.options,
 		};
 		this.fs.copyTpl(
-			this.templatePath('dummyfile.txt'),
-			this.destinationPath('dummyfile.txt'),
+			this.templatePath('package.ejs'),
+			this.destinationPath('package.json'),
 			templateData
 		);
-	}
-
-	install() {
-		console.log('Nothing to install');
+		this.fs.copyTpl(
+			this.templatePath('themes.ejs'),
+			this.destinationPath(`${this.answers['packageName']}.json`),
+			templateData
+		);
+		if (this.answers['gitInit']) {
+			this.spawnCommandSync('git', ['init', '--quiet']);
+		}
 	}
 };
