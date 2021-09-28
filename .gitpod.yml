@@ -1,3 +1,4 @@
+---
 # The image is needed so that every Gitpod Workspace comes with gitpod/workspace-full-vnc whenever they start it.
 image:
   file: .gitpod.Dockerfile
@@ -18,9 +19,10 @@ tasks:
 
 vscode:
   extensions:
-    - kimlimjustin.jsdoc-generator
+    # - kimlimjustin.jsdoc-generator # @kimlimjustin this is on hold since this doesn't exist in the Open VSX Registry, you must check out about the error
     - esbenp.prettier-vscode
-    - orta.vscode.jest
+
+    - orta.vscode-jest
 
 # GitHub Prebuilds
 github:
