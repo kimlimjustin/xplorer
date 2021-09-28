@@ -45,14 +45,14 @@ How to install in Arch OS?
 Run the following command:
 
 ```bash
-sudo pacman -u [installer file name]
+sudo pacman -U [installer file name]
 ```
 
 :::info
 If you faced the `xplorer exists in filesystem` error, run this command instead:
 
 ```bash
-sudo pacman -u [installer file name] --overwrite "*"
+sudo pacman -U [installer file name] --overwrite "*"
 ```
 
 :::
