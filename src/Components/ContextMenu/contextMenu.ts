@@ -238,7 +238,7 @@ const ContextMenuInner = (target: HTMLElement, coorX:number, coorY:number, open:
             const clickSubmenuEvent = (e:Event) => {
                 const target = e.target as HTMLElement;
                 if (target.getAttribute("role")) {
-                    const files = document.querySelectorAll<HTMLElement>(".file")
+                    const files = document.querySelectorAll<HTMLElement>(".file + div:not(.favorite) + div:not(.pendrive)")
                     const layout = storage.get('layout')?.data ?? {}
                     const sort = storage.get('layout')?.data ?? {}
                     const tabs = storage.get(`tabs-${windowGUID}`)?.data
