@@ -45,7 +45,7 @@ You can access the insider version [here](https://github.com/kimlimjustin/xplore
 
 <details>
 <summary>
-Opening folder like `Documents`, `Desktop`, `Downloads` make Xplorer crash
+Opening folder like <kbd>Documents</kbd>, <kbd>Desktop</kbd>, <kbd>Downloads</kbd> make Xplorer crash
 </summary>
 
 Disable the [`Extract exe file icon and make it as preview`](https://xplorer.vercel.app/docs/guides/setting/#extract-exe-file-icon-and-make-it-a-preview) setting
@@ -55,7 +55,7 @@ Disable the [`Extract exe file icon and make it as preview`](https://xplorer.ver
 <summary>
 Xplorer is unstable after installing it.
 </summary>
-Simply restart, Xplorer will fix itself, if it doesn't, please address an issue over h[here](https://github.com/kimlimjustin/xplorer/issues)
+Simply restart, Xplorer will fix itself, if it doesn't, please address an issue over [here](https://github.com/kimlimjustin/xplorer/issues)
 
 </details>
 
