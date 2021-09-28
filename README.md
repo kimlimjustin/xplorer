@@ -59,6 +59,16 @@ Simply restart it will fix it, if it doesn't, please address an issue.
 
 </details>
 
+### Development
+
+For more info, visit [Xplorer's Contributing guide](https://xplorer.vercel.app/community/Contributing)
+
+#### Gitpod
+
+Gitpod is a Ready-to-Code environment in which you don't need to worry about dependency errors or lagging your computer. Hit the button below and log in to GitHub with your GitHub account. Then, after it loads, you end up with a VS Code-like environment where you can start developing and pushing your changes.
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#/https://github.com/kimlimjustin/xplorer)
+
 ### LICENSE
 
 [Apache-2.0](https://github.com/kimlimjustin/xplorer/blob/master/LICENSE)
