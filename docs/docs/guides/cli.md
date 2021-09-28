@@ -1,7 +1,7 @@
 # Launch Xplorer from Terminal
 
 :::info
-This feature hasn't been optimized yet. It works but it might be laggy. Will be optimized in the feature release.
+This feature hasn't been optimized yet. It works but it might be laggy. This will be optimized in the feature release.
 :::
 
 ## Commands
