@@ -13,6 +13,9 @@ const About = (): void => {
 		description,
 		versions: process.versions,
 		os: os.release(),
+		copyToClipboard: (str: string) => {
+			return `navigator.clipboard.writeText('${str}')`;
+		},
 	}).then((result) => {
 		settingsMain.innerHTML = result;
 	});

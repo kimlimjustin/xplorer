@@ -4,10 +4,59 @@ sidebar_position: 2
 
 # Installation
 
-## Installer
+## For Windows and MacOS
 
 You can access the installer [here](https://github.com/kimlimjustin/xplorer/releases).
 
+## For Linux
+
+### AppImages
+
+Grab **.AppImage** file in [releases](https://github.com/kimlimjustin/xplorer/releases) and follow this [Guide](https://docs.appimage.org/introduction/quickstart.html#how-to-run-an-appimage).
+
+### Debian and Ubuntu based distros 
+
+Grab **.deb** file in [releases](https://github.com/kimlimjustin/xplorer/releases).
+
+You can install it by:
+```bash
+sudo dpkg -i /path/to/deb/file.deb
+```
+**or**
+
+```bash
+sudo apt install /path/to/deb/file.deb
+```
+### Arch based distros
+
+> Use you favorite [aur helper](https://wiki.archlinux.org/title/AUR_helpers).
+
+```bash
+yay -S xplorer-bin
+
+#or for manjaro
+
+pamac build xplorer-bin
+```
+**or** 
+
+Grab **.pacman** file in [releases](https://github.com/kimlimjustin/xplorer/releases).
+
+You can install it by:
+```bash
+sudo pacman -U /path/to/deb/file.pacman
+```
+
+**or**
+
+build for [source](https://aur.archlinux.org/xplorer-bin.git)
+```bash
+git clone https://aur.archlinux.org/xplorer-bin.git
+
+cd xplorer-bin
+
+makepkg -si
+```
 ## Common Problems
 
 <details>
@@ -39,28 +88,7 @@ Please try [this official docs](https://support.apple.com/guide/mac-help/open-a-
 </details>
 <details>
 <summary>
-How to install in Arch OS?
-</summary>
-
-Run the following command:
-
-```bash
-sudo pacman -u [installer file name]
-```
-
-:::info
-If you faced the `xplorer exists in filesystem` error, run this command instead:
-
-```bash
-sudo pacman -u [installer file name] --overwrite "*"
-```
-
-:::
-
-</details>
-<details>
-<summary>
-There is no my favourites installer.
+My favorite Installer is not here.
 </summary>
 
 Please address an issue [here](https://github.com/kimlimjustin/xplorer).
