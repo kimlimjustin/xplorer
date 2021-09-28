@@ -72,7 +72,6 @@ const Recent = async (): Promise<void> => {
 			}
 			fileGrid.setAttribute('draggable', 'true');
 			fileGrid.setAttribute('data-listenOpen', '');
-			fileGrid.setAttribute('data-tilt', '');
 			fileGrid.dataset.path = escape(recent);
 			fileGrid.innerHTML = `
             ${preview}

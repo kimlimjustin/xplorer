@@ -1,6 +1,5 @@
 import fs from 'fs';
 import storage from "electron-json-storage-sync";
-import VanillaTilt from "../../Lib/tilt/tilt";
 import os from "os";
 import { nativeTheme } from '@electron/remote';
 import { ipcRenderer } from 'electron';
@@ -213,7 +212,6 @@ const changeTheme = (document:Document, theme:string): void => {
         changeElementTheme(grid, "gridBackground", "background", theme)
         changeElementTheme(grid, "gridColor", "color", theme)
     })
-    VanillaTilt();
     return;
 }
 
