@@ -92,15 +92,27 @@ const homeFiles = (callback: cb) => {
 			switch (layout) {
 				case 'm':
 					className += ' medium-grid-view';
+					file.name =
+						file.name.length > 30
+							? file.name.substring(0, 30) + '...'
+							: file.name;
 					break;
 				case 'l':
 					className += ' large-grid-view';
+					file.name =
+						file.name.length > 40
+							? file.name.substring(0, 40) + '...'
+							: file.name;
 					break;
 				case 'd':
 					className += ' detail-view';
 					break;
 				default:
 					className += ' small-grid-view';
+					file.name =
+						file.name.length > 20
+							? file.name.substring(0, 20) + '...'
+							: file.name;
 					break;
 			}
 			result += `<div class="${className}" draggable="true" data-isdir=${
