@@ -111,7 +111,7 @@ const homeFiles = (callback: cb) => {
 				isHiddenFile(path.join(os.homedir(), file.name))
 					? 'data-hidden-file'
 					: ''
-			} data-tilt data-size="${file.size}" data-created-at="${
+			} data-size="${file.size}" data-created-at="${
 				file.createdAt
 			}" data-modified-at="${file.modifiedAt}" data-accessed-at="${
 				file.accessedAt
