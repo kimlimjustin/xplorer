@@ -6,7 +6,7 @@ Xplorer is an open-source project which you can freely join and seek support ðŸ˜
 
 On this page, we've listed some communities/forums you can participate in to seek support or help others.
 
-Before participating in Xplorer's communities, please read our [Code Of Conduct](./CODE_OF_CONDUCT).
+Before participating in Xplorer's communities, please read our [Code Of Conduct](https://xplorer.vercel.app/community/CODE_OF_CONDUCT/).
 
 ## Issues
 We use GitHub Issues to track public bugs. Please ensure your description is clear and has sufficient instructions to be able to reproduce the issue. Report a bug by opening a new issue [here](https://github.com/kimlimjustin/xplorer/issues). Please use [GitHub Discussions](https://github.com/kimlimjustin/xplorer/discussions) instead to suggest a new feature.
