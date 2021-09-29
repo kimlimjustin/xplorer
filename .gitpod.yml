@@ -23,6 +23,15 @@ vscode:
     - esbenp.prettier-vscode
 
     - orta.vscode-jest
+  
+# Ports config
+ports:
+  - port: 3000
+    onOpen: open-preview
+  - port: 6080
+    onOpen: open-browser
+  - port: 5900
+    onOpen: ignore
 
 # GitHub Prebuilds
 github:
