@@ -45,7 +45,7 @@ You can access the insider version [here](https://github.com/kimlimjustin/xplore
 
 <details>
 <summary>
-Opening folder like <kbd>Documents</kbd>, <kbd>Desktop</kbd>, <kbd>Downloads</kbd> make Xplorer crash
+Opening folder like <kbd>Documents</kbd>, <kbd>Desktop</kbd>, <kbd>Downloads</kbd> makes Xplorer crash
 </summary>
 
 Disable the [`Extract exe file icon and make it as preview`](https://xplorer.vercel.app/docs/guides/setting/#extract-exe-file-icon-and-make-it-a-preview) setting
@@ -66,6 +66,8 @@ For more info, visit [Xplorer's Contributing guide](https://xplorer.vercel.app/c
 #### Gitpod for Xplorer's development
 
 Gitpod is a Ready-to-Code environment in which you don't need to worry about dependency errors or lagging your computer. Hit the button below and log in to GitHub with your GitHub account. Then, after it loads, you end up with a VS Code-like environment where you can start developing and pushing your changes.
+
+**Very Important Note: Remember to reload the Gitpod website after it loads up since it won't start the servers immediately, but by reloading, you can get it started. If you are developing the app, go to the Remote Explorer on the sidebar and visit port _6080_ which opens the noVNC app server. If you are developing the docs, go to the Remote explorer but instead of port 6080, visit port _3000_. You can edit normally as you do in VS Code, but if you want to use it locally, clik the hamburger menu button and click _Open in VS Code_.**
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#/https://github.com/kimlimjustin/xplorer)
 
