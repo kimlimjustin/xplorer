@@ -2,6 +2,10 @@
 	"name": "<%= packageName %>",
 	"themePackName": "<%= themeName %>",
 	"description": "<%= themeName %> for Xplorer",
-	"main": "<%= themeName %>.json",
-	"version": "0.1.0"
+	"main": "<%= packageName %>.json",
+	"version": "0.1.0",
+	"license": "MIT",
+	"scripts": {
+		"start": "xplorer --theme --listen <%= packageName %>.json"
+	}
 }

@@ -16,14 +16,22 @@ import windowStateKeeper from 'electron-window-state';
 import log from 'electron-log';
 import { autoUpdater } from 'electron-updater';
 import yargs from 'yargs/yargs';
+import fs from 'fs';
+import { PathLike } from 'original-fs';
 
 const args = yargs(process.argv.slice(isDev ? 2 : 1))
 	.usage('Usage: $0 <options> <dir1> <dir2> <dir3>')
 	.alias('h', 'help')
+	.alias('v', 'version')
 	.command('reveal', 'Open the containing folder and select the file')
 	.alias('r', 'reveal')
-	.alias('v', 'version').argv;
-console.log(args);
+	.command('theme', 'Use custom theme file')
+	.alias('t', 'theme')
+	.command(
+		'listen',
+		'Listen to a file change, used for plugin development'
+	).argv;
+//console.log(args);
 autoUpdater.logger = log;
 
 /**
@@ -154,6 +162,8 @@ function createWindow() {
 		}
 	);
 	windowState.manage(win);
+
+	fs.watchFile(args?.listen as PathLike, () => win.reload());
 }
 
 app.allowRendererProcessReuse = false;

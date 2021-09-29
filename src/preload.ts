@@ -13,6 +13,11 @@ import { Shortcut } from './Components/Shortcut/shortcut';
 import path from 'path';
 
 const args = ipcRenderer.sendSync('args');
+if (args.listen && args.theme) {
+	args.theme = args.listen;
+}
+
+console.log(args);
 const requestedOpen = args._;
 
 // Wait DOM Content to be loaded
@@ -42,7 +47,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 		}
 	}
 	// Update the page theme
-	updateTheme();
+	if (args?.theme) updateTheme(args.theme);
 	// Initialize toggle hidden files feature
 	toggleHiddenFiles();
 	// Initialize option menu feature
