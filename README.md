@@ -7,7 +7,7 @@
 
 ---
 
-## What is Xplorer?
+# What is Xplorer?
 
 ![Demo](docs/static/img/Xplorer%20win.png)
 
@@ -35,20 +35,38 @@ To summarize, Xplorer's features contain:
 
 Xplorer is currently in development. Suggest improvements in Xplorer [Discussions](https://github.com/kimlimjustin/xplorer/discussions/) or [contribute to it](https://xplorer.vercel.app/community/Contributing/)!
 
-### Installation
+## Installation
 
 You can access the insider version [here](https://github.com/kimlimjustin/xplorer/releases). Please note that it is not stable yet. Use it on your own risk.
 
-### Common Problems
+## Common Problems
 
 **NB: For installation common problems, please visit this page [here](https://xplorer.vercel.app/docs/install/#common-problems)**
 
 <details>
 <summary>
+Xplorer keep loading and crashes.
+</summary>
+Try open cmd by typing `Win + R` and type `cmd`.
+Enter following command:
+
+```
+wmic
+```
+
+If the output says the `wmic` is not recognized as internal or internal command, please follow following steps given on [this](https://superuser.com/questions/1178674/wmic-is-not-recognized-as-an-internal-or-external-command-operable-program-or) or [this](https://knowledge.informatica.com/s/article/156865?language=en_US).
+
+Also, please make sure that windows defender isn't blocking Xplorer from accessing your documents.
+
+</details>
+<details>
+<summary>
 Opening folder like <kbd>Documents</kbd>, <kbd>Desktop</kbd>, <kbd>Downloads</kbd> makes Xplorer crash
 </summary>
 
-Disable the [`Extract exe file icon and make it as preview`](https://xplorer.vercel.app/docs/guides/setting/#extract-exe-file-icon-and-make-it-a-preview) setting
+Disable the [`Extract exe file icon and make it as preview`](https://xplorer.vercel.app/docs/guides/setting/#extract-exe-file-icon-and-make-it-a-preview) setting.
+
+Also, please make sure that windows defender isn't blocking Xplorer from accessing your documents.
 
 </details>
 <details>
@@ -59,11 +77,11 @@ Simply restart, Xplorer will fix itself, if it doesn't, please address an issue 
 
 </details>
 
-### Development
+## Development
 
 For more info, visit [Xplorer's Contributing guide](https://xplorer.vercel.app/community/Contributing)
 
-#### Gitpod for Xplorer's development
+### Gitpod for Xplorer's development
 
 Gitpod is a Ready-to-Code environment in which you don't need to worry about dependency errors or lagging your computer. Hit the button below and log in to GitHub with your GitHub account. Then, after it loads, you end up with a VS Code-like environment where you can start developing and pushing your changes.
 
@@ -71,6 +89,6 @@ Gitpod is a Ready-to-Code environment in which you don't need to worry about dep
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#/https://github.com/kimlimjustin/xplorer)
 
-### LICENSE
+## LICENSE
 
 [Apache-2.0](https://github.com/kimlimjustin/xplorer/blob/master/LICENSE)
