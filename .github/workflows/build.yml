@@ -21,7 +21,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm install --global node-gyp@latest
       - run: npm prefix -g | % {npm config set node_gyp "$_\node_modules\node-gyp\bin\node-gyp.js"}
-      - run: yarn install --frozen-lockfile
+      - run: yarn install
       - run: yarn build --publish=never
 
   build-mac:
@@ -36,7 +36,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-      - run: yarn install --frozen-lockfile
+      - run: yarn install
       - run: yarn build --publish=never
 
   build-linux:
@@ -51,5 +51,5 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-      - run: yarn install --frozen-lockfile
+      - run: yarn install
       - run: yarn build --publish=never
