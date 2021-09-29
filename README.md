@@ -1,5 +1,5 @@
 <div align="center">
-<img height=100 src="https://repository-images.githubusercontent.com/360936748/a0855a00-bb4a-11eb-8e22-5f868d7b5f66" />
+<img height=150 src="./icons/icon.svg" />
 </div>
 
 <p align="center"><span><b>Xplorer</b>, a customizable, modern and cross-platform file explorer.</span></p>
