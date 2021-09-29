@@ -9,7 +9,7 @@ tasks:
     init: echo "Starting app server"
     command: |
           yarn
-          yarn start
+          yarn dev
   - name: Yarn Docs Server
     init: echo "Starting docs server"
     command: |
@@ -19,7 +19,8 @@ tasks:
 
 vscode:
   extensions:
-    # - kimlimjustin.jsdoc-generator # @kimlimjustin this is on hold since this doesn't exist in the Open VSX Registry, you must check out about the error.
+    - kimlimjustin.jsdoc-generator
+    
     - esbenp.prettier-vscode
 
     - orta.vscode-jest
