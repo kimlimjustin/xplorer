@@ -52,15 +52,24 @@ Great Feature Requests tend to have:
 ### Installation
 
 1. After cloning the repository, run `yarn` in the root of the repository and run `yarn` in the `docs` folder (if you want to working on Xplorer Docs).
-2. To start Xplorer locally, run `yarn start` in the root of the repository.
+2. To start Xplorer locally:
+
+    - run `yarn start` in the root of the repository if you **don't want** the hot reload feature.
+    - run `yarn dev` in the root of the repository if you **want** the hot reload feature.
 
     To start a local development server serving the Docusaurus docs, go into the `docs` directory and run `yarn start`
 
 ### Gitpod
+
 Gitpod is a Ready-to-Code environment in which you can get started immediately. Gitpod offers all dependencies pre-installed so you can just click and get started.
 
 To get started with Gitpod, click the button below and log in with your GitHub account.
+
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/kimlimjustin/xplorer)
+
+:::note
+Remember to reload the Gitpod website after it loads up since it won't start the servers immediately, but by reloading, you can get it started. If you are developing the app, go to the Remote Explorer on the sidebar and visit port _6080_ which opens the noVNC app server. If you are developing the docs, go to the Remote explorer but instead of port 6080, visit port _3000_. You can edit normally as you do in VS Code, but if you want to use it locally, clik the hamburger menu button and click _Open in VS Code_.
+:::
 
 ### Semantic commit messages {#commit-msg}
 
@@ -125,7 +134,7 @@ Working on your first Pull Request? You can learn how from this free video serie
 
 How to Contribute to an Open Source Project on GitHub
 
-We have a list of [beginner-friendly issues](https://github.com/kimlimjustin/xplorer/labels/good%20first%20issue) to help you get your feet wet in the DXplorer codebase and familiar with our contribution process. This is a great place to get started.
+We have a list of [beginner-friendly issues](https://github.com/kimlimjustin/xplorer/labels/good%20first%20issue) to help you get your feet wet in the Xplorer codebase and familiar with our contribution process. This is a great place to get started.
 
 ### Proposing a change
 
