@@ -26,6 +26,10 @@ module.exports = {
 			backgroundColor: '#fafbfc',
 			textColor: '#091E42',
 		},
+		algolia: {
+			apiKey: '801dd9730a1ed22103221e93b49ed9ac',
+			indexName: 'xplorer',
+		},
 		navbar: {
 			hideOnScroll: true,
 			title: 'Xplorer',
