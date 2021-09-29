@@ -6,16 +6,22 @@ Xplorer is an open-source project which you can freely join and seek support ðŸ˜
 
 On this page, we've listed some communities/forums you can participate in to seek support or help others.
 
-Before participating in Xplorer's communities, please read our [Code Of Conduct](../CODE_OF_CONDUCT).
+Before participating in Xplorer's communities, please read our [Code Of Conduct](/community/CODE_OF_CONDUCT/).
 
 ## Issues
-We use GitHub issues to track public bugs. Please ensure your description is clear and has sufficient instructions to be able to reproduce the issue. Report a bug by opening a new issue [here](https://github.com/kimlimjustin/xplorer/issues). Please use [GitHub Discussion](https://github.com/kimlimjustin/xplorer/discussions) instead to suggest a new feature.
+We use GitHub Issues to track public bugs. Please ensure your description is clear and has sufficient instructions to be able to reproduce the issue. Report a bug by opening a new issue [here](https://github.com/kimlimjustin/xplorer/issues). Please use [GitHub Discussions](https://github.com/kimlimjustin/xplorer/discussions) instead to suggest a new feature.
 
-## GitHub Discussion
-GitHub Discussion is used for multiple purposes, such as:
+## GitHub Discussions
+GitHub Discussions is used for multiple purposes, such as:
+1. Asking questions
+2. Making feature requests and sharing ideas
+3. Xplorer Announcements
+4. Chat on Xplorer
+5. Show and tell: Making custom themes/plug-ins for Xplorer and showing them there!
+
 
 ### Feature Request
-We use [GitHub Discussion](https://github.com/kimlimjustin/xplorer/discussions) to track ideas from users. Suggest a new feature [here](https://github.com/kimlimjustin/xplorer/discussions)!
+We use [GitHub Discussions](https://github.com/kimlimjustin/xplorer/discussion) to track ideas from users. Suggest a new feature [here](https://github.com/kimlimjustin/xplorer/discussions)!
 Great Feature Requests tend to have:
 - A quick idea summary.
 - What & why you wanted to add the specific feature.

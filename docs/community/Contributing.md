@@ -21,7 +21,7 @@ Contributions are very welcome!
 
 ## Our development process
 
-Xplorer uses [GitHub](https://github.com/kimlimjustin/xplorer) as its source of truth. The core team will be work directly there. All changes will be public from the beginning.
+Xplorer uses [GitHub](https://github.com/kimlimjustin/xplorer) as its source of truth. The core team will work directly there. All changes will be public from the beginning.
 
 ### Reporting new issues/bugs. {#issues}
 
@@ -32,7 +32,7 @@ When [opening a new issue](https://github.com/kimlimjustin/xplorer/issues), alwa
 
 ### Feature Request {#feat}
 
-We use [GitHub Discussion](https://github.com/kimlimjustin/xplorer/discussions) to track ideas from users. Suggest a new feature [here](https://github.com/kimlimjustin/xplorer/discussions)!
+We use [GitHub Discussions](https://github.com/kimlimjustin/xplorer/discussions) to track ideas from users. Suggest a new feature [here](https://github.com/kimlimjustin/xplorer/discussions)!
 Great Feature Requests tend to have:
 
 -   A quick idea summary.
@@ -43,11 +43,11 @@ Great Feature Requests tend to have:
 
 ### Prerequisite
 
--   [node js](https://nodejs.org/en/)
--   [git](https://git-scm.com/)
+-   [Node JS](https://nodejs.org/en/)
+-   [Git](https://git-scm.com/)
 -   [yarn](https://yarnpkg.com/)
--   [gcc compiler](https://gcc.gnu.org/)
--   Code Editor, recommended [vscode](https://code.visualstudio.com/)
+-   [GCC Compiler](https://gcc.gnu.org/)
+-   Code Editor, we recommend to use [VS Code](https://code.visualstudio.com/)
 
 ### Installation
 
@@ -55,6 +55,12 @@ Great Feature Requests tend to have:
 2. To start Xplorer locally, run `yarn start` in the root of the repository.
 
     To start a local development server serving the Docusaurus docs, go into the `docs` directory and run `yarn start`
+
+### Gitpod
+Gitpod is a Ready-to-Code environment in which you can get started immediately. Gitpod offers all dependencies pre-installed so you can just click and get started.
+
+To get started with Gitpod, click the button below and log in with your GitHub account.
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/kimlimjustin/xplorer)
 
 ### Semantic commit messages {#commit-msg}
 
@@ -85,7 +91,7 @@ the various types of commits:
 -   `test`: adding missing tests, refactoring tests.
 -   `chore`: updating grunt tasks etc
 
-Use lower case not title case!
+Use lower case not the upper case!
 
 ## Working on Xplorer docs
 
@@ -101,6 +107,8 @@ Xplorer documentation website is built using [Docusaurus 2](https://docusaurus.i
 ### Installation
 
 After cloning the repository, run `yarn` in the `docs` folder (you can go into the `docs` folder by running the `cd docs` command).
+
+If you want to use Gitpod, click here for the Gitpod Guide.
 
 ### Local development
 
@@ -125,7 +133,7 @@ If you would like to request a new feature or enhancement but are not yet thinki
 
 If you intend to fix a bug, please discuss it through [Issues](#issues) before submitting a pull request.
 
-If you intend to add a new feature, please discuss it through [GitHub Discussion](#feat) to avoid multiple people working on the same feature request.
+If you intend to add a new feature, please discuss it through [GitHub Discussions](#feat) to avoid multiple people working on the same feature request.
 
 ### Sending a Pull Request
 
