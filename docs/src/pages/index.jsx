@@ -96,7 +96,7 @@ export default function Home() {
 								Xplorer supports files preview, even videos!
 								Learn more{' '}
 								<a
-									href="/docs/guides/file%20operation/#preview"
+									href="/docs/guides/operation/#preview-file"
 									target="_blank"
 								>
 									here
