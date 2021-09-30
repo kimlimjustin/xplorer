@@ -47,7 +47,7 @@ Great Feature Requests tend to have:
 -   [Git](https://git-scm.com/)
 -   [yarn](https://yarnpkg.com/)
 -   [GCC Compiler](https://gcc.gnu.org/)
--   Code Editor, we recommend to use [VS Code](https://code.visualstudio.com/)
+-   Code Editor, we recommend you to use [VS Code](https://code.visualstudio.com/)
 
 ### Installation
 
@@ -59,7 +59,7 @@ Great Feature Requests tend to have:
 
     To start a local development server serving the Docusaurus docs, go into the `docs` directory and run `yarn start`
 
-### Gitpod
+### Gitpod {#gitpod-env}
 
 Gitpod is a Ready-to-Code environment in which you can get started immediately. Gitpod offers all dependencies pre-installed so you can just click and get started.
 
@@ -111,13 +111,13 @@ Xplorer documentation website is built using [Docusaurus 2](https://docusaurus.i
 -   [node js](https://nodejs.org/en/)
 -   [git](https://git-scm.com/downloads)
 -   [yarn](https://yarnpkg.com/getting-started/install#about-global-installs)
--   Code Editor, recommended [vscode](https://code.visualstudio.com/)
+-   Code Editor, we recommend you to use [VS Code](https://code.visualstudio.com/)
 
 ### Installation
 
 After cloning the repository, run `yarn` in the `docs` folder (you can go into the `docs` folder by running the `cd docs` command).
 
-If you want to use Gitpod, click [here](/community/Contributing/#gitpod) for the guide on how to use Gitpod.
+If you want to use Gitpod, click [here](#gitpod-env) for the guide on how to use Gitpod.
 
 ### Local development
 
