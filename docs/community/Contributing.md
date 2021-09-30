@@ -15,7 +15,7 @@ There are many ways to contribute to Xplorer, and many of them do not involve wr
 -   Start using Xplorer! Go through the Tutorial guides. Does anything work as expected? If not, we're always looking for improvements. Let us know by opening an issue.
 -   Look through the [Xplorer issues](https://github.com/kimlimjustin/xplorer/issues). If you find an issue you would like to fix, [open a pull request](#first-pull-request). Issues tagged as [good first issue](https://github.com/kimlimjustin/xplorer/labels/good%20first%20issue) are a good place to get started.
 -   Help us make the docs better. File an issue if you find anything that is confusing, any grammatical error, or can be improved.
--   Take a look at the [GitHub Discussion](https://github.com/kimlimjustin/xplorer/discussions) and give your opinion into a discussion or consider opening a pull request if you see something you want to work on.
+-   Take a look at [GitHub Discussions](https://github.com/kimlimjustin/xplorer/discussions) and give your opinion into a discussion or consider opening a pull request if you see something you want to work on.
 
 Contributions are very welcome!
 
@@ -32,7 +32,7 @@ When [opening a new issue](https://github.com/kimlimjustin/xplorer/issues), alwa
 
 ### Feature Request {#feat}
 
-We use [GitHub Discussions](https://github.com/kimlimjustin/xplorer/discussions) to track ideas from users. Suggest a new feature [here](https://github.com/kimlimjustin/xplorer/discussions)!
+We use [GitHub Discussions](https://github.com/kimlimjustin/xplorer/discussions) to track ideas from users. Suggest a new feature [here](https://github.com/kimlimjustin/xplorer/discussions/new)!
 Great Feature Requests tend to have:
 
 -   A quick idea summary.
@@ -117,7 +117,7 @@ Xplorer documentation website is built using [Docusaurus 2](https://docusaurus.i
 
 After cloning the repository, run `yarn` in the `docs` folder (you can go into the `docs` folder by running the `cd docs` command).
 
-If you want to use Gitpod, click here for the Gitpod Guide.
+If you want to use Gitpod, click [here](/community/Contributing/#gitpod) for the guide on how to use Gitpod.
 
 ### Local development
 
