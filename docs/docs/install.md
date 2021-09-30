@@ -81,7 +81,7 @@ Adopted from [Stack Overflow](https://stackoverflow.com/questions/65488839/how-c
 </details>
 <details>
 <summary>
-`“Xplorer” cannot be opened because the developer cannot be verified. ` Error on macOS
+<kbd>“Xplorer” cannot be opened because the developer cannot be verified.</kbd> Error on macOS
 </summary>
 
 Please try [the official docs](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unidentified-developer-mh40616/mac) by Apple.
