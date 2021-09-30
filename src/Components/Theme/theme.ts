@@ -220,13 +220,17 @@ const changeTheme = (document:Document, theme?:string): void => {
 
 /**
  * Update the entire page theme
- * @argument {customStylesheet} - use custom configuration file
+ * @param {any} customStylesheet - use custom stylesheet
  * @returns {Promise<void>}
  */
 const updateTheme = async (customStylesheet?: string):Promise<void> => {
     developmentStylesheet = customStylesheet;
     if(developmentStylesheet){
-        themeJSON  = JSON.parse(fs.readFileSync(developmentStylesheet, 'utf-8'))
+        console.log(customStylesheet)
+        // eslint-disable-next-line
+        const customStylesheetScript:any = require(customStylesheet).default;
+        console.log(customStylesheetScript)
+        themeJSON  = customStylesheetScript()
         await changeTheme(document)
     }else{
         const { data } = storage.get("theme")
