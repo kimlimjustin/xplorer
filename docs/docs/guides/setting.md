@@ -48,11 +48,11 @@ This will parse and cache the icon from a `exe` file and make it a preview. Only
 
 ![Extract Exe file icon](/img/docs/extract-exe-icon.png)
 
-:::warning This might causes Xplorer crashes.
+:::warning This might causes Xplorer to crash.
 
 This is because Xplorer parses the icon from the exe and if the hexadecimal of the exe file is broken, Xplorer crashes.
 
-The way to fix it: disable this setting
+The way to fix it is to disable the setting.
 
 :::
 
