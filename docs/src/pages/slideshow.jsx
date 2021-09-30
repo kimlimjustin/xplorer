@@ -8,14 +8,14 @@ const slides = [
 		alt:'Xplorer on Windows'
 	},
 	{
-		name:'Xplorer on Linux',
+		name:'Garuda Linux',
 		src:'/img/Xplorer%20linux.png',
-		alt:'Xplorer on Windows'
+		alt:'Xplorer on Linux'
 	},
 	{
-		name:'Windows',
-		src:'/img/Xplorer%20win.png',
-		alt:'Xplorer on Windows'
+		name:'macOS Catalina',
+		src:'/img/Xplorer%20mac.png',
+		alt:'Xplorer on macOS'
 	},
 ]
 
