@@ -163,7 +163,11 @@ function createWindow() {
 	);
 	windowState.manage(win);
 
-	fs.watchFile(args?.listen as PathLike, () => win.reload());
+	if (typeof args?.listen === 'boolean') {
+		fs.watch(process.cwd(), () => win.reload());
+	} else {
+		fs.watchFile(args?.listen as PathLike, () => win.reload());
+	}
 }
 
 app.allowRendererProcessReuse = false;

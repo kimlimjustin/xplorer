@@ -80,7 +80,7 @@ module.exports = class extends Generator {
 		);
 		this.fs.copyTpl(
 			this.templatePath('themes.ejs'),
-			this.destinationPath(`${this.answers['packageName']}.json`),
+			this.destinationPath(`${this.answers['packageName']}.js`),
 			templateData
 		);
 		if (this.answers['gitInit']) {

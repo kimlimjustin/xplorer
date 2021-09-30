@@ -1,3 +1,4 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
 import { updateTheme } from './Components/Theme/theme';
 import { ipcRenderer, webFrame } from 'electron';
 import createSidebar from './Components/Layout/sidebar';
@@ -11,13 +12,24 @@ import optionMenu from './Components/Layout/optionMenu';
 import { SelectListener } from './Components/Files/File Operation/select';
 import { Shortcut } from './Components/Shortcut/shortcut';
 import path from 'path';
+import fs from 'fs';
 
 const args = ipcRenderer.sendSync('args');
 if (args.listen && args.theme) {
-	args.theme = args.listen;
+	args.theme =
+		args.listen?.length > 0
+			? args.listen
+			: path.join(
+					process.cwd(),
+					JSON.parse(
+						fs.readFileSync(
+							path.join(process.cwd(), 'package.json'),
+							'utf-8'
+						)
+					).main
+			  );
 }
 
-console.log(args);
 const requestedOpen = args._;
 
 // Wait DOM Content to be loaded
