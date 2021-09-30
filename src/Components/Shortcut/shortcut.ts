@@ -292,7 +292,7 @@ const Shortcut = (): void => {
 		// Forward button
 		case 4:
 			goForward();
-    		}
+		}
 	}
 
 	document.addEventListener('keyup', KeyboardShortcutsHandler);
