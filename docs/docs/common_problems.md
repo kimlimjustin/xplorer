@@ -40,6 +40,6 @@ Also, please make sure that windows defender isn't blocking Xplorer from accessi
 ### Xplorer is unstable after installing it.
 
 </summary>
-Simply restart it will fix it, if it doesn't, please address an issue.
+Simply restart, Xplorer will fix itself, if it doesn't, please address an issue [here](https://github.com/kimlimjustin/xplorer/issues/new).
 
 </details>
