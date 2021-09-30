@@ -1,28 +1,28 @@
-<h3 class="settings-title">App Language</h3>
+<h3 class="settings-title"><%= appLanguage_i18n %></h3>
 <select name="language">
     <% Object.keys(availableLanguages).map((lang) => { %>
         <option <%= language === availableLanguages[lang] ? "selected" : "" %> value="<%=availableLanguages[lang] %>"><%=lang %></option>
     <% }) %>
 </select>
-<h3 class="settings-title">Files and Folders</h3>
+<h3 class="settings-title"><%= fileAndFolders_i18n %></h3>
 <div class="toggle-box">
     <label class="toggle">
         <input type="checkbox" name="hide-hidden-files" <%= hideHiddenFiles ? "checked" : "" %>>
         <span class="toggle-slider"></span>
-        <span class="toggle-label">Hide Hidden Files</span>
+        <span class="toggle-label"><%= hideHiddenFiles_i18n %></span>
     </label>
 </div>
 <div class="toggle-box">
     <label class="toggle">
         <input type="checkbox" name="hide-system-files" <%= hideSystemFiles ? "checked" : "" %>>
         <span class="toggle-slider"></span>
-        <span class="toggle-label">Hide System Files</span>
+        <span class="toggle-label"><%= hideSystemFiles_i18n %></span>
     </label>
 </div>
 <div class="toggle-box">
     <label class="toggle">
         <input type="checkbox" name="dirAlongsideFiles" <%= dirAlongsideFiles ? "checked" : "" %>>
         <span class="toggle-slider"></span>
-        <span class="toggle-label">List and sort directories alongside files</span>
+        <span class="toggle-label"><%= dirAlongsideFiles_i18n %></span>
     </label>
 </div>
