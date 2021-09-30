@@ -1,7 +1,5 @@
-import path from 'path';
 import { getDiskInfoSync } from '../../Lib/node-disk-info/index';
 import formatBytes from '../Functions/filesize';
-import os from 'os';
 import storage from 'electron-json-storage-sync';
 import getDriveBasePath from '../Functions/basePath';
 import Translate from '../I18n/i18n';
