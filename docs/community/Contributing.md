@@ -178,14 +178,14 @@ Please comment [here](https://github.com/kimlimjustin/xplorer/discussions/30) if
 
 ### Files Icon
 
-Files icons are available on [`src/icon`](https://github.com/kimlimjustin/xplorer/tree/master/src/icon).
+Files icons are available on [`src/Icon`](https://github.com/kimlimjustin/xplorer/tree/master/src/Icon).
 You can add an icon by doing these steps:
 
 -   Paste the new icon in `src/icon`
--   Edit the value of [`src/config/icon.json`](https://github.com/kimlimjustin/xplorer/tree/master/src/config/icon.json)
+-   Edit the value of [`src/Components/Files/File Icon/icon.json`](https://github.com/kimlimjustin/xplorer/tree/master/src/Components/Files/File%20Icon/icon.json)
 
 ### File Type library
 
-The files type library is available on [`src/config/type.json`](https://github.com/kimlimjustin/xplorer/tree/master/src/config/type.json).
+The files type library is available on [`src/Components/Files/File Type/type.json`](https://github.com/kimlimjustin/xplorer/tree/master/src/Components/Files/File%20Type/type.json).
 
 You can add the type of file extension by adding value to the file.
