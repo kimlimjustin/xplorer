@@ -1,5 +1,4 @@
 const cpy = require('cpy');
-const process = require('process');
 
 (async () => {
 	await cpy(
