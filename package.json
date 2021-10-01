@@ -113,6 +113,7 @@
 		"prettier": "2.3.2",
 		"sass": "1.42.1",
 		"rimraf": "^3.0.2",
+		"jest": "^27.1.0",
 		"typescript": "^4.4.2"
 	},
 	"dependencies": {
@@ -129,7 +130,6 @@
 		"fswin": "^3.21.905",
 		"highlight.js": "^11.2.0",
 		"is-hidden-file": "1.1.2",
-		"jest": "^27.1.0",
 		"mammoth": "^1.4.18",
 		"marked": "^3.0.2",
 		"mv": "^2.1.1",
