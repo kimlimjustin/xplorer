@@ -27,7 +27,7 @@ Great Feature Requests tend to have:
 - What & why you wanted to add the specific feature.
 - Additional context like images, links to resources to implement the feature, etc.
 ### Help
-You can ask for help using [GitHub Discussion](https://github.com/kimlimjustin/xplorer/discussions) and others will answer you, just like Stackoverflow!
+You can ask for help using [GitHub Discussion](https://github.com/kimlimjustin/xplorer/discussions) and others will answer you, just like Stack Overflow!
 
 :::note
 Remember to choose the discussion category as Q&A so that your question will be published with answers enabled.
