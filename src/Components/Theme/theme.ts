@@ -1,4 +1,3 @@
-import fs from 'fs';
 import storage from "electron-json-storage-sync";
 import VanillaTilt from "../../Lib/tilt/tilt";
 import os from "os";
@@ -226,10 +225,8 @@ const changeTheme = (document:Document, theme?:string): void => {
 const updateTheme = async (customStylesheet?: string):Promise<void> => {
     developmentStylesheet = customStylesheet;
     if(developmentStylesheet){
-        console.log(customStylesheet)
         // eslint-disable-next-line
         const customStylesheetScript:any = require(customStylesheet).default;
-        console.log(customStylesheetScript)
         themeJSON  = customStylesheetScript()
         await changeTheme(document)
     }else{
@@ -244,9 +241,15 @@ const updateTheme = async (customStylesheet?: string):Promise<void> => {
                 await changeTheme(document, data.theme)
             }
             else { // Otherwise read user theme json file
-                if (data.themeJSON) {
-                    themeJSON = JSON.parse(fs.readFileSync(data.themeJSON, 'utf-8'))
-                    await changeTheme(document, data.theme)
+                if (data.availableThemes?.filter((theme:any) => theme.identifier === data.theme).length > 0) { //eslint-disable-line
+                    for(const i of data.availableThemes){
+                        if(i.identifier === data.theme){
+                            // eslint-disable-next-line
+                            const customStylesheetScript:any = require(i.source);
+                            themeJSON = customStylesheetScript.default()
+                            await changeTheme(document, data.theme)
+                        }
+                    }
                 } else {
                     await changeTheme(document, defaultTheme)
                 }
