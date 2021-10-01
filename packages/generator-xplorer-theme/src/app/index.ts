@@ -86,9 +86,5 @@ module.exports = class extends Generator {
 		if (this.answers['gitInit']) {
 			this.spawnCommandSync('git', ['init', '--quiet']);
 		}
-		this.fs.copyTpl(
-			this.templatePath('gitignore.ejs'),
-			this.destinationPath('.gitignore')
-		);
 	}
 };
