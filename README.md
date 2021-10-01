@@ -2,14 +2,14 @@
 <img height=150 src="./icons/icon.svg" />
 </div>
 
-<p align="center"><span><b>Xplorer</b>, a customizable, modern and cross-platform file explorer.</span></p>
-<h4 align="center"><span><a href="https://xplorer.vercel.app/community/support/">Supports</a></span> • <span><a href="https://github.com/kimlimjustin/xplorer/discussions">Discussion</a></span> • <span><a href="https://xplorer.vercel.app">Documentation</a></span></h4>
+<p align="center"><span><b>Xplorer</b>, a customizable, modern and cross-platform File Explorer.</span></p>
+<h4 align="center"><span><a href="https://xplorer.vercel.app/community/support/">Supports</a></span> • <span><a href="https://github.com/kimlimjustin/xplorer/discussions">Discussions</a></span> • <span><a href="https://xplorer.vercel.app">Documentation</a></span></h4>
 
 <div align="center">
 
 [![LICENSE](https://img.shields.io/github/license/kimlimjustin/xplorer.svg?style=for-the-badge)](https://github.com/kimlimjustin/xplorer/blob/master/LICENSE) [![Download Counts](https://img.shields.io/github/downloads/kimlimjustin/xplorer/total.svg?style=for-the-badge)](https://github.com/kimlimjustin/xplorer/releases) [![Stars Count](https://img.shields.io/github/stars/kimlimjustin/xplorer.svg?style=for-the-badge)](https://github.com/kimlimjustin/xplorer/stargazers) [![Forks Count](https://img.shields.io/github/forks/kimlimjustin/xplorer.svg?style=for-the-badge)](https://github.com/kimlimjustin/xplorer/network/members) [![Watchers Count](https://img.shields.io/github/watchers/kimlimjustin/xplorer.svg?style=for-the-badge)](https://github.com/kimlimjustin/xplorer/watchers) [![Issues Count](https://img.shields.io/github/issues/kimlimjustin/xplorer.svg?style=for-the-badge)](https://github.com/kimlimjustin/xplorer/issues) [![Pull Request Count](https://img.shields.io/github/issues-pr/kimlimjustin/xplorer.svg?style=for-the-badge)](https://github.com/kimlimjustin/xplorer/pulls) [![Follow](https://img.shields.io/github/followers/kimlimjustin.svg?style=for-the-badge&label=Follow&maxAge=2592000)](https://github.com/kimlimjustin) [![Discord Server](https://img.shields.io/discord/893135322093871104?style=for-the-badge)](https://discord.gg/eM2hsDMtjq)
 
-[![Windows Support](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/kimlimjustin/xplorer/releases) [![Ubuntu Support](https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)](https://github.com/kimlimjustin/xplorer/releases) [![Arch Linux Support](https://img.shields.io/badge/Arch_Linux-1793D1?style=for-the-badge&logo=arch-linux&logoColor=white)](https://github.com/kimlimjustin/xplorer) [![Windows Support](https://img.shields.io/badge/MACOS-adb8c5?style=for-the-badge&logo=macos&logoColor=white)](https://github.com/kimlimjustin/xplorer/releases)
+[![Windows Support](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/kimlimjustin/xplorer/releases) [![Ubuntu Support](https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)](https://github.com/kimlimjustin/xplorer/releases) [![Arch Linux Support](https://img.shields.io/badge/Arch_Linux-1793D1?style=for-the-badge&logo=arch-linux&logoColor=white)](https://github.com/kimlimjustin/xplorer/releases) [![Windows Support](https://img.shields.io/badge/MACOS-adb8c5?style=for-the-badge&logo=macos&logoColor=white)](https://github.com/kimlimjustin/xplorer/releases)
 
 </div>
 
@@ -21,7 +21,7 @@
 
 <details>
 <summary>
-More Screenshots
+View More Screenshots
 </summary>
 
 ![Demo](docs/static/img/Xplorer%20linux.png)
@@ -29,17 +29,17 @@ More Screenshots
 
 </details>
 
-Xplorer is a file explorer built from ground-up to be fully customizable. And even without customization, it also looks modern!
-It is cross-platform, built using Electron Technology that allowed our File Explorer to be run not only in Windows, but also Linux and MacOS alike.
-It also allowed file preview directly inside it, not only pictures or documents, but also videos!
+Xplorer is a modern File Explorer built from ground-up to be fully customizable.
+It is built using [Electron Technology](https://www.electronjs.org/) allowing the app to be cross-platform compatible with MacOS, Windows and linux.
+It also supports file preview directly inside it, not only pictures or documents, but also for videos!
 
 To summarize, Xplorer's features contain:
 
 -   Looks modern
 -   Easy to use
 -   Cross-platform
--   File Preview, even videos!
--   Most importantly, FOSS, Free and Open Source, which mean you can change components inside if you see fit
+-   [File Preview](https://xplorer.vercel.app/docs/guides/operation/#preview-file), even videos!
+-   Most importantly, Free and Open Source Software(FOSS), which means you can change components inside if you see fit
 
 Xplorer is currently in development. Suggest improvements in Xplorer [Discussions](https://github.com/kimlimjustin/xplorer/discussions/) or [contribute to it](https://xplorer.vercel.app/community/Contributing/)!
 
@@ -93,7 +93,7 @@ For more info, visit [Xplorer's Contributing guide](https://xplorer.vercel.app/c
 
 Gitpod is a Ready-to-Code environment in which you don't need to worry about dependency errors or lagging your computer. Hit the button below and log in to GitHub with your GitHub account. Then, after it loads, you end up with a VS Code-like environment where you can start developing and pushing your changes.
 
-**Very Important Note: Remember to reload the Gitpod website after it loads up since it won't start the servers immediately, but by reloading, you can get it started. If you are developing the app, go to the Remote Explorer on the sidebar and visit port _6080_ which opens the noVNC app server. If you are developing the docs, go to the Remote explorer but instead of port 6080, visit port _3000_. You can edit normally as you do in VS Code, but if you want to use it locally, clik the hamburger menu button and click _Open in VS Code_.**
+**Very Important Note: Remember to reload the Gitpod website after it loads up since it won't start the servers immediately, but by reloading, you can get it started. If you are developing the app, go to the Remote Explorer on the sidebar and visit port _6080_ which opens the noVNC app server. If you are developing the docs, go to the Remote explorer but instead of port 6080, visit port _3000_. You can edit normally as you do in VS Code, but if you want to use it locally, click the hamburger menu button and click _Open in VS Code_.**
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#/https://github.com/kimlimjustin/xplorer)
 
