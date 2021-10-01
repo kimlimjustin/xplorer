@@ -1,0 +1,11 @@
+diff --git a/node_modules/electron-json-storage-sync/lib/storage.js b/node_modules/electron-json-storage-sync/lib/storage.js
+index de07541..311765c 100644
+--- a/node_modules/electron-json-storage-sync/lib/storage.js
++++ b/node_modules/electron-json-storage-sync/lib/storage.js
+@@ -129,3 +129,5 @@ exports.has = function(key) {
+   }
+   return utils.createSuccessObject(false);
+ };
++
++exports.getStorageDir = utils.getStorageDir()
+\ No newline at end of file

@@ -18,8 +18,10 @@ import { autoUpdater } from 'electron-updater';
 import yargs from 'yargs/yargs';
 import fs from 'fs';
 import { PathLike } from 'original-fs';
+import RegisterTheme from './Extensions/registerTheme';
 
-const args = yargs(process.argv.slice(isDev ? 2 : 1))
+// eslint-disable-next-line no-var
+var args = yargs(process.argv.slice(isDev ? 2 : 1))
 	.usage('Usage: $0 <options> <dir1> <dir2> <dir3>')
 	.alias('h', 'help')
 	.alias('v', 'version')
@@ -27,13 +29,15 @@ const args = yargs(process.argv.slice(isDev ? 2 : 1))
 	.alias('r', 'reveal')
 	.command('theme', 'Use custom theme file')
 	.alias('t', 'theme')
-	.command(
-		'listen',
-		'Listen to a file change, used for plugin development'
-	).argv;
-//console.log(args);
+	.command('listen', 'Listen to a file change, used for plugin development')
+	.command('register-theme', 'Register an extension').argv;
+console.log(args);
 autoUpdater.logger = log;
 
+if (args.registerTheme) {
+	RegisterTheme();
+	process.exit(0);
+}
 /**
  * Initialize Acrylic's BrowserWindow if available
  */
@@ -165,7 +169,7 @@ function createWindow() {
 
 	if (typeof args?.listen === 'boolean') {
 		fs.watch(process.cwd(), () => win.reload());
-	} else {
+	} else if (typeof args?.listen === 'string') {
 		fs.watchFile(args?.listen as PathLike, () => win.reload());
 	}
 }
