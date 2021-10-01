@@ -115,9 +115,14 @@ const detectDefaultTheme = (): string => {
 };
 
 const vibrancy = () => {
+	const pluginTheme = JSON.parse(
+		fs.readFileSync(path.join(process.cwd(), 'package.json'), 'utf-8')
+	).themeCategory;
 	return {
 		disableOnBlur: false,
-		theme: storage.get('theme')?.data?.category
+		theme: args.listen
+			? pluginTheme
+			: storage.get('theme')?.data?.category
 			? storage.get('theme')?.data?.category === 'dark'
 				? '#1b1e2e88'
 				: '#ffffff88'
@@ -168,7 +173,14 @@ function createWindow() {
 	windowState.manage(win);
 
 	if (typeof args?.listen === 'boolean') {
-		fs.watch(process.cwd(), () => win.reload());
+		fs.watch(process.cwd(), () => {
+			win.reload();
+			win.setVibrancy(
+				isVibrancySupported()
+					? vibrancy()
+					: storage.get('theme')?.data?.category ?? 'white'
+			);
+		});
 	} else if (typeof args?.listen === 'string') {
 		fs.watchFile(args?.listen as PathLike, () => win.reload());
 	}
