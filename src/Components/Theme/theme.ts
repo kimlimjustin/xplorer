@@ -58,6 +58,15 @@ const changeElementTheme = (element:HTMLElement, variable:string, key:string, th
     if (element && !isAcrylicElement) (<any>element.style)[key] = themeJSON?.[variable] || defaultThemeJSON[theme][variable] //eslint-disable-line
 }
 
+const getXYCoordinates = (e: MouseEvent): { x: number; y: number } => {
+	const rect = (e.target as Element).getBoundingClientRect();
+
+	return {
+		x: e.clientX - rect.left,
+		y: e.clientY - rect.top
+	};
+}
+
 /**
  * Change page theme
  * @param {Document} document - The HTML Document
@@ -132,9 +141,8 @@ const changeTheme = (document:Document, theme?:string): void => {
         changeElementTheme(favorite, "favoriteBackground", "background", theme)
         changeElementTheme(favorite, "favoriteColor", "color", theme)
         favorite.addEventListener("mousemove", (e) => {
-            const rect = (e.target as Element).getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+			const { x, y } = getXYCoordinates(e);
+
             favorite.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle("favoriteHoverBackground", theme)} )`;
             favorite.addEventListener("mouseleave", () => {
                 favorite.style.background = getElementStyle("favoriteBackground", theme)
@@ -143,10 +151,9 @@ const changeTheme = (document:Document, theme?:string): void => {
     })
     document.querySelectorAll<HTMLElement>(".card-hover-effect").forEach(obj => {
         obj.addEventListener("mousemove", (e) => {
-            const rect = (e.target as Element).getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle("cardHoverEffectBackground", theme)} )`;
+			const { x, y } = getXYCoordinates(e);
+
+			obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle("cardHoverEffectBackground", theme)} )`;
             obj.onmouseleave = () => {
                 obj.style.background = null;
                 obj.style.borderImage = null;
@@ -179,10 +186,9 @@ const changeTheme = (document:Document, theme?:string): void => {
     })
     document.querySelectorAll<HTMLElement>(".grid-hover-effect").forEach(obj => {
         obj.addEventListener("mousemove", (e) => {
-            const rect = (e.target as Element).getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle("gridHoverEffectBackground", theme)} )`;
+			const { x, y } = getXYCoordinates(e);
+
+			obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle("gridHoverEffectBackground", theme)} )`;
             obj.onmouseleave = () => {
                 obj.style.background = getElementStyle("gridBackground", theme);
                 obj.style.borderImage = null;
@@ -193,10 +199,9 @@ const changeTheme = (document:Document, theme?:string): void => {
         changeElementTheme(pendrive, "pendriveBackground", "background", theme)
         changeElementTheme(pendrive, "pendriveColor", "color", theme)
         pendrive.addEventListener("mousemove", (e) => {
-            const rect = (e.target as Element).getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            pendrive.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle("pendriveHoverBackground", theme)} )`;
+			const { x, y } = getXYCoordinates(e);
+
+			pendrive.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle("pendriveHoverBackground", theme)} )`;
                 pendrive.addEventListener("mouseleave", () => {
                     pendrive.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle("pendriveHoverBackground", theme)} )`;
                     pendrive.addEventListener("mouseleave", () => {
@@ -233,7 +238,7 @@ const updateTheme = async (customStylesheet?: string):Promise<void> => {
         await changeTheme(document)
     }else{
         const { data } = storage.get("theme")
-        
+
         // If user has no preference theme
         if (!data || !Object.keys(data).length) {
             await changeTheme(document, defaultTheme)

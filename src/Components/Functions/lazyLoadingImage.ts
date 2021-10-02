@@ -8,7 +8,7 @@ const FETCHED_ICONS: string[] = []; // Array of fetch icons
  * @param {HTMLElement} el - Element to check
  * @returns {boolean} if element in viewport
  */
-const isElementInViewport = (el: HTMLElement): boolean => {
+export const isElementInViewport = (el: HTMLElement): boolean => {
 	const rect = el.getBoundingClientRect();
 	return (
 		rect.top >= 0 &&
