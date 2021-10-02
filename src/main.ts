@@ -16,16 +16,28 @@ import windowStateKeeper from 'electron-window-state';
 import log from 'electron-log';
 import { autoUpdater } from 'electron-updater';
 import yargs from 'yargs/yargs';
+import fs from 'fs';
+import { PathLike } from 'original-fs';
+import RegisterTheme from './Extensions/registerTheme';
 
-const args = yargs(process.argv.slice(isDev ? 2 : 1))
+// eslint-disable-next-line no-var
+var args = yargs(process.argv.slice(isDev ? 2 : 1))
 	.usage('Usage: $0 <options> <dir1> <dir2> <dir3>')
 	.alias('h', 'help')
+	.alias('v', 'version')
 	.command('reveal', 'Open the containing folder and select the file')
 	.alias('r', 'reveal')
-	.alias('v', 'version').argv;
+	.command('theme', 'Use custom theme file')
+	.alias('t', 'theme')
+	.command('listen', 'Listen to a file change, used for plugin development')
+	.command('register-theme', 'Register an extension').argv;
 console.log(args);
 autoUpdater.logger = log;
 
+if (args.registerTheme) {
+	RegisterTheme();
+	process.exit(0);
+}
 /**
  * Initialize Acrylic's BrowserWindow if available
  */
@@ -103,9 +115,14 @@ const detectDefaultTheme = (): string => {
 };
 
 const vibrancy = () => {
+	const pluginTheme = JSON.parse(
+		fs.readFileSync(path.join(process.cwd(), 'package.json'), 'utf-8')
+	).themeCategory;
 	return {
 		disableOnBlur: false,
-		theme: storage.get('theme')?.data?.category
+		theme: args.listen
+			? pluginTheme
+			: storage.get('theme')?.data?.category
 			? storage.get('theme')?.data?.category === 'dark'
 				? '#1b1e2e88'
 				: '#ffffff88'
@@ -154,6 +171,19 @@ function createWindow() {
 		}
 	);
 	windowState.manage(win);
+
+	if (typeof args?.listen === 'boolean') {
+		fs.watch(process.cwd(), () => {
+			win.reload();
+			win.setVibrancy(
+				isVibrancySupported()
+					? vibrancy()
+					: storage.get('theme')?.data?.category ?? 'white'
+			);
+		});
+	} else if (typeof args?.listen === 'string') {
+		fs.watchFile(args?.listen as PathLike, () => win.reload());
+	}
 }
 
 app.allowRendererProcessReuse = false;

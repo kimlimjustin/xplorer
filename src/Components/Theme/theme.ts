@@ -1,4 +1,3 @@
-import fs from 'fs';
 import storage from "electron-json-storage-sync";
 import os from "os";
 import { nativeTheme } from '@electron/remote';
@@ -21,7 +20,8 @@ interface Theme{
 	}
 };
 
-let defaultTheme = detectDefaultTheme(); // default system theme
+let defaultTheme = detectDefaultTheme();
+let developmentStylesheet; // this is important, as this will store the custom stylesheet during development path.
 // Watch native theme to be updated
 nativeTheme.on('updated', () => {
     defaultTheme = detectDefaultTheme()
@@ -57,8 +57,8 @@ const IS_VIBRANCY_SUPPORTED = () => process.platform === 'win32' && parseInt(os.
  * @returns {string|null} style of the [variable] of the element
  */
 const getElementStyle = (variable:string, theme:string): string|null => {
-    const isAcrylicElement = (themeJSON?.[theme]?.acrylicEffect || defaultThemeJSON?.[theme]?.acrylicEffect).indexOf(variable) !== -1 && IS_VIBRANCY_SUPPORTED()
-    return isAcrylicElement? null : themeJSON?.[theme]?.[variable] || defaultThemeJSON[theme][variable]
+    const isAcrylicElement = (themeJSON?.acrylicEffect || defaultThemeJSON?.[theme]?.acrylicEffect).indexOf(variable) !== -1 && IS_VIBRANCY_SUPPORTED()
+    return isAcrylicElement? null : themeJSON?.[variable] || defaultThemeJSON[theme][variable]
 }
 
 /**
@@ -70,8 +70,8 @@ const getElementStyle = (variable:string, theme:string): string|null => {
  * @returns {void}
  */
 const changeElementTheme = (element:HTMLElement, variable:string, key:string, theme:string): void => {
-    const isAcrylicElement = (themeJSON?.[theme]?.acrylicEffect || defaultThemeJSON?.[theme]?.acrylicEffect).indexOf(variable) !== -1 && IS_VIBRANCY_SUPPORTED()
-    if (element && !isAcrylicElement) (<any>element.style)[key] = themeJSON?.[theme]?.[variable] || defaultThemeJSON[theme][variable] //eslint-disable-line
+    const isAcrylicElement = (themeJSON?.acrylicEffect || defaultThemeJSON?.[theme]?.acrylicEffect).indexOf(variable) !== -1 && IS_VIBRANCY_SUPPORTED()
+    if (element && !isAcrylicElement) (<any>element.style)[key] = themeJSON?.[variable] || defaultThemeJSON[theme][variable] //eslint-disable-line
 }
 
 /**
@@ -80,17 +80,17 @@ const changeElementTheme = (element:HTMLElement, variable:string, key:string, th
  * @param {string} theme - The current theme
  * @returns {void}
  */
-const changeTheme = (document:Document, theme:string): void => {
+const changeTheme = (document:Document, theme?:string): void => {
     changeElementTheme(document.querySelector(".main-box"), "mainBackground", "background", theme)
     changeElementTheme(document.body, "textColor", "color", theme)
     changeElementTheme(document.body, "fontSize", "fontSize", theme)
     changeElementTheme(document.body, "fontFamily", "fontFamily", theme)
-    document.body.style.setProperty("--scrollbar-track", themeJSON ? themeJSON[theme].scrollbarTrackBackground : defaultThemeJSON[theme].scrollbarTrackBackground)
-    document.body.style.setProperty("--scrollbar-thumb", themeJSON ? themeJSON[theme].scrollbarThumbBackground : defaultThemeJSON[theme].scrollbarThumbBackground)
-    document.body.style.setProperty("--scrollbar-thumb-hover", themeJSON ? themeJSON[theme].scrollbarThumbHoverBackground : defaultThemeJSON[theme].scrollbarThumbHoverBackground)
-    document.body.style.setProperty("--selected-grid-border", themeJSON ? themeJSON[theme].selectedGridBorder : defaultThemeJSON[theme].selectedGridBorder)
-    document.body.style.setProperty("--selected-grid-background", themeJSON ? themeJSON[theme].selectedGridBackground : defaultThemeJSON[theme].selectedGridBackground)
-    document.body.style.setProperty("--selected-grid-color", themeJSON ? themeJSON[theme].selectedGridColor : defaultThemeJSON[theme].selectedGridColor)
+    document.body.style.setProperty("--scrollbar-track", themeJSON ? themeJSON.scrollbarTrackBackground : defaultThemeJSON[theme].scrollbarTrackBackground)
+    document.body.style.setProperty("--scrollbar-thumb", themeJSON ? themeJSON.scrollbarThumbBackground : defaultThemeJSON[theme].scrollbarThumbBackground)
+    document.body.style.setProperty("--scrollbar-thumb-hover", themeJSON ? themeJSON.scrollbarThumbHoverBackground : defaultThemeJSON[theme].scrollbarThumbHoverBackground)
+    document.body.style.setProperty("--selected-grid-border", themeJSON ? themeJSON.selectedGridBorder : defaultThemeJSON[theme].selectedGridBorder)
+    document.body.style.setProperty("--selected-grid-background", themeJSON ? themeJSON.selectedGridBackground : defaultThemeJSON[theme].selectedGridBackground)
+    document.body.style.setProperty("--selected-grid-color", themeJSON ? themeJSON.selectedGridColor : defaultThemeJSON[theme].selectedGridColor)
 
     changeElementTheme(document.querySelector(".loading-bar"), "loadingBar", "background", theme)
     changeElementTheme(document.querySelector(".loader"), "loader", "background", theme)
@@ -127,19 +127,19 @@ const changeTheme = (document:Document, theme:string): void => {
     changeElementTheme(document.querySelector(".preview-object"), "previewObjectBackground", "background", theme)
     changeElementTheme(document.querySelector(".preview-object"), "previewObjectColor", "color", theme)
     changeElementTheme(document.querySelector(".properties"), "propertiesBackground", "background", theme)
-    document.querySelector<HTMLElement>(".preview-object")?.style?.setProperty("--preview-object-table-border", themeJSON ? themeJSON[theme].previewObjectTableBorder : defaultThemeJSON[theme].previewObjectTableBorder)
-    document.querySelector<HTMLElement>(".preview-object")?.style?.setProperty("--preview-object-table-row-even-bg", themeJSON ? themeJSON[theme].previewObjectTableRowEvenBackground : defaultThemeJSON[theme].previewObjectTableRowEvenBackground)
-    document.querySelector<HTMLElement>(".preview-object")?.style?.setProperty("--preview-object-table-row-even-color", themeJSON ? themeJSON[theme].previewObjectTableRowEvenColor : defaultThemeJSON[theme].previewObjectTableRowEvenColor)
-    document.querySelector<HTMLElement>(".preview-object")?.style?.setProperty("--preview-object-table-row-odd-bg", themeJSON ? themeJSON[theme].previewObjectTableRowOddBackground : defaultThemeJSON[theme].previewObjectTableRowOddBackground)
-    document.querySelector<HTMLElement>(".preview-object")?.style?.setProperty("--preview-object-table-row-odd-color", themeJSON ? themeJSON[theme].previewObjectTableRowOddColor : defaultThemeJSON[theme].previewObjectTableRowOddColor)
-    document.querySelector<HTMLElement>(".preview-object")?.setAttribute("data-theme-category", themeJSON ? themeJSON[theme].themeCategory : defaultThemeJSON[theme].themeCategory)
+    document.querySelector<HTMLElement>(".preview-object")?.style?.setProperty("--preview-object-table-border", themeJSON ? themeJSON.previewObjectTableBorder : defaultThemeJSON[theme].previewObjectTableBorder)
+    document.querySelector<HTMLElement>(".preview-object")?.style?.setProperty("--preview-object-table-row-even-bg", themeJSON ? themeJSON.previewObjectTableRowEvenBackground : defaultThemeJSON[theme].previewObjectTableRowEvenBackground)
+    document.querySelector<HTMLElement>(".preview-object")?.style?.setProperty("--preview-object-table-row-even-color", themeJSON ? themeJSON.previewObjectTableRowEvenColor : defaultThemeJSON[theme].previewObjectTableRowEvenColor)
+    document.querySelector<HTMLElement>(".preview-object")?.style?.setProperty("--preview-object-table-row-odd-bg", themeJSON ? themeJSON.previewObjectTableRowOddBackground : defaultThemeJSON[theme].previewObjectTableRowOddBackground)
+    document.querySelector<HTMLElement>(".preview-object")?.style?.setProperty("--preview-object-table-row-odd-color", themeJSON ? themeJSON.previewObjectTableRowOddColor : defaultThemeJSON[theme].previewObjectTableRowOddColor)
+    document.querySelector<HTMLElement>(".preview-object")?.setAttribute("data-theme-category", themeJSON ? themeJSON.themeCategory : defaultThemeJSON[theme].themeCategory)
     document.querySelectorAll<HTMLElement>(".contextmenu-submenu").forEach(submenu => {
         changeElementTheme(submenu, "contextMenuSubmenuBackground", "background", theme)
         changeElementTheme(submenu, "contextMenuSubmenuColor", "color", theme)
     })
-    document.querySelector<HTMLElement>(".tabs-manager").style.setProperty("--tabs-scrollbar-track", themeJSON ? themeJSON[theme].tabsScrollbarTrack : defaultThemeJSON[theme].tabsScrollbarTrack)
-    document.querySelector<HTMLElement>(".tabs-manager").style.setProperty("--tabs-scrollbar-thumb", themeJSON ? themeJSON[theme].tabsScrollbarThumb : defaultThemeJSON[theme].tabsScrollbarThumb)
-    document.querySelector<HTMLElement>(".tabs-manager").style.setProperty("--tabs-scrollbar-thumb-hover", themeJSON ? themeJSON[theme].tabsScrollbarThumbHover : defaultThemeJSON[theme].tabsScrollbarThumbHover)
+    document.querySelector<HTMLElement>(".tabs-manager").style.setProperty("--tabs-scrollbar-track", themeJSON ? themeJSON.tabsScrollbarTrack : defaultThemeJSON[theme].tabsScrollbarTrack)
+    document.querySelector<HTMLElement>(".tabs-manager").style.setProperty("--tabs-scrollbar-thumb", themeJSON ? themeJSON.tabsScrollbarThumb : defaultThemeJSON[theme].tabsScrollbarThumb)
+    document.querySelector<HTMLElement>(".tabs-manager").style.setProperty("--tabs-scrollbar-thumb-hover", themeJSON ? themeJSON.tabsScrollbarThumbHover : defaultThemeJSON[theme].tabsScrollbarThumbHover)
     document.querySelectorAll<HTMLElement>(".tab").forEach(tab => {
         changeElementTheme(tab, "tabBackground", "background", theme)
         changeElementTheme(tab, "tabColor", "color", theme)
@@ -147,7 +147,7 @@ const changeTheme = (document:Document, theme:string): void => {
     document.querySelectorAll<HTMLElement>(".favorite").forEach(favorite => {
         changeElementTheme(favorite, "favoriteBackground", "background", theme)
         changeElementTheme(favorite, "favoriteColor", "color", theme)
-        hoverEffect(favorite, themeJSON ? themeJSON[theme].favoriteBackground : defaultThemeJSON[theme].favoriteBackground, themeJSON ? themeJSON[theme].favoriteHoverBackground : defaultThemeJSON[theme].favoriteHoverBackground)
+        hoverEffect(favorite, themeJSON ? themeJSON.favoriteBackground : defaultThemeJSON[theme].favoriteBackground, themeJSON ? themeJSON.favoriteHoverBackground : defaultThemeJSON[theme].favoriteHoverBackground)
     })
     document.querySelectorAll<HTMLElement>(".card-hover-effect").forEach(obj => {
         obj.onmouseleave = () => {
@@ -200,7 +200,7 @@ const changeTheme = (document:Document, theme:string): void => {
     document.querySelectorAll<HTMLElement>(".pendrive").forEach(pendrive => {
         changeElementTheme(pendrive, "pendriveBackground", "background", theme)
         changeElementTheme(pendrive, "pendriveColor", "color", theme)
-        hoverEffect(pendrive, themeJSON ? themeJSON[theme].pendriveBackground : defaultThemeJSON[theme].pendriveBackground, themeJSON ? themeJSON[theme].pendriveHoverBackground : defaultThemeJSON[theme].pendriveHoverBackground)
+        hoverEffect(pendrive, themeJSON ? themeJSON.pendriveBackground : defaultThemeJSON[theme].pendriveBackground, themeJSON ? themeJSON.pendriveHoverBackground : defaultThemeJSON[theme].pendriveHoverBackground)
     })
     document.querySelectorAll<HTMLElement>(".pendrive-total-capacity").forEach(bar => {
         changeElementTheme(bar, "pendriveTotalCapacityBackground", "background", theme)
@@ -217,24 +217,40 @@ const changeTheme = (document:Document, theme:string): void => {
 
 /**
  * Update the entire page theme
+ * @param {any} customStylesheet - use custom stylesheet
  * @returns {Promise<void>}
  */
-const updateTheme = async ():Promise<void> => {
-    const { data } = storage.get("theme")
-    // If user has no preference theme
-    if (!data || !Object.keys(data).length) {
-        await changeTheme(document, defaultTheme)
-    } else {
-        // If user preference is default color theme...
-        if (Object.keys(defaultThemeJSON).indexOf(data.theme) !== -1) {
-            await changeTheme(document, data.theme)
-        }
-        else { // Otherwise read user theme json file
-            if (data.themeJSON) {
-                themeJSON = JSON.parse(fs.readFileSync(data.themeJSON, 'utf-8'))
+const updateTheme = async (customStylesheet?: string):Promise<void> => {
+    developmentStylesheet = customStylesheet;
+    if(developmentStylesheet){
+        // eslint-disable-next-line
+        const customStylesheetScript:any = require(customStylesheet).default;
+        themeJSON  = customStylesheetScript()
+        await changeTheme(document)
+    }else{
+        const { data } = storage.get("theme")
+        
+        // If user has no preference theme
+        if (!data || !Object.keys(data).length) {
+            await changeTheme(document, defaultTheme)
+        } else {
+            // If user preference is default color theme...
+            if (Object.keys(defaultThemeJSON).indexOf(data.theme) !== -1) {
                 await changeTheme(document, data.theme)
-            } else {
-                await changeTheme(document, defaultTheme)
+            }
+            else { // Otherwise read user theme json file
+                if (data.availableThemes?.filter((theme:any) => theme.identifier === data.theme).length > 0) { //eslint-disable-line
+                    for(const i of data.availableThemes){
+                        if(i.identifier === data.theme){
+                            // eslint-disable-next-line
+                            const customStylesheetScript:any = require(i.source);
+                            themeJSON = customStylesheetScript.default()
+                            await changeTheme(document, data.theme)
+                        }
+                    }
+                } else {
+                    await changeTheme(document, defaultTheme)
+                }
             }
         }
     }
