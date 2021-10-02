@@ -162,14 +162,14 @@ const displayFiles = async (files: fileData[], dir:string, options?: {reveal: bo
             switch (layout) {
                 case "m":
                     fileGrid.classList.add("medium-grid-view")
-                    dirent.name =
+                    dirent.displayName =
 						dirent.name.length > 30
 							? dirent.name.substring(0, 30) + '...'
 							: dirent.name;
                     break;
                 case "l":
                     fileGrid.classList.add("large-grid-view")
-                    dirent.name =
+                    dirent.displayName =
 						dirent.name.length > 40
 							? dirent.name.substring(0, 40) + '...'
 							: dirent.name;
@@ -179,7 +179,7 @@ const displayFiles = async (files: fileData[], dir:string, options?: {reveal: bo
                     break;
                 default:
                     fileGrid.classList.add("small-grid-view")
-                    dirent.name =
+                    dirent.displayName =
 						dirent.name.length > 20
 							? dirent.name.substring(0, 20) + '...'
 							: dirent.name;
@@ -198,7 +198,7 @@ const displayFiles = async (files: fileData[], dir:string, options?: {reveal: bo
             fileGrid.dataset.path = escape(dirent.path ?? path.join(dir, dirent.name))
             fileGrid.innerHTML = `
             ${preview}
-            <span class="file-grid-filename" id="file-filename">${dirent.name}</span><span class="file-modifiedAt" id="file-createdAt">${new Date(dirent.modifiedAt ?? dirent.trashDeletionDate).toLocaleString(navigator.language, { hour12: false })}</span>
+            <span class="file-grid-filename" id="file-filename">${dirent.displayName}</span><span class="file-modifiedAt" id="file-createdAt">${new Date(dirent.modifiedAt ?? dirent.trashDeletionDate).toLocaleString(navigator.language, { hour12: false })}</span>
             ${dirent.size > 0 ? `<span class="file-size" id="file-size">${formatBytes(dirent.size)}</span>` : `<span class="file-size" id="file-size"></span>`}
             <span class="file-type">${dirent.type}</span>
             `

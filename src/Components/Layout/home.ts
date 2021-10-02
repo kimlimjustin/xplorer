@@ -48,6 +48,7 @@ const homeFiles = (callback: cb) => {
 					isHidden: isHiddenFile(
 						path.join(os.homedir(), dirent.name)
 					),
+					displayName: dirent.name,
 				};
 				const type = dirent.isDirectory()
 					? 'File Folder'
@@ -92,14 +93,14 @@ const homeFiles = (callback: cb) => {
 			switch (layout) {
 				case 'm':
 					className += ' medium-grid-view';
-					file.name =
+					file.displayName =
 						file.name.length > 30
 							? file.name.substring(0, 30) + '...'
 							: file.name;
 					break;
 				case 'l':
 					className += ' large-grid-view';
-					file.name =
+					file.displayName =
 						file.name.length > 40
 							? file.name.substring(0, 40) + '...'
 							: file.name;
@@ -109,7 +110,7 @@ const homeFiles = (callback: cb) => {
 					break;
 				default:
 					className += ' small-grid-view';
-					file.name =
+					file.displayName =
 						file.name.length > 20
 							? file.name.substring(0, 20) + '...'
 							: file.name;
@@ -130,7 +131,7 @@ const homeFiles = (callback: cb) => {
 			}">
             ${preview}
             <span class="file-grid-filename" id="file-filename">${Translate(
-				file.name
+				file.displayName
 			)}</span><span class="file-modifiedAt" id="file-createdAt">${new Date(
 				file.modifiedAt
 			).toLocaleString(navigator.language, { hour12: false })}</span>
