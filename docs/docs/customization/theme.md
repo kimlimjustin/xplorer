@@ -75,6 +75,6 @@ To flash a color theme into Xplorer, you can simply run `yarn build` in the proj
 Why don't you just develop a marketplace so user can easily share their theme with others?
 </summary>
 
-I can't afford to buy a server for developing marketplace xD, but will consider it in the future, if you want to sponsor/offer it, feel free to contact [me](kimlimjustin@gmail.com)
+I can't afford to buy a server for developing marketplace xD, but will consider it in the future, if you want to sponsor/offer it, feel free to contact [me](mailto:kimlimjustin@gmail.com)
 
 </details>
