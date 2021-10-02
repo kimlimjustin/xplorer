@@ -22,7 +22,7 @@ const RenderProperties = (options: Record<string, unknown>) => {
 	table = '<table><tbody>';
 	Object.keys(options).forEach((key) => {
 		if (options[key] !== '') {
-			table += `<tr><td>${key}</td><td>${options[key]}</td></tr>`;
+			table += `<tr><td>${key}</td><td class="text">${options[key]}</td></tr>`;
 		}
 	});
 	table += '</tbody</table>';
