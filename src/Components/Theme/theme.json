@@ -58,9 +58,9 @@
 		"selectedGridColor": "#202124",
 
 		"gridHoverEffectBackground": "rgba(79, 86, 109, 1),rgba(35, 35, 53, .5)",
-		"cardHoverEffectBackground": "#c2d0ff,rgba(162, 182, 255, 0.8)",
+		"cardHoverEffectBackground": "rgba(140, 162, 210, 0.5),rgba(27, 30, 46 , 0.7)",
 		"sidebarHoverEffectBackground": "rgba(45, 45, 57, 0.7),rgba(20, 20, 27, 0.8)",
-		"tabHoverEffectBackground": "#c2d0ff,rgba(162, 182, 255, 0.8)",
+		"tabHoverEffectBackground": "rgba(140, 162, 210, 0.5),rgba(27, 30, 46 , 0.7)",
 
 		"contextMenuBackground": "#1b1e2e",
 		"contextMenuColor": "inherit",
@@ -175,9 +175,9 @@
 		"scrollbarThumbBackground": "rgb(163, 163, 163)",
 		"scrollbarThumbHoverBackground": "#888",
 
-		"sidebarBackground": "#cbccd1",
-		"mainBackground": "#d5d6db",
-		"topbarBackground": "#cbccd1",
+		"sidebarBackground": "#F7F7F7",
+		"mainBackground": "#ffffff",
+		"topbarBackground": "#F7F7F7",
 
 		"minimizeBackground": "#fbd914",
 		"minimizeColor": "#14141b",
@@ -200,8 +200,8 @@
 		"menuDropdownBackground": "#e0e0e0",
 		"menuDropdownColor": "#202124",
 
-		"settingsSidebarBackground": "#cbccd1",
-		"settingsMainBackground": "#d5d6db",
+		"settingsSidebarBackground": "#F7F7F7",
+		"settingsMainBackground": "#FCFCFC",
 		"settingButtonBackground": "inherit",
 		"settingButtonColor": "inherit",
 
@@ -218,7 +218,7 @@
 		"pendriveTotalCapacityBackground": "#eee",
 		"pendriveUsedCapacityBackground": "#8989e2",
 
-		"gridBackground": "#d5d6db",
+		"gridBackground": "#F7F7F7",
 		"gridColor": "#202124",
 		"selectedGridBorder": "2px solid #1e88e5",
 		"selectedGridBackground": "#e0e0e0",
@@ -259,9 +259,9 @@
 		"scrollbarThumbBackground": "rgb(195, 195, 201)",
 		"scrollbarThumbHoverBackground": "rgb(187, 187, 187)",
 
-		"sidebarBackground": "#d1d1d8",
-		"mainBackground": "#f3f3f3",
-		"topbarBackground": "#eeeeee",
+		"sidebarBackground": "#FAFAFA",
+		"mainBackground": "#ffffff",
+		"topbarBackground": "#FAFAFA",
 
 		"minimizeBackground": "#fbd914",
 		"minimizeColor": "#14141b",
@@ -284,8 +284,8 @@
 		"menuDropdownBackground": "#d1d1d8",
 		"menuDropdownColor": "#202124",
 
-		"settingsSidebarBackground": "#d1d1d8",
-		"settingsMainBackground": "#f3f3f3",
+		"settingsSidebarBackground": "#FAFAFA",
+		"settingsMainBackground": "#FEFEFE",
 		"settingButtonBackground": "inherit",
 		"settingButtonColor": "inherit",
 
