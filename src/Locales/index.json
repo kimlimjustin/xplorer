@@ -1,10 +1,15 @@
 {
-    "availableLanguages": {
-        "Bahasa Indonesia": "id-ID", 
-        "日本語": "ja-JP", 
-        "English": "en-US", 
-        "Bahasa Melayu": "ms-MY", 
-        "中文 (简体)": "zh-CN", 
-        "中文 (繁體)": "zh-TW"
-    }
+	"availableLanguages": {
+		"Bahasa Indonesia": "id-ID",
+		"日本語": "ja-JP",
+		"English": "en-US",
+		"German": "de-DE",
+		"Bahasa Melayu": "ms-MY",
+		"中文 (简体)": "zh-CN",
+		"中文 (繁體)": "zh-TW",
+		"한국어": "ko-KR",
+		"Portuguese, Brazilian": "pt-BR",
+		"Русский": "ru-RU",
+		"Français": "fr-FR"
+	}
 }

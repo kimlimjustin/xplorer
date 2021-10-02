@@ -15,7 +15,7 @@ module.exports = {
 	trailingSlash: true,
 	i18n: {
 		defaultLocale: 'en',
-		locales: ['en', 'id-ID', 'ja-JP', 'zh-CN'],
+		locales: ['en', 'id-ID', 'zh-CN', 'zh-TW', 'ru-RU', 'pt-BR', 'de-DE'],
 	},
 	themeConfig: {
 		hideableSidebar: true,
@@ -25,6 +25,10 @@ module.exports = {
 				'Xplorer is still under heavy development, any features might change anytime.',
 			backgroundColor: '#fafbfc',
 			textColor: '#091E42',
+		},
+		algolia: {
+			apiKey: '801dd9730a1ed22103221e93b49ed9ac',
+			indexName: 'xplorer',
 		},
 		navbar: {
 			hideOnScroll: true,

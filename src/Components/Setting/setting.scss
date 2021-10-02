@@ -11,13 +11,13 @@
 		min-width: 250px;
 		.settings-sidebar-header {
 			padding: 1rem;
-			text-align: center;
+			text-align: left;
 		}
 
 		.settings-sidebar-item {
 			display: block;
 			margin: 0.5rem;
-			padding: 0.5rem;
+			padding: 0.7rem;
 			cursor: pointer;
 			img {
 				width: 1.5rem;
@@ -104,8 +104,10 @@
 	}
 
 	.exit-setting-btn {
-		font-size: 1.5rem;
 		cursor: pointer;
+	}
+	.exit-setting-icon {
+		font-size: 1.5rem;
 	}
 	.settings-title {
 		margin: 1.5rem 0 0.5rem 0;
@@ -116,9 +118,97 @@
 	}
 
 	.settings-about {
-		margin: 0;
-		font-weight: normal;
-		display: block;
+		box-sizing: border-box;
+		display: flex;
+		justify-content: center;
+		flex-direction: column;
+		align-items: center;
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 80vw;
+	}
+	.settings-about-header {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+
+		img {
+			width: 30%;
+		}
+
+		h1 {
+			margin-top: 0px;
+		}
+	}
+
+	.settings-about-caption {
+		font-size: 0.8rem;
+		font-style: italic;
+	}
+
+	.settings-about-content {
+		width: 20vw;
+
+		ul {
+			list-style: none;
+			display: flex;
+			align-content: center;
+			flex-direction: column;
+			justify-content: center;
+			padding-left: 0;
+
+			li {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				border: 1px solid #d5d2d2;
+				padding: 10px;
+				margin: 2px;
+				cursor: pointer;
+
+				&:hover {
+					transform: scale(1.01);
+				}
+			}
+		}
+	}
+
+	.settings-about-footer {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.settings-about-link-btn {
+		box-sizing: border-box;
+		appearance: none;
+		background-color: transparent;
+		border: 2px solid inherit;
+		border-radius: 0.6em;
+		cursor: pointer;
+		display: flex;
+		align-self: center;
+		line-height: 1;
+		padding: 0.8em 0.8em;
+		text-decoration: none;
+		text-align: center;
+		margin: 0 5px;
+		text-decoration: none;
+		color: inherit;
+
+		background: {
+			image: linear-gradient(45deg, #f1c40f 50%, transparent 50%);
+			position: 100%;
+			size: 400%;
+		}
+		transition: background 300ms ease-in-out;
+
+		&:hover {
+			background-position: 0;
+			color: black;
+		}
 	}
 
 	.sidebar-text {
@@ -146,4 +236,29 @@
 	100% {
 		top: 100%;
 	}
+}
+
+[data-tooltip] {
+	cursor: pointer;
+}
+
+[data-tooltip]:hover:before {
+	content: attr(data-tooltip);
+	position: absolute;
+	padding: 5px 10px;
+	margin: -3px 0 0 30px;
+	background: #000;
+	color: white;
+	border-radius: 3px;
+}
+
+[data-tooltip]:hover:after {
+	content: '';
+	position: absolute;
+	margin: 6px 0 0 3px;
+	width: 0;
+	height: 0;
+	border-top: 5px solid transparent;
+	border-right: 10px solid #000;
+	border-bottom: 5px solid transparent;
 }

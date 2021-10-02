@@ -1,7 +1,5 @@
-import path from 'path';
 import { getDiskInfoSync } from '../../Lib/node-disk-info/index';
 import formatBytes from '../Functions/filesize';
-import os from 'os';
 import storage from 'electron-json-storage-sync';
 import getDriveBasePath from '../Functions/basePath';
 import Translate from '../I18n/i18n';
@@ -71,7 +69,7 @@ const drivesToElements = (drives: Drive[], kBlockFormat = false): string => {
 		const driveName =
 			drive.mounted.split('/')[drive.mounted.split('/').length - 1]; // Get name of drive
 		result += `
-        <div class="pendrive card-hover-effect" data-tilt data-isdir="true" data-listenOpen data-path = "${getDriveBasePath(
+        <div class="pendrive file card-hover-effect" data-isdir="true" data-listenOpen data-path = "${getDriveBasePath(
 			drive.mounted
 		)}">
             <img src="${fileIcon(
