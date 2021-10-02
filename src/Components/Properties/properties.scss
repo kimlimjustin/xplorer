@@ -3,15 +3,25 @@
 	position: fixed;
 	bottom: 2rem;
 	right: -100vw;
-	padding: 0.5rem;
+	padding: 1rem;
 	.properties-heading {
 		display: flex;
 		border-bottom: 1px solid #b9b9b9;
+		padding-bottom: 1rem;
 		.properties-heading-exit {
 			cursor: pointer;
 			width: 1rem;
 			margin-left: auto;
 		}
+	}
+	.properties-table {
+		margin-top: 1rem;
+	}
+	.properties-table-value {
+		padding: 0.3rem;
+		width: 25vw;
+		margin-left: 1rem;
+		word-break: break-all;
 	}
 }
 
