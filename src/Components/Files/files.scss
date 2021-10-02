@@ -23,7 +23,6 @@
 }
 
 .file-grid {
-	border: 2px solid transparent;
 	display: inline-block;
 	margin: 0.5rem 1rem;
 	padding: 0.5rem;
@@ -81,17 +80,25 @@
 
 .large-grid-view {
 	width: 12rem;
+	vertical-align: top;
 	.file-grid-preview {
 		max-width: 12rem;
 		height: 9rem;
+	}
+	.file-grid-filename {
+		-webkit-line-clamp: 4;
 	}
 }
 
 .medium-grid-view {
 	width: 9rem;
+	vertical-align: top;
 	.file-grid-preview {
 		max-width: 9rem;
 		height: 6rem;
+	}
+	.file-grid-filename {
+		-webkit-line-clamp: 3;
 	}
 }
 
@@ -99,6 +106,13 @@
 	margin: 0 auto;
 	font-weight: bold;
 	text-align: center;
+}
+
+.small-grid-view {
+	vertical-align: top;
+	.file-grid-filename {
+		-webkit-line-clamp: 2;
+	}
 }
 
 [data-hide-hidden-files='true'] [data-hidden-file] {
