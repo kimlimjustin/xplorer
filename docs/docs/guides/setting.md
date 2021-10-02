@@ -11,9 +11,9 @@ You can open settings on Xplorer by clicking the `Settings` button on the left d
 </details>
 <details>
 <summary>
-How to exit from the settings?
+How to exit from Settings?
 </summary>
-You can exit from settings on Xplorer by clicking the Arrow Up button on the upside left of Xplorer.
+You can exit from Settings on Xplorer by clicking the Arrow Up button on the upside left of Xplorer.
 
 ![Settings](/img/docs/exit-settings.png)
 
@@ -48,11 +48,11 @@ This will parse and cache the icon from a `exe` file and make it a preview. Only
 
 ![Extract Exe file icon](/img/docs/extract-exe-icon.png)
 
-:::warning This might causes Xplorer crashes.
+:::warning This might causes Xplorer to crash.
 
-This is because Xplorer parse the icon from the exe and if the hexadecimal of the exe file broken, Xplorer crashes.
+This is because Xplorer parses the icon from the exe and if the hexadecimal of the exe file is broken, Xplorer crashes.
 
-Way to fix it: disable this setting
+The way to fix it is to disable the setting.
 
 :::
 
