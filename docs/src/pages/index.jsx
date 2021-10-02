@@ -82,7 +82,7 @@ export default function Home() {
 							/>
 							<h2>Supports Multiple Tabs</h2>
 							<p>
-								Xplorer helps you oraganize you files easier by
+								Xplorer helps you organize you files easier by
 								supporting multiple tabs .
 							</p>
 						</div>
