@@ -39,7 +39,7 @@ To summarize, Xplorer's features contain:
 -   It looks modern
 -   Easy to use
 -   Cross-platform
--   [File Preview](https://xplorer.vercel.app/docs/guides/operation/#preview-file), even videos!
+-   [File Preview](https://xplorer.vercel.app/docs/guides/operation/#preview-file), even for videos!
 -   Most importantly, Free and Open Source Software(FOSS), which means you can change components inside if you see fit
 
 Xplorer is currently under heavy development. You can give your suggestions and feedbacks in our [Discussions](https://github.com/kimlimjustin/xplorer/discussions/) page. If you feel comfortable in writing code using Typescript, we highly encourage you to [contribute to this project](https://xplorer.vercel.app/community/Contributing/).
