@@ -61,41 +61,28 @@ const ensureElementInViewPort = (element: HTMLElement): void => {
 };
 
 /**
- * Select the first file there in case the latest selected file is not exist
- * @returns {any}
- */
-const selectFirstFile = () => {
-	const firstFileElement = document
-		.getElementById('workspace')
-		.querySelector(
-			`.file${isHiddenFile ? ':not([data-hidden-file])' : ''}`
-		);
-	firstFileElement.classList.add('selected');
-	latestSelected = firstFileElement as HTMLElement;
-};
-
-const handleLatestShift = (): void => {
-	if (!document.contains(latestSelected)) {
-		selectFirstFile();
-		return;
-	}
-	if (
-		Array.from(latestSelected.parentNode.children).indexOf(
-			latestShiftSelected
-		) <
-		Array.from(latestSelected.parentNode.children).indexOf(
-			latestSelected
-		)
-	) {
-		latestShiftSelected = latestSelected;
-	}
-}
-
-/**
  * Select shortcut initializer
  * @returns {any}
  */
 const Initializer = () => {
+	/**
+	 * Select the first file there in case the latest selected file is not exist
+	 * @returns {any}
+	 */
+	const selectFirstFile = () => {
+		const firstFileElement = document
+			.getElementById('workspace')
+			.querySelector(
+				`.file${isHiddenFile ? ':not([data-hidden-file])' : ''}`
+			);
+		firstFileElement.classList.add('selected');
+		latestSelected = firstFileElement as HTMLElement;
+	};
+
+	const childIndex = (parentNode: ParentNode): number => {
+		return Array.from(parentNode.children).indexOf(latestSelected)
+	}
+
 	const selectShortcut = (e: KeyboardEvent) => {
 		// Ignore keyboard shortcuts for select files if path navigator has focus
 		if (document.querySelector('.path-navigator') === document.activeElement) return;
@@ -103,9 +90,14 @@ const Initializer = () => {
 		const hideHiddenFiles =
 			storage.get('preference')?.data?.hideHiddenFiles ?? true;
 		if (e.key === 'ArrowRight' && !e.altKey) {
-			handleLatestShift();
+			if (!document.contains(latestSelected)) {
+				selectFirstFile();
+				return;
+			}
+			if (childIndex(latestSelected.parentNode) < childIndex(latestSelected.parentNode)) {
+				latestShiftSelected = latestSelected;
+			}
 			e.preventDefault();
-
 			let nextSibling = (
 				e.shiftKey
 					? latestShiftSelected.nextSibling
@@ -154,9 +146,14 @@ const Initializer = () => {
 				}
 			}
 		} else if (e.key === 'ArrowLeft' && !e.altKey) {
-			handleLatestShift();
-			e.preventDefault();
+			if (!document.contains(latestSelected)) {
+				selectFirstFile();
+				return;
+			}
+			if (childIndex(latestSelected.parentNode) > childIndex(latestSelected.parentNode))
+				latestShiftSelected = latestSelected;
 
+			e.preventDefault();
 			let previousSibling = (
 				e.shiftKey
 					? latestShiftSelected.previousSibling
@@ -206,9 +203,14 @@ const Initializer = () => {
 				}
 			}
 		} else if (e.key === 'ArrowDown' && !e.altKey) {
-			handleLatestShift();
-			e.preventDefault();
+			if (!document.contains(latestSelected)) {
+				selectFirstFile();
+				return;
+			}
+			if (childIndex(latestSelected.parentNode) < childIndex(latestSelected.parentNode))
+				latestShiftSelected = latestSelected;
 
+			e.preventDefault();
 			const totalGridInArrow = Math.floor(
 				(latestSelected.parentNode as HTMLElement).offsetWidth /
 					(latestSelected.offsetWidth +
@@ -267,9 +269,14 @@ const Initializer = () => {
 				}
 			}
 		} else if (e.key === 'ArrowUp' && !e.altKey) {
-			handleLatestShift();
-			e.preventDefault();
+			if (!document.contains(latestSelected)) {
+				selectFirstFile();
+				return;
+			}
+			if (childIndex(latestSelected.parentNode) > childIndex(latestSelected.parentNode))
+				latestShiftSelected = latestSelected;
 
+			e.preventDefault();
 			const totalGridInArrow = Math.floor(
 				(latestSelected.parentNode as HTMLElement).offsetWidth /
 					(latestSelected.offsetWidth +
