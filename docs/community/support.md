@@ -9,7 +9,7 @@ On this page, we've listed some communities/forums you can participate in to see
 Before participating in Xplorer's communities, please read our [Code Of Conduct](/community/CODE_OF_CONDUCT/).
 
 ## Issues
-We use GitHub Issues to track public bugs. Please ensure your description is clear and has sufficient instructions to be able to reproduce the issue. Report a bug by opening a new issue [here](https://github.com/kimlimjustin/xplorer/issues). Please use [GitHub Discussions](https://github.com/kimlimjustin/xplorer/discussions) instead to suggest a new feature.
+We use GitHub Issues to track public bugs. Please ensure your description is clear and has sufficient instructions to be able to reproduce the issue. Report a bug by opening a new issue [here](https://github.com/kimlimjustin/xplorer/issues/new). Please use [GitHub Discussions](https://github.com/kimlimjustin/xplorer/discussions) instead to suggest a new feature.
 
 ## GitHub Discussions
 GitHub Discussions is used for multiple purposes, such as:
@@ -21,13 +21,17 @@ GitHub Discussions is used for multiple purposes, such as:
 
 
 ### Feature Request
-We use [GitHub Discussions](https://github.com/kimlimjustin/xplorer/discussion) to track ideas from users. Suggest a new feature [here](https://github.com/kimlimjustin/xplorer/discussions)!
+We use [GitHub Discussions](https://github.com/kimlimjustin/xplorer/discussion) to track ideas from users. Suggest a new feature [here](https://github.com/kimlimjustin/xplorer/discussions/new)!
 Great Feature Requests tend to have:
 - A quick idea summary.
 - What & why you wanted to add the specific feature.
 - Additional context like images, links to resources to implement the feature, etc.
 ### Help
-You can ask for help using [GitHub Discussion](https://github.com/kimlimjustin/xplorer/discussions) and others will answer you, just like Stackoverflow!
+You can ask for help using [GitHub Discussion](https://github.com/kimlimjustin/xplorer/discussions) and others will answer you, just like Stack Overflow!
+
+:::note
+Remember to choose the discussion category as Q&A so that your question will be published with answers enabled.
+:::
 
 ## News
 For the latest news about Xplorer, you can see it through the [official Xplorer blog](/blog) on this website.
