@@ -162,27 +162,15 @@ const displayFiles = async (files: fileData[], dir:string, options?: {reveal: bo
             switch (layout) {
                 case "m":
                     fileGrid.classList.add("medium-grid-view")
-                    dirent.name =
-						dirent.name.length > 30
-							? dirent.name.substring(0, 30) + '...'
-							: dirent.name;
                     break;
                 case "l":
                     fileGrid.classList.add("large-grid-view")
-                    dirent.name =
-						dirent.name.length > 40
-							? dirent.name.substring(0, 40) + '...'
-							: dirent.name;
                     break;
                 case "d":
                     fileGrid.classList.add("detail-view")
                     break;
                 default:
                     fileGrid.classList.add("small-grid-view")
-                    dirent.name =
-						dirent.name.length > 20
-							? dirent.name.substring(0, 20) + '...'
-							: dirent.name;
                     break;
 
             }
