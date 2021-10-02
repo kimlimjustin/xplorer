@@ -23,7 +23,7 @@ const Appearance = (): void => {
 		{ name: 'Dark', identifier: 'dark', category: 'dark' },
 		{ name: 'Light+', identifier: 'light+', category: 'light+' },
 		{ name: 'Dark+', identifier: 'dark+', category: 'dark' },
-	];
+	].concat(storage.get('theme')?.data?.availableThemes ?? []);
 	const appTheme_i18n = Translate('App Theme');
 	const systemDefault_i18n = Translate('System Default');
 	const acrylicEffect_i18n = Translate('Acrylic Effect');
@@ -58,14 +58,10 @@ const Appearance = (): void => {
 						(event.target as unknown as HTMLSelectElement)
 							.selectedIndex
 					].dataset.category;
-					storage.set('theme', {
-						theme: event.target.value,
-						category: category,
-						acrylic:
-							document.querySelector<HTMLInputElement>(
-								'[name="acrylic"]'
-							)?.checked ?? true,
-					});
+					const themes = storage.get('theme')?.data;
+					themes['theme'] = event.target.value;
+					themes['category'] = category;
+					storage.set('theme', themes);
 					ipcRenderer.send('update-theme');
 					reload();
 				}
