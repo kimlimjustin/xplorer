@@ -1,5 +1,4 @@
 import storage from "electron-json-storage-sync";
-import VanillaTilt from "../../Lib/tilt/tilt";
 import os from "os";
 import { nativeTheme } from '@electron/remote';
 import { ipcRenderer } from 'electron';
@@ -152,7 +151,7 @@ const changeTheme = (document:Document, theme?:string): void => {
     })
     document.querySelectorAll<HTMLElement>(".card-hover-effect").forEach(obj => {
         obj.onmouseleave = () => {
-            obj.style.background = getElementStyle("pendriveBackground", theme);
+            obj.style.background = null;
             obj.style.borderImage = null;
         }
         obj.addEventListener("mousemove", (e) => {
@@ -213,7 +212,6 @@ const changeTheme = (document:Document, theme?:string): void => {
         changeElementTheme(grid, "gridBackground", "background", theme)
         changeElementTheme(grid, "gridColor", "color", theme)
     })
-    VanillaTilt();
     return;
 }
 

@@ -17,10 +17,7 @@ const Setting = (): void => {
 				'open-setting 1s forwards';
 
 			document.querySelector('.settings-sidebar-heading').innerHTML =
-				Translate(
-					document.querySelector('.settings-sidebar-heading')
-						.innerHTML
-				);
+				Translate('Settings');
 			const settingsSidebarItems = document.querySelector(
 				'.settings-sidebar-items'
 			);
@@ -28,6 +25,7 @@ const Setting = (): void => {
 			const settingsItem = ['Appearance', 'Preference', 'About'];
 
 			settingsItem.map((item) => {
+				console.log(Translate(item));
 				const settingsItem = document.createElement('span');
 				settingsItem.classList.add('settings-sidebar-item');
 				settingsItem.classList.add('sidebar-hover-effect');
@@ -35,7 +33,7 @@ const Setting = (): void => {
 					item,
 					'settings',
 					false
-				)}"><span>${item}</span>`;
+				)}"><span>${Translate(item)}</span>`;
 				settingsSidebarItems.appendChild(settingsItem);
 
 				settingsItem.addEventListener('click', () => {

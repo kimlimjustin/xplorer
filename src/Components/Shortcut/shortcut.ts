@@ -55,10 +55,18 @@ const changeSelectedStatus = (): void => {
 const Shortcut = (): void => {
 	const { reload, minimize, maximize } = require('../Layout/windowManager'); //eslint-disable-line
 	const { createNewTab, goBack, goForward } = require('../Layout/tab'); //eslint-disable-line
-	const ShortcutHandler = (e: KeyboardEvent) => {
+
+	const KeyboardShortcutsHandler = (e: KeyboardEvent) => {
 		e.preventDefault();
 		const selectedFilePath = unescape(getSelected()?.[0]?.dataset?.path);
 		const isDir = getSelected()?.[0]?.dataset.isdir === 'true';
+
+		// Check if file navigator input is in focus, if it is then ignore key shortcuts
+		if (
+			document.querySelector('.path-navigator') === document.activeElement
+		)
+			return;
+
 		// Select all shortcut (Ctrl + A)
 		if (e.key === 'a' && e.ctrlKey) {
 			selectedAll = !selectedAll;
@@ -271,9 +279,28 @@ const Shortcut = (): void => {
 			Redo();
 		}
 	};
-	document.addEventListener('keyup', ShortcutHandler);
+
+	const MouseShortcutsHandler = (e: MouseEvent) => {
+		// Don't react if cursor is over path navigator
+		if (document.querySelector('.path-navigator') === document.activeElement) return;
+
+		switch (e.button) {
+		// Back button
+		case 3:
+			goBack();
+			break;
+		// Forward button
+		case 4:
+			goForward();
+		}
+	}
+
+	document.addEventListener('keyup', KeyboardShortcutsHandler);
+	document.addEventListener('mouseup', MouseShortcutsHandler);
+
 	window.addEventListener('beforeunload', () => {
-		document.removeEventListener('keyup', ShortcutHandler, false);
+		document.removeEventListener('keyup', KeyboardShortcutsHandler, false);
+		document.addEventListener('mouseup', MouseShortcutsHandler);
 	});
 };
 

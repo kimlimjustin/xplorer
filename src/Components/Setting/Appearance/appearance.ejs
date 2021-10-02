@@ -1,6 +1,6 @@
-<h3 class="settings-title">App Theme</h3>
+<h3 class="settings-title"><%= appTheme_i18n %></h3>
 <select name="theme">
-    <option>System Default</option>
+    <option><%= systemDefault_i18n %></option>
     <% for (let i = 0; i < availableThemes.length; i++){ %>
         <option <%= theme === availableThemes[i].identifier ? "selected" : "" %> value="<%=availableThemes[i].identifier %>" data-category="<%=availableThemes[i].category %>"><%=availableThemes[i].name %></option>
     <% } %>
@@ -10,7 +10,7 @@
     <label class="toggle">
         <input type="checkbox" name="acrylic" <%= acrylicEnabled ? "checked" : "" %>>
         <span class="toggle-slider"></span>
-        <span class="toggle-label">Acrylic Effect</span>
+        <span class="toggle-label"><%= acrylicEffect_i18n %></span>
     </label>
 </div>
 <% } %>
@@ -19,7 +19,7 @@
     <label class="toggle">
         <input type="checkbox" name="preview-video" <%= autoPlayPreviewVideo ? "checked" : "" %>>
         <span class="toggle-slider"></span>
-        <span class="toggle-label">Auto play video file as preview (May consume high amount of RAM)</span>
+        <span class="toggle-label"><%= autoPlayPreviewVideo_i18n %></span>
     </label>
 </div>
 <%if (process.platform === "win32"){ %>
@@ -27,7 +27,7 @@
     <label class="toggle">
         <input type="checkbox" name="extract-exe-icon" <%= extractExeIcon ? "checked" : "" %>>
         <span class="toggle-slider"></span>
-        <span class="toggle-label">Extract exe file icon and make it as preview</span>
+        <span class="toggle-label"><%= extractExeIcon_i18n %></span>
     </label>
 </div>
 <% } %>

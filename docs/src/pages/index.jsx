@@ -2,6 +2,7 @@ import React from 'react';
 import Layout from '@theme/Layout';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Slideshow from './slideshow';
+import Link from '@docusaurus/Link';
 
 export default function Home() {
 	const { siteConfig } = useDocusaurusContext();
@@ -26,19 +27,15 @@ export default function Home() {
 							>
 								Download now
 							</a>
-							<a
-								href="/docs/intro"
+							<Link
+								to="/docs/intro"
 								className="margin--sm explore--docs--link"
 							>
 								Xplorer the docs -{'>'}
-							</a>
+							</Link>
 						</div>
 					</div>
 					<div className="col col--8">
-						{/*<img
-							src="/img/Xplorer win.png"
-							alt="Xplorer app on Windows 11"
-						/>*/}
 						<Slideshow></Slideshow>
 					</div>
 				</div>
@@ -85,7 +82,7 @@ export default function Home() {
 							/>
 							<h2>Supports Multiple Tabs</h2>
 							<p>
-								Xplorer helps you oraganize you files easier by
+								Xplorer helps you organize you files easier by
 								supporting multiple tabs .
 							</p>
 						</div>
@@ -95,12 +92,9 @@ export default function Home() {
 							<p>
 								Xplorer supports files preview, even videos!
 								Learn more{' '}
-								<a
-									href="/docs/guides/file%20operation/#preview"
-									target="_blank"
-								>
+								<Link to="/docs/guides/operation/#preview-file">
 									here
-								</a>
+								</Link>
 								.
 							</p>
 						</div>

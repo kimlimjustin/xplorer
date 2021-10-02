@@ -12,7 +12,7 @@ tags: [xplorer, introduction, hello, blog]
 I am very happy to introduce [Xplorer](https://xplorer.vercel.app) to help you organize your files/folders.
 
 I created Xplorer for the following reasons:
-* Support Multiple Tabs
+* Supports Multiple Tabs
 * Easy to use
 * Highly customizable (just like VSCode)
 * Cross-platform

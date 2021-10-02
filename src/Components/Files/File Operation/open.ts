@@ -11,7 +11,7 @@ import Recent from "../../Recent/recent";
 import LAZY_LOAD from "../../Functions/lazyLoadingImage";
 import fs from "fs";
 import {isHiddenFile} from "is-hidden-file";
-import { ContextMenu } from "../../Context Menu/contextMenu";
+import { ContextMenu } from "../../ContextMenu/contextMenu";
 import formatBytes from "../../Functions/filesize";
 import getType from "../File Type/type";
 import { SelectListener, Select } from "./select";
@@ -162,21 +162,32 @@ const displayFiles = async (files: fileData[], dir:string, options?: {reveal: bo
             switch (layout) {
                 case "m":
                     fileGrid.classList.add("medium-grid-view")
+                    dirent.name =
+						dirent.name.length > 30
+							? dirent.name.substring(0, 30) + '...'
+							: dirent.name;
                     break;
                 case "l":
                     fileGrid.classList.add("large-grid-view")
+                    dirent.name =
+						dirent.name.length > 40
+							? dirent.name.substring(0, 40) + '...'
+							: dirent.name;
                     break;
                 case "d":
                     fileGrid.classList.add("detail-view")
                     break;
                 default:
                     fileGrid.classList.add("small-grid-view")
+                    dirent.name =
+						dirent.name.length > 20
+							? dirent.name.substring(0, 20) + '...'
+							: dirent.name;
                     break;
 
             }
             fileGrid.setAttribute("draggable", 'true')
             fileGrid.setAttribute("data-listenOpen", '')
-            fileGrid.setAttribute("data-tilt", '')
             fileGrid.dataset.modifiedAt = String(dirent.modifiedAt);
             fileGrid.dataset.createdAt = String(dirent.createdAt);
             fileGrid.dataset.accessedAt = String(dirent.accessedAt);
@@ -220,6 +231,8 @@ const displayFiles = async (files: fileData[], dir:string, options?: {reveal: bo
  * @returns {Promise<void>}
  */
 const open = async (dir:string, reveal?:boolean):Promise<void> => {
+    if (!dir) return
+
     const initialDirToOpen = dir;
     closePreviewFile()
     timeStarted = Date.now()

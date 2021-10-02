@@ -98,6 +98,9 @@ const Initializer = () => {
 		latestSelected = firstFileElement as HTMLElement;
 	};
 	const selectShortcut = (e: KeyboardEvent) => {
+		// Ignore keyboard shortcuts for select files if path navigator has focus
+		if (document.querySelector('.path-navigator') === document.activeElement) return;
+
 		const hideHiddenFiles =
 			storage.get('preference')?.data?.hideHiddenFiles ?? true;
 		if (e.key === 'ArrowRight' && !e.altKey) {
