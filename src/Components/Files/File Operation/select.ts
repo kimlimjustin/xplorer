@@ -1,5 +1,6 @@
 import storage from 'electron-json-storage-sync';
 import { isHiddenFile } from 'is-hidden-file';
+import { isElementInViewport } from '../../Functions/lazyLoadingImage';
 let latestSelected: HTMLElement;
 let latestShiftSelected: HTMLElement;
 let initialized = false;
@@ -51,26 +52,6 @@ const Select = (
 };
 
 /**
- * Check if element in viewport
- * @param {HTMLElement} - element to check
- * @returns {boolean} if element in viewport
- */
-const isElementInViewport = (el: HTMLElement): boolean => {
-	const rect = el.getBoundingClientRect();
-	return (
-		rect.top >= 0 &&
-		rect.left >= 0 &&
-		rect.bottom <=
-			(window.innerHeight ||
-				document.documentElement
-					.clientHeight) /* or $(window).height() */ &&
-		rect.right <=
-			(window.innerWidth ||
-				document.documentElement.clientWidth) /* or $(window).width() */
-	);
-};
-
-/**
  * Ensure an element in view port
  * @param {HTMLElement} element - element you want to ensure
  * @returns {void}
@@ -80,23 +61,41 @@ const ensureElementInViewPort = (element: HTMLElement): void => {
 };
 
 /**
+ * Select the first file there in case the latest selected file is not exist
+ * @returns {any}
+ */
+const selectFirstFile = () => {
+	const firstFileElement = document
+		.getElementById('workspace')
+		.querySelector(
+			`.file${isHiddenFile ? ':not([data-hidden-file])' : ''}`
+		);
+	firstFileElement.classList.add('selected');
+	latestSelected = firstFileElement as HTMLElement;
+};
+
+const handleLatestShift = (): void => {
+	if (!document.contains(latestSelected)) {
+		selectFirstFile();
+		return;
+	}
+	if (
+		Array.from(latestSelected.parentNode.children).indexOf(
+			latestShiftSelected
+		) <
+		Array.from(latestSelected.parentNode.children).indexOf(
+			latestSelected
+		)
+	) {
+		latestShiftSelected = latestSelected;
+	}
+}
+
+/**
  * Select shortcut initializer
  * @returns {any}
  */
 const Initializer = () => {
-	/**
-	 * Select the first file there in case the latest selected file is not exist
-	 * @returns {any}
-	 */
-	const selectFirstFile = () => {
-		const firstFileElement = document
-			.getElementById('workspace')
-			.querySelector(
-				`.file${isHiddenFile ? ':not([data-hidden-file])' : ''}`
-			);
-		firstFileElement.classList.add('selected');
-		latestSelected = firstFileElement as HTMLElement;
-	};
 	const selectShortcut = (e: KeyboardEvent) => {
 		// Ignore keyboard shortcuts for select files if path navigator has focus
 		if (document.querySelector('.path-navigator') === document.activeElement) return;
@@ -104,20 +103,9 @@ const Initializer = () => {
 		const hideHiddenFiles =
 			storage.get('preference')?.data?.hideHiddenFiles ?? true;
 		if (e.key === 'ArrowRight' && !e.altKey) {
-			if (!document.contains(latestSelected)) {
-				selectFirstFile();
-				return;
-			}
-			if (
-				Array.from(latestSelected.parentNode.children).indexOf(
-					latestShiftSelected
-				) <
-				Array.from(latestSelected.parentNode.children).indexOf(
-					latestSelected
-				)
-			)
-				latestShiftSelected = latestSelected;
+			handleLatestShift();
 			e.preventDefault();
+
 			let nextSibling = (
 				e.shiftKey
 					? latestShiftSelected.nextSibling
@@ -166,20 +154,9 @@ const Initializer = () => {
 				}
 			}
 		} else if (e.key === 'ArrowLeft' && !e.altKey) {
-			if (!document.contains(latestSelected)) {
-				selectFirstFile();
-				return;
-			}
-			if (
-				Array.from(latestSelected.parentNode.children).indexOf(
-					latestShiftSelected
-				) >
-				Array.from(latestSelected.parentNode.children).indexOf(
-					latestSelected
-				)
-			)
-				latestShiftSelected = latestSelected;
+			handleLatestShift();
 			e.preventDefault();
+
 			let previousSibling = (
 				e.shiftKey
 					? latestShiftSelected.previousSibling
@@ -229,20 +206,9 @@ const Initializer = () => {
 				}
 			}
 		} else if (e.key === 'ArrowDown' && !e.altKey) {
-			if (!document.contains(latestSelected)) {
-				selectFirstFile();
-				return;
-			}
-			if (
-				Array.from(latestSelected.parentNode.children).indexOf(
-					latestShiftSelected
-				) <
-				Array.from(latestSelected.parentNode.children).indexOf(
-					latestSelected
-				)
-			)
-				latestShiftSelected = latestSelected;
+			handleLatestShift();
 			e.preventDefault();
+
 			const totalGridInArrow = Math.floor(
 				(latestSelected.parentNode as HTMLElement).offsetWidth /
 					(latestSelected.offsetWidth +
@@ -301,20 +267,9 @@ const Initializer = () => {
 				}
 			}
 		} else if (e.key === 'ArrowUp' && !e.altKey) {
-			if (!document.contains(latestSelected)) {
-				selectFirstFile();
-				return;
-			}
-			if (
-				Array.from(latestSelected.parentNode.children).indexOf(
-					latestShiftSelected
-				) >
-				Array.from(latestSelected.parentNode.children).indexOf(
-					latestSelected
-				)
-			)
-				latestShiftSelected = latestSelected;
+			handleLatestShift();
 			e.preventDefault();
+
 			const totalGridInArrow = Math.floor(
 				(latestSelected.parentNode as HTMLElement).offsetWidth /
 					(latestSelected.offsetWidth +
