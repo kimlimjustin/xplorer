@@ -174,10 +174,17 @@ const createSidebar = (): void => {
 			.querySelectorAll('.sidebar-nav-item-dropdown-btn')
 			.forEach((btn) => {
 				btn.addEventListener('click', (e) => {
-					(
-						(e.target as Element).parentNode
-							.parentNode as HTMLElement
-					).classList.toggle('nav-hide-item');
+					let sidebarNavItem = (e.target as Element).parentNode;
+					while (
+						!(sidebarNavItem as HTMLElement).classList.contains(
+							'sidebar-nav-item'
+						)
+					) {
+						sidebarNavItem = sidebarNavItem.parentNode;
+					}
+					(sidebarNavItem as HTMLElement).classList.toggle(
+						'nav-hide-item'
+					);
 
 					// Save preference into local storage
 					const sidebar = storage.get('sidebar')?.data ?? {};
