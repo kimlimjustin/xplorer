@@ -12,4 +12,5 @@ export default interface fileData {
 	path?: string;
 	realPath?: string;
 	trashDeletionDate?: string | Date;
+	displayName?: string;
 }
