@@ -1,0 +1,13 @@
+{
+	"name": "purple",
+	"themePackName": "Purple",
+	"description": "Purple for Xplorer",
+	"main": "purple.js",
+	"themeCategory": "dark",
+	"version": "0.1.0",
+	"license": "MIT",
+	"scripts": {
+		"start": "xplorer --theme --listen",
+		"build": "xplorer --register-theme ."
+	}
+}
