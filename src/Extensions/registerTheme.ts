@@ -24,7 +24,7 @@ const RegisterTheme = (): void => {
 	if (
 		availableThemes.filter(
 			//eslint-disable-next-line
-			(theme: any) => theme.name !== extensionInformation.name
+			(theme: any) => theme.identifier === extensionInformation.name
 		).length === 0
 	) {
 		availableThemes.push({
