@@ -32,22 +32,6 @@ let themeJSON:Theme; // user preference theme json
 import * as defaultThemeData from "./theme.json"
 const defaultThemeJSON:Theme = defaultThemeData;
 
-/**
- * Create a hover effect of an element
- * @param {HTMLElement} element - Element you wanna to give hover effect
- * @param {string} before - Style before hover
- * @param {string} after - Style on hover
- * @returns {void}
- */
-const hoverEffect = (element:HTMLElement, before:string, after:string): void => {
-    element.addEventListener("mouseover", () => {
-        element.style.background = after
-        element.addEventListener("mouseout", () => {
-            element.style.background = before
-        })
-    });
-}
-
 const IS_VIBRANCY_SUPPORTED = () => process.platform === 'win32' && parseInt(os.release().split('.')[0]) >= 10 && (storage.get("theme")?.data?.acrylic ?? true)
 
 /**
@@ -147,60 +131,80 @@ const changeTheme = (document:Document, theme?:string): void => {
     document.querySelectorAll<HTMLElement>(".favorite").forEach(favorite => {
         changeElementTheme(favorite, "favoriteBackground", "background", theme)
         changeElementTheme(favorite, "favoriteColor", "color", theme)
-        hoverEffect(favorite, themeJSON ? themeJSON.favoriteBackground : defaultThemeJSON[theme].favoriteBackground, themeJSON ? themeJSON.favoriteHoverBackground : defaultThemeJSON[theme].favoriteHoverBackground)
+        favorite.addEventListener("mousemove", (e) => {
+            const rect = (e.target as Element).getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            favorite.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle("favoriteHoverBackground", theme)} )`;
+            favorite.addEventListener("mouseleave", () => {
+                favorite.style.background = getElementStyle("favoriteBackground", theme)
+            })
+        })
     })
     document.querySelectorAll<HTMLElement>(".card-hover-effect").forEach(obj => {
-        obj.onmouseleave = () => {
-            obj.style.background = null;
-            obj.style.borderImage = null;
-        }
         obj.addEventListener("mousemove", (e) => {
             const rect = (e.target as Element).getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
             obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle("cardHoverEffectBackground", theme)} )`;
+            obj.onmouseleave = () => {
+                obj.style.background = null;
+                obj.style.borderImage = null;
+            }
         })
     })
     document.querySelectorAll<HTMLElement>(".sidebar-hover-effect").forEach(obj => {
-        obj.onmouseleave = () => {
-            obj.style.background = getElementStyle("sidebarBackground", theme);
-            obj.style.borderImage = null;
-        }
         obj.addEventListener("mousemove", (e) => {
             const rect = (e.target as Element).getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
             obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle("sidebarHoverEffectBackground", theme)} )`;
+            obj.onmouseleave = () => {
+                obj.style.background = getElementStyle("sidebarBackground", theme);
+                obj.style.borderImage = null;
+            }
         })
     })
     document.querySelectorAll<HTMLElement>(".tab-hover-effect").forEach(obj => {
-        obj.onmouseleave = () => {
-            obj.style.background = getElementStyle("tabBackground", theme);
-            obj.style.borderImage = null;
-        }
         obj.addEventListener("mousemove", (e) => {
             const rect = (e.target as Element).getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
             obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle("tabHoverEffectBackground", theme)} )`;
+            obj.onmouseleave = () => {
+                obj.style.background = getElementStyle("tabBackground", theme);
+                obj.style.borderImage = null;
+            }
         })
     })
     document.querySelectorAll<HTMLElement>(".grid-hover-effect").forEach(obj => {
-        obj.onmouseleave = () => {
-            obj.style.background = getElementStyle("gridBackground", theme);
-            obj.style.borderImage = null;
-        }
         obj.addEventListener("mousemove", (e) => {
             const rect = (e.target as Element).getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
             obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle("gridHoverEffectBackground", theme)} )`;
+            obj.onmouseleave = () => {
+                obj.style.background = getElementStyle("gridBackground", theme);
+                obj.style.borderImage = null;
+            }
         })
     })
     document.querySelectorAll<HTMLElement>(".pendrive").forEach(pendrive => {
         changeElementTheme(pendrive, "pendriveBackground", "background", theme)
         changeElementTheme(pendrive, "pendriveColor", "color", theme)
-        hoverEffect(pendrive, themeJSON ? themeJSON.pendriveBackground : defaultThemeJSON[theme].pendriveBackground, themeJSON ? themeJSON.pendriveHoverBackground : defaultThemeJSON[theme].pendriveHoverBackground)
+        pendrive.addEventListener("mousemove", (e) => {
+            const rect = (e.target as Element).getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            pendrive.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle("pendriveHoverBackground", theme)} )`;
+                pendrive.addEventListener("mouseleave", () => {
+                    pendrive.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle("pendriveHoverBackground", theme)} )`;
+                    pendrive.addEventListener("mouseleave", () => {
+                        pendrive.style.background = getElementStyle("pendriveBackground", theme)
+                    pendrive.style.background = getElementStyle("pendriveBackground", theme)
+                })
+            })
+        })
     })
     document.querySelectorAll<HTMLElement>(".pendrive-total-capacity").forEach(bar => {
         changeElementTheme(bar, "pendriveTotalCapacityBackground", "background", theme)

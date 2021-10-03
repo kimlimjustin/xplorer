@@ -2,6 +2,7 @@ import fs from 'fs';
 import getType from '../Files/File Type/type';
 import storage from 'electron-json-storage-sync';
 import { isHiddenFile as checkIsHiddenFile } from 'is-hidden-file';
+import moment from 'moment';
 /**
  * Render file/folder properties into HTML
  * @param {Record<string, unknown>} options - File/folder's properties
@@ -19,10 +20,10 @@ const RenderProperties = (options: Record<string, unknown>) => {
 	PROPERTIES_ELEMENT.style.animation = 'properties 1s forwards';
 
 	let table: string;
-	table = '<table><tbody>';
+	table = '<table class="properties-table"><tbody>';
 	Object.keys(options).forEach((key) => {
 		if (options[key] !== '') {
-			table += `<tr><td>${key}</td><td class="text">${options[key]}</td></tr>`;
+			table += `<tr><td>${key}</td class="properties-separator"><td>:</td><td class="properties-table-value">${options[key]}</td></tr>`;
 		}
 	});
 	table += '</tbody</table>';
@@ -80,10 +81,12 @@ const Properties = (filePath: string): void => {
 		Size: size,
 		'File Path': filePath,
 		'File Type': fileType,
-		'Created At': createdAt,
-		'Modified At': modifiedAt,
-		'Accessed At': accessedAt,
-		'Is Hidden': isHiddenFile,
+		'Created At': moment(createdAt).format('MMMM DD, YYYY (hh:mm A)'),
+		'Modified At': moment(modifiedAt).format('MMMM DD, YYYY (hh:mm A)'),
+		'Accessed At': moment(accessedAt).format('MMMM DD, YYYY (hh:mm A)'),
+		'Is Hidden':
+			String(isHiddenFile)[0].toUpperCase() +
+			String(isHiddenFile).substring(1, String(isHiddenFile).length),
 	});
 };
 
