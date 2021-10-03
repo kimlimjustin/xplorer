@@ -111,6 +111,7 @@ const changeTheme = (document:Document, theme?:string): void => {
     changeElementTheme(document.querySelector(".preview-object"), "previewObjectBackground", "background", theme)
     changeElementTheme(document.querySelector(".preview-object"), "previewObjectColor", "color", theme)
     changeElementTheme(document.querySelector(".properties"), "propertiesBackground", "background", theme)
+    changeElementTheme(document.querySelector(".active"), "settingsActiveTab", "background", theme)
     document.querySelector<HTMLElement>(".preview-object")?.style?.setProperty("--preview-object-table-border", themeJSON ? themeJSON.previewObjectTableBorder : defaultThemeJSON[theme].previewObjectTableBorder)
     document.querySelector<HTMLElement>(".preview-object")?.style?.setProperty("--preview-object-table-row-even-bg", themeJSON ? themeJSON.previewObjectTableRowEvenBackground : defaultThemeJSON[theme].previewObjectTableRowEvenBackground)
     document.querySelector<HTMLElement>(".preview-object")?.style?.setProperty("--preview-object-table-row-even-color", themeJSON ? themeJSON.previewObjectTableRowEvenColor : defaultThemeJSON[theme].previewObjectTableRowEvenColor)
