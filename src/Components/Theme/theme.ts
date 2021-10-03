@@ -159,10 +159,14 @@ const changeTheme = (document:Document, theme?:string): void => {
             const rect = (e.target as Element).getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
-            obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle("sidebarHoverEffectBackground", theme)} )`;
-            obj.onmouseleave = () => {
-                obj.style.background = getElementStyle("sidebarBackground", theme);
-                obj.style.borderImage = null;
+            const elementIsActive = obj.classList.contains('active')
+            if(elementIsActive) obj.onmouseleave = null
+            else {
+                obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle("sidebarHoverEffectBackground", theme)} )`;
+                obj.onmouseleave = () => {
+                    obj.style.background = getElementStyle("sidebarBackground", theme);
+                    obj.style.borderImage = null;
+                }
             }
         })
     })

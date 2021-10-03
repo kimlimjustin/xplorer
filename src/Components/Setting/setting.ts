@@ -11,8 +11,8 @@ import Preference from './Preference/preference';
  * @returns {void}
  */
 const Setting = (): void => {
-	let activeTab = 'Appearance';
 	const settingsItem = ['Appearance', 'Preference', 'About'];
+	const defaultTab = settingsItem[0];
 
 	const setActiveTab = (tab: string) => {
 		settingsItem.forEach((tabs: string) => {
@@ -81,7 +81,7 @@ const Setting = (): void => {
 			updateTheme();
 			Appearance();
 
-			setActiveTab(activeTab);
+			setActiveTab(defaultTab);
 			document
 				.querySelector('.exit-setting-btn')
 				.addEventListener('click', () => {
