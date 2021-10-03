@@ -54,7 +54,7 @@ Within the function, you can add `document.querySelector` to change something yo
 
 ### Development
 
-You can start developing Xplorer theme by running `yarn start` command.
+You can start developing Xplorer theme by running `yarn start` command. Before starting the development process, please change your `App Theme` to the system default (for some reasons it's buggy if you don't set it into system default)
 
 ### Production
 
@@ -67,6 +67,10 @@ To use a color scheme developed by others, you have to get the code locally, thi
 ### Flashing color theme into Xplorer
 
 To flash a color theme into Xplorer, you can simply run `yarn build` in the project root.
+
+## Examples
+
+Examples of custom color theme are available [here](https://github.com/kimlimjustin/xplorer/tree/master/packages/generator-xplorer-theme/example).
 
 ## Common Question
 
