@@ -37,6 +37,7 @@
 		"settingsMainBackground": "#1a1b26",
 		"settingButtonBackground": "inherit",
 		"settingButtonColor": "#98aec1",
+		"settingsActiveTab": "rgb(43, 46, 86)",
 
 		"tabsScrollbarTrack": "rgb(139, 164, 248)",
 		"tabsScrollbarThumb": "rgb(116, 118, 231)",
@@ -121,6 +122,7 @@
 		"settingsMainBackground": "#24283b",
 		"settingButtonBackground": "inherit",
 		"settingButtonColor": "#98aec1",
+		"settingsActiveTab": "rgba(140, 162, 210 , 0.25)",
 
 		"tabsScrollbarTrack": "rgb(128, 128, 128)",
 		"tabsScrollbarThumb": "rgb(77, 77, 77)",
@@ -204,6 +206,7 @@
 		"settingsMainBackground": "#FCFCFC",
 		"settingButtonBackground": "inherit",
 		"settingButtonColor": "inherit",
+		"settingsActiveTab": "rgb(220, 220, 220)",
 
 		"tabsScrollbarTrack": "rgb(185, 185, 185)",
 		"tabsScrollbarThumb": "rgb(163, 163, 163)",
@@ -288,6 +291,7 @@
 		"settingsMainBackground": "#FEFEFE",
 		"settingButtonBackground": "inherit",
 		"settingButtonColor": "inherit",
+		"settingsActiveTab": "rgb(220, 220, 220)",
 
 		"tabsScrollbarTrack": "rgb(229, 229, 233)",
 		"tabsScrollbarThumb": "rgb(195, 195, 201)",
