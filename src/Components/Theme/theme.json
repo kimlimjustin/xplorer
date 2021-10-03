@@ -249,7 +249,7 @@
 		"previewObjectTableRowOddBackground": "inherit",
 		"previewObjectTableRowOddColor": "inherit",
 
-		"propertiesBackground": "#e0e0e0",
+		"propertiesBackground": "#f7f7f7",
 
 		"acrylicEffect": ["sidebarBackground"]
 	},
@@ -334,7 +334,7 @@
 		"previewObjectTableRowOddBackground": "inherit",
 		"previewObjectTableRowOddColor": "inherit",
 
-		"propertiesBackground": "#dbdbdc",
+		"propertiesBackground": "#fcfcfc",
 
 		"acrylicEffect": ["sidebarBackground"]
 	}

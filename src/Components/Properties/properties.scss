@@ -1,34 +1,58 @@
 .properties {
+	-webkit-touch-callout: text;
+	-webkit-user-select: text;
+	-khtml-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	user-select: text;
 	border-radius: 0.5rem;
 	position: fixed;
-	bottom: 2rem;
-	right: -100vw;
-	padding: 0.5rem;
+	bottom: -100vh;
+	left: 50%;
+	transform: translateX(-50%);
+	padding: 1rem;
 	.properties-heading {
 		display: flex;
-		border-bottom: 1px solid #b9b9b9;
+		border-bottom: 1px solid #3c9ffc;
+		color: #3c9ffc;
+		padding-bottom: 1rem;
+		font-weight: bold;
+		margin-bottom: 0.3rem;
 		.properties-heading-exit {
 			cursor: pointer;
 			width: 1rem;
 			margin-left: auto;
 		}
 	}
+	.text {
+		font-size: 0.7rem;
+		padding-left: 0.3rem;
+	}
+	.properties-table {
+		margin-top: 1rem;
+	}
+	.properties-table-value {
+		padding: 0.3rem;
+		width: 25vw;
+		margin-left: 1rem;
+		word-break: break-all;
+	}
 }
 
 @keyframes properties {
 	from {
-		right: -50vw;
+		bottom: -100vh;
 	}
 	to {
-		right: 2rem;
+		bottom: 3rem;
 	}
 }
 
 @keyframes close-properties {
 	from {
-		right: 2rem;
+		bottom: 5rem;
 	}
 	to {
-		right: -100vw;
+		bottom: -100vh;
 	}
 }
