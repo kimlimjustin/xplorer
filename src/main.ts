@@ -1,3 +1,4 @@
+/* eslint-disable no-mixed-spaces-and-tabs */
 import {
 	BrowserWindow as ElectronBrowserWindow,
 	app,
@@ -20,8 +21,7 @@ import fs from 'fs';
 import { PathLike } from 'original-fs';
 import RegisterTheme from './Extensions/registerTheme';
 
-// eslint-disable-next-line no-var
-var args = yargs(process.argv.slice(isDev ? 2 : 1))
+const args = yargs(process.argv.slice(isDev ? 2 : 1))
 	.usage('Usage: $0 <options> <dir1> <dir2> <dir3>')
 	.alias('h', 'help')
 	.alias('v', 'version')
@@ -115,12 +115,19 @@ const detectDefaultTheme = (): string => {
 };
 
 const vibrancy = () => {
-	const pluginTheme = JSON.parse(
-		fs.readFileSync(path.join(process.cwd(), 'package.json'), 'utf-8')
-	).themeCategory;
+	const pluginTheme =
+		process?.cwd() &&
+		fs.existsSync(path.join(process.cwd(), 'package.json'))
+			? JSON.parse(
+					fs.readFileSync(
+						path.join(process.cwd(), 'package.json'),
+						'utf-8'
+					)
+			  ).themeCategory
+			: detectDefaultTheme();
 	return {
 		disableOnBlur: false,
-		theme: args.listen
+		theme: args?.listen
 			? pluginTheme
 			: storage.get('theme')?.data?.category
 			? storage.get('theme')?.data?.category === 'dark'
