@@ -1,5 +1,6 @@
 import storage from 'electron-json-storage-sync';
 import { isHiddenFile } from 'is-hidden-file';
+import { isElementInViewport } from '../../Functions/lazyLoadingImage';
 let latestSelected: HTMLElement;
 let latestShiftSelected: HTMLElement;
 let initialized = false;
@@ -51,26 +52,6 @@ const Select = (
 };
 
 /**
- * Check if element in viewport
- * @param {HTMLElement} - element to check
- * @returns {boolean} if element in viewport
- */
-const isElementInViewport = (el: HTMLElement): boolean => {
-	const rect = el.getBoundingClientRect();
-	return (
-		rect.top >= 0 &&
-		rect.left >= 0 &&
-		rect.bottom <=
-			(window.innerHeight ||
-				document.documentElement
-					.clientHeight) /* or $(window).height() */ &&
-		rect.right <=
-			(window.innerWidth ||
-				document.documentElement.clientWidth) /* or $(window).width() */
-	);
-};
-
-/**
  * Ensure an element in view port
  * @param {HTMLElement} element - element you want to ensure
  * @returns {void}
@@ -97,9 +78,17 @@ const Initializer = () => {
 		firstFileElement.classList.add('selected');
 		latestSelected = firstFileElement as HTMLElement;
 	};
+
+	const elementIndex = (element: HTMLElement): number => {
+		return Array.from(element.parentNode.children).indexOf(element);
+	};
+
 	const selectShortcut = (e: KeyboardEvent) => {
 		// Ignore keyboard shortcuts for select files if path navigator has focus
-		if (document.querySelector('.path-navigator') === document.activeElement) return;
+		if (
+			document.querySelector('.path-navigator') === document.activeElement
+		)
+			return;
 
 		const hideHiddenFiles =
 			storage.get('preference')?.data?.hideHiddenFiles ?? true;
@@ -109,14 +98,10 @@ const Initializer = () => {
 				return;
 			}
 			if (
-				Array.from(latestSelected.parentNode.children).indexOf(
-					latestShiftSelected
-				) <
-				Array.from(latestSelected.parentNode.children).indexOf(
-					latestSelected
-				)
-			)
+				elementIndex(latestShiftSelected) < elementIndex(latestSelected)
+			) {
 				latestShiftSelected = latestSelected;
+			}
 			e.preventDefault();
 			let nextSibling = (
 				e.shiftKey
@@ -171,14 +156,10 @@ const Initializer = () => {
 				return;
 			}
 			if (
-				Array.from(latestSelected.parentNode.children).indexOf(
-					latestShiftSelected
-				) >
-				Array.from(latestSelected.parentNode.children).indexOf(
-					latestSelected
-				)
+				elementIndex(latestShiftSelected) > elementIndex(latestSelected)
 			)
 				latestShiftSelected = latestSelected;
+
 			e.preventDefault();
 			let previousSibling = (
 				e.shiftKey
@@ -234,14 +215,10 @@ const Initializer = () => {
 				return;
 			}
 			if (
-				Array.from(latestSelected.parentNode.children).indexOf(
-					latestShiftSelected
-				) <
-				Array.from(latestSelected.parentNode.children).indexOf(
-					latestSelected
-				)
+				elementIndex(latestShiftSelected) < elementIndex(latestSelected)
 			)
 				latestShiftSelected = latestSelected;
+
 			e.preventDefault();
 			const totalGridInArrow = Math.floor(
 				(latestSelected.parentNode as HTMLElement).offsetWidth /
@@ -306,14 +283,10 @@ const Initializer = () => {
 				return;
 			}
 			if (
-				Array.from(latestSelected.parentNode.children).indexOf(
-					latestShiftSelected
-				) >
-				Array.from(latestSelected.parentNode.children).indexOf(
-					latestSelected
-				)
+				elementIndex(latestShiftSelected) > elementIndex(latestSelected)
 			)
 				latestShiftSelected = latestSelected;
+
 			e.preventDefault();
 			const totalGridInArrow = Math.floor(
 				(latestSelected.parentNode as HTMLElement).offsetWidth /
