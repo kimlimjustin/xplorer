@@ -79,13 +79,16 @@ const Initializer = () => {
 		latestSelected = firstFileElement as HTMLElement;
 	};
 
-	const childIndex = (parentNode: ParentNode): number => {
-		return Array.from(parentNode.children).indexOf(latestSelected)
-	}
+	const elementIndex = (element: HTMLElement): number => {
+		return Array.from(element.parentNode.children).indexOf(element);
+	};
 
 	const selectShortcut = (e: KeyboardEvent) => {
 		// Ignore keyboard shortcuts for select files if path navigator has focus
-		if (document.querySelector('.path-navigator') === document.activeElement) return;
+		if (
+			document.querySelector('.path-navigator') === document.activeElement
+		)
+			return;
 
 		const hideHiddenFiles =
 			storage.get('preference')?.data?.hideHiddenFiles ?? true;
@@ -94,7 +97,9 @@ const Initializer = () => {
 				selectFirstFile();
 				return;
 			}
-			if (childIndex(latestSelected.parentNode) < childIndex(latestSelected.parentNode)) {
+			if (
+				elementIndex(latestShiftSelected) < elementIndex(latestSelected)
+			) {
 				latestShiftSelected = latestSelected;
 			}
 			e.preventDefault();
@@ -150,7 +155,9 @@ const Initializer = () => {
 				selectFirstFile();
 				return;
 			}
-			if (childIndex(latestSelected.parentNode) > childIndex(latestSelected.parentNode))
+			if (
+				elementIndex(latestShiftSelected) > elementIndex(latestSelected)
+			)
 				latestShiftSelected = latestSelected;
 
 			e.preventDefault();
@@ -207,7 +214,9 @@ const Initializer = () => {
 				selectFirstFile();
 				return;
 			}
-			if (childIndex(latestSelected.parentNode) < childIndex(latestSelected.parentNode))
+			if (
+				elementIndex(latestShiftSelected) < elementIndex(latestSelected)
+			)
 				latestShiftSelected = latestSelected;
 
 			e.preventDefault();
@@ -273,7 +282,9 @@ const Initializer = () => {
 				selectFirstFile();
 				return;
 			}
-			if (childIndex(latestSelected.parentNode) > childIndex(latestSelected.parentNode))
+			if (
+				elementIndex(latestShiftSelected) > elementIndex(latestSelected)
+			)
 				latestShiftSelected = latestSelected;
 
 			e.preventDefault();
