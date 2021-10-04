@@ -1,238 +1,236 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@800&family=Rubik:wght@300&display=swap');
 
 :root {
-	--ifm-color-primary: #84a59d;
-	--ifm-color-primary-dark: rgb(33, 175, 144);
-	--ifm-color-primary-darker: rgb(31, 165, 136);
-	--ifm-color-primary-darkest: rgb(26, 136, 112);
-	--ifm-color-primary-light: rgb(70, 203, 174);
-	--ifm-color-primary-lighter: rgb(102, 212, 189);
-	--ifm-color-primary-lightest: rgb(146, 224, 208);
-	--ifm-navbar-background-color: #cbccd1;
-	--ifm-footer-background-color: #cbccd1;
-	--link-active-color: #4d8dff;
-	--ifm-link-color: var(--link-active-color);
-	--ifm-navbar-link-hover-color: var(--link-active-color);
-	--ifm-menu-color-active: var(--link-active-color);
-	--ifm-color-emphasis-300: #9cbfdd;
-	--ifm-table-background: #cbccd1;
-	--ifm-table-head-background: #d5d6db;
-	--ifm-pre-background: #fff;
-	--gray-color: #657482;
-	background: #d5d6db;
+    --ifm-color-primary: #84a59d;
+    --ifm-color-primary-dark: rgb(33, 175, 144);
+    --ifm-color-primary-darker: rgb(31, 165, 136);
+    --ifm-color-primary-darkest: rgb(26, 136, 112);
+    --ifm-color-primary-light: rgb(70, 203, 174);
+    --ifm-color-primary-lighter: rgb(102, 212, 189);
+    --ifm-color-primary-lightest: rgb(146, 224, 208);
+    --ifm-navbar-background-color: #cbccd1;
+    --ifm-footer-background-color: #cbccd1;
+    --link-active-color: #4d8dff;
+    --ifm-link-color: var(--link-active-color);
+    --ifm-navbar-link-hover-color: var(--link-active-color);
+    --ifm-menu-color-active: var(--link-active-color);
+    --ifm-color-emphasis-300: #9cbfdd;
+    --ifm-table-background: #cbccd1;
+    --ifm-table-head-background: #d5d6db;
+    --ifm-pre-background: #fff;
+    --gray-color: #657482;
+    background: #d5d6db;
 }
 
 summary h3 {
-	margin: 0 !important;
+    margin: 0 !important;
 }
 
 .menu {
-	background: #cbccd1;
+    background: #cbccd1;
 }
 
 html[data-theme='dark'] {
-	--ifm-navbar-background-color: #1b1e2e;
-	--ifm-footer-background-color: #1b1e2e;
-	--ifm-table-background: #1b1e2e;
-	--ifm-table-head-background: #1b1e2e;
-	background: #24283b;
+    --ifm-navbar-background-color: #1b1e2e;
+    --ifm-footer-background-color: #1b1e2e;
+    --ifm-table-background: #1b1e2e;
+    --ifm-table-head-background: #1b1e2e;
+    background: #24283b;
 }
 
 html[data-theme='dark'] .menu {
-	background: #1b1e2e;
+    background: #1b1e2e;
 }
 
 .docusaurus-highlight-code-line {
-	background-color: rgba(0, 0, 0, 0.1);
-	display: block;
-	margin: 0 calc(-1 * var(--ifm-pre-padding));
-	padding: 0 var(--ifm-pre-padding);
+    background-color: rgba(0, 0, 0, 0.1);
+    display: block;
+    margin: 0 calc(-1 * var(--ifm-pre-padding));
+    padding: 0 var(--ifm-pre-padding);
 }
 
 html[data-theme='dark'] .docusaurus-highlight-code-line {
-	background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(0, 0, 0, 0.3);
 }
 
 .blog-wrapper article {
-	text-align: justify;
+    text-align: justify;
 }
 
 .padding-top--l {
-	padding-top: 2.5rem !important;
+    padding-top: 2.5rem !important;
 }
 
 .padding-bottom--l {
-	padding-bottom: 2.5rem !important;
+    padding-bottom: 2.5rem !important;
 }
 
 .padding-left--m {
-	padding-left: 0.8rem !important;
+    padding-left: 0.8rem !important;
 }
 .padding-right--m {
-	padding-right: 0.8rem !important;
+    padding-right: 0.8rem !important;
 }
 
 .welcome--section {
-	padding-top: 1rem !important;
+    padding-top: 1rem !important;
 }
 
 .banner {
-	text-align: center;
+    text-align: center;
 }
 
 .banner--title {
-	font-family: 'Inter';
-	font-weight: normal;
-	margin: 0;
-	font-size: 2.9rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: normal;
+    margin: 0;
+    font-size: 2.9rem;
 }
 
 .banner--subtitle {
-	font-family: 'Inter';
-	font-weight: bold;
-	font-size: 3rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: bold;
+    font-size: 3rem;
 }
 
 .banner--description {
-	font-family: 'Rubik';
-	margin: 1rem 0;
-	font-size: 1.3rem;
+    font-family: 'Rubik', sans-serif;
+    margin: 1rem 0;
+    font-size: 1.3rem;
 }
 
 .explore--docs--link {
-	font-family: 'Inter';
-	font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
 }
 
 .btn {
-	font-family: 'Inter';
-	letter-spacing: -0.02em;
-	font-weight: 600;
-	padding: 16px 20px;
-	line-height: 112%;
-	-ms-flex-align: center;
-	align-items: center;
-	-ms-flex-pack: center;
-	justify-content: center;
-	font-size: 16px;
-	box-shadow: none;
-	color: #fff;
-	background: -webkit-linear-gradient(-70deg, #804eda, #6978de);
-	border-radius: 100px;
-	transition: background-color 1s ease-out;
-	cursor: pointer;
-	border: none;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -0.02em;
+    font-weight: 600;
+    padding: 16px 20px;
+    line-height: 112%;
+    -ms-flex-align: center;
+    align-items: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    font-size: 16px;
+    box-shadow: none;
+    color: #fff;
+    background: -webkit-linear-gradient(-70deg, #804eda, #6978de);
+    border-radius: 100px;
+    transition: background-color 1s ease-out;
+    cursor: pointer;
+    border: none;
 }
 
 .btn:hover {
-	color: initial;
+    color: initial;
 }
 
 .built-with-web {
-	margin: auto;
-	text-align: center;
+    margin: auto;
+    text-align: center;
 }
 
 .built-with-web span {
-	max-width: 750px;
+    max-width: 750px;
 }
 
 .built-with-web h1 {
-	font-weight: 800 !important;
-	font-style: normal !important;
-	font-family: 'Inter' !important;
-	font-size: 3rem;
-	color: var(--gray-color);
+    font-weight: 800 !important;
+    font-style: normal !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 3rem;
+    color: var(--gray-color);
 }
 .built-with-web h1 em {
-	display: block;
-	font-style: normal;
-	color: initial;
+    display: block;
+    font-style: normal;
+    color: initial;
 }
 
 .features--list {
-	max-width: 900px;
-	margin: auto;
+    max-width: 900px;
+    margin: auto;
 }
 
 .features--list img {
-	height: 200px;
-	width: 100%;
+    height: 200px;
+    width: 100%;
 }
 
 @media only screen and (max-width: 996px) {
-	.built-with-web h1 {
-		font-size: 2rem;
-	}
-	.welcome--section {
-		padding: 0 !important;
-	}
-	.banner {
-		padding: 1rem 0.5rem !important;
-	}
+    .built-with-web h1 {
+        font-size: 2rem;
+    }
+    .welcome--section {
+        padding: 0 !important;
+    }
+    .banner {
+        padding: 1rem 0.5rem !important;
+    }
 }
 
 .slideshow-container {
-	position: relative;
-	padding-top: 53%;
-	overflow: hidden;
+    position: relative;
+    padding-top: 53%;
+    overflow: hidden;
 }
 
 .slide {
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-
-	opacity: 0;
-	transition-property: opacity;
-	transition-duration: 1s;
-	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+    transition-property: opacity;
+    transition-duration: 1s;
+    transition-timing-function: cubic-bezier(0.46, 0.03, 0.52, 0.96);
 }
 
 .slide.active {
-	opacity: 100;
+    opacity: 100;
 }
 
 .slide > img {
-	width: 100%;
-	height: 100%;
+    width: 100%;
+    height: 100%;
 }
 
 .slide-caption {
-	color: #f2f2f2;
-	font-size: 15px;
-	padding: 8px 12px;
-	position: absolute;
-	bottom: 8px;
-	width: 100%;
-	text-align: center;
+    color: #f2f2f2;
+    font-size: 15px;
+    padding: 8px 12px;
+    position: absolute;
+    bottom: 8px;
+    width: 100%;
+    text-align: center;
 }
 
 .slide-numbertext {
-	color: #f2f2f2;
-	font-size: 12px;
-	padding: 8px 12px;
-	position: absolute;
-	top: 0;
+    color: #f2f2f2;
+    font-size: 12px;
+    padding: 8px 12px;
+    position: absolute;
+    top: 0;
 }
 
 .slide-dots {
-	text-align: center;
+    text-align: center;
 }
 
 .slide-dot {
-	height: 15px;
-	width: 15px;
-	margin: 0 2px;
-	background-color: #bbb;
-	border-radius: 50%;
-	display: inline-block;
-	transition: background-color 0.6s ease;
+    height: 15px;
+    width: 15px;
+    margin: 0 2px;
+    background-color: #bbb;
+    border-radius: 50%;
+    display: inline-block;
+    transition: background-color 0.6s ease;
 }
 
 .slide-dot.active {
-	background-color: #717171;
+    background-color: #717171;
 }
