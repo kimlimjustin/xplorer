@@ -1,11 +1,11 @@
-import { getDiskInfoSync } from '../../Lib/node-disk-info/index';
+import { getDiskInfoSync } from 'node-disk-info/dist/index';
 import formatBytes from '../Functions/filesize';
 import storage from 'electron-json-storage-sync';
 import getDriveBasePath from '../Functions/basePath';
 import Translate from '../I18n/i18n';
 import fileIcon from '../Files/File Icon/fileIcon';
 import windowGUID from '../Constants/windowGUID';
-import type Drive from '../../Lib/node-disk-info/classes/drive';
+import type Drive from 'node-disk-info/dist/classes/drive';
 
 /**
  * Function to get array of drives detected on the system
@@ -47,7 +47,10 @@ const getUniqueDrives = (drives: Array<Drive>): Array<uniqueDrives> => {
 		result.push({
 			filesystem: drive.filesystem,
 			mounted: drive.filesystem,
-			volumename: drive.volumename || drive.filesystem,
+			volumename:
+				drive.volumename && /[^?]/.test(drive.volumename)
+					? drive.volumename
+					: drive.filesystem,
 		})
 	);
 	return result;
@@ -81,7 +84,10 @@ const drivesToElements = (drives: Drive[], kBlockFormat = false): string => {
                 ${
 					drive.volumename || drive.filesystem
 						? `<h4 class="pendrive-title">${
-								drive.volumename || drive.filesystem
+								drive.volumename &&
+								/[^?]/.test(drive.volumename)
+									? drive.volumename
+									: drive.filesystem
 						  } (${driveName})</h4>` //eslint-disable-line
 						: `<h4 class="pendrive-title">${driveName}</h4>`
 				}
