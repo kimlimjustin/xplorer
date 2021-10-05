@@ -42,7 +42,7 @@
 		"build:mac": "electron-builder --mac",
 		"native_build": "node-gyp rebuild",
 		"install": "node scripts/install.js",
-		"postinstall": "patch-package"
+		"postinstall": "patch-package && husky install"
 	},
 	"build": {
 		"files": [
@@ -113,6 +113,7 @@
 		"grunt-cli": "^1.4.3",
 		"grunt-contrib-uglify": "^5.0.1",
 		"grunt-contrib-watch": "^1.1.0",
+		"husky": "^7.0.2",
 		"jest": "^27.1.0",
 		"lerna": "^4.0.0",
 		"node-sass": "^6.0.1",
