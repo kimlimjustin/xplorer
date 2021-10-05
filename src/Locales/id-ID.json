@@ -20,7 +20,7 @@
 	"App Theme": "Tema Aplikasi",
 	"System Default": "Standar Aplikasi",
 	"Auto play video file as thumbnail (May consume high amount of RAM)": "Putar berkas video sebagai thumbnail video (Dapat memakan RAM dalam jumlah besar)",
-	"Extract exe file icon and make it as thumbnail": "Ekstrak icon dari file exe dan membuatnya sebagai thumbnail",
+	"Extract exe file icon and make it as the thumbnail (Turning it on might crashes Xplorer)": "Ekstrak icon dari file exe dan membuatnya sebagai thumbnail (menyalakannya mungkin dapat merusak Xplorer)",
 	"Preference": "Preferensi",
 	"App Language": "Bahasa Aplikasi",
 	"Acrylic Effect": "Efek Acrylic",
