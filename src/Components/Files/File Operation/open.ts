@@ -176,6 +176,7 @@ const displayFiles = async (files: fileData[], dir:string, options?: {reveal: bo
                     break;
                 case "d":
                     fileGrid.classList.add("detail-view")
+                    dirent.displayName = dirent.name
                     break;
                 default:
                     fileGrid.classList.add("small-grid-view")
