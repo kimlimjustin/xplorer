@@ -24,7 +24,10 @@ const Translate = (source: string): string => {
 			// Replace all text
 			Object.keys(JSON.parse(langSrc)).forEach((key) => {
 				source = source.replace(
-					new RegExp(key, 'g'),
+					new RegExp(
+						key.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&'),
+						'g'
+					),
 					JSON.parse(langSrc)[key]
 				);
 			});

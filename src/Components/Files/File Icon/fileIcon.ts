@@ -14,8 +14,7 @@ let iconJSON:Icon = null;
 let iconJSONPath:string = null;
 const defaultIconJSON:Icon = defaultIconData;
 
-// Get user preference
-const preference = storage.get("preference")?.data
+// Load cache
 const icon = storage.get('icon')
 
 const IMAGE = ['jpg', 'png', 'gif', 'bmp', 'jpeg', 'jpe', 'jif', 'jfif', 'jfi', 'webp', 'tiff', 'tif', 'ico', 'svg', 'webp'];
@@ -85,7 +84,8 @@ const exePreview = (filename:string) => {
  * @returns {string} the preview of the file/folder
  */
 const fileIcon = (filename:string, category = "folder", HTMLFormat = true):string => {
-
+    const preference = storage.get("preference")?.data;
+    const extractExeIcon = preference?.extractExeIcon ?? false;
     if (icon.data && fs.existsSync(icon.data.iconJSON)) {
         iconJSON = JSON.parse(fs.readFileSync(icon.data.iconJSON, 'utf-8'))
         iconJSONPath = icon.data.iconJSON
@@ -98,9 +98,9 @@ const fileIcon = (filename:string, category = "folder", HTMLFormat = true):strin
     else if (VIDEO.indexOf(ext) !== -1) return HTMLFormat ? videoPreview(filename) : filename // Show the video itself if the file is video
 
     try {
-        if (ext === "exe" && preference?.extractExeIcon !== false && process.platform === "win32") return exePreview(filename)
+        if (ext === "exe" && extractExeIcon && process.platform === "win32") return exePreview(filename)
     // eslint-disable-next-line no-empty
-    } catch (_) { }
+    } catch (err) {console.log(err)}
 
     filename = filename.toLowerCase() // Lowercase filename
 

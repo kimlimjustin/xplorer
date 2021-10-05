@@ -31,7 +31,6 @@ const Setting = (): void => {
 				'settings-sidebar-item'
 			) as HTMLCollectionOf<HTMLElement>
 		).forEach((element) => {
-			console.log(element.classList.contains('active'));
 			if (!element.classList.contains('active'))
 				element.style.background = '';
 		});
@@ -50,7 +49,6 @@ const Setting = (): void => {
 			settingsSidebarItems.innerHTML = '';
 
 			settingsItem.map((item) => {
-				console.log(Translate(item));
 				const settingsItem = document.createElement('span');
 				settingsItem.classList.add(
 					'settings-sidebar-item',

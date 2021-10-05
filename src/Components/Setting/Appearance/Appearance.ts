@@ -16,7 +16,7 @@ const Appearance = (): void => {
 	const autoPlayPreviewVideo =
 		storage.get('preference')?.data?.autoPlayPreviewVideo;
 	const extractExeIcon =
-		storage.get('preference')?.data?.extractExeIcon ?? true;
+		storage.get('preference')?.data?.extractExeIcon ?? false;
 	const settingsMain = document.querySelector('.settings-main');
 	const availableThemes = [
 		{ name: 'Light', identifier: 'light', category: 'light' },
@@ -31,7 +31,7 @@ const Appearance = (): void => {
 		'Auto play video file as thumbnail (May consume high amount of RAM)'
 	);
 	const extractExeIcon_i18n = Translate(
-		'Extract exe file icon and make it as thumbnail'
+		'Extract exe file icon and make it as the thumbnail (Turning it on might crashes Xplorer)'
 	);
 	ejs.renderFile(path.join(__dirname, 'appearance.ejs'), {
 		theme,
