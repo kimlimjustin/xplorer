@@ -3,6 +3,8 @@ import getType from '../Files/File Type/type';
 import storage from 'electron-json-storage-sync';
 import { isHiddenFile as checkIsHiddenFile } from 'is-hidden-file';
 import moment from 'moment';
+import fastFolderSize from 'fast-folder-size';
+import formatBytes from '../Functions/filesize';
 /**
  * Render file/folder properties into HTML
  * @param {Record<string, unknown>} options - File/folder's properties
@@ -23,7 +25,11 @@ const RenderProperties = (options: Record<string, unknown>) => {
 	table = '<table class="properties-table"><tbody>';
 	Object.keys(options).forEach((key) => {
 		if (options[key] !== '') {
-			table += `<tr><td>${key}</td class="properties-separator"><td>:</td><td class="properties-table-value">${options[key]}</td></tr>`;
+			const value =
+				options[key] === 'calculating'
+					? `<td class="properties-table-value" data-calculating="size">Calculating...</td>`
+					: `<td class="properties-table-value">${options[key]}</td>`;
+			table += `<tr><td>${key}</td class="properties-separator"><td>:</td>${value}</tr>`;
 		}
 	});
 	table += '</tbody</table>';
@@ -32,13 +38,19 @@ const RenderProperties = (options: Record<string, unknown>) => {
 /**
  * Show properties of a file
  * @param {string} filePath - Path of the file to show the properties
- * @returns {void}
+ * @returns {Promise<void>}
  */
-const Properties = (filePath: string): void => {
+const Properties = async (filePath: string): Promise<void> => {
 	const fileElement = document.querySelector<HTMLElement>(
 		`[data-path="${escape(filePath)}"]`
 	);
-	let size, createdAt, modifiedAt, accessedAt, isHiddenFile, fileType;
+	let size: string,
+		createdAt,
+		modifiedAt,
+		accessedAt,
+		isHiddenFile,
+		fileType,
+		isDirectory;
 	try {
 		size = fileElement.querySelector('.file-size').innerHTML;
 		if (fileElement.dataset.realPath)
@@ -48,6 +60,7 @@ const Properties = (filePath: string): void => {
 		accessedAt = fileElement.dataset.accessedAt;
 		isHiddenFile = !!fileElement.dataset.hiddenFile;
 		fileType = fileElement.querySelector('.file-type').innerHTML;
+		isDirectory = fs.lstatSync(filePath).isDirectory();
 	} catch (_) {
 		const hideSystemFile =
 			storage.get('preference')?.data?.hideSystemFiles ?? true;
@@ -55,15 +68,13 @@ const Properties = (filePath: string): void => {
 		if (process.platform === 'win32')
 			getAttributesSync = require('fswin').getAttributesSync; //eslint-disable-line
 		isHiddenFile = checkIsHiddenFile(filePath); //eslint-disable-line
-		fileType = fs.lstatSync(filePath).isDirectory()
-			? 'File Folder'
-			: getType(filePath);
+		fileType = isDirectory ? 'File Folder' : getType(filePath);
 		try {
 			const stat = fs.statSync(filePath);
 			createdAt = stat.ctime;
 			modifiedAt = stat.mtime;
 			accessedAt = stat.atime;
-			size = stat.size;
+			size = String(stat.size);
 		} catch (_) {
 			if (process.platform === 'win32' && !hideSystemFile) {
 				const stat = getAttributesSync(filePath);
@@ -76,9 +87,15 @@ const Properties = (filePath: string): void => {
 			}
 		}
 	}
+	if (isDirectory) {
+		fastFolderSize(filePath, (err, bytes) => {
+			document.querySelector(`[data-calculating="size"]`).innerHTML =
+				formatBytes(bytes);
+		});
+	}
 
 	RenderProperties({
-		Size: size,
+		Size: size ? size : 'calculating',
 		'File Path': filePath,
 		'File Type': fileType,
 		'Created At': moment(createdAt).format('MMMM DD, YYYY (hh:mm A)'),
