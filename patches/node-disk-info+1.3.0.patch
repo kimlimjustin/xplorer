@@ -1,0 +1,116 @@
+diff --git a/node_modules/node-disk-info/dist/classes/drive.d.ts b/node_modules/node-disk-info/dist/classes/drive.d.ts
+index 79e7add..e47c7eb 100644
+--- a/node_modules/node-disk-info/dist/classes/drive.d.ts
++++ b/node_modules/node-disk-info/dist/classes/drive.d.ts
+@@ -28,6 +28,7 @@ export default class Drive {
+      * Indicates the mount point of the disk.
+      */
+     private readonly _mounted;
++    private readonly _volumename;
+     /**
+      * Constructor for Drive class.
+      *
+@@ -38,7 +39,7 @@ export default class Drive {
+      * @param {string} capacity Disk capacity.
+      * @param {string} mounted Indicates the mount point of the disk.
+      */
+-    constructor(filesystem: string, blocks: number, used: number, available: number, capacity: string, mounted: string);
++    constructor(filesystem: string, blocks: number, used: number, available: number, capacity: string, mounted: string, volumename:string);
+     /**
+      * Drive filesystem.
+      *
+@@ -75,4 +76,5 @@ export default class Drive {
+      * @return Gets the mount point of the disk.
+      */
+     get mounted(): string;
++    get volumename(): string;
+ }
+diff --git a/node_modules/node-disk-info/dist/classes/drive.js b/node_modules/node-disk-info/dist/classes/drive.js
+index 9d13d32..7f4dcfb 100644
+--- a/node_modules/node-disk-info/dist/classes/drive.js
++++ b/node_modules/node-disk-info/dist/classes/drive.js
+@@ -16,13 +16,14 @@ var Drive = /** @class */ (function () {
+      * @param {string} capacity Disk capacity.
+      * @param {string} mounted Indicates the mount point of the disk.
+      */
+-    function Drive(filesystem, blocks, used, available, capacity, mounted) {
++    function Drive(filesystem, blocks, used, available, capacity, mounted, volumename=null) {
+         this._filesystem = filesystem;
+         this._blocks = blocks;
+         this._used = used;
+         this._available = available;
+         this._capacity = capacity;
+         this._mounted = mounted;
++        this._volumename = volumename
+     }
+     Object.defineProperty(Drive.prototype, "filesystem", {
+         /**
+@@ -96,6 +97,18 @@ var Drive = /** @class */ (function () {
+         enumerable: false,
+         configurable: true
+     });
++    Object.defineProperty(Drive.prototype, "volumename", {
++        /**
++         * Indicates the mount point of the disk.
++         *
++         * @return Gets the mount point of the disk.
++         */
++        get: function () {
++            return this._volumename;
++        },
++        enumerable: false,
++        configurable: true
++    });
+     return Drive;
+ }());
+ exports.default = Drive;
+diff --git a/node_modules/node-disk-info/dist/platforms/windows.js b/node_modules/node-disk-info/dist/platforms/windows.js
+index 303bd1d..6762154 100644
+--- a/node_modules/node-disk-info/dist/platforms/windows.js
++++ b/node_modules/node-disk-info/dist/platforms/windows.js
+@@ -41,11 +41,13 @@ var Windows = /** @class */ (function () {
+         }
+         buffer = iconv_lite_1.default.encode(iconv_lite_1.default.decode(buffer, encoding), 'UTF-8');
+         var lines = buffer.toString().split('\r\r\n');
++        console.log(lines)
+         var newDiskIteration = false;
+         var caption = '';
+         var description = '';
+         var freeSpace = 0;
+         var size = 0;
++        var volumename = ''
+         lines.forEach(function (value) {
+             if (value !== '') {
+                 var tokens = value.split('=');
+@@ -65,6 +67,9 @@ var Windows = /** @class */ (function () {
+                     case 'Size':
+                         size = isNaN(parseFloat(data)) ? 0 : +data;
+                         break;
++                    case 'VolumeName':
++                        volumename = data;
++                        break;
+                 }
+             }
+             else {
+@@ -74,7 +79,7 @@ var Windows = /** @class */ (function () {
+                     if (size > 0) {
+                         percent = Math.round((used / size) * 100) + '%';
+                     }
+-                    var d = new drive_1.default(description, size, used, freeSpace, percent, caption);
++                    var d = new drive_1.default(description, size, used, freeSpace, percent, caption, volumename);
+                     drives.push(d);
+                     newDiskIteration = false;
+                     caption = '';
+diff --git a/node_modules/node-disk-info/dist/utils/constants.js b/node_modules/node-disk-info/dist/utils/constants.js
+index d2936e1..52b0d4c 100644
+--- a/node_modules/node-disk-info/dist/utils/constants.js
++++ b/node_modules/node-disk-info/dist/utils/constants.js
+@@ -10,7 +10,7 @@ var Constants = /** @class */ (function () {
+     /**
+      * Command to execute on Windows.
+      */
+-    Constants.WINDOWS_COMMAND = 'wmic logicaldisk get Caption,FreeSpace,Size,VolumeSerialNumber,Description  /format:list';
++    Constants.WINDOWS_COMMAND = 'wmic logicaldisk get Caption,FreeSpace,Size,VolumeSerialNumber,Description,VolumeName  /format:list';
+     /**
+      * Command to execute on Linux.
+      */
