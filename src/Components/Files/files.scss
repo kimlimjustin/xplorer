@@ -53,6 +53,10 @@
 	}
 }
 
+.hovering .file-grid-filename {
+	-webkit-line-clamp: initial !important;
+}
+
 .detail-view {
 	display: inline-flex;
 	width: -webkit-fill-available;
