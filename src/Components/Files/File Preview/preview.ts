@@ -32,7 +32,6 @@ const closePreviewFile = (): void => {
  * @returns {void}
  */
 const Preview = (filePath: string): void => {
-	const { listenOpen } = require('../File Operation/open'); //eslint-disable-line
 	closePreviewFile();
 	const previewElement = document.createElement('div');
 	previewElement.classList.add('preview');
@@ -45,7 +44,6 @@ const Preview = (filePath: string): void => {
                 ${html}
                 `;
 
-		listenOpen(previewElement.querySelectorAll('[data-listenOpen]'));
 		document.querySelector<HTMLElement>('.main-box').scrollTop = 0;
 		document.querySelector<HTMLElement>('.main-box').style.overflowY =
 			'hidden';
@@ -98,7 +96,7 @@ const Preview = (filePath: string): void => {
 		});
 	} else if (IMAGE_TYPES.indexOf(path.extname(filePath)) !== -1) {
 		changePreview(
-			`<div class="preview-object" data-type="img"><img src="${filePath}" data-listenOpen data-path="${filePath}" /></div>`
+			`<div class="preview-object" data-type="img"><img src="${filePath}" data-path="${filePath}" /></div>`
 		);
 	} else if (VIDEO_TYPES.indexOf(path.extname(filePath)) !== -1) {
 		changePreview(
