@@ -136,3 +136,11 @@
 	background: var(--selected-grid-background) !important;
 	color: var(--selected-grid-color) !important;
 }
+
+.hover-preview {
+	position: fixed;
+	width: 300px;
+	img {
+		width: 100%;
+	}
+}
