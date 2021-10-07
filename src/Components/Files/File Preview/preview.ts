@@ -7,13 +7,10 @@ import { URLify, eURLify } from '../../Functions/urlify';
 import hljs from 'highlight.js';
 import marked from 'marked';
 import storage from 'electron-json-storage-sync';
+import { IMAGE_TYPES, VIDEO_TYPES } from '../../Constants/fileTypes';
 
 //prettier-ignore
 const FILE_TYPES_AVAILABLE_FOR_PREVIEW = ['.pdf', '.html', '.docx', '.htm', '.xlsx', '.xls', '.xlsb', 'xls', '.ods', '.fods', '.csv', '.txt', '.py', '.js', '.bat', '.css', '.c++', '.cpp', '.cc', '.c', '.diff', '.patch', '.go', '.java', '.json', '.php', '.ts', '.tsx', '.jsx', '.jpg', '.png', '.gif', '.bmp', '.jpeg', '.jpe', '.jif', '.jfif', '.jfi', '.webp', '.tiff', '.tif', '.ico', '.svg', '.webp', '.mp4', '.webm', '.mpg', '.mp2', '.mpeg', '.mpe', '.mpv', '.ocg', '.m4p', '.m4v', '.avi', '.wmv', '.mov', '.qt', '.flv', '.swf', '.md']
-//prettier-ignore
-const IMAGE_TYPES = ['.jpg', '.png', '.gif', '.bmp', '.jpeg', '.jpe', '.jif', '.jfif', '.jfi', '.webp', '.tiff', '.tif', '.ico', '.svg', '.webp']
-//prettier-ignore
-const VIDEO_TYPES = ['.mp4', '.webm', '.mpg', '.mp2', '.mpeg', '.mpe', '.mpv', '.ocg', '.m4p', '.m4v', '.avi', '.wmv', '.mov', '.qt', '.flv', '.swf']
 
 /**
  * Close the preview file
