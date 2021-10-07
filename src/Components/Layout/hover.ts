@@ -1,4 +1,6 @@
 import path from 'path';
+import { IMAGE_TYPES } from '../Constants/fileTypes';
+
 /**
  * Listen to mouse hovering
  * @returns {void}
@@ -7,9 +9,13 @@ const Hover = (): void => {
 	let timeOut: number;
 	let displayName: string;
 	let hoveringElement: HTMLElement;
+	const hoverPreviewElement = document.createElement('div');
 
 	document.querySelector('#workspace').addEventListener('mousemove', (e) => {
+		const x = (e as MouseEvent).clientX;
+		const y = (e as MouseEvent).clientY;
 		window.clearTimeout(timeOut);
+		hoverPreviewElement?.parentNode?.removeChild(hoverPreviewElement);
 
 		// Ignore workspace hovering
 		if ((e.target as HTMLElement).id === 'workspace') {
@@ -37,6 +43,19 @@ const Hover = (): void => {
 				unescape(target.dataset.path)
 			);
 			target?.classList?.add('hovering');
+
+			if (
+				IMAGE_TYPES.indexOf(path.extname(filenameGrid.innerHTML)) !== -1
+			) {
+				hoverPreviewElement.innerHTML = `<img src="${unescape(
+					target.dataset.path
+				)}">`;
+				hoverPreviewElement.classList.add('hover-preview');
+				hoverPreviewElement.style.top = y + 'px';
+				hoverPreviewElement.style.left = x + 'px';
+				hoverPreviewElement.dataset.path = target.dataset.path;
+				document.body.appendChild(hoverPreviewElement);
+			}
 		}, 1500);
 	});
 };
