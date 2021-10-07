@@ -56,7 +56,7 @@ const Hover = (): void => {
 				hoverPreviewElement.dataset.path = target.dataset.path;
 				document.body.appendChild(hoverPreviewElement);
 			}
-		}, 1500);
+		}, 500);
 	});
 };
 
