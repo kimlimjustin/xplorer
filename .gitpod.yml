@@ -6,13 +6,18 @@ image:
 # Now, there are specific tasks for dependencies, servers, noVNC, ports and even pre-builds so that you start without delay.
 tasks:
   - name: Yarn App Server
+    before: sleep 1
     init: yarn
-    command: yarn dev
+    command: |
+        sleep 1
+        yarn dev
   
   - name: Yarn Docs Server
     before: cd docs
     init: yarn
-    command: yarn start
+    command: |
+        sleep 1
+        yarn start
 
 vscode:
   extensions:
