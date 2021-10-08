@@ -31,7 +31,6 @@ const args = yargs(process.argv.slice(isDev ? 2 : 1))
 	.alias('t', 'theme')
 	.command('listen', 'Listen to a file change, used for plugin development')
 	.command('register-theme', 'Register an extension').argv;
-console.log(args);
 autoUpdater.logger = log;
 
 if (args.registerTheme) {

@@ -12,6 +12,7 @@ import { SelectListener } from './Components/Files/File Operation/select';
 import { Shortcut } from './Components/Shortcut/shortcut';
 import path from 'path';
 import fs from 'fs';
+import Hover from './Components/Layout/hover';
 
 const args = ipcRenderer.sendSync('args');
 if (args.listen && args.theme) {
@@ -66,4 +67,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 	ContextMenu(document.getElementById('workspace'));
 	// Initialize shortcut
 	Shortcut();
+	// Initialize hover handler
+	Hover();
 });
