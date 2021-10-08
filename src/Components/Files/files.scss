@@ -53,6 +53,10 @@
 	}
 }
 
+.hovering .file-grid-filename {
+	-webkit-line-clamp: initial !important;
+}
+
 .detail-view {
 	display: inline-flex;
 	width: -webkit-fill-available;
@@ -131,4 +135,12 @@
 	border: var(--selected-grid-border);
 	background: var(--selected-grid-background) !important;
 	color: var(--selected-grid-color) !important;
+}
+
+.hover-preview {
+	position: fixed;
+	width: 300px;
+	img {
+		width: 100%;
+	}
 }

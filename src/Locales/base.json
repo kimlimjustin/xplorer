@@ -20,7 +20,7 @@
 	"App Theme": "App Theme",
 	"System Default": "System Default",
 	"Auto play video file as thumbnail (May consume high amount of RAM)": "Auto play video file as thumbnail (May consume high amount of RAM)",
-	"Extract exe file icon and make it as thumbnail": "Extract exe file icon and make it as thumbnail",
+	"Extract exe file icon and make it as the thumbnail (Turning it on might crashes Xplorer)": "Extract exe file icon and make it as the thumbnail (Turning it on might crashes Xplorer)",
 	"Preference": "Preference",
 	"App Language": "App Language",
 	"Acrylic Effect": "Acrylic Effect",

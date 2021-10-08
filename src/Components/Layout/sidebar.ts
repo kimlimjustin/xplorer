@@ -101,7 +101,9 @@ const createSidebar = (): void => {
 				//prettier-ignore
 				const driveName = process.platform === 'win32'
 				//prettier-ignore
-					? `${drive.volumename || drive.filesystem} (${drive.mounted})`
+					? `${drive.volumename && /[^?]/.test(drive.volumename)
+						? drive.volumename
+						: drive.filesystem} (${drive.mounted})`
 				//prettier-ignore
 					: drive.mounted.split('/')[drive.mounted.split('/').length - 1]; // Get name of drive
 				drivesElement += `<span data-listenOpen data-path = "${getDriveBasePath(
