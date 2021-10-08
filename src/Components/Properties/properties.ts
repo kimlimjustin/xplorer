@@ -3,7 +3,7 @@ import getType from '../Files/File Type/type';
 import storage from 'electron-json-storage-sync';
 import { isHiddenFile as checkIsHiddenFile } from 'is-hidden-file';
 import moment from 'moment';
-import fastFolderSize from 'fast-folder-size';
+import getFolderSize from 'get-folder-size';
 import formatBytes from '../Functions/filesize';
 /**
  * Render file/folder properties into HTML
@@ -88,7 +88,7 @@ const Properties = async (filePath: string): Promise<void> => {
 		}
 	}
 	if (isDirectory) {
-		fastFolderSize(filePath, (err, bytes) => {
+		getFolderSize(filePath, (err, bytes) => {
 			document.querySelector(`[data-calculating="size"]`).innerHTML =
 				formatBytes(bytes);
 		});
