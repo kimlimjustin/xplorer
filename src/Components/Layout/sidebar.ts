@@ -201,18 +201,6 @@ const createSidebar = (): void => {
 				});
 			});
 		changeSidebar(sidebarElement);
-		document.body
-			.querySelector('.sidebar')
-			.querySelectorAll('.sidebar-item')
-			.forEach((item) => {
-				ContextMenu(item);
-			});
-		document.body
-			.querySelector('.sidebar')
-			.querySelectorAll('.drive-item')
-			.forEach((item) => {
-				ContextMenu(item);
-			});
 		Setting();
 	});
 	let _prevDrives: undefined | string;
@@ -238,12 +226,6 @@ const createSidebar = (): void => {
 							.getElementById('sidebar-drives')
 							.querySelectorAll('[data-listenOpen]')
 					);
-					document.body
-						.querySelector('.sidebar')
-						.querySelectorAll('.drive-item')
-						.forEach((item) => {
-							ContextMenu(item);
-						});
 				}
 				_prevDrives = _drives;
 			}

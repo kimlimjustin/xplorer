@@ -32,6 +32,8 @@ const Hover = (): void => {
 
 		const filenameGrid = target.querySelector('.file-grid-filename');
 
+		if (!filenameGrid) return;
+
 		if (target !== hoveringElement) {
 			displayName = undefined;
 		}
