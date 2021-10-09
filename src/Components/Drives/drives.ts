@@ -72,7 +72,7 @@ const drivesToElements = (drives: Drive[], kBlockFormat = false): string => {
 		const driveName =
 			drive.mounted.split('/')[drive.mounted.split('/').length - 1]; // Get name of drive
 		result += `
-        <div class="pendrive file card-hover-effect" data-isdir="true" data-listenOpen data-path = "${getDriveBasePath(
+        <div class="pendrive file card-hover-effect" data-isdir="true" data-path = "${getDriveBasePath(
 			drive.mounted
 		)}">
             <img src="${fileIcon(

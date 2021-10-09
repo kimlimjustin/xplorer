@@ -120,7 +120,7 @@ const homeFiles = (callback: cb) => {
 				file.isDir
 			} data-path = "${escape(
 				path.join(os.homedir(), file.name)
-			)}" data-listenOpen ${
+			)}" ${
 				isHiddenFile(path.join(os.homedir(), file.name))
 					? 'data-hidden-file'
 					: ''

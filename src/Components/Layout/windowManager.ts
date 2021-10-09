@@ -1,7 +1,6 @@
 import { open } from '../Files/File Operation/open';
 import storage from 'electron-json-storage-sync';
 import { BrowserWindow } from '@electron/remote';
-import createSidebar from './sidebar';
 import { closePreviewFile } from '../Files/File Preview/preview';
 import windowGUID from '../Constants/windowGUID';
 
@@ -9,9 +8,8 @@ import windowGUID from '../Constants/windowGUID';
  * Reload the page
  * @returns {void}
  */
-const reload = async (): Promise<void> => {
+const reload = (): void => {
 	const tabs = storage.get(`tabs-${windowGUID}`)?.data;
-	await createSidebar();
 	open(tabs.tabs[tabs.focus].position);
 	closePreviewFile();
 	document.querySelector<HTMLElement>('.properties').style.animation =
