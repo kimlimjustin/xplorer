@@ -116,19 +116,8 @@ const ContextMenu = (): void => {
 	document.addEventListener('contextmenu', (e) => {
 		contextMenu.innerHTML = '';
 		contextMenuSubmenus.innerHTML = '';
-		const coorX = e.pageX;
+		let coorX = e.pageX;
 		let coorY = e.pageY;
-
-		const TOPBAR_ELEMENT = document.querySelector<HTMLElement>('.topbar');
-
-		if (
-			contextMenu.offsetHeight + coorY > window.innerHeight &&
-			coorY - contextMenu.offsetHeight > TOPBAR_ELEMENT.offsetHeight
-		)
-			coorY = coorY - contextMenu.offsetHeight * 0.5;
-
-		contextMenu.style.left = coorX + 'px';
-		contextMenu.style.top = coorY + 'px';
 
 		let target = e.target as HTMLElement;
 		while (!target.dataset.path) {
@@ -150,6 +139,18 @@ const ContextMenu = (): void => {
 			MenuToElements(FileMenu(target, filePath));
 		}
 
+		if (
+			coorY + contextMenu.offsetHeight > window.innerHeight &&
+			coorY - contextMenu.offsetHeight > -50
+		) {
+			coorY -= contextMenu.offsetHeight;
+		}
+		if (coorX + contextMenu.offsetWidth > window.innerWidth)
+			coorX = window.innerWidth - contextMenu.offsetWidth;
+
+		contextMenu.style.left = coorX + 'px';
+		contextMenu.style.top = coorY + 'px';
+
 		updateTheme();
 		document.addEventListener('click', exitContextMenu);
 	});
@@ -164,7 +165,8 @@ const ContextMenu = (): void => {
 	document.addEventListener('mousemove', (e) => {
 		// Expand contextmenu
 		if (
-			e.pageX >= contextMenu.offsetLeft + contextMenu.offsetWidth - 15 &&
+			(e.pageX >= contextMenu.offsetLeft + contextMenu.offsetWidth - 15 ||
+				e.pageX <= contextMenu.offsetLeft + 15) &&
 			e.pageX < contextMenu.offsetLeft + contextMenu.offsetWidth + 100
 		) {
 			return;
@@ -196,10 +198,19 @@ const ContextMenu = (): void => {
 			const menuCoordinate = (
 				e.target as HTMLElement
 			).getBoundingClientRect();
-			submenuElement.style.left =
-				contextMenu.offsetLeft + contextMenu.offsetWidth + 'px';
-			submenuElement.style.top = menuCoordinate.top + 'px';
+
 			submenuElement.style.display = 'block';
+
+			let submenuCoorX = contextMenu.offsetLeft + contextMenu.offsetWidth;
+			if (
+				submenuCoorX + submenuElement.offsetWidth * 0.5 >=
+				window.innerWidth
+			) {
+				submenuCoorX =
+					contextMenu.offsetLeft - submenuElement.offsetWidth;
+			}
+			submenuElement.style.left = submenuCoorX + 'px';
+			submenuElement.style.top = menuCoordinate.top + 'px';
 		}
 	});
 
