@@ -76,13 +76,14 @@ function openFileWithDefaultApp(file:string) :void{
  * @returns {void}
  */
 const openFileHandler = (e: Event): void => {
-    const target = e.target as HTMLElement
 
-    // Ignore workspace clicks
-    if (target.id === 'workspace') return
+    let element = e.target as HTMLElement;
+    while(!element.dataset.path){
+        element = element.parentNode as HTMLElement;
+    }
+    if(element.id === "workspace") return;
 
-    const element = target.dataset.path ? target : target.parentNode as HTMLElement,
-        filePath = unescape(element.dataset.path);
+    const filePath = unescape(element.dataset.path);
 
     // Open the file if it's not directory
     if (element.dataset.isdir !== 'true') {
