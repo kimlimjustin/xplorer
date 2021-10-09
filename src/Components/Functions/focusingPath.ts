@@ -8,7 +8,8 @@ import windowGUID from '../Constants/windowGUID';
  */
 const focusingPath = (): string => {
 	const tabs = storage.get(`tabs-${windowGUID}`)?.data;
-	return tabs.tabs[tabs.focus].position === 'xplorer://Home'
+	return tabs.tabs[tabs.focus].position === 'xplorer://Home' &&
+		process.platform === 'linux'
 		? os.homedir()
 		: tabs.tabs[tabs.focus].position;
 };

@@ -13,9 +13,14 @@ import Cut from '../../Files/File Operation/cut';
 import Copy from '../../Files/File Operation/copy';
 import copyLocation from '../../Files/File Operation/location';
 import Rename from '../../Files/File Operation/rename';
-import { Trash } from '../../Files/File Operation/trash';
+import {
+	PermanentDelete,
+	Restore,
+	Trash,
+} from '../../Files/File Operation/trash';
 import Pin from '../../Files/File Operation/pin';
 import Properties from '../../Properties/properties';
+import focusingPath from '../../Functions/focusingPath';
 
 interface Favorites {
 	name: string;
@@ -109,9 +114,24 @@ const FileMenu = (
 			},
 			{
 				menu: 'Delete',
+				visible: focusingPath() !== 'xplorer://Trash',
 				shortcut: 'Del',
 				icon: 'delete',
 				role: () => Trash([filePath]),
+			},
+			{
+				menu: 'Restore',
+				icon: 'delete',
+				visible: focusingPath() === 'xplorer://Trash',
+				role: () => Restore(filePath),
+			},
+			{
+				menu: 'Permanently Delete',
+				icon: 'delete',
+				visible: focusingPath() === 'xplorer://Trash',
+				shortcut: 'Shift+Del',
+				role: () =>
+					PermanentDelete([unescape(target.dataset.realPath)]),
 			},
 			{
 				menu: isPinned ? 'Unpin from Sidebar' : 'Pin to Sidebar',

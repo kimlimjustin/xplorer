@@ -100,22 +100,13 @@ const MenuToElements = (menu: contextMenuItem[][]) => {
 				}
 			}
 		});
-		if (index !== menu.length - 1) contextMenu.innerHTML += `<hr />`;
+		if (
+			index !== menu.length - 1 &&
+			section.filter((menu) => menu.visible !== false).length > 0
+		)
+			contextMenu.innerHTML += `<hr />`;
 	});
 };
-/*if (getSelected().length > 1) {
-	MenuToElements(MultipleSelectedMenu);
-} else if (target.classList.contains('sidebar-item')) {
-	MenuToElements(SidebarMenu);
-} else if (target.classList.contains('drive-item')) {
-	MenuToElements(SidebarDriveMenu);
-} else if (isTrash) {
-	MenuToElements(TrashMenu);
-} else {
-	if (target === document.getElementById('workspace'))
-		MenuToElements(BodyMenu);
-	else if (target?.dataset?.path) MenuToElements(FileMenu);
-}*/
 
 /**
  * Context menu initializer

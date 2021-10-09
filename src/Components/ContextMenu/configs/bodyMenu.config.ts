@@ -20,8 +20,8 @@ const BodyMenu = (
 ): contextMenuItem[][] => {
 	const favorites: Favorites[] = storage.get('sidebar')?.data?.favorites;
 	const isPinned =
-		!!favorites?.filter((favorite) => favorite.path === target.dataset.path)
-			.length ?? false;
+		!!favorites?.filter((favorite) => favorite.path === filePath).length ??
+		false;
 
 	const changeLayout = (selectedLayout: 'l' | 'm' | 's' | 'd') => {
 		const layout = storage.get('layout')?.data ?? {};
@@ -88,6 +88,7 @@ const BodyMenu = (
 		[
 			{
 				menu: 'Paste',
+				visible: !focusingPath().startsWith('xplorer://'),
 				shortcut: 'Ctrl+V',
 				icon: 'paste',
 				role: () => {
@@ -96,6 +97,7 @@ const BodyMenu = (
 			},
 			{
 				menu: 'Undo Action',
+				visible: !focusingPath().startsWith('xplorer://'),
 				shortcut: 'Ctrl+Z',
 				icon: 'undo',
 				role: () => {
@@ -104,6 +106,7 @@ const BodyMenu = (
 			},
 			{
 				menu: 'Redo Action',
+				visible: !focusingPath().startsWith('xplorer://'),
 				shortcut: 'Ctrl+Y',
 				icon: 'redo',
 				role: () => {
@@ -118,17 +121,27 @@ const BodyMenu = (
 					copyLocation(target);
 				},
 			},
+			{
+				menu: 'Clear Recent List',
+				icon: 'delete',
+				role: () => {
+					storage.set('recent', []);
+					reload();
+				},
+			},
 		],
 		[
 			{
 				menu: 'Open in terminal',
+				visible: !focusingPath().startsWith('xplorer://'),
 				shortcut: 'Alt+T',
 				icon: 'terminal',
 				role: () => openInTerminal(filePath),
 			},
 			{
 				menu: 'Open in VSCode',
-				visible: vscodeInstalled,
+				visible:
+					vscodeInstalled && !focusingPath().startsWith('xplorer://'),
 				shortcut: 'Shift+Enter',
 				icon: 'vscode',
 				role: () => {
@@ -144,6 +157,7 @@ const BodyMenu = (
 			},
 			{
 				menu: 'New',
+				visible: !focusingPath().startsWith('xplorer://'),
 				submenu: [
 					{ name: 'Folder', shortcut: 'Shift+N' },
 					{ name: 'File', shortcut: 'Alt+N' },
