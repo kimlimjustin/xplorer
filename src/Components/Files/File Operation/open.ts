@@ -11,7 +11,6 @@ import Recent from "../../Recent/recent";
 import LAZY_LOAD from "../../Functions/lazyLoadingImage";
 import fs from "fs";
 import {isHiddenFile} from "is-hidden-file";
-import { ContextMenu } from "../../ContextMenu/contextMenu";
 import formatBytes from "../../Functions/filesize";
 import getType from "../File Type/type";
 import { SelectListener, Select } from "./select";
@@ -64,6 +63,17 @@ function openFileWithDefaultApp(file:string) :void{
         child_process.exec('start "" "' + file + '"') :
         child_process.spawn(getCommandLine(), [file],
             { detached: true, stdio: 'ignore' }).unref();
+            // Push file into recent files
+    const recents = storage.get('recent')?.data;
+    if (recents) {
+        if (recents.indexOf(file) !== -1) {
+            recents.push(recents.splice(recents.indexOf(file), 1)[0]);
+            storage.set('recent', recents)
+        } else {
+            storage.set('recent', [...recents, file])
+        }
+    }
+    else storage.set('recent', [file])
 }
 
 /**
@@ -79,19 +89,8 @@ const openFileHandler = (e:Event):void => {
     const filePath = unescape(element.dataset.path)
     // Open the file if it's not directory
     if (element.dataset.isdir !== "true") {
-        const recents = storage.get('recent')?.data;
         openFileWithDefaultApp(filePath)
 
-        // Push file into recent files
-        if (recents) {
-            if (recents.indexOf(filePath) !== -1) {
-                recents.push(recents.splice(recents.indexOf(filePath), 1)[0]);
-                storage.set('recent', recents)
-            } else {
-                storage.set('recent', [...recents, filePath])
-            }
-        }
-        else storage.set('recent', [filePath])
     } else {
         open(filePath)
     }
@@ -205,7 +204,6 @@ const displayFiles = async (files: fileData[], dir:string, options?: {reveal: bo
             `
             MAIN_ELEMENT.appendChild(fileGrid)
 
-            ContextMenu(fileGrid, openFileWithDefaultApp, open)
         })
         if(options?.reveal || !fs.statSync(dir)?.isDirectory()){
             Select(document.querySelector<HTMLElement>(

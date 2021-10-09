@@ -38,9 +38,9 @@ const RenderProperties = (options: Record<string, unknown>) => {
 /**
  * Show properties of a file
  * @param {string} filePath - Path of the file to show the properties
- * @returns {Promise<void>}
+ * @returns {void}
  */
-const Properties = async (filePath: string): Promise<void> => {
+const Properties = (filePath: string): void => {
 	const fileElement = document.querySelector<HTMLElement>(
 		`[data-path="${escape(filePath)}"]`
 	);

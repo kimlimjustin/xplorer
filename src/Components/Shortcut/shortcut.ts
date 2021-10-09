@@ -25,13 +25,8 @@ import focusingPath from '../Functions/focusingPath';
 import Properties from '../Properties/properties';
 import Undo from '../Files/File Operation/undo';
 import Redo from '../Files/File Operation/redo';
-let vscodeInstalled = false;
-try {
-	execSync('code --version');
-	vscodeInstalled = true;
-} catch (_) {
-	console.log('INFO: vscode not installed');
-}
+import vscodeInstalled from '../Constants/isVSCodeInstalled';
+import openInTerminal from '../Functions/openInTerminal';
 
 let selectedAll = true;
 
@@ -173,32 +168,7 @@ const Shortcut = (): void => {
 		}
 		// Open in terminal shortcut (Alt + T)
 		else if (e.altKey && e.key === 't') {
-			const filePath = selectedFilePath ?? focusingPath();
-			if (process.platform === 'win32') {
-				execSync(
-					`${filePath.split('\\')[0]} && cd ${
-						selectedFilePath === 'undefined'
-							? focusingPath()
-							: selectedFilePath
-					} && start cmd`
-				);
-			} else if (process.platform === 'linux') {
-				execSync(
-					`gnome-terminal --working-directory="${
-						selectedFilePath === 'undefined'
-							? focusingPath()
-							: selectedFilePath
-					}"`
-				);
-			} else {
-				execSync(
-					`open -a Terminal ${
-						selectedFilePath === 'undefined'
-							? focusingPath()
-							: selectedFilePath
-					}`
-				);
-			}
+			openInTerminal(selectedFilePath ?? focusingPath());
 		}
 		// Copy file shortcut (Ctrl+C)
 		else if (e.ctrlKey && e.key === 'c') {
@@ -282,18 +252,21 @@ const Shortcut = (): void => {
 
 	const MouseShortcutsHandler = (e: MouseEvent) => {
 		// Don't react if cursor is over path navigator
-		if (document.querySelector('.path-navigator') === document.activeElement) return;
+		if (
+			document.querySelector('.path-navigator') === document.activeElement
+		)
+			return;
 
 		switch (e.button) {
-		// Back button
-		case 3:
-			goBack();
-			break;
-		// Forward button
-		case 4:
-			goForward();
+			// Back button
+			case 3:
+				goBack();
+				break;
+			// Forward button
+			case 4:
+				goForward();
 		}
-	}
+	};
 
 	document.addEventListener('keyup', KeyboardShortcutsHandler);
 	document.addEventListener('mouseup', MouseShortcutsHandler);

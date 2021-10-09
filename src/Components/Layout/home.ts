@@ -16,7 +16,6 @@ import fileIcon from '../Files/File Icon/fileIcon';
 import { startLoading, stopLoading } from '../Functions/Loading/loading';
 import storage from 'electron-json-storage-sync';
 import LAZY_LOAD from '../Functions/lazyLoadingImage';
-import { createContextMenus } from '../ContextMenu/contextMenu';
 import { isHiddenFile } from 'is-hidden-file';
 import getType from '../Files/File Type/type';
 import formatBytes from '../Functions/filesize';
@@ -187,7 +186,6 @@ const Home = async (_callback: homecb): Promise<void> => {
 			// Update the content in the main page ...
 			MAIN_ELEMENT.innerHTML = favorites + drives + files;
 
-			createContextMenus(document.querySelectorAll('.file'));
 			// And also the theme :)
 			updateTheme();
 			nativeDrag(document.querySelectorAll('.file'), os.homedir()); // Listen to native drag
