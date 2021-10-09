@@ -31,6 +31,10 @@ const IGNORE_FILE = ['.', '..'];
 let timeStarted:number;
 let watcher:undefined|FSWatcher;
 
+document.addEventListener('DOMContentLoaded', () => {
+	document.querySelector('#sidebar-nav').addEventListener('click', openFileHandler);
+	document.querySelector('#workspace').addEventListener('dblclick', openFileHandler);
+})
 
 /**
  * Close dir watcher
@@ -44,7 +48,7 @@ const closeWatcher = ():void => {
  * Get command to open a file with default app on various operating systems.
  * @returns {string}
  */
-const getCommandLine =():string => {
+const getCommandLine = ():string => {
     switch (process.platform) {
         case 'darwin':
             return 'open';
@@ -71,47 +75,35 @@ function openFileWithDefaultApp(file:string) :void{
  * @param {any} e - event
  * @returns {void}
  */
-const openFileHandler = (e:Event):void => {
+const openFileHandler = (e: Event): void => {
+
     let element = e.target as HTMLElement;
-    while (!element.dataset.path) {
-        element = element.parentNode as HTMLElement
+    while(!element.dataset.path){
+        element = element.parentNode as HTMLElement;
     }
-    const filePath = unescape(element.dataset.path)
+    if(element.id === "workspace") return;
+
+    const filePath = unescape(element.dataset.path);
+
     // Open the file if it's not directory
-    if (element.dataset.isdir !== "true") {
+    if (element.dataset.isdir !== 'true') {
         const recents = storage.get('recent')?.data;
-        openFileWithDefaultApp(filePath)
+        openFileWithDefaultApp(filePath);
 
         // Push file into recent files
         if (recents) {
             if (recents.indexOf(filePath) !== -1) {
                 recents.push(recents.splice(recents.indexOf(filePath), 1)[0]);
-                storage.set('recent', recents)
+                storage.set('recent', recents);
             } else {
-                storage.set('recent', [...recents, filePath])
+                storage.set('recent', [...recents, filePath]);
             }
-        }
-        else storage.set('recent', [filePath])
-    } else {
-        open(filePath)
-    }
-}
-
-/**
- * Listen elements and pass it into the handler
- * @param {NodeListOf<HTMLElement>} elements - array of elements to be listened
- * @returns {void}
- */
-const listenOpen = (elements: NodeListOf<HTMLElement>):void => {
-    elements.forEach(element => {
-        if (document.getElementById("workspace").contains(element)) {
-            element.removeEventListener("dblclick", openFileHandler)
-            element.addEventListener("dblclick", openFileHandler)
         } else {
-            element.removeEventListener("click", openFileHandler)
-            element.addEventListener("click", openFileHandler)
-        }
-    })
+		storage.set('recent', [filePath]);
+	}
+    } else {
+        open(filePath);
+    }
 }
 
 /**
@@ -188,7 +180,6 @@ const displayFiles = async (files: fileData[], dir:string, options?: {reveal: bo
 
             }
             fileGrid.setAttribute("draggable", 'true')
-            fileGrid.setAttribute("data-listenOpen", '')
             fileGrid.dataset.modifiedAt = String(dirent.modifiedAt);
             fileGrid.dataset.createdAt = String(dirent.createdAt);
             fileGrid.dataset.accessedAt = String(dirent.accessedAt);
@@ -216,7 +207,6 @@ const displayFiles = async (files: fileData[], dir:string, options?: {reveal: bo
         updateTheme()
         nativeDrag(document.querySelectorAll(".file"), dir)
         SelectListener(document.querySelectorAll(".file"))
-        listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
         LAZY_LOAD()
 
         InfoLog(`Open ${dir} within ${(Date.now() - timeStarted) / 1000}s`)
@@ -241,7 +231,6 @@ const open = async (dir:string, reveal?:boolean):Promise<void> => {
     await changePosition(dir)
     if (dir === "xplorer://Home") {
         Home(() => {
-            listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
             SelectListener(document.querySelectorAll(".file"))
             InfoLog(`Open ${dir} within ${(Date.now() - timeStarted) / 1000}s`)
             console.log(`Open ${dir} within ${(Date.now() - timeStarted) / 1000}s`)
@@ -344,5 +333,4 @@ const open = async (dir:string, reveal?:boolean):Promise<void> => {
     }
 }
    
-
-export { listenOpen, open, openFileWithDefaultApp, closeWatcher }
+export { open, openFileWithDefaultApp, closeWatcher }
