@@ -21,6 +21,7 @@ import getType from '../Files/File Type/type';
 import formatBytes from '../Functions/filesize';
 import windowGUID from '../Constants/windowGUID';
 import type fileData from '../../Typings/fileData';
+import { ErrorLog } from '../Functions/log';
 
 /**
  * Create home files section (only for linux)
@@ -41,24 +42,30 @@ const homeFiles = (callback: cb) => {
 		let files = fs
 			.readdirSync(os.homedir(), { withFileTypes: true })
 			.map((dirent) => {
-				const result: fileData = {
-					name: dirent.name,
-					isDir: dirent.isDirectory(),
-					isHidden: isHiddenFile(
+				try {
+					const result: fileData = {
+						name: dirent.name,
+						isDir: dirent.isDirectory(),
+						isHidden: isHiddenFile(
+							path.join(os.homedir(), dirent.name)
+						),
+						displayName: dirent.name,
+					};
+					const type = dirent.isDirectory()
+						? 'File Folder'
+						: getType(path.join(os.homedir(), dirent.name));
+					result.type = type;
+					const stat = fs.statSync(
 						path.join(os.homedir(), dirent.name)
-					),
-					displayName: dirent.name,
-				};
-				const type = dirent.isDirectory()
-					? 'File Folder'
-					: getType(path.join(os.homedir(), dirent.name));
-				result.type = type;
-				const stat = fs.statSync(path.join(os.homedir(), dirent.name));
-				result.createdAt = stat.ctime;
-				result.modifiedAt = stat.mtime;
-				result.accessedAt = stat.atime;
-				result.size = stat.size;
-				return result;
+					);
+					result.createdAt = stat.ctime;
+					result.modifiedAt = stat.mtime;
+					result.accessedAt = stat.atime;
+					result.size = stat.size;
+					return result;
+				} catch (_) {
+					ErrorLog(`Error reading ${dirent.name}`);
+				}
 			});
 		files = files.sort((a, b) => {
 			switch (sort) {
