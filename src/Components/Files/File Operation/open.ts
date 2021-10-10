@@ -219,7 +219,6 @@ const displayFiles = async (files: fileData[], dir:string, options?: {reveal: bo
 
         InfoLog(`Open ${dir} within ${(Date.now() - timeStarted) / 1000}s`)
         stopLoading()
-        console.log(`Open ${dir} within ${(Date.now() - timeStarted) / 1000}s`)
     }
 }
 
@@ -227,16 +226,16 @@ const displayFiles = async (files: fileData[], dir:string, options?: {reveal: bo
  * Open a directory on Xplorer
  * @param {string} dir
  * @param {boolean} boolean - Open the parent directory and select the file/dir
- * @returns {Promise<void>}
+ * @returns {void}
  */
-const open = async (dir:string, reveal?:boolean):Promise<void> => {
+const open = (dir:string, reveal?:boolean):void => {
     if (!dir) return
 
     const initialDirToOpen = dir;
     closePreviewFile()
     timeStarted = Date.now()
     startLoading()
-    await changePosition(dir)
+    changePosition(dir)
     if (dir === "xplorer://Home") {
         Home(() => {
             listenOpen(document.querySelectorAll("[data-listenOpen]")) // Listen to open the file
@@ -289,14 +288,17 @@ const open = async (dir:string, reveal?:boolean):Promise<void> => {
         })
 
     } else {
-        if(reveal || !fs.statSync(dir)?.isDirectory()){
-            dir = path.dirname(dir)
-        }
         if (!fs.existsSync(dir)) {
-            dialog.showMessageBoxSync({ message: `Xplorer can't find '${dir}'. Check the spelling and try again.`, type: "error" })
             ErrorLog(`${dir} does not exist.`)
             stopLoading()
-            return;
+            if(dialog.showMessageBoxSync({ message: `'${dir}' does not exist. do you want to create it?.`, type: "error", buttons: ["Yes", "No"] }) === 0){
+                fs.mkdir(dir, (err) => {
+                    if(err) dialog.showMessageBoxSync({message: 'Error creating folder. Please try again', type: "error"})
+                })
+            } else return;
+        }
+        if(reveal || !fs.statSync(dir)?.isDirectory()){
+            dir = path.dirname(dir)
         }
         const hideSystemFile = storage.get("preference")?.data?.hideSystemFiles ?? true
         let getAttributesSync:any; //eslint-disable-line

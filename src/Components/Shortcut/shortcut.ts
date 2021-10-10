@@ -1,8 +1,6 @@
 import copyLocation from '../Files/File Operation/location';
 import { getSelected } from '../Files/File Operation/select';
-import { execSync, exec } from 'child_process';
-import NewFile from '../Files/File Operation/new';
-import Rename from '../Files/File Operation/rename';
+import { exec } from 'child_process';
 import { updateTheme } from '../Theme/theme';
 import storage from 'electron-json-storage-sync';
 import {
@@ -27,6 +25,8 @@ import Undo from '../Files/File Operation/undo';
 import Redo from '../Files/File Operation/redo';
 import vscodeInstalled from '../Constants/isVSCodeInstalled';
 import openInTerminal from '../Functions/openInTerminal';
+import New from '../Functions/new';
+import Rename from '../Files/File Operation/rename';
 
 let selectedAll = true;
 
@@ -76,11 +76,11 @@ const Shortcut = (): void => {
 		}
 		// New file shortcut (Alt + N)
 		else if (e.key === 'n' && e.altKey && !e.shiftKey) {
-			NewFile('new file');
+			New('file');
 		}
 		// New folder shortcut (Shift + N)
 		else if (e.key === 'N' && !e.altKey && e.shiftKey) {
-			NewFile('new folder');
+			New('folder');
 		} else if (e.key === 'F2') {
 			if (getSelected()[0]) Rename(getSelected()[0].dataset.path);
 		}

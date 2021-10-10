@@ -124,6 +124,7 @@ const BodyMenu = (
 			{
 				menu: 'Clear Recent List',
 				icon: 'delete',
+				visible: focusingPath() === 'xplorer://Recent',
 				role: () => {
 					storage.set('recent', []);
 					reload();
