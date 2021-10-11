@@ -11,7 +11,6 @@ import Recent from "../../Recent/recent";
 import LAZY_LOAD from "../../Functions/lazyLoadingImage";
 import fs from "fs";
 import {isHiddenFile} from "is-hidden-file";
-import { ContextMenu } from "../../ContextMenu/contextMenu";
 import formatBytes from "../../Functions/filesize";
 import getType from "../File Type/type";
 import { SelectListener, Select } from "./select";
@@ -68,6 +67,17 @@ function openFileWithDefaultApp(file:string) :void{
         child_process.exec('start "" "' + file + '"') :
         child_process.spawn(getCommandLine(), [file],
             { detached: true, stdio: 'ignore' }).unref();
+            // Push file into recent files
+    const recents = storage.get('recent')?.data;
+    if (recents) {
+        if (recents.indexOf(file) !== -1) {
+            recents.push(recents.splice(recents.indexOf(file), 1)[0]);
+            storage.set('recent', recents)
+        } else {
+            storage.set('recent', [...recents, file])
+        }
+    }
+    else storage.set('recent', [file])
 }
 
 /**
@@ -86,21 +96,9 @@ const openFileHandler = (e: Event): void => {
     const filePath = unescape(element.dataset.path);
 
     // Open the file if it's not directory
-    if (element.dataset.isdir !== 'true') {
-        const recents = storage.get('recent')?.data;
-        openFileWithDefaultApp(filePath);
+    if (element.dataset.isdir !== "true") {
+        openFileWithDefaultApp(filePath)
 
-        // Push file into recent files
-        if (recents) {
-            if (recents.indexOf(filePath) !== -1) {
-                recents.push(recents.splice(recents.indexOf(filePath), 1)[0]);
-                storage.set('recent', recents);
-            } else {
-                storage.set('recent', [...recents, filePath]);
-            }
-        } else {
-		storage.set('recent', [filePath]);
-	}
     } else {
         open(filePath);
     }
@@ -196,7 +194,6 @@ const displayFiles = async (files: fileData[], dir:string, options?: {reveal: bo
             `
             MAIN_ELEMENT.appendChild(fileGrid)
 
-            ContextMenu(fileGrid, openFileWithDefaultApp, open)
         })
         if(options?.reveal || !fs.statSync(dir)?.isDirectory()){
             Select(document.querySelector<HTMLElement>(
@@ -211,7 +208,6 @@ const displayFiles = async (files: fileData[], dir:string, options?: {reveal: bo
 
         InfoLog(`Open ${dir} within ${(Date.now() - timeStarted) / 1000}s`)
         stopLoading()
-        console.log(`Open ${dir} within ${(Date.now() - timeStarted) / 1000}s`)
     }
 }
 
@@ -219,16 +215,16 @@ const displayFiles = async (files: fileData[], dir:string, options?: {reveal: bo
  * Open a directory on Xplorer
  * @param {string} dir
  * @param {boolean} boolean - Open the parent directory and select the file/dir
- * @returns {Promise<void>}
+ * @returns {void}
  */
-const open = async (dir:string, reveal?:boolean):Promise<void> => {
+const open = (dir:string, reveal?:boolean):void => {
     if (!dir) return
 
     const initialDirToOpen = dir;
     closePreviewFile()
     timeStarted = Date.now()
     startLoading()
-    await changePosition(dir)
+    changePosition(dir)
     if (dir === "xplorer://Home") {
         Home(() => {
             SelectListener(document.querySelectorAll(".file"))
@@ -280,14 +276,17 @@ const open = async (dir:string, reveal?:boolean):Promise<void> => {
         })
 
     } else {
-        if(reveal || !fs.statSync(dir)?.isDirectory()){
-            dir = path.dirname(dir)
-        }
         if (!fs.existsSync(dir)) {
-            dialog.showMessageBoxSync({ message: `Xplorer can't find '${dir}'. Check the spelling and try again.`, type: "error" })
             ErrorLog(`${dir} does not exist.`)
             stopLoading()
-            return;
+            if(dialog.showMessageBoxSync({ message: `'${dir}' does not exist. do you want to create it?.`, type: "error", buttons: ["Yes", "No"] }) === 0){
+                fs.mkdir(dir, (err) => {
+                    if(err) dialog.showMessageBoxSync({message: 'Error creating folder. Please try again', type: "error"})
+                })
+            } else return;
+        }
+        if(reveal || !fs.statSync(dir)?.isDirectory()){
+            dir = path.dirname(dir)
         }
         const hideSystemFile = storage.get("preference")?.data?.hideSystemFiles ?? true
         let getAttributesSync:any; //eslint-disable-line

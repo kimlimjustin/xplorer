@@ -144,18 +144,26 @@ const createSidebar = (): void => {
 
 	getDrivesElement().then((drivesElement) => {
 		// get drives element
-		const sidebarNavElement = document.querySelector('#sidebar-nav') as HTMLDivElement;
+		const sidebarNavElement = document.querySelector(
+			'#sidebar-nav'
+		) as HTMLDivElement;
 		sidebarNavElement.innerHTML = `
 			${getFavoritesElement(_favorites)}
 			${drivesElement}
-		`
+		`;
 
-		const sidebarElement = document.querySelector('.sidebar') as HTMLDivElement;
+		const sidebarElement = document.querySelector(
+			'.sidebar'
+		) as HTMLDivElement;
 		sidebarElement.insertAdjacentHTML(
 			'beforeend',
 			`<div class="sidebar-setting-btn sidebar-hover-effect">
 				<div class="sidebar-setting-btn-inner">
-					<img src="${fileIcon('setting', 'sidebar', false)}" alt="Setting icon" class="sidebar-setting-btn-icon" />
+					<img src="${fileIcon(
+						'setting',
+						'sidebar',
+						false
+					)}" alt="Setting icon" class="sidebar-setting-btn-icon" />
 
 					<span class="sidebar-setting-btn-text">
 						${Translate('Settings')}
@@ -165,7 +173,8 @@ const createSidebar = (): void => {
 		);
 
 		// Collapse section
-		sidebarElement.querySelectorAll('.sidebar-nav-item-dropdown-btn')
+		sidebarElement
+			.querySelectorAll('.sidebar-nav-item-dropdown-btn')
 			.forEach((btn) => {
 				btn.addEventListener('click', (e) => {
 					let sidebarNavItem = (e.target as Element).parentNode;
@@ -193,18 +202,6 @@ const createSidebar = (): void => {
 				});
 			});
 		changeSidebar(sidebarElement);
-		document.body
-			.querySelector('.sidebar')
-			.querySelectorAll('.sidebar-item')
-			.forEach((item) => {
-				ContextMenu(item);
-			});
-		document.body
-			.querySelector('.sidebar')
-			.querySelectorAll('.drive-item')
-			.forEach((item) => {
-				ContextMenu(item);
-			});
 		Setting();
 	});
 	let _prevDrives: undefined | string;
@@ -222,12 +219,6 @@ const createSidebar = (): void => {
 							document.getElementById('sidebar-drives')
 						);
 					updateTheme();
-					document.body
-						.querySelector('.sidebar')
-						.querySelectorAll('.drive-item')
-						.forEach((item) => {
-							ContextMenu(item);
-						});
 				}
 				_prevDrives = _drives;
 			}
