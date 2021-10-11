@@ -1,22 +1,22 @@
 {
   "link.title.Docs": {
-    "message": "ドキュメント",
+    "message": "Documentación",
     "description": "The title of the footer links column with title=Docs in the footer"
   },
   "link.title.Community": {
-    "message": "コミュニティ",
+    "message": "Comunidad",
     "description": "The title of the footer links column with title=Community in the footer"
   },
   "link.item.label.Tutorial": {
-    "message": "チュートリアル",
+    "message": "Tutorial",
     "description": "The label of footer link with label=Tutorial linking to /docs/intro"
   },
   "link.item.label.GitHub Discussions": {
-    "message": "GitHubで議論",
+    "message": "Debates en GitHub",
     "description": "The label of footer link with label=GitHub Discussions linking to https://github.com/kimlimjustin/xplorer/discussions"
   },
   "copyright": {
-    "message": "Copyright © 2021 Justin Maximillian Kimlim. このサイトは<a href=\"https://docusaurus.io\" target=\"_blank\">Docusaurus</a>で作られました.",
+    "message": "Copyright © 2021 Justin Maximillian Kimlim. Sitio web construido con <a href=\"https://docusaurus.io\" target=\"_blank\">Docusaurus</a>.",
     "description": "The footer copyright"
   }
 }

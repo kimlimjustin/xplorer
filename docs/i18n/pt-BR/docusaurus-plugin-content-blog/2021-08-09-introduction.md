@@ -1,49 +1,49 @@
 ---
-slug: welcome
-title: Welcome
+slug: bem vindo
+title: Bem-vindo
 author: Justin Maximillian Kimlim
-author_title: A High School Student Who Loves Programming
+author_title: Um estudante do Ensino Médio que adora Programação
 author_url: https://github.com/kimlimjustin
 author_image_url: https://avatars.githubusercontent.com/u/61906684?v=4
 tags:
   - xplorer
-  - introduction
-  - hello
+  - introdução
+  - olá
   - blog
 ---
 ![Demo](https://camo.githubusercontent.com/7c638a81d598d3ebccdf5d4b213b7b88950fb2d186ef28796826014a671029c7/68747470733a2f2f64726976652e676f6f676c652e636f6d2f75633f6578706f72743d766965772669643d3153427555633042684334396472754a776e6457326d61625339616d546f73705a)
 
-I am very happy to introduce [Xplorer](https://xplorer.vercel.app) to help you organize your files/folders.
+Estou muito feliz em apresentar o [Xplorer](https://xplorer.vercel.app) para ajudá-lo a organizar seus arquivos/pastas.
 
-I created Xplorer for the following reasons:
-* Support Multiple Tabs
-* Easy to use
-* Highly customizable (just like VSCode)
-* Cross-platform
-* Supports previewing apps directly inside Xplorer
-* Looks modern
-* Most importantly, FOSS, Free and Open Source, which means you can change components inside if you see it fit
+Eu criei o Xplorer pelas seguintes razões:
+* Supports Multiple Tabs
+* Fácil de usar
+* Altamente customizável (assim como VSCode)
+* Multi-plataforma
+* Suporta pré-visualização de aplicativos diretamente dentro do Xplorer
+* Moderno
+* Mais importante, FOSS, Livre e de Código Aberto, o que significa que você pode alterar os componentes internos se achar necessário
 
-Xplorer is an app designed to let users manage files/folders easily by supporting multiple tabs, previewing files and so on. Also, it looks modern! You can customize the application by changing the theme, icon and also plugin a custom function into Xplorer (though by the time I write this documentation, it's not done yet, but it will be soon)!
+O Xplorer é um aplicativo projetado para permitir que os usuários gerenciem arquivos/pastas facilmente suportando várias abas, pré-visualizando arquivos e assim por diante. Além disso, parece moderno! Você pode personalizar o aplicativo alterando o tema, ícone e também uma função personalizada no Xplorer (embora na hora de escrever esta documentação, Ainda não terminou, mas chegará em breve)!
 
-## Why did I build this?
+## Por que eu construí isto?
 
-Back then, I was taught Python at my school and I found it interesting when I created the “Hello World” program and I posted  some tutorials on making things like Calculator and showoff to my friends XD. Soon after, Covid 19 came and I was bored and got a lot of time, I went to YouTube and learned how to program using PHP, then I switched to JavaScript and found its better.
+Naquela época, aprendi Python na minha escola e achei interessante quando criei o programa “Hello World” e postei alguns tutoriais sobre como fazer coisas como Calculadora e mostrar para meus amigos 😆. Logo depois, Covid-19 veio e eu estava entediado, em outras palavras, ganhei muito tempo. Fui ao YouTube e aprendi a programar usando PHP, então mudei para JavaScript e achei melhor.
 
-One day, I found out the [Files](https://files-community.github.io/) and it’s awesome, I use it as my default file explorer. However, I found it quite laggy and at a certain version, it just doesn’t work on my laptop. I opened an issue but they asked me to reinstall windows 10 and they just closed [that Issue](https://github.com/files-community/Files/issues/4287) Meanwhile, I also tried dual-booting with Linux and found out the file manager of Linux is boring and I was unable to use any available file manager out there.
+Um dia, descobri os [Arquivos](https://files-community.github.io/) e é incrível, eu o uso como meu explorador de arquivos padrão. No entanto, achei bastante lento e, em uma determinada versão, simplesmente não funciona no meu laptop. Eu abri um issue mas eles pediram eu para reinstalar o windows 10 e acabaram fechando [este Issue](https://github.com/files-community/Files/issues/4287), enquanto isso, eu também tentei dupla inicialização com Linux e descobri que o gerenciador de arquivos do Linux é chato e eu não consegui usar nenhum gerenciador de arquivos disponível.
 
-So, I asked myself, why don’t I build one that is a cross-platform, customizable and modern file manager. Besides, I would add some awesome features that other file explorers doesn’t support. Aha, Xplorer was born!
+Então, perguntei-me por que não construo um que seja um gerenciador de arquivos multiplataforma, personalizável e moderno. Além disso, eu adicionaria algumas funções incríveis que outros exploradores de arquivos não suportam. Aha, Xplorer nasceu!
 
-### Why was it built using JavaScript?
-- JavaScript has become the most used language.
-- JavaScript has a very strong community.
-- You can easily write plugin using JavaScript
-- JavaScript can be run in various OSes.
-- Modern layouts can be built using the HTML and CSS from Electron.
-- I'm bad at C/C++
+### Por que isso foi construído usando JavaScript?
+- O JavaScript se tornou a linguagem mais usada.
+- O JavaScript tem uma comunidade muito forte.
+- Você pode facilmente escrever plugins usando JavaScript
+- O JavaScript pode ser executado em vários sistemas operacionais.
+- Layouts modernos podem ser construídos usando o HTML e o CSS do Electron.
+- Sou ruim em C/C++
 
-## Community
-We welcome your [contributions](https://xplorer.vercel.app/community/Contributing/) to Xplorer, whether you want to use it as your file manager, you want to contribute to the Xplorer core or just have questions. Follow me on [GitHub](https://github.com/kimlimjustin).
+## Comunidade
+Agradecemos suas [contribuições](https://xplorer.vercel.app/community/Contributing/) para o Xplorer, se você quiser usá-las como seu gerenciador de arquivos, você quer contribuir para o Xplorer ou apenas tirar dúvidas. Siga-me no [GitHub](https://github.com/kimlimjustin).
 
-## See ya'll soon!
-Xplorer is currently on development progress (you can try it by manually [setup however](https://xplorer.vercel.app/community/Contributing/#working-on-xplorer-code)), stay tuned till the beta version released!
+## Até logo!
+O Xplorer está atualmente em progresso de desenvolvimento (você pode tentar manualmente [configurando no entanto](https://xplorer.vercel.app/community/Contributing/#working-on-xplorer-code)), fique ligado até a versão beta ser lançada!

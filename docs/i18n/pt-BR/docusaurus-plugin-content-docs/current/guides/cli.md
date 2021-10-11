@@ -10,7 +10,7 @@ Xplorer CLI:
 xplorer <options> [dir1] [dir2] [dir3]
 ```
 
-O Xplorer abrirá o `dir`, `dir2`, `dir3` como guias no Xplorer. Se não houver nenhum diretório passado para o comando, o Xplorer começará na Página inicial.
+O Xplorer abrirá o `dir`, `dir2`, `dir3` como guias no Xplorer. If there's no directory(dir) passed into the command, Xplorer will start at the Home page.
 
 Opções:
 
@@ -31,7 +31,7 @@ Em primeiro lugar, você tem que registrar o comando no caminho do sistema.
 2. Clique no botão `Variáveis de ambiente`, ele irá exibir uma janela.
 3. Na tabela, pesquise pela variável `Path` e clique nela.
 4. Clique no botão `Editar`, irá exibir uma janela.
-5. Clique no botão `Novo`
-6. Adicione `%USERPROFILE%\AppData\Local\Programs\xplorer`
+5. Clique no botão `Novo`.
+6. Adicione `%USERPROFILE%\AppData\Local\Programs\xplorer`.
 
 </details>

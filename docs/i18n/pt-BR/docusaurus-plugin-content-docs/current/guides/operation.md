@@ -2,11 +2,11 @@
 
 ## Copiar arquivo
 
-Você pode copiar arquivos clicando com o botão direito do mouse sobre ele e clicar em `Copiar` ou selecionar o arquivo, depois pressione `Ctrl + C` como atalho e cole-o clicando na opção `Colar` ou pressione `Ctrl + V` na pasta de destino.
+Você pode copiar arquivos clicando com o botão direito e clicar na opção `Copiar` ou selecionar o arquivo e pressionar `Ctrl + C` no teclado e colá-lo clicando no botão `Colar` opção ou pressione `Ctrl + V` na pasta de destino.
 
 :::info
 
-No Windows e macOS, o Xplorer irá copiar os caminhos dos arquivos para a área de transferência local, por isso, você pode copiar o arquivo do Xplorer e colá-lo em uma pasta em outro sistema. No entanto, no Linux, criamos uma string nos comandos do Xplorer e a copiamos para a área de transferência do usuário, o Xplorer irá ler a área de transferência do usuário ao colar o arquivo (porque não encontramos nenhuma ideia para implementá-lo, podemos [abrir um PR](/community/Contributing/#pull-requests) se você puder nos ajudar). A string nos comandos do Xplorer se parece dessa forma:
+No Windows e no macOS, o Xplorer irá copiar o caminho dos arquivos para a área de transferência local, por isso, você pode copiar um arquivo do Xplorer e colá-lo em qualquer pasta em outro sistema. No entanto, no Linux, nós criamos uma string nos comandos do Xplorer e a copiamos para a área de transferência do usuário, o Xplorer irá ler a área de transferência do usuário ao colar o arquivo (porque não encontramos nenhuma ideia para implementá-lo, sinta-se à vontade para [abrir um PR](/community/Contributing/#pull-requests) se você puder nos ajudar). A string nos comandos do Xplorer se parece dessa forma:
 
 ```
 Xplorer command - COPY
@@ -18,13 +18,13 @@ Xplorer command - COPY
 
 ## Copiar caminho de localização
 
-Você pode copiar um caminho de localização de arquivo / pasta para a área de transferência clicando com o botão direito e clicando em `Copiar caminho de localização` ou selecione o arquivo e pressione `Alt + Shift + C` como atalho.
+Você pode copiar um caminho de localização de arquivo/pasta para a área de transferência clicando com o botão direito do mouse e clicando em `Copiar caminho de localização` ou selecione o arquivo e pressione `Alt + Shift + C` no teclado.
 
 ## Recortar arquivo
 
-Você pode cortar arquivos clicando com o botão direito e clicando na opção `Recortar` ou selecione o arquivo e pressione ` Ctrl + X ` como atalho e cole-o clicando em ` Colar ` opção ou pressione ` Ctrl + V ` na pasta de destino.
+Você pode recortar arquivos clicando com o botão direito e clicando na opção `Recortar` ou selecione o arquivo e pressione `Ctrl + X` no teclado, e para colá-lo clicando no botão `Colar` ou pressione ` Ctrl + V ` na pasta de destino.
 
-:::info Isso é feito criando uma string nos comandos do Xplorer e copiando-a para a área de transferência do usuário para ser usada quando colar o arquivo (não integrado com a plataforma porque não encontramos nenhuma ideia, fique à vontade para [abrir um PR](/community/Contributing/#pull-requests) se você pode nos ajudar.). A string nos comandos do Xplorer se parece dessa forma:
+:::info Isso é feito criando uma string nos comandos do Xplorer e a copia para a área de transferência do usuário para ser usada ao colar o arquivo (não está integrado com a plataforma porque não encontramos nenhuma ideia, sinta-se à vontade para [abrir um PR](/community/Contributing/#pull-requests) se você puder nos ajudar.). A string nos comandos do Xplorer se parece dessa forma:
 
 ```
 Xplorer command - CUT
@@ -36,28 +36,28 @@ E://test
 
 ## Apagar arquivos
 
-Você pode apagar arquivos clicando nele com o botão direito e clique na opção `Excluir` ou selecione o arquivo, então pressione `Del` como atalho. O arquivo na lixeira pode ser acessado em `xplorer://Lixeira`.
+Você pode apagar arquivos clicando com o botão direito e selecionando a opção `Delete` ou selecionando o arquivo e pressionando `Del` no teclado. O arquivo na lixeira pode ser acessado em `xplorer://Trash`.
 
 :::info
 
--   No Windows, isso é feito ao criar uma pasta `Lixeira` no `C:` unidade e mover o arquivo para ela.
--   No Linux, essa função está totalmente integrada com o system
+-   No Windows, isto é feito criando uma pasta `Lixeira` em `Disco Local C:` e movendo o arquivo até ela.
+-   No Linux, esta função está totalmente integrada com o sistema.
 -   No macOS, isso é feito criando uma pasta `.local/Lixeira` no diretório `homedir` e movendo o arquivo para ele.
 
-Ainda estamos trabalhando no Windows e no macOS para integrar a pasta `Lixeira`, será lançada antes do surgimento da versão estável. sinta-se livre para [abrir um PR](/community/Contributing/#pull-requests) se você puder nos ajudar.
+Nós estamos trabalhando para integrar a `Lixeira` no Windows e macOS, será lançado antes do lançamento da versão estável. Sinta-se livre para [abrir um PR](/community/Contributing/#pull-requests) se você puder nos ajudar.
 
 :::
 
 ### Excluir permanentemente
 
-:::danger O arquivo excluído permanentemente não pode ser restaurado. Por favor, verifique novamente antes de excluir permanentemente os arquivos.
+:::danger Um arquivo excluído permanentemente não pode ser restaurado. Por favor, verifique novamente antes de excluir permanentemente os arquivos.
 
 :::
 
-Você pode excluir um arquivo permanentemente por:
+Você pode excluir um arquivo permanentemente das seguintes formas:
 
-1. Exclua-o na `Lixeira` e clique com o botão direito do mouse e `Excluir` opção
-2. Selecione o arquivo e pressione `Shift + Del` como atalho
+1. Exclua-o na `Lixeira`, clique com o botão direito e clique na opção `Excluir Permanentemente`
+2. Selecione o arquivo e pressione `Shift + Del` no teclado
 
 ## Novo
 
@@ -65,31 +65,31 @@ Você pode excluir um arquivo permanentemente por:
 
 ### Novo arquivo
 
-Você pode criar um novo arquivo clicando com o botão direito do mouse no espaço de trabalho, expanda a opção `Novo` e selecione a opção `Arquivo` ou pressione `Alt + N` como atalho.
+Você pode criar um novo arquivo clicando com o botão direito do mouse na área de trabalho, selecione a opção `Novo` e selecione a opção `Arquivo` ou pressione `Alt + N` no teclado.
 
 ### Nova Pasta
 
-Você pode criar uma nova pasta clicando com o botão direito do mouse no espaço de trabalho, expanda a opção `Novo` e selecione a opção `Pasta` ou pressione `Shift+ N` como atalho.
+Você pode criar uma nova pasta clicando com o botão direito do mouse na área de trabalho, selecione a opção `Novo` e selecione a opção `Pasta` ou pressione `Shift + N` no teclado.
 
 ## Abrir arquivo
 
-Você pode abrir um arquivo no aplicativo padrão clicando duas vezes ou selecionando o arquivo e pressionando `Enter` como atalho.
+Você pode abrir um arquivo com o aplicativo padrão clicando duas vezes com o mouse ou selecionando o arquivo e pressionando `Enter` no teclado.
 
 ### Abrir no terminal
 
-Esta é uma função integrada pelo Xplorer. Você pode abrir uma pasta no Terminal clicando com o botão direito do mouse sobre ela e clica na opção `Abrir no Terminal` ou selecionar a pasta, então pressione `Alt + T` como atalho.
+Esta é uma função integrada do Xplorer. Você pode abrir uma pasta no Terminal clicando com o botão direito e clique na opção `Abrir no terminal` ou selecionando a pasta e pressione `Alt + T` no teclado.
 
 ### Abrir no VSCode
 
-Esta é uma função integrada pelo Xplorer. Você pode abrir uma pasta de arquivo/arquivo no VSCode clicando com o botão direito do mouse nele e clique na opção `Abrir na VSCode` ou selecione o arquivo, pressione `Ctrl + Enter` como atalho. Você não será capaz de fazer isso se não tiver o VSCode instalado.
+Esta é uma função integrada do Xplorer. Você pode abrir um arquivo/pasta no VSCode clicando com o botão direito e clicando na opção `Abrir no VSCode` ou selecionando o arquivo e pressione `Ctrl + Enter` no teclado. Você não será capaz de fazer isso se não tiver o VSCode instalado.
 
 ## Fixar na Barra Lateral
 
-Você pode fixar uma pasta ou arquivo na barra lateral clicando com o botão direito nele e clique em `Fixar para barra lateral` ou selecione o arquivo, pressione `Alt + P` como atalho.
+Você pode fixar um arquivo/pasta na barra lateral clicando com o botão direito e clicando em `Fixar na barra lateral` ou selecionando o arquivo e pressionando `Alt + P` no teclado.
 
 ## Pré-visualizar arquivo
 
-Você pode pré-visualizar um arquivo diretamente do Xplorer clicando com o botão direito do mouse sobre ele e clique em `Pré-visualizar` ou selecione o arquivo, em seguida, pressione `Ctrl+O`.
+Você pode pré-visualizar um arquivo diretamente do Xplorer clicando com o botão direito do mouse sobre ele e clique em `Pré-visualizar` ou selecione o arquivo, em seguida, pressione `Ctrl + O` no teclado.
 
 ![Pré-visualizar demonstração](/img/docs/preview.png)
 
@@ -172,7 +172,7 @@ Arquivos disponíveis para pré-visualização agora:
 
 ## Propriedades
 
-Você pode ver as propriedades de um arquivo/pasta clicando com o botão direito nele e clicando em `Propriedades` ou selecione o arquivo e pressione `Ctrl + P` como atalho. Propriedades disponíveis por agora (serão melhoradas na próxima versão):
+Você pode ver as propriedades de um arquivo ou pasta clicando com o botão direito e selecionando a opção `Propriedades` ou selecionando o arquivo e pressionando `Ctrl + P` no teclado. Propriedades disponíveis por agora (serão melhoradas na próxima versão):
 
 -   Tamanho
 -   Caminho do Arquivo
@@ -183,4 +183,4 @@ Você pode ver as propriedades de um arquivo/pasta clicando com o botão direito
 
 ## Renomear o arquivo/pasta
 
-Você pode renomear um arquivo/pasta clicando com o botão direito do mouse nele e clique na opção `Renomear` ou selecione o arquivo e pressione `F2` como atalho. Ele irá solicitar um diálogo, digite o novo nome e o arquivo/pasta serão renomeados.
+Você pode renomear um arquivo/pasta clicando com o botão direito do mouse nele e clique na opção `Renomear` ou selecione o arquivo e pressione `F2` no teclado. Ele irá solicitar um diálogo, digite o novo nome e o arquivo/pasta serão renomeados.

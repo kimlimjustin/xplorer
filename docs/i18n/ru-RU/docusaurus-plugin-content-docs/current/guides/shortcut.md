@@ -30,6 +30,6 @@
 | `Enter`             | Открыть                         |
 | `Del`               | Удалить файл                    |
 
-:::note Difference between `reload` and `refresh` `Reload` refreshes the internal HTML while `Refresh` refreshes the whole Electron process.
+::note Разница между `перезагрузкой` и `обновлением` `Перезагрузка` обновляет внутренний HTML, а `Обновление` обновляет весь процесс Electron.
 
 :::

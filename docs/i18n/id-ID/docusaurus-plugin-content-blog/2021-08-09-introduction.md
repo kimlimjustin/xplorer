@@ -16,7 +16,7 @@ tags:
 Saya sangat bahagia untuk memperkenalkan [Xplorer](https://xplorer.vercel.app) pada anda untuk mengatur data/berangkas anda.
 
 I created Xplorer for the following reasons:
-* Menunjang banyak tab
+* Supports Multiple Tabs
 * Mudah digunakan
 * Highly customizable (just like VSCode)
 * Lintas Platform

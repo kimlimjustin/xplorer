@@ -1,16 +1,19 @@
 {
 	"availableLanguages": {
+		"عربي": "ar-SA",
+		"German": "de-DE",
+		"Español": "es-ES",
+		"English": "en-US",
+		"Français": "fr-FR",
+		"Hrvatska": "hr-HR",
 		"Bahasa Indonesia": "id-ID",
 		"日本語": "ja-JP",
-		"English": "en-US",
-		"German": "de-DE",
-		"Bahasa Melayu": "ms-MY",
-		"中文 (简体)": "zh-CN",
-		"中文 (繁體)": "zh-TW",
 		"한국어": "ko-KR",
+		"Bahasa Melayu": "ms-MY",
 		"Portuguese, Brazilian": "pt-BR",
-	  	"Українська": "uk-UA",
 		"Русский": "ru-RU",
-		"Français": "fr-FR"
+		"Українська": "uk-UA",
+		"中文 (简体)": "zh-CN",
+		"中文 (繁體)": "zh-TW"
 	}
 }

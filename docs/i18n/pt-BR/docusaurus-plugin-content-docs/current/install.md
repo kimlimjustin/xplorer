@@ -2,56 +2,94 @@
 sidebar_position: 2
 ---
 
-# Installation
+# Instalação
 
-## Installer
+## Para Windows e MacOS
 
-You can acess the installer [here](https://github.com/kimlimjustin/xplorer/releases).
+You can download Xplorer from the installer [here](https://github.com/kimlimjustin/xplorer/releases).
 
-## Common Problems
+## Para Linux
+
+### AppImages
+
+Grab the **.AppImage** file in the [releases](https://github.com/kimlimjustin/xplorer/releases) page and follow this [guide](https://docs.appimage.org/introduction/quickstart.html#how-to-run-an-appimage).
+
+### Distribuições baseadas em Debian e Ubuntu
+
+Grab the **.deb** file in the [releases](https://github.com/kimlimjustin/xplorer/releases) page.
+
+Você pode instalá-lo com os seguintes comandos:
+```bash
+sudo dpkg -i /path/to/deb/file.deb
+```
+
+**ou**
+
+```bash
+sudo apt install /path/to/deb/file.deb
+```
+### Para sistemas baseados em Arch Linux
+
+> Use seu [AUR](https://wiki.archlinux.org/title/AUR_helpers) favorito.
+
+```bash
+yay -S xplorer-bin
+
+#or for manjaro
+
+pacman build xplorer-bin
+```
+**ou**
+
+Grab the **.pacman** file in the [releases](https://github.com/kimlimjustin/xplorer/releases) page.
+
+Você pode instalá-lo das seguintes formas:
+```bash
+sudo pacman -U /path/to/deb/file.pacman
+```
+
+**ou**
+
+build from [source](https://aur.archlinux.org/xplorer-bin.git)
+```bash
+git clone https://aur.archlinux.org/xplorer-bin.git
+
+cd xplorer-bin
+
+makepkg -si
+```
+## Problemas comuns
 
 <details>
 <summary>
-Faced Windows Defender?
+Enfrentou o Windows Defender?
 </summary>
 
-This is actually not an error, it's a design choice by Microsoft to protect those of us who are not tech-savvy (i.e. potentially your friends) from virus. You don't need to worry the safety of Xplorer in this case, since it's [open source](https://github.com/kimlimjustin/xplorer) and you can inspect the code or even build your own version!
+Na verdade, isto não é um erro, é uma escolha de design da Microsoft para proteger aqueles de nós que não são experientes em tecnologia (i.e. potencialmente seus amigos) do vírus. Você não precisa se preocupar com a segurança do Xplorer neste caso, já que é de [código aberto](https://github.com/kimlimjustin/xplorer) e você pode inspecionar o código ou até mesmo compilar sua própria versão!
 
-To Handle this, you can just click the `More Info` button, then, just click Run Anyway.
+To handle this, you can just click the `More Info` button, then, just click Run Anyway.
 
-1. ![Step 1](/img/docs/windows-defender-1.png)
-2. ![Step 2](/img/docs/windows-defender-2.png)
+1. ![Passo 1](/img/docs/windows-defender-1.png)
+2. ![Passo 2](/img/docs/windows-defender-2.png)
 
-:::note References
+:::note Referências
 
-Adopted from [Stack Overflow](https://stackoverflow.com/questions/65488839/how-can-i-avoid-windows-protected-your-pc-problem-when-my-friends-try-to-use-m).
+Referência de [Stack Overflow](https://stackoverflow.com/questions/65488839/how-can-i-avoid-windows-protected-your-pc-problem-when-my-friends-try-to-use-m).
 
 :::
 
 </details> <details>
 <summary>
-How to install in Arch OS?
+<code>“Xplorer” cannot be opened because the developer cannot be verified.</code> Error on macOS
 </summary>
 
-Run following command:
-
-```bash
-sudo pacman -u [installer file name]
-```
-
-:::info If you faced the `xplorer exists in filesystem` error, run this command instead:
-
-```bash
-sudo pacman -u [installer file name] --overwrite "*"
-```
-
-:::
+Please try [the official docs](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unidentified-developer-mh40616/mac) by Apple.
 
 </details> <details>
 <summary>
-There is no my favourites installer.
+O meu instalador favorito não está aqui.
 </summary>
 
-Please address an issue [here](https://github.com/kimlimjustin/xplorer).
+Please address an issue [here](https://github.com/kimlimjustin/xplorer/new).
 
 </details>

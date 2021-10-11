@@ -4,25 +4,75 @@ sidebar_position: 2
 
 # 安裝
 
-## 安裝程式
+## For Windows and MacOS
 
-您可[點此](https://github.com/kimlimjustin/xplorer/releases)前往下載頁面
+You can download Xplorer from the installer [here](https://github.com/kimlimjustin/xplorer/releases).
 
-## 常見問題
+## For Linux
+
+### AppImages
+
+Grab the **.AppImage** file in the [releases](https://github.com/kimlimjustin/xplorer/releases) page and follow this [guide](https://docs.appimage.org/introduction/quickstart.html#how-to-run-an-appimage).
+
+### Debian and Ubuntu based distros
+
+Grab the **.deb** file in the [releases](https://github.com/kimlimjustin/xplorer/releases) page.
+
+You can install it by:
+```bash
+sudo dpkg -i /path/to/deb/file.deb
+```
+
+**or**
+
+```bash
+sudo apt install /path/to/deb/file.deb
+```
+### Arch based distros
+
+> Use you favorite [aur helper](https://wiki.archlinux.org/title/AUR_helpers).
+
+```bash
+yay -S xplorer-bin
+
+#or for manjaro
+
+pacman build xplorer-bin
+```
+**or**
+
+Grab the **.pacman** file in the [releases](https://github.com/kimlimjustin/xplorer/releases) page.
+
+You can install it by:
+```bash
+sudo pacman -U /path/to/deb/file.pacman
+```
+
+**or**
+
+build from [source](https://aur.archlinux.org/xplorer-bin.git)
+```bash
+git clone https://aur.archlinux.org/xplorer-bin.git
+
+cd xplorer-bin
+
+makepkg -si
+```
+## Common Problems
 
 <details>
 <summary>
-Windows防火牆問題？
+Faced Windows Defender?
 </summary>
 
-這其實不是錯誤，這是微軟設計來保護那些不是很精通科技的人 (換句話講：可能你的朋友) 遠離電腦病毒之功能。 在這情況下，您不需要擔心安全性，因為它是[開源專案](https://github.com/kimlimjustin/xplorer) ，您可以檢查程式碼，甚至編寫屬於您自己的版本！
+This is actually not an error, it's a design choice by Microsoft to protect those of us who are not tech-savvy (i.e. potentially your friends) from a virus. You don't need to worry about the safety of Xplorer in this case since it's [open source](https://github.com/kimlimjustin/xplorer) and you can inspect the code or even build your own version!
 
-處理方法：您可以點選 `More Info` 按鈕後點選「仍要執行」
+To handle this, you can just click the `More Info` button, then, just click Run Anyway.
 
 1. ![第一步](/img/docs/windows-defender-1.png)
 2. ![第二步](/img/docs/windows-defender-2.png)
 
-:::note 參考自：
+:::note References
 
 Adopted from [Stack Overflow](https://stackoverflow.com/questions/65488839/how-can-i-avoid-windows-protected-your-pc-problem-when-my-friends-try-to-use-m).
 
@@ -30,28 +80,16 @@ Adopted from [Stack Overflow](https://stackoverflow.com/questions/65488839/how-c
 
 </details> <details>
 <summary>
-How to install in Arch OS?
+<code>“Xplorer” cannot be opened because the developer cannot be verified.</code> Error on macOS
 </summary>
 
-Run following command:
-
-```bash
-sudo pacman -u [安裝檔案名稱]
-```
-
-:::info If you faced the `xplorer exists in filesystem` error, run this command instead:
-
-```bash
-sudo pacman -u [安裝檔案名稱] --overwrite "*"
-```
-
-:::
+Please try [the official docs](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unidentified-developer-mh40616/mac) by Apple.
 
 </details> <details>
 <summary>
-There is no my favourites installer.
+My favorite Installer is not here.
 </summary>
 
-Please address an issue [here](https://github.com/kimlimjustin/xplorer).
+Please address an issue [here](https://github.com/kimlimjustin/xplorer/new).
 
 </details>

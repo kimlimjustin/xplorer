@@ -17,8 +17,7 @@ export default function Home() {
                         <h1 className="banner--title">Penjelajah File</h1>
                         <h1 className="banner--subtitle">Redefinisi.</h1>
                         <h2 className="banner--description">
-                            Aplikasi Bebas dan Bersumber Terbuka (Foss). Dapat
-                            dijalankan dimana saja.
+                            Aplikasi Bebas dan Bersumber Terbuka (Foss). Dapat dijalankan dimana saja.
                         </h2>
                         <div className="padding-top--l padding-bottom--l">
                             <a
@@ -69,13 +68,11 @@ export default function Home() {
                                 src="/img/home/designed-out-of-the-box.png"
                                 alt="Xplorer designed out of the box"
                             />
-                            <h2>
-                                <i>Designed out of the box</i>
-                            </h2>
+                            <h2><i>Designed out of the box</i></h2>
                             <p>
-                                Katakan sampai jumpa pada desain aplikasi
-                                traditional dan katakan halo kepada desain yang
-                                simple tetapi berguna ini .
+                                Katakan sampai jumpa pada desain aplikasi traditional
+                                dan katakan halo kepada desain yang simple tetapi berguna ini
+                                .
                             </p>
                         </div>
                         <div className="col col--4 padding-left--m padding-right--m">
@@ -85,8 +82,8 @@ export default function Home() {
                             />
                             <h2>Mendukung beberapa tab</h2>
                             <p>
-                                Xplorer membantu anda mengatur berkas-berkas
-                                anda dengan menunjang banyak tab .
+                                Xplorer helps you organize you files easier by
+                                menunjang banyak tab .
                             </p>
                         </div>
                         <div className="col col--4 padding-left--m padding-right--m">

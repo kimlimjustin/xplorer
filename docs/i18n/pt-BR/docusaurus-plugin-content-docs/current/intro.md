@@ -4,18 +4,18 @@ sidebar_position: 1
 
 # Xplorer
 
-## Summary
+## Sumário
 
-Welcome to xplorer! A Free and Open Source (FOSS) File Explorer.
+Welcome to Xplorer, A Free and Open Source (FOSS) File Explorer.
 
-Xplorer is a file explorer built from ground-up to be fully customizable and without customization, it also looks modern! It is cross-platform, built using Electron Technology that allowed our File Explorer to be run not only in Windows, but also Linux and MacOS alike. It also allowed file preview directly inside it, not only pictures or documents, but also videos!
+O Xplorer é um explorador de arquivos construído do zero para ser totalmente personalizável, também parece moderno! É multiplataforma, feita utilizando a tecnologia Electron que permitiu que o File Explorer fosse executado não apenas no Windows, mas também no Linux e MacOS. Também permite a pré-visualização de arquivos diretamente dentro dele, não só de fotos ou documentos, mas também de vídeos!
 
-## Features
+## Funcionalidades
 
-So to summary, Xplorer's features contain:
+Então, resumindo, os recursos do Xplorer:
 
--   Looks modern
--   Easy to use
--   Cross-platform
--   File Preview, even videos!
--   Most importantly, it's Free and Open Source! Which mean you can change components inside if you see fit and you also don't make your wallet go dry
+-   Parece moderno
+-   Fácil de usar
+-   Multi-plataforma
+-   Pré-visualização de Arquivo, até mesmo vídeos!
+-   O mais importante, é gratuito e de código aberto! Which mean you can change components inside if you see fit and you also don't need to make your wallet go dry or break the bank.

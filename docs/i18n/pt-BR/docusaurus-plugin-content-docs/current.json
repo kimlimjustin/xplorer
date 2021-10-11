@@ -1,14 +1,14 @@
 {
   "version.label": {
-    "message": "Next",
+    "message": "Avançar",
     "description": "The label for version current"
   },
   "sidebar.tutorialSidebar.category.Installation": {
-    "message": "Installation",
+    "message": "Instalação",
     "description": "The label for category Installation in sidebar tutorialSidebar"
   },
   "sidebar.tutorialSidebar.category.Guides": {
-    "message": "Guides",
+    "message": "Guias",
     "description": "The label for category Guides in sidebar tutorialSidebar"
   }
 }

@@ -2,25 +2,33 @@
 sidebar_position: 1
 ---
 # 维持
-Xplorer 是一个开源项目，您可以自由加入并寻求支持 😊。
+Xplorer is an open-source project which you can freely join and seek support 😊.
 
-在这个页面上，我们已经列出了一些您可以参与的社区/论坛来寻求支持或帮助他人。
+On this page, we've listed some communities/forums you can participate in to seek support or help others.
 
-在 Xplorer 社区参与之前，请阅读我们的 [行为准则](../CODE_OF_CONDUCT)。
+Before participating in Xplorer's communities, please read our [Code Of Conduct](/community/CODE_OF_CONDUCT/).
 
 ## Issues
-我们使用 GitHub 问题来跟踪公开的漏洞。 请确保您的描述清晰，并且有足够的指示来复制问题。 在这里打开一个新 Issue [来报告错误。](https://github.com/kimlimjustin/xplorer/issues)。 若你想建议新功能，请使用 [GitHub 讨论](https://github.com/kimlimjustin/xplorer/discussions) 。
+We use GitHub Issues to track public bugs. 请确保您的描述清晰，并且有足够的指示来复制问题。 Report a bug by opening a new issue [here](https://github.com/kimlimjustin/xplorer/issues/new). Please use [GitHub Discussions](https://github.com/kimlimjustin/xplorer/discussions) instead to suggest a new feature.
 
-## GitHub 讨论
-GitHub 讨论被用于多个目的，例如：
+## GitHub Discussions
+GitHub Discussions is used for multiple purposes, such as:
+1. Asking questions
+2. Making feature requests and sharing ideas
+3. Xplorer Announcements
+4. Chat on Xplorer
+5. Show and tell: Making custom themes/plug-ins for Xplorer and showing them there!
+
 
 ### 建议新功能
-若你想建议新功能，请使用 [GitHub 讨论](https://github.com/kimlimjustin/xplorer/discussions) 。 在这里建议一个新功能 [](https://github.com/kimlimjustin/xplorer/discussions)！ 优秀的功能请求通常含有：
+We use [GitHub Discussions](https://github.com/kimlimjustin/xplorer/discussion) to track ideas from users. Suggest a new feature [here](https://github.com/kimlimjustin/xplorer/discussions/new)! 优秀的功能请求通常含有：
 - 功能概要
 - 什么 & 为何你想添加此功能
 - 附加附件，如图像，实现功能的资源链接等。
 ### 寻求帮助
-您可以使用 [GitHub Discussion](https://github.com/kimlimjustin/xplorer/discussions) 寻求帮助，其他人也会回答您，就像Stackoverflow一样！
+You can ask for help using [GitHub Discussion](https://github.com/kimlimjustin/xplorer/discussions) and others will answer you, just like Stack Overflow!
+
+:::note Remember to choose the discussion category as Q&A so that your question will be published with answers enabled. :::
 
 ## 资讯
-关注有关Xplorer的最新消息，您可以在这个网站上看到 [官方的 Xplorer 博客](/blog)。
+For the latest news about Xplorer, you can see it through the [official Xplorer blog](/blog) on this website.

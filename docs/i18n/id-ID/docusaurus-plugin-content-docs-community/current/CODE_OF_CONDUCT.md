@@ -11,7 +11,7 @@ Kami berjanji untuk bertingkah dan berinteraksi dalam langkah komunitas yang ter
 
 ## Standar Kami
 
-Contoh perilaku yang berkontribusi memberi dampak yang positif dalam komunitas kami meliputi:
+Examples of behavior that contributes to a positive environment for our community includes:
 
 * Menunjukkan rasa empati dan kebaikan kepada orang lain
 * Menghormati opini, pandangan, dan pengalaman yang berbeda
@@ -35,7 +35,7 @@ Pengelola komunitas mempunyai hak dan tanggung jawab untuk menghapus, mengubah, 
 
 ## Lingkup
 
-Kode Etik ini berlaku di semua ruang lingkup komunitas, dan juga berlaku ketika individu secara resmi mewakili komunitas di ruang lingkup publik. Contoh dalam perwakilan komunitas seperti menggunakan alamat surel yang resmi, mengirim melalui akun media sosial resmi, atau sebagai perwakilan yang ditunjuk pada kegiatan online maupun offline.
+This Code of Conduct applies within all community spaces and also applies when an individual is officially representing the community in public spaces. Contoh dalam perwakilan komunitas seperti menggunakan alamat surel yang resmi, mengirim melalui akun media sosial resmi, atau sebagai perwakilan yang ditunjuk pada kegiatan online maupun offline.
 
 ## Penegakan
 

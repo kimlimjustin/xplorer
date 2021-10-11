@@ -16,7 +16,7 @@ tags:
 我很高兴介绍 [Xplorer](https://xplorer.vercel.app) 来帮助你组织你的文件。
 
 I created Xplorer for the following reasons:
-* Support Multiple Tabs
+* Supports Multiple Tabs
 * Easy to use
 * Highly customizable (just like VSCode)
 * Cross-platform
