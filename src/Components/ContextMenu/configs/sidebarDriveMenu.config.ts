@@ -1,23 +1,23 @@
 import { open } from '../../Files/File Operation/open';
 import { createNewTab } from '../../Layout/tab';
 import contextMenuItem from '../../../Typings/contextMenuItem';
+import Translate from '../../I18n/i18n';
 
 const SidebarDriveMenu = (
 	target: HTMLElement,
 	filePath: string
 ): contextMenuItem[][] => {
-	console.log(filePath);
 	return [
 		[
 			{
-				menu: 'Open',
+				menu: Translate('Open'),
 				icon: 'open',
 				role: () => {
 					open(filePath);
 				},
 			},
 			{
-				menu: 'Open in new tab',
+				menu: Translate('Open in New Tab'),
 				visible: target?.dataset?.isdir === 'true',
 				icon: 'open in new tab',
 				role: () => {

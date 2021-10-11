@@ -21,6 +21,7 @@ import {
 import Pin from '../../Files/File Operation/pin';
 import Properties from '../../Properties/properties';
 import focusingPath from '../../Functions/focusingPath';
+import Translate from '../../I18n/i18n';
 
 interface Favorites {
 	name: string;
@@ -38,7 +39,7 @@ const FileMenu = (
 	return [
 		[
 			{
-				menu: 'Open',
+				menu: Translate('Open'),
 				shortcut: 'Enter',
 				icon: 'open',
 				role: () => {
@@ -48,7 +49,7 @@ const FileMenu = (
 				},
 			},
 			{
-				menu: 'Open in new tab',
+				menu: Translate('Open in new tab'),
 				visible: target?.dataset?.isdir === 'true',
 				icon: 'open in new tab',
 				role: () => {
@@ -56,7 +57,7 @@ const FileMenu = (
 				},
 			},
 			{
-				menu: 'Open in terminal',
+				menu: Translate('Open in terminal'),
 				visible: target?.dataset?.isdir === 'true',
 				shortcut: 'Alt+T',
 				icon: 'terminal',
@@ -65,7 +66,7 @@ const FileMenu = (
 				},
 			},
 			{
-				menu: 'Open in VSCcode',
+				menu: Translate('Open in VSCcode'),
 				visible: vscodeInstalled,
 				shortcut: 'Shift+Enter',
 				icon: 'vscode',
@@ -75,7 +76,7 @@ const FileMenu = (
 				},
 			},
 			{
-				menu: 'Preview',
+				menu: Translate('Preview'),
 				visible:
 					FILE_TYPES_AVAILABLE_FOR_PREVIEW.indexOf(
 						path.extname(target?.dataset?.path)
@@ -87,19 +88,19 @@ const FileMenu = (
 		],
 		[
 			{
-				menu: 'Cut',
+				menu: Translate('Cut'),
 				shortcut: 'Ctrl+X',
 				icon: 'cut',
 				role: () => Cut([filePath]),
 			},
 			{
-				menu: 'Copy',
+				menu: Translate('Copy'),
 				shortcut: 'Ctrl+C',
 				icon: 'copy',
 				role: () => Copy([filePath]),
 			},
 			{
-				menu: 'Copy Location Path',
+				menu: Translate('Copy Location Path'),
 				shortcut: 'Alt+Shift+C',
 				icon: 'location',
 				role: () => copyLocation(target),
@@ -107,26 +108,26 @@ const FileMenu = (
 		],
 		[
 			{
-				menu: 'Rename',
+				menu: Translate('Rename'),
 				shortcut: 'F2',
 				icon: 'rename',
 				role: () => Rename(filePath),
 			},
 			{
-				menu: 'Delete',
+				menu: Translate('Delete'),
 				visible: focusingPath() !== 'xplorer://Trash',
 				shortcut: 'Del',
 				icon: 'delete',
 				role: () => Trash([filePath]),
 			},
 			{
-				menu: 'Restore',
+				menu: Translate('Restore'),
 				icon: 'delete',
 				visible: focusingPath() === 'xplorer://Trash',
 				role: () => Restore(filePath),
 			},
 			{
-				menu: 'Permanently Delete',
+				menu: Translate('Permanently Delete'),
 				icon: 'delete',
 				visible: focusingPath() === 'xplorer://Trash',
 				shortcut: 'Shift+Del',
@@ -134,7 +135,9 @@ const FileMenu = (
 					PermanentDelete([unescape(target.dataset.realPath)]),
 			},
 			{
-				menu: isPinned ? 'Unpin from Sidebar' : 'Pin to Sidebar',
+				menu: Translate(
+					isPinned ? 'Unpin from Sidebar' : 'Pin to Sidebar'
+				),
 				shortcut: 'Alt+P',
 				icon: 'pin',
 				role: () => Pin([filePath]),
@@ -142,7 +145,7 @@ const FileMenu = (
 		],
 		[
 			{
-				menu: 'Properties',
+				menu: Translate('Properties'),
 				shortcut: 'Ctrl+P',
 				icon: target?.dataset?.isdir
 					? 'folder property'
