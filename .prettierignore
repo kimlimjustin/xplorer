@@ -6,7 +6,5 @@ src/Components/Theme/theme.ts
 src/Components/Files/File Icon/fileIcon.ts
 src/Components/Files/File Operation/open.ts
 src/Components/Favorites/favorites.ts
-src/Components/ContextMenu/contextmenu.ts
-src/Components/Files/File Operation/new.ts
 *.min.
 packages/**/*.ejs

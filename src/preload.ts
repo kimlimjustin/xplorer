@@ -4,7 +4,8 @@ import { ipcRenderer, webFrame } from 'electron';
 import createSidebar from './Components/Layout/sidebar';
 import { windowManager } from './Components/Layout/windowManager';
 import Home from './Components/Layout/home';
-import { ContextMenu } from './Components/ContextMenu/contextMenu';
+import { open } from './Components/Files/File Operation/open';
+import ContextMenu from './Components/ContextMenu/contextMenu';
 import { createNewTab, Tab } from './Components/Layout/tab';
 import { toggleHiddenFiles } from './Components/Functions/toggleHiddenFiles';
 import optionMenu from './Components/Layout/optionMenu';
@@ -64,7 +65,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 	// Initialize option menu feature
 	optionMenu();
 	// Initialize context menu
-	ContextMenu(document.getElementById('workspace'));
+	ContextMenu();
 	// Initialize shortcut
 	Shortcut();
 	// Initialize hover handler
