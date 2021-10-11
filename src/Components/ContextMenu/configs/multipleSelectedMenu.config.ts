@@ -6,6 +6,7 @@ import Cut from '../../Files/File Operation/cut';
 import Copy from '../../Files/File Operation/copy';
 import { Trash } from '../../Files/File Operation/trash';
 import Pin from '../../Files/File Operation/pin';
+import Translate from '../../I18n/i18n';
 
 const MultipleSelectedMenu = (
 	_: HTMLElement,
@@ -14,7 +15,7 @@ const MultipleSelectedMenu = (
 	return [
 		[
 			{
-				menu: 'Open in new tab',
+				menu: Translate('Open in New Tab'),
 				role: () => {
 					for (const element of getSelected()) {
 						if (element.dataset.isdir === 'true') {
@@ -25,7 +26,7 @@ const MultipleSelectedMenu = (
 				icon: 'open in new tab',
 			},
 			{
-				menu: 'Open in VSCode',
+				menu: Translate('Open in VSCode'),
 				role: () => {
 					const os = require('os');
 					const { exec } = require('child_process');
@@ -49,7 +50,7 @@ const MultipleSelectedMenu = (
 		],
 		[
 			{
-				menu: 'Cut',
+				menu: Translate('Cut'),
 				shortcut: 'Ctrl+X',
 				icon: 'cut',
 				role: () => {
@@ -61,7 +62,7 @@ const MultipleSelectedMenu = (
 				},
 			},
 			{
-				menu: 'Copy',
+				menu: Translate('Copy'),
 				shortcut: 'Ctrl+C',
 				icon: 'copy',
 				role: () => {
@@ -73,7 +74,7 @@ const MultipleSelectedMenu = (
 				},
 			},
 			{
-				menu: 'Delete',
+				menu: Translate('Delete'),
 				shortcut: 'Del',
 				icon: 'delete',
 				role: () => {
@@ -87,7 +88,7 @@ const MultipleSelectedMenu = (
 		],
 		[
 			{
-				menu: 'Pin to Sidebar',
+				menu: Translate('Pin to Sidebar'),
 				shortcut: 'Alt+P',
 				icon: 'pin',
 				role: () => {

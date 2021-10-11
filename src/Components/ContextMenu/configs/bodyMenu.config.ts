@@ -10,6 +10,7 @@ import Pin from '../../Files/File Operation/pin';
 import Properties from '../../Properties/properties';
 import focusingPath from '../../Functions/focusingPath';
 import openInTerminal from '../../Functions/openInTerminal';
+import Translate from '../../I18n/i18n';
 interface Favorites {
 	name: string;
 	path: string;
@@ -40,44 +41,59 @@ const BodyMenu = (
 	return [
 		[
 			{
-				menu: 'Layout Mode',
+				menu: Translate('Layout Mode'),
 				submenu: [
 					{
-						name: 'Grid View (Large)',
+						name: Translate('Grid View (Large)'),
 						role: () => changeLayout('l'),
 					},
 					{
-						name: 'Grid View (Medium)',
+						name: Translate('Grid View (Medium)'),
 						role: () => changeLayout('m'),
 					},
 					{
-						name: 'Grid View (Small)',
+						name: Translate('Grid View (Small)'),
 						role: () => changeLayout('s'),
 					},
-					{ name: 'Detail View', role: () => changeLayout('d') },
+					{
+						name: Translate('Detail View'),
+						role: () => changeLayout('d'),
+					},
 				],
 				icon: 'layout',
 			},
 			{
-				menu: 'Sort by',
+				menu: Translate('Sort By'),
 				submenu: [
-					{ name: 'A-Z', role: () => changeSortMethod('A') },
-					{ name: 'Z-A', role: () => changeSortMethod('Z') },
 					{
-						name: 'Last Modified',
+						name: Translate('A-Z'),
+						role: () => changeSortMethod('A'),
+					},
+					{
+						name: Translate('Z-A'),
+						role: () => changeSortMethod('Z'),
+					},
+					{
+						name: Translate('Last Modified'),
 						role: () => changeSortMethod('L'),
 					},
 					{
-						name: 'First Modified',
+						name: Translate('First Modified'),
 						role: () => changeSortMethod('F'),
 					},
-					{ name: 'Size', role: () => changeSortMethod('S') },
-					{ name: 'Type', role: () => changeSortMethod('T') },
+					{
+						name: Translate('Size'),
+						role: () => changeSortMethod('S'),
+					},
+					{
+						name: Translate('Type'),
+						role: () => changeSortMethod('T'),
+					},
 				],
 				icon: 'sort',
 			},
 			{
-				menu: 'Refresh',
+				menu: Translate('Reload'),
 				role: () => {
 					reload();
 				},
@@ -87,7 +103,7 @@ const BodyMenu = (
 		],
 		[
 			{
-				menu: 'Paste',
+				menu: Translate('Paste'),
 				visible: !focusingPath().startsWith('xplorer://'),
 				shortcut: 'Ctrl+V',
 				icon: 'paste',
@@ -96,7 +112,7 @@ const BodyMenu = (
 				},
 			},
 			{
-				menu: 'Undo Action',
+				menu: Translate('Undo Action'),
 				visible: !focusingPath().startsWith('xplorer://'),
 				shortcut: 'Ctrl+Z',
 				icon: 'undo',
@@ -105,7 +121,7 @@ const BodyMenu = (
 				},
 			},
 			{
-				menu: 'Redo Action',
+				menu: Translate('Redo Action'),
 				visible: !focusingPath().startsWith('xplorer://'),
 				shortcut: 'Ctrl+Y',
 				icon: 'redo',
@@ -114,7 +130,7 @@ const BodyMenu = (
 				},
 			},
 			{
-				menu: 'Copy Location Path',
+				menu: Translate('Copy Location Path'),
 				shortcut: 'Alt+Shift+C',
 				icon: 'location',
 				role: () => {
@@ -122,7 +138,7 @@ const BodyMenu = (
 				},
 			},
 			{
-				menu: 'Clear Recent List',
+				menu: Translate('Clear Recent List'),
 				icon: 'delete',
 				visible: focusingPath() === 'xplorer://Recent',
 				role: () => {
@@ -133,7 +149,7 @@ const BodyMenu = (
 		],
 		[
 			{
-				menu: 'Open in terminal',
+				menu: 'Open in Terminal',
 				visible: !focusingPath().startsWith('xplorer://'),
 				shortcut: 'Alt+T',
 				icon: 'terminal',
@@ -157,18 +173,20 @@ const BodyMenu = (
 				},
 			},
 			{
-				menu: 'New',
+				menu: Translate('New'),
 				visible: !focusingPath().startsWith('xplorer://'),
 				submenu: [
-					{ name: 'Folder', shortcut: 'Shift+N' },
-					{ name: 'File', shortcut: 'Alt+N' },
+					{ name: Translate('Folder'), shortcut: 'Shift+N' },
+					{ name: Translate('File'), shortcut: 'Alt+N' },
 				],
 				icon: 'new',
 			},
 		],
 		[
 			{
-				menu: isPinned ? 'Unpin from Sidebar' : 'Pin to Sidebar',
+				menu: Translate(
+					isPinned ? 'Unpin from Sidebar' : 'Pin to Sidebar'
+				),
 				shortcut: 'Alt+P',
 				icon: 'pin',
 				role: () => {
@@ -176,7 +194,7 @@ const BodyMenu = (
 				},
 			},
 			{
-				menu: 'Properties',
+				menu: Translate('Properties'),
 				shortcut: 'Ctrl+P',
 				icon: target?.dataset?.isdir
 					? 'folder property'
