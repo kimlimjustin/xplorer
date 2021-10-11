@@ -13,10 +13,7 @@ const nativeDrag = (elements: NodeListOf<Element>, srcPath: string): void => {
 			e.preventDefault();
 			ipcRenderer.send(
 				'ondragstart',
-				path.join(
-					srcPath,
-					file.querySelector<HTMLElement>('#file-filename').innerText
-				),
+				path.join(srcPath, (file as HTMLElement).dataset.path),
 				{ isDir: (file as HTMLElement).dataset.isdir == 'true' }
 			);
 		};
