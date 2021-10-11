@@ -6,16 +6,16 @@ sidebar_position: 1
 
 ## 概述
 
-歡迎使用 Xplorer！ 一個免費且開源 (開放原始碼) 的檔案管理器！
+Welcome to Xplorer, A Free and Open Source (FOSS) File Explorer.
 
-Xplorer是一個從零開始製作、可完全自訂義的檔案管理器，即使沒有做自訂義，介面看起來還是非常現代！ 它跨平台，使用Electron製作，讓我們的檔案管理器不僅可以在Windows上執行，也可以在Linux和MacOS上執行。 它也允許檔案直接預覽，而且不僅可以預覽圖片、文件，也可以預覽影片！
+Xplorer is a file explorer built from the ground up to be fully customizable and without customization, it also looks modern! It is cross-platform, built using Electron Technology that allowed our File Explorer to be run not only in Windows but also Linux and MacOS alike. It also allowed file preview directly inside it, not only pictures or documents but also videos!
 
 ## 特色
 
-大概來講，Xplorer的特色包含：
+So to summarize, Xplorer's features contain:
 
 -   看起來現代
 -   簡單易用
 -   跨平台
 -   檔案預覽，包括影片！
--   最重要的，它是免費且開源的！ 您可以隨意更改任何你想改的功能
+-   最重要的，它是免費且開源的！ Which mean you can change components inside if you see fit and you also don't need to make your wallet go dry or break the bank.

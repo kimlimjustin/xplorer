@@ -16,7 +16,7 @@ tags:
 Es freut mich sehr, Ihnen [Xplorer](https://xplorer.vercel.app) vorstellen zu können, um Ihnen bei der Organisation Ihrer Dateien/Ordner zu helfen.
 
 Ich habe Xplorer aus folgenden Gründen erstellt:
-* Unterstützung mehrerer Tabs
+* Supports Multiple Tabs
 * Benutzerfreundlich
 * Sehr anpassbar (wie VSCode)
 * Plattformübergreifend
@@ -28,22 +28,22 @@ Xplorer wird entwickelt, um es Nutzern mithilfe mehrerer Tabs, Dateivorschau, et
 
 ## Warum habe ich diese Anwendung gebaut?
 
-Back then, I was taught Python at my school and I found it interesting when I created the “Hello World” program and I posted  some tutorials on making things like Calculator and showoff to my friends XD. Soon after, Covid 19 came and I was bored and got a lot of time, I went to YouTube and learned how to program using PHP, then I switched to JavaScript and found its better.
+Damals als ich in meiner Schule in Python unterrichtet wurde, fand ich es interessant, als ich ein "Hello World" Programm erstellt habe und mehrere Videos hochgeladen habe, in denen ich gezeigt habe, wie man Sachen wie einen Rechner erstellt und ich diese meinen Freunden gezeigt habe XD. Als Covid 19 kam war mir langweilig und ich hatte viel Zeit, in der ich zu YouTube gegangen bin und dort mit Videos über PHP angeschaut und auch gelernt habe. Später bin ich dann auf JavaScript umgestiegen und fand es besser.
 
-One day, I found out the [Files](https://files-community.github.io/) and it’s awesome, I use it as my default file explorer. However, I found it quite laggy and at a certain version, it just doesn’t work on my laptop. I opened an issue but they asked me to reinstall windows 10 and they just closed [that Issue](https://github.com/files-community/Files/issues/4287) Meanwhile, I also tried dual-booting with Linux and found out the file manager of Linux is boring and I was unable to use any available file manager out there.
+Eines Tages habe ich [Files](https://files-community.github.io/) gefunden und es war so großartig, dass ich es als Standard-Datei-Explorer verwendete. Aber ich fand es ziemlich verzögert und bei einer bestimmten Version funktioniert es einfach nicht mehr auf meinem Laptop. Ich habe einen Issue erstellt, jedoch sagten die, dass ich Windows 10 neu installieren solle und schlossen den [Issue](https://github.com/files-community/Files/issues/4287). Währenddessen versuchte ich Multi-Booting mit Linux aber ich habe herausgefunden, dass der Datei-Explorer auf Linux langweilig ist und ich war nicht fähig einen anderen Datei-Explorer den es gibt zu nutzen.
 
-So, I asked myself, why don’t I build one that is a cross-platform, customizable and modern file manager. Besides, I would add some awesome features that other file explorers doesn’t support. Aha, Xplorer was born!
+Also habe ich mich selber gefragt, warum ich nicht selber einen cross-platform, anpassbaren und modernen Datei-Explorer mache. Außerdem würde ich einige großartige Funktionen hinzufügen, die andere Datei-Explorer nicht unterstützen. Und Xplorer wurde geboren!
 
-### Why was it built using JavaScript?
-- JavaScript has become the most used language.
-- JavaScript has a very strong community.
-- You can easily write plugin using JavaScript
-- JavaScript can be run in various OSes.
-- Modern layouts can be built using the HTML and CSS from Electron.
-- I'm bad at C/C++
+### Warum wurde es mit JavaScript erstellt?
+- JavaScript hat sich zu der am häufigsten verwendete Programmiersprache entwickelt.
+- JavaScript hat eine sehr starke Community.
+- Man kann einfach Erweiterungen mit JavaScript schreiben
+- JavaScript kann in verschiedenen Betriebssystem verwendet werden.
+- Moderne Layouts können mit HTML und CSS von Electron erstellt werden.
+- Ich bin schlecht in C/C++
 
 ## Community
 Wir freuen uns über deine [Beiträge](https://xplorer.vercel.app/community/Contributing/) zu Xplorer, egal ob du es als Dateimanager verwenden, etwas zu Xplorer beitragen möchtest oder nur Fragen hast. Folge mir auf [GitHub](https://github.com/kimlimjustin).
 
 ## Bis bald!
-Xplorer is currently on development progress (you can try it by manually [setup however](https://xplorer.vercel.app/community/Contributing/#working-on-xplorer-code)), stay tuned till the beta version released!
+Xplorer befindet sich derzeit auf dem Entwicklungsstand (Sie können ihn manuell durch [eigenes Setup](https://xplorer.vercel.app/community/Contributing/#working-on-xplorer-code)ausprobieren), bleiben Sie dran, bis die Beta-Version veröffentlicht wurde!

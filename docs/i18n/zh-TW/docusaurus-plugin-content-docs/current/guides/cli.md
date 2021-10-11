@@ -1,6 +1,6 @@
 # 從終端機啟動Xplorer
 
-:::info 此功能尚未被優化 可以使用但可能反應較慢 會在後續版本進行優化 :::
+:::info This feature hasn't been optimized yet. 可以使用但可能反應較慢 This will be optimized in the feature release. :::
 
 ## 指令
 
@@ -10,7 +10,7 @@ Xplorer CLI:
 xplorer <options> [dir1] [dir2] [dir3]
 ```
 
-Xplorer會以分頁開啟`資料夾`, `資料夾2`, `資料夾3`。 若指令中沒有指定任何資料夾，Xplorer會啟動至首頁
+Xplorer會以分頁開啟`資料夾`, `資料夾2`, `資料夾3`。 If there's no directory(dir) passed into the command, Xplorer will start at the Home page.
 
 選項
 
@@ -28,10 +28,10 @@ Xplorer會以分頁開啟`資料夾`, `資料夾2`, `資料夾3`。 若指令中
 首先，您需要將指令新增至環境變數。
 
 1. 在Windows系統中開啟`系統內容`
-2. 點擊`環境變數`按鈕（於「進階」標籤），會彈出一個視窗
-3. 在表格中找到`Path`變數後，選取該變數
-4. 點選`編輯`按鈕，會彈出編輯環境變數視窗
-5. 點選`新增`按鈕
-6. 新增`%USERPROFILE%\AppData\Local\Programs\xplorer`
+2. Click the `Environment Variables` button, it will pop up a window.
+3. On the table, search for the `Path` variable and click on it.
+4. Click the `Edit` button, it will pop up a window.
+5. Click the `New` button.
+6. Add `%USERPROFILE%\AppData\Local\Programs\xplorer`.
 
 </details>

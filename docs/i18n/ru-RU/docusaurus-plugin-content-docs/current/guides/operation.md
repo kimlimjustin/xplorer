@@ -1,12 +1,12 @@
-# Operations
+# Операции
 
-## Copy files
+## Копировать файлы
 
-You can copy files by right clicking it and click `Copy` option or select the file then press `Ctrl + C` as shortcut and paste it by clicking `Paste` option or press `Ctrl + V` on the destination folder.
+You can copy files by right-clicking it and click the `Copy` option or select the file then press `Ctrl + C` as a shortcut and paste it by clicking the `Paste` option or press `Ctrl + V` on the destination folder.
 
 :::info
 
-On windows and macOS, Xplorer will copy the file paths into local clipboard, because of this, you can copy file from Xplorer and paste it into an folder in another system. However, on Linux, we create a string of Xplorer commands and copy it into user clipboard, Xplorer will read user's clipboard when pasting file (because we haven't found any idea to implement it, fell free to [open a PR](/community/Contributing/#pull-requests) if you can help us). The string of Xplorer command look like this:
+On Windows and macOS, Xplorer will copy the file paths into the local clipboard, because of this, you can copy a file from Xplorer and paste it into any folder in another system. However, on Linux, we create a string of Xplorer commands and copy it into the user clipboard, Xplorer will read the user's clipboard when pasting the file (because we haven't found any idea to implement it, feel free to [open a PR](/community/Contributing/#pull-requests) if you can help us). The string of the Xplorer command looks like this:
 
 ```
 Xplorer command - COPY
@@ -16,15 +16,15 @@ Xplorer command - COPY
 
 :::
 
-## Copy Location Path
+## Скопировать путь
 
-You can copy a file/folder location path into your clipboard by right clicking it and click `Copy Location Path` or select the file then press `Alt + Shift + C` as shortcut.
+You can copy a file/folder location path into your clipboard by right-clicking it and click `Copy Location Path` or select the file then press `Alt + Shift + C` as a shortcut.
 
-## Cut files
+## Вырезать файлы
 
-You can cut files by right clicking it and click `Cut` option or select the file then press `Ctrl + X` as shortcut and paste it by clicking `Paste` option or press `Ctrl + V` on the destination folder.
+You can cut files by right-clicking it and click the `Cut` option or select the file then press `Ctrl + X` as a shortcut and paste it by clicking the `Paste` option or press `Ctrl + V` on the destination folder.
 
-:::info THis is done by creating a string of Xplorer command and copy it into user clipboard to be used when pasting file (not integrated with platform because we haven't found any idea, fell free to [open a PR](/community/Contributing/#pull-requests) if you can help us.). The string og Xplorer command look like this:
+:::info This is done by creating a string of Xplorer command and copies it into the user clipboard to be used when pasting file (this is not integrated with the platform because we haven't found any idea, feel free to [open a PR](/community/Contributing/#pull-requests) if you can help us.). The string of Xplorer command looks like this:
 
 ```
 Xplorer command - CUT
@@ -34,70 +34,70 @@ E://test
 
 :::
 
-## Delete files
+## Удаление файлов
 
-You can cut files by right clicking it and click `Delete` option or select the file then press `Del` as shortcut. Trashed file can be accessed at `xplorer://Trash`.
+You can cut files by right-clicking it and click the `Delete` option or select the file then press `Del` as a shortcut. The trashed file can be accessed at `xplorer://Trash`.
 
 :::info
 
--   On Windows, this is done by creating a `Trash` folder on `C:` drive and moving the file into it.
--   On Linux, this feature is fully integrated with the sytem
--   On macOS, this is done by creating a `.local/Trash` folder on `homedir` and moving the file into it.
+-   On Windows, this is done by creating a `Trash` folder on the `C:` drive and moving the file into it.
+-   On Linux, this feature is fully integrated with the system.
+-   В MacOS это делается путем создания папки `.local/Trash` в `homedir` и перемещения в неё файла.
 
-We are still working on Windows on macOS to integrate the `Trash` folder, will be released before the stable version came out. fell free to [open a PR](/community/Contributing/#pull-requests) if you can help us.
-
-:::
-
-### Permanently delete
-
-:::danger Permanently deleted file cannot be restored. Please check again before permanently delete any files.
+We are still working on Windows on macOS to integrate the `Trash` folder, which will be released before the stable version came out. Feel free to [open a PR](/community/Contributing/#pull-requests) if you can help us.
 
 :::
 
-You can permanently delete a file by:
+### Удалить безвозвратно
 
-1. Delete it into `Trash` and right clicking it and click the `Permanent Delete` option
-2. Select the file and press `Shift + Del` as shortcut
+:::danger A permanently deleted file cannot be restored. Пожалуйста, проверьте ещё раз перед тем, как удалить файл.
 
-## New
+:::
 
-:::caution Be careful with new file/folder name Xplorer treats `/` on file name/folder as subdir/subfile :::
+Вы можете навсегда удалить файл следующими способами:
 
-### New file
+1. Delete it into `Trash` and right-clicking it and click the `Permanent Delete` option
+2. Select the file and press `Shift + Del` as a shortcut
 
-You can create a new file by right clicking the workspace, expand the `New` option and select `file` option or press `Alt + N` as shortcut.
+## Создать
 
-### New folder
+:::caution Будьте осторожны с именем файла/папки Xplorer обрабатывает `/` в имени файла или папки как подпапку/подфайл :::
 
-You can create a new folder by right clicking the workspace, expand the `New` option and select `folder` option or press `Shift + N` as shortcut.
+### Файл
 
-## Open file
+You can create a new file by right-clicking the workspace, expand the `New` option and select the `file` option, or press `Alt + N` as a shortcut.
 
-You can open a file on default application by double-clicking it or select the file then press `Enter` as shortcut.
+### Папку
 
-### Open in Terminal
+You can create a new folder by right-clicking the workspace, expand the `New` option and select the `folder` option, or press `Shift + N` as a shortcut.
 
-This is built-in function by Xplorer. You can open a folder on Terminal by right clicking it and click `Open in terminal` option or select the folder then press `Alt + T` as shortcut.
+## Открыть файл
 
-### Open in VSCode
+You can open a file on the default application by double-clicking it or select the file then press `Enter` as a shortcut.
 
-This is built-in function by Xplorer. You can open a file/folder on VSCode by right clicking it and click `Open in vscode` option or select the file then press `Ctrl + Enter` as shortcut. You won't able to do this if you don't have VSCode installed.
+### Открыть в терминале
 
-## Pin to Sidebar
+This is a built-in function by Xplorer. You can open a folder on Terminal by right-clicking it and click the `Open in terminal` option or select the folder then press `Alt + T` as a shortcut.
 
-You can pin a file/folder into sidebar by right clicking it and click `Pin to Sidebar` or select the file then press `Alt + P` as shortcut.
+### Открыть в VS Code
 
-## Preview file
+This is a built-in function by Xplorer. You can open a file/folder on VSCode by right-clicking it and click the `Open in vscode` option or select the file then press `Ctrl + Enter` as a shortcut. Вы не сможете это сделать, если у вас не установлен VS Code.
 
-You can preview a file directly from Xplorer by right-clicking it and click `Preview` otioin or select the file then press `Ctrl+O`.
+## Закрепить в боковой панели
 
-![Preview Demo](/img/docs/preview.png)
+You can pin a file/folder into the sidebar by right-clicking it and click `Pin to Sidebar` or select the file then press `Alt + P` as a shortcut.
+
+## Предпросмотр файла
+
+You can preview a file directly from Xplorer by right-clicking it and click the `Preview` option or select the file then press `Ctrl+O`.
+
+![Предпросмотр демо](/img/docs/preview.png)
 
 :::info
 
 <details>
 <summary>
-Files available to preview for now:
+Файлы, доступные для предварительного просмотра:
 </summary>
 
 ```json
@@ -170,17 +170,17 @@ Files available to preview for now:
 
 :::
 
-## Properties
+## Свойства
 
-You can view properties of a file/folder by right clicking it and click `Properties` or select the file then press `Ctrl + P` as shortcut. Available properties for now (will be improved at the next version):
+You can view properties of a file/folder by right-clicking it and click `Properties` or select the file then press `Ctrl + P` as a shortcut. На данный момент доступны следующие свойства (список дополнится в будущих версиях):
 
--   Size
--   File Path
--   Created At
--   Accesssed At
--   Modified At
--   Is Hidden
+-   Размер
+-   Путь к файлу
+-   Дата создания
+-   Accessed At
+-   Дата изменения
+-   Скрыто или нет
 
-## Rename file/folder
+## Переименовать файл/папку
 
-You can rename a file/folder by right clicking it and click `Rename` option or select the file then press `F2` as shortcut. It will prompt a dialog, enter the new name and the file/folder will be renamed.
+You can rename a file/folder by right-clicking it and click the `Rename` option or select the file then press `F2` as a shortcut. Появится диалоговое окно. Введите новое имя файла/папки, которую хотите переименовать.

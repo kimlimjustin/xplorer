@@ -1,6 +1,6 @@
 # Запуск Xplorer из терминала
 
-::info Эта функция ещё не оптимизирована. Она может работать нестабильно. В будущих версиях мы это исправим. :::
+:::info This feature hasn't been optimized yet. It works but it might be laggy. This will be optimized in the feature release. :::
 
 ## Команды
 
@@ -10,7 +10,7 @@ Xplorer CLI:
 xplorer <options> [dir1] [dir2] [dir3]
 ```
 
-Xplorer откроет `dir`, `dir2`, `dir3` в качестве вкладок. Если в команде нет директории, Xplorer откроется на домашней странице.
+Xplorer will open `dir`, `dir2`, `dir3` as tabs on Xplorer. If there's no directory(dir) passed into the command, Xplorer will start at the Home page.
 
 Параметры:
 

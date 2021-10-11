@@ -11,7 +11,7 @@ sidebar_label: "行为准则"
 
 ## 我们的准则
 
-有助于促进本社区积极环境的行为包括但不限于：
+Examples of behavior that contributes to a positive environment for our community includes:
 
 * 与人为善、推己及人
 * 尊重不同的主张、观点和经历
@@ -35,7 +35,7 @@ sidebar_label: "行为准则"
 
 ## 适用范围
 
-此行为标准适用于本社区全部场合，以及在其他场合代表本社区的个人。 代表本社区的情形包括但不限于：使用官方电子邮件与社交平台、作为指定代表参与在线或线下活动。
+This Code of Conduct applies within all community spaces and also applies when an individual is officially representing the community in public spaces. 代表本社区的情形包括但不限于：使用官方电子邮件与社交平台、作为指定代表参与在线或线下活动。
 
 ## 贯彻落实
 

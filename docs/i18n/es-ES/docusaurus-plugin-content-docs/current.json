@@ -1,14 +1,14 @@
 {
   "version.label": {
-    "message": "次へ",
+    "message": "Siguiente",
     "description": "The label for version current"
   },
   "sidebar.tutorialSidebar.category.Installation": {
-    "message": "インストール",
+    "message": "Instalación",
     "description": "The label for category Installation in sidebar tutorialSidebar"
   },
   "sidebar.tutorialSidebar.category.Guides": {
-    "message": "ガイド",
+    "message": "Guías",
     "description": "The label for category Guides in sidebar tutorialSidebar"
   }
 }

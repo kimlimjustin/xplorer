@@ -6,7 +6,7 @@ You can copy files by right clicking it and click `Copy` option or select the fi
 
 :::info
 
-On windows and macOS, Xplorer will copy the file paths into local clipboard, because of this, you can copy file from Xplorer and paste it into an folder in another system. However, on Linux, we create a string of Xplorer commands and copy it into user clipboard, Xplorer will read user's clipboard when pasting file (because we haven't found any idea to implement it, fell free to [open a PR](/community/Contributing/#pull-requests) if you can help us). The string of Xplorer command look like this:
+On Windows and macOS, Xplorer will copy the file paths into the local clipboard, because of this, you can copy a file from Xplorer and paste it into any folder in another system. However, on Linux, we create a string of Xplorer commands and copy it into the user clipboard, Xplorer will read the user's clipboard when pasting the file (because we haven't found any idea to implement it, feel free to [open a PR](/community/Contributing/#pull-requests) if you can help us). The string of the Xplorer command looks like this:
 
 ```
 Xplorer command - COPY
@@ -24,7 +24,7 @@ You can copy a file/folder location path into your clipboard by right clicking i
 
 You can cut files by right clicking it and click `Cut` option or select the file then press `Ctrl + X` as shortcut and paste it by clicking `Paste` option or press `Ctrl + V` on the destination folder.
 
-:::info THis is done by creating a string of Xplorer command and copy it into user clipboard to be used when pasting file (not integrated with platform because we haven't found any idea, fell free to [open a PR](/community/Contributing/#pull-requests) if you can help us.). The string og Xplorer command look like this:
+:::info This is done by creating a string of Xplorer command and copies it into the user clipboard to be used when pasting file (this is not integrated with the platform because we haven't found any idea, feel free to [open a PR](/community/Contributing/#pull-requests) if you can help us.). The string of Xplorer command looks like this:
 
 ```
 Xplorer command - CUT
@@ -36,7 +36,7 @@ E://test
 
 ## Delete files
 
-You can cut files by right clicking it and click `Delete` option or select the file then press `Del` as shortcut. Trashed file can be accessed at `xplorer://Trash`.
+You can cut files by right-clicking it and click the `Delete` option or select the file then press `Del` as a shortcut. The trashed file can be accessed at `xplorer://Trash`.
 
 :::info
 
@@ -44,13 +44,13 @@ You can cut files by right clicking it and click `Delete` option or select the f
 -   On Linux, this feature is fully integrated with the sytem
 -   On macOS, this is done by creating a `.local/Trash` folder on `homedir` and moving the file into it.
 
-We are still working on Windows on macOS to integrate the `Trash` folder, will be released before the stable version came out. fell free to [open a PR](/community/Contributing/#pull-requests) if you can help us.
+We are still working on Windows on macOS to integrate the `Trash` folder, which will be released before the stable version came out. Feel free to [open a PR](/community/Contributing/#pull-requests) if you can help us.
 
 :::
 
 ### Permanently delete
 
-:::danger Permanently deleted file cannot be restored. Please check again before permanently delete any files.
+:::danger A permanently deleted file cannot be restored. Please check again before permanently delete any files.
 
 :::
 
@@ -77,11 +77,11 @@ You can open a file on default application by double-clicking it or select the f
 
 ### Open in Terminal
 
-This is built-in function by Xplorer. You can open a folder on Terminal by right clicking it and click `Open in terminal` option or select the folder then press `Alt + T` as shortcut.
+This is a built-in function by Xplorer. You can open a folder on Terminal by right-clicking it and click the `Open in terminal` option or select the folder then press `Alt + T` as a shortcut.
 
 ### Open in VSCode
 
-This is built-in function by Xplorer. You can open a file/folder on VSCode by right clicking it and click `Open in vscode` option or select the file then press `Ctrl + Enter` as shortcut. You won't able to do this if you don't have VSCode installed.
+This is a built-in function by Xplorer. You can open a file/folder on VSCode by right-clicking it and click the `Open in vscode` option or select the file then press `Ctrl + Enter` as a shortcut. You won't able to do this if you don't have VSCode installed.
 
 ## Pin to Sidebar
 
@@ -172,7 +172,7 @@ Files available to preview for now:
 
 ## Properties
 
-You can view properties of a file/folder by right clicking it and click `Properties` or select the file then press `Ctrl + P` as shortcut. Available properties for now (will be improved at the next version):
+You can view properties of a file/folder by right-clicking it and click `Properties` or select the file then press `Ctrl + P` as a shortcut. Available properties for now (will be improved at the next version):
 
 -   Size
 -   File Path
@@ -183,4 +183,4 @@ You can view properties of a file/folder by right clicking it and click `Propert
 
 ## Rename file/folder
 
-You can rename a file/folder by right clicking it and click `Rename` option or select the file then press `F2` as shortcut. It will prompt a dialog, enter the new name and the file/folder will be renamed.
+You can rename a file/folder by right-clicking it and click the `Rename` option or select the file then press `F2` as a shortcut. It will prompt a dialog, enter the new name and the file/folder will be renamed.

@@ -1,26 +1,34 @@
 ---
 sidebar_position: 1
 ---
-# Support
-Xplorer is an open source project which you can freely join and seek support 😊.
+# Suporte
+Xplorer é um projeto de código aberto no qual você pode entrar livremente e buscar suporte 😊.
 
-On this page we've listed some communites/forums you can participate in to seek support or help others.
+Nesta página nós listamos algumas comunidades/fóruns em que você pode participar para procurar apoio ou ajudar outros.
 
-Before participating in Xplorer's communities, please read our [Code Of Conduct](../CODE_OF_CONDUCT).
+Antes de participar das comunidades do Xplorer, leia nosso [Código de Conduta](/community/CODE_OF_CONDUCT/).
 
 ## Issues
-We use GitHub issues to track public bugs. Please ensure your description is clear and has sufficient instructions to be able to reproduce the issue. Report a bug by opening a new issue [here](https://github.com/kimlimjustin/xplorer/issues). Please use [GitHub Discussion](https://github.com/kimlimjustin/xplorer/discussions) instead to suggest a new feature.
+Usamos issues no GitHub para rastrear bugs públicos. Por favor, certifique-se de que sua descrição seja clara e tenha instruções suficientes para reproduzir o problema. Report a bug by opening a new issue [here](https://github.com/kimlimjustin/xplorer/issues/new). Por favor, use [Discussão GitHub](https://github.com/kimlimjustin/xplorer/discussions) para sugerir um novo recurso.
 
-## GitHub Discussion
-GitHub Discussion is used for multiple purposes, such as:
+## Discussões no GitHub
+Discussão do GitHub é usada para múltiplos fins, tais como:
+1. Fazer Perguntas
+2. Fazendo solicitações de recursos e compartilhando ideias
+3. Anúncios do Xplorer
+4. Chat do Xplorer
+5. Mostrar e dizer: Fazendo temas/plug-ins personalizados para Xplorer e mostrando-os lá!
 
-### Feature Request
-We use [GitHub Discussion](https://github.com/kimlimjustin/xplorer/discussions) to track ideas from users. Suggest a new feature [here](https://github.com/kimlimjustin/xplorer/discussions)! Great Feature Requests tend to have:
-- A quick idea summary.
-- What & why you wanted to add the specific feature.
-- Additional context like images, links to resources to implement the feature, etc.
-### Help
-You can ask help using [GitHub Discussion](https://github.com/kimlimjustin/xplorer/discussions) and others will answer you, just like Stackoverflow!
 
-## News
-FOr the latest news about Xplorer, you can see through the [official Xplorer blog](/blog) on this website.
+### Solicitar Recurso
+Usamos a [Discussão do GitHub](https://github.com/kimlimjustin/xplorer/discussion) para avaliar ideias dos usuários. Suggest a new feature [here](https://github.com/kimlimjustin/xplorer/discussions/new)! As ótimas solicitações de recursos tendem a ter:
+- Um resumo rápido da ideia.
+- O que & por que você queria adicionar o recurso específico.
+- Contexto adicional, como imagens, links para os recursos para implementar o recurso, etc.
+### Ajuda
+You can ask for help using [GitHub Discussion](https://github.com/kimlimjustin/xplorer/discussions) and others will answer you, just like Stack Overflow!
+
+:::note Remember to choose the discussion category as Q&A so that your question will be published with answers enabled. :::
+
+## Novidades
+For the latest news about Xplorer, you can see it through the [official Xplorer blog](/blog) on this website.

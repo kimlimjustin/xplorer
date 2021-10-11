@@ -1,6 +1,6 @@
 # Set As Default File Explorer (Windows)
 
-:::caution This guides involves modifiying the Windows registry, make sure to crate a backup beforehand to recover if you got any problem with Xplorer. Please keep in mind that this metod may not work for everyone.
+:::caution This guide involves modifying the Windows registry, make sure to create a backup beforehand to recover if you got any problem with Xplorer. Please keep in mind that this method may not work for everyone.
 
 > Click [here](https://support.microsoft.com/en-us/topic/how-to-back-up-and-restore-the-registry-in-windows-855140ad-e318-2a13-2829-d428a2ab0692) to Microsoft official documentation on how to backup and restore the registry
 
