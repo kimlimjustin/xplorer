@@ -4,7 +4,7 @@ import { ipcRenderer, webFrame } from 'electron';
 import createSidebar from './Components/Layout/sidebar';
 import { windowManager } from './Components/Layout/windowManager';
 import Home from './Components/Layout/home';
-import { listenOpen, open } from './Components/Files/File Operation/open';
+import { open } from './Components/Files/File Operation/open';
 import ContextMenu from './Components/ContextMenu/contextMenu';
 import { createNewTab, Tab } from './Components/Layout/tab';
 import { toggleHiddenFiles } from './Components/Functions/toggleHiddenFiles';
@@ -47,7 +47,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 			let homeExecuted = false; // only execute home once
 			if (!homeExecuted) {
 				Home(() => {
-					listenOpen(document.querySelectorAll('[data-listenOpen]')); // Listen to open the file
 					SelectListener(document.querySelectorAll('.file'));
 					homeExecuted = true;
 				});

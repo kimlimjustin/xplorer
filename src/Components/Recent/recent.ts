@@ -12,7 +12,6 @@ import { SelectListener } from '../Files/File Operation/select';
  * @returns {Promise<void>}
  */
 const Recent = async (): Promise<void> => {
-	const { listenOpen } = require('../Files/File Operation/open'); //eslint-disable-line
 	startLoading();
 	// Preference data
 	const layout =
@@ -71,7 +70,6 @@ const Recent = async (): Promise<void> => {
 					break;
 			}
 			fileGrid.setAttribute('draggable', 'true');
-			fileGrid.setAttribute('data-listenOpen', '');
 			fileGrid.dataset.path = escape(recent);
 			fileGrid.innerHTML = `
             ${preview}
@@ -86,7 +84,6 @@ const Recent = async (): Promise<void> => {
 		}
 		updateTheme();
 		SelectListener(document.querySelectorAll('.file'));
-		listenOpen(document.querySelectorAll('[data-listenOpen]')); // Listen to open the file
 		LAZY_LOAD();
 	}
 	stopLoading();

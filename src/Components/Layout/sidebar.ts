@@ -14,15 +14,9 @@ interface Favorites {
 }
 
 const changeSidebar = (newElement: HTMLElement) => {
-	const { listenOpen } = require('../Files/File Operation/open'); //eslint-disable-line
 	const sidebarElement = document.body.querySelector('.sidebar');
 	sidebarElement.parentElement.replaceChild(newElement, sidebarElement);
 	updateTheme();
-	listenOpen(
-		document
-			.querySelector('.sidebar-nav')
-			.querySelectorAll('[data-listenOpen]')
-	); // Listen to open the file
 	return;
 };
 
@@ -54,7 +48,7 @@ const createSidebar = (): void => {
 			} catch (_) {
 				isdir = true;
 			}
-			favoritesElement += `<span data-listenOpen data-path = "${
+			favoritesElement += `<span data-path = "${
 				favorite.path
 			}" data-isdir="${isdir}" class="sidebar-hover-effect sidebar-item"><img src="${fileIcon(
 				favorite.name,
@@ -106,7 +100,7 @@ const createSidebar = (): void => {
 						: drive.filesystem} (${drive.mounted})`
 				//prettier-ignore
 					: drive.mounted.split('/')[drive.mounted.split('/').length - 1]; // Get name of drive
-				drivesElement += `<span data-listenOpen data-path = "${getDriveBasePath(
+				drivesElement += `<span data-path = "${getDriveBasePath(
 					drive.mounted
 				)}" data-isdir="true" class="sidebar-hover-effect drive-item"><img src="${fileIcon(
 					drive.filesystem === 'Removable Disk' ? 'usb' : 'hard-disk',
@@ -150,26 +144,33 @@ const createSidebar = (): void => {
 
 	getDrivesElement().then((drivesElement) => {
 		// get drives element
-		const sidebarElement = document.createElement('div');
-		sidebarElement.classList.add('sidebar');
-		sidebarElement.innerHTML = `
-        <span class="xplorer-brand">Xplorer</span>
-        <div class="sidebar-nav">
-            ${getFavoritesElement(_favorites)}
-            ${drivesElement}
-        </div>
-        <div class="sidebar-setting-btn sidebar-hover-effect">
-            <div class="sidebar-setting-btn-inner">
-                <img src="${fileIcon(
-					'setting',
-					'sidebar',
-					false
-				)}" alt="Setting icon" class="sidebar-setting-btn-icon">
-                <span class="sidebar-setting-btn-text">${Translate(
-					'Settings'
-				)}</span>
-            </div>
-        </div>`;
+		const sidebarNavElement = document.querySelector(
+			'#sidebar-nav'
+		) as HTMLDivElement;
+		sidebarNavElement.innerHTML = `
+			${getFavoritesElement(_favorites)}
+			${drivesElement}
+		`;
+
+		const sidebarElement = document.querySelector(
+			'.sidebar'
+		) as HTMLDivElement;
+		sidebarElement.insertAdjacentHTML(
+			'beforeend',
+			`<div class="sidebar-setting-btn sidebar-hover-effect">
+				<div class="sidebar-setting-btn-inner">
+					<img src="${fileIcon(
+						'setting',
+						'sidebar',
+						false
+					)}" alt="Setting icon" class="sidebar-setting-btn-icon" />
+
+					<span class="sidebar-setting-btn-text">
+						${Translate('Settings')}
+					</span>
+				</div>
+			</div>`
+		);
 
 		// Collapse section
 		sidebarElement
@@ -209,9 +210,6 @@ const createSidebar = (): void => {
 			if (_prevDrives === undefined) _prevDrives = _drives;
 			else {
 				if (_drives !== _prevDrives) {
-					const {
-						listenOpen,
-					} = require('../Files/File Operation/open'); //eslint-disable-line
 					const _newElement = document.createElement('div');
 					_newElement.innerHTML = _drives.trim();
 					document
@@ -221,11 +219,6 @@ const createSidebar = (): void => {
 							document.getElementById('sidebar-drives')
 						);
 					updateTheme();
-					listenOpen(
-						document
-							.getElementById('sidebar-drives')
-							.querySelectorAll('[data-listenOpen]')
-					);
 				}
 				_prevDrives = _drives;
 			}
