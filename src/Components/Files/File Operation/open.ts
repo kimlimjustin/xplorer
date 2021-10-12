@@ -26,6 +26,7 @@ const WINDOWS_TRASH_INFO_PATH = "C:\\Trash/info";
 const LINUX_TRASH_FILES_PATH = path.join(os.homedir(), '.local/share/Trash/files')
 const LINUX_TRASH_INFO_PATH = path.join(os.homedir(), '.local/share/Trash/info')
 const IGNORE_FILE = ['.', '..'];
+const SYSTEM_FILES = ['desktop.ini'];
 
 let timeStarted:number;
 let watcher:undefined|FSWatcher;
@@ -137,13 +138,13 @@ const displayFiles = async (files: fileData[], dir:string, options?: {reveal: bo
     if (!dirAlongsideFiles) {
         files = files.sort((a, b) => -(Number(a.isDir) - Number(b.isDir)))
     }
+    files = files.filter(file => !file.isSystemFile && !(hideSystemFile && SYSTEM_FILES.indexOf(file.name) !== -1))
     if (!files.length) {
         MAIN_ELEMENT.classList.add('empty-dir-notification')
         MAIN_ELEMENT.innerText = "This folder is empty."
         stopLoading()
     } else {
         await files.forEach(async dirent => {
-            if (hideSystemFile && dirent.isSystemFile) return;
             if (IGNORE_FILE.indexOf(dirent.name) !== -1) return;
             const preview = await fileIcon(dirent.type === "Image" && dirent.isTrash ? dirent.realPath : path.join(dir, dirent.name), dirent.isDir ? "folder" : "file")
             const fileGrid = document.createElement("div")
@@ -298,11 +299,13 @@ const open = (dir:string, reveal?:boolean):void => {
                 result.type = type
                 try {
                     const stat = fs.statSync(path.join(dir, dirent.name))
+                    console.log(stat)
                     result.createdAt = stat.ctime
                     result.modifiedAt = stat.mtime
                     result.accessedAt = stat.atime
                     result.size = stat.size
                 } catch (_) {
+                    console.log('b')
                     if (process.platform === "win32" && !hideSystemFile) {
                         const stat = getAttributesSync(path.join(dir, dirent.name));
                         if (stat) {
