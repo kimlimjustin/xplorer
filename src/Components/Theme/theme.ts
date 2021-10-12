@@ -22,12 +22,12 @@ interface Theme{
 
 let defaultTheme = detectDefaultTheme();
 let developmentStylesheet; // this is important, as this will store the custom stylesheet during development path.
-// Watch native theme to be updated
-nativeTheme.on('updated', () => {
+const updateNativeTheme = () => {
     defaultTheme = detectDefaultTheme()
     ipcRenderer.send('update-theme');
     updateTheme()
-})
+}
+
 let themeJSON:Theme; // user preference theme json
 import * as defaultThemeData from "./theme.json"
 const defaultThemeJSON:Theme = defaultThemeData;
@@ -271,4 +271,4 @@ const updateTheme = async (customStylesheet?: string):Promise<void> => {
     return;
 }
 
-export { changeTheme, updateTheme, detectDefaultTheme }
+export { changeTheme, updateTheme, detectDefaultTheme, updateNativeTheme }

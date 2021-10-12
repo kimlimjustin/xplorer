@@ -1,8 +1,9 @@
 /* eslint-disable no-mixed-spaces-and-tabs */
-import { updateTheme } from './Components/Theme/theme';
+import { updateNativeTheme, updateTheme } from './Components/Theme/theme';
 import { ipcRenderer, webFrame } from 'electron';
 import createSidebar from './Components/Layout/sidebar';
 import { windowManager } from './Components/Layout/windowManager';
+import { nativeTheme } from '@electron/remote';
 import Home from './Components/Layout/home';
 import { open } from './Components/Files/File Operation/open';
 import ContextMenu from './Components/ContextMenu/contextMenu';
@@ -15,6 +16,10 @@ import path from 'path';
 import fs from 'fs';
 import Hover from './Components/Layout/hover';
 
+// Watch native theme to be updated
+nativeTheme.on('updated', () => {
+	updateNativeTheme();
+});
 const args = ipcRenderer.sendSync('args');
 if (args.listen && args.theme) {
 	args.theme =
