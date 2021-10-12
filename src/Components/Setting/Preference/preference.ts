@@ -56,6 +56,11 @@ const Preference = (): void => {
 					preference.language = event.target.value;
 					storage.set('preference', preference);
 					reload();
+
+					document.querySelector(
+						'.sidebar-setting-btn-text'
+					).innerHTML = Translate('Settings');
+					Preference();
 				}
 			);
 		settingsMain

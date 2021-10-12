@@ -25,7 +25,6 @@ const changeSidebar = (newElement: HTMLElement) => {
  * @returns {void}
  */
 const createSidebar = (): void => {
-	const { ContextMenu } = require('../ContextMenu/contextMenu'); //eslint-disable-line
 	const { data } = storage.get('sidebar'); // Get user favorites data on sidebar
 	// Functions to get favorites element
 	const getFavoritesElement = (favorites: Favorites[]) => {
@@ -155,22 +154,20 @@ const createSidebar = (): void => {
 		const sidebarElement = document.querySelector(
 			'.sidebar'
 		) as HTMLDivElement;
-		sidebarElement.insertAdjacentHTML(
-			'beforeend',
-			`<div class="sidebar-setting-btn sidebar-hover-effect">
-				<div class="sidebar-setting-btn-inner">
-					<img src="${fileIcon(
-						'setting',
-						'sidebar',
-						false
-					)}" alt="Setting icon" class="sidebar-setting-btn-icon" />
 
-					<span class="sidebar-setting-btn-text">
-						${Translate('Settings')}
-					</span>
-				</div>
-			</div>`
-		);
+		const settingBtn = document.querySelector('.sidebar-setting-btn');
+		settingBtn.innerHTML = `
+		<div class="sidebar-setting-btn-inner">
+			<img src="${fileIcon(
+				'setting',
+				'sidebar',
+				false
+			)}" alt="Setting icon" class="sidebar-setting-btn-icon" />
+
+			<span class="sidebar-setting-btn-text">
+				${Translate('Settings')}
+			</span>
+		</div>`;
 
 		// Collapse section
 		sidebarElement
