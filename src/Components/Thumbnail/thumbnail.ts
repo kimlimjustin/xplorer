@@ -76,7 +76,27 @@ const fileThumbnail = (
 
 	if (category === 'file') {
 		for (const fileType of FileConfig()) {
-			if (fileType.extension?.indexOf(ext) !== -1) {
+			if (
+				fileType?.fileNames?.indexOf(basename) !== undefined &&
+				fileType?.fileNames?.indexOf(basename) !== -1
+			) {
+				const thumbnailPath = fileType.thumbnail?.(filePath);
+				if (thumbnailPath) {
+					return imageThumbnail(
+						fs.existsSync(thumbnailPath)
+							? thumbnailPath
+							: path.join(__dirname, '../../icon', thumbnailPath),
+						false,
+						HTMLFormat
+					);
+				}
+			}
+		}
+		for (const fileType of FileConfig()) {
+			if (
+				fileType.extension?.indexOf(ext) !== undefined &&
+				fileType.extension?.indexOf(ext) !== -1
+			) {
 				const thumbnailPath = fileType.thumbnail?.(filePath);
 				if (thumbnailPath) {
 					return imageThumbnail(
