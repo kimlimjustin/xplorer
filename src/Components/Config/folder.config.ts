@@ -12,6 +12,7 @@ const folderConfig = (): folderThumbnailType[] => {
 				'article',
 				'articles',
 				'documentation',
+				'doc',
 				'docs',
 				'post',
 				'posts',
@@ -82,7 +83,7 @@ const folderConfig = (): folderThumbnailType[] => {
 			thumbnail: 'folder/setting-preference.svg',
 		},
 		{
-			folderNames: ['.git', 'git'],
+			folderNames: ['.git', 'git', 'patch'],
 			thumbnail: 'folder/folder-git.svg',
 			type: 'Version Control System',
 		},
@@ -94,6 +95,109 @@ const folderConfig = (): folderThumbnailType[] => {
 			folderNames: ['node_modules'],
 			type: 'Node Package Modules',
 			thumbnail: 'folder/folder-node.svg',
+		},
+		{
+			folderNames: ['app', 'apps'],
+			thumbnail: 'folder/folder-app.svg',
+		},
+		{
+			folderNames: [
+				'archival',
+				'archive',
+				'archives',
+				'backup',
+				'backups',
+			],
+			thumbnail: 'folder/folder-archive.svg',
+			type: 'Archived',
+		},
+		{
+			folderNames: [
+				'asset',
+				'assets',
+				'report',
+				'reports',
+				'res',
+				'resources',
+				'resource',
+				'src',
+				'static',
+			],
+			thumbnail: 'folder/folder-resource.svg',
+			type: 'Resources',
+		},
+		{
+			folderNames: ['backend', 'server', 'servers'],
+			thumbnail: 'folder/folder-server.svg',
+		},
+		{
+			folderNames: ['bin', 'dist', 'build', 'out', 'outs', 'release'],
+			thumbnail: 'folder/folder-dist.svg',
+			type: 'Packaged Distributions',
+		},
+		{
+			folderNames: ['client', 'clients', 'frontend', 'pwa'],
+			thumbnail: 'folder/folder-client.svg',
+		},
+		{
+			folderNames: ['database', 'data', 'db', 'databases'],
+			thumbnail: 'folder/folder-database.svg',
+			type: 'Database',
+		},
+		{
+			folderNames: ['font', 'fonts'],
+			thumbnail: 'folder/folder-font.svg',
+		},
+		{
+			folderNames: ['function', 'functions', 'math'],
+			thumbnail: 'folder/folder-function.svg',
+		},
+		{
+			folderNames: [
+				'html',
+				'page',
+				'pages',
+				'screen',
+				'screens',
+				'view',
+				'views',
+			],
+			thumbnail: 'folder/folder-view.svg',
+		},
+		{
+			folderNames: ['javascript', 'js'],
+			thumbnail: 'folder/folder-javascript.svg',
+		},
+		{
+			folderNames: [
+				'lib',
+				'libraries',
+				'library',
+				'third-party',
+				'vendor',
+				'vendors',
+			],
+			thumbnail: 'folder/folder-lib.svg',
+		},
+		{
+			folderNames: ['project', 'projects'],
+			thumbnail: 'folder/folder-project.svg',
+		},
+		{
+			folderNames: ['python, __pycache__'],
+			thumbnail: 'folder/folder-python.svg',
+		},
+		{
+			folderNames: ['script', 'scripts'],
+			thumbnail: 'folder/folder-scripts.svg',
+		},
+		{
+			folderNames: ['template', 'templates'],
+			thumbnail: 'folder/folder-template.svg',
+		},
+		{
+			folderNames: ['test', 'jest', 'mocha'],
+			thumbnail: 'folder/folder-test.svg',
 		},
 	];
 };
