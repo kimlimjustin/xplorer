@@ -1,12 +1,12 @@
-import { URLify, eURLify } from '../../Functions/urlify';
+import { URLify, eURLify } from '../Functions/urlify';
 import fs from 'fs';
 
-interface FileTypes {
+interface FileConfigType {
 	extension?: string[];
 	fileNames?: string[];
-	folderNames?: string[];
 	type: string;
 	preview?: (filePath: string, cb: (html: string) => void) => void;
+	thumbnail?: (filePath?: string) => string;
 }
 
 const IMAGE_TYPES = [
@@ -55,22 +55,25 @@ const previewCode = (filePath: string, language?: string) => {
 	return `<pre class='preview-object' data-type="code"><code>${highlightedCode}</code></pre>`;
 };
 
-const FileTypesConfig = (): FileTypes[] => {
+const FileConfig = (): FileConfigType[] => {
 	return [
 		{
 			extension: ['js'],
 			type: 'JavaScript',
+			thumbnail: () => 'extension/javascript.svg',
 			preview: (filePath: string, cb: (html: string) => void) =>
 				cb(previewCode(filePath, 'javascript')),
 		},
 		{
 			extension: ['ts'],
 			type: 'TypeScript',
+			thumbnail: () => 'extension/file.svg',
 			preview: (filePath: string, cb: (html: string) => void) =>
 				cb(previewCode(filePath, 'typescript')),
 		},
 		{
 			extension: ['html', 'htm', 'xhtml', 'html_vm'],
+			thumbnail: () => 'extension/html.svg',
 			type: 'HyperText Markup Language',
 			preview: (filePath: string, cb: (html: string) => void) =>
 				cb(
@@ -80,6 +83,7 @@ const FileTypesConfig = (): FileTypes[] => {
 		{
 			extension: ['pdf'],
 			type: 'Portable Document Format',
+			thumbnail: () => 'extension/pdf.svg',
 			preview: (filePath: string, cb: (html: string) => void) => {
 				cb(
 					`<object data="${filePath}#toolbar=0" type="application/pdf" class="preview-object"><embed src="${filePath}#toolbar=0" type="application/pdf" /></object>`
@@ -176,6 +180,24 @@ const FileTypesConfig = (): FileTypes[] => {
 		{
 			extension: ['exe'],
 			type: 'Executable',
+			thumbnail: (filePath: string) => {
+				const storage = require('electron-json-storage-sync');
+				const preference = storage.get('preference')?.data;
+				const extractExeIcon =
+					require('../Functions/extractExeIcon').default;
+				try {
+					if (
+						(preference?.extractExeIcon ?? false) &&
+						process.platform === 'win32'
+					) {
+						return extractExeIcon(filePath);
+					}
+				} catch (err) {
+					console.log(err);
+					return 'extension/exe.svg';
+				}
+				extractExeIcon(filePath);
+			},
 			preview: (filePath: string, cb: (html: string) => void) =>
 				cb(previewCode(filePath, 'bat')),
 		},
@@ -217,6 +239,7 @@ const FileTypesConfig = (): FileTypes[] => {
 		{
 			extension: IMAGE_TYPES,
 			type: 'Image',
+			thumbnail: (filePath: string) => filePath,
 			preview: (filePath: string, cb: (html: string) => void) =>
 				cb(
 					`<div class="preview-object" data-type="img"><img src="${filePath}" data-path="${filePath}" /></div>`
@@ -259,7 +282,6 @@ const FileTypesConfig = (): FileTypes[] => {
 			},
 		},
 		{
-			folderNames: ['.git'],
 			type: 'Git',
 			fileNames: ['gitignore', 'gitconfig'],
 			preview: (filePath: string, cb: (html: string) => void) =>
@@ -270,10 +292,6 @@ const FileTypesConfig = (): FileTypes[] => {
 			type: 'Yet Anoter Markup Language',
 			preview: (filePath: string, cb: (html: string) => void) =>
 				cb(previewCode(filePath, 'yml')),
-		},
-		{
-			folderNames: ['node_modules'],
-			type: 'Node Packages',
 		},
 		{
 			fileNames: ['.prettierignore', '.prettierrc.json'],
@@ -297,4 +315,4 @@ const FileTypesConfig = (): FileTypes[] => {
 };
 
 export { IMAGE_TYPES, VIDEO_TYPES };
-export default FileTypesConfig;
+export default FileConfig;

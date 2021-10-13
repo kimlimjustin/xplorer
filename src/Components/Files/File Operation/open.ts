@@ -1,4 +1,4 @@
-import fileIcon from "../File Icon/fileIcon";
+import fileThumbnail from "../../Thumbnail/thumbnail";
 import path from "path";
 import os from "os";
 import Home from '../../Layout/home';
@@ -146,7 +146,7 @@ const displayFiles = async (files: fileData[], dir:string, options?: {reveal: bo
     } else {
         await files.forEach(async dirent => {
             if (IGNORE_FILE.indexOf(dirent.name) !== -1) return;
-            const preview = await fileIcon(dirent.type === "Image" && dirent.isTrash ? dirent.realPath : path.join(dir, dirent.name), dirent.isDir ? "folder" : "file")
+            const preview = await fileThumbnail(dirent.type === "Image" && dirent.isTrash ? dirent.realPath : path.join(dir, dirent.name), dirent.isDir ? "folder" : "file")
             const fileGrid = document.createElement("div")
             fileGrid.className = "file-grid grid-hover-effect file"
             if (dirent.isTrash) fileGrid.dataset.isTrash = "true"

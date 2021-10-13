@@ -3,7 +3,7 @@ import formatBytes from '../Functions/filesize';
 import storage from 'electron-json-storage-sync';
 import getDriveBasePath from '../Functions/basePath';
 import Translate from '../I18n/i18n';
-import fileIcon from '../Files/File Icon/fileIcon';
+import fileThumbnail from '../Thumbnail/thumbnail';
 import windowGUID from '../Constants/windowGUID';
 import type Drive from 'node-disk-info/dist/classes/drive';
 
@@ -75,7 +75,7 @@ const drivesToElements = (drives: Drive[], kBlockFormat = false): string => {
         <div class="pendrive file card-hover-effect" data-isdir="true" data-path = "${getDriveBasePath(
 			drive.mounted
 		)}">
-            <img src="${fileIcon(
+            <img src="${fileThumbnail(
 				drive.filesystem === 'Removable Disk' ? 'usb' : 'hard-disk',
 				'favorites',
 				false

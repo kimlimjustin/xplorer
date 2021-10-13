@@ -1,6 +1,6 @@
 import { startLoading, stopLoading } from '../Functions/Loading/loading';
 import storage from 'electron-json-storage-sync';
-import fileIcon from '../Files/File Icon/fileIcon';
+import fileThumbnail from '../Thumbnail/thumbnail';
 import LAZY_LOAD from '../Functions/lazyLoadingImage';
 import { updateTheme } from '../Theme/theme';
 import getType from '../Files/File Type/type';
@@ -52,7 +52,7 @@ const Recent = async (): Promise<void> => {
 		MAIN_ELEMENT.innerText = 'This folder is empty.';
 	} else {
 		for (const recent of recents) {
-			const preview = await fileIcon(recent, 'file');
+			const preview = await fileThumbnail(recent, 'file');
 			const fileGrid = document.createElement('div');
 			fileGrid.className = 'file-grid file grid-hover-effect';
 			switch (layout) {
