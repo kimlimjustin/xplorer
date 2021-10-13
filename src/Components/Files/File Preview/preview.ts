@@ -1,7 +1,7 @@
 import { dialog } from '@electron/remote';
 import path from 'path';
 import { updateTheme } from '../../Theme/theme';
-import FileTypesConfig from '../Types/fileTypes';
+import FileConfig from '../../Config/file.config';
 
 /**
  * Close the preview file
@@ -49,18 +49,16 @@ const Preview = (filePath: string): void => {
 	const ext = filePath.split('.').pop().toLowerCase();
 	const basename = path.basename(filePath);
 	let previewed = false;
-	for (const type of FileTypesConfig()) {
+	for (const type of FileConfig()) {
 		if (
-			(type.fileNames?.indexOf(basename) !== undefined &&
-				type.fileNames?.indexOf(basename) !== -1) ||
-			(type.folderNames?.indexOf(basename) !== undefined &&
-				type.folderNames?.indexOf(basename) !== -1)
+			type.fileNames?.indexOf(basename) !== undefined &&
+			type.fileNames?.indexOf(basename) !== -1
 		) {
 			type?.preview?.(filePath, (html) => changePreview(html));
 			previewed = true;
 		}
 	}
-	for (const type of FileTypesConfig()) {
+	for (const type of FileConfig()) {
 		if (
 			type.extension?.indexOf(ext) !== undefined &&
 			type.extension?.indexOf(ext) !== -1

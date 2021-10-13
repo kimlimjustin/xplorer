@@ -3,7 +3,7 @@ import SidebarDriveMenu from './configs/sidebarDriveMenu.config';
 import BodyMenu from './configs/bodyMenu.config';
 import MultipleSelectedMenu from './configs/multipleSelectedMenu.config';
 import contextMenuItem from '../../Typings/contextMenuItem';
-import fileIcon from '../Files/File Icon/fileIcon';
+import fileThumbnail from '../Thumbnail/thumbnail';
 import { getSelected } from '../Files/File Operation/select';
 import { updateTheme } from '../Theme/theme';
 import FileMenu from './configs/fileMenu.config';
@@ -30,7 +30,7 @@ const MenuToElements = (menu: contextMenuItem[][]) => {
 
 				if (item.icon) {
 					if (item.shortcut)
-						menu.innerHTML = `<img src = "${fileIcon(
+						menu.innerHTML = `<img src = "${fileThumbnail(
 							item.icon,
 							'contextmenu',
 							false
@@ -38,7 +38,7 @@ const MenuToElements = (menu: contextMenuItem[][]) => {
 							item.shortcut
 						}</span>`;
 					else
-						menu.innerHTML = `<img src = "${fileIcon(
+						menu.innerHTML = `<img src = "${fileThumbnail(
 							item.icon,
 							'contextmenu',
 							false
