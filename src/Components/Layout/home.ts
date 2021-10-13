@@ -51,9 +51,10 @@ const homeFiles = (callback: cb) => {
 						),
 						displayName: dirent.name,
 					};
-					const type = dirent.isDirectory()
-						? 'File Folder'
-						: getType(path.join(os.homedir(), dirent.name));
+					const type = getType(
+						path.join(os.homedir(), dirent.name),
+						dirent.isDirectory()
+					);
 					result.type = type;
 					const stat = fs.statSync(
 						path.join(os.homedir(), dirent.name)
@@ -124,9 +125,7 @@ const homeFiles = (callback: cb) => {
 			}
 			result += `<div class="${className}" draggable="true" data-isdir=${
 				file.isDir
-			} data-path = "${escape(
-				path.join(os.homedir(), file.name)
-			)}" ${
+			} data-path = "${escape(path.join(os.homedir(), file.name))}" ${
 				isHiddenFile(path.join(os.homedir(), file.name))
 					? 'data-hidden-file'
 					: ''

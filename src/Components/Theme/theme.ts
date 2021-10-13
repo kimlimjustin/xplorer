@@ -22,7 +22,7 @@ interface Theme{
 
 let defaultTheme = detectDefaultTheme();
 let developmentStylesheet; // this is important, as this will store the custom stylesheet during development path.
-const updateNativeTheme = () => {
+const updateNativeTheme = ():void => {
     defaultTheme = detectDefaultTheme()
     ipcRenderer.send('update-theme');
     updateTheme()

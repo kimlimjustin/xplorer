@@ -1,8 +1,4 @@
-import {
-	FILE_TYPES_AVAILABLE_FOR_PREVIEW,
-	Preview,
-} from '../../Files/File Preview/preview';
-import path from 'path';
+import { Preview } from '../../Files/File Preview/preview';
 import vscodeInstalled from '../../Constants/isVSCodeInstalled';
 import contextMenuItem from '../../../Typings/contextMenuItem';
 import storage from 'electron-json-storage-sync';
@@ -77,10 +73,7 @@ const FileMenu = (
 			},
 			{
 				menu: Translate('Preview'),
-				visible:
-					FILE_TYPES_AVAILABLE_FOR_PREVIEW.indexOf(
-						path.extname(target?.dataset?.path)
-					) !== -1,
+				visible: target?.dataset?.isdir !== 'true',
 				shortcut: 'Ctrl+O',
 				icon: 'preview',
 				role: () => Preview(filePath),

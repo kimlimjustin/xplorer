@@ -1,16 +1,34 @@
-import Types from './type.json';
 import path from 'path';
+import FileTypesConfig from '../Types/fileTypes';
 /**
  * Get type of a file name
  * @param {string} filename - File name
+ * @param {boolean} isDir - is it a directory?
  * @returns {string} File Type
  */
-const getType = (filename: string): string => {
+const getType = (filename: string, isDir?: boolean): string => {
+	filename = path.basename(filename);
 	const ext = filename.split('.').pop().toLowerCase();
-	for (const type of Types) {
-		if (type.extension.indexOf(ext) !== -1) return type.type;
+	// Prioritize exact file name and folder name over file extension
+	for (const type of FileTypesConfig()) {
+		if (
+			(type.fileNames?.indexOf(filename) !== undefined &&
+				type.fileNames?.indexOf(filename) !== -1) ||
+			(type.folderNames?.indexOf(filename) !== undefined &&
+				type.folderNames?.indexOf(filename) !== -1)
+		) {
+			return type.type;
+		}
 	}
-	return `${path.basename(ext).toUpperCase()} file`;
+	for (const type of FileTypesConfig()) {
+		if (
+			type.extension?.indexOf(ext) !== undefined &&
+			type.extension?.indexOf(ext) !== -1
+		) {
+			return type.type;
+		}
+	}
+	return isDir ? 'File Folder' : `${path.basename(ext).toUpperCase()} file`;
 };
 
 export default getType;
