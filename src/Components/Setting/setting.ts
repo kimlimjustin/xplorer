@@ -1,6 +1,6 @@
 import Translate from '../I18n/i18n';
 import { updateTheme } from '../Theme/theme';
-import fileIcon from '../Files/File Icon/fileIcon';
+import fileThumbnail from '../Thumbnail/thumbnail';
 
 import About from './About/about';
 import Appearance from './Appearance/Appearance';
@@ -54,7 +54,7 @@ const Setting = (): void => {
 					'settings-sidebar-item',
 					'sidebar-hover-effect'
 				);
-				settingsItem.innerHTML = `<img src="${fileIcon(
+				settingsItem.innerHTML = `<img src="${fileThumbnail(
 					item,
 					'settings',
 					false

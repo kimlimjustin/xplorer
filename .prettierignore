@@ -3,7 +3,6 @@ dist
 outs
 node_modules
 src/Components/Theme/theme.ts
-src/Components/Files/File Icon/fileIcon.ts
 src/Components/Files/File Operation/open.ts
 src/Components/Favorites/favorites.ts
 *.min.

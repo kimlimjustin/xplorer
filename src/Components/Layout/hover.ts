@@ -1,5 +1,5 @@
 import path from 'path';
-import { IMAGE_TYPES } from '../Constants/fileTypes';
+import { IMAGE_TYPES } from '../Config/file.config';
 
 /**
  * Listen to mouse hovering

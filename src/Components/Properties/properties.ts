@@ -68,7 +68,7 @@ const Properties = (filePath: string): void => {
 		if (process.platform === 'win32')
 			getAttributesSync = require('fswin').getAttributesSync; //eslint-disable-line
 		isHiddenFile = checkIsHiddenFile(filePath); //eslint-disable-line
-		fileType = isDirectory ? 'File Folder' : getType(filePath);
+		fileType = getType(filePath, isDirectory);
 		try {
 			const stat = fs.statSync(filePath);
 			createdAt = stat.ctime;

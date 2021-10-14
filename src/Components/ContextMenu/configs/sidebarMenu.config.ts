@@ -1,13 +1,9 @@
-import {
-	FILE_TYPES_AVAILABLE_FOR_PREVIEW,
-	Preview,
-} from '../../Files/File Preview/preview';
 import contextMenuItem from '../../../Typings/contextMenuItem';
-import path from 'path';
 import { createNewTab } from '../../Layout/tab';
 import Pin from '../../Files/File Operation/pin';
 import { open } from '../../Files/File Operation/open';
 import Translate from '../../I18n/i18n';
+import { Preview } from '../../Files/File Preview/preview';
 
 const SidebarMenu = (
 	target: HTMLElement,
@@ -30,11 +26,8 @@ const SidebarMenu = (
 			},
 			{
 				menu: Translate('Preview'),
-				visible:
-					FILE_TYPES_AVAILABLE_FOR_PREVIEW.indexOf(
-						path.extname(target?.dataset?.path)
-					) !== -1,
 				shortcut: 'Ctrl+O',
+				visible: target?.dataset?.isdir !== 'true',
 				icon: 'preview',
 				role: () => {
 					Preview(filePath);

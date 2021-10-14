@@ -7,16 +7,12 @@ import {
 	toggleHideHiddenFilesValue,
 	getHideHiddenFilesValue,
 } from '../Functions/toggleHiddenFiles';
-import path from 'path';
 import Copy from '../Files/File Operation/copy';
 import Cut from '../Files/File Operation/cut';
 import Paste from '../Files/File Operation/paste';
 import Pin from '../Files/File Operation/pin';
 import { Trash, PermanentDelete } from '../Files/File Operation/trash';
-import {
-	Preview,
-	FILE_TYPES_AVAILABLE_FOR_PREVIEW,
-} from '../Files/File Preview/preview';
+import { Preview } from '../Files/File Preview/preview';
 import windowGUID from '../Constants/windowGUID';
 import remote from '@electron/remote';
 import focusingPath from '../Functions/focusingPath';
@@ -221,13 +217,7 @@ const Shortcut = (): void => {
 		}
 		// Preview file shortcut (Ctrl+O)
 		else if (e.ctrlKey && e.key === 'o') {
-			if (
-				FILE_TYPES_AVAILABLE_FOR_PREVIEW.indexOf(
-					path.extname(selectedFilePath)
-				) !== -1
-			) {
-				Preview(selectedFilePath);
-			}
+			Preview(selectedFilePath);
 		}
 		// File properties (Ctrl+P)
 		else if (e.ctrlKey && e.key === 'p') {
