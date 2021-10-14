@@ -14,7 +14,8 @@ const getType = (filename: string, isDir?: boolean): string => {
 	for (const type of FileConfig()) {
 		if (
 			type.fileNames?.indexOf(filename) !== undefined &&
-			type.fileNames?.indexOf(filename) !== -1
+			type.fileNames?.indexOf(filename) !== -1 &&
+			type.type
 		) {
 			return type.type;
 		}
@@ -22,7 +23,8 @@ const getType = (filename: string, isDir?: boolean): string => {
 	for (const type of folderConfig()) {
 		if (
 			type.folderNames?.indexOf(filename) !== undefined &&
-			type.folderNames?.indexOf(filename) !== -1
+			type.folderNames?.indexOf(filename) !== -1 &&
+			type.type
 		) {
 			return type.type;
 		}
