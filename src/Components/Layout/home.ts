@@ -12,7 +12,7 @@ import { updateTheme } from '../Theme/theme';
 import fs from 'fs';
 import Translate from '../I18n/i18n';
 import nativeDrag from '../Files/File Operation/drag';
-import fileIcon from '../Files/File Icon/fileIcon';
+import fileThumbnail from '../Thumbnail/thumbnail';
 import { startLoading, stopLoading } from '../Functions/Loading/loading';
 import storage from 'electron-json-storage-sync';
 import LAZY_LOAD from '../Functions/lazyLoadingImage';
@@ -51,9 +51,10 @@ const homeFiles = (callback: cb) => {
 						),
 						displayName: dirent.name,
 					};
-					const type = dirent.isDirectory()
-						? 'File Folder'
-						: getType(path.join(os.homedir(), dirent.name));
+					const type = getType(
+						path.join(os.homedir(), dirent.name),
+						dirent.isDirectory()
+					);
 					result.type = type;
 					const stat = fs.statSync(
 						path.join(os.homedir(), dirent.name)
@@ -91,7 +92,7 @@ const homeFiles = (callback: cb) => {
 			files = files.sort((a, b) => -(Number(a.isDir) - Number(b.isDir)));
 		}
 		await files.forEach(async (file) => {
-			const preview = await fileIcon(
+			const preview = await fileThumbnail(
 				path.join(os.homedir(), file.name),
 				file.isDir ? 'folder' : 'file'
 			);
@@ -124,9 +125,7 @@ const homeFiles = (callback: cb) => {
 			}
 			result += `<div class="${className}" draggable="true" data-isdir=${
 				file.isDir
-			} data-path = "${escape(
-				path.join(os.homedir(), file.name)
-			)}" ${
+			} data-path = "${escape(path.join(os.homedir(), file.name))}" ${
 				isHiddenFile(path.join(os.homedir(), file.name))
 					? 'data-hidden-file'
 					: ''

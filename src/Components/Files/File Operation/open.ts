@@ -1,4 +1,4 @@
-import fileIcon from "../File Icon/fileIcon";
+import fileThumbnail from "../../Thumbnail/thumbnail";
 import path from "path";
 import os from "os";
 import Home from '../../Layout/home';
@@ -146,7 +146,7 @@ const displayFiles = async (files: fileData[], dir:string, options?: {reveal: bo
     } else {
         await files.forEach(async dirent => {
             if (IGNORE_FILE.indexOf(dirent.name) !== -1) return;
-            const preview = await fileIcon(dirent.type === "Image" && dirent.isTrash ? dirent.realPath : path.join(dir, dirent.name), dirent.isDir ? "folder" : "file")
+            const preview = await fileThumbnail(dirent.type === "Image" && dirent.isTrash ? dirent.realPath : path.join(dir, dirent.name), dirent.isDir ? "folder" : "file")
             const fileGrid = document.createElement("div")
             fileGrid.className = "file-grid grid-hover-effect file"
             if (dirent.isTrash) fileGrid.dataset.isTrash = "true"
@@ -246,7 +246,7 @@ const open = (dir:string, reveal?:boolean):void => {
                             trashPath = fileInfo[1].split('=')[1]
                             trashDeletionDate = fileInfo[2].split("=")[1]
                         }
-                        const type = dirent.isDirectory() ? "File Folder" : getType(unescape(trashPath) ?? path.join(dir, dirent.name))
+                        const type = getType(unescape(trashPath) ?? path.join(dir, dirent.name), dirent.isDirectory() )
                         return { name: unescape(trashPath), isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)), trashPath, trashDeletionDate, type, isTrash: true, path: unescape(trashPath), realPath: path.join(WINDOWS_TRASH_FILES_PATH, dirent.name) };
                     })
                 }
@@ -260,7 +260,8 @@ const open = (dir:string, reveal?:boolean):void => {
                             trashPath = fileInfo[1].split('=')[1]
                             trashDeletionDate = fileInfo[2].split("=")[1]
                         }
-                        const type = dirent.isDirectory() ? "File Folder" : getType(unescape(trashPath) ?? path.join(dir, dirent.name))
+                        const type = getType(unescape(trashPath) ?? path.join(dir, dirent.name), dirent.isDirectory() )
+
                         return { name: unescape(trashPath), isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)), trashPath, trashDeletionDate, type, isTrash: true, path: unescape(trashPath), realPath: path.join(LINUX_TRASH_FILES_PATH, dirent.name) };
                     })
                 }
@@ -295,17 +296,15 @@ const open = (dir:string, reveal?:boolean):void => {
         const getFiles = () => {
             return fs.readdirSync(dir, { withFileTypes: true }).map(dirent => {
                 const result:fileData = { name: dirent.name, isDir: dirent.isDirectory(), isHidden: isHiddenFile(path.join(dir, dirent.name)) }
-                const type = dirent.isDirectory() ? "File Folder" : getType(path.join(dir, dirent.name))
+                const type = getType(path.join(dir, dirent.name), dirent.isDirectory())
                 result.type = type
                 try {
                     const stat = fs.statSync(path.join(dir, dirent.name))
-                    console.log(stat)
                     result.createdAt = stat.ctime
                     result.modifiedAt = stat.mtime
                     result.accessedAt = stat.atime
                     result.size = stat.size
                 } catch (_) {
-                    console.log('b')
                     if (process.platform === "win32" && !hideSystemFile) {
                         const stat = getAttributesSync(path.join(dir, dirent.name));
                         if (stat) {

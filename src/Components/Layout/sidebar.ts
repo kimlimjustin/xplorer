@@ -1,6 +1,6 @@
 import fs from 'fs';
 import storage from 'electron-json-storage-sync';
-import fileIcon from '../Files/File Icon/fileIcon';
+import fileThumbnail from '../Thumbnail/thumbnail';
 import { getDrives } from '../Drives/drives';
 import getDriveBasePath from '../Functions/basePath';
 import { updateTheme } from '../Theme/theme';
@@ -49,7 +49,7 @@ const createSidebar = (): void => {
 			}
 			favoritesElement += `<span data-path = "${
 				favorite.path
-			}" data-isdir="${isdir}" class="sidebar-hover-effect sidebar-item"><img src="${fileIcon(
+			}" data-isdir="${isdir}" class="sidebar-hover-effect sidebar-item"><img src="${fileThumbnail(
 				favorite.name,
 				sidebarElementFavorites.indexOf(favorite.name) === -1
 					? isdir
@@ -67,7 +67,7 @@ const createSidebar = (): void => {
 			data?.hideSection?.favorites ? 'nav-hide-item' : ''
 		}">
         <div class="sidebar-hover-effect">
-            <span class="sidebar-nav-item-dropdown-btn" data-section="favorites"><img src="${fileIcon(
+            <span class="sidebar-nav-item-dropdown-btn" data-section="favorites"><img src="${fileThumbnail(
 				'Favorites',
 				'sidebar',
 				false
@@ -101,7 +101,7 @@ const createSidebar = (): void => {
 					: drive.mounted.split('/')[drive.mounted.split('/').length - 1]; // Get name of drive
 				drivesElement += `<span data-path = "${getDriveBasePath(
 					drive.mounted
-				)}" data-isdir="true" class="sidebar-hover-effect drive-item"><img src="${fileIcon(
+				)}" data-isdir="true" class="sidebar-hover-effect drive-item"><img src="${fileThumbnail(
 					drive.filesystem === 'Removable Disk' ? 'usb' : 'hard-disk',
 					'favorites',
 					false
@@ -111,7 +111,7 @@ const createSidebar = (): void => {
 				data?.hideSection?.drives ? 'nav-hide-item' : ''
 			}" id="sidebar-drives">
                 <div class="sidebar-hover-effect">
-                <span class="sidebar-nav-item-dropdown-btn" data-section="drives"><img src="${fileIcon(
+                <span class="sidebar-nav-item-dropdown-btn" data-section="drives"><img src="${fileThumbnail(
 					'hard-disk',
 					'favorites',
 					false
@@ -158,7 +158,7 @@ const createSidebar = (): void => {
 		const settingBtn = document.querySelector('.sidebar-setting-btn');
 		settingBtn.innerHTML = `
 		<div class="sidebar-setting-btn-inner">
-			<img src="${fileIcon(
+			<img src="${fileThumbnail(
 				'setting',
 				'sidebar',
 				false
