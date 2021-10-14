@@ -67,7 +67,7 @@ const FileConfig = (): FileConfigType[] => {
 		{
 			extension: ['ts'],
 			type: 'TypeScript',
-			thumbnail: () => 'extension/file.svg',
+			thumbnail: () => 'extension/typescript.svg',
 			preview: (filePath: string, cb: (html: string) => void) =>
 				cb(previewCode(filePath, 'typescript')),
 		},
@@ -496,6 +496,7 @@ const FileConfig = (): FileConfigType[] => {
 				'.yarnrc.yml',
 				'.yarnrc.yaml',
 			],
+			thumbnail: () => 'extension/yarn.svg',
 		},
 	];
 };
