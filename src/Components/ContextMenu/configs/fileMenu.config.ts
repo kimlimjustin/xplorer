@@ -141,8 +141,8 @@ const FileMenu = (
 				menu: Translate('Properties'),
 				shortcut: 'Ctrl+P',
 				icon: target?.dataset?.isdir
-					? 'folder property'
-					: 'file property',
+					? 'folder setting'
+					: 'file setting',
 				role: () => Properties(filePath),
 			},
 		],

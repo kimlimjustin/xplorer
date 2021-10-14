@@ -74,6 +74,12 @@ const fileThumbnail = (
 
 	const filename = filePath.toLowerCase(); // Lowercase filename
 
+	if (category === 'contextmenu') {
+		return imageThumbnail(
+			path.join(__dirname, '../../icon/contextmenu', filePath + '.svg')
+		);
+	}
+
 	if (category === 'file') {
 		for (const fileType of FileConfig()) {
 			if (
