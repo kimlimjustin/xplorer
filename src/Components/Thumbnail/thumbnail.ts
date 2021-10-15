@@ -8,18 +8,18 @@ import FileConfig, { VIDEO_TYPES } from '../Config/file.config';
 
 const DEFAULT_FILE_ICON = path.join(
 	__dirname,
-	'../../icon',
+	'../../Icon',
 	defaultThumbnail.file
 );
 const DEFAULT_FOLDER_ICON = path.join(
 	__dirname,
-	'../../icon',
+	'../../Icon',
 	defaultThumbnail.folder
 );
 
 const DEFAULT_IMAGE = path.join(
 	__dirname,
-	'../../icon',
+	'../../Icon',
 	defaultThumbnail.image
 );
 
@@ -49,7 +49,7 @@ const imageThumbnail = (
 const videoPreview = (filename: string): string => {
 	const storage = require('electron-json-storage-sync');
 	const preference = storage.get('preference')?.data;
-	const alt = path.join(__dirname, '../../icon', defaultThumbnail.video);
+	const alt = path.join(__dirname, '../../Icon', defaultThumbnail.video);
 	return preference?.autoPlayPreviewVideo
 		? `<video autoplay loop muted class="file-grid-preview"><source src = "${filename}" /><img src = "${alt}" /></video>`
 		: imageThumbnail(alt, false, true);
@@ -91,7 +91,7 @@ const fileThumbnail = (
 					return imageThumbnail(
 						fs.existsSync(thumbnailPath)
 							? thumbnailPath
-							: path.join(__dirname, '../../icon', thumbnailPath),
+							: path.join(__dirname, '../../Icon', thumbnailPath),
 						false,
 						HTMLFormat
 					);
@@ -108,7 +108,7 @@ const fileThumbnail = (
 					return imageThumbnail(
 						fs.existsSync(thumbnailPath)
 							? thumbnailPath
-							: path.join(__dirname, '../../icon', thumbnailPath),
+							: path.join(__dirname, '../../Icon', thumbnailPath),
 						false,
 						HTMLFormat
 					);
@@ -121,7 +121,7 @@ const fileThumbnail = (
 			const _key = `${category}-${filename}`;
 			if (Object.keys(customThumbnail).indexOf(_key) !== -1) {
 				return imageThumbnail(
-					path.join(__dirname, '../../icon', customThumbnail[_key]),
+					path.join(__dirname, '../../Icon', customThumbnail[_key]),
 					false,
 					HTMLFormat
 				);
@@ -130,7 +130,7 @@ const fileThumbnail = (
 		for (const fldr of folderConfig()) {
 			if (fldr.folderNames?.indexOf(basename) !== -1) {
 				return imageThumbnail(
-					path.join(__dirname, '../../icon', fldr.thumbnail),
+					path.join(__dirname, '../../Icon', fldr.thumbnail),
 					false,
 					HTMLFormat
 				);
