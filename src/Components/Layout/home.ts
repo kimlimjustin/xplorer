@@ -1,12 +1,6 @@
 import os from 'os';
 import path from 'path';
-import {
-	Drives,
-	getDrives,
-	getUniqueDrives,
-	drivesToElements,
-	uniqueDrives,
-} from '../Drives/drives';
+import { Drives } from '../Drives/drives';
 import Favorites from '../Favorites/favorites';
 import { updateTheme } from '../Theme/theme';
 import fs from 'fs';
@@ -207,37 +201,6 @@ const Home = async (_callback: homecb): Promise<void> => {
 		_callback();
 		stopLoading();
 	}
-	let previousDrive: uniqueDrives[];
-	// Function to listen changes of drives
-	const listenDrives = setInterval(async () => {
-		const _drives = await getDrives();
-		const _uniqueDrive = getUniqueDrives(_drives);
-		if (previousDrive === undefined) {
-			previousDrive = _uniqueDrive;
-		} else {
-			if (
-				JSON.stringify(_uniqueDrive) !== JSON.stringify(previousDrive)
-			) {
-				if (
-					document
-						.getElementById('drives')
-						.classList.contains('hidden')
-				)
-					document
-						.getElementById('drives')
-						.classList.remove('hidden');
-				document.getElementById('drives').innerHTML =
-					drivesToElements(_drives);
-				updateTheme();
-			}
-		}
-		const tabs = storage.get(`tabs-${windowGUID}`)?.data;
-		const focusingPath = tabs.tabs[tabs.focus]?.position;
-		if (focusingPath !== 'xplorer://Home') {
-			clearInterval(listenDrives);
-		}
-		previousDrive = _uniqueDrive;
-	}, 500);
 };
 
 export default Home;

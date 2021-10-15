@@ -6,6 +6,8 @@ import Translate from '../I18n/i18n';
 import fileThumbnail from '../Thumbnail/thumbnail';
 import windowGUID from '../Constants/windowGUID';
 import type Drive from 'node-disk-info/dist/classes/drive';
+import focusingPath from '../Functions/focusingPath';
+import { updateTheme } from '../Theme/theme';
 
 /**
  * Function to get array of drives detected on the system
@@ -131,4 +133,90 @@ const Drives = async (): Promise<string> => {
 	} else return '';
 };
 
-export { Drives, getDrives, getUniqueDrives, drivesToElements, uniqueDrives };
+/**
+ * Get sidebar's drive element
+ * @returns {string}
+ */
+const sidebarDrivesElement = async (): Promise<string> => {
+	const { data } = storage.get('sidebar'); // Get user favorites data on sidebar
+	const drives = await getDrives();
+	if (!drives.length || process.platform === 'darwin')
+		return `<div class="sidebar-nav-item" id="sidebar-drives"></div>`;
+	// Return basic sidebar item element if there's no drives detected or its running on macOS
+	else {
+		let drivesElement = '';
+		for (const drive of drives) {
+			//prettier-ignore
+			const driveName = process.platform === 'win32'
+			//prettier-ignore
+				? `${drive.volumename && /[^?]/.test(drive.volumename)
+					? drive.volumename
+					: drive.filesystem} (${drive.mounted})`
+			//prettier-ignore
+				: drive.mounted.split('/')[drive.mounted.split('/').length - 1]; // Get name of drive
+			drivesElement += `<span data-path = "${getDriveBasePath(
+				drive.mounted
+			)}" data-isdir="true" class="sidebar-hover-effect drive-item"><img src="${fileThumbnail(
+				drive.filesystem === 'Removable Disk' ? 'usb' : 'hard-disk',
+				'favorites',
+				false
+			)}" alt="${driveName}"><span class="sidebar-text">${driveName}</span></span>`;
+		}
+		const result = `<div class="sidebar-nav-item sidebar-nav-drives ${
+			data?.hideSection?.drives ? 'nav-hide-item' : ''
+		}" id="sidebar-drives">
+			<div class="sidebar-hover-effect">
+			<span class="sidebar-nav-item-dropdown-btn" data-section="drives"><img src="${fileThumbnail(
+				'hard-disk',
+				'favorites',
+				false
+			)}" alt="Drives icon"><span class="sidebar-text">${
+			process.platform === 'win32'
+				? Translate('Drives')
+				: Translate('Pendrives')
+		}</span><div class="sidebar-nav-item-dropdown-spacer"></div></span>
+			</div>
+			<div class="sidebar-nav-item-dropdown-container">
+				${drivesElement}
+			</div>
+		</div>`;
+		return result;
+	}
+};
+
+const detectDrive = async (): Promise<void> => {
+	let _drives = JSON.stringify(getUniqueDrives(await getDrives()));
+	setInterval(async () => {
+		const _newDrive = JSON.stringify(getUniqueDrives(await getDrives()));
+		if (_newDrive !== _drives) {
+			// Change home page's drive sectin
+			if (focusingPath() === 'xplorer://Home') {
+				const MAIN_DRIVES_ELEMENT = document.getElementById('drives');
+				if (MAIN_DRIVES_ELEMENT.classList.contains('hidden'))
+					MAIN_DRIVES_ELEMENT.classList.remove('hidden');
+				const _driveSection = await Drives();
+				MAIN_DRIVES_ELEMENT.innerHTML = _driveSection;
+			}
+			const _newElement = document.createElement('div');
+			_newElement.innerHTML = (await sidebarDrivesElement()).trim();
+			document
+				.getElementById('sidebar-drives')
+				.parentNode.replaceChild(
+					_newElement.firstChild,
+					document.getElementById('sidebar-drives')
+				);
+			updateTheme();
+		}
+		_drives = _newDrive;
+	}, 500);
+};
+
+export {
+	sidebarDrivesElement,
+	Drives,
+	getDrives,
+	getUniqueDrives,
+	drivesToElements,
+	uniqueDrives,
+	detectDrive,
+};
