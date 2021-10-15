@@ -15,6 +15,7 @@ import { Shortcut } from './Components/Shortcut/shortcut';
 import path from 'path';
 import fs from 'fs';
 import Hover from './Components/Layout/hover';
+import { detectDrive } from './Components/Drives/drives';
 
 // Watch native theme to be updated
 nativeTheme.on('updated', () => {
@@ -37,6 +38,8 @@ if (args.listen && args.theme) {
 }
 
 const requestedOpen = args._;
+
+detectDrive();
 
 // Wait DOM Content to be loaded
 document.addEventListener('DOMContentLoaded', async () => {
