@@ -76,7 +76,7 @@ const fileThumbnail = (
 
 	if (category === 'contextmenu') {
 		return imageThumbnail(
-			path.join(__dirname, '../../icon/contextmenu', filePath + '.svg')
+			path.join(__dirname, '../../Icon/contextmenu', filePath + '.svg')
 		);
 	}
 
