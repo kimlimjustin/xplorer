@@ -17,6 +17,7 @@
 		"linux"
 	],
 	"scripts": {
+		"tauri": "tauri",
 		"electron": "electron ./outs/src/main.js",
 		"start": "yarn compile && yarn sass && yarn electron",
 		"dev": "yarn compile && concurrently \"yarn compile:watch\" \"yarn sass:watch\" \"yarn copyfiles:watch\" \"yarn electron\"",
@@ -97,6 +98,7 @@
 	"license": "Apache-2.0",
 	"devDependencies": {
 		"@crowdin/cli": "^3.6.5",
+		"@tauri-apps/cli": "^1.0.0-beta.10",
 		"@types/ejs": "^3.1.0",
 		"@types/get-folder-size": "2",
 		"@types/marked": "^3.0.0",
@@ -129,6 +131,7 @@
 	},
 	"dependencies": {
 		"@electron/remote": "1.2.1",
+		"@tauri-apps/api": "^1.0.0-beta.8",
 		"cpy": "^8.1.2",
 		"ejs": "^3.1.6",
 		"electron-acrylic-window": "^0.5.8",

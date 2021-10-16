@@ -7,3 +7,5 @@ temp
 yarn-error.log
 .DS_Store
 .idea
+src-tauri/target
+WixTools
