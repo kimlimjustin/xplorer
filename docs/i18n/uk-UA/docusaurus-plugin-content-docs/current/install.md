@@ -2,21 +2,21 @@
 sidebar_position: 2
 ---
 
-# Встановлення
+# Інсталяція
 
-## Установние
+## Інсталяція
 
-You can download Xplorer from the installer [here](https://github.com/kimlimjustin/xplorer/releases).
+Ви можете завантажити інсталятор Xplorer [тут](https://github.com/kimlimjustin/xplorer/releases).
 
 ## Проблеми з якими Ви можете стикнутись
 
 ### AppImages
 
-Скачайте останню версію програми з сторінки [релізів](https://github.com/kimlimjustin/xplorer/releases) та слідуйте [інструкціям](https://docs.appimage.org/introduction/quickstart.html#how-to-run-an-appimage).
+Завантажте останню версію програми на сторінці [релізів](https://github.com/kimlimjustin/xplorer/releases) та слідуйте [інструкціям](https://docs.appimage.org/introduction/quickstart.html#how-to-run-an-appimage).
 
 ### Debian та Ubuntu дистрибутиви
 
-Скачайте **.deb** пакет з сторінки [релізів](https://github.com/kimlimjustin/xplorer/releases).
+Завантажте **.deb** пакет на сторінці [релізів](https://github.com/kimlimjustin/xplorer/releases).
 
 Для продовження, натисніть `Деталі`, а потім запустити.
 ```bash
@@ -41,16 +41,16 @@ pacman build xplorer-bin
 ```
 **або**
 
-Скачайте **.pacman** інсталятор на сторінці [релізів](https://github.com/kimlimjustin/xplorer/releases).
+Завантажте **.pacman** інсталятор на сторінці [релізів](https://github.com/kimlimjustin/xplorer/releases).
 
-Ви також можете встановити пакет використовуючи:
+Ви також можете інсталювати пакет використовуючи:
 ```bash
 sudo pacman -U /path/to/deb/file.pacman
 ```
 
 **або**
 
-зібрати пакет з [коду](https://aur.archlinux.org/xplorer-bin.git)
+Зібрати пакет з [коду](https://aur.archlinux.org/xplorer-bin.git)
 ```bash
 git clone https://aur.archlinux.org/xplorer-bin.git
 
