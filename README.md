@@ -1,5 +1,5 @@
 <div align="center">
-<img height=150 src="./icons/icon.svg" />
+<img height=150 src="src-tauri/icons/icon.png" />
 </div>
 
 <p align="center"><span><b>Xplorer</b>, a customizable, modern and cross-platform File Explorer.</span></p>

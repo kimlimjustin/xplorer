@@ -45,7 +45,7 @@ module.exports = {
 			title: 'Xplorer',
 			logo: {
 				alt: 'Xplorer Logo',
-				src: 'img/icon.svg',
+				src: 'img/icon.png',
 			},
 			items: [
 				{
