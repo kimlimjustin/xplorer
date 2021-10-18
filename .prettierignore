@@ -1,6 +1,6 @@
 build
 dist
-outs
+out
 node_modules
 src/Components/Theme/theme.ts
 src/Components/Files/File Operation/open.ts
