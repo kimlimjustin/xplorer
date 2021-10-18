@@ -1,9 +1,10 @@
 test/*
 src/Typings/*
 src/Lib/**/*
-outs/**/*
+out/**/*
 scripts/*
 src/Components/Functions/log.ts
 gruntfile.js
 docs/**/*
 packages/**/*
+webpack.config.js
