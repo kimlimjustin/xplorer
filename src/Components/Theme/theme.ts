@@ -1,19 +1,11 @@
-import storage from "electron-json-storage-sync";
-import os from "os";
-import { nativeTheme } from '@electron/remote';
-import { ipcRenderer } from 'electron';
-interface Theme{
-    [key:string]: {
-        [key:string]: any //eslint-disable-line
-    }
-}
-
+import localforage from "localforage";
+import {themeValue, themeData, Theme} from "../../Typings/theme";
 /**
  * Detect system theme
  * @returns {string}
  */
  const detectDefaultTheme = (): string => {
-	if (nativeTheme.shouldUseDarkColors) {
+	if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
 		return 'dark';
 	} else {
 		return 'light';
@@ -21,18 +13,14 @@ interface Theme{
 };
 
 let defaultTheme = detectDefaultTheme();
-let developmentStylesheet; // this is important, as this will store the custom stylesheet during development path.
 const updateNativeTheme = ():void => {
     defaultTheme = detectDefaultTheme()
-    ipcRenderer.send('update-theme');
     updateTheme()
 }
 
-let themeJSON:Theme; // user preference theme json
+let themeJSON:themeValue; // user preference theme json
 import * as defaultThemeData from "./theme.json"
-const defaultThemeJSON:Theme = defaultThemeData;
-
-const IS_VIBRANCY_SUPPORTED = () => process.platform === 'win32' && parseInt(os.release().split('.')[0]) >= 10 && (storage.get("theme")?.data?.acrylic ?? true)
+const defaultThemeJSON:Theme = defaultThemeData
 
 /**
  * Get style of an element
@@ -41,8 +29,7 @@ const IS_VIBRANCY_SUPPORTED = () => process.platform === 'win32' && parseInt(os.
  * @returns {string|null} style of the [variable] of the element
  */
 const getElementStyle = (variable:string, theme:string): string|null => {
-    const isAcrylicElement = (themeJSON?.acrylicEffect || defaultThemeJSON?.[theme]?.acrylicEffect).indexOf(variable) !== -1 && IS_VIBRANCY_SUPPORTED()
-    return isAcrylicElement? null : themeJSON?.[variable] || defaultThemeJSON[theme][variable]
+    return themeJSON?.[variable] || defaultThemeJSON[theme][variable]
 }
 
 /**
@@ -54,8 +41,7 @@ const getElementStyle = (variable:string, theme:string): string|null => {
  * @returns {void}
  */
 const changeElementTheme = (element:HTMLElement, variable:string, key:string, theme:string): void => {
-    const isAcrylicElement = (themeJSON?.acrylicEffect || defaultThemeJSON?.[theme]?.acrylicEffect).indexOf(variable) !== -1 && IS_VIBRANCY_SUPPORTED()
-    if (element && !isAcrylicElement) (<any>element.style)[key] = themeJSON?.[variable] || defaultThemeJSON[theme][variable] //eslint-disable-line
+    if (element) (<any>element.style)[key] = themeJSON?.[variable] || defaultThemeJSON[theme][variable] //eslint-disable-line
 }
 
 const getXYCoordinates = (e: MouseEvent): { x: number; y: number } => {
@@ -231,19 +217,10 @@ const changeTheme = (document:Document, theme?:string): void => {
 
 /**
  * Update the entire page theme
- * @param {any} customStylesheet - use custom stylesheet
  * @returns {Promise<void>}
  */
-const updateTheme = async (customStylesheet?: string):Promise<void> => {
-    developmentStylesheet = customStylesheet;
-    if(developmentStylesheet){
-        // eslint-disable-next-line
-        const customStylesheetScript:any = require(customStylesheet).default;
-        themeJSON  = customStylesheetScript()
-        await changeTheme(document)
-    }else{
-        const { data } = storage.get("theme")
-
+const updateTheme = async ():Promise<void> => {
+    localforage.getItem("theme", async (err, data:themeData) => {
         // If user has no preference theme
         if (!data || !Object.keys(data).length) {
             await changeTheme(document, defaultTheme)
@@ -267,7 +244,7 @@ const updateTheme = async (customStylesheet?: string):Promise<void> => {
                 }
             }
         }
-    }
+    })
     return;
 }
 

@@ -1,19 +1,17 @@
-import { open } from '../Files/File Operation/open';
-import storage from 'electron-json-storage-sync';
-import { BrowserWindow } from '@electron/remote';
-import { closePreviewFile } from '../Files/File Preview/preview';
-import windowGUID from '../Constants/windowGUID';
-
+//import { open } from '../Files/File Operation/open';
+//import windowGUID from '../Constants/windowGUID';
+import { appWindow } from '@tauri-apps/api/window';
 /**
  * Reload the page
  * @returns {void}
  */
 const reload = (): void => {
-	const tabs = storage.get(`tabs-${windowGUID}`)?.data;
-	open(tabs.tabs[tabs.focus].position);
+	//const tabs = storage.get(`tabs-${windowGUID}`)?.data;
+	/*open(tabs.tabs[tabs.focus].position);
 	closePreviewFile();
 	document.querySelector<HTMLElement>('.properties').style.animation =
-		'close-properties 1s forwards';
+		'close-properties 1s forwards';*/
+	console.log('a');
 };
 
 /**
@@ -21,8 +19,7 @@ const reload = (): void => {
  * @returns {void}
  */
 const minimize = (): void => {
-	const electronWindow = BrowserWindow.getFocusedWindow();
-	electronWindow.minimize();
+	appWindow.minimize();
 };
 
 /**
@@ -30,10 +27,7 @@ const minimize = (): void => {
  * @returns {void}
  */
 const maximize = (): void => {
-	const electronWindow = BrowserWindow.getFocusedWindow();
-	!electronWindow.isMaximized()
-		? electronWindow.maximize()
-		: electronWindow.unmaximize();
+	appWindow.maximize();
 };
 
 /**
@@ -47,8 +41,7 @@ const windowManager = (): void => {
 	document.querySelector('#maximize').addEventListener('click', maximize);
 	// Exit window
 	document.querySelector('#exit').addEventListener('click', () => {
-		const electronWindow = BrowserWindow.getFocusedWindow();
-		electronWindow.close();
+		appWindow.close();
 	});
 
 	// Refresh the page
