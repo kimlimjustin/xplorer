@@ -113,7 +113,6 @@
 	}
 	.topbar {
 		padding: 15px;
-		-webkit-app-region: drag;
 		&:focus {
 			cursor: grabbing;
 		}
@@ -124,7 +123,6 @@
 			display: flex;
 			width: 100%;
 			margin: 0 1rem;
-			-webkit-app-region: no-drag;
 			&::webkit-scrollbar {
 				height: 3px;
 			}
@@ -143,7 +141,6 @@
 				cursor: pointer;
 				border-radius: 5px;
 				position: relative;
-				-webkit-app-region: no-drag;
 				margin: 0 1rem;
 				display: inline-block;
 				#tab-position {
@@ -164,7 +161,6 @@
 			.create-new-tab {
 				padding: 5px;
 				cursor: pointer;
-				-webkit-app-region: no-drag;
 				display: inline-block;
 				width: calc(1rem + 5px);
 				text-align: center;
@@ -183,7 +179,6 @@
 				cursor: pointer;
 				vertical-align: middle;
 				top: -1rem;
-				-webkit-app-region: no-drag;
 			}
 		}
 		.row {
@@ -197,7 +192,6 @@
 					margin: 0.2rem;
 					padding: 0.2rem;
 					cursor: pointer;
-					-webkit-app-region: no-drag;
 					border-radius: 5px;
 					width: 1rem;
 					height: 1rem;
@@ -211,7 +205,6 @@
 			.path-navigator {
 				flex: 1;
 				margin: 0 1rem;
-				-webkit-app-region: no-drag;
 				border: none;
 				border-radius: 5px;
 				padding: 0.5rem;
@@ -237,7 +230,6 @@
 .menu {
 	vertical-align: middle;
 	width: 1rem;
-	-webkit-app-region: no-drag;
 	position: relative;
 	.menu-dropdown {
 		display: none;
@@ -246,7 +238,6 @@
 		z-index: 1;
 		padding: 5px 8px;
 		width: max-content;
-		-webkit-app-region: no-drag;
 	}
 	&:active .menu-dropdown,
 	&:hover .menu-dropdown,
@@ -258,7 +249,6 @@
 		width: 1rem;
 		fill: inherit;
 		cursor: pointer;
-		-webkit-app-region: no-drag;
 	}
 }
 

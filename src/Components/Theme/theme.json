@@ -80,9 +80,7 @@
 		"previewObjectTableRowOddBackground": "inherit",
 		"previewObjectTableRowOddColor": "#a2b7ff",
 
-		"propertiesBackground": "#0a0f19",
-
-		"acrylicEffect": ["sidebarBackground"]
+		"propertiesBackground": "#0a0f19"
 	},
 	"dark": {
 		"themeCategory": "dark",
@@ -141,6 +139,7 @@
 		"gridColor": "#87c1ce",
 		"selectedGridBorder": "2px solid #1e88e5",
 		"selectedGridBackground": "#2893a0",
+		"selectedGridColor": "inherit",
 
 		"gridHoverEffectBackground": "rgba(140, 162, 210 , 0.4),#24283b",
 		"cardHoverEffectBackground": "rgba(140, 162, 210 , 0.7),rgba(140, 162, 210, 0.2)",
@@ -164,9 +163,7 @@
 		"previewObjectTableRowOddBackground": "inherit",
 		"previewObjectTableRowOddColor": "inherit",
 
-		"propertiesBackground": "#39496a",
-
-		"acrylicEffect": ["sidebarBackground"]
+		"propertiesBackground": "#39496a"
 	},
 	"light": {
 		"themeCategory": "light",
@@ -249,9 +246,7 @@
 		"previewObjectTableRowOddBackground": "inherit",
 		"previewObjectTableRowOddColor": "inherit",
 
-		"propertiesBackground": "#f7f7f7",
-
-		"acrylicEffect": ["sidebarBackground"]
+		"propertiesBackground": "#f7f7f7"
 	},
 	"light+": {
 		"themeCategory": "light",
@@ -334,8 +329,6 @@
 		"previewObjectTableRowOddBackground": "inherit",
 		"previewObjectTableRowOddColor": "inherit",
 
-		"propertiesBackground": "#fcfcfc",
-
-		"acrylicEffect": ["sidebarBackground"]
+		"propertiesBackground": "#fcfcfc"
 	}
 }
