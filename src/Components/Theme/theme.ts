@@ -1,4 +1,3 @@
-import localforage from "localforage";
 import {themeValue, themeData, Theme} from "../../Typings/theme";
 /**
  * Detect system theme
@@ -220,31 +219,30 @@ const changeTheme = (document:Document, theme?:string): void => {
  * @returns {Promise<void>}
  */
 const updateTheme = async ():Promise<void> => {
-    localforage.getItem("theme", async (err, data:themeData) => {
-        // If user has no preference theme
-        if (!data || !Object.keys(data).length) {
-            await changeTheme(document, defaultTheme)
-        } else {
-            // If user preference is default color theme...
-            if (Object.keys(defaultThemeJSON).indexOf(data.theme) !== -1) {
-                await changeTheme(document, data.theme)
-            }
-            else { // Otherwise read user theme json file
-                if (data.availableThemes?.filter((theme:any) => theme.identifier === data.theme).length > 0) { //eslint-disable-line
-                    for(const i of data.availableThemes){
-                        if(i.identifier === data.theme){
-                            // eslint-disable-next-line
-                            const customStylesheetScript:any = require(i.source);
-                            themeJSON = customStylesheetScript.default()
-                            await changeTheme(document, data.theme)
-                        }
+    const data:themeData = JSON.parse(localStorage.getItem("theme"))
+    // If user has no preference theme
+    if (!data || !Object.keys(data).length) {
+        await changeTheme(document, defaultTheme)
+    } else {
+        // If user preference is default color theme...
+        if (Object.keys(defaultThemeJSON).indexOf(data.theme) !== -1) {
+            await changeTheme(document, data.theme)
+        }
+        else { // Otherwise read user theme json file
+            if (data.availableThemes?.filter((theme:any) => theme.identifier === data.theme).length > 0) { //eslint-disable-line
+                for(const i of data.availableThemes){
+                    if(i.identifier === data.theme){
+                        // eslint-disable-next-line
+                        const customStylesheetScript:any = require(i.source);
+                        themeJSON = customStylesheetScript.default()
+                        await changeTheme(document, data.theme)
                     }
-                } else {
-                    await changeTheme(document, defaultTheme)
                 }
+            } else {
+                await changeTheme(document, defaultTheme)
             }
         }
-    })
+    }
     return;
 }
 

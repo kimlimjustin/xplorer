@@ -201,12 +201,6 @@ const folderConfig = (): folderThumbnailType[] => {
 		},
 	];
 };
-const defaultThumbnail = {
-	file: 'file.svg',
-	folder: 'folder.svg',
-	image: 'extension/image.svg',
-	video: 'extension/video.svg',
-};
 
 interface customThumbnailType {
 	[key: string]: string;
@@ -231,4 +225,4 @@ const customThumbnail: customThumbnailType = {
 	'favorites-hard-disk': 'hard-disk.svg',
 };
 export default folderConfig;
-export { defaultThumbnail, customThumbnail };
+export { customThumbnail };

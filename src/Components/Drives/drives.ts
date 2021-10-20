@@ -1,43 +1,38 @@
-import { getDiskInfoSync } from 'node-disk-info/dist/index';
 import formatBytes from '../Functions/filesize';
-import storage from 'electron-json-storage-sync';
-import getDriveBasePath from '../Functions/basePath';
 import Translate from '../I18n/i18n';
-import fileThumbnail from '../Thumbnail/thumbnail';
-import windowGUID from '../Constants/windowGUID';
-import type Drive from 'node-disk-info/dist/classes/drive';
+//import fileThumbnail from '../Thumbnail/thumbnail';
 import focusingPath from '../Functions/focusingPath';
 import { updateTheme } from '../Theme/theme';
-
+import DrivesAPI, { Drive } from '../../Api/drives';
+import OS from '../../Api/platform';
+let platform: string;
+(async () => {
+	platform = await OS();
+})();
 /**
  * Function to get array of drives detected on the system
  * @returns {Array<Drive>} drives detected on the system
  */
 const getDrives = async (): Promise<Array<Drive>> => {
 	// Get all Physical disks Detected on the system
-	//prettier-ignore
-	const drives = await getDiskInfoSync().filter((drive) => drive.available > 0);
-	// Get all USB Stick (for Linux and macOS)
-	const USBStick: Drive[] = [];
-	drives.forEach((drive) => {
-		// If the drive is detected as not-first physical disk...
-		if (
-			drive.filesystem.indexOf('/sda') === -1 &&
-			drive.filesystem.indexOf('tmpfs') === -1
-		) {
-			// ... push it into the USB Stick array
-			USBStick.push(drive);
-		}
-	});
-	return process.platform === 'win32' ? drives : USBStick;
+	const drives = (await new DrivesAPI().get()).filter(
+		(drive) => drive.available_space > 0
+	);
+	return drives;
 };
 
 interface uniqueDrives {
-	filesystem: string;
-	mounted: string;
-	volumename: string;
+	mount_point: string;
+	name: string;
 }
 
+/**
+ * Get Disk Type (Removable Disk/Local Disk)
+ * @param {boolean} is_removable - is it removable?
+ * @returns {string}
+ */
+const getDiskType = (is_removable: boolean): string =>
+	is_removable ? 'Removable Disk' : 'Local Disk';
 /**
  * Get unique drives regardless space
  * @param {Array<Drive>} drives - drives array
@@ -47,12 +42,11 @@ const getUniqueDrives = (drives: Array<Drive>): Array<uniqueDrives> => {
 	const result: uniqueDrives[] = [];
 	drives.forEach((drive) =>
 		result.push({
-			filesystem: drive.filesystem,
-			mounted: drive.filesystem,
-			volumename:
-				drive.volumename && /[^?]/.test(drive.volumename)
-					? drive.volumename
-					: drive.filesystem,
+			mount_point: drive.mount_point,
+			name:
+				drive.name && /[^?]/.test(drive.name)
+					? drive.name
+					: getDiskType(drive.is_removable),
 		})
 	);
 	return result;
@@ -62,47 +56,55 @@ const getUniqueDrives = (drives: Array<Drive>): Array<uniqueDrives> => {
  * Function to convert drives into HTML Tags
  * @param {Array} drives - Array of drives
  * @param {boolean} kBlockFormat - Is drive size presented as K-block-format (1024*n)? (optional)
- * @returns {string} Result
+ * @returns {Promise<string>} Result
  */
-const drivesToElements = (drives: Drive[], kBlockFormat = false): string => {
+const drivesToElements = async (
+	drives: Drive[],
+	kBlockFormat = false
+): Promise<string> => {
 	let result = drives.length
-		? `<h1 class="section-title">${Translate(
-				process.platform === 'linux' ? 'Pendrives' : 'Drives'
+		? `<h1 class="section-title">${await Translate(
+				platform === 'linux' ? 'Pendrives' : 'Drives'
 		  )}</h1>` //eslint-disable-line
 		: ''; // Element Result
-	drives.forEach((drive: Drive) => {
+	for (const drive of drives) {
 		const driveName =
-			drive.mounted.split('/')[drive.mounted.split('/').length - 1]; // Get name of drive
+			drive.mount_point.split('/')[
+				drive.mount_point.split('/').length - 1
+			]; // Get name of drive
 		result += `
-        <div class="pendrive file card-hover-effect" data-isdir="true" data-path = "${getDriveBasePath(
-			drive.mounted
+        <div class="pendrive file card-hover-effect" data-isdir="true" data-path = "${escape(
+			drive.mount_point
 		)}">
-            <img src="${fileThumbnail(
+            <!--img src="{fileThumbnail(
 				drive.filesystem === 'Removable Disk' ? 'usb' : 'hard-disk',
 				'favorites',
 				false
-			)}" alt="USB icon" class="pendrive-icon">
+			)}" alt="USB icon" class="pendrive-icon"-->
             <div class="pendrive-info">
                 ${
-					drive.volumename || drive.filesystem
+					drive.name ?? getDiskType(drive.is_removable)
 						? `<h4 class="pendrive-title">${
-								drive.volumename &&
-								/[^?]/.test(drive.volumename)
-									? drive.volumename
-									: drive.filesystem
+								drive.name && /[^?]/.test(drive.name)
+									? drive.name
+									: getDiskType(drive.is_removable)
 						  } (${driveName})</h4>` //eslint-disable-line
 						: `<h4 class="pendrive-title">${driveName}</h4>`
 				}
                 <div class="pendrive-total-capacity"><span class="pendrive-used-capacity" style="width: ${
-					drive.capacity
+					(drive.available_space / drive.total_space) * 100 + '%'
 				}"></span></div>
-                <p>${formatBytes(drive.available, kBlockFormat)} ${Translate(
-			'free of'
-		)} ${formatBytes(drive.blocks, kBlockFormat)}</p>
+                <p>${formatBytes(
+					drive.available_space,
+					kBlockFormat
+				)} ${await Translate('free of')} ${formatBytes(
+			drive.total_space,
+			kBlockFormat
+		)}</p>
             </div>
         </div>
         `;
-	});
+	}
 	return result;
 };
 
@@ -113,19 +115,16 @@ const drivesToElements = (drives: Drive[], kBlockFormat = false): string => {
 const Drives = async (): Promise<string> => {
 	const drives = await getDrives();
 
-	const tabs = storage.get(`tabs-${windowGUID}`)?.data;
-	const focusingPath = tabs.tabs[tabs.focus].position;
-
-	if (focusingPath === 'xplorer://Home') {
-		switch (process.platform) {
+	if (focusingPath() === 'xplorer://Home') {
+		switch (platform) {
 			case 'win32':
-				return `<section class="home-section" id="drives">${drivesToElements(
+				return `<section class="home-section" id="drives">${await drivesToElements(
 					drives
 				)}</section>`;
 			case 'darwin':
 				return ''; // Xplorer does not support drives for macOS recently
 			default:
-				return `<section class="home-section" id="drives">${drivesToElements(
+				return `<section class="home-section" id="drives">${await drivesToElements(
 					drives,
 					true
 				)}</section>`;
@@ -138,43 +137,43 @@ const Drives = async (): Promise<string> => {
  * @returns {string}
  */
 const sidebarDrivesElement = async (): Promise<string> => {
-	const { data } = storage.get('sidebar'); // Get user favorites data on sidebar
+	const data = JSON.parse(localStorage.getItem('sidebar')); // Get user favorites data on sidebar
 	const drives = await getDrives();
-	if (!drives.length || process.platform === 'darwin')
+	if (!drives.length || platform === 'darwin')
 		return `<div class="sidebar-nav-item" id="sidebar-drives"></div>`;
 	// Return basic sidebar item element if there's no drives detected or its running on macOS
 	else {
 		let drivesElement = '';
 		for (const drive of drives) {
 			//prettier-ignore
-			const driveName = process.platform === 'win32'
+			const driveName = platform === 'win32'
 			//prettier-ignore
-				? `${drive.volumename && /[^?]/.test(drive.volumename)
-					? drive.volumename
-					: drive.filesystem} (${drive.mounted})`
+				? `${drive.name && /[^?]/.test(drive.name)
+					? drive.name
+					: getDiskType(drive.is_removable)} (${drive.mount_point.replace(/\\$/g, '')})`
 			//prettier-ignore
-				: drive.mounted.split('/')[drive.mounted.split('/').length - 1]; // Get name of drive
-			drivesElement += `<span data-path = "${getDriveBasePath(
-				drive.mounted
-			)}" data-isdir="true" class="sidebar-hover-effect drive-item"><img src="${fileThumbnail(
+				: drive.mount_point.split('/')[drive.mount_point.split('/').length - 1]; // Get name of drive
+			drivesElement += `<span data-path = "${await escape(
+				drive.mount_point
+			)}" data-isdir="true" class="sidebar-hover-effect drive-item"><!--img src="{fileThumbnail(
 				drive.filesystem === 'Removable Disk' ? 'usb' : 'hard-disk',
 				'favorites',
 				false
-			)}" alt="${driveName}"><span class="sidebar-text">${driveName}</span></span>`;
+			)}" alt="${driveName}"--><span class="sidebar-text">${driveName}</span></span>`;
 		}
 		const result = `<div class="sidebar-nav-item sidebar-nav-drives ${
 			data?.hideSection?.drives ? 'nav-hide-item' : ''
 		}" id="sidebar-drives">
 			<div class="sidebar-hover-effect">
-			<span class="sidebar-nav-item-dropdown-btn" data-section="drives"><img src="${fileThumbnail(
+			<span class="sidebar-nav-item-dropdown-btn" data-section="drives"><!--img src="{fileThumbnail(
 				'hard-disk',
 				'favorites',
 				false
-			)}" alt="Drives icon"><span class="sidebar-text">${
-			process.platform === 'win32'
-				? Translate('Drives')
-				: Translate('Pendrives')
-		}</span><div class="sidebar-nav-item-dropdown-spacer"></div></span>
+			)}" alt="Drives icon"--><span class="sidebar-text">${
+				platform === 'win32'
+					? await Translate('Drives')
+					: await Translate('Pendrives')
+			}</span><div class="sidebar-nav-item-dropdown-spacer"></div></span>
 			</div>
 			<div class="sidebar-nav-item-dropdown-container">
 				${drivesElement}

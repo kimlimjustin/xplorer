@@ -47,14 +47,14 @@ const windowManager = (): void => {
 	// Refresh the page
 	document.querySelector('#refresh').addEventListener('click', reload);
 
-	document
+	/*document
 		.querySelector('.path-navigator')
 		.addEventListener(
 			'change',
 			(event: Event & { target: HTMLInputElement }) => {
 				open(event.target.value);
 			}
-		);
+		);*/
 };
 
 export { windowManager, reload, minimize, maximize };
