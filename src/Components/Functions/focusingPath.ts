@@ -1,5 +1,4 @@
-import os from 'os';
-import storage from 'electron-json-storage-sync';
+import FavoritesAPI from '../../Api/favorites';
 import windowGUID from '../Constants/windowGUID';
 
 /**
@@ -7,10 +6,12 @@ import windowGUID from '../Constants/windowGUID';
  * @returns {string}
  */
 const focusingPath = (): string => {
-	const tabs = storage.get(`tabs-${windowGUID}`)?.data;
+	const tabs = JSON.parse(localStorage.getItem(`tabs-${windowGUID}`))?.data;
+	const favoriteData = new FavoritesAPI();
+	favoriteData.build();
 	return tabs.tabs[tabs.focus].position === 'xplorer://Home' &&
 		process.platform === 'linux'
-		? os.homedir()
+		? favoriteData.HOMEDIR_PATH
 		: tabs.tabs[tabs.focus].position;
 };
 

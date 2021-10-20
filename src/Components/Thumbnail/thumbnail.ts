@@ -1,28 +1,10 @@
-import fs from 'fs';
-import path from 'path';
-import folderConfig, {
-	defaultThumbnail,
-	customThumbnail,
-} from '../Config/folder.config';
+import folderConfig, { customThumbnail } from '../Config/folder.config';
 import FileConfig, { VIDEO_TYPES } from '../Config/file.config';
-
-const DEFAULT_FILE_ICON = path.join(
-	__dirname,
-	'../../Icon',
-	defaultThumbnail.file
-);
-const DEFAULT_FOLDER_ICON = path.join(
-	__dirname,
-	'../../Icon',
-	defaultThumbnail.folder
-);
-
-const DEFAULT_IMAGE = path.join(
-	__dirname,
-	'../../Icon',
-	defaultThumbnail.image
-);
-
+import ThumbnailAPI from '../../Api/thumbnail';
+let ThumbnailData: ThumbnailAPI;
+(async () => {
+	ThumbnailData = new ThumbnailAPI();
+})();
 /**
  * Return image view of preview
  * @param {string} filename - the file name
@@ -37,8 +19,12 @@ const imageThumbnail = (
 ) => {
 	if (!HTMLFormat) return filename;
 	return `<img data-src = "${filename}" class="file-grid-preview" src="${
-		isdir ? DEFAULT_FOLDER_ICON : DEFAULT_FILE_ICON
-	}" onerror="this.onerror=null;this.src='${DEFAULT_IMAGE}'" />`;
+		isdir
+			? ThumbnailData.DEFAULT_FOLDER_ICON
+			: ThumbnailData.DEFAULT_FILE_ICON
+	}" onerror="this.onerror=null;this.src='${
+		ThumbnailData.DEFAULT_IMAGE_ICON
+	}'" />`;
 };
 
 /**
@@ -49,7 +35,7 @@ const imageThumbnail = (
 const videoPreview = (filename: string): string => {
 	const storage = require('electron-json-storage-sync');
 	const preference = storage.get('preference')?.data;
-	const alt = path.join(__dirname, '../../Icon', defaultThumbnail.video);
+	const alt = ThumbnailData.DEFAULT_VIDEO_ICON;
 	return preference?.autoPlayPreviewVideo
 		? `<video autoplay loop muted class="file-grid-preview"><source src = "${filename}" /><img src = "${alt}" /></video>`
 		: imageThumbnail(alt, false, true);
@@ -136,7 +122,11 @@ const fileThumbnail = (
 				);
 			}
 		}
-		return imageThumbnail(DEFAULT_FOLDER_ICON, false, HTMLFormat);
+		return imageThumbnail(
+			ThumbnailData.DEFAULT_FOLDER_ICON,
+			false,
+			HTMLFormat
+		);
 	}
 };
 

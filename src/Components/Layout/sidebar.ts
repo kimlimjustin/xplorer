@@ -1,11 +1,10 @@
-import fs from 'fs';
-import storage from 'electron-json-storage-sync';
-import fileThumbnail from '../Thumbnail/thumbnail';
+//import fileThumbnail from '../Thumbnail/thumbnail';
 import { sidebarDrivesElement } from '../Drives/drives';
 import { updateTheme } from '../Theme/theme';
 import Translate from '../I18n/i18n';
-import Setting from '../Setting/setting';
-import { default as getPath } from 'platform-folders';
+//import Setting from '../Setting/setting';
+import FavoritesAPI from '../../Api/favorites';
+import DirectoryAPI from '../../Api/directory';
 
 interface Favorites {
 	name: string;
@@ -21,14 +20,16 @@ const changeSidebar = (newElement: HTMLElement) => {
 
 /**
  * Sidebar initializer function
- * @returns {void}
+ * @returns {Promise<void>}
  */
-const createSidebar = (): void => {
-	const { data } = storage.get('sidebar'); // Get user favorites data on sidebar
+const createSidebar = async (): Promise<void> => {
+	const data = JSON.parse(localStorage.getItem('favorites')); // Get user favorites data on sidebar
+	const FavoritesData = new FavoritesAPI();
+	FavoritesData.build();
 	// Functions to get favorites element
-	const getFavoritesElement = (favorites: Favorites[]) => {
+	const getFavoritesElement = async (favorites: Favorites[]) => {
 		let favoritesElement = '';
-		const sidebarElementFavorites = [
+		/*const sidebarElementFavorites = [
 			'Home',
 			'Recent',
 			'Documents',
@@ -38,17 +39,12 @@ const createSidebar = (): void => {
 			'Music',
 			'Videos',
 			'Trash',
-		];
+		];*/
 		for (const favorite of favorites) {
-			let isdir;
-			try {
-				isdir = fs.lstatSync(favorite.path).isDirectory();
-			} catch (_) {
-				isdir = true;
-			}
+			const isdir = new DirectoryAPI(favorite.path).isDir();
 			favoritesElement += `<span data-path = "${
 				favorite.path
-			}" data-isdir="${isdir}" class="sidebar-hover-effect sidebar-item"><img src="${fileThumbnail(
+			}" data-isdir="${isdir}" class="sidebar-hover-effect sidebar-item"><!--img src="{fileThumbnail(
 				favorite.name,
 				sidebarElementFavorites.indexOf(favorite.name) === -1
 					? isdir
@@ -56,9 +52,7 @@ const createSidebar = (): void => {
 						: 'file'
 					: 'sidebar',
 				false
-			)}" alt="${
-				favorite.name
-			} icon"><span class="sidebar-text">${Translate(
+			)}" alt="${favorite.name} icon"--><span class="sidebar-text">${await Translate(
 				favorite.name
 			)}</span></span>`;
 		}
@@ -66,13 +60,13 @@ const createSidebar = (): void => {
 			data?.hideSection?.favorites ? 'nav-hide-item' : ''
 		}">
         <div class="sidebar-hover-effect">
-            <span class="sidebar-nav-item-dropdown-btn" data-section="favorites"><img src="${fileThumbnail(
+            <span class="sidebar-nav-item-dropdown-btn" data-section="favorites"><!--img src="{fileThumbnail(
 				'Favorites',
 				'sidebar',
 				false
-			)}" alt="Favorites icon"><span class="sidebar-text">${Translate(
-			'Favorites'
-		)}</span><div class="sidebar-nav-item-dropdown-spacer"></div></span>
+			)}" alt="Favorites icon"--><span class="sidebar-text">${await Translate(
+				'Favorites'
+			)}</span><div class="sidebar-nav-item-dropdown-spacer"></div></span>
         </div>
         <div class="sidebar-nav-item-dropdown-container">
             ${favoritesElement}
@@ -84,75 +78,72 @@ const createSidebar = (): void => {
 	const _favorites = data?.favorites ?? [
 		{ name: 'Home', path: 'xplorer://Home' },
 		{ name: 'Recent', path: 'xplorer://Recent' },
-		{ name: 'Desktop', path: `${getPath('desktop')}` },
-		{ name: 'Documents', path: `${getPath('documents')}` },
-		{ name: 'Downloads', path: `${getPath('downloads')}` },
-		{ name: 'Pictures', path: `${getPath('pictures')}` },
-		{ name: 'Music', path: `${getPath('music')}` },
-		{ name: 'Videos', path: `${getPath('videos')}` },
+		{ name: 'Desktop', path: FavoritesData.DESKTOP_PATH },
+		{ name: 'Documents', path: FavoritesData.DOCUMENT_PATH },
+		{ name: 'Downloads', path: FavoritesData.DOWNLOAD_PATH },
+		{ name: 'Pictures', path: FavoritesData.PICTURE_PATH },
+		{ name: 'Music', path: FavoritesData.MUSIC_PATH },
+		{ name: 'Videos', path: FavoritesData.VIDEO_PATH },
 		{ name: 'Trash', path: 'xplorer://Trash' },
 	];
 
-	sidebarDrivesElement().then((drivesElement) => {
-		// get drives element
-		const sidebarNavElement = document.querySelector(
-			'#sidebar-nav'
-		) as HTMLDivElement;
-		sidebarNavElement.innerHTML = `
-			${getFavoritesElement(_favorites)}
-			${drivesElement}
+	//sidebarDrivesElement().then((drivesElement) => {
+	// get drives element
+	const sidebarNavElement = document.querySelector(
+		'#sidebar-nav'
+	) as HTMLDivElement;
+	sidebarNavElement.innerHTML = `
+			${await getFavoritesElement(_favorites)}
+			${await sidebarDrivesElement()}
 		`;
 
-		const sidebarElement = document.querySelector(
-			'.sidebar'
-		) as HTMLDivElement;
+	const sidebarElement = document.querySelector('.sidebar') as HTMLDivElement;
 
-		const settingBtn = document.querySelector('.sidebar-setting-btn');
-		settingBtn.innerHTML = `
+	const settingBtn = document.querySelector('.sidebar-setting-btn');
+	settingBtn.innerHTML = `
 		<div class="sidebar-setting-btn-inner">
-			<img src="${fileThumbnail(
+			<!--img src="{fileThumbnail(
 				'setting',
 				'sidebar',
 				false
-			)}" alt="Setting icon" class="sidebar-setting-btn-icon" />
+			)}" alt="Setting icon" class="sidebar-setting-btn-icon" /-->
 
 			<span class="sidebar-setting-btn-text">
-				${Translate('Settings')}
+				${await Translate('Settings')}
 			</span>
 		</div>`;
 
-		// Collapse section
-		sidebarElement
-			.querySelectorAll('.sidebar-nav-item-dropdown-btn')
-			.forEach((btn) => {
-				btn.addEventListener('click', (e) => {
-					let sidebarNavItem = (e.target as Element).parentNode;
-					while (
-						!(sidebarNavItem as HTMLElement).classList.contains(
-							'sidebar-nav-item'
-						)
-					) {
-						sidebarNavItem = sidebarNavItem.parentNode;
-					}
-					(sidebarNavItem as HTMLElement).classList.toggle(
-						'nav-hide-item'
-					);
+	// Collapse section
+	sidebarElement
+		.querySelectorAll('.sidebar-nav-item-dropdown-btn')
+		.forEach((btn) => {
+			btn.addEventListener('click', (e) => {
+				let sidebarNavItem = (e.target as Element).parentNode;
+				while (
+					!(sidebarNavItem as HTMLElement).classList.contains(
+						'sidebar-nav-item'
+					)
+				) {
+					sidebarNavItem = sidebarNavItem.parentNode;
+				}
+				(sidebarNavItem as HTMLElement).classList.toggle(
+					'nav-hide-item'
+				);
 
-					// Save preference into local storage
-					const sidebar = storage.get('sidebar')?.data ?? {};
-					if (!sidebar.hideSection) sidebar.hideSection = {}; // Initialize if it's not exist
-					sidebar.hideSection[
-						(e.target as HTMLElement).dataset.section
-					] = (
+				// Save preference into local storage
+				const sidebar = JSON.parse(localStorage.getItem('sidebar'));
+				if (!sidebar?.hideSection) sidebar.hideSection = {}; // Initialize if it's not exist
+				sidebar.hideSection[(e.target as HTMLElement).dataset.section] =
+					(
 						(e.target as Element).parentNode
 							.parentNode as HTMLElement
 					).classList.contains('nav-hide-item');
-					storage.set('sidebar', sidebar);
-				});
+				localStorage.setItem('sidebar', sidebar);
 			});
-		changeSidebar(sidebarElement);
-		Setting();
-	});
+		});
+	changeSidebar(sidebarElement);
+	//Setting();
+	//});
 };
 
 export default createSidebar;

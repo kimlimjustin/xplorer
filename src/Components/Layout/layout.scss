@@ -1,3 +1,5 @@
+$edge-radius: 10px;
+
 .xplorer-brand {
 	font-size: 1.5rem;
 	text-align: center;
@@ -11,6 +13,7 @@
 		width: 100%;
 		height: 100%;
 	}
+	border-radius: 50px;
 }
 
 .sidebar {
@@ -19,6 +22,7 @@
 	display: flex;
 	flex-direction: column;
 	height: 100vh;
+	border-radius: $edge-radius 0 0 $edge-radius;
 	overflow: auto;
 	#sidebar-nav {
 		flex-grow: 1;
@@ -112,6 +116,7 @@
 		margin: 2rem 0;
 	}
 	.topbar {
+		border-radius: 0 $edge-radius 0 0;
 		padding: 15px;
 		&:focus {
 			cursor: grabbing;
@@ -213,6 +218,7 @@
 		}
 	}
 	.main-box {
+		border-radius: 0 0 $edge-radius 0;
 		overflow-x: hidden;
 		overflow-y: auto;
 		height: 100%;

@@ -1,53 +1,33 @@
-extern crate kernel32;
-extern crate libc;
-use std::fs::{self};
-//use std::path::Path;
-use std::path::PathBuf;
-use std::ffi::CString;
-#[tauri::command]
-pub fn read_drives() {
+use sysinfo::{DiskExt, System, SystemExt};
 
-    unsafe{
-        for mut cur_drl in get_win32_ready_drives(){
-            println!("{}", cur_drl);
-            let mut mcur_drl = cur_drl.clone();
-            let mut cur_path = PathBuf::from(mcur_drl.clone());
-
-            //print root of each logical drive letter 
-            let unwrpd_curfspath = fs::metadata(cur_path).unwrap();
-            if unwrpd_curfspath.is_dir(){
-
-                for entry in fs::read_dir(mcur_drl).unwrap() {
-
-                        println!("drive {0}", entry.unwrap().path().display());
-                }
-            }
-        }
-    }
+#[derive(serde::Serialize, Debug)]
+pub struct DriveInformation {
+  name: String,
+  mount_point: String,
+  total_space: u64,
+  available_space: u64,
+  is_removable: bool,
+}
+#[derive(serde::Serialize)]
+pub struct Drives {
+  array_of_drives: Vec<DriveInformation>,
 }
 
-//getting all drive letters 
-pub unsafe fn get_win32_ready_drives() -> Vec<String>
-{
-    let mut logical_drives = Vec::with_capacity(5);
-    let mut bitfield =kernel32::GetLogicalDrives();
-     let mut drive = 'A';
-     let mut rtstr = CString::new("");
-
-     while bitfield != 0 {
-           if bitfield & 1 == 1 {
-
-            let strfulldl = drive.to_string() + ":\\";
-            let cstrfulldl = CString::new(strfulldl.clone()).unwrap();
-            let x = kernel32::GetDriveTypeA(cstrfulldl.as_ptr());
-            if x ==3 || x ==2
-            {
-                  logical_drives.push(strfulldl);
-                  // println!("drive {0} is {1}", strfdl, x);
-            }
-           }
-           drive = std::char::from_u32((drive as u32) + 1).unwrap();
-                   bitfield >>= 1;
-       }
-    logical_drives
+#[tauri::command]
+pub fn get_drives() -> Result<Drives, String> {
+  let sys = System::new_all();
+  let mut array_of_drives = Vec::new();
+  for disk in sys.disks() {
+    println!("{:?} {:?}", disk.name(), disk.mount_point());
+    array_of_drives.push(DriveInformation {
+      name: disk.name().to_str().unwrap_or("Disk").to_string(), //name: format!("{:?}", disk.name()),
+      mount_point: disk.mount_point().to_str().unwrap_or("/").to_string(),
+      total_space: disk.total_space(),
+      available_space: disk.available_space(),
+      is_removable: disk.is_removable(),
+    });
+  }
+  Ok(Drives {
+    array_of_drives: array_of_drives,
+  })
 }
