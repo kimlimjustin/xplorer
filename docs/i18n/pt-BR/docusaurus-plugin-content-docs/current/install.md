@@ -6,7 +6,7 @@ sidebar_position: 2
 
 ## Para Windows e MacOS
 
-You can download Xplorer from the installer [here](https://github.com/kimlimjustin/xplorer/releases).
+Você pode baixar o Xplorer pelo instalador [aqui](https://github.com/kimlimjustin/xplorer/releases).
 
 ## Para Linux
 
@@ -35,7 +35,7 @@ sudo apt install /path/to/deb/file.deb
 ```bash
 yay -S xplorer-bin
 
-#or for manjaro
+#ou para o manjaro
 
 pacman build xplorer-bin
 ```
@@ -80,7 +80,7 @@ Referência de [Stack Overflow](https://stackoverflow.com/questions/65488839/how
 
 </details> <details>
 <summary>
-<code>“Xplorer” cannot be opened because the developer cannot be verified.</code> Error on macOS
+<code>“Xplorer” não pode ser aberto porque o desenvolvedor não pôde ser verificado.</code> Erro no macOS
 </summary>
 
 Please try [the official docs](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unidentified-developer-mh40616/mac) by Apple.

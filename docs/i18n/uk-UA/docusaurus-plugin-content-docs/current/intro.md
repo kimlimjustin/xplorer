@@ -8,7 +8,7 @@ sidebar_position: 1
 
 Ласкаво просимо до Xplorer, безкоштовного та опенсорсного файлового менеджера.
 
-Xplorer - це файловий менеджен, побудований з можливістю роботи з повго нуля (без будь яких налаштувань) та для повного налаштування (під потреби користувача). Він виглядає дуже сучасно! Це крос-платформна, побудована з використанням технології Electron, яка дозволила запускати файловий менеджер не лише у Windows, а й у Linux та MacOS. Додатковою важливою опцією є перегляд файлів безпосередньо всередині програми: не тільки фотографій або документів, а й відео!
+Xplorer is a file explorer built from the ground up to be fully customizable and without customization, it also looks modern! It is cross-platform, built using Electron Technology that allowed our File Explorer to be run not only in Windows but also Linux and MacOS alike. It also allowed file preview directly inside it, not only pictures or documents but also videos!
 
 ## Особливості
 
@@ -18,4 +18,4 @@ Xplorer включает у себе:
 -   Простоту використання
 -   Кроссплатформенність
 -   Попередній перегляд файлів і навіть відео!
--   Найголовніше - це безкоштовний программа з відкритим кодом! А це означає, що ви можете міняти компоненти всередині, якщо вважаєте за потрібне, і вам також не потрібно тратити на це жодної копійки.
+-   Most importantly, it's Free and Open Source! Which mean you can change components inside if you see fit and you also don't need to make your wallet go dry or break the bank.
