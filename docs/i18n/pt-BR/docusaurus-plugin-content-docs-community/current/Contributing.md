@@ -40,7 +40,7 @@ Usamos as [ Discussões no GitHub ](https://github.com/kimlimjustin/xplorer/disc
 
 ## Working on Xplorer code
 
-### Prerequisite
+### Pré-requisito
 
 -   [Node JS](https://nodejs.org/en/)
 -   [Git](https://git-scm.com/)
@@ -64,7 +64,7 @@ Gitpod is a Ready-to-Code environment in which you can get started immediately. 
 
 To get started with Gitpod, click the button below and log in with your GitHub account.
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/kimlimjustin/xplorer)
+[![Abrir no Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/kimlimjustin/xplorer)
 
 :::note Remember to reload the Gitpod website after it loads up since it won't start the servers immediately, but by reloading, you can get it started. If you are developing the app, go to the Remote Explorer on the sidebar and visit port _6080_ which opens the noVNC app server. If you are developing the docs, go to the Remote explorer but instead of port 6080, visit port _3000_. You can edit normally as you do in VS Code, but if you want to use it locally, clik the hamburger menu button and click _Open in VS Code_. :::
 
@@ -76,7 +76,7 @@ Format: `<type>(<scope>): <subject>`
 
 `<scope>` is optional
 
-#### Example
+#### Exemplo
 
 ```
 feat: allow overriding of webpack config
@@ -110,7 +110,7 @@ Xplorer documentation website is built using [Docusaurus 2](https://docusaurus.i
 -   [yarn](https://yarnpkg.com/getting-started/install#about-global-installs)
 -   Code Editor, we recommend you to use [VS Code](https://code.visualstudio.com/)
 
-### Installation
+### Instalação
 
 After cloning the repository, run `yarn` in the `docs` folder (you can go into the `docs` folder by running the `cd docs` command).
 

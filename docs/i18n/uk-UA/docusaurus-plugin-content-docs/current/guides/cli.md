@@ -1,8 +1,8 @@
-# Запуск Xplorer з терміналу
+# Запуск Xplorer из терминала
 
-:::info Перелічені нижче функції недостатньо оптимізовані. Вони можуть працювати з певними затримками. Оптимізація буде здійснена в наступних релізах. :::
+:::info This feature hasn't been optimized yet. It works but it might be laggy. This will be optimized in the feature release. :::
 
-## Команди
+## Команды
 
 Xplorer CLI:
 
@@ -10,28 +10,28 @@ Xplorer CLI:
 xplorer <options> [dir1] [dir2] [dir3]
 ```
 
-Xplorer відкриє `dir`, `dir2`, `dir3` як окремі вкладки у Xplorer. Якщо директорій не буде перелічено у команді вище, Xplorer відкриє домашню директорію.
+Xplorer will open `dir`, `dir2`, `dir3` as tabs on Xplorer. If there's no directory(dir) passed into the command, Xplorer will start at the Home page.
 
-Параметри:
+Параметры:
 
-| Команда     | Скорочення | Опис                                         |
-| ----------- | ---------- | -------------------------------------------- |
-| `--help`    | `-h`       | Інформація                                   |
-| `--version` | `-v`       | Показати номер версії                        |
-| `--reveal`  | `-r`       | Відкрити директорію з вмістом и вибрати файл |
+| Команда     | Сокращение | Описание                                  |
+| ----------- | ---------- | ----------------------------------------- |
+| `--help`    | `-h`       | Справка                                   |
+| `--version` | `-v`       | Показать номер версии                     |
+| `--reveal`  | `-r`       | Открыть папку с содержимым и выбрать файл |
 
 <details>
 <summary>
 <code>xplorer: command not found</code> ошибка в Windows
 </summary>
 
-Для початку ви повинні внести команду в системний шлях.
+Для начала вы должны зарегистрировать команду в системный путь.
 
-1. Відкрийте `Системні налаштування` на Windows.
-2. Натисніть `Змінні середовища`.
-3. У списку знайдіть змінну `Path` та клацніть на неї.
-4. Натисніть `Редагувати`.
-5. Натисніть кнопку `Додати нову`
-6. Додайте `%USERPROFILE%\AppData\Local\Programs\xplorer`
+1. Open the `System Properties` on Windows.
+2. Click the `Environment Variables` button, it will popup a window.
+3. On the table, search for `Path` variable and click on it.
+4. Click `Edit` button, it will popup a window.
+5. Click `New` button
+6. Add `%USERPROFILE%\AppData\Local\Programs\xplorer`
 
 </details>

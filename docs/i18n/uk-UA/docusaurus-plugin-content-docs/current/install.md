@@ -2,21 +2,21 @@
 sidebar_position: 2
 ---
 
-# Інсталяція
+# Встановлення
 
-## Інсталяція
+## Установние
 
-Ви можете завантажити інсталятор Xplorer [тут](https://github.com/kimlimjustin/xplorer/releases).
+You can download Xplorer from the installer [here](https://github.com/kimlimjustin/xplorer/releases).
 
 ## Проблеми з якими Ви можете стикнутись
 
 ### AppImages
 
-Завантажте останню версію програми на сторінці [релізів](https://github.com/kimlimjustin/xplorer/releases) та слідуйте [інструкціям](https://docs.appimage.org/introduction/quickstart.html#how-to-run-an-appimage).
+Скачайте останню версію програми з сторінки [релізів](https://github.com/kimlimjustin/xplorer/releases) та слідуйте [інструкціям](https://docs.appimage.org/introduction/quickstart.html#how-to-run-an-appimage).
 
 ### Debian та Ubuntu дистрибутиви
 
-Завантажте **.deb** пакет на сторінці [релізів](https://github.com/kimlimjustin/xplorer/releases).
+Скачайте **.deb** пакет з сторінки [релізів](https://github.com/kimlimjustin/xplorer/releases).
 
 Для продовження, натисніть `Деталі`, а потім запустити.
 ```bash
@@ -41,16 +41,16 @@ pacman build xplorer-bin
 ```
 **або**
 
-Завантажте **.pacman** інсталятор на сторінці [релізів](https://github.com/kimlimjustin/xplorer/releases).
+Скачайте **.pacman** інсталятор на сторінці [релізів](https://github.com/kimlimjustin/xplorer/releases).
 
-Ви також можете інсталювати пакет використовуючи:
+Ви також можете встановити пакет використовуючи:
 ```bash
 sudo pacman -U /path/to/deb/file.pacman
 ```
 
 **або**
 
-Зібрати пакет з [коду](https://aur.archlinux.org/xplorer-bin.git)
+зібрати пакет з [коду](https://aur.archlinux.org/xplorer-bin.git)
 ```bash
 git clone https://aur.archlinux.org/xplorer-bin.git
 
@@ -65,7 +65,7 @@ makepkg -si
 Стикнулись з Windows Defender?
 </summary>
 
-Насправді це не помилка, це значить, що Microsoft вирішили обрати схему "заборонити все" для захисту тих із нас, хто не володіє технікою (тобто потенційно ваших друзів) від вірусів. У цьому випадку вам не потрібно турбуватися про безпеку Xplorer, оскільки він [з відкритим кодом] (https://github.com/kimlimjustin/xplorer), і ви можете перевірити код або навіть створити власну версію!
+This is actually not an error, it's a design choice by Microsoft to protect those of us who are not tech-savvy (i.e. potentially your friends) from a virus. You don't need to worry about the safety of Xplorer in this case since it's [open source](https://github.com/kimlimjustin/xplorer) and you can inspect the code or even build your own version!
 
 Щоб вирішити цю проблему, просто натисніть кнопку `Додаткова інформація`, а потім просто натисніть "Виконати все одно".
 
