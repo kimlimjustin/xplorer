@@ -1,15 +1,28 @@
-import { path } from '@tauri-apps/api';
+import localesInformation from '../Locales/index.json';
 
-class LocalesAPI {
-	LOCALES_FOLDER: string;
-	LOCALE_PATH: {
+interface AvailableLocalesType {
+	[key: string]: string;
+}
+
+interface Locales {
+	[key: string]: {
 		[key: string]: string;
 	};
+}
+class LocalesAPI {
+	AVAILABLE_LOCALES: AvailableLocalesType;
+	LOCALES: Locales;
+	constructor() {
+		this.LOCALES = {};
+	}
 	async build(): Promise<void> {
-		this.LOCALES_FOLDER = await path.resolve(
-			await path.currentDir(),
-			'../src/Locales'
-		);
+		this.AVAILABLE_LOCALES = localesInformation.availableLanguages;
+		for (const locale of Object.values(this.AVAILABLE_LOCALES)) {
+			const localeJSON = await import(
+				'../Locales/' + (locale === 'en-US' ? 'base' : locale) + '.json'
+			);
+			this.LOCALES[locale] = localeJSON;
+		}
 	}
 }
 
