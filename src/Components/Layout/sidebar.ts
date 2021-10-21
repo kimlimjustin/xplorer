@@ -25,7 +25,7 @@ const changeSidebar = (newElement: HTMLElement) => {
 const createSidebar = async (): Promise<void> => {
 	const data = JSON.parse(localStorage.getItem('favorites')); // Get user favorites data on sidebar
 	const FavoritesData = new FavoritesAPI();
-	FavoritesData.build();
+	await FavoritesData.build();
 	// Functions to get favorites element
 	const getFavoritesElement = async (favorites: Favorites[]) => {
 		let favoritesElement = '';
@@ -41,7 +41,7 @@ const createSidebar = async (): Promise<void> => {
 			'Trash',
 		];*/
 		for (const favorite of favorites) {
-			const isdir = new DirectoryAPI(favorite.path).isDir();
+			const isdir = await new DirectoryAPI(favorite.path).isDir();
 			favoritesElement += `<span data-path = "${
 				favorite.path
 			}" data-isdir="${isdir}" class="sidebar-hover-effect sidebar-item"><!--img src="{fileThumbnail(
@@ -87,7 +87,6 @@ const createSidebar = async (): Promise<void> => {
 		{ name: 'Trash', path: 'xplorer://Trash' },
 	];
 
-	//sidebarDrivesElement().then((drivesElement) => {
 	// get drives element
 	const sidebarNavElement = document.querySelector(
 		'#sidebar-nav'
@@ -143,7 +142,6 @@ const createSidebar = async (): Promise<void> => {
 		});
 	changeSidebar(sidebarElement);
 	//Setting();
-	//});
 };
 
 export default createSidebar;

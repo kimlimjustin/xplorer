@@ -6,6 +6,8 @@ interface LangSrcType {
 	[key: string]: string;
 }
 
+let localesInformation: LocalesAPI;
+
 /**
  * Translate a source into user's preferenced language
  * @param {string} source - The source you want to be translated
@@ -13,30 +15,26 @@ interface LangSrcType {
  */
 const Translate = async (source: string): Promise<string> => {
 	// Read available language
-	const localesInformation = new LocalesAPI();
-	await localesInformation.build();
-	const files = await new DirectoryAPI(
-		localesInformation.LOCALES_FOLDER
-	).getFilesWithName();
+	if (!localesInformation) {
+		localesInformation = new LocalesAPI();
+		await localesInformation.build();
+	}
 	const lang =
 		JSON.parse(localStorage.getItem('preference'))?.language ??
 		navigator.language;
-	for (const file of files) {
+	for (const locale of Object.values(localesInformation.AVAILABLE_LOCALES)) {
 		// Check if the inputed lang available
-		if (file.name.indexOf(lang) !== -1) {
-			// Read the language file
-			const langSrc = (await new FileAPI(
-				file.path
-			).readJSONFile()) as unknown as LangSrcType;
+		if (locale === lang) {
 			// Replace all text
-			Object.keys(langSrc).forEach((key) => {
-				if (source === key) source = langSrc[key];
+			Object.keys(localesInformation.LOCALES[locale]).forEach((key) => {
+				if (source === key)
+					source = localesInformation.LOCALES[locale][key];
 			});
 			// Return translated text
 			return source;
 		}
 	}
-	return source; // Return translated text*/
+	return source; // Return translated text
 };
 
 export default Translate;
