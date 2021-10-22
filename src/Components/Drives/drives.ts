@@ -68,11 +68,6 @@ const drivesToElements = async (
 		  )}</h1>` //eslint-disable-line
 		: ''; // Element Result
 	for (const drive of drives) {
-		if (
-			drive.available_space > drive.total_space &&
-			drive.name === 'Google Drive'
-		)
-			drive.total_space = 15 * 1024 * 1024 * 1024;
 		const driveName =
 			drive.mount_point.split('/')[
 				drive.mount_point.split('/').length - 1
