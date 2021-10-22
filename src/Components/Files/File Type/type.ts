@@ -1,6 +1,6 @@
 import path from 'path';
-import folderConfig from '../../Config/folder.config';
-import FileConfig from '../../Config/file.config';
+import folderConfig from '../../../Config/folder.config';
+import FileConfig from '../../../Config/file.config';
 /**
  * Get type of a file name
  * @param {string} filename - File name

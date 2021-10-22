@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 24 24" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="1.4142" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <linearGradient id="linearGradient823" x1="1.8520275" y1="2.1797514" x2="14.197296" y2="11.058097" gradientUnits="userSpaceOnUse" gradientTransform="matrix(1, 0, 0, 1, 10.162161, 7.41394)" xlink:href="#linearGradient821"/>
+    <linearGradient id="linearGradient821">
+      <stop style="stop-color:#f59496;stop-opacity:1" offset="0" id="stop817"/>
+      <stop style="stop-color:#ef599f;stop-opacity:1" offset="1" id="stop819"/>
+    </linearGradient>
+  </defs>
+  <path d="m10 4h-6c-1.11 0-2 .89-2 2v12c0 1.097.903 2 2 2h16c1.097 0 2-.903 2-2v-10c0-1.11-.9-2-2-2h-8l-2-2z" fill-rule="nonzero" style="fill: rgb(176, 66, 245);"/>
+  <path style="fill: url(#linearGradient823); fill-opacity: 1; stroke: none; border-block-color: rgb(218, 68, 83); border-color: rgb(218, 68, 83); border-inline-color: rgb(218, 68, 83); caret-color: rgb(218, 68, 83); color: rgb(218, 68, 83); column-rule-color: rgb(218, 68, 83); outline-color: rgb(218, 68, 83); text-decoration: none solid rgb(218, 68, 83); -webkit-text-emphasis-color: rgb(218, 68, 83); -webkit-text-fill-color: rgb(218, 68, 83); -webkit-text-stroke-color: rgb(218, 68, 83);" class="ColorScheme-NegativeText" d="M 16.162 9.414 L 16.162 10.414 L 12.162 10.414 L 12.162 11.414 L 13.162 11.414 L 13.162 21.414 L 14.162 21.414 L 23.162 21.414 L 23.162 20.414 L 23.162 11.414 L 24.162 11.414 L 24.162 10.414 L 20.162 10.414 L 20.162 9.414 L 16.162 9.414 Z M 17.162 10.414 L 19.162 10.414 L 19.162 11.414 L 20.162 11.414 L 22.162 11.414 L 22.162 20.414 L 14.162 20.414 L 14.162 11.414 L 17.162 11.414 L 17.162 10.414 Z M 16.162 13.414 L 16.162 18.414 L 17.162 18.414 L 17.162 13.414 L 16.162 13.414 Z M 19.162 13.414 L 19.162 18.414 L 20.162 18.414 L 20.162 13.414 L 19.162 13.414 Z" id="path4"/>
+</svg>

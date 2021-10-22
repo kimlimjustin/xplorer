@@ -1,5 +1,4 @@
-import { URLify, eURLify } from '../Functions/urlify';
-import fs from 'fs';
+import { URLify, eURLify } from '../Components/Functions/urlify';
 
 interface FileConfigType {
 	extension?: string[];
@@ -47,12 +46,13 @@ const VIDEO_TYPES = [
 
 const previewCode = (filePath: string, language?: string) => {
 	const hljs = require('highlight.js');
-	const highlightedCode = language
+	/*const highlightedCode = language
 		? hljs.highlight(fs.readFileSync(filePath, 'utf8'), {
 				language: language,
 		  }).value //eslint-disable-line no-mixed-spaces-and-tabs
-		: hljs.highlightAuto(fs.readFileSync(filePath, 'utf8')).value;
-	return `<pre class='preview-object' data-type="code"><code>${highlightedCode}</code></pre>`;
+		: hljs.highlightAuto(fs.readFileSync(filePath, 'utf8')).value;*/
+	return `<pre class='preview-object' data-type="code"><code></code></pre>`;
+	//return `<pre class='preview-object' data-type="code"><code>${highlightedCode}</code></pre>`;
 };
 
 const FileConfig = (): FileConfigType[] => {
@@ -96,7 +96,7 @@ const FileConfig = (): FileConfigType[] => {
 			thumbnail: () => 'extension/word.svg',
 			preview: (filePath: string, cb: (html: string) => void) => {
 				if (filePath.endsWith('docx')) {
-					const mammoth = require('mammoth');
+					/*const mammoth = require('mammoth');
 					mammoth
 						.convertToHtml({ path: filePath })
 						.then(({ value }: { value: string }) => {
@@ -105,7 +105,8 @@ const FileConfig = (): FileConfigType[] => {
 									`<div class='preview-object' data-type="docx">${value}</div>`
 								)
 							);
-						});
+						});*/
+					cb('hello');
 				}
 			},
 		},
@@ -187,8 +188,10 @@ const FileConfig = (): FileConfigType[] => {
 			extension: ['exe'],
 			type: 'Executable',
 			thumbnail: (filePath: string) => {
-				const storage = require('electron-json-storage-sync');
-				const preference = storage.get('preference')?.data;
+				return 'extension/exe.svg';
+				/*const preference = JSON.parse(
+					localStorage.getItem('preference')
+				);
 				const extractExeIcon =
 					require('../Functions/extractExeIcon').default;
 				try {
@@ -202,7 +205,7 @@ const FileConfig = (): FileConfigType[] => {
 					console.log(err);
 					return 'extension/exe.svg';
 				}
-				extractExeIcon(filePath);
+				extractExeIcon(filePath);*/
 			},
 			preview: (filePath: string, cb: (html: string) => void) =>
 				cb(previewCode(filePath, 'bat')),
@@ -246,9 +249,10 @@ const FileConfig = (): FileConfigType[] => {
 			type: 'Text Document',
 			preview: (filePath: string, cb: (html: string) => void) => {
 				cb(
-					`<div class='preview-object' data-type="txt">${fs
+					'<div class="preview-object"></div>'
+					/*`<div class='preview-object' data-type="txt">${fs
 						.readFileSync(filePath, 'utf8')
-						.replaceAll('\n', '<br />')}</div>`
+						.replaceAll('\n', '<br />')}</div>`*/
 				);
 			},
 		},

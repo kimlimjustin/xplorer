@@ -1,4 +1,4 @@
-//import fileThumbnail from '../Thumbnail/thumbnail';
+import fileThumbnail from '../Thumbnail/thumbnail';
 import { sidebarDrivesElement } from '../Drives/drives';
 import { updateTheme } from '../Theme/theme';
 import Translate from '../I18n/i18n';
@@ -18,18 +18,22 @@ const changeSidebar = (newElement: HTMLElement) => {
 	return;
 };
 
+let FavoritesData: FavoritesAPI;
+
 /**
  * Sidebar initializer function
  * @returns {Promise<void>}
  */
 const createSidebar = async (): Promise<void> => {
 	const data = JSON.parse(localStorage.getItem('favorites')); // Get user favorites data on sidebar
-	const FavoritesData = new FavoritesAPI();
-	await FavoritesData.build();
+	if (!FavoritesData) {
+		FavoritesData = new FavoritesAPI();
+		await FavoritesData.build();
+	}
 	// Functions to get favorites element
 	const getFavoritesElement = async (favorites: Favorites[]) => {
 		let favoritesElement = '';
-		/*const sidebarElementFavorites = [
+		const sidebarElementFavorites = [
 			'Home',
 			'Recent',
 			'Documents',
@@ -39,12 +43,12 @@ const createSidebar = async (): Promise<void> => {
 			'Music',
 			'Videos',
 			'Trash',
-		];*/
+		];
 		for (const favorite of favorites) {
 			const isdir = await new DirectoryAPI(favorite.path).isDir();
 			favoritesElement += `<span data-path = "${
 				favorite.path
-			}" data-isdir="${isdir}" class="sidebar-hover-effect sidebar-item"><!--img src="{fileThumbnail(
+			}" data-isdir="${isdir}" class="sidebar-hover-effect sidebar-item"><img src="${await fileThumbnail(
 				favorite.name,
 				sidebarElementFavorites.indexOf(favorite.name) === -1
 					? isdir
@@ -52,7 +56,9 @@ const createSidebar = async (): Promise<void> => {
 						: 'file'
 					: 'sidebar',
 				false
-			)}" alt="${favorite.name} icon"--><span class="sidebar-text">${await Translate(
+			)}" alt="${
+				favorite.name
+			} icon"><span class="sidebar-text">${await Translate(
 				favorite.name
 			)}</span></span>`;
 		}
@@ -60,13 +66,13 @@ const createSidebar = async (): Promise<void> => {
 			data?.hideSection?.favorites ? 'nav-hide-item' : ''
 		}">
         <div class="sidebar-hover-effect">
-            <span class="sidebar-nav-item-dropdown-btn" data-section="favorites"><!--img src="{fileThumbnail(
+            <span class="sidebar-nav-item-dropdown-btn" data-section="favorites"><img src="${await fileThumbnail(
 				'Favorites',
 				'sidebar',
 				false
-			)}" alt="Favorites icon"--><span class="sidebar-text">${await Translate(
-				'Favorites'
-			)}</span><div class="sidebar-nav-item-dropdown-spacer"></div></span>
+			)}" alt="Favorites icon"><span class="sidebar-text">${await Translate(
+			'Favorites'
+		)}</span><div class="sidebar-nav-item-dropdown-spacer"></div></span>
         </div>
         <div class="sidebar-nav-item-dropdown-container">
             ${favoritesElement}
@@ -101,11 +107,11 @@ const createSidebar = async (): Promise<void> => {
 	const settingBtn = document.querySelector('.sidebar-setting-btn');
 	settingBtn.innerHTML = `
 		<div class="sidebar-setting-btn-inner">
-			<!--img src="{fileThumbnail(
+			<img src="${await fileThumbnail(
 				'setting',
 				'sidebar',
 				false
-			)}" alt="Setting icon" class="sidebar-setting-btn-icon" /-->
+			)}" alt="Setting icon" class="sidebar-setting-btn-icon" />
 
 			<span class="sidebar-setting-btn-text">
 				${await Translate('Settings')}

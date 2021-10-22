@@ -1,6 +1,6 @@
 import formatBytes from '../Functions/filesize';
 import Translate from '../I18n/i18n';
-//import fileThumbnail from '../Thumbnail/thumbnail';
+import fileThumbnail from '../Thumbnail/thumbnail';
 import focusingPath from '../Functions/focusingPath';
 import { updateTheme } from '../Theme/theme';
 import DrivesAPI, { Drive } from '../../Api/drives';
@@ -68,6 +68,11 @@ const drivesToElements = async (
 		  )}</h1>` //eslint-disable-line
 		: ''; // Element Result
 	for (const drive of drives) {
+		if (
+			drive.available_space > drive.total_space &&
+			drive.name === 'Google Drive'
+		)
+			drive.total_space = 15 * 1024 * 1024 * 1024;
 		const driveName =
 			drive.mount_point.split('/')[
 				drive.mount_point.split('/').length - 1
@@ -76,11 +81,11 @@ const drivesToElements = async (
         <div class="pendrive file card-hover-effect" data-isdir="true" data-path = "${escape(
 			drive.mount_point
 		)}">
-            <!--img src="{fileThumbnail(
-				drive.filesystem === 'Removable Disk' ? 'usb' : 'hard-disk',
+            <img src="${await fileThumbnail(
+				drive.is_removable ? 'usb' : 'hard-disk',
 				'favorites',
 				false
-			)}" alt="USB icon" class="pendrive-icon"-->
+			)}" alt="USB icon" class="pendrive-icon">
             <div class="pendrive-info">
                 ${
 					drive.name ?? getDiskType(drive.is_removable)
@@ -115,21 +120,21 @@ const drivesToElements = async (
 const Drives = async (): Promise<string> => {
 	const drives = await getDrives();
 
-	if (focusingPath() === 'xplorer://Home') {
-		switch (platform) {
-			case 'win32':
-				return `<section class="home-section" id="drives">${await drivesToElements(
-					drives
-				)}</section>`;
-			case 'darwin':
-				return ''; // Xplorer does not support drives for macOS recently
-			default:
-				return `<section class="home-section" id="drives">${await drivesToElements(
-					drives,
-					true
-				)}</section>`;
-		}
-	} else return '';
+	//if (focusingPath() === 'xplorer://Home') {
+	switch (platform) {
+		case 'win32':
+			return `<section class="home-section" id="drives">${await drivesToElements(
+				drives
+			)}</section>`;
+		case 'darwin':
+			return ''; // Xplorer does not support drives for macOS currently
+		default:
+			return `<section class="home-section" id="drives">${await drivesToElements(
+				drives,
+				true
+			)}</section>`;
+	}
+	//} else return '';
 };
 
 /**
@@ -155,25 +160,25 @@ const sidebarDrivesElement = async (): Promise<string> => {
 				: drive.mount_point.split('/')[drive.mount_point.split('/').length - 1]; // Get name of drive
 			drivesElement += `<span data-path = "${await escape(
 				drive.mount_point
-			)}" data-isdir="true" class="sidebar-hover-effect drive-item"><!--img src="{fileThumbnail(
-				drive.filesystem === 'Removable Disk' ? 'usb' : 'hard-disk',
+			)}" data-isdir="true" class="sidebar-hover-effect drive-item"><img src="${await fileThumbnail(
+				drive.is_removable ? 'usb' : 'hard-disk',
 				'favorites',
 				false
-			)}" alt="${driveName}"--><span class="sidebar-text">${driveName}</span></span>`;
+			)}" alt="${driveName}"><span class="sidebar-text">${driveName}</span></span>`;
 		}
 		const result = `<div class="sidebar-nav-item sidebar-nav-drives ${
 			data?.hideSection?.drives ? 'nav-hide-item' : ''
 		}" id="sidebar-drives">
 			<div class="sidebar-hover-effect">
-			<span class="sidebar-nav-item-dropdown-btn" data-section="drives"><!--img src="{fileThumbnail(
+			<span class="sidebar-nav-item-dropdown-btn" data-section="drives"><img src="${await fileThumbnail(
 				'hard-disk',
 				'favorites',
 				false
-			)}" alt="Drives icon"--><span class="sidebar-text">${
-				platform === 'win32'
-					? await Translate('Drives')
-					: await Translate('Pendrives')
-			}</span><div class="sidebar-nav-item-dropdown-spacer"></div></span>
+			)}" alt="Drives icon"><span class="sidebar-text">${
+			platform === 'win32'
+				? await Translate('Drives')
+				: await Translate('Pendrives')
+		}</span><div class="sidebar-nav-item-dropdown-spacer"></div></span>
 			</div>
 			<div class="sidebar-nav-item-dropdown-container">
 				${drivesElement}

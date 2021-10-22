@@ -10,10 +10,14 @@ module.exports = {
 				use: 'ts-loader',
 				exclude: /node_modules/,
 			},
+			{
+				test: /\.svg/,
+				type: 'asset/inline',
+			},
 		],
 	},
 	resolve: {
-		extensions: ['.tsx', '.ts', '.js'],
+		extensions: ['.tsx', '.ts', '.js', '.svg'],
 	},
 	output: {
 		filename: 'index.js',
