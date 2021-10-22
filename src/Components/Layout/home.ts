@@ -1,37 +1,40 @@
-import os from 'os';
-import path from 'path';
 import { Drives } from '../Drives/drives';
 import Favorites from '../Favorites/favorites';
 import { updateTheme } from '../Theme/theme';
-import fs from 'fs';
-import Translate from '../I18n/i18n';
+/*import Translate from '../I18n/i18n';
 import nativeDrag from '../Files/File Operation/drag';
-import fileThumbnail from '../Thumbnail/thumbnail';
+import fileThumbnail from '../Thumbnail/thumbnail';*/
 import { startLoading, stopLoading } from '../Functions/Loading/loading';
-import storage from 'electron-json-storage-sync';
-import LAZY_LOAD from '../Functions/lazyLoadingImage';
+/*import LAZY_LOAD from '../Functions/lazyLoadingImage';
 import { isHiddenFile } from 'is-hidden-file';
 import getType from '../Files/File Type/type';
 import formatBytes from '../Functions/filesize';
 import windowGUID from '../Constants/windowGUID';
 import type fileData from '../../Typings/fileData';
-import { ErrorLog } from '../Functions/log';
+import { ErrorLog } from '../Functions/log';*/
+import OS from '../../Api/platform';
+let platform: string;
+(async () => {
+	platform = await OS();
+})();
 
 /**
  * Create home files section (only for linux)
  * @param {any} callback
  * @returns {any} home file section
  */
-type cb = (res: string) => void;
+/*type cb = (res: string) => void;
 const homeFiles = (callback: cb) => {
 	const readHomeFiles = async () => {
 		const dirAlongsideFiles =
-			storage.get('preference')?.data?.dirAlongsideFiles ?? false;
+			JSON.parse(localStorage?.getItem('preference'))
+				?.dirAlongsideFiles ?? false;
 		const layout =
-			storage.get('layout')?.data?.[os.homedir()] ??
-			storage.get('preference')?.data?.layout ??
+			JSON.parse(localStorage.getItem('layout'))?.[os.homedir()] ??
+			JSON.parse(localStorage.getItem('preference'))?.layout ??
 			's';
-		const sort = storage.get('sort')?.data?.[os.homedir()] ?? 'A';
+		const sort =
+			JSON.parse(localStorage.getItem('sort'))?.[os.homedir()] ?? 'A';
 		let result = `<section class='home-section'><h1 class="section-title">Files</h1>`;
 		let files = fs
 			.readdirSync(os.homedir(), { withFileTypes: true })
@@ -164,24 +167,21 @@ const homeFiles = (callback: cb) => {
 			}
 		}
 	}, 500);
-};
-
-type homecb = () => void;
+};*/
 
 /**
  * Create contents for home page
- * @param {homecb} _callback - callback argument
  * @returns {Promise<void>}
  */
-const Home = async (_callback: homecb): Promise<void> => {
+const Home = async (): Promise<void> => {
 	startLoading();
 	// Get the main element
 	const MAIN_ELEMENT = document.getElementById('workspace');
 	if (MAIN_ELEMENT.classList.contains('empty-dir-notification'))
 		MAIN_ELEMENT.classList.remove('empty-dir-notification'); // Remove class if exist
-	const favorites = Favorites();
+	const favorites = await Favorites();
 	const drives = await Drives();
-	if (process.platform !== 'win32') {
+	/*if (platform !== 'win32') {
 		homeFiles((files) => {
 			// Update the content in the main page ...
 			MAIN_ELEMENT.innerHTML = favorites + drives + files;
@@ -189,18 +189,16 @@ const Home = async (_callback: homecb): Promise<void> => {
 			// And also the theme :)
 			updateTheme();
 			nativeDrag(document.querySelectorAll('.file'), os.homedir()); // Listen to native drag
-			_callback();
 			stopLoading();
 			LAZY_LOAD();
 		});
-	} else {
-		// Update the content in the main page ...
-		MAIN_ELEMENT.innerHTML = favorites + drives;
-		// And also the theme :)
-		updateTheme();
-		_callback();
-		stopLoading();
-	}
+	} else {*/
+	// Update the content in the main page ...
+	MAIN_ELEMENT.innerHTML = favorites + drives;
+	// And also the theme :)
+	updateTheme();
+	stopLoading();
+	//}
 };
 
 export default Home;

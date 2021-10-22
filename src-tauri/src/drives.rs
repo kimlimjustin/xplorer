@@ -18,7 +18,6 @@ pub fn get_drives() -> Result<Drives, String> {
   let sys = System::new_all();
   let mut array_of_drives = Vec::new();
   for disk in sys.disks() {
-    println!("{:?} {:?}", disk.name(), disk.mount_point());
     array_of_drives.push(DriveInformation {
       name: disk.name().to_str().unwrap_or("Disk").to_string(), //name: format!("{:?}", disk.name()),
       mount_point: disk.mount_point().to_str().unwrap_or("/").to_string(),

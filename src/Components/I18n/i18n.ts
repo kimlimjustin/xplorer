@@ -1,10 +1,4 @@
-import DirectoryAPI from '../../Api/directory';
-import FileAPI from '../../Api/files';
 import LocalesAPI from '../../Api/locales';
-
-interface LangSrcType {
-	[key: string]: string;
-}
 
 let localesInformation: LocalesAPI;
 
@@ -15,7 +9,7 @@ let localesInformation: LocalesAPI;
  */
 const Translate = async (source: string): Promise<string> => {
 	// Read available language
-	if (!localesInformation) {
+	if (!localesInformation?.LOCALES) {
 		localesInformation = new LocalesAPI();
 		await localesInformation.build();
 	}
@@ -25,11 +19,15 @@ const Translate = async (source: string): Promise<string> => {
 	for (const locale of Object.values(localesInformation.AVAILABLE_LOCALES)) {
 		// Check if the inputed lang available
 		if (locale === lang) {
-			// Replace all text
-			Object.keys(localesInformation.LOCALES[locale]).forEach((key) => {
-				if (source === key)
-					source = localesInformation.LOCALES[locale][key];
-			});
+			if (localesInformation.LOCALES[locale]) {
+				// Replace all text
+				Object.keys(localesInformation.LOCALES[locale]).forEach(
+					(key) => {
+						if (source === key)
+							source = localesInformation.LOCALES[locale][key];
+					}
+				);
+			}
 			// Return translated text
 			return source;
 		}
