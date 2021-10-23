@@ -106,19 +106,27 @@ If you want to run this project in your local system, please follow this guide:
 
 2. Clone the project to your local system using this command
 
-    `$ git clone https://github.com/<your_github_username>/xplorer.git`
+```sh
+$ git clone https://github.com/<your_github_username>/xplorer.git
+```
 
 3. Change directory to the root directory of this project
 
-    `$ cd xplorer`
+```sh
+$ cd xplorer
+```
 
-4. Install all dependencies using `yarn`
+4. Install all dependencies using [`yarn`](https://yarnpkg.com/)
 
-    `$ yarn install`
+```sh
+$ yarn install
+```
 
 5. Run the project in development mode
 
-    `$ yarn dev`
+```sh
+$ yarn dev
+```
 
 ---
 
