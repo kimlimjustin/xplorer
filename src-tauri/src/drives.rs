@@ -7,6 +7,8 @@ pub struct DriveInformation {
   total_space: u64,
   available_space: u64,
   is_removable: bool,
+  disk_type: String,
+  file_system: String,
 }
 #[derive(serde::Serialize)]
 pub struct Drives {
@@ -24,6 +26,15 @@ pub fn get_drives() -> Result<Drives, String> {
     let name: String = disk.name().to_str().unwrap_or("Disk").to_string();
     let is_removable: bool = disk.is_removable();
     let mut caption = mount_point.clone();
+    let file_system = String::from_utf8(disk.file_system().to_vec()).unwrap_or("Err".to_string());
+    let disk_type: String;
+    if disk.type_() == sysinfo::DiskType::SSD {
+      disk_type = "SSD".to_string()
+    } else if disk.type_() == sysinfo::DiskType::HDD {
+      disk_type = "HDD".to_string()
+    } else {
+      disk_type = "Removable Disk".to_string()
+    }
     caption.pop();
     if total_space < available_space {
       if cfg!(target_os = "windows") {
@@ -51,6 +62,8 @@ pub fn get_drives() -> Result<Drives, String> {
       total_space,
       available_space,
       is_removable,
+      disk_type,
+      file_system,
     });
   }
   Ok(Drives {
