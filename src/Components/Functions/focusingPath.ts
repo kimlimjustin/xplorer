@@ -1,18 +1,26 @@
+import OS from '../../Api/platform';
 import FavoritesAPI from '../../Api/favorites';
-import windowGUID from '../Constants/windowGUID';
 
+let favoriteData: FavoritesAPI;
+let platform: string;
 /**
  * Get the tab focusing path
- * @returns {string}
+ * @returns {Promise<string>}
  */
-const focusingPath = (): string => {
-	const tabs = JSON.parse(localStorage.getItem(`tabs-${windowGUID}`))?.data;
-	const favoriteData = new FavoritesAPI();
-	favoriteData.build();
-	return tabs.tabs[tabs.focus].position === 'xplorer://Home' &&
-		process.platform === 'linux'
+const focusingPath = async (): Promise<string> => {
+	const PathNavigator = document.querySelector(
+		'.path-navigator'
+	) as HTMLInputElement;
+	if (!favoriteData) {
+		favoriteData = new FavoritesAPI();
+		await favoriteData.build();
+	}
+	if (!platform) {
+		platform = await OS();
+	}
+	return PathNavigator.value === 'xplorer://Home' && platform === 'linux'
 		? favoriteData.HOMEDIR_PATH
-		: tabs.tabs[tabs.focus].position;
+		: PathNavigator.value;
 };
 
 export default focusingPath;
