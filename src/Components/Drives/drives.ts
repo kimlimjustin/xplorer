@@ -149,7 +149,10 @@ const detectDriveInit = async (): Promise<void> => {
 		await driveInfo.build();
 	}
 	driveInfo.detectChange(async () => {
-		if ((await focusingPath()) === 'xplorer://Home') {
+		if (
+			document.querySelector<HTMLInputElement>('.path-navigator')
+				.value === 'xplorer://Home'
+		) {
 			const MAIN_DRIVES_ELEMENT = document.getElementById('drives');
 			if (MAIN_DRIVES_ELEMENT.classList.contains('hidden'))
 				MAIN_DRIVES_ELEMENT.classList.remove('hidden');
