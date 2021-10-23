@@ -5,7 +5,8 @@ import Translate from '../I18n/i18n';
 //import Setting from '../Setting/setting';
 import FavoritesAPI from '../../Api/favorites';
 import DirectoryAPI from '../../Api/directory';
-
+import Storage from '../../Api/storage';
+import IsValid from '../Functions/validChecker';
 interface Favorites {
 	name: string;
 	path: string;
@@ -25,7 +26,7 @@ let FavoritesData: FavoritesAPI;
  * @returns {Promise<void>}
  */
 const createSidebar = async (): Promise<void> => {
-	const data = JSON.parse(localStorage.getItem('favorites')); // Get user favorites data on sidebar
+	const sidebar = await Storage.get('sidebar');
 	if (!FavoritesData) {
 		FavoritesData = new FavoritesAPI();
 		await FavoritesData.build();
@@ -63,7 +64,7 @@ const createSidebar = async (): Promise<void> => {
 			)}</span></span>`;
 		}
 		const result = `<div class="sidebar-nav-item ${
-			data?.hideSection?.favorites ? 'nav-hide-item' : ''
+			sidebar?.hideSection?.favorites ? 'nav-hide-item' : ''
 		}">
         <div class="sidebar-hover-effect">
             <span class="sidebar-nav-item-dropdown-btn" data-section="favorites"><img src="${await fileThumbnail(
@@ -81,17 +82,20 @@ const createSidebar = async (): Promise<void> => {
 		return result;
 	};
 
-	const _favorites = data?.favorites ?? [
-		{ name: 'Home', path: 'xplorer://Home' },
-		{ name: 'Recent', path: 'xplorer://Recent' },
-		{ name: 'Desktop', path: FavoritesData.DESKTOP_PATH },
-		{ name: 'Documents', path: FavoritesData.DOCUMENT_PATH },
-		{ name: 'Downloads', path: FavoritesData.DOWNLOAD_PATH },
-		{ name: 'Pictures', path: FavoritesData.PICTURE_PATH },
-		{ name: 'Music', path: FavoritesData.MUSIC_PATH },
-		{ name: 'Videos', path: FavoritesData.VIDEO_PATH },
-		{ name: 'Trash', path: 'xplorer://Trash' },
-	];
+	const favorites = await Storage.get('favorites');
+	const _favorites = IsValid(favorites)
+		? favorites
+		: [
+				{ name: 'Home', path: 'xplorer://Home' },
+				{ name: 'Recent', path: 'xplorer://Recent' },
+				{ name: 'Desktop', path: FavoritesData.DESKTOP_PATH },
+				{ name: 'Documents', path: FavoritesData.DOCUMENT_PATH },
+				{ name: 'Downloads', path: FavoritesData.DOWNLOAD_PATH },
+				{ name: 'Pictures', path: FavoritesData.PICTURE_PATH },
+				{ name: 'Music', path: FavoritesData.MUSIC_PATH },
+				{ name: 'Videos', path: FavoritesData.VIDEO_PATH },
+				{ name: 'Trash', path: 'xplorer://Trash' }, // eslint-disable-next-line no-mixed-spaces-and-tabs
+		  ];
 
 	// get drives element
 	const sidebarNavElement = document.querySelector(
@@ -122,7 +126,7 @@ const createSidebar = async (): Promise<void> => {
 	sidebarElement
 		.querySelectorAll('.sidebar-nav-item-dropdown-btn')
 		.forEach((btn) => {
-			btn.addEventListener('click', (e) => {
+			btn.addEventListener('click', async (e) => {
 				let sidebarNavItem = (e.target as Element).parentNode;
 				while (
 					!(sidebarNavItem as HTMLElement).classList.contains(
@@ -136,14 +140,17 @@ const createSidebar = async (): Promise<void> => {
 				);
 
 				// Save preference into local storage
-				const sidebar = JSON.parse(localStorage.getItem('sidebar'));
+				const sidebar = await Storage.get('sidebar');
+				console.log(sidebar);
 				if (!sidebar?.hideSection) sidebar.hideSection = {}; // Initialize if it's not exist
-				sidebar.hideSection[(e.target as HTMLElement).dataset.section] =
-					(
-						(e.target as Element).parentNode
-							.parentNode as HTMLElement
-					).classList.contains('nav-hide-item');
-				localStorage.setItem('sidebar', sidebar);
+				sidebar.hideSection[
+					(sidebarNavItem as HTMLElement).querySelector<HTMLElement>(
+						'[data-section]'
+					).dataset.section
+				] = (sidebarNavItem as HTMLElement).classList.contains(
+					'nav-hide-item'
+				);
+				Storage.set('sidebar', sidebar);
 			});
 		});
 	changeSidebar(sidebarElement);
