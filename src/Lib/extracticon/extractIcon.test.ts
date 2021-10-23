@@ -1,4 +1,4 @@
-const { extractIcon } = require('../src/Lib/extracticon/bindings');
+const { extractIcon } = require('./bindings');
 const fs = require('fs');
 
 test('Extract exe icon', () => {

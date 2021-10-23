@@ -3,5 +3,9 @@
  * @param {string} path the path to be evaluated
  * @returns {string}
  */
-const basename = (path: string): string => path.split(/[\\/]/).pop();
+const basename = (path: string): string =>
+	path
+		.replace(/(\\|\/)$/g, '')
+		.split(/[\\/]/)
+		.pop();
 export default basename;
