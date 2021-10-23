@@ -8,5 +8,6 @@ export default interface MenuItem {
 		shortcut?: string;
 		name?: string;
 		role?: () => void;
+		icon?: string;
 	}[];
 }
