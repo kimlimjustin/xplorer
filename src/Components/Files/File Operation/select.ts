@@ -1,6 +1,8 @@
 import storage from 'electron-json-storage-sync';
 import { isHiddenFile } from 'is-hidden-file';
 import { isElementInViewport } from '../../Functions/lazyLoadingImage';
+import { elementClassNameContains } from '../../Functions/elementClassNameContains';
+
 let latestSelected: HTMLElement;
 let latestShiftSelected: HTMLElement;
 let initialized = false;
@@ -61,28 +63,28 @@ const ensureElementInViewPort = (element: HTMLElement): void => {
 };
 
 /**
+ * Select the first file there in case the latest selected file is not exist
+ * @returns {any}
+ */
+const selectFirstFile = () => {
+	const firstFileElement = document
+		.getElementById('workspace')
+		.querySelector(
+			`.file${isHiddenFile ? ':not([data-hidden-file])' : ''}`
+		);
+	firstFileElement.classList.add('selected');
+	latestSelected = firstFileElement as HTMLElement;
+};
+
+const elementIndex = (element: HTMLElement): number => {
+	return Array.from(element.parentNode.children).indexOf(element);
+};
+
+/**
  * Select shortcut initializer
  * @returns {any}
  */
 const Initializer = () => {
-	/**
-	 * Select the first file there in case the latest selected file is not exist
-	 * @returns {any}
-	 */
-	const selectFirstFile = () => {
-		const firstFileElement = document
-			.getElementById('workspace')
-			.querySelector(
-				`.file${isHiddenFile ? ':not([data-hidden-file])' : ''}`
-			);
-		firstFileElement.classList.add('selected');
-		latestSelected = firstFileElement as HTMLElement;
-	};
-
-	const elementIndex = (element: HTMLElement): number => {
-		return Array.from(element.parentNode.children).indexOf(element);
-	};
-
 	const selectShortcut = (e: KeyboardEvent) => {
 		// Ignore keyboard shortcuts for select files if path navigator has focus
 		if (
@@ -92,259 +94,21 @@ const Initializer = () => {
 
 		const hideHiddenFiles =
 			storage.get('preference')?.data?.hideHiddenFiles ?? true;
-		if (e.key === 'ArrowRight' && !e.altKey) {
-			if (!document.contains(latestSelected)) {
-				selectFirstFile();
-				return;
-			}
-			if (
-				elementIndex(latestShiftSelected) < elementIndex(latestSelected)
-			) {
-				latestShiftSelected = latestSelected;
-			}
-			e.preventDefault();
-			let nextSibling = (
-				e.shiftKey
-					? latestShiftSelected.nextSibling
-					: latestSelected.nextSibling
-			) as HTMLElement;
-			if (hideHiddenFiles) {
-				while (
-					nextSibling &&
-					nextSibling.dataset.hiddenFile !== undefined
-				) {
-					nextSibling = nextSibling.nextSibling as HTMLElement;
-				}
-			}
-			if (
-				nextSibling?.className.split(' ').some(function (c) {
-					return /file/.test(c);
-				})
-			) {
-				ensureElementInViewPort(nextSibling);
-				unselectAllSelected();
-				if (e.shiftKey) {
-					let start = false;
-					for (const sibling of latestSelected.parentNode.children) {
-						if (
-							start ||
-							sibling === nextSibling ||
-							sibling === latestSelected
-						) {
-							if (
-								!(
-									hideHiddenFiles &&
-									(sibling as HTMLElement).dataset
-										.hiddenFile === 'true'
-								)
-							)
-								sibling.classList.add('selected');
-						}
-						if (sibling === latestSelected) start = true;
-						if (sibling === nextSibling) break;
-					}
-					latestShiftSelected = nextSibling;
-				} else {
-					latestSelected.classList.remove('selected');
-					latestSelected = nextSibling;
-					nextSibling.classList.add('selected');
-				}
-			}
-		} else if (e.key === 'ArrowLeft' && !e.altKey) {
-			if (!document.contains(latestSelected)) {
-				selectFirstFile();
-				return;
-			}
-			if (
-				elementIndex(latestShiftSelected) > elementIndex(latestSelected)
-			)
-				latestShiftSelected = latestSelected;
 
-			e.preventDefault();
-			let previousSibling = (
-				e.shiftKey
-					? latestShiftSelected.previousSibling
-					: latestSelected.previousSibling
-			) as HTMLElement;
-			if (hideHiddenFiles) {
-				while (
-					previousSibling &&
-					previousSibling.dataset.hiddenFile !== undefined
-				) {
-					previousSibling =
-						previousSibling.previousSibling as HTMLElement;
-				}
-			}
-			if (
-				previousSibling?.className.split(' ').some(function (c) {
-					return /file/.test(c);
-				})
-			) {
-				ensureElementInViewPort(previousSibling);
-				let start = false;
-				unselectAllSelected();
-				if (e.shiftKey) {
-					for (const sibling of latestSelected.parentNode.children) {
-						if (
-							start ||
-							sibling === previousSibling ||
-							sibling === latestSelected
-						) {
-							if (
-								!(
-									hideHiddenFiles &&
-									(sibling as HTMLElement).dataset
-										.hiddenFile === 'true'
-								)
-							)
-								sibling.classList.add('selected');
-						}
-						if (sibling === previousSibling) start = true;
-						if (sibling === latestSelected) break;
-					}
-					latestShiftSelected = previousSibling;
-				} else {
-					latestSelected.classList.remove('selected');
-					latestSelected = previousSibling;
-					previousSibling.classList.add('selected');
-				}
-			}
-		} else if (e.key === 'ArrowDown' && !e.altKey) {
+		const keyHandlers: { [key: string]: (e: KeyboardEvent, hideHiddenFiles: boolean) => void } = {
+			ArrowRight: arrowRightHandler,
+			ArrowLeft: arrowLeftHandler,
+			ArrowDown: arrowDownHandler,
+			ArrowUp: arrowUpHandler,
+		}
+
+		if (!e.altKey && keyHandlers[e.key]) {
 			if (!document.contains(latestSelected)) {
 				selectFirstFile();
 				return;
 			}
-			if (
-				elementIndex(latestShiftSelected) < elementIndex(latestSelected)
-			)
-				latestShiftSelected = latestSelected;
 
-			e.preventDefault();
-			const totalGridInArrow = Math.floor(
-				(latestSelected.parentNode as HTMLElement).offsetWidth /
-					(latestSelected.offsetWidth +
-						parseInt(getComputedStyle(latestSelected).marginLeft) *
-							2)
-			); // Calculate the total of grids in arrow
-			const siblings = latestSelected.parentNode.children;
-			let elementBelow = siblings[
-				Array.from(siblings).indexOf(
-					e.shiftKey ? latestShiftSelected : latestSelected
-				) + totalGridInArrow
-			] as HTMLElement;
-			if (hideHiddenFiles) {
-				while (
-					elementBelow &&
-					elementBelow.dataset.hiddenFile !== undefined
-				) {
-					elementBelow = siblings[
-						Array.from(siblings).indexOf(elementBelow) +
-							totalGridInArrow
-					] as HTMLElement;
-				}
-			}
-			if (
-				elementBelow?.className.split(' ').some(function (c) {
-					return /file/.test(c);
-				})
-			) {
-				ensureElementInViewPort(elementBelow);
-				let start = false;
-				unselectAllSelected();
-				if (e.shiftKey) {
-					for (const sibling of latestSelected.parentNode.children) {
-						if (
-							start ||
-							sibling === elementBelow ||
-							sibling === latestSelected
-						) {
-							if (
-								!(
-									hideHiddenFiles &&
-									(sibling as HTMLElement).dataset
-										.hiddenFile === 'true'
-								)
-							)
-								sibling.classList.add('selected');
-						}
-						if (sibling === latestSelected) start = true;
-						if (sibling === elementBelow) break;
-					}
-					latestShiftSelected = elementBelow;
-				} else {
-					latestSelected.classList.remove('selected');
-					latestSelected = elementBelow;
-					elementBelow.classList.add('selected');
-				}
-			}
-		} else if (e.key === 'ArrowUp' && !e.altKey) {
-			if (!document.contains(latestSelected)) {
-				selectFirstFile();
-				return;
-			}
-			if (
-				elementIndex(latestShiftSelected) > elementIndex(latestSelected)
-			)
-				latestShiftSelected = latestSelected;
-
-			e.preventDefault();
-			const totalGridInArrow = Math.floor(
-				(latestSelected.parentNode as HTMLElement).offsetWidth /
-					(latestSelected.offsetWidth +
-						parseInt(getComputedStyle(latestSelected).marginLeft) *
-							2)
-			); // Calculate the total of grids in arrow
-			const siblings = latestSelected.parentNode.children;
-			let elementAbove = siblings[
-				Array.from(siblings).indexOf(
-					e.shiftKey ? latestShiftSelected : latestSelected
-				) - totalGridInArrow
-			] as HTMLElement;
-			if (hideHiddenFiles) {
-				while (
-					elementAbove &&
-					elementAbove.dataset.hiddenFile !== undefined
-				) {
-					elementAbove = siblings[
-						Array.from(siblings).indexOf(elementAbove) -
-							totalGridInArrow
-					] as HTMLElement;
-				}
-			}
-			if (
-				elementAbove?.className.split(' ').some(function (c) {
-					return /file/.test(c);
-				})
-			) {
-				ensureElementInViewPort(elementAbove);
-				let start = false;
-				unselectAllSelected();
-				if (e.shiftKey) {
-					for (const sibling of latestSelected.parentNode.children) {
-						if (
-							start ||
-							sibling === elementAbove ||
-							sibling === latestSelected
-						) {
-							if (
-								!(
-									hideHiddenFiles &&
-									(sibling as HTMLElement).dataset
-										.hiddenFile === 'true'
-								)
-							)
-								sibling.classList.add('selected');
-						}
-						if (sibling === elementAbove) start = true;
-						if (sibling === latestSelected) break;
-					}
-					latestShiftSelected = elementAbove;
-				} else {
-					latestSelected.classList.remove('selected');
-					latestSelected = elementAbove;
-					elementAbove.classList.add('selected');
-				}
-			}
+			keyHandlers[e.key](e, hideHiddenFiles);
 		}
 	};
 	document.addEventListener('keydown', selectShortcut);
@@ -391,10 +155,231 @@ const unselectAllSelected = (): void => {
 
 /**
  * Get selected files array
- * @returns {NodeListOf<HTMLELement>}
+ * @returns {NodeListOf<HTMLElement>}
  */
 const getSelected = (): NodeListOf<HTMLElement> => {
 	return document.querySelectorAll<HTMLElement>('.selected');
 };
+
+const arrowRightHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
+	if (elementIndex(latestShiftSelected) < elementIndex(latestSelected)) {
+		latestShiftSelected = latestSelected;
+	}
+	e.preventDefault();
+	let nextSibling = (
+		e.shiftKey
+			? latestShiftSelected.nextSibling
+			: latestSelected.nextSibling
+	) as HTMLElement;
+	if (hideHiddenFiles) {
+		while (
+			nextSibling &&
+			nextSibling.dataset.hiddenFile !== undefined
+			) {
+			nextSibling = nextSibling.nextSibling as HTMLElement;
+		}
+	}
+	if (elementClassNameContains(nextSibling, /file/)) {
+		ensureElementInViewPort(nextSibling);
+		unselectAllSelected();
+		if (e.shiftKey) {
+			let start = false;
+			for (const sibling of latestSelected.parentNode.children) {
+				if (
+					start ||
+					sibling === nextSibling ||
+					sibling === latestSelected
+				) {
+					if (
+						!(
+							hideHiddenFiles &&
+							(sibling as HTMLElement).dataset
+								.hiddenFile === 'true'
+						)
+					)
+						sibling.classList.add('selected');
+				}
+				if (sibling === latestSelected) start = true;
+				if (sibling === nextSibling) break;
+			}
+			latestShiftSelected = nextSibling;
+		} else {
+			latestSelected.classList.remove('selected');
+			latestSelected = nextSibling;
+			nextSibling.classList.add('selected');
+		}
+	}
+}
+
+const arrowLeftHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
+	if (elementIndex(latestShiftSelected) > elementIndex(latestSelected))
+		latestShiftSelected = latestSelected;
+
+	e.preventDefault();
+	let previousSibling = (
+		e.shiftKey
+			? latestShiftSelected.previousSibling
+			: latestSelected.previousSibling
+	) as HTMLElement;
+	if (hideHiddenFiles) {
+		while (
+			previousSibling &&
+			previousSibling.dataset.hiddenFile !== undefined
+			) {
+			previousSibling =
+				previousSibling.previousSibling as HTMLElement;
+		}
+	}
+	if (elementClassNameContains(previousSibling, /file/)) {
+		ensureElementInViewPort(previousSibling);
+		let start = false;
+		unselectAllSelected();
+		if (e.shiftKey) {
+			for (const sibling of latestSelected.parentNode.children) {
+				if (
+					start ||
+					sibling === previousSibling ||
+					sibling === latestSelected
+				) {
+					if (
+						!(
+							hideHiddenFiles &&
+							(sibling as HTMLElement).dataset
+								.hiddenFile === 'true'
+						)
+					)
+						sibling.classList.add('selected');
+				}
+				if (sibling === previousSibling) start = true;
+				if (sibling === latestSelected) break;
+			}
+			latestShiftSelected = previousSibling;
+		} else {
+			latestSelected.classList.remove('selected');
+			latestSelected = previousSibling;
+			previousSibling.classList.add('selected');
+		}
+	}
+}
+
+const arrowDownHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
+	if (elementIndex(latestShiftSelected) < elementIndex(latestSelected))
+		latestShiftSelected = latestSelected;
+
+	e.preventDefault();
+	const totalGridInArrow = Math.floor(
+		(latestSelected.parentNode as HTMLElement).offsetWidth /
+		(latestSelected.offsetWidth +
+			parseInt(getComputedStyle(latestSelected).marginLeft) *
+			2)
+	); // Calculate the total of grids in arrow
+	const siblings = latestSelected.parentNode.children;
+	let elementBelow = siblings[
+		Array.from(siblings).indexOf(
+			e.shiftKey
+				? latestShiftSelected
+				: latestSelected
+		) + totalGridInArrow
+	] as HTMLElement;
+	if (hideHiddenFiles) {
+		while (
+			elementBelow &&
+			elementBelow.dataset.hiddenFile !== undefined
+			) {
+			elementBelow = siblings[
+			Array.from(siblings).indexOf(elementBelow) +
+			totalGridInArrow
+				] as HTMLElement;
+		}
+	}
+	if (elementClassNameContains(elementBelow, /file/)) {
+		ensureElementInViewPort(elementBelow);
+		let start = false;
+		unselectAllSelected();
+		if (e.shiftKey) {
+			for (const sibling of latestSelected.parentNode.children) {
+				if (
+					start ||
+					sibling === elementBelow ||
+					sibling === latestSelected
+				) {
+					if (
+						!(
+							hideHiddenFiles &&
+							(sibling as HTMLElement).dataset
+								.hiddenFile === 'true'
+						)
+					)
+						sibling.classList.add('selected');
+				}
+				if (sibling === latestSelected) start = true;
+				if (sibling === elementBelow) break;
+			}
+			latestShiftSelected = elementBelow;
+		} else {
+			latestSelected.classList.remove('selected');
+			latestSelected = elementBelow;
+			elementBelow.classList.add('selected');
+		}
+	}
+}
+
+const arrowUpHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
+	if (elementIndex(latestShiftSelected) > elementIndex(latestSelected))
+		latestShiftSelected = latestSelected;
+
+	e.preventDefault();
+	const totalGridInArrow = Math.floor(
+		(latestSelected.parentNode as HTMLElement).offsetWidth /
+		(latestSelected.offsetWidth +
+			parseInt(getComputedStyle(latestSelected).marginLeft) *
+			2)
+	); // Calculate the total of grids in arrow
+	const siblings = latestSelected.parentNode.children;
+	let elementAbove = siblings[
+		Array.from(siblings).indexOf(
+			e.shiftKey
+				? latestShiftSelected
+				: latestSelected
+		) - totalGridInArrow
+	] as HTMLElement;
+	if (hideHiddenFiles) {
+		while (elementAbove && elementAbove.dataset.hiddenFile !== undefined) {
+			elementAbove = siblings[
+				Array.from(siblings).indexOf(elementAbove) - totalGridInArrow
+			] as HTMLElement;
+		}
+	}
+	if (elementClassNameContains(elementAbove, /file/)) {
+		ensureElementInViewPort(elementAbove);
+		let start = false;
+		unselectAllSelected();
+		if (e.shiftKey) {
+			for (const sibling of latestSelected.parentNode.children) {
+				if (
+					start ||
+					sibling === elementAbove ||
+					sibling === latestSelected
+				) {
+					if (
+						!(
+							hideHiddenFiles &&
+							(sibling as HTMLElement).dataset
+								.hiddenFile === 'true'
+						)
+					)
+						sibling.classList.add('selected');
+				}
+				if (sibling === elementAbove) start = true;
+				if (sibling === latestSelected) break;
+			}
+			latestShiftSelected = elementAbove;
+		} else {
+			latestSelected.classList.remove('selected');
+			latestSelected = elementAbove;
+			elementAbove.classList.add('selected');
+		}
+	}
+}
 
 export { Select, SelectListener, getSelected };
