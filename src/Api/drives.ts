@@ -35,11 +35,13 @@ class DrivesAPI {
 		return new Promise((resolve) => {
 			invoke('get_drives').then(
 				(drives: { array_of_drives: Drive[] }) => {
-					const filteredDrives = drives.array_of_drives.filter(
+					let filteredDrives = drives.array_of_drives.filter(
 						(drive) => drive.available_space > 0
 					);
 					if (platform !== 'win32') {
-						filteredDrives.filter((drive) => drive.is_removable);
+						filteredDrives = filteredDrives.filter(
+							(drive) => drive.is_removable
+						);
 					}
 					resolve(filteredDrives);
 				}
