@@ -1,3 +1,4 @@
+import Storage from "../../Api/storage";
 import {themeValue, themeData, Theme} from "../../Typings/theme";
 /**
  * Detect system theme
@@ -219,7 +220,7 @@ const changeTheme = (document:Document, theme?:string): void => {
  * @returns {Promise<void>}
  */
 const updateTheme = async ():Promise<void> => {
-    const data:themeData = JSON.parse(localStorage.getItem("theme"))
+    const data:themeData = await Storage.get("theme")
     // If user has no preference theme
     if (!data || !Object.keys(data).length) {
         await changeTheme(document, defaultTheme)

@@ -4,6 +4,7 @@ import folderConfig, {
 } from '../../Config/folder.config';
 import FileConfig, { VIDEO_TYPES } from '../../Config/file.config';
 import getBasename from '../Functions/basename';
+import Storage from '../../Api/storage';
 /**
  * Return image view of preview
  * @param {string} filename - the file name
@@ -24,8 +25,8 @@ const imageThumbnail = (filename: string, HTMLFormat?: boolean) => {
  * @param {string} filename
  * @returns {string} HTML Result
  */
-const videoPreview = (filename: string): string => {
-	const preference = JSON.parse(localStorage.getItem('preference'));
+const videoPreview = async (filename: string): Promise<string> => {
+	const preference = await Storage.get('preference');
 	const alt = defaultThumbnail.DEFAULT_VIDEO_THUMBNAIL;
 	return preference?.autoPlayPreviewVideo
 		? `<video autoplay loop muted class="file-grid-preview"><source src = "${filename}" /><img src = "${alt}" /></video>`
@@ -47,7 +48,7 @@ const fileThumbnail = async (
 	const basename = getBasename(filePath);
 
 	if (VIDEO_TYPES.indexOf(ext) !== -1)
-		return HTMLFormat ? videoPreview(filePath) : filePath;
+		return HTMLFormat ? await videoPreview(filePath) : filePath;
 
 	const filename = filePath.toLowerCase(); // Lowercase filename
 	if (category === 'contextmenu') {

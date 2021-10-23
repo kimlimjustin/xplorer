@@ -1,11 +1,10 @@
 import formatBytes from '../Functions/filesize';
 import Translate from '../I18n/i18n';
 import fileThumbnail from '../Thumbnail/thumbnail';
-import focusingPath from '../Functions/focusingPath';
 import { updateTheme } from '../Theme/theme';
 import DrivesAPI, { Drive } from '../../Api/drives';
 import OS from '../../Api/platform';
-
+import Storage from '../../Api/storage';
 // Initialize values
 let platform: string;
 let driveInfo: DrivesAPI;
@@ -93,7 +92,7 @@ const Drives = async (): Promise<string> => {
  * @returns {string}
  */
 const sidebarDrivesElement = async (): Promise<string> => {
-	const data = JSON.parse(localStorage.getItem('sidebar')); // Get user favorites data on sidebar
+	const data = await Storage.get('sidebar'); // Get user favorites data on sidebar
 	const drives = driveInfo.DRIVES;
 	if (!drives.length || platform === 'darwin')
 		return `<div class="sidebar-nav-item" id="sidebar-drives"></div>`;

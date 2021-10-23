@@ -2,6 +2,7 @@ import Translate from '../I18n/i18n';
 import fileThumbnail from '../Thumbnail/thumbnail';
 import FavoritesAPI from '../../Api/favorites';
 import DirectoryAPI from '../../Api/directory';
+import Storage from '../../Api/storage';
 let FavoritesData: FavoritesAPI;
 
 /**
@@ -13,7 +14,7 @@ const Favorites = async (): Promise<string> => {
 		FavoritesData = new FavoritesAPI();
 		await FavoritesData.build();
 	}
-	const data = JSON.parse(localStorage.getItem('favorites')); // Get user favorites data on sidebar
+	const data = await Storage.get('favorites'); // Get user favorites data on sidebar
 	const favorites = data?.favorites ?? [
 		{
 			name: await Translate('Recent'),
