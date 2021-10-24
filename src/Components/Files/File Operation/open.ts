@@ -1,16 +1,216 @@
-import fileThumbnail from "../../Thumbnail/thumbnail";
-import path from "path";
-import os from "os";
+import Storage from '../../../Api/storage';
+import DirectoryAPI, { FileMetaData } from '../../../Api/directory';
+//import getType from '../File Type/type';
+import { stopLoading } from '../../Functions/Loading/loading';
+import { updateTheme } from '../../Theme/theme';
+import formatBytes from '../../Functions/filesize';
+import LAZY_LOAD from '../../Functions/lazyLoadingImage';
+import fileThumbnail from '../../Thumbnail/thumbnail';
+/**
+ * Display files into Xplorer main section
+ * @param {fileData[]} files - array of files of a directory
+ * @param {string} dir - directory base path
+ * @returns {void}
+ */
+const displayFiles = async (
+	files: FileMetaData[],
+	dir: string
+	//options?: { reveal: boolean; initialDirToOpen: string }
+) => {
+	const preference = await Storage.get('preference');
+	const hideSystemFile = preference?.hideSystemFiles ?? true;
+	const dirAlongsideFiles = preference?.dirAlongsideFiles ?? false;
+	const layout =
+		(await Storage.get('layout'))?.[dir] ?? preference?.layout ?? 's';
+	const sort = (await Storage.get('sort'))?.[dir] ?? 'A';
+	const MAIN_ELEMENT = document.getElementById('workspace');
+	MAIN_ELEMENT.innerHTML = '';
+	if (MAIN_ELEMENT.classList.contains('empty-dir-notification'))
+		MAIN_ELEMENT.classList.remove('empty-dir-notification'); // Remove class if
+
+	files = files.sort((a, b) => {
+		switch (sort) {
+			case 'A': // A-Z
+				return a.basename.toLowerCase() > b.basename.toLowerCase()
+					? 1
+					: -1;
+			case 'Z': // Z-A
+				return a.basename.toLowerCase() < b.basename.toLowerCase()
+					? 1
+					: -1;
+			case 'L': // Last Modified
+				return new Date(a.last_modified.secs_since_epoch) <
+					new Date(b.last_modified.secs_since_epoch)
+					? 1
+					: -1;
+			case 'F': // First Modified
+				return new Date(a.last_modified.secs_since_epoch) >
+					new Date(b.last_modified.secs_since_epoch)
+					? 1
+					: -1;
+			case 'S': // Size
+				return a.size > b.size ? 1 : -1;
+			case 'T':
+				return 1;
+			//return getType(a.basename) > getType(b.basename) ? 1 : -1;
+		}
+	});
+	if (!dirAlongsideFiles) {
+		files = files.sort((a, b) => -(Number(a.is_dir) - Number(b.is_dir)));
+	}
+	if (hideSystemFile) {
+		files = files.filter((file) => !file.is_system);
+	}
+	if (!files.length) {
+		MAIN_ELEMENT.classList.add('empty-dir-notification');
+		MAIN_ELEMENT.innerText = 'This folder is empty.';
+		stopLoading();
+	} else {
+		for (const file of files) {
+			const fileType = file.basename;
+			//const fileType = getType(file.basename);
+			const preview = await fileThumbnail(
+				file.file_path,
+				file.is_dir ? 'folder' : 'file'
+			);
+			const fileGrid = document.createElement('div');
+			fileGrid.className = 'file-grid grid-hover-effect file';
+			//if (dirent.isTrash) fileGrid.dataset.isTrash = 'true';
+			let displayName: string;
+			switch (layout) {
+				case 'm':
+					fileGrid.classList.add('medium-grid-view');
+					displayName =
+						file.basename.length > 30
+							? file.basename.substring(0, 30) + '...'
+							: file.basename;
+					break;
+				case 'l':
+					fileGrid.classList.add('large-grid-view');
+					displayName =
+						file.basename.length > 40
+							? file.basename.substring(0, 40) + '...'
+							: file.basename;
+					break;
+				case 'd':
+					fileGrid.classList.add('detail-view');
+					displayName = file.basename;
+					break;
+				default:
+					fileGrid.classList.add('small-grid-view');
+					displayName =
+						file.basename.length > 20
+							? file.basename.substring(0, 20) + '...'
+							: file.basename;
+					break;
+			}
+			fileGrid.setAttribute('draggable', 'true');
+			fileGrid.dataset.modifiedAt = String(file.last_modified);
+			fileGrid.dataset.createdAt = String(file.created);
+			fileGrid.dataset.accessedAt = String(file.last_accessed);
+			fileGrid.dataset.isdir = String(file.is_dir);
+			/*if (dirent.trashDeletionDate)
+                fileGrid.dataset.trashDeletionDate = String(
+                    dirent.trashDeletionDate
+                );*/
+			if (file.is_hidden) fileGrid.dataset.hiddenFile = 'true';
+			/*if (dirent.realPath)
+                fileGrid.dataset.realPath = escape(
+                    dirent.realPath ?? path.join(dir, dirent.name)
+                );*/
+			fileGrid.dataset.path = escape(file.file_path);
+			fileGrid.innerHTML = `
+            ${preview}
+            <span class="file-grid-filename" id="file-filename">${displayName}</span><span class="file-modifiedAt" id="file-timestamp">${new Date(
+				file.last_modified.secs_since_epoch * 1000
+			).toLocaleString(navigator.language, { hour12: false })}</span>
+            ${
+				file.size > 0
+					? `<span class="file-size" id="file-size">${formatBytes(
+							file.size // eslint-disable-next-line no-mixed-spaces-and-tabs
+					  )}</span>`
+					: `<span class="file-size" id="file-size"></span>`
+			}
+            <span class="file-type">${fileType}</span>
+            `;
+			MAIN_ELEMENT.appendChild(fileGrid);
+		}
+		/*if (options?.reveal || !fs.statSync(dir)?.isDirectory()) {
+			Select(
+				document.querySelector<HTMLElement>(
+					`[data-path="${escape(options?.initialDirToOpen)}"]`
+				),
+				false,
+				false,
+				document.querySelectorAll('.file')
+			);
+		}*/
+
+		updateTheme();
+		LAZY_LOAD();
+		/*nativeDrag(document.querySelectorAll('.file'), dir);
+		SelectListener(document.querySelectorAll('.file'));
+
+		InfoLog(`Open ${dir} within ${(Date.now() - timeStarted) / 1000}s`);*/
+		stopLoading();
+	}
+};
+
+/**
+ * Open a directory on Xplorer
+ * @param {string} dir - Dir path to open
+ * @param {boolean} reveal - Open the parent directory and select the file/dir
+ * @returns {void}
+ */
+const OpenDir = (dir: string, reveal?: boolean): void => {
+	const directoryInfo = new DirectoryAPI(dir);
+	directoryInfo.getFiles().then((files) => {
+		console.log(files.files);
+		displayFiles(files.files, dir);
+	});
+};
+/**
+ * Open file/folder handler
+ * @param {any} e - event
+ * @returns {void}
+ */
+const OpenFileHandler = (e: Event): void => {
+	let element = e.target as HTMLElement;
+	while (!element.dataset.path) {
+		element = element.parentNode as HTMLElement;
+	}
+	if (element.id === 'workspace') return;
+
+	const filePath = unescape(element.dataset.path);
+
+	// Open the file if it's not directory
+	if (element.dataset.isdir !== 'true') {
+		//openFileWithDefaultApp(filePath)
+		open(filePath, '_blank');
+	} else {
+		OpenDir(filePath);
+	}
+};
+/**
+ * Open directory/file listener initializer
+ * @returns {void}
+ */
+const OpenInit = (): void => {
+	document
+		.querySelector('#sidebar-nav')
+		.addEventListener('click', OpenFileHandler);
+	document
+		.querySelector('#workspace')
+		.addEventListener('dblclick', OpenFileHandler);
+};
+/*import fileThumbnail from "../../Thumbnail/thumbnail";
 import Home from '../../Layout/home';
 import changePosition from "../../Functions/changePosition";
 import { updateTheme } from "../../Theme/theme";
 import nativeDrag from "./drag";
 import { startLoading, stopLoading } from "../../Functions/Loading/loading";
-import storage from "electron-json-storage-sync";
 import Recent from "../../Recent/recent";
 import LAZY_LOAD from "../../Functions/lazyLoadingImage";
-import fs from "fs";
-import {isHiddenFile} from "is-hidden-file";
 import formatBytes from "../../Functions/filesize";
 import getType from "../File Type/type";
 import { SelectListener, Select } from "./select";
@@ -35,20 +235,20 @@ document.addEventListener('DOMContentLoaded', () => {
 	document.querySelector('#sidebar-nav').addEventListener('click', openFileHandler);
 	document.querySelector('#workspace').addEventListener('dblclick', openFileHandler);
 })
-
+*/
 /**
  * Close dir watcher
  * @returns {void}
  */
-const closeWatcher = ():void => {
+/*const closeWatcher = ():void => {
     watcher?.close()
-}
+}*/
 
 /**
  * Get command to open a file with default app on various operating systems.
  * @returns {string}
  */
-const getCommandLine = ():string => {
+/*const getCommandLine = ():string => {
     switch (process.platform) {
         case 'darwin':
             return 'open';
@@ -56,13 +256,13 @@ const getCommandLine = ():string => {
             return 'xdg-open';
     }
 }
-
+*/
 /**
  * Open a file with default app registered
  * @param {string} file path
  * @returns {void}
  */
-function openFileWithDefaultApp(file:string) :void{
+/*function openFileWithDefaultApp(file:string) :void{
     const child_process = require("child_process"); //eslint-disable-line
     /^win/.test(process.platform) ?
         child_process.exec('start "" "' + file + '"') :
@@ -79,14 +279,14 @@ function openFileWithDefaultApp(file:string) :void{
         }
     }
     else storage.set('recent', [file])
-}
+}*/
 
 /**
  * Open file handler
  * @param {any} e - event
  * @returns {void}
  */
-const openFileHandler = (e: Event): void => {
+/*const openFileHandler = (e: Event): void => {
 
     let element = e.target as HTMLElement;
     while(!element.dataset.path){
@@ -103,114 +303,7 @@ const openFileHandler = (e: Event): void => {
     } else {
         open(filePath);
     }
-}
-
-/**
- * Display files into Xplorer main section
- * @param {fileData[]} files - array of files of a directory
- * @param {string} dir - directory base path
- * @returns {void}
- */
-const displayFiles = async (files: fileData[], dir:string, options?: {reveal: boolean, initialDirToOpen: string}) => {
-    const hideSystemFile = storage.get("preference")?.data?.hideSystemFiles ?? true
-    const dirAlongsideFiles = storage.get("preference")?.data?.dirAlongsideFiles ?? false
-    const layout = storage.get("layout")?.data?.[dir] ?? storage.get("preference")?.data?.layout ?? "s"
-    const sort = storage.get("sort")?.data?.[dir] ?? 'A'
-    const MAIN_ELEMENT = document.getElementById("workspace");
-    MAIN_ELEMENT.innerHTML = "";
-    if (MAIN_ELEMENT.classList.contains('empty-dir-notification')) MAIN_ELEMENT.classList.remove('empty-dir-notification') // Remove class if exist
-    files = files.sort((a, b) => {
-        switch (sort) {
-            case "A": // A-Z
-                return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1
-            case "Z": // Z-A
-                return a.name.toLowerCase() < b.name.toLowerCase() ? 1 : -1
-            case "L": // Last Modified
-                return new Date(a.modifiedAt) < new Date(b.modifiedAt) ? 1 : -1
-            case "F": // First Modified
-                return new Date(a.modifiedAt) > new Date(b.modifiedAt) ? 1 : -1
-            case "S": // Size
-                return a.size > b.size ? 1 : -1
-            case "T":
-                return a.type > b.type ? 1 : -1
-        }
-    })
-    if (!dirAlongsideFiles) {
-        files = files.sort((a, b) => -(Number(a.isDir) - Number(b.isDir)))
-    }
-    files = files.filter(file => !file.isSystemFile && !(hideSystemFile && SYSTEM_FILES.indexOf(file.name) !== -1))
-    if (!files.length) {
-        MAIN_ELEMENT.classList.add('empty-dir-notification')
-        MAIN_ELEMENT.innerText = "This folder is empty."
-        stopLoading()
-    } else {
-        await files.forEach(async dirent => {
-            if (IGNORE_FILE.indexOf(dirent.name) !== -1) return;
-            const preview = await fileThumbnail(dirent.type === "Image" && dirent.isTrash ? dirent.realPath : path.join(dir, dirent.name), dirent.isDir ? "folder" : "file")
-            const fileGrid = document.createElement("div")
-            fileGrid.className = "file-grid grid-hover-effect file"
-            if (dirent.isTrash) fileGrid.dataset.isTrash = "true"
-            switch (layout) {
-                case "m":
-                    fileGrid.classList.add("medium-grid-view")
-                    dirent.displayName =
-						dirent.name.length > 30
-							? dirent.name.substring(0, 30) + '...'
-							: dirent.name;
-                    break;
-                case "l":
-                    fileGrid.classList.add("large-grid-view")
-                    dirent.displayName =
-						dirent.name.length > 40
-							? dirent.name.substring(0, 40) + '...'
-							: dirent.name;
-                    break;
-                case "d":
-                    fileGrid.classList.add("detail-view")
-                    dirent.displayName = dirent.name
-                    break;
-                default:
-                    fileGrid.classList.add("small-grid-view")
-                    dirent.displayName =
-						dirent.name.length > 20
-							? dirent.name.substring(0, 20) + '...'
-							: dirent.name;
-                    break;
-
-            }
-            fileGrid.setAttribute("draggable", 'true')
-            fileGrid.dataset.modifiedAt = String(dirent.modifiedAt);
-            fileGrid.dataset.createdAt = String(dirent.createdAt);
-            fileGrid.dataset.accessedAt = String(dirent.accessedAt);
-            fileGrid.dataset.isdir = String(dirent.isDir)
-            if(dirent.trashDeletionDate) fileGrid.dataset.trashDeletionDate = String(dirent.trashDeletionDate);
-            if (dirent.isHidden) fileGrid.dataset.hiddenFile = "true"
-            if (dirent.realPath) fileGrid.dataset.realPath = escape(dirent.realPath ?? path.join(dir, dirent.name))
-            fileGrid.dataset.path = escape(dirent.path ?? path.join(dir, dirent.name))
-            fileGrid.innerHTML = `
-            ${preview}
-            <span class="file-grid-filename" id="file-filename">${dirent.displayName}</span><span class="file-modifiedAt" id="file-createdAt">${new Date(dirent.modifiedAt ?? dirent.trashDeletionDate).toLocaleString(navigator.language, { hour12: false })}</span>
-            ${dirent.size > 0 ? `<span class="file-size" id="file-size">${formatBytes(dirent.size)}</span>` : `<span class="file-size" id="file-size"></span>`}
-            <span class="file-type">${dirent.type}</span>
-            `
-            MAIN_ELEMENT.appendChild(fileGrid)
-
-        })
-        if(options?.reveal || !fs.statSync(dir)?.isDirectory()){
-            Select(document.querySelector<HTMLElement>(
-                `[data-path="${escape(options?.initialDirToOpen)}"]`
-            ), false, false, document.querySelectorAll(".file"))
-        }
-
-        updateTheme()
-        nativeDrag(document.querySelectorAll(".file"), dir)
-        SelectListener(document.querySelectorAll(".file"))
-        LAZY_LOAD()
-
-        InfoLog(`Open ${dir} within ${(Date.now() - timeStarted) / 1000}s`)
-        stopLoading()
-    }
-}
+}*/
 
 /**
  * Open a directory on Xplorer
@@ -218,7 +311,7 @@ const displayFiles = async (files: fileData[], dir:string, options?: {reveal: bo
  * @param {boolean} boolean - Open the parent directory and select the file/dir
  * @returns {void}
  */
-const open = (dir:string, reveal?:boolean):void => {
+/*const open = (dir:string, reveal?:boolean):void => {
     if (!dir) return
 
     const initialDirToOpen = dir;
@@ -334,4 +427,5 @@ const open = (dir:string, reveal?:boolean):void => {
     }
 }
    
-export { open, openFileWithDefaultApp, closeWatcher }
+export { open, openFileWithDefaultApp, closeWatcher }*/
+export { OpenInit };

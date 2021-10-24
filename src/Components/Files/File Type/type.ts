@@ -1,4 +1,3 @@
-import path from 'path';
 import folderConfig from '../../../Config/folder.config';
 import FileConfig from '../../../Config/file.config';
 /**

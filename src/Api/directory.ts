@@ -1,33 +1,54 @@
-import { invoke, path } from '@tauri-apps/api';
+import { invoke } from '@tauri-apps/api';
 
-interface readDirReturnType {
-	array_of_files: string[];
+interface SystemTime {
+	nanos_since_epoch: number;
+	secs_since_epoch: number;
 }
-
-interface FileWithName {
-	path: string;
-	name: string;
+interface FileMetaData {
+	file_path: string;
+	basename: string;
+	is_dir: boolean;
+	is_hidden: boolean;
+	is_file: boolean;
+	is_system: boolean;
+	size: number;
+	readonly: boolean;
+	last_modified: SystemTime;
+	last_accessed: SystemTime;
+	created: SystemTime;
 }
+interface DirectoryData {
+	files: FileMetaData[];
+	number_of_files: number;
+	skipped_files: string[];
+}
+/**
+ * Invoke Rust command to read information of a directory
+ */
 class DirectoryAPI {
 	readonly dirName: string;
+	files: FileMetaData[];
 	constructor(dirName: string) {
 		this.dirName = dirName;
 	}
-	getFiles(): Promise<string[]> {
+	/**
+	 * Get files inside a directory
+	 * @returns {Promise<DirectoryData>}
+	 */
+	getFiles(): Promise<DirectoryData> {
 		return new Promise((resolve) => {
 			invoke('read_directory', { dir: this.dirName }).then(
-				(files: readDirReturnType) => resolve(files.array_of_files)
+				(files: DirectoryData) => {
+					this.files = files.files;
+					resolve(files);
+				}
 			);
 		});
 	}
-	async getFilesWithName(): Promise<FileWithName[]> {
-		const result = [];
-		const files = await this.getFiles();
-		for (const file of files) {
-			result.push({ path: file, name: await path.basename(file) });
-		}
-		return result;
-	}
+	/**
+	 * Check if given path is directory
+	 * @returns {Promise<boolean>}
+	 */
 	async isDir(): Promise<boolean> {
 		return new Promise((resolve) => {
 			invoke('is_dir', { path: this.dirName }).then((result: boolean) =>
@@ -38,3 +59,4 @@ class DirectoryAPI {
 }
 
 export default DirectoryAPI;
+export { FileMetaData };

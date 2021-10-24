@@ -1,6 +1,4 @@
-import storage from 'electron-json-storage-sync';
-const lazy_load_frequency =
-	storage.get('preference')?.data?.lazyLoadFrequency || 500;
+const lazy_load_frequency = 500;
 const FETCHED_ICONS: string[] = []; // Array of fetch icons
 
 /**
