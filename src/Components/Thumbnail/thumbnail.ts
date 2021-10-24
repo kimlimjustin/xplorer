@@ -7,17 +7,13 @@ import getBasename from '../Functions/basename';
 import Storage from '../../Api/storage';
 /**
  * Return image view of preview
- * @param {string} filename - the file name
+ * @param {string} source -Thumbnail source
  * @param {boolean} HTMLFormat - return with the HTML format
  * @returns {string} HTML Result
  */
-const imageThumbnail = (filename: string, HTMLFormat?: boolean) => {
-	if (!HTMLFormat) return filename;
-	return `<img data-src = "${require(filename)}" class="file-grid-preview" src="${
-		defaultThumbnail.DEFAULT_FILE_THUMBNAIL
-	}" onerror="this.onerror=null;this.src='${
-		defaultThumbnail.DEFAULT_IMAGE_THUMBNAIL
-	}'" />`;
+const imageThumbnail = (source: string, HTMLFormat?: boolean): string => {
+	if (!HTMLFormat) return source;
+	return `<img data-src = "${source}" class="file-grid-preview" src="${defaultThumbnail.DEFAULT_FILE_THUMBNAIL}" onerror="this.onerror=null;this.src='${defaultThumbnail.DEFAULT_IMAGE_THUMBNAIL}'" />`;
 };
 
 /**
@@ -27,7 +23,7 @@ const imageThumbnail = (filename: string, HTMLFormat?: boolean) => {
  */
 const videoPreview = async (filename: string): Promise<string> => {
 	const preference = await Storage.get('preference');
-	const alt = defaultThumbnail.DEFAULT_VIDEO_THUMBNAIL;
+	const alt = require(`../../Icon/${defaultThumbnail.DEFAULT_VIDEO_THUMBNAIL}`);
 	return preference?.autoPlayPreviewVideo
 		? `<video autoplay loop muted class="file-grid-preview"><source src = "${filename}" /><img src = "${alt}" /></video>`
 		: imageThumbnail(alt, true);
@@ -87,7 +83,7 @@ const fileThumbnail = async (
 			}
 		}
 		return imageThumbnail(
-			defaultThumbnail.DEFAULT_FILE_THUMBNAIL,
+			require(`../../Icon/${defaultThumbnail.DEFAULT_FILE_THUMBNAIL}`),
 			HTMLFormat
 		);
 	} else {
@@ -109,7 +105,7 @@ const fileThumbnail = async (
 			}
 		}
 		return imageThumbnail(
-			defaultThumbnail.DEFAULT_FOLDER_THUMBNAIL,
+			require(`../../Icon/${defaultThumbnail.DEFAULT_FOLDER_THUMBNAIL}`),
 			HTMLFormat
 		);
 	}

@@ -143,6 +143,7 @@ const sidebarDrivesElement = async (): Promise<string> => {
  * @returns {Promise<void>}
  */
 const detectDriveInit = async (): Promise<void> => {
+	if (!(await Storage.get('preference'))?.detectDriveChange) return;
 	if (!driveInfo) {
 		driveInfo = new DrivesAPI();
 		await driveInfo.build();

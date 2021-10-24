@@ -6737,13 +6737,6 @@ is-glob@^4.0.0, is-glob@^4.0.1, is-glob@~4.0.1:
   dependencies:
     is-extglob "^2.1.1"
 
-is-hidden-file@1.1.2:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/is-hidden-file/-/is-hidden-file-1.1.2.tgz#30bc21f6dda3aee475e3038d383c6f2e2ad7e120"
-  integrity sha512-WS2Y+gFNWlK8IPAvcvsqa4rwf4kZUqGz3VTpHVhAu4Zvrbk+XPbve/RKacyyVNYxHQulubZshXXlzmfCR7G+WQ==
-  dependencies:
-    cross-spawn "^7.0.3"
-
 is-installed-globally@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/is-installed-globally/-/is-installed-globally-0.4.0.tgz#9a0fd407949c30f86eb6959ef1b7994ed0b7b520"

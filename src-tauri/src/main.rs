@@ -11,6 +11,7 @@ fn main() {
     .invoke_handler(tauri::generate_handler![
       files_api::read_directory,
       files_api::is_dir,
+      files_api::get_file_meta_data,
       drives::get_drives,
       storage::write_data,
       storage::read_data
