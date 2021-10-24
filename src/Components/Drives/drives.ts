@@ -54,7 +54,10 @@ const drivesToElements = async (drives: Drive[]): Promise<string> => {
 						: `<h4 class="pendrive-title">${driveName}</h4>`
 				}
                 <div class="pendrive-total-capacity"><span class="pendrive-used-capacity" style="width: ${
-					(drive.available_space / drive.total_space) * 100 + '%'
+					((drive.total_space - drive.available_space) /
+						drive.total_space) *
+						100 +
+					'%'
 				}"></span></div>
                 <p>${formatBytes(drive.available_space)} ${await Translate(
 			'free of'
