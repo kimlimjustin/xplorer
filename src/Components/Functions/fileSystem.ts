@@ -28,7 +28,7 @@ export const createFile = async (path: string): Promise<void> => fs.writeFile(pa
  */
 export const mkdirRecursively = async (dir: string): Promise<void> => {
 	const splitFileName = dir.split('/');
-	let pathToDirectory = '/'
+	let pathToDirectory = process.platform !== 'win32' ? '/' : ''
 
 	for (let i = 0; i < splitFileName.length; i++) {
 		pathToDirectory = path.join(pathToDirectory, splitFileName[i]);
