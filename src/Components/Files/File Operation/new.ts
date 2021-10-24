@@ -23,9 +23,8 @@ const NewFile = async (
 			type: 'error',
 		});
 	} else {
-		await mkdirRecursively(path.join(parentDir, fileName));
-
 		try {
+			await mkdirRecursively(path.join(parentDir));
 			await createFile(newFileName);
 		} catch (err) {
 			await dialog.showMessageBox({
