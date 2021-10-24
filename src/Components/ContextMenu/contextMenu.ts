@@ -76,13 +76,33 @@ const MenuToElements = (menu: contextMenuItem[][]) => {
 							document.createElement('span');
 						submenuItemElement.classList.add('contextmenu-item');
 
-						if (submenuItem.shortcut)
-							submenuItemElement.innerHTML = `${
-								submenuItem.name ?? submenuItem
-							}<span class="contextmenu-item-shortcut">${
-								submenuItem.shortcut
-							}</span>`;
-						else submenuItemElement.innerHTML = submenuItem.name;
+						if (submenuItem.icon) {
+							if (submenuItem.shortcut)
+								submenuItemElement.innerHTML = `<img src = "${fileThumbnail(
+									submenuItem.icon,
+									'contextmenu',
+									false
+								)}">${
+									submenuItem.name ?? submenuItem
+								}<span class="contextmenu-item-shortcut">${
+									submenuItem.shortcut
+								}</span>`;
+							else
+								submenuItemElement.innerHTML = `<img src = "${fileThumbnail(
+									submenuItem.icon,
+									'contextmenu',
+									false
+								)}" >${submenuItem?.name?.trim()}`;
+						} else {
+							if (submenuItem.shortcut)
+								submenuItemElement.innerHTML = `${
+									submenuItem.name ?? submenuItem
+								}<span class="contextmenu-item-shortcut">${
+									submenuItem.shortcut
+								}</span>`;
+							else
+								submenuItemElement.innerHTML = submenuItem.name;
+						}
 
 						if (typeof submenuItem?.role === 'function') {
 							const roleIdentifier =
