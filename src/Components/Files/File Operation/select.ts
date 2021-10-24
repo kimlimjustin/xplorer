@@ -162,7 +162,7 @@ const getSelected = (): NodeListOf<HTMLElement> => {
 };
 
 const arrowRightHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
-	if (elementIndex(latestShiftSelected) < elementIndex(latestSelected)) {
+	if (latestShiftSelected && elementIndex(latestShiftSelected) < elementIndex(latestSelected)) {
 		latestShiftSelected = latestSelected;
 	}
 	e.preventDefault();
@@ -212,7 +212,7 @@ const arrowRightHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => 
 }
 
 const arrowLeftHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
-	if (elementIndex(latestShiftSelected) > elementIndex(latestSelected))
+	if (latestShiftSelected && elementIndex(latestShiftSelected) > elementIndex(latestSelected))
 		latestShiftSelected = latestSelected;
 
 	e.preventDefault();
@@ -263,7 +263,7 @@ const arrowLeftHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
 }
 
 const arrowDownHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
-	if (elementIndex(latestShiftSelected) < elementIndex(latestSelected))
+	if (latestShiftSelected && elementIndex(latestShiftSelected) < elementIndex(latestSelected))
 		latestShiftSelected = latestSelected;
 
 	e.preventDefault();
@@ -325,7 +325,7 @@ const arrowDownHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
 }
 
 const arrowUpHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
-	if (elementIndex(latestShiftSelected) > elementIndex(latestSelected))
+	if (latestShiftSelected && elementIndex(latestShiftSelected) > elementIndex(latestSelected))
 		latestShiftSelected = latestSelected;
 
 	e.preventDefault();
