@@ -1,6 +1,6 @@
 import Storage from '../../../Api/storage';
 import DirectoryAPI, { FileMetaData } from '../../../Api/directory';
-//import getType from '../File Type/type';
+import getType from '../File Type/type';
 import { stopLoading } from '../../Functions/Loading/loading';
 import { updateTheme } from '../../Theme/theme';
 import formatBytes from '../../Functions/filesize';
@@ -67,8 +67,7 @@ const displayFiles = async (
 		stopLoading();
 	} else {
 		for (const file of files) {
-			const fileType = file.basename;
-			//const fileType = getType(file.basename);
+			const fileType = getType(file.basename, file.is_dir);
 			const preview = await fileThumbnail(
 				file.file_path,
 				file.is_dir ? 'folder' : 'file'
