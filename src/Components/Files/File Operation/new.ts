@@ -1,9 +1,8 @@
-import { ErrorLog, OperationLog } from '../../Functions/log';
-import fs from 'fs/promises';
 import { dialog } from '@electron/remote';
 import path from 'path';
+import { ErrorLog, OperationLog } from '../../Functions/log';
 import focusingPath from '../../Functions/focusingPath';
-import { mkdirRecursively } from '../../Functions/mkdirRecursively';
+import { createFile, exists, mkdirRecursively } from '../../Functions/fileSystem';
 
 /**
  * Create a new file
@@ -16,7 +15,7 @@ const NewFile = async (
 	parentDir: string = focusingPath()
 ): Promise<void> => {
 	const newFileName = path.join(parentDir, fileName);
-	const fileExists = await fs.stat(newFileName);
+	const fileExists = await exists(newFileName);
 
 	if (fileExists) {
 		await dialog.showMessageBox({
@@ -27,7 +26,7 @@ const NewFile = async (
 		await mkdirRecursively(path.join(parentDir, fileName));
 
 		try {
-			await fs.writeFile(newFileName, '');
+			await createFile(newFileName);
 		} catch (err) {
 			await dialog.showMessageBox({
 				message: 'Error creating file. Please try again.',
