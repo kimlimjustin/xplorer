@@ -1,5 +1,6 @@
 import folderConfig from '../../../Config/folder.config';
 import FileConfig from '../../../Config/file.config';
+import basename from '../../Functions/basename';
 /**
  * Get type of a file name
  * @param {string} filename - File name
@@ -7,7 +8,7 @@ import FileConfig from '../../../Config/file.config';
  * @returns {string} File Type
  */
 const getType = (filename: string, isDir?: boolean): string => {
-	filename = path.basename(filename);
+	filename = basename(filename);
 	const ext = filename.split('.').pop().toLowerCase();
 	// Prioritize exact file name and folder name over file extension
 	for (const type of FileConfig()) {
@@ -36,7 +37,9 @@ const getType = (filename: string, isDir?: boolean): string => {
 			return type.type;
 		}
 	}
-	return isDir ? 'File Folder' : `${path.basename(ext).toUpperCase()} file`;
+	return isDir
+		? 'File Folder'
+		: `${filename.split('.').pop().toUpperCase()} file`;
 };
 
 export default getType;
