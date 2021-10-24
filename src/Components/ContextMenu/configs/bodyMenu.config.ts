@@ -46,18 +46,22 @@ const BodyMenu = (
 					{
 						name: Translate('Grid View (Large)'),
 						role: () => changeLayout('l'),
+						icon: 'grid_large',
 					},
 					{
 						name: Translate('Grid View (Medium)'),
 						role: () => changeLayout('m'),
+						icon: 'grid_medium',
 					},
 					{
 						name: Translate('Grid View (Small)'),
 						role: () => changeLayout('s'),
+						icon: 'grid_small',
 					},
 					{
 						name: Translate('Detail View'),
 						role: () => changeLayout('d'),
+						icon: 'detail',
 					},
 				],
 				icon: 'layout',

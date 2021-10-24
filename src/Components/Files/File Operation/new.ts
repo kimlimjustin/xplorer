@@ -1,52 +1,41 @@
-import { ErrorLog, OperationLog } from '../../Functions/log';
-import fs from 'fs';
 import { dialog } from '@electron/remote';
 import path from 'path';
+import { ErrorLog, OperationLog } from '../../Functions/log';
 import focusingPath from '../../Functions/focusingPath';
+import { createFile, exists, mkdirRecursively } from '../../Functions/fileSystem';
 
 /**
  * Create a new file
- * @param {string} folderName - name for the new file
+ * @param {string} fileName - name for the new file
  * @param {string} parentDir - parent directory of the new file
- * @returns {any}
+ * @returns {void}
  */
-const NewFile = (
+const NewFile = async (
 	fileName: string,
 	parentDir: string = focusingPath()
-): void => {
-	if (fs.existsSync(path.join(parentDir, fileName))) {
-		dialog.showMessageBoxSync({
+): Promise<void> => {
+	const newFileName = path.join(parentDir, fileName);
+	const fileExists = await exists(newFileName);
+
+	if (fileExists) {
+		await dialog.showMessageBox({
 			message: 'A file with that name already exists.',
 			type: 'error',
 		});
 	} else {
-		for (let i = 1; i < fileName.split('/').length; i++) {
-			if (
-				!fs.existsSync(
-					path.join(
-						parentDir,
-						fileName.split('/').splice(0, i).join('/')
-					)
-				)
-			) {
-				fs.mkdirSync(
-					path.join(
-						parentDir,
-						fileName.split('/').splice(0, i).join('/')
-					)
-				);
-			}
+		try {
+			await mkdirRecursively(path.join(parentDir));
+			await createFile(newFileName);
+		} catch (err) {
+			await dialog.showMessageBox({
+				message: 'Error creating file. Please try again.',
+				type: 'error',
+			});
+			ErrorLog(err);
 		}
-		fs.writeFile(path.join(parentDir, fileName), '', (err) => {
-			if (err) {
-				dialog.showMessageBoxSync({
-					message: 'Error creating file. Please try again.',
-					type: 'error',
-				});
-				ErrorLog(err);
-			}
-		});
+
 		OperationLog('newfile', null, path.join(parentDir, fileName));
 	}
 };
+
 export default NewFile;
