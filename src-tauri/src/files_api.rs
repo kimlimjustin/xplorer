@@ -28,6 +28,40 @@ pub struct FolderInformation {
   skipped_files: Vec<String>,
 }
 
+fn get_basename(file_path: String) -> String {
+  Path::new(&file_path)
+    .file_name()
+    .unwrap()
+    .to_str()
+    .unwrap()
+    .to_string()
+}
+
+#[cfg(windows)]
+fn check_is_hidden(file_path: String) -> bool {
+  let metadata = fs::metadata(file_path).unwrap();
+  let attributes = metadata.file_attributes();
+  (attributes & 0x2) > 0
+}
+
+#[cfg(unix)]
+fn check_is_hidden(file_path: String) -> bool {
+  let basename = get_basename(file_path);
+  basename.clone().starts_with(".")
+}
+
+#[cfg(windows)]
+fn check_is_system_file(file_path: String) -> bool {
+  let metadata = fs::metadata(file_path).unwrap();
+  let attributes = metadata.file_attributes();
+  (attributes & 0x4) > 0
+}
+
+#[cfg(unix)]
+fn check_is_system_file(_: String) -> bool {
+  false
+}
+
 fn get_file_properties(file_path: String) -> Result<FileMetaData, std::io::Error> {
   let metadata = fs::metadata(file_path.clone());
   let metadata = match metadata {
@@ -53,24 +87,9 @@ fn get_file_properties(file_path: String) -> Result<FileMetaData, std::io::Error
     Ok(result) => result,
     Err(e) => return Err(e),
   };
-  let basename = Path::new(&file_path)
-    .file_name()
-    .unwrap()
-    .to_str()
-    .unwrap()
-    .to_string();
-  let is_hidden = if cfg!(windows) {
-    let attributes = metadata.file_attributes();
-    (attributes & 0x2) > 0
-  } else {
-    basename.clone().starts_with(".")
-  };
-  let is_system = if cfg!(windows) {
-    let attributes = metadata.file_attributes();
-    (attributes & 0x4) > 0
-  } else {
-    false
-  };
+  let basename = get_basename(file_path.clone());
+  let is_hidden = check_is_hidden(file_path.clone());
+  let is_system = check_is_system_file(file_path.clone());
   Ok(FileMetaData {
     is_system,
     is_hidden,
