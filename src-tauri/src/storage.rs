@@ -35,3 +35,13 @@ pub fn read_data(key: String) -> Result<StorageData, String> {
   }
   Ok(StorageData { data, status })
 }
+
+#[tauri::command]
+pub fn delete_storage_data(key: String) {
+  let storage_dir = Path::new(&local_data_dir().unwrap()).join("Xplorer");
+
+  match fs::remove_file(storage_dir.join(key)) {
+    Ok(..) => {}
+    Err(..) => {}
+  }
+}
