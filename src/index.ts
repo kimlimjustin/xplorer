@@ -30,4 +30,5 @@ document.addEventListener('DOMContentLoaded', async () => {
 			}
 		);*/
 	OpenInit();
+	console.log('test');
 });

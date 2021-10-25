@@ -5,7 +5,7 @@
 	},
 	"build": {
 		"distDir": "../out/src",
-		"devPath": "../out/src",
+		"devPath": "http://localhost:8080",
 		"beforeDevCommand": "",
 		"beforeBuildCommand": "",
 		"withGlobalTauri": true
