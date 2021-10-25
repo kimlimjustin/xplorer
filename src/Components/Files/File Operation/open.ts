@@ -1,175 +1,11 @@
-import Storage from '../../../Api/storage';
 import DirectoryAPI, { FileMetaData } from '../../../Api/directory';
-import getType from '../File Type/type';
 import { stopLoading } from '../../Functions/Loading/loading';
 import { updateTheme } from '../../Theme/theme';
-import formatBytes from '../../Functions/filesize';
 import LAZY_LOAD from '../../Functions/lazyLoadingImage';
-import fileThumbnail from '../../Thumbnail/thumbnail';
 import FileAPI from '../../../Api/files';
-import { OpenLog } from '../../Functions/log';
 import changePosition from '../../Functions/changePosition';
-
-/**
- * Display files into Xplorer main section
- * @param {fileData[]} files - array of files of a directory
- * @param {string} dir - directory base path
- * @returns {Promise<void>}
- */
-const displayFiles = async (
-	files: FileMetaData[],
-	dir: string
-	//options?: { reveal: boolean; initialDirToOpen: string }
-): Promise<void> => {
-	const preference = await Storage.get('preference');
-	const hideSystemFile = preference?.hideSystemFiles ?? true;
-	const dirAlongsideFiles = preference?.dirAlongsideFiles ?? false;
-	const layout =
-		(await Storage.get('layout'))?.[dir] ?? preference?.layout ?? 's';
-	const sort = (await Storage.get('sort'))?.[dir] ?? 'A';
-	const MAIN_ELEMENT = document.getElementById('workspace');
-	MAIN_ELEMENT.innerHTML = '';
-	if (MAIN_ELEMENT.classList.contains('empty-dir-notification'))
-		MAIN_ELEMENT.classList.remove('empty-dir-notification'); // Remove class if
-
-	files = files.sort((a, b) => {
-		switch (sort) {
-			case 'A': // A-Z
-				return a.basename.toLowerCase() > b.basename.toLowerCase()
-					? 1
-					: -1;
-			case 'Z': // Z-A
-				return a.basename.toLowerCase() < b.basename.toLowerCase()
-					? 1
-					: -1;
-			case 'L': // Last Modified
-				return new Date(a.last_modified.secs_since_epoch) <
-					new Date(b.last_modified.secs_since_epoch)
-					? 1
-					: -1;
-			case 'F': // First Modified
-				return new Date(a.last_modified.secs_since_epoch) >
-					new Date(b.last_modified.secs_since_epoch)
-					? 1
-					: -1;
-			case 'S': // Size
-				return a.size > b.size ? 1 : -1;
-			case 'T':
-				return 1;
-			//return getType(a.basename) > getType(b.basename) ? 1 : -1;
-		}
-	});
-	if (!dirAlongsideFiles) {
-		files = files.sort((a, b) => -(Number(a.is_dir) - Number(b.is_dir)));
-	}
-	if (hideSystemFile) {
-		files = files.filter((file) => !file.is_system);
-	}
-	if (!files.length) {
-		MAIN_ELEMENT.classList.add('empty-dir-notification');
-		MAIN_ELEMENT.innerText = 'This folder is empty.';
-		stopLoading();
-	} else {
-		for (const file of files) {
-			const fileType = getType(file.basename, file.is_dir);
-			const preview = await fileThumbnail(
-				file.file_path,
-				file.is_dir ? 'folder' : 'file'
-			);
-			const fileGrid = document.createElement('div');
-			fileGrid.className = 'file-grid grid-hover-effect file';
-			//if (dirent.isTrash) fileGrid.dataset.isTrash = 'true';
-			let displayName: string;
-			switch (layout) {
-				case 'm':
-					fileGrid.classList.add('medium-grid-view');
-					displayName =
-						file.basename.length > 30
-							? file.basename.substring(0, 30) + '...'
-							: file.basename;
-					break;
-				case 'l':
-					fileGrid.classList.add('large-grid-view');
-					displayName =
-						file.basename.length > 40
-							? file.basename.substring(0, 40) + '...'
-							: file.basename;
-					break;
-				case 'd':
-					fileGrid.classList.add('detail-view');
-					displayName = file.basename;
-					break;
-				default:
-					fileGrid.classList.add('small-grid-view');
-					displayName =
-						file.basename.length > 20
-							? file.basename.substring(0, 20) + '...'
-							: file.basename;
-					break;
-			}
-			fileGrid.setAttribute('draggable', 'true');
-			fileGrid.dataset.modifiedAt = String(
-				new Date(
-					file.last_modified.secs_since_epoch * 1000
-				).toLocaleString(navigator.language, { hour12: false })
-			);
-			fileGrid.dataset.createdAt = String(
-				new Date(file.created.secs_since_epoch * 1000).toLocaleString(
-					navigator.language,
-					{ hour12: false }
-				)
-			);
-			fileGrid.dataset.accessedAt = String(
-				new Date(
-					file.last_accessed.secs_since_epoch * 1000
-				).toLocaleString(navigator.language, { hour12: false })
-			);
-			fileGrid.dataset.isdir = String(file.is_dir);
-			/*if (dirent.trashDeletionDate)
-                fileGrid.dataset.trashDeletionDate = String(
-                    dirent.trashDeletionDate
-                );*/
-			if (file.is_hidden) fileGrid.dataset.hiddenFile = 'true';
-			/*if (dirent.realPath)
-                fileGrid.dataset.realPath = escape(
-                    dirent.realPath ?? path.join(dir, dirent.name)
-                );*/
-			fileGrid.dataset.path = escape(file.file_path);
-			fileGrid.innerHTML = `
-            ${preview}
-            <span class="file-grid-filename" id="file-filename">${displayName}</span><span class="file-modifiedAt" id="file-timestamp">${new Date(
-				file.last_modified.secs_since_epoch * 1000
-			).toLocaleString(navigator.language, { hour12: false })}</span>
-            ${
-				file.size > 0
-					? `<span class="file-size" id="file-size">${formatBytes(
-							file.size // eslint-disable-next-line no-mixed-spaces-and-tabs
-					  )}</span>`
-					: `<span class="file-size" id="file-size"></span>`
-			}
-            <span class="file-type">${fileType}</span>
-            `;
-			MAIN_ELEMENT.appendChild(fileGrid);
-		}
-		/*if (options?.reveal || !fs.statSync(dir)?.isDirectory()) {
-			Select(
-				document.querySelector<HTMLElement>(
-					`[data-path="${escape(options?.initialDirToOpen)}"]`
-				),
-				false,
-				false,
-				document.querySelectorAll('.file')
-			);
-		}*/
-
-		updateTheme();
-		LAZY_LOAD();
-		/*SelectListener(document.querySelectorAll('.file'));*/
-
-		OpenLog(dir);
-		stopLoading();
-	}
-};
+import Home from '../../Layout/home';
+import displayFiles from '../../Functions/displayFiles';
 
 /**
  * Open a directory on Xplorer
@@ -179,10 +15,28 @@ const displayFiles = async (
  */
 const OpenDir = (dir: string, reveal?: boolean): void => {
 	changePosition(dir);
-	const directoryInfo = new DirectoryAPI(dir);
-	directoryInfo.getFiles().then((files) => {
-		displayFiles(files.files, dir);
-	});
+	const MAIN_ELEMENT = document.getElementById('workspace');
+	MAIN_ELEMENT.innerHTML = '';
+	if (MAIN_ELEMENT.classList.contains('empty-dir-notification'))
+		MAIN_ELEMENT.classList.remove('empty-dir-notification'); // Remove class if exist
+
+	if (dir === 'xplorer://Home') {
+		Home();
+	} else {
+		const directoryInfo = new DirectoryAPI(dir);
+		directoryInfo.getFiles().then(async (files) => {
+			if (!files.files.length) {
+				MAIN_ELEMENT.classList.add('empty-dir-notification');
+				MAIN_ELEMENT.innerText = 'This folder is empty.';
+				stopLoading();
+			} else {
+				await displayFiles(files.files, dir, MAIN_ELEMENT);
+				stopLoading();
+				updateTheme();
+				LAZY_LOAD();
+			}
+		});
+	}
 };
 /**
  * Open file/folder handler

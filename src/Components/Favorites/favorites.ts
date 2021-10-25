@@ -59,6 +59,7 @@ const Favorites = async (): Promise<string> => {
 	];
 
 	let result = '<section class="home-section">';
+	result += `<h1 class="section-title">${await Translate('Favorites')}</h1>`;
 	for (const favorite of favorites) {
 		let icon = favorite.icon;
 		if (!icon) {
