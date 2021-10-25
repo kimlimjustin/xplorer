@@ -6,6 +6,7 @@ import { updateTheme } from '../../Theme/theme';
 import formatBytes from '../../Functions/filesize';
 import LAZY_LOAD from '../../Functions/lazyLoadingImage';
 import fileThumbnail from '../../Thumbnail/thumbnail';
+import FileAPI from '../../../Api/files';
 /**
  * Display files into Xplorer main section
  * @param {fileData[]} files - array of files of a directory
@@ -104,9 +105,22 @@ const displayFiles = async (
 					break;
 			}
 			fileGrid.setAttribute('draggable', 'true');
-			fileGrid.dataset.modifiedAt = String(file.last_modified);
-			fileGrid.dataset.createdAt = String(file.created);
-			fileGrid.dataset.accessedAt = String(file.last_accessed);
+			fileGrid.dataset.modifiedAt = String(
+				new Date(
+					file.last_modified.secs_since_epoch * 1000
+				).toLocaleString(navigator.language, { hour12: false })
+			);
+			fileGrid.dataset.createdAt = String(
+				new Date(file.created.secs_since_epoch * 1000).toLocaleString(
+					navigator.language,
+					{ hour12: false }
+				)
+			);
+			fileGrid.dataset.accessedAt = String(
+				new Date(
+					file.last_accessed.secs_since_epoch * 1000
+				).toLocaleString(navigator.language, { hour12: false })
+			);
 			fileGrid.dataset.isdir = String(file.is_dir);
 			/*if (dirent.trashDeletionDate)
                 fileGrid.dataset.trashDeletionDate = String(
@@ -152,6 +166,7 @@ const displayFiles = async (
 
 		InfoLog(`Open ${dir} within ${(Date.now() - timeStarted) / 1000}s`);*/
 		stopLoading();
+		console.timeEnd(dir);
 	}
 };
 
@@ -162,9 +177,9 @@ const displayFiles = async (
  * @returns {void}
  */
 const OpenDir = (dir: string, reveal?: boolean): void => {
+	console.time(dir);
 	const directoryInfo = new DirectoryAPI(dir);
 	directoryInfo.getFiles().then((files) => {
-		console.log(files.files);
 		displayFiles(files.files, dir);
 	});
 };
@@ -173,7 +188,7 @@ const OpenDir = (dir: string, reveal?: boolean): void => {
  * @param {any} e - event
  * @returns {void}
  */
-const OpenFileHandler = (e: Event): void => {
+const OpenHandler = (e: Event): void => {
 	let element = e.target as HTMLElement;
 	while (!element.dataset.path) {
 		element = element.parentNode as HTMLElement;
@@ -185,7 +200,7 @@ const OpenFileHandler = (e: Event): void => {
 	// Open the file if it's not directory
 	if (element.dataset.isdir !== 'true') {
 		//openFileWithDefaultApp(filePath)
-		open(filePath, '_blank');
+		new FileAPI(filePath).openFile();
 	} else {
 		OpenDir(filePath);
 	}
@@ -197,10 +212,10 @@ const OpenFileHandler = (e: Event): void => {
 const OpenInit = (): void => {
 	document
 		.querySelector('#sidebar-nav')
-		.addEventListener('click', OpenFileHandler);
+		.addEventListener('click', OpenHandler);
 	document
 		.querySelector('#workspace')
-		.addEventListener('dblclick', OpenFileHandler);
+		.addEventListener('dblclick', OpenHandler);
 };
 /*import fileThumbnail from "../../Thumbnail/thumbnail";
 import Home from '../../Layout/home';

@@ -2,9 +2,13 @@ import folderConfig, {
 	customThumbnail,
 	defaultThumbnail,
 } from '../../Config/folder.config';
-import FileConfig, { VIDEO_TYPES } from '../../Config/file.config';
+import FileConfig, { IMAGE_TYPES, VIDEO_TYPES } from '../../Config/file.config';
 import getBasename from '../Functions/basename';
 import Storage from '../../Api/storage';
+import FileAPI from '../../Api/files';
+
+const DEFAULT_FILE_THUMBNAIL = require(`../../Icon/${defaultThumbnail.DEFAULT_FILE_THUMBNAIL}`);
+const DEFAULT_IMAGE_THUMBNAIL = require(`../../Icon/${defaultThumbnail.DEFAULT_IMAGE_THUMBNAIL}`);
 /**
  * Return image view of preview
  * @param {string} source -Thumbnail source
@@ -13,7 +17,7 @@ import Storage from '../../Api/storage';
  */
 const imageThumbnail = (source: string, HTMLFormat?: boolean): string => {
 	if (!HTMLFormat) return source;
-	return `<img data-src = "${source}" class="file-grid-preview" src="${defaultThumbnail.DEFAULT_FILE_THUMBNAIL}" onerror="this.onerror=null;this.src='${defaultThumbnail.DEFAULT_IMAGE_THUMBNAIL}'" />`;
+	return `<img data-src = "${source}" class="file-grid-preview" src="${DEFAULT_FILE_THUMBNAIL}" onerror="this.onerror=null;this.src='${DEFAULT_IMAGE_THUMBNAIL}'" />`;
 };
 
 /**
@@ -24,7 +28,7 @@ const imageThumbnail = (source: string, HTMLFormat?: boolean): string => {
 const videoPreview = async (filename: string): Promise<string> => {
 	const preference = await Storage.get('preference');
 	const alt = require(`../../Icon/${defaultThumbnail.DEFAULT_VIDEO_THUMBNAIL}`);
-	return preference?.autoPlayPreviewVideo
+	return preference?.videoAsThumbnail
 		? `<video autoplay loop muted class="file-grid-preview"><source src = "${filename}" /><img src = "${alt}" /></video>`
 		: imageThumbnail(alt, true);
 };
@@ -43,8 +47,21 @@ const fileThumbnail = async (
 	const ext = filePath.split('.').pop().toLowerCase(); // Get extension of filename
 	const basename = getBasename(filePath);
 
-	if (VIDEO_TYPES.indexOf(ext) !== -1)
-		return HTMLFormat ? await videoPreview(filePath) : filePath;
+	if (IMAGE_TYPES.indexOf(ext) !== -1) {
+		const preference = await Storage.get('preference');
+		const imageAsThumbnail = preference?.imageAsThumbnail ?? true;
+		if (imageAsThumbnail) {
+			return imageThumbnail(
+				new FileAPI(filePath).readAsset(),
+				HTMLFormat
+			);
+		} else {
+			return imageThumbnail(DEFAULT_IMAGE_THUMBNAIL, HTMLFormat);
+		}
+	} else if (VIDEO_TYPES.indexOf(ext) !== -1) {
+		const assetSrc = new FileAPI(filePath).readAsset();
+		return HTMLFormat ? await videoPreview(assetSrc) : assetSrc;
+	}
 
 	const filename = filePath.toLowerCase(); // Lowercase filename
 	if (category === 'contextmenu') {

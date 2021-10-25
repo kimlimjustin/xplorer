@@ -1,6 +1,7 @@
 use std::fs;
 use std::path::Path;
 use std::time::SystemTime;
+extern crate open;
 
 #[cfg(windows)]
 use std::os::windows::prelude::*;
@@ -125,4 +126,9 @@ pub fn read_directory(dir: &Path) -> Result<FolderInformation, String> {
     files,
     skipped_files,
   })
+}
+
+#[tauri::command]
+pub fn open_file(file_path: String) {
+  open::that(file_path);
 }

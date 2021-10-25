@@ -259,7 +259,6 @@ const FileConfig = (): FileConfigType[] => {
 		{
 			extension: IMAGE_TYPES,
 			type: 'Image',
-			thumbnail: (filePath: string) => 'extension/image.svg',
 			preview: (filePath: string, cb: (html: string) => void) =>
 				cb(
 					`<div class="preview-object" data-type="img"><img src="${filePath}" data-path="${filePath}" /></div>`

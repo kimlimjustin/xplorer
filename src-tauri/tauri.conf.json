@@ -24,7 +24,7 @@
 			],
 			"resources": [],
 			"externalBin": [],
-			"copyright": "",
+			"copyright": "Apache-2.0",
 			"category": "DeveloperTool",
 			"shortDescription": "",
 			"longDescription": "",
@@ -77,7 +77,7 @@
 			}
 		],
 		"security": {
-			"csp": "default-src blob: data: filesystem: ws: wss: http: https: tauri: 'unsafe-eval' 'unsafe-inline' 'self' img-src: 'self'"
+			"csp": "default-src asset: blob: data: filesystem: ws: wss: http: https: tauri: 'unsafe-eval' 'unsafe-inline' 'self' img-src: 'self'"
 		}
 	}
 }
