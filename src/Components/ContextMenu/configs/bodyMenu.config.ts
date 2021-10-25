@@ -11,6 +11,8 @@ import Properties from '../../Properties/properties';
 import focusingPath from '../../Functions/focusingPath';
 import openInTerminal from '../../Functions/openInTerminal';
 import Translate from '../../I18n/i18n';
+import New from '../../Functions/new';
+
 interface Favorites {
 	name: string;
 	path: string;
@@ -180,8 +182,8 @@ const BodyMenu = (
 				menu: Translate('New'),
 				visible: !focusingPath().startsWith('xplorer://'),
 				submenu: [
-					{ name: Translate('Folder'), shortcut: 'Shift+N' },
-					{ name: Translate('File'), shortcut: 'Alt+N' },
+					{ name: Translate('Folder'), shortcut: 'Shift+N', role: () => New('folder') },
+					{ name: Translate('File'), shortcut: 'Alt+N', role: () => New('file') },
 				],
 				icon: 'new',
 			},
