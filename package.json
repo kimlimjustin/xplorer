@@ -17,7 +17,7 @@
 	],
 	"scripts": {
 		"start": "tauri start",
-		"dev": "yarn compile && concurrently \"yarn compile:watch\" \"yarn sass:watch\" \"yarn copyfiles:watch\" \"tauri dev\"",
+		"dev": "yarn compile && concurrently --kill-others \"yarn compile:watch\" \"yarn sass:watch\" \"yarn copyfiles:watch\" \"tauri dev\"",
 		"clean": "rimraf out",
 		"sass": "sass src/Public/style.scss out/src/Public/style.css",
 		"sass:watch": "sass src/Public/style.scss out/src/Public/style.css -w",

@@ -12,6 +12,7 @@ fn main() {
       files_api::read_directory,
       files_api::is_dir,
       files_api::get_file_meta_data,
+      files_api::open_file,
       drives::get_drives,
       storage::write_data,
       storage::read_data
