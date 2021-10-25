@@ -1,22 +1,20 @@
-import storage from 'electron-json-storage-sync';
 import Translate from '../I18n/i18n';
-import { changeSelectedStatus } from '../Shortcut/shortcut';
-import path from 'path';
+//import { changeSelectedStatus } from '../Shortcut/shortcut';
 import windowGUID from '../Constants/windowGUID';
-import { closeWatcher } from '../Files/File Operation/open';
-
+import Storage from '../../Api/storage';
+import basename from './basename';
 /**
  * Change current tab position
  * @param {string} newPath - the new position you want to open
- * @returns {void}
+ * @returns {Promise<void>}
  */
-const changePosition = (newPath: string): void => {
-	closeWatcher();
+const changePosition = async (newPath: string): Promise<void> => {
+	//closeWatcher();
 	document.querySelector<HTMLInputElement>('.path-navigator').value = newPath;
 	document.getElementById('workspace').dataset.path = escape(newPath);
 
-	const tabs = storage.get(`tabs-${windowGUID}`)?.data;
-	const _focusingTab = tabs.tabs[String(tabs.focus)];
+	const tabs = await Storage.get(`tabs-${windowGUID}`);
+	const _focusingTab = tabs?.tabs[String(tabs?.focus)];
 	_focusingTab.position = newPath;
 
 	if (newPath === _focusingTab.history[_focusingTab.currentIndex]) {
@@ -40,11 +38,10 @@ const changePosition = (newPath: string): void => {
 	tabs.tabs[String(tabs.focus)] = _focusingTab;
 	document
 		.getElementById(`tab${tabs.focus}`)
-		.querySelector<HTMLInputElement>('#tab-position').innerText = Translate(
-		path.basename(newPath) === '' ? newPath : path.basename(newPath)
-	);
-	storage.set(`tabs-${windowGUID}`, tabs);
-	changeSelectedStatus();
+		.querySelector<HTMLInputElement>('#tab-position').innerText =
+		await Translate(basename(newPath) === '' ? newPath : basename(newPath));
+	Storage.set(`tabs-${windowGUID}`, tabs);
+	//changeSelectedStatus();
 	return;
 };
 

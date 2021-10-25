@@ -1,17 +1,17 @@
-//import { open } from '../Files/File Operation/open';
-//import windowGUID from '../Constants/windowGUID';
 import { appWindow } from '@tauri-apps/api/window';
+import Storage from '../../Api/storage';
+import windowGUID from '../Constants/windowGUID';
+import { OpenDir } from '../Files/File Operation/open';
 /**
  * Reload the page
- * @returns {void}
+ * @returns {Promise<void>}
  */
-const reload = (): void => {
-	//const tabs = storage.get(`tabs-${windowGUID}`)?.data;
-	/*open(tabs.tabs[tabs.focus].position);
-	closePreviewFile();
+const reload = async (): Promise<void> => {
+	const tabs = await Storage.get(`tabs-${windowGUID}`);
+	open(tabs.tabs[tabs.focus].position);
+	//closePreviewFile();
 	document.querySelector<HTMLElement>('.properties').style.animation =
-		'close-properties 1s forwards';*/
-	console.log('a');
+		'close-properties 1s forwards';
 };
 
 /**
@@ -31,6 +31,15 @@ const maximize = (): void => {
 };
 
 /**
+ * Close Xplorer window
+ * @returns {any}
+ */
+const close = (): void => {
+	Storage.remove(`tabs-${windowGUID}`);
+	appWindow.close();
+};
+
+/**
  * Window manager initializer function
  * @returns {void}
  */
@@ -40,21 +49,19 @@ const windowManager = (): void => {
 	// Maximize the screen
 	document.querySelector('#maximize').addEventListener('click', maximize);
 	// Exit window
-	document.querySelector('#exit').addEventListener('click', () => {
-		appWindow.close();
-	});
+	document.querySelector('#exit').addEventListener('click', close);
 
 	// Refresh the page
 	document.querySelector('#refresh').addEventListener('click', reload);
 
-	/*document
+	document
 		.querySelector('.path-navigator')
 		.addEventListener(
 			'change',
 			(event: Event & { target: HTMLInputElement }) => {
-				open(event.target.value);
+				OpenDir(event.target.value);
 			}
-		);*/
+		);
 };
 
-export { windowManager, reload, minimize, maximize };
+export { windowManager, reload, minimize, maximize, close };

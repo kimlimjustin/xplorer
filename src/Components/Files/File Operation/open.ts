@@ -7,17 +7,20 @@ import formatBytes from '../../Functions/filesize';
 import LAZY_LOAD from '../../Functions/lazyLoadingImage';
 import fileThumbnail from '../../Thumbnail/thumbnail';
 import FileAPI from '../../../Api/files';
+import { OpenLog } from '../../Functions/log';
+import changePosition from '../../Functions/changePosition';
+
 /**
  * Display files into Xplorer main section
  * @param {fileData[]} files - array of files of a directory
  * @param {string} dir - directory base path
- * @returns {void}
+ * @returns {Promise<void>}
  */
 const displayFiles = async (
 	files: FileMetaData[],
 	dir: string
 	//options?: { reveal: boolean; initialDirToOpen: string }
-) => {
+): Promise<void> => {
 	const preference = await Storage.get('preference');
 	const hideSystemFile = preference?.hideSystemFiles ?? true;
 	const dirAlongsideFiles = preference?.dirAlongsideFiles ?? false;
@@ -161,12 +164,10 @@ const displayFiles = async (
 
 		updateTheme();
 		LAZY_LOAD();
-		/*nativeDrag(document.querySelectorAll('.file'), dir);
-		SelectListener(document.querySelectorAll('.file'));
+		/*SelectListener(document.querySelectorAll('.file'));*/
 
-		InfoLog(`Open ${dir} within ${(Date.now() - timeStarted) / 1000}s`);*/
+		OpenLog(dir);
 		stopLoading();
-		console.timeEnd(dir);
 	}
 };
 
@@ -177,7 +178,7 @@ const displayFiles = async (
  * @returns {void}
  */
 const OpenDir = (dir: string, reveal?: boolean): void => {
-	console.time(dir);
+	changePosition(dir);
 	const directoryInfo = new DirectoryAPI(dir);
 	directoryInfo.getFiles().then((files) => {
 		displayFiles(files.files, dir);
@@ -240,84 +241,11 @@ const WINDOWS_TRASH_INFO_PATH = "C:\\Trash/info";
 const LINUX_TRASH_FILES_PATH = path.join(os.homedir(), '.local/share/Trash/files')
 const LINUX_TRASH_INFO_PATH = path.join(os.homedir(), '.local/share/Trash/info')
 const IGNORE_FILE = ['.', '..'];
-const SYSTEM_FILES = ['desktop.ini'];
 
 let timeStarted:number;
 let watcher:undefined|FSWatcher;
 
-document.addEventListener('DOMContentLoaded', () => {
-	document.querySelector('#sidebar-nav').addEventListener('click', openFileHandler);
-	document.querySelector('#workspace').addEventListener('dblclick', openFileHandler);
-})
 */
-/**
- * Close dir watcher
- * @returns {void}
- */
-/*const closeWatcher = ():void => {
-    watcher?.close()
-}*/
-
-/**
- * Get command to open a file with default app on various operating systems.
- * @returns {string}
- */
-/*const getCommandLine = ():string => {
-    switch (process.platform) {
-        case 'darwin':
-            return 'open';
-        default:
-            return 'xdg-open';
-    }
-}
-*/
-/**
- * Open a file with default app registered
- * @param {string} file path
- * @returns {void}
- */
-/*function openFileWithDefaultApp(file:string) :void{
-    const child_process = require("child_process"); //eslint-disable-line
-    /^win/.test(process.platform) ?
-        child_process.exec('start "" "' + file + '"') :
-        child_process.spawn(getCommandLine(), [file],
-            { detached: true, stdio: 'ignore' }).unref();
-            // Push file into recent files
-    const recents = storage.get('recent')?.data;
-    if (recents) {
-        if (recents.indexOf(file) !== -1) {
-            recents.push(recents.splice(recents.indexOf(file), 1)[0]);
-            storage.set('recent', recents)
-        } else {
-            storage.set('recent', [...recents, file])
-        }
-    }
-    else storage.set('recent', [file])
-}*/
-
-/**
- * Open file handler
- * @param {any} e - event
- * @returns {void}
- */
-/*const openFileHandler = (e: Event): void => {
-
-    let element = e.target as HTMLElement;
-    while(!element.dataset.path){
-        element = element.parentNode as HTMLElement;
-    }
-    if(element.id === "workspace") return;
-
-    const filePath = unescape(element.dataset.path);
-
-    // Open the file if it's not directory
-    if (element.dataset.isdir !== "true") {
-        openFileWithDefaultApp(filePath)
-
-    } else {
-        open(filePath);
-    }
-}*/
 
 /**
  * Open a directory on Xplorer
@@ -442,4 +370,4 @@ document.addEventListener('DOMContentLoaded', () => {
 }
    
 export { open, openFileWithDefaultApp, closeWatcher }*/
-export { OpenInit };
+export { OpenInit, OpenDir };

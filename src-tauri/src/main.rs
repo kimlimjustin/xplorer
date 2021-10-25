@@ -15,7 +15,8 @@ fn main() {
       files_api::open_file,
       drives::get_drives,
       storage::write_data,
-      storage::read_data
+      storage::read_data,
+      storage::delete_storage_data
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

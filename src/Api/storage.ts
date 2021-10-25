@@ -26,5 +26,14 @@ const get = async (key: string): Promise<any> => {
 	return returnedData.status ? JSON.parse(returnedData.data) : {};
 };
 
-const Storage = { set, get };
+/**
+ * Remove a data
+ * @param {string} key
+ * @returns {any}
+ */
+const remove = async (key: string): Promise<void> => {
+	await invoke('delete_storage_data', { key });
+};
+
+const Storage = { set, get, remove };
 export default Storage;
