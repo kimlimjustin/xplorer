@@ -1,11 +1,13 @@
-import DirectoryAPI, { FileMetaData } from '../../../Api/directory';
+import DirectoryAPI from '../../../Api/directory';
 import { stopLoading } from '../../Functions/Loading/loading';
 import { updateTheme } from '../../Theme/theme';
 import LAZY_LOAD from '../../Functions/lazyLoadingImage';
 import FileAPI from '../../../Api/files';
 import changePosition from '../../Functions/changePosition';
+import Recent from '../../Recent/recent';
 import Home from '../../Layout/home';
 import displayFiles from '../../Functions/displayFiles';
+import { OpenLog } from '../../Functions/log';
 
 /**
  * Open a directory on Xplorer
@@ -22,6 +24,8 @@ const OpenDir = (dir: string, reveal?: boolean): void => {
 
 	if (dir === 'xplorer://Home') {
 		Home();
+	} else if (dir === 'xplorer://Recent') {
+		Recent();
 	} else {
 		const directoryInfo = new DirectoryAPI(dir);
 		directoryInfo.getFiles().then(async (files) => {
@@ -54,7 +58,7 @@ const OpenHandler = (e: Event): void => {
 
 	// Open the file if it's not directory
 	if (element.dataset.isdir !== 'true') {
-		//openFileWithDefaultApp(filePath)
+		OpenLog(filePath);
 		new FileAPI(filePath).openFile();
 	} else {
 		OpenDir(filePath);

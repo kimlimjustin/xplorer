@@ -1,11 +1,13 @@
 import { startLoading, stopLoading } from '../Functions/Loading/loading';
-import storage from 'electron-json-storage-sync';
+import Storage from '../../Api/storage';
 import fileThumbnail from '../Thumbnail/thumbnail';
 import LAZY_LOAD from '../Functions/lazyLoadingImage';
 import { updateTheme } from '../Theme/theme';
 import getType from '../Files/File Type/type';
-import fs from 'fs';
-import { SelectListener } from '../Files/File Operation/select';
+//import { SelectListener } from '../Files/File Operation/select';
+import type { OpenLogType } from '../Functions/log';
+import getBasename from '../Functions/basename';
+import DirectoryAPI from '../../Api/directory';
 
 /**
  * Recent files handler
@@ -15,44 +17,64 @@ const Recent = async (): Promise<void> => {
 	startLoading();
 	// Preference data
 	const layout =
-		storage.get('layout')?.data?.['Recent'] ??
-		storage.get('preference')?.data?.layout ??
+		(await Storage.get('layout'))?.['Recent'] ??
+		(await Storage.get('preference'))?.layout ??
 		's';
-	const sort = storage.get('sort')?.data?.['Recent'] ?? 'A';
+	const sort = (await Storage.get('sort'))?.['Recent'] ?? 'A';
 	// Get the main element
 	const MAIN_ELEMENT = document.getElementById('workspace');
 	MAIN_ELEMENT.innerHTML = '';
 	if (MAIN_ELEMENT.classList.contains('empty-dir-notification'))
 		MAIN_ELEMENT.classList.remove('empty-dir-notification'); // Remove class if exist
 	// Get recent files list
-	let recents = storage.get('recent')?.data;
+	let recents: OpenLogType[] = (await Storage.get('log'))?.opens ?? [];
 	if (!recents) {
 		MAIN_ELEMENT.classList.add('empty-dir-notification');
 		MAIN_ELEMENT.innerText = 'This folder is empty.';
 		stopLoading();
 		return;
 	}
-	recents = recents.sort((a: string, b: string) => {
+	recents = recents.sort((a: OpenLogType, b: OpenLogType) => {
 		switch (sort) {
 			case 'A': // A-Z
-				return a.split('\\').pop().split('/').pop().toLowerCase() >
-					b.split('\\').pop().split('/').pop().toLowerCase()
+				return a.path.split('\\').pop().split('/').pop().toLowerCase() >
+					b.path.split('\\').pop().split('/').pop().toLowerCase()
 					? 1
 					: -1;
 			case 'Z': // Z-A
-				return a.split('\\').pop().split('/').pop().toLowerCase() <
-					b.split('\\').pop().split('/').pop().toLowerCase()
+				return a.path.split('\\').pop().split('/').pop().toLowerCase() <
+					b.path.split('\\').pop().split('/').pop().toLowerCase()
 					? 1
 					: -1;
+			case 'L': // Last Modified
+				return new Date(a.date) < new Date(b.date) ? -1 : 1;
+			case 'F': // First Modified
+				new Date(a.date) > new Date(b.date) ? -1 : 1;
 		}
 	});
-	recents = recents.filter((recent: string) => fs.existsSync(recent));
-	if (!recents) {
+	const __filterDuplicate = (arr: OpenLogType[]) => {
+		const seen: string[] = [];
+		const out = [];
+		for (let i = 0; i < arr.length; i++) {
+			const item = arr[i];
+			if (seen.indexOf(item.path) === -1) {
+				seen.push(item.path);
+				out.push(arr[i]);
+			}
+		}
+		return out;
+	};
+	recents = __filterDuplicate(recents);
+	if (!recents.length) {
 		MAIN_ELEMENT.classList.add('empty-dir-notification');
 		MAIN_ELEMENT.innerText = 'This folder is empty.';
 	} else {
 		for (const recent of recents) {
-			const preview = await fileThumbnail(recent, 'file');
+			const isdir = await new DirectoryAPI(recent.path).isDir();
+			const preview = await fileThumbnail(
+				recent.path,
+				isdir ? 'folder' : 'file'
+			);
 			const fileGrid = document.createElement('div');
 			fileGrid.className = 'file-grid file grid-hover-effect';
 			switch (layout) {
@@ -70,20 +92,19 @@ const Recent = async (): Promise<void> => {
 					break;
 			}
 			fileGrid.setAttribute('draggable', 'true');
-			fileGrid.dataset.path = escape(recent);
+			fileGrid.dataset.path = escape(recent.path);
+			fileGrid.dataset.isdir = String(isdir);
 			fileGrid.innerHTML = `
             ${preview}
-            <span class="file-grid-filename" id="file-filename">${recent
-				.split('\\')
-				.pop()
-				.split('/')
-				.pop()}</span>
-            <span class="file-type">${getType(recent)}</span>
+            <span class="file-grid-filename" id="file-filename">${getBasename(
+				recent.path
+			)}</span>
+            <span class="file-type">${getType(recent.path)}</span>
             `;
 			MAIN_ELEMENT.appendChild(fileGrid);
 		}
 		updateTheme();
-		SelectListener(document.querySelectorAll('.file'));
+		//SelectListener(document.querySelectorAll('.file'));
 		LAZY_LOAD();
 	}
 	stopLoading();

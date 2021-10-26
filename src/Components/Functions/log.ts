@@ -1,14 +1,19 @@
 import windowGUID from '../Constants/windowGUID';
 import Storage from '../../Api/storage';
+
+interface OpenLogType {
+	path: string;
+	date: string;
+}
 /**
  * Write an error log
  * @param {any} err - error message
  * @returns {Promise<void>}
  */
 const ErrorLog = async (err: any): Promise<void> => {
-	const log = (await Storage.get('log'))?.logs ?? [];
+	const log = (await Storage.get('log'))?.errors ?? [];
 
-	Storage.set('log', { logs: [...log, err] });
+	Storage.set('log', { errors: [...log, err] });
 };
 
 /**
@@ -17,9 +22,9 @@ const ErrorLog = async (err: any): Promise<void> => {
  * @returns {Promise<void>}
  */
 const InfoLog = async (info: any): Promise<void> => {
-	const log = (await Storage.get('log'))?.logs ?? [];
+	const log = (await Storage.get('log'))?.info ?? [];
 
-	Storage.set('log', { logs: [...log, info] });
+	Storage.set('log', { info: [...log, info] });
 };
 
 /**
@@ -60,14 +65,14 @@ const OperationLog = async (
 
 /**
  * Write down open directory log
- * @param {String} dir - Dir path
+ * @param {String} path - File/Dir path
  * @returns {Promise<void>}
  */
-const OpenLog = async (dir: String): Promise<void> => {
-	const log = (await Storage.get('log'))?.logs ?? [];
+const OpenLog = async (path: String): Promise<void> => {
+	const log = (await Storage.get('log'))?.opens ?? [];
 	Storage.set('log', {
-		logs: [...log, { dir, date: new Date().toString() }],
+		opens: [...log, { path, date: new Date() }],
 	});
 };
 
-export { ErrorLog, InfoLog, OperationLog, OpenLog };
+export { ErrorLog, InfoLog, OperationLog, OpenLog, OpenLogType };
