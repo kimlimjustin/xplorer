@@ -1,7 +1,7 @@
 import { appWindow } from '@tauri-apps/api/window';
 import Storage from '../../Api/storage';
 import windowGUID from '../Constants/windowGUID';
-import { OpenDir } from '../Files/File Operation/open';
+import { OpenDir } from '../Open/open';
 /**
  * Reload the page
  * @returns {Promise<void>}

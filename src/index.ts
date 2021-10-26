@@ -3,7 +3,7 @@ import { windowManager } from './Components/Layout/windowManager';
 import createSidebar from './Components/Layout/sidebar';
 import Home from './Components/Layout/home';
 import { detectDriveInit } from './Components/Drives/drives';
-import { OpenInit } from './Components/Files/File Operation/open';
+import { OpenInit } from './Components/Open/open';
 import { Tab } from './Components/Layout/tab';
 // Wait DOM Loaded to be loaded
 document.addEventListener('DOMContentLoaded', async () => {

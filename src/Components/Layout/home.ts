@@ -6,7 +6,7 @@ import OS from '../../Api/platform';
 import LAZY_LOAD from '../Functions/lazyLoadingImage';
 import DirectoryAPI from '../../Api/directory';
 import FavoritesAPI from '../../Api/favorites';
-import displayFiles from '../Functions/displayFiles';
+import displayFiles from '../Open/displayFiles';
 let platform: string;
 (async () => {
 	platform = await OS();

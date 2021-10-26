@@ -38,12 +38,16 @@
 				"useBootstrapper": false,
 				"exceptionDomain": "",
 				"signingIdentity": null,
-				"entitlements": null
+				"entitlements": null,
+				"license": "../LICENSE"
 			},
 			"windows": {
 				"certificateThumbprint": null,
 				"digestAlgorithm": "sha256",
-				"timestampUrl": ""
+				"timestampUrl": "",
+				"wix": {
+					"license": "../LICENSE"
+				}
 			}
 		},
 		"updater": {

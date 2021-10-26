@@ -1,7 +1,7 @@
-import { OpenLog } from './log';
+import { OpenLog } from '../Functions/log';
 import Storage from '../../Api/storage';
 import fileThumbnail from '../Thumbnail/thumbnail';
-import formatBytes from './filesize';
+import formatBytes from '../Functions/filesize';
 import getType from '../Files/File Type/type';
 import type { FileMetaData } from '../../Api/directory';
 /**
