@@ -48,8 +48,7 @@ const displayFiles = async (
 			case 'S': // Size
 				return a.size > b.size ? 1 : -1;
 			case 'T':
-				return 1;
-			//return getType(a.basename) > getType(b.basename) ? 1 : -1;
+				return getType(a.basename) > getType(b.basename) ? 1 : -1;
 		}
 	});
 	if (!dirAlongsideFiles) {
@@ -132,7 +131,7 @@ const displayFiles = async (
 			file.last_modified.secs_since_epoch * 1000
 		).toLocaleString(navigator.language, { hour12: false })}</span>
             ${
-				file.size > 0
+				file.size > 0 && !file.is_dir
 					? `<span class="file-size" id="file-size">${formatBytes(
 							file.size // eslint-disable-next-line no-mixed-spaces-and-tabs
 					  )}</span>`

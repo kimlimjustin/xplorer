@@ -42,6 +42,14 @@ class FileAPI {
 		const content = await this.readFile();
 		return JSON.parse(content);
 	}
+
+	/**
+	 * Return true if file exist
+	 * @returns {boolean}
+	 */
+	async exists(): Promise<boolean> {
+		return await invoke('exists', { filePath: this.fileName });
+	}
 }
 
 export default FileAPI;

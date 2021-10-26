@@ -151,3 +151,7 @@ pub fn read_directory(dir: &Path) -> Result<FolderInformation, String> {
 pub fn open_file(file_path: String) {
   open::that(file_path);
 }
+#[tauri::command]
+pub fn file_exist(file_path: String) -> bool {
+  fs::metadata(file_path).is_ok()
+}

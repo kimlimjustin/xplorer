@@ -13,6 +13,7 @@ fn main() {
       files_api::is_dir,
       files_api::get_file_meta_data,
       files_api::open_file,
+      files_api::file_exist,
       drives::get_drives,
       storage::write_data,
       storage::read_data,

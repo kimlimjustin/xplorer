@@ -46,7 +46,9 @@ const createSidebar = async (): Promise<void> => {
 			'Trash',
 		];
 		for (const favorite of favorites) {
-			const isdir = await new DirectoryAPI(favorite.path).isDir();
+			const isdir = favorite.path.startsWith('xplorer://')
+				? true
+				: await new DirectoryAPI(favorite.path).isDir();
 			favoritesElement += `<span data-path = "${
 				favorite.path
 			}" data-isdir="${isdir}" class="sidebar-hover-effect sidebar-item"><img src="${await fileThumbnail(
