@@ -1,5 +1,3 @@
-import storage from 'electron-json-storage-sync';
-import { isHiddenFile } from 'is-hidden-file';
 import { isElementInViewport } from '../../Functions/lazyLoadingImage';
 import { elementClassNameContains } from '../../Functions/elementClassNameContains';
 
@@ -95,12 +93,14 @@ const Initializer = () => {
 		const hideHiddenFiles =
 			storage.get('preference')?.data?.hideHiddenFiles ?? true;
 
-		const keyHandlers: { [key: string]: (e: KeyboardEvent, hideHiddenFiles: boolean) => void } = {
+		const keyHandlers: {
+			[key: string]: (e: KeyboardEvent, hideHiddenFiles: boolean) => void;
+		} = {
 			ArrowRight: arrowRightHandler,
 			ArrowLeft: arrowLeftHandler,
 			ArrowDown: arrowDownHandler,
 			ArrowUp: arrowUpHandler,
-		}
+		};
 
 		if (!e.altKey && keyHandlers[e.key]) {
 			if (!document.contains(latestSelected)) {
@@ -161,8 +161,14 @@ const getSelected = (): NodeListOf<HTMLElement> => {
 	return document.querySelectorAll<HTMLElement>('.selected');
 };
 
-const arrowRightHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
-	if (latestShiftSelected && elementIndex(latestShiftSelected) < elementIndex(latestSelected)) {
+const arrowRightHandler = (
+	e: KeyboardEvent,
+	hideHiddenFiles: boolean
+): void => {
+	if (
+		latestShiftSelected &&
+		elementIndex(latestShiftSelected) < elementIndex(latestSelected)
+	) {
 		latestShiftSelected = latestSelected;
 	}
 	e.preventDefault();
@@ -172,10 +178,7 @@ const arrowRightHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => 
 			: latestSelected.nextSibling
 	) as HTMLElement;
 	if (hideHiddenFiles) {
-		while (
-			nextSibling &&
-			nextSibling.dataset.hiddenFile !== undefined
-			) {
+		while (nextSibling && nextSibling.dataset.hiddenFile !== undefined) {
 			nextSibling = nextSibling.nextSibling as HTMLElement;
 		}
 	}
@@ -193,8 +196,8 @@ const arrowRightHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => 
 					if (
 						!(
 							hideHiddenFiles &&
-							(sibling as HTMLElement).dataset
-								.hiddenFile === 'true'
+							(sibling as HTMLElement).dataset.hiddenFile ===
+								'true'
 						)
 					)
 						sibling.classList.add('selected');
@@ -209,10 +212,13 @@ const arrowRightHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => 
 			nextSibling.classList.add('selected');
 		}
 	}
-}
+};
 
 const arrowLeftHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
-	if (latestShiftSelected && elementIndex(latestShiftSelected) > elementIndex(latestSelected))
+	if (
+		latestShiftSelected &&
+		elementIndex(latestShiftSelected) > elementIndex(latestSelected)
+	)
 		latestShiftSelected = latestSelected;
 
 	e.preventDefault();
@@ -225,9 +231,8 @@ const arrowLeftHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
 		while (
 			previousSibling &&
 			previousSibling.dataset.hiddenFile !== undefined
-			) {
-			previousSibling =
-				previousSibling.previousSibling as HTMLElement;
+		) {
+			previousSibling = previousSibling.previousSibling as HTMLElement;
 		}
 	}
 	if (elementClassNameContains(previousSibling, /file/)) {
@@ -244,8 +249,8 @@ const arrowLeftHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
 					if (
 						!(
 							hideHiddenFiles &&
-							(sibling as HTMLElement).dataset
-								.hiddenFile === 'true'
+							(sibling as HTMLElement).dataset.hiddenFile ===
+								'true'
 						)
 					)
 						sibling.classList.add('selected');
@@ -260,36 +265,32 @@ const arrowLeftHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
 			previousSibling.classList.add('selected');
 		}
 	}
-}
+};
 
 const arrowDownHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
-	if (latestShiftSelected && elementIndex(latestShiftSelected) < elementIndex(latestSelected))
+	if (
+		latestShiftSelected &&
+		elementIndex(latestShiftSelected) < elementIndex(latestSelected)
+	)
 		latestShiftSelected = latestSelected;
 
 	e.preventDefault();
 	const totalGridInArrow = Math.floor(
 		(latestSelected.parentNode as HTMLElement).offsetWidth /
-		(latestSelected.offsetWidth +
-			parseInt(getComputedStyle(latestSelected).marginLeft) *
-			2)
+			(latestSelected.offsetWidth +
+				parseInt(getComputedStyle(latestSelected).marginLeft) * 2)
 	); // Calculate the total of grids in arrow
 	const siblings = latestSelected.parentNode.children;
 	let elementBelow = siblings[
 		Array.from(siblings).indexOf(
-			e.shiftKey
-				? latestShiftSelected
-				: latestSelected
+			e.shiftKey ? latestShiftSelected : latestSelected
 		) + totalGridInArrow
 	] as HTMLElement;
 	if (hideHiddenFiles) {
-		while (
-			elementBelow &&
-			elementBelow.dataset.hiddenFile !== undefined
-			) {
+		while (elementBelow && elementBelow.dataset.hiddenFile !== undefined) {
 			elementBelow = siblings[
-			Array.from(siblings).indexOf(elementBelow) +
-			totalGridInArrow
-				] as HTMLElement;
+				Array.from(siblings).indexOf(elementBelow) + totalGridInArrow
+			] as HTMLElement;
 		}
 	}
 	if (elementClassNameContains(elementBelow, /file/)) {
@@ -306,8 +307,8 @@ const arrowDownHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
 					if (
 						!(
 							hideHiddenFiles &&
-							(sibling as HTMLElement).dataset
-								.hiddenFile === 'true'
+							(sibling as HTMLElement).dataset.hiddenFile ===
+								'true'
 						)
 					)
 						sibling.classList.add('selected');
@@ -322,25 +323,25 @@ const arrowDownHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
 			elementBelow.classList.add('selected');
 		}
 	}
-}
+};
 
 const arrowUpHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
-	if (latestShiftSelected && elementIndex(latestShiftSelected) > elementIndex(latestSelected))
+	if (
+		latestShiftSelected &&
+		elementIndex(latestShiftSelected) > elementIndex(latestSelected)
+	)
 		latestShiftSelected = latestSelected;
 
 	e.preventDefault();
 	const totalGridInArrow = Math.floor(
 		(latestSelected.parentNode as HTMLElement).offsetWidth /
-		(latestSelected.offsetWidth +
-			parseInt(getComputedStyle(latestSelected).marginLeft) *
-			2)
+			(latestSelected.offsetWidth +
+				parseInt(getComputedStyle(latestSelected).marginLeft) * 2)
 	); // Calculate the total of grids in arrow
 	const siblings = latestSelected.parentNode.children;
 	let elementAbove = siblings[
 		Array.from(siblings).indexOf(
-			e.shiftKey
-				? latestShiftSelected
-				: latestSelected
+			e.shiftKey ? latestShiftSelected : latestSelected
 		) - totalGridInArrow
 	] as HTMLElement;
 	if (hideHiddenFiles) {
@@ -364,8 +365,8 @@ const arrowUpHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
 					if (
 						!(
 							hideHiddenFiles &&
-							(sibling as HTMLElement).dataset
-								.hiddenFile === 'true'
+							(sibling as HTMLElement).dataset.hiddenFile ===
+								'true'
 						)
 					)
 						sibling.classList.add('selected');
@@ -380,6 +381,6 @@ const arrowUpHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
 			elementAbove.classList.add('selected');
 		}
 	}
-}
+};
 
 export { Select, SelectListener, getSelected };

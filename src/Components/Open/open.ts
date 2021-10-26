@@ -1,13 +1,13 @@
-import DirectoryAPI from '../../../Api/directory';
-import { stopLoading } from '../../Functions/Loading/loading';
-import { updateTheme } from '../../Theme/theme';
-import LAZY_LOAD from '../../Functions/lazyLoadingImage';
-import FileAPI from '../../../Api/files';
-import changePosition from '../../Functions/changePosition';
-import Recent from '../../Recent/recent';
-import Home from '../../Layout/home';
-import displayFiles from '../../Functions/displayFiles';
-import { OpenLog } from '../../Functions/log';
+import DirectoryAPI from '../../Api/directory';
+import { stopLoading } from '../Functions/Loading/loading';
+import { updateTheme } from '../Theme/theme';
+import LAZY_LOAD from '../Functions/lazyLoadingImage';
+import FileAPI from '../../Api/files';
+import changePosition from '../Functions/changePosition';
+import Recent from './recent';
+import Home from '../Layout/home';
+import displayFiles from './displayFiles';
+import { OpenLog } from '../Functions/log';
 
 /**
  * Open a directory on Xplorer

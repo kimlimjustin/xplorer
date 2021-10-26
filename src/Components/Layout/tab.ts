@@ -2,7 +2,7 @@ import { updateTheme } from '../Theme/theme';
 import Storage from '../../Api/storage';
 import Translate from '../I18n/i18n';
 import windowGUID from '../Constants/windowGUID';
-import { OpenDir } from '../Files/File Operation/open';
+import { OpenDir } from '../Open/open';
 import { close } from './windowManager';
 /**
  * Function to create new tab
