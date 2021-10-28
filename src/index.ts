@@ -5,6 +5,8 @@ import Home from './Components/Layout/home';
 import { detectDriveInit } from './Components/Drives/drives';
 import { OpenInit } from './Components/Open/open';
 import { Tab } from './Components/Layout/tab';
+import { Shortcut } from './Components/Shortcut/shortcut';
+import { SelectInit } from './Components/Files/File Operation/select';
 // Wait DOM Loaded to be loaded
 document.addEventListener('DOMContentLoaded', async () => {
 	// Listen to minimize, maximize, exit and reload button
@@ -21,4 +23,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 	updateTheme();
 	// Initialize open dir/files listener
 	OpenInit();
+	// Intialize shortcuts
+	Shortcut();
+	// Initialize select files listener
+	SelectInit();
 });
