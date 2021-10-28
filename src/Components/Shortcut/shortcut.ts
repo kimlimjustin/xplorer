@@ -65,12 +65,10 @@ const Shortcut = (): void => {
 		}
 	};
 
-	document.addEventListener('keyup', KeyUpShortcutsHandler);
 	document.addEventListener('keydown', KeyDownShortcutsHandler);
 	document.addEventListener('mouseup', MouseShortcutsHandler);
 
 	window.addEventListener('beforeunload', () => {
-		document.removeEventListener('keyup', KeyUpShortcutsHandler, false);
 		document.removeEventListener('keydown', KeyDownShortcutsHandler, false);
 		document.removeEventListener('mouseup', MouseShortcutsHandler);
 	});

@@ -24,7 +24,7 @@
 			],
 			"resources": [],
 			"externalBin": [],
-			"copyright": "Apache-2.0",
+			"copyright": "Justin Maximillian Kimlim and the Xplorer Contributors",
 			"category": "DeveloperTool",
 			"shortDescription": "",
 			"longDescription": "",
@@ -46,7 +46,7 @@
 				"digestAlgorithm": "sha256",
 				"timestampUrl": "",
 				"wix": {
-					"license": "../LICENSE"
+					"license": "./LICENSE.rtf"
 				}
 			}
 		},
