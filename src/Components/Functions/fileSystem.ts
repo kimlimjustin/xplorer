@@ -1,6 +1,8 @@
 import fs from 'fs/promises';
 import path from 'path';
 
+const pathPrefix = process.platform === 'win32' ? '' : '/'
+
 /**
  * Checks that path exists
  * @param {string} path
@@ -28,7 +30,7 @@ export const createFile = async (path: string): Promise<void> => fs.writeFile(pa
  */
 export const mkdirRecursively = async (dir: string): Promise<void> => {
 	const splitFileName = dir.split('/');
-	let pathToDirectory = process.platform !== 'win32' ? '/' : ''
+	let pathToDirectory = pathPrefix
 
 	for (let i = 0; i < splitFileName.length; i++) {
 		pathToDirectory = path.join(pathToDirectory, splitFileName[i]);
