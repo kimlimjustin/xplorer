@@ -1,9 +1,9 @@
 import { isElementInViewport } from '../../Functions/lazyLoadingImage';
 import { elementClassNameContains } from '../../Functions/elementClassNameContains';
+import Storage from '../../../Api/storage';
 
 let latestSelected: HTMLElement;
 let latestShiftSelected: HTMLElement;
-let initialized = false;
 /**
  * Select a file grid...
  *
@@ -15,15 +15,9 @@ let initialized = false;
  * @param {HTMLElement} element - element you want to selefct
  * @param {boolean} ctrl - does user pressing ctrl while clicking the file grid
  * @param {boolean} shift - does user pressing shift while clicking the file grid
- * @param {NodeListOf<Element>} elements - array of elements that being listened
  * @returns {void}
  */
-const Select = (
-	element: HTMLElement,
-	ctrl: boolean,
-	shift: boolean,
-	elements: NodeListOf<Element>
-): void => {
+const Select = (element: HTMLElement, ctrl: boolean, shift: boolean): void => {
 	if (!ctrl && !shift) unselectAllSelected();
 	// add 'selected' class if element classlist does not contain it...
 	if (!element.classList.contains('selected'))
@@ -32,7 +26,7 @@ const Select = (
 	else element.classList.remove('selected');
 	if (shift && latestSelected) {
 		let start = false;
-		for (const _element of elements) {
+		for (const _element of document.querySelectorAll('.file')) {
 			if (start) _element.classList.add('selected');
 			else _element.classList.remove('selected');
 			if (_element === latestSelected) {
@@ -44,8 +38,8 @@ const Select = (
 			}
 		}
 	} else {
-		const { getSelectedStatus } = require('../../Shortcut/shortcut'); //eslint-disable-line
-		if (getSelectedStatus() && ctrl) return;
+		const { getSelectedAllStatus } = require('../../Shortcut/shortcut'); //eslint-disable-line
+		if (getSelectedAllStatus() && ctrl) return;
 		latestSelected = element;
 		latestShiftSelected = element;
 	}
@@ -62,13 +56,15 @@ const ensureElementInViewPort = (element: HTMLElement): void => {
 
 /**
  * Select the first file there in case the latest selected file is not exist
- * @returns {any}
+ * @returns {Promise<void>}
  */
-const selectFirstFile = () => {
+const selectFirstFile = async (): Promise<void> => {
+	const hideHiddenFiles =
+		(await Storage.get('preference'))?.hideHiddenFiles ?? true;
 	const firstFileElement = document
 		.getElementById('workspace')
 		.querySelector(
-			`.file${isHiddenFile ? ':not([data-hidden-file])' : ''}`
+			`.file${hideHiddenFiles ? ':not([data-hidden-file])' : ''}`
 		);
 	firstFileElement.classList.add('selected');
 	latestSelected = firstFileElement as HTMLElement;
@@ -79,11 +75,33 @@ const elementIndex = (element: HTMLElement): number => {
 };
 
 /**
- * Select shortcut initializer
- * @returns {any}
+ * Initialize select files function
+ * @returns {void}
  */
-const Initializer = () => {
-	const selectShortcut = (e: KeyboardEvent) => {
+const SelectInit = (): void => {
+	document.getElementById('workspace').addEventListener('click', (e) => {
+		if (
+			!(e.target as HTMLElement).className.split(' ').some(function (c) {
+				return /file/.test(c);
+			})
+		) {
+			unselectAllSelected();
+			latestSelected = null;
+			latestShiftSelected = null;
+		}
+		//Select(element, e.ctrlKey, e.shiftKey, elements);
+		// If target clicked is not a file grid, just ignore it
+		if (!(e.target as HTMLElement).className.startsWith('file')) return;
+		else {
+			let fileTarget = e.target as HTMLElement;
+			while (!fileTarget.classList.contains('file'))
+				fileTarget = fileTarget.parentNode as HTMLElement;
+			if (fileTarget.id === 'workspace') return;
+			Select(fileTarget, e.ctrlKey, e.shiftKey);
+		}
+	});
+
+	const selectShortcut = async (e: KeyboardEvent) => {
 		// Ignore keyboard shortcuts for select files if path navigator has focus
 		if (
 			document.querySelector('.path-navigator') === document.activeElement
@@ -91,7 +109,7 @@ const Initializer = () => {
 			return;
 
 		const hideHiddenFiles =
-			storage.get('preference')?.data?.hideHiddenFiles ?? true;
+			(await Storage.get('preference'))?.hideHiddenFiles ?? true;
 
 		const keyHandlers: {
 			[key: string]: (e: KeyboardEvent, hideHiddenFiles: boolean) => void;
@@ -104,7 +122,7 @@ const Initializer = () => {
 
 		if (!e.altKey && keyHandlers[e.key]) {
 			if (!document.contains(latestSelected)) {
-				selectFirstFile();
+				await selectFirstFile();
 				return;
 			}
 
@@ -112,35 +130,6 @@ const Initializer = () => {
 		}
 	};
 	document.addEventListener('keydown', selectShortcut);
-};
-
-/**
- * Select files listener
- * @param {NodeListOf<Element>} elements
- * @returns {void}
- */
-const SelectListener = (elements: NodeListOf<Element>): void => {
-	elements.forEach((element: HTMLElement) => {
-		element.addEventListener('click', (e) => {
-			Select(element, e.ctrlKey, e.shiftKey, elements);
-		});
-	});
-	document.getElementById('workspace').addEventListener('click', (e) => {
-		if (
-			!(e.target as HTMLElement).className.split(' ').some(function (c) {
-				return /file/.test(c);
-			})
-		) {
-			unselectAllSelected();
-			latestSelected = null;
-			latestShiftSelected = null;
-		}
-	});
-
-	if (!initialized) {
-		Initializer();
-		initialized = true;
-	}
 };
 /**
  * Unselect all selected file grids.
@@ -383,4 +372,4 @@ const arrowUpHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
 	}
 };
 
-export { Select, SelectListener, getSelected };
+export { Select, SelectInit, getSelected };

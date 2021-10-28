@@ -1,8 +1,84 @@
+import { goBack, goForward } from '../Layout/tab';
+import focusingPath from '../Functions/focusingPath';
+import { OpenDir } from '../Open/open';
+import getDirname from '../Functions/dirname';
 import copyLocation from '../Files/File Operation/location';
 import { getSelected } from '../Files/File Operation/select';
-import { exec } from 'child_process';
+
+let selectedAll = true;
+
+/**
+ * Get if currently selecting all files
+ * @returns {boolean} currently selecting all files
+ */
+const getSelectedAllStatus = (): boolean => selectedAll;
+/**
+ * Change selected all status
+ * @returns {void}
+ */
+const changeSelectedAllStatus = (): void => {
+	selectedAll = false;
+};
+
+/**
+ * Initialize shortcut keys
+ * @returns {void}
+ */
+const Shortcut = (): void => {
+	const KeyDownShortcutsHandler = (e: KeyboardEvent) => {
+		// Don't react if cursor is over path navigator
+		if (
+			document.querySelector('.path-navigator') === document.activeElement
+		)
+			return;
+		// Select all shortcut (Ctrl + A)
+		if (e.key === 'a' && e.ctrlKey) {
+			e.preventDefault();
+			selectedAll = !selectedAll;
+			if (selectedAll) {
+				document
+					.querySelectorAll('.file')
+					.forEach((element) => element.classList.add('selected'));
+			} else
+				document
+					.querySelectorAll('.file')
+					.forEach((element) => element.classList.remove('selected'));
+		}
+	};
+
+	const MouseShortcutsHandler = (e: MouseEvent) => {
+		// Don't react if cursor is over path navigator
+		if (
+			document.querySelector('.path-navigator') === document.activeElement
+		)
+			return;
+
+		switch (e.button) {
+			// Back button
+			case 3:
+				goBack();
+				break;
+			// Forward button
+			case 4:
+				goForward();
+				break;
+		}
+	};
+
+	document.addEventListener('keyup', KeyUpShortcutsHandler);
+	document.addEventListener('keydown', KeyDownShortcutsHandler);
+	document.addEventListener('mouseup', MouseShortcutsHandler);
+
+	window.addEventListener('beforeunload', () => {
+		document.removeEventListener('keyup', KeyUpShortcutsHandler, false);
+		document.removeEventListener('keydown', KeyDownShortcutsHandler, false);
+		document.removeEventListener('mouseup', MouseShortcutsHandler);
+	});
+};
+export { Shortcut, changeSelectedAllStatus, getSelectedAllStatus };
+/*import copyLocation from '../Files/File Operation/location';
+import { getSelected } from '../Files/File Operation/select';
 import { updateTheme } from '../Theme/theme';
-import storage from 'electron-json-storage-sync';
 import {
 	toggleHideHiddenFilesValue,
 	getHideHiddenFilesValue,
@@ -23,27 +99,13 @@ import vscodeInstalled from '../Constants/isVSCodeInstalled';
 import openInTerminal from '../Functions/openInTerminal';
 import New from '../Functions/new';
 import Rename from '../Files/File Operation/rename';
-
-let selectedAll = true;
-
-/**
- * Get if currently selecting all files
- * @returns {boolean} currently selecting all files
- */
-const getSelectedStatus = (): boolean => selectedAll;
-/**
- * Change selected all status
- * @returns {void}
- */
-const changeSelectedStatus = (): void => {
-	selectedAll = false;
-};
+*/
 
 /**
  * Shortcut initializer function for Xplorer
  * @returns {void}
  */
-const Shortcut = (): void => {
+/*const Shortcut = (): void => {
 	const { reload, minimize, maximize } = require('../Layout/windowManager'); //eslint-disable-line
 	const { createNewTab, goBack, goForward } = require('../Layout/tab'); //eslint-disable-line
 
@@ -58,18 +120,7 @@ const Shortcut = (): void => {
 		)
 			return;
 
-		// Select all shortcut (Ctrl + A)
-		if (e.key === 'a' && e.ctrlKey) {
-			selectedAll = !selectedAll;
-			if (selectedAll) {
-				document
-					.querySelectorAll('.file')
-					.forEach((element) => element.classList.add('selected'));
-			} else
-				document
-					.querySelectorAll('.file')
-					.forEach((element) => element.classList.remove('selected'));
-		}
+		
 		// New file shortcut (Alt + N)
 		else if (e.key === 'n' && e.altKey && !e.shiftKey) {
 			New('file');
@@ -139,14 +190,7 @@ const Shortcut = (): void => {
 				storage.set(`tabs-${windowGUID}`, tabs);
 			}
 		}
-		// Previous tab shortcut (Alt+Arrow Left)
-		else if (e.altKey && e.key === 'ArrowLeft') {
-			goBack();
-		}
-		// Next tab shortcut (Alt+Arrow Right)
-		else if (e.altKey && e.key === 'ArrowRight') {
-			goForward();
-		}
+		
 		// Toggle hidden files shortcut (Ctrl+H)
 		else if (e.ctrlKey && e.key === 'h') {
 			const userPreference = storage.get('preference')?.data; // Read user preference
@@ -265,6 +309,4 @@ const Shortcut = (): void => {
 		document.removeEventListener('keyup', KeyboardShortcutsHandler, false);
 		document.addEventListener('mouseup', MouseShortcutsHandler);
 	});
-};
-
-export { Shortcut, selectedAll, changeSelectedStatus, getSelectedStatus };
+};*/
