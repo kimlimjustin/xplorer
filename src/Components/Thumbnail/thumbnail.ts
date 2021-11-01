@@ -3,7 +3,7 @@ import folderConfig, {
 	defaultThumbnail,
 } from '../../Config/folder.config';
 import FileConfig, { IMAGE_TYPES, VIDEO_TYPES } from '../../Config/file.config';
-import getBasename from '../Functions/basename';
+import getBasename from '../Functions/path/basename';
 import Storage from '../../Api/storage';
 import FileAPI from '../../Api/files';
 

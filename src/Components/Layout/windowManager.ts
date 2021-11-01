@@ -1,14 +1,16 @@
 import { appWindow } from '@tauri-apps/api/window';
 import Storage from '../../Api/storage';
-import windowGUID from '../Constants/windowGUID';
+import windowName, { listenWindowClose } from '../../Api/window';
 import { OpenDir } from '../Open/open';
+import focusingPath from '../Functions/focusingPath';
+import getDirname from '../Functions/path/dirname';
 /**
  * Reload the page
  * @returns {Promise<void>}
  */
 const reload = async (): Promise<void> => {
-	const tabs = await Storage.get(`tabs-${windowGUID}`);
-	open(tabs.tabs[tabs.focus].position);
+	const tabs = await Storage.get(`tabs-${windowName}`);
+	OpenDir(tabs.tabs[tabs.focus].position);
 	//closePreviewFile();
 	document.querySelector<HTMLElement>('.properties').style.animation =
 		'close-properties 1s forwards';
@@ -35,8 +37,15 @@ const maximize = (): void => {
  * @returns {any}
  */
 const close = (): void => {
-	Storage.remove(`tabs-${windowGUID}`);
 	appWindow.close();
+};
+
+/**
+ * Go to parent directory of current focusing path
+ * @returns {Promise<void>}
+ */
+const goParentDir = async (): Promise<void> => {
+	OpenDir(getDirname(await focusingPath()));
 };
 
 /**
@@ -55,6 +64,10 @@ const windowManager = (): void => {
 	document.querySelector('#refresh').addEventListener('click', reload);
 
 	document
+		.querySelector('#go-parent-dir')
+		.addEventListener('click', goParentDir);
+
+	document
 		.querySelector('.path-navigator')
 		.addEventListener(
 			'change',
@@ -62,6 +75,11 @@ const windowManager = (): void => {
 				OpenDir(event.target.value);
 			}
 		);
+	listenWindowClose().then(() => {
+		Storage.remove(`tabs-${windowName}`);
+		Storage.remove(`operations-${windowName}`);
+		Storage.remove('clipboard');
+	});
 };
 
 export { windowManager, reload, minimize, maximize, close };

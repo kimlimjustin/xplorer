@@ -80,7 +80,14 @@
 		"previewObjectTableRowOddBackground": "inherit",
 		"previewObjectTableRowOddColor": "#a2b7ff",
 
-		"propertiesBackground": "#0a0f19"
+		"propertiesBackground": "#0a0f19",
+		"promptBackground": "#1b1e2e",
+		"promptInputBackground": "#292c40",
+		"promptInputColor": "#87c1ce",
+		"promptOkBackground": "#3879d9",
+		"promptOkColor": "#fff",
+		"promptCancelBackground": "#87c1ce",
+		"promptCancelColor": "#000"
 	},
 	"dark": {
 		"themeCategory": "dark",
@@ -163,7 +170,14 @@
 		"previewObjectTableRowOddBackground": "inherit",
 		"previewObjectTableRowOddColor": "inherit",
 
-		"propertiesBackground": "#39496a"
+		"propertiesBackground": "#39496a",
+		"promptBackground": "#1b1e2e",
+		"promptInputBackground": "#292c40",
+		"promptInputColor": "#87c1ce",
+		"promptOkBackground": "#3879d9",
+		"promptOkColor": "#fff",
+		"promptCancelBackground": "#87c1ce",
+		"promptCancelColor": "#000"
 	},
 	"light": {
 		"themeCategory": "light",
@@ -246,7 +260,14 @@
 		"previewObjectTableRowOddBackground": "inherit",
 		"previewObjectTableRowOddColor": "inherit",
 
-		"propertiesBackground": "#f7f7f7"
+		"propertiesBackground": "#e0e0e0",
+		"promptBackground": "#f7f7f7",
+		"promptInputBackground": "#ebe9e9",
+		"promptInputColor": "#87c1ce",
+		"promptOkBackground": "#3879d9",
+		"promptOkColor": "#fff",
+		"promptCancelBackground": "#87c1ce",
+		"promptCancelColor": "#000"
 	},
 	"light+": {
 		"themeCategory": "light",
@@ -329,6 +350,13 @@
 		"previewObjectTableRowOddBackground": "inherit",
 		"previewObjectTableRowOddColor": "inherit",
 
-		"propertiesBackground": "#fcfcfc"
+		"propertiesBackground": "#e0e0e0",
+		"promptBackground": "#f7f7f7",
+		"promptInputBackground": "#ebe9e9",
+		"promptInputColor": "#87c1ce",
+		"promptOkBackground": "#3879d9",
+		"promptOkColor": "#fff",
+		"promptCancelBackground": "#87c1ce",
+		"promptCancelColor": "#000"
 	}
 }

@@ -1,8 +1,8 @@
 import Translate from '../I18n/i18n';
 //import { changeSelectedStatus } from '../Shortcut/shortcut';
-import windowGUID from '../Constants/windowGUID';
+import windowName from '../../Api/window';
 import Storage from '../../Api/storage';
-import basename from './basename';
+import basename from './path/basename';
 /**
  * Change current tab position
  * @param {string} newPath - the new position you want to open
@@ -13,7 +13,7 @@ const changePosition = async (newPath: string): Promise<void> => {
 	document.querySelector<HTMLInputElement>('.path-navigator').value = newPath;
 	document.getElementById('workspace').dataset.path = escape(newPath);
 
-	const tabs = await Storage.get(`tabs-${windowGUID}`);
+	const tabs = await Storage.get(`tabs-${windowName}`);
 	const _focusingTab = tabs?.tabs[String(tabs?.focus)];
 	_focusingTab.position = newPath;
 
@@ -40,7 +40,7 @@ const changePosition = async (newPath: string): Promise<void> => {
 		.getElementById(`tab${tabs.focus}`)
 		.querySelector<HTMLInputElement>('#tab-position').innerText =
 		await Translate(basename(newPath) === '' ? newPath : basename(newPath));
-	Storage.set(`tabs-${windowGUID}`, tabs);
+	Storage.set(`tabs-${windowName}`, tabs);
 	//changeSelectedStatus();
 	return;
 };

@@ -1,5 +1,6 @@
 use std::fs;
 use std::path::Path;
+use std::process::Command;
 use std::time::SystemTime;
 extern crate open;
 
@@ -148,10 +149,72 @@ pub fn read_directory(dir: &Path) -> Result<FolderInformation, String> {
 }
 
 #[tauri::command]
-pub fn open_file(file_path: String) {
-  open::that(file_path);
+pub fn open_file(file_path: String) -> bool {
+  open::that(file_path).is_ok()
 }
 #[tauri::command]
 pub fn file_exist(file_path: String) -> bool {
   fs::metadata(file_path).is_ok()
+}
+
+#[tauri::command]
+pub fn create_dir_recursive(dir_path: String) -> bool {
+  fs::create_dir_all(dir_path).is_ok()
+}
+
+#[tauri::command]
+pub fn create_file(file_path: String) -> bool {
+  fs::write(file_path, "").is_ok()
+}
+#[tauri::command]
+pub fn open_in_terminal(folder_path: String) {
+  if cfg!(target_os = "windows") {
+    let result = Command::new("cmd")
+      .args([
+        "/C",
+        format!(
+          "{drive} && cd {folderPath} && start cmd",
+          drive = folder_path.split("/").next().unwrap(),
+          folderPath = folder_path
+        )
+        .as_str(),
+      ])
+      .output()
+      .expect("failed to execute process");
+    println!("{:?}", result);
+  } else if cfg!(target_os = "linux") {
+    Command::new("sh")
+      .arg("-c")
+      .arg(
+        format!(
+          "gnome-terminal --working-directory={folderPath}",
+          folderPath = folder_path
+        )
+        .as_str(),
+      )
+      .output()
+      .expect("failed to execute process");
+  } else {
+    Command::new("sh")
+      .arg("-c")
+      .arg(format!("open -a Terminal {folderPath}", folderPath = folder_path).as_str())
+      .output()
+      .expect("failed to execute process");
+  }
+}
+
+#[tauri::command]
+pub fn open_in_vscode(path: String) {
+  if cfg!(target_os = "windows") {
+    Command::new("cmd")
+      .args(["/C", format!("code {path}", path = path).as_str()])
+      .output()
+      .expect("failed to execute process")
+  } else {
+    Command::new("sh")
+      .arg("-c")
+      .arg(format!("code {path}", path = path).as_str())
+      .output()
+      .expect("failed to execute process")
+  };
 }

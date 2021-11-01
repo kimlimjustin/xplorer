@@ -21,9 +21,9 @@ const getDirname = (path: string): string => {
 			matchedSlash = false;
 		}
 	}
-	console.log(end);
 	if (end === -1) return hasRoot ? '/' : '.';
 	if (hasRoot && end === 1) return '//';
-	return path.slice(0, end);
+	const result = path.slice(0, end);
+	if (!(result.endsWith('/') || result.endsWith('\\'))) return result + '/';
 };
 export default getDirname;

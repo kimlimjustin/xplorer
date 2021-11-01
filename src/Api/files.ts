@@ -1,13 +1,21 @@
 import { fs, invoke, tauri } from '@tauri-apps/api';
+import joinPath from '../Components/Functions/path/joinPath';
+import dirname from '../Components/Functions/path/dirname';
+
 /** Invoke Rust command to handle files */
 class FileAPI {
 	readonly fileName: string;
+	readonly parentDir: string;
 	/**
 	 * Construct FileAPI Class
 	 * @param {string} fileName - Your file path
+	 * @param {string} parentDir - Parent directory of the file
 	 */
-	constructor(fileName: string) {
-		this.fileName = fileName;
+	constructor(fileName: string, parentDir?: string) {
+		if (parentDir) {
+			this.parentDir = parentDir;
+			this.fileName = joinPath(parentDir, fileName);
+		} else this.fileName = fileName;
 	}
 	/**
 	 * Read text file
@@ -48,7 +56,17 @@ class FileAPI {
 	 * @returns {boolean}
 	 */
 	async exists(): Promise<boolean> {
-		return await invoke('exists', { filePath: this.fileName });
+		return await invoke('file_exist', { filePath: this.fileName });
+	}
+	/**
+	 * Create file if it doesn't exist
+	 * @returns {Promise<void>}
+	 */
+	async createFile(): Promise<void> {
+		await invoke('create_dir_recursive', {
+			dirPath: dirname(this.fileName),
+		});
+		return await invoke('create_file', { filePath: this.fileName });
 	}
 }
 

@@ -1,5 +1,6 @@
-import windowGUID from '../Constants/windowGUID';
+import windowName from '../../Api/window';
 import Storage from '../../Api/storage';
+import isValid from './validChecker';
 
 interface OpenLogType {
 	path: string;
@@ -11,9 +12,10 @@ interface OpenLogType {
  * @returns {Promise<void>}
  */
 const ErrorLog = async (err: any): Promise<void> => {
-	const log = (await Storage.get('log'))?.errors ?? [];
-
-	Storage.set('log', { errors: [...log, err] });
+	const log = await Storage.get('log');
+	let errorLog = log?.errors ?? [];
+	log.errors = [...errorLog, { err, timestamp: new Date() }];
+	Storage.set('log', log);
 };
 
 /**
@@ -22,9 +24,10 @@ const ErrorLog = async (err: any): Promise<void> => {
  * @returns {Promise<void>}
  */
 const InfoLog = async (info: any): Promise<void> => {
-	const log = (await Storage.get('log'))?.info ?? [];
-
-	Storage.set('log', { info: [...log, info] });
+	const log = await Storage.get('log');
+	let infoLog = log?.info ?? [];
+	log.info = [...infoLog, { info, timestamp: new Date() }];
+	Storage.set('log', log);
 };
 
 /**
@@ -45,10 +48,12 @@ const OperationLog = async (
 	sources?: string | string[],
 	destination?: string
 ): Promise<void> => {
-	const operationLogs = (await Storage.get(`operations-${windowGUID}`)) ?? {
-		operations: [],
-		currentIndex: -1,
-	};
+	let operationLogs = await Storage.get(`operations-${windowName}`);
+	if (!isValid(operationLogs))
+		operationLogs = {
+			operations: [],
+			currentIndex: -1,
+		};
 	if (
 		JSON.stringify(
 			operationLogs.operations[operationLogs.currentIndex + 1]
@@ -60,7 +65,7 @@ const OperationLog = async (
 		);
 	operationLogs.currentIndex += 1;
 	operationLogs.operations.push({ operationType, sources, destination });
-	Storage.set(`operations-${windowGUID}`, operationLogs);
+	Storage.set(`operations-${windowName}`, operationLogs);
 };
 
 /**
@@ -69,10 +74,10 @@ const OperationLog = async (
  * @returns {Promise<void>}
  */
 const OpenLog = async (path: String): Promise<void> => {
-	const log = (await Storage.get('log'))?.opens ?? [];
-	Storage.set('log', {
-		opens: [...log, { path, date: new Date() }],
-	});
+	const log = await Storage.get('log');
+	let openLog = log?.opens ?? [];
+	log.opens = [...openLog, { path, timestamp: new Date() }];
+	Storage.set('log', log);
 };
 
 export { ErrorLog, InfoLog, OperationLog, OpenLog, OpenLogType };

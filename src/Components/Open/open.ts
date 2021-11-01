@@ -1,5 +1,5 @@
 import DirectoryAPI from '../../Api/directory';
-import { stopLoading } from '../Functions/Loading/loading';
+import { startLoading, stopLoading } from '../Functions/Loading/loading';
 import { updateTheme } from '../Theme/theme';
 import LAZY_LOAD from '../Functions/lazyLoadingImage';
 import FileAPI from '../../Api/files';
@@ -8,7 +8,10 @@ import Recent from './recent';
 import Home from '../Layout/home';
 import displayFiles from './displayFiles';
 import { OpenLog } from '../Functions/log';
-
+import getDirname from '../Functions/path/dirname';
+import normalizeSlash from '../Functions/path/normalizeSlash';
+import { changeWindowTitle } from '../../Api/window';
+import getBasename from '../Functions/path/basename';
 /**
  * Open a directory on Xplorer
  * @param {string} dir - Dir path to open
@@ -16,6 +19,7 @@ import { OpenLog } from '../Functions/log';
  * @returns {void}
  */
 const OpenDir = (dir: string, reveal?: boolean): void => {
+	startLoading();
 	changePosition(dir);
 	const MAIN_ELEMENT = document.getElementById('workspace');
 	MAIN_ELEMENT.innerHTML = '';
@@ -27,19 +31,40 @@ const OpenDir = (dir: string, reveal?: boolean): void => {
 	} else if (dir === 'xplorer://Recent') {
 		Recent();
 	} else {
-		const directoryInfo = new DirectoryAPI(dir);
-		directoryInfo.getFiles().then(async (files) => {
-			if (!files.files.length) {
-				MAIN_ELEMENT.classList.add('empty-dir-notification');
-				MAIN_ELEMENT.innerText = 'This folder is empty.';
-				stopLoading();
-			} else {
-				await displayFiles(files.files, dir, MAIN_ELEMENT);
-				stopLoading();
-				updateTheme();
-				LAZY_LOAD();
-			}
-		});
+		if (reveal) {
+			const directoryInfo = new DirectoryAPI(getDirname(dir));
+			directoryInfo.getFiles().then(async (files) => {
+				if (!files.files.length) {
+					MAIN_ELEMENT.classList.add('empty-dir-notification');
+					MAIN_ELEMENT.innerText = 'This folder is empty.';
+					stopLoading();
+				} else {
+					await displayFiles(files.files, dir, MAIN_ELEMENT, {
+						reveal,
+						revealDir: normalizeSlash(dir),
+					});
+					stopLoading();
+					updateTheme();
+					LAZY_LOAD();
+					changeWindowTitle(getBasename(getDirname(dir)));
+				}
+			});
+		} else {
+			const directoryInfo = new DirectoryAPI(dir);
+			directoryInfo.getFiles().then(async (files) => {
+				if (!files.files.length) {
+					MAIN_ELEMENT.classList.add('empty-dir-notification');
+					MAIN_ELEMENT.innerText = 'This folder is empty.';
+					stopLoading();
+				} else {
+					await displayFiles(files.files, dir, MAIN_ELEMENT);
+					stopLoading();
+					updateTheme();
+					LAZY_LOAD();
+					changeWindowTitle(getBasename(dir));
+				}
+			});
+		}
 	}
 };
 /**
