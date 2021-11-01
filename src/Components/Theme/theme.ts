@@ -29,7 +29,7 @@ const defaultThemeJSON:Theme = defaultThemeData
  * @returns {string|null} style of the [variable] of the element
  */
 const getElementStyle = (variable:string, theme:string): string|null => {
-    return themeJSON?.[variable] || defaultThemeJSON[theme][variable]
+    return themeJSON?.[variable] || defaultThemeJSON[theme]?.[variable]
 }
 
 /**
@@ -41,7 +41,7 @@ const getElementStyle = (variable:string, theme:string): string|null => {
  * @returns {void}
  */
 const changeElementTheme = (element:HTMLElement, variable:string, key:string, theme:string): void => {
-    if (element) (<any>element.style)[key] = themeJSON?.[variable] || defaultThemeJSON[theme][variable] //eslint-disable-line
+    if (element) (<any>element.style)[key] = themeJSON?.[variable] || defaultThemeJSON?.[theme]?.[variable] //eslint-disable-line
 }
 
 const getXYCoordinates = (e: MouseEvent): { x: number; y: number } => {
@@ -55,21 +55,20 @@ const getXYCoordinates = (e: MouseEvent): { x: number; y: number } => {
 
 /**
  * Change page theme
- * @param {Document} document - The HTML Document
  * @param {string} theme - The current theme
  * @returns {void}
  */
-const changeTheme = (document:Document, theme?:string): void => {
+const changeTheme = (theme?:string): void => {
     changeElementTheme(document.querySelector(".main-box"), "mainBackground", "background", theme)
     changeElementTheme(document.body, "textColor", "color", theme)
     changeElementTheme(document.body, "fontSize", "fontSize", theme)
     changeElementTheme(document.body, "fontFamily", "fontFamily", theme)
-    document.body.style.setProperty("--scrollbar-track", themeJSON ? themeJSON.scrollbarTrackBackground : defaultThemeJSON[theme].scrollbarTrackBackground)
-    document.body.style.setProperty("--scrollbar-thumb", themeJSON ? themeJSON.scrollbarThumbBackground : defaultThemeJSON[theme].scrollbarThumbBackground)
-    document.body.style.setProperty("--scrollbar-thumb-hover", themeJSON ? themeJSON.scrollbarThumbHoverBackground : defaultThemeJSON[theme].scrollbarThumbHoverBackground)
-    document.body.style.setProperty("--selected-grid-border", themeJSON ? themeJSON.selectedGridBorder : defaultThemeJSON[theme].selectedGridBorder)
-    document.body.style.setProperty("--selected-grid-background", themeJSON ? themeJSON.selectedGridBackground : defaultThemeJSON[theme].selectedGridBackground)
-    document.body.style.setProperty("--selected-grid-color", themeJSON ? themeJSON.selectedGridColor : defaultThemeJSON[theme].selectedGridColor)
+    document.body.style.setProperty("--scrollbar-track", themeJSON ? themeJSON.scrollbarTrackBackground : defaultThemeJSON[theme]?.scrollbarTrackBackground)
+    document.body.style.setProperty("--scrollbar-thumb", themeJSON ? themeJSON.scrollbarThumbBackground : defaultThemeJSON[theme]?.scrollbarThumbBackground)
+    document.body.style.setProperty("--scrollbar-thumb-hover", themeJSON ? themeJSON.scrollbarThumbHoverBackground : defaultThemeJSON[theme]?.scrollbarThumbHoverBackground)
+    document.body.style.setProperty("--selected-grid-border", themeJSON ? themeJSON.selectedGridBorder : defaultThemeJSON[theme]?.selectedGridBorder)
+    document.body.style.setProperty("--selected-grid-background", themeJSON ? themeJSON.selectedGridBackground : defaultThemeJSON[theme]?.selectedGridBackground)
+    document.body.style.setProperty("--selected-grid-color", themeJSON ? themeJSON.selectedGridColor : defaultThemeJSON[theme]?.selectedGridColor)
 
     changeElementTheme(document.querySelector(".loading-bar"), "loadingBar", "background", theme)
     changeElementTheme(document.querySelector(".loader"), "loader", "background", theme)
@@ -107,6 +106,13 @@ const changeTheme = (document:Document, theme?:string): void => {
     changeElementTheme(document.querySelector(".preview-object"), "previewObjectColor", "color", theme)
     changeElementTheme(document.querySelector(".properties"), "propertiesBackground", "background", theme)
     changeElementTheme(document.querySelector(".active"), "settingsActiveTab", "background", theme)
+    changeElementTheme(document.querySelector(".prompt"), "promptBackground", "background", theme)
+    changeElementTheme(document.querySelector(".prompt-input"), "promptInputColor", "color", theme)
+    changeElementTheme(document.querySelector(".prompt-input"), "promptInputBackground", "background", theme)
+    changeElementTheme(document.querySelector(".prompt-exit-btn"), "exitBackground", "background", theme)
+    changeElementTheme(document.querySelector(".prompt-exit-btn"), "exitColor", "color", theme)
+    changeElementTheme(document.querySelector(".prompt-ok"), "promptOkColor", "color", theme)
+    changeElementTheme(document.querySelector(".prompt-ok"), "promptOkBackground", "background", theme)
     document.querySelector<HTMLElement>(".preview-object")?.style?.setProperty("--preview-object-table-border", themeJSON ? themeJSON.previewObjectTableBorder : defaultThemeJSON[theme].previewObjectTableBorder)
     document.querySelector<HTMLElement>(".preview-object")?.style?.setProperty("--preview-object-table-row-even-bg", themeJSON ? themeJSON.previewObjectTableRowEvenBackground : defaultThemeJSON[theme].previewObjectTableRowEvenBackground)
     document.querySelector<HTMLElement>(".preview-object")?.style?.setProperty("--preview-object-table-row-even-color", themeJSON ? themeJSON.previewObjectTableRowEvenColor : defaultThemeJSON[theme].previewObjectTableRowEvenColor)
@@ -117,9 +123,9 @@ const changeTheme = (document:Document, theme?:string): void => {
         changeElementTheme(submenu, "contextMenuSubmenuBackground", "background", theme)
         changeElementTheme(submenu, "contextMenuSubmenuColor", "color", theme)
     })
-    document.querySelector<HTMLElement>(".tabs-manager").style.setProperty("--tabs-scrollbar-track", themeJSON ? themeJSON.tabsScrollbarTrack : defaultThemeJSON[theme].tabsScrollbarTrack)
-    document.querySelector<HTMLElement>(".tabs-manager").style.setProperty("--tabs-scrollbar-thumb", themeJSON ? themeJSON.tabsScrollbarThumb : defaultThemeJSON[theme].tabsScrollbarThumb)
-    document.querySelector<HTMLElement>(".tabs-manager").style.setProperty("--tabs-scrollbar-thumb-hover", themeJSON ? themeJSON.tabsScrollbarThumbHover : defaultThemeJSON[theme].tabsScrollbarThumbHover)
+    document.querySelector<HTMLElement>(".tabs-manager").style.setProperty("--tabs-scrollbar-track", themeJSON ? themeJSON.tabsScrollbarTrack : defaultThemeJSON[theme]?.tabsScrollbarTrack)
+    document.querySelector<HTMLElement>(".tabs-manager").style.setProperty("--tabs-scrollbar-thumb", themeJSON ? themeJSON.tabsScrollbarThumb : defaultThemeJSON[theme]?.tabsScrollbarThumb)
+    document.querySelector<HTMLElement>(".tabs-manager").style.setProperty("--tabs-scrollbar-thumb-hover", themeJSON ? themeJSON.tabsScrollbarThumbHover : defaultThemeJSON[theme]?.tabsScrollbarThumbHover)
     document.querySelectorAll<HTMLElement>(".tab").forEach(tab => {
         changeElementTheme(tab, "tabBackground", "background", theme)
         changeElementTheme(tab, "tabColor", "color", theme)
@@ -223,11 +229,11 @@ const updateTheme = async ():Promise<void> => {
     const data:themeData = await Storage.get("theme")
     // If user has no preference theme
     if (!data || !Object.keys(data).length) {
-        await changeTheme(document, defaultTheme)
+        await changeTheme( defaultTheme)
     } else {
         // If user preference is default color theme...
         if (Object.keys(defaultThemeJSON).indexOf(data.theme) !== -1) {
-            await changeTheme(document, data.theme)
+            await changeTheme( data.theme)
         }
         else { // Otherwise read user theme json file
             if (data.availableThemes?.filter((theme:any) => theme.identifier === data.theme).length > 0) { //eslint-disable-line
@@ -236,11 +242,11 @@ const updateTheme = async ():Promise<void> => {
                         // eslint-disable-next-line
                         const customStylesheetScript:any = require(i.source);
                         themeJSON = customStylesheetScript.default()
-                        await changeTheme(document, data.theme)
+                        await changeTheme( data.theme)
                     }
                 }
             } else {
-                await changeTheme(document, defaultTheme)
+                await changeTheme(defaultTheme)
             }
         }
     }

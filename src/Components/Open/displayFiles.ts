@@ -4,6 +4,8 @@ import fileThumbnail from '../Thumbnail/thumbnail';
 import formatBytes from '../Functions/filesize';
 import getType from '../Files/File Type/type';
 import type { FileMetaData } from '../../Api/directory';
+import { Select } from '../Files/File Operation/select';
+import normalizeSlash from '../Functions/path/normalizeSlash';
 /**
  * Display files into Xplorer main section
  * @param {fileData[]} files - array of files of a directory
@@ -14,7 +16,8 @@ import type { FileMetaData } from '../../Api/directory';
 const displayFiles = async (
 	files: FileMetaData[],
 	dir: string,
-	onElement?: HTMLElement
+	onElement?: HTMLElement,
+	options?: { reveal: boolean; revealDir: string }
 	//options?: { reveal: boolean; initialDirToOpen: string }
 ): Promise<HTMLElement> => {
 	const FilesElement = onElement ?? document.createElement('div');
@@ -22,7 +25,7 @@ const displayFiles = async (
 	const hideSystemFile = preference?.hideSystemFiles ?? true;
 	const dirAlongsideFiles = preference?.dirAlongsideFiles ?? false;
 	const layout =
-		(await Storage.get('layout'))?.[dir] ?? preference?.layout ?? 's';
+		(await Storage.get('layout'))?.[dir] ?? preference?.layout ?? 'd';
 	const sort = (await Storage.get('sort'))?.[dir] ?? 'A';
 
 	files = files.sort((a, b) => {
@@ -95,6 +98,7 @@ const displayFiles = async (
 						: file.basename;
 				break;
 		}
+
 		fileGrid.setAttribute('draggable', 'true');
 		fileGrid.dataset.modifiedAt = String(
 			new Date(file.last_modified.secs_since_epoch * 1000).toLocaleString(
@@ -124,7 +128,7 @@ const displayFiles = async (
                 fileGrid.dataset.realPath = escape(
                     dirent.realPath ?? path.join(dir, dirent.name)
                 );*/
-		fileGrid.dataset.path = escape(file.file_path);
+		fileGrid.dataset.path = escape(normalizeSlash(file.file_path));
 		fileGrid.innerHTML = `
             ${preview}
             <span class="file-grid-filename" id="file-filename">${displayName}</span><span class="file-modifiedAt" id="file-timestamp">${new Date(
@@ -141,18 +145,15 @@ const displayFiles = async (
             `;
 		FilesElement.appendChild(fileGrid);
 	}
-	/*if (options?.reveal || !fs.statSync(dir)?.isDirectory()) {
+	if (options?.reveal) {
 		Select(
 			document.querySelector<HTMLElement>(
-				`[data-path="${escape(options?.initialDirToOpen)}"]`
-				),
-				false,
-				false,
-				document.querySelectorAll('.file')
-				);
-			}*/
-
-	/*SelectListener(document.querySelectorAll('.file'));*/
+				`.file[data-path="${escape(options?.revealDir)}"]`
+			),
+			false,
+			false
+		);
+	}
 
 	OpenLog(dir);
 	return FilesElement;

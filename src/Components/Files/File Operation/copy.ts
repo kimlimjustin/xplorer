@@ -1,4 +1,4 @@
-import { clipboard } from 'electron';
+import Storage from '../../../Api/storage';
 /**
  * Copy (a) file/s
  *
@@ -6,17 +6,7 @@ import { clipboard } from 'electron';
  * @returns {void}
  */
 const Copy = (files: Array<string>): void => {
-	if (process.platform === 'linux') {
-		let commands = `Xplorer command - COPY`;
-		for (const file of files) {
-			commands += '\n' + file;
-		}
-		clipboard.writeText(commands);
-	} else {
-		const clipboardEx = require('electron-clipboard-ex'); //eslint-disable-line
-		clipboardEx.writeFilePaths(files);
-	}
-	return;
+	Storage.set('clipboard', { command: 'cp', files: files });
 };
 
 export default Copy;

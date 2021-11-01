@@ -1,52 +1,44 @@
-import prompt from 'electron-prompt';
-import path from 'path';
-import fs from 'fs';
-import { ErrorLog, OperationLog } from '../../Functions/log';
-import { dialog } from '@electron/remote';
-import storage from 'electron-json-storage-sync';
-import { detectDefaultTheme } from '../../Theme/theme';
+import { OperationLog } from '../../Functions/log';
 import focusingPath from '../../Functions/focusingPath';
-
+import Ask from '../../Prompt/ask';
+import basename from '../../Functions/path/basename';
+import getDirname from '../../Functions/path/dirname';
+import joinPath from '../../Functions/path/joinPath';
+import OperationAPI from '../../../Api/operation';
+import PromptError from '../../Prompt/error';
+import FileAPI from '../../../Api/files';
+import ConfirmDialog from '../../Prompt/confirm';
 /**
  * Rename file/folder name
  * @param {string} path - location of the file/folder
  * @returns {void}
  */
 const Rename = (filePath: string): void => {
-	const themeCategory =
-		storage.get('theme')?.data?.category ?? detectDefaultTheme();
-	const customStylesheet = path.join(
-		__dirname,
-		`../../Patches/${
-			themeCategory === 'light' ? 'prompt-light.css' : 'prompt-dark.css'
-		}`
-	);
-	prompt({
-		title: 'New File Name',
-		label: 'New Name:',
-		inputAttrs: { type: 'text', required: true },
-		type: 'input',
-		value: path.basename(unescape(filePath)),
-		icon: path.join(__dirname, '../../../../icons/icon.png'),
-		alwaysOnTop: true,
-		customStylesheet,
-	}).then((newName: string) => {
-		const target =
-			path.dirname(newName) === '.'
-				? path.join(focusingPath(), newName)
-				: path.join(path.dirname(filePath), newName);
-		fs.rename(unescape(filePath), target, (err) => {
-			if (err) {
-				dialog.showMessageBoxSync({
-					message:
-						'Something went wrong, please try again or open an issue on GitHub.',
-					type: 'error',
-				});
-				ErrorLog(err);
+	Ask('Rename', 'New File Name:', { value: basename(filePath) }).then(
+		async (newName: string) => {
+			const target =
+				getDirname(newName) === '.'
+					? joinPath(await focusingPath(), newName)
+					: joinPath(getDirname(filePath), newName);
+			if (new FileAPI(target).exists()) {
+				const confirm = await ConfirmDialog(
+					'File Exists',
+					'The new name already exists, do you want to overwrite it?',
+					'No'
+				);
+				if (!confirm) return;
 			}
-		});
-		OperationLog('rename', unescape(filePath), target);
-	});
+			try {
+				new OperationAPI(filePath, target).rename();
+			} catch (err) {
+				PromptError(
+					'Error renaming file',
+					`Failed to rename ${filePath} [${err}]`
+				);
+			}
+			OperationLog('rename', unescape(filePath), target);
+		}
+	);
 };
 
 export default Rename;

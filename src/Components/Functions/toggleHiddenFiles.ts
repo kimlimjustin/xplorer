@@ -1,27 +1,10 @@
-import storage from 'electron-json-storage-sync';
-const userPreference = storage.get('preference')?.data; // Read user preference
-let hideHiddenFiles = userPreference ? userPreference?.hideHiddenFiles : true; // Hide hidden files as default
-
-const __init__ = () => {
+import Storage from '../../Api/storage';
+const toggleHiddenFiles = async (): Promise<void> => {
+	const _preference = await Storage.get('preference');
+	const hideHiddenFiles = !_preference.hideHiddenFiles;
+	_preference.hideHiddenFiles = hideHiddenFiles;
 	document.getElementById('workspace').dataset.hideHiddenFiles =
-		hideHiddenFiles;
+		String(hideHiddenFiles);
+	Storage.set('preference', _preference);
 };
-
-const getHideHiddenFilesValue = (): boolean => hideHiddenFiles;
-const toggleHideHiddenFilesValue = (): void => {
-	hideHiddenFiles = !hideHiddenFiles;
-};
-
-/**
- * Show/hide hidden files
- * @returns {void}
- */
-const toggleHiddenFiles = (): void => {
-	__init__();
-};
-
-export {
-	toggleHiddenFiles,
-	getHideHiddenFilesValue,
-	toggleHideHiddenFilesValue,
-};
+export default toggleHiddenFiles;

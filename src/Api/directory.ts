@@ -1,3 +1,5 @@
+import joinPath from '../Components/Functions/path/joinPath';
+import normalizeSlash from '../Components/Functions/path/normalizeSlash';
 import { invoke } from '@tauri-apps/api';
 
 interface SystemTime {
@@ -27,9 +29,13 @@ interface DirectoryData {
  */
 class DirectoryAPI {
 	readonly dirName: string;
+	readonly parentDir: string;
 	files: FileMetaData[];
-	constructor(dirName: string) {
-		this.dirName = dirName;
+	constructor(dirName: string, parentDir?: string) {
+		if (parentDir) {
+			this.parentDir = normalizeSlash(parentDir);
+			this.dirName = normalizeSlash(joinPath(parentDir, dirName));
+		} else this.dirName = normalizeSlash(dirName);
 	}
 	/**
 	 * Get files inside a directory
@@ -55,6 +61,26 @@ class DirectoryAPI {
 				resolve(result)
 			);
 		});
+	}
+	/**
+	 * Return true if folder exist
+	 * @returns {boolean}
+	 */
+	async exists(): Promise<boolean> {
+		return await invoke('file_exist', { filePath: this.dirName });
+	}
+	/**
+	 * Create dir if not exists
+	 * @returns {any}
+	 */
+	async mkdir(): Promise<boolean> {
+		return await invoke('create_dir_recursive', {
+			dirPath: this.dirName,
+		});
+	}
+
+	listen(): void {
+		null;
 	}
 }
 

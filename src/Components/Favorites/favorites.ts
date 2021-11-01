@@ -3,6 +3,7 @@ import fileThumbnail from '../Thumbnail/thumbnail';
 import FavoritesAPI from '../../Api/favorites';
 import DirectoryAPI from '../../Api/directory';
 import Storage from '../../Api/storage';
+import defaultFavorites from './defaultFavorites';
 let FavoritesData: FavoritesAPI;
 
 /**
@@ -15,60 +16,31 @@ const Favorites = async (): Promise<string> => {
 		await FavoritesData.build();
 	}
 	const data = await Storage.get('favorites'); // Get user favorites data on sidebar
-	const favorites = data?.favorites ?? [
-		{
-			name: await Translate('Recent'),
-			path: 'xplorer://Recent',
-			icon: await fileThumbnail('recent', 'folder', false),
-		},
-		{
-			name: await Translate('Desktop'),
-			path: FavoritesData.DESKTOP_PATH,
-			icon: await fileThumbnail('desktop', 'folder', false),
-		},
-		{
-			name: await Translate('Documents'),
-			path: FavoritesData.DOCUMENT_PATH,
-			icon: await fileThumbnail('document', 'folder', false),
-		},
-		{
-			name: await Translate('Downloads'),
-			path: FavoritesData.DOWNLOAD_PATH,
-			icon: await fileThumbnail('download', 'folder', false),
-		},
-		{
-			name: await Translate('Pictures'),
-			path: FavoritesData.PICTURE_PATH,
-			icon: await fileThumbnail('picture', 'folder', false),
-		},
-		{
-			name: await Translate('Music'),
-			path: FavoritesData.MUSIC_PATH,
-			icon: await fileThumbnail('music', 'folder', false),
-		},
-		{
-			name: await Translate('Videos'),
-			path: FavoritesData.VIDEO_PATH,
-			icon: await fileThumbnail('video', 'folder', false),
-		},
-		{
-			name: await Translate('Trash'),
-			path: 'xplorer://Trash',
-			icon: await fileThumbnail('trash', 'folder', false),
-		},
-	];
+	const favorites = data?.favorites ?? (await defaultFavorites());
 
 	let result = '<section class="home-section">';
 	result += `<h1 class="section-title">${await Translate('Favorites')}</h1>`;
+	const defaultFavoritesList = (await defaultFavorites()).map(
+		(favorite) => favorite.name
+	);
 	for (const favorite of favorites) {
+		if (favorite.path === 'xplorer://Home') continue;
 		let icon = favorite.icon;
 		if (!icon) {
-			const isdir = await new DirectoryAPI(favorite.path).isDir();
-			icon = await fileThumbnail(
-				favorite.name,
-				isdir ? 'folder' : 'file',
-				false
-			);
+			if (defaultFavoritesList.indexOf(favorite.name) === -1) {
+				const isdir = await new DirectoryAPI(favorite.path).isDir();
+				icon = await fileThumbnail(
+					favorite.name,
+					isdir ? 'folder' : 'file',
+					false
+				);
+			} else {
+				icon = await fileThumbnail(
+					favorite.name.toLowerCase(),
+					'folder',
+					false
+				);
+			}
 		}
 		result += `<div
 		class="favorite file card-hover-effect"

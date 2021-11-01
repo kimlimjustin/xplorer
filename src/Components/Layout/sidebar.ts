@@ -7,6 +7,7 @@ import FavoritesAPI from '../../Api/favorites';
 import DirectoryAPI from '../../Api/directory';
 import Storage from '../../Api/storage';
 import IsValid from '../Functions/validChecker';
+import defaultFavorites from '../Favorites/defaultFavorites';
 interface Favorites {
 	name: string;
 	path: string;
@@ -34,17 +35,9 @@ const createSidebar = async (): Promise<void> => {
 	// Functions to get favorites element
 	const getFavoritesElement = async (favorites: Favorites[]) => {
 		let favoritesElement = '';
-		const sidebarElementFavorites = [
-			'Home',
-			'Recent',
-			'Documents',
-			'Desktop',
-			'Downloads',
-			'Pictures',
-			'Music',
-			'Videos',
-			'Trash',
-		];
+		const defaultFavoritesList = (await defaultFavorites()).map(
+			(favorite) => favorite.name
+		);
 		for (const favorite of favorites) {
 			const isdir = favorite.path.startsWith('xplorer://')
 				? true
@@ -53,7 +46,8 @@ const createSidebar = async (): Promise<void> => {
 				favorite.path
 			}" data-isdir="${isdir}" class="sidebar-hover-effect sidebar-item"><img src="${await fileThumbnail(
 				favorite.name,
-				sidebarElementFavorites.indexOf(favorite.name) === -1
+				defaultFavoritesList.indexOf(favorite.name) === -1 &&
+					favorite.path !== 'xplorer://Home'
 					? isdir
 						? 'folder'
 						: 'file'
@@ -85,8 +79,8 @@ const createSidebar = async (): Promise<void> => {
 	};
 
 	const favorites = await Storage.get('favorites');
-	const _favorites = IsValid(favorites)
-		? favorites
+	const _favorites = IsValid(favorites?.favorites)
+		? favorites.favorites
 		: [
 				{ name: 'Home', path: 'xplorer://Home' },
 				{ name: 'Recent', path: 'xplorer://Recent' },
@@ -98,7 +92,6 @@ const createSidebar = async (): Promise<void> => {
 				{ name: 'Videos', path: FavoritesData.VIDEO_PATH },
 				{ name: 'Trash', path: 'xplorer://Trash' }, // eslint-disable-next-line no-mixed-spaces-and-tabs
 		  ];
-
 	// get drives element
 	const sidebarNavElement = document.querySelector(
 		'#sidebar-nav'

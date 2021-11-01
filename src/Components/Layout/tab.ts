@@ -1,7 +1,7 @@
 import { updateTheme } from '../Theme/theme';
 import Storage from '../../Api/storage';
 import Translate from '../I18n/i18n';
-import windowGUID from '../Constants/windowGUID';
+import windowName from '../../Api/window';
 import { OpenDir } from '../Open/open';
 import { close } from './windowManager';
 /**
@@ -12,7 +12,7 @@ import { close } from './windowManager';
 
 const createNewTab = async (path?: string): Promise<void> => {
 	const createNewTabElement = document.querySelector('.create-new-tab');
-	const tabsInfo = await Storage.get(`tabs-${windowGUID}`); // Fetch latest tabs information
+	const tabsInfo = await Storage.get(`tabs-${windowName}`); // Fetch latest tabs information
 
 	const newTab = document.createElement('div');
 	newTab.classList.add('tab');
@@ -34,7 +34,7 @@ const createNewTab = async (path?: string): Promise<void> => {
 			if (document.querySelectorAll('.tab').length === 1) {
 				close();
 			} else {
-				const tabs = await Storage.get(`tabs-${windowGUID}`);
+				const tabs = await Storage.get(`tabs-${windowName}`);
 				tabs.focusHistory = tabs.focusHistory.filter(
 					(tabIndex: number) =>
 						String(tabIndex) !== String(newTab.dataset.tabIndex)
@@ -44,7 +44,7 @@ const createNewTab = async (path?: string): Promise<void> => {
 						tabs.focusHistory[tabs.focusHistory.length - 1]
 					);
 				delete tabs.tabs[newTab.dataset.tabIndex];
-				Storage.set(`tabs-${windowGUID}`, tabs);
+				Storage.set(`tabs-${windowName}`, tabs);
 				newTab.parentElement.removeChild(newTab);
 
 				OpenDir(tabs.tabs[tabs.focus].position);
@@ -69,7 +69,7 @@ const createNewTab = async (path?: string): Promise<void> => {
 	};
 	tabsInfo.focus = String(tabsInfo.latestIndex);
 	tabsInfo.focusHistory.push(tabsInfo.latestIndex);
-	Storage.set(`tabs-${windowGUID}`, tabsInfo);
+	Storage.set(`tabs-${windowName}`, tabsInfo);
 
 	OpenDir(path || 'xplorer://Home');
 
@@ -85,11 +85,11 @@ const createNewTab = async (path?: string): Promise<void> => {
  * @returns {Promise<void>}
  */
 const SwitchTab = async (tabIndex: number | string): Promise<void> => {
-	const tabs = await Storage.get(`tabs-${windowGUID}`);
+	const tabs = await Storage.get(`tabs-${windowName}`);
 	tabs.focus = String(tabIndex);
 	tabs.focusHistory.push(parseInt(String(tabIndex)));
 	tabs.tabs[tabs.focus].currentIndex -= 1;
-	Storage.set(`tabs-${windowGUID}`, tabs);
+	Storage.set(`tabs-${windowName}`, tabs);
 	OpenDir(tabs.tabs[tabIndex].position);
 };
 
@@ -98,9 +98,8 @@ const SwitchTab = async (tabIndex: number | string): Promise<void> => {
  * @returns {Promise<void>}
  */
 const goBack = async (): Promise<void> => {
-	const tabs = await Storage.get(`tabs-${windowGUID}`);
+	const tabs = await Storage.get(`tabs-${windowName}`);
 	const _focusingTab = tabs.tabs[tabs.focus];
-	console.log(_focusingTab);
 	if (_focusingTab.currentIndex > 0) {
 		OpenDir(_focusingTab.history[_focusingTab.currentIndex - 1]);
 	}
@@ -111,7 +110,7 @@ const goBack = async (): Promise<void> => {
  * @returns {Promise<void>}
  */
 const goForward = async (): Promise<void> => {
-	const tabs = await Storage.get(`tabs-${windowGUID}`);
+	const tabs = await Storage.get(`tabs-${windowName}`);
 	const _focusingTab = tabs.tabs[tabs.focus];
 	if (
 		_focusingTab.currentIndex >= 0 &&
@@ -138,7 +137,7 @@ const Tab = async (): Promise<void> => {
 		latestIndex: 1,
 	}; // default tabs information
 	// Store default tabs information into local storage
-	Storage.set(`tabs-${windowGUID}`, tabsInfo);
+	Storage.set(`tabs-${windowName}`, tabsInfo);
 
 	const arrayOfTabs = document.querySelectorAll<HTMLElement>('.tab');
 	// Add close tab button
@@ -156,7 +155,7 @@ const Tab = async (): Promise<void> => {
 				close();
 			} else {
 				tab.parentElement.removeChild(tab);
-				const tabs = await Storage.get(`tabs-${windowGUID}`);
+				const tabs = await Storage.get(`tabs-${windowName}`);
 				tabs.focusHistory = tabs.focusHistory.filter(
 					(tabIndex: number) => tabIndex !== index + 1
 				);
@@ -164,7 +163,7 @@ const Tab = async (): Promise<void> => {
 					tabs.focusHistory[tabs.focusHistory.length - 1]
 				);
 				delete tabs.tabs[index + 1];
-				Storage.set(`tabs-${windowGUID}`, tabs);
+				Storage.set(`tabs-${windowName}`, tabs);
 
 				OpenDir(tabs.tabs[tabs.focus].position);
 			}

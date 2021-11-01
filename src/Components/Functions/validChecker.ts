@@ -9,6 +9,7 @@ const IsValid = (obj: any): boolean => {
 	if (obj === null || obj === undefined) return false;
 	else if (Array.isArray(obj)) {
 		if (obj.length === 0) return false;
+		else return true;
 	} else if (typeof obj === 'object') {
 		if (Object.keys(obj).length === 0) return false;
 		else return true;

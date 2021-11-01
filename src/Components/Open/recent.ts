@@ -6,7 +6,7 @@ import { updateTheme } from '../Theme/theme';
 import getType from '../Files/File Type/type';
 //import { SelectListener } from '../Files/File Operation/select';
 import type { OpenLogType } from '../Functions/log';
-import getBasename from '../Functions/basename';
+import getBasename from '../Functions/path/basename';
 import DirectoryAPI from '../../Api/directory';
 
 /**

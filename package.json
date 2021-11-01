@@ -40,44 +40,6 @@
 		"install": "node scripts/install.js",
 		"postinstall": "patch-package && husky install"
 	},
-	"build": {
-		"files": [
-			"**/*",
-			"!test/**/*",
-			"!dist/**/*",
-			"!patches/**/*",
-			"!scripts/**/*",
-			"!docs/**/*",
-			"!src/**/*",
-			"!scripts/**/*",
-			"!paths/**/*",
-			"!.vscode/**/*",
-			"!packages/**/*",
-			"!.github/**/*",
-			"!.git/**/*"
-		],
-		"directories": {
-			"buildResources": "icons"
-		},
-		"win": {
-			"target": [
-				"nsis"
-			]
-		},
-		"nsis": {
-			"license": "LICENSE",
-			"runAfterFinish": true
-		},
-		"linux": {
-			"target": [
-				"AppImage",
-				"deb"
-			]
-		},
-		"appId": "app.vercel.xplorer",
-		"productName": "Xplorer",
-		"copyright": "Copyright 2021 Justin Maximillian Kimlim and the Xplorer Contributors"
-	},
 	"keywords": [
 		"Xplorer",
 		"File explorer",

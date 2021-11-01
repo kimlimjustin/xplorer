@@ -1,6 +1,6 @@
 {
 	"package": {
-		"productName": "Xplorer Rebrand",
+		"productName": "Xplorer",
 		"version": "0.2.0"
 	},
 	"build": {
@@ -24,7 +24,7 @@
 			],
 			"resources": [],
 			"externalBin": [],
-			"copyright": "Justin Maximillian Kimlim and the Xplorer Contributors",
+			"copyright": "Apache-2.0",
 			"category": "DeveloperTool",
 			"shortDescription": "",
 			"longDescription": "",
@@ -46,7 +46,8 @@
 				"digestAlgorithm": "sha256",
 				"timestampUrl": "",
 				"wix": {
-					"license": "./LICENSE.rtf"
+					"template": "./installer.wxs",
+					"license": "../LICENSE"
 				}
 			}
 		},

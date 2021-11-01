@@ -43,6 +43,7 @@ const Select = (element: HTMLElement, ctrl: boolean, shift: boolean): void => {
 		latestSelected = element;
 		latestShiftSelected = element;
 	}
+	ensureElementInViewPort(element);
 };
 
 /**
@@ -102,11 +103,8 @@ const SelectInit = (): void => {
 	});
 
 	const selectShortcut = async (e: KeyboardEvent) => {
-		// Ignore keyboard shortcuts for select files if path navigator has focus
-		if (
-			document.querySelector('.path-navigator') === document.activeElement
-		)
-			return;
+		// Ignore keyboard shortcuts for select files if input element has focus.
+		if (document.activeElement.tagName === 'INPUT') return;
 
 		const hideHiddenFiles =
 			(await Storage.get('preference'))?.hideHiddenFiles ?? true;
