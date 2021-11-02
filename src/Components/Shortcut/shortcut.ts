@@ -19,7 +19,8 @@ import Copy from '../Files/File Operation/copy';
 import Paste from '../Files/File Operation/paste';
 import toggleHiddenFiles from '../Functions/toggleHiddenFiles';
 import Rename from '../Files/File Operation/rename';
-
+import Undo from '../Files/File Operation/undo';
+import Redo from '../Files/File Operation/redo';
 let selectedAll = true;
 let pauseEnterListener = false;
 /**
@@ -159,6 +160,17 @@ const Shortcut = (): void => {
 				filePaths.push(unescape(element.dataset.path));
 			}
 			Cut(filePaths);
+		}
+		// Undo file action (Ctrl+Z)
+		else if (e.ctrlKey && e.key === 'z') {
+			Undo();
+		}
+		// Redo file action (Ctrl+Shift+Z OR Ctrl+Y)
+		else if (
+			(e.ctrlKey && e.shiftKey && e.key === 'Z') ||
+			(e.ctrlKey && e.key === 'y')
+		) {
+			Redo();
 		}
 		// Previous tab shortcut (Alt+Arrow Left)
 		else if (e.altKey && e.key === 'ArrowLeft') {
@@ -330,17 +342,7 @@ import New from '../Functions/new';
 					: selectedFilePath
 			);
 		}
-		// Undo file action (Ctrl+Z)
-		else if (e.ctrlKey && e.key === 'z') {
-			Undo();
-		}
-		// Redo file action (Ctrl+Shift+Z OR Ctrl+Y)
-		else if (
-			(e.ctrlKey && e.shiftKey && e.key === 'z') ||
-			(e.ctrlKey && e.key === 'y')
-		) {
-			Redo();
-		}
+		
 	};
 	document.addEventListener('keyup', KeyboardShortcutsHandler);
 	document.addEventListener('mouseup', MouseShortcutsHandler);

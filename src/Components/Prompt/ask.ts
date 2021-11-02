@@ -15,6 +15,9 @@ const Ask = async (
 	message: string,
 	options?: AskOptions
 ): Promise<string> => {
+	document
+		.querySelectorAll('.prompt')
+		.forEach((el) => el.parentNode.removeChild(el));
 	const promptElement = document.createElement('div');
 	promptElement.className = 'prompt';
 	promptElement.innerHTML = `<div class="prompt-frame">

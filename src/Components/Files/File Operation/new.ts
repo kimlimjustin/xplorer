@@ -7,9 +7,14 @@ import PromptError from '../../Prompt/error';
  * Create a new file
  * @param {string} fileName - name for the new file
  * @param {string} parentDir - parent directory of the new file
- * @returns {void}
+ * @param {boolean} writeLog - does the operation need to be written
+ * @returns {Promise<void>}
  */
-const NewFile = async (fileName: string, parentDir?: string): Promise<void> => {
+const NewFile = async (
+	fileName: string,
+	parentDir?: string,
+	writeLog = true
+): Promise<void> => {
 	if (!parentDir) parentDir = await focusingPath();
 	const newFile = new FileAPI(fileName, parentDir);
 
@@ -28,7 +33,10 @@ const NewFile = async (fileName: string, parentDir?: string): Promise<void> => {
 			);
 		}
 
-		OperationLog('newfile', null, newFile.fileName);
+		if (writeLog) {
+			console.log(writeLog);
+			OperationLog('newfile', null, newFile.fileName);
+		}
 	}
 };
 

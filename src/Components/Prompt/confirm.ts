@@ -8,6 +8,9 @@ const ConfirmDialog = (
 	defaultValue?: 'Yes' | 'No'
 ): Promise<boolean> => {
 	return new Promise<boolean>((resolve) => {
+		document
+			.querySelectorAll('.prompt')
+			.forEach((el) => el.parentNode.removeChild(el));
 		const promptElement = document.createElement('div');
 		promptElement.className = 'prompt';
 		promptElement.innerHTML = `<div class="prompt-frame">
