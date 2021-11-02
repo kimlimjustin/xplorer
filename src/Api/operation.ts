@@ -1,12 +1,17 @@
-import { invoke } from '@tauri-apps/api';
-import { copyFile, renameFile } from '@tauri-apps/api/fs';
+import {
+	copyFile,
+	renameFile,
+	removeDir,
+	removeFile,
+} from '@tauri-apps/api/fs';
+import DirectoryAPI from './directory';
 /**
  * Invoke Rust command to operate files/dirs
  */
 class OperationAPI {
 	readonly src: string;
 	readonly dest: string;
-	constructor(src: string, dest: string) {
+	constructor(src: string, dest?: string) {
 		this.src = src;
 		this.dest = dest;
 	}
@@ -23,6 +28,14 @@ class OperationAPI {
 	 */
 	async rename(): Promise<void> {
 		return await renameFile(this.src, this.dest);
+	}
+
+	async unlink(): Promise<void> {
+		if (await new DirectoryAPI(this.src).isDir()) {
+			return await removeDir(this.src, { recursive: true });
+		} else {
+			return await removeFile(this.src);
+		}
 	}
 }
 export default OperationAPI;

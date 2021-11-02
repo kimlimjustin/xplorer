@@ -20,7 +20,7 @@ const Rename = (filePath: string): void => {
 				getDirname(newName) === '.'
 					? joinPath(await focusingPath(), newName)
 					: joinPath(getDirname(filePath), newName);
-			if (new FileAPI(target).exists()) {
+			if (await new FileAPI(target).exists()) {
 				const confirm = await ConfirmDialog(
 					'File Exists',
 					'The new name already exists, do you want to overwrite it?',

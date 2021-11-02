@@ -3,6 +3,9 @@ import dragElement from '../Functions/dragElement';
 import { updateTheme } from '../Theme/theme';
 import { ErrorLog } from '../Functions/log';
 const PromptError = (title: string, message: string): void => {
+	document
+		.querySelectorAll('.prompt')
+		.forEach((el) => el.parentNode.removeChild(el));
 	const promptElement = document.createElement('div');
 	promptElement.className = 'prompt';
 	promptElement.innerHTML = `<div class="prompt-frame">
