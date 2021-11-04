@@ -1,24 +1,8 @@
 import joinPath from '../Components/Functions/path/joinPath';
 import normalizeSlash from '../Components/Functions/path/normalizeSlash';
 import { invoke } from '@tauri-apps/api';
+import type FileMetaData from '../Typings/fileMetaData';
 
-interface SystemTime {
-	nanos_since_epoch: number;
-	secs_since_epoch: number;
-}
-interface FileMetaData {
-	file_path: string;
-	basename: string;
-	is_dir: boolean;
-	is_hidden: boolean;
-	is_file: boolean;
-	is_system: boolean;
-	size: number;
-	readonly: boolean;
-	last_modified: SystemTime;
-	last_accessed: SystemTime;
-	created: SystemTime;
-}
 interface DirectoryData {
 	files: FileMetaData[];
 	number_of_files: number;
@@ -85,4 +69,3 @@ class DirectoryAPI {
 }
 
 export default DirectoryAPI;
-export { FileMetaData };

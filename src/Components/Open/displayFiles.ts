@@ -3,9 +3,10 @@ import Storage from '../../Api/storage';
 import fileThumbnail from '../Thumbnail/thumbnail';
 import formatBytes from '../Functions/filesize';
 import getType from '../Files/File Type/type';
-import type { FileMetaData } from '../../Api/directory';
+import type FileMetaData from '../../Typings/fileMetaData';
 import { Select } from '../Files/File Operation/select';
 import normalizeSlash from '../Functions/path/normalizeSlash';
+import joinPath from '../Functions/path/joinPath';
 /**
  * Display files into Xplorer main section
  * @param {fileData[]} files - array of files of a directory
@@ -39,13 +40,21 @@ const displayFiles = async (
 					? 1
 					: -1;
 			case 'L': // Last Modified
-				return new Date(a.last_modified.secs_since_epoch) <
-					new Date(b.last_modified.secs_since_epoch)
+				return new Date(
+					a.last_modified?.secs_since_epoch ?? a.time_deleted
+				) <
+					new Date(
+						b.last_modified?.secs_since_epoch ?? b.time_deleted
+					)
 					? 1
 					: -1;
 			case 'F': // First Modified
-				return new Date(a.last_modified.secs_since_epoch) >
-					new Date(b.last_modified.secs_since_epoch)
+				return new Date(
+					a.last_modified?.secs_since_epoch ?? a.time_deleted
+				) >
+					new Date(
+						b.last_modified?.secs_since_epoch ?? b.time_deleted
+					)
 					? 1
 					: -1;
 			case 'S': // Size
@@ -69,7 +78,7 @@ const displayFiles = async (
 		);
 		const fileGrid = document.createElement('div');
 		fileGrid.className = 'file-grid grid-hover-effect file';
-		//if (dirent.isTrash) fileGrid.dataset.isTrash = 'true';
+		if (file.is_trash) fileGrid.dataset.isTrash = 'true';
 		let displayName: string;
 		switch (layout) {
 			case 'm':
@@ -100,40 +109,46 @@ const displayFiles = async (
 		}
 
 		fileGrid.setAttribute('draggable', 'true');
-		fileGrid.dataset.modifiedAt = String(
-			new Date(file.last_modified.secs_since_epoch * 1000).toLocaleString(
-				navigator.language,
-				{ hour12: false }
-			)
-		);
-		fileGrid.dataset.createdAt = String(
-			new Date(file.created.secs_since_epoch * 1000).toLocaleString(
-				navigator.language,
-				{ hour12: false }
-			)
-		);
-		fileGrid.dataset.accessedAt = String(
-			new Date(file.last_accessed.secs_since_epoch * 1000).toLocaleString(
-				navigator.language,
-				{ hour12: false }
-			)
-		);
+		if (!file.is_trash) {
+			fileGrid.dataset.modifiedAt = String(
+				new Date(
+					file.last_modified.secs_since_epoch * 1000
+				).toLocaleString(navigator.language, { hour12: false })
+			);
+			fileGrid.dataset.createdAt = String(
+				new Date(file.created.secs_since_epoch * 1000).toLocaleString(
+					navigator.language,
+					{ hour12: false }
+				)
+			);
+			fileGrid.dataset.accessedAt = String(
+				new Date(
+					file.last_accessed.secs_since_epoch * 1000
+				).toLocaleString(navigator.language, { hour12: false })
+			);
+		}
 		fileGrid.dataset.isdir = String(file.is_dir);
-		/*if (dirent.trashDeletionDate)
-                fileGrid.dataset.trashDeletionDate = String(
-                    dirent.trashDeletionDate
-                );*/
+		if (file.time_deleted)
+			fileGrid.dataset.trashDeletionDate = String(file.time_deleted);
 		if (file.is_hidden) fileGrid.dataset.hiddenFile = 'true';
-		/*if (dirent.realPath)
-                fileGrid.dataset.realPath = escape(
-                    dirent.realPath ?? path.join(dir, dirent.name)
-                );*/
+		if (file.is_trash)
+			fileGrid.dataset.realPath = escape(
+				joinPath(file.original_parent, file.basename)
+			);
+
 		fileGrid.dataset.path = escape(normalizeSlash(file.file_path));
 		fileGrid.innerHTML = `
             ${preview}
-            <span class="file-grid-filename" id="file-filename">${displayName}</span><span class="file-modifiedAt" id="file-timestamp">${new Date(
-			file.last_modified.secs_since_epoch * 1000
-		).toLocaleString(navigator.language, { hour12: false })}</span>
+            <span class="file-grid-filename" id="file-filename">${displayName}</span>
+			${
+				file.original_parent
+					? `<span class="file-original-parent">${file.original_parent}</span>`
+					: ''
+			}
+			<span class="file-modifiedAt" id="file-timestamp">${new Date(
+				(file.last_modified?.secs_since_epoch ?? file.time_deleted) *
+					1000
+			).toLocaleString(navigator.language, { hour12: false })}</span>
             ${
 				file.size > 0 && !file.is_dir
 					? `<span class="file-size" id="file-size">${formatBytes(

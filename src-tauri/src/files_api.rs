@@ -3,6 +3,7 @@ use std::path::Path;
 use std::process::Command;
 use std::time::SystemTime;
 extern crate open;
+extern crate trash;
 
 #[cfg(windows)]
 use std::os::windows::prelude::*;
@@ -20,6 +21,24 @@ pub struct FileMetaData {
   last_modified: SystemTime,
   last_accessed: SystemTime,
   created: SystemTime,
+  is_trash: bool,
+}
+#[derive(serde::Serialize)]
+pub struct TrashMetaData {
+  file_path: String,
+  basename: String,
+  original_parent: String,
+  time_deleted: i64,
+  is_trash: bool,
+  is_dir: bool,
+  is_hidden: bool,
+  is_file: bool,
+  is_system: bool,
+  size: u64,
+  readonly: bool,
+  last_modified: SystemTime,
+  last_accessed: SystemTime,
+  created: SystemTime,
 }
 
 #[derive(serde::Serialize)]
@@ -27,6 +46,11 @@ pub struct FolderInformation {
   number_of_files: u16,
   files: Vec<FileMetaData>,
   skipped_files: Vec<String>,
+}
+
+#[derive(serde::Serialize)]
+pub struct TrashInformation {
+  files: Vec<TrashMetaData>,
 }
 
 fn get_basename(file_path: String) -> String {
@@ -103,6 +127,7 @@ fn get_file_properties(file_path: String) -> Result<FileMetaData, std::io::Error
     created,
     file_path,
     basename,
+    is_trash: false,
   })
 }
 
@@ -217,4 +242,44 @@ pub fn open_in_vscode(path: String) {
       .output()
       .expect("failed to execute process")
   };
+}
+
+#[tauri::command]
+pub fn get_trashed_items() -> Result<TrashInformation, String> {
+  if cfg!(target_os = "macos") {
+    Err("macOS is not supported currently".into())
+  } else {
+    let _trash_items = trash::os_limited::list().map_err(|err| err.to_string())?;
+    let mut trash_files = Vec::new();
+    for item in _trash_items {
+      let properties = get_file_properties(item.id.to_str().unwrap().to_string());
+      if properties.is_err() {
+        continue;
+      } else {
+        let properties = properties.unwrap();
+        trash_files.push(TrashMetaData {
+          file_path: item.id.to_str().unwrap().to_string(),
+          basename: item.name.clone(),
+          original_parent: item.original_parent.into_os_string().into_string().unwrap(),
+          time_deleted: item.time_deleted,
+          is_trash: true,
+          is_dir: properties.is_dir,
+          is_file: properties.is_file,
+          is_hidden: properties.is_hidden,
+          is_system: properties.is_system,
+          size: properties.size,
+          readonly: properties.readonly,
+          last_modified: properties.last_modified,
+          last_accessed: properties.last_accessed,
+          created: properties.created,
+        })
+      }
+    }
+    Ok(TrashInformation { files: trash_files })
+  }
+}
+
+#[tauri::command]
+pub fn delete_file(paths: Vec<String>) -> bool {
+  trash::delete_all(paths).is_ok()
 }

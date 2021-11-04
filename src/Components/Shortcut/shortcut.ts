@@ -21,6 +21,7 @@ import toggleHiddenFiles from '../Functions/toggleHiddenFiles';
 import Rename from '../Files/File Operation/rename';
 import Undo from '../Files/File Operation/undo';
 import Redo from '../Files/File Operation/redo';
+import { Trash, PermanentDelete } from '../Files/File Operation/trash';
 let selectedAll = true;
 let pauseEnterListener = false;
 /**
@@ -198,6 +199,26 @@ const Shortcut = (): void => {
 		else if (e.key === 'F2') {
 			if (selectedFile) Rename(selectedFilePath);
 		}
+		// Delete file shortcut (Del)
+		else if (e.key === 'Delete') {
+			if (e.shiftKey) {
+				const filePaths = [];
+				for (const element of getSelected()) {
+					filePaths.push(
+						_focusingPath === 'xplorer://Trash'
+							? unescape(element.dataset.realPath)
+							: unescape(element.dataset.path)
+					);
+				}
+				PermanentDelete(filePaths);
+			} else {
+				const filePaths = [];
+				for (const element of getSelected()) {
+					filePaths.push(unescape(element.dataset.path));
+				}
+				Trash(filePaths);
+			}
+		}
 	};
 	const KeyDownShortcutsHandler = (e: KeyboardEvent) => {
 		// Don't react if cursor is over input field
@@ -309,26 +330,6 @@ import New from '../Functions/new';
 			}
 			if (!filePaths.length) filePaths = [focusingPath()];
 			Pin(filePaths);
-		}
-		// Delete file shortcut (Del)
-		else if (e.key === 'Delete') {
-			if (e.shiftKey) {
-				const filePaths = [];
-				for (const element of getSelected()) {
-					filePaths.push(
-						focusingPath() === 'xplorer://Trash'
-							? unescape(element.dataset.realPath)
-							: unescape(element.dataset.path)
-					);
-				}
-				PermanentDelete(filePaths);
-			} else {
-				const filePaths = [];
-				for (const element of getSelected()) {
-					filePaths.push(unescape(element.dataset.path));
-				}
-				Trash(filePaths);
-			}
 		}
 		// Preview file shortcut (Ctrl+O)
 		else if (e.ctrlKey && e.key === 'o') {

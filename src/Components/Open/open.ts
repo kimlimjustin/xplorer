@@ -12,13 +12,16 @@ import getDirname from '../Functions/path/dirname';
 import normalizeSlash from '../Functions/path/normalizeSlash';
 import { changeWindowTitle } from '../../Api/window';
 import getBasename from '../Functions/path/basename';
+import { getTrashedFiles } from '../../Api/trash';
+import OS from '../../Api/platform';
+let platform: string;
 /**
  * Open a directory on Xplorer
  * @param {string} dir - Dir path to open
  * @param {boolean} reveal - Open the parent directory and select the file/dir
- * @returns {void}
+ * @returns {Promise<void>}
  */
-const OpenDir = (dir: string, reveal?: boolean): void => {
+const OpenDir = async (dir: string, reveal?: boolean): Promise<void> => {
 	startLoading();
 	changePosition(dir);
 	const MAIN_ELEMENT = document.getElementById('workspace');
@@ -28,6 +31,28 @@ const OpenDir = (dir: string, reveal?: boolean): void => {
 
 	if (dir === 'xplorer://Home') {
 		Home();
+	} else if (dir === 'xplorer://Trash') {
+		if (!platform) platform = await OS();
+		if (platform === 'darwin') {
+			MAIN_ELEMENT.classList.add('empty-dir-notification');
+			MAIN_ELEMENT.innerText =
+				'Xploring trash folder is not supported for macOS yet.';
+			stopLoading();
+		} else {
+			getTrashedFiles().then(async (trashedFiles) => {
+				if (!trashedFiles.files.length) {
+					MAIN_ELEMENT.classList.add('empty-dir-notification');
+					MAIN_ELEMENT.innerText = 'This folder is empty.';
+					stopLoading();
+				} else {
+					await displayFiles(trashedFiles.files, dir, MAIN_ELEMENT);
+					stopLoading();
+					updateTheme();
+					LAZY_LOAD();
+					changeWindowTitle(getBasename(dir));
+				}
+			});
+		}
 	} else if (dir === 'xplorer://Recent') {
 		Recent();
 	} else {
