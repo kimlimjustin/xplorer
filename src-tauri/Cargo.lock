@@ -49,6 +49,7 @@ dependencies = [
  "sysinfo",
  "tauri",
  "tauri-build",
+ "trash",
 ]
 
 [[package]]
@@ -3199,6 +3200,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "trash"
+version = "2.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d3ebb6cb2db7947ab9f65dec9f7c5dbe01042b708f564242dcfb6d5cb2957cbc"
+dependencies = [
+ "chrono",
+ "libc",
+ "log",
+ "objc",
+ "scopeguard",
+ "url",
+ "windows 0.9.1",
+]
+
+[[package]]
 name = "typenum"
 version = "1.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3523,14 +3539,34 @@ checksum = "712e227841d057c1ee1cd2fb22fa7e5a5461ae8e48fa2ca79ec42cfc1931183f"
 
 [[package]]
 name = "windows"
+version = "0.9.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "361f3533a83ee1a28c9be59683f40043db02dbedf6479ce8795657386195c97f"
+dependencies = [
+ "const-sha1",
+ "windows_gen 0.9.1",
+ "windows_macros 0.9.1",
+]
+
+[[package]]
+name = "windows"
 version = "0.21.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b8f5f8d2ea79bf690bbee453fd4a1516ae426e5d5c7215d96cc0c3dc134fc4a0"
 dependencies = [
  "const-sha1",
- "windows_gen",
- "windows_macros",
+ "windows_gen 0.21.1",
+ "windows_macros 0.21.1",
  "windows_reader",
+]
+
+[[package]]
+name = "windows_gen"
+version = "0.9.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "54154dbc515d58723f6b6053c12f1065da7389f733660581b2391bd1af480452"
+dependencies = [
+ "syn",
 ]
 
 [[package]]
@@ -3545,12 +3581,22 @@ dependencies = [
 
 [[package]]
 name = "windows_macros"
+version = "0.9.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0f7794c652845dc466cb8dc1b86c08345707c8144bc53e9086430047c7d33b76"
+dependencies = [
+ "syn",
+ "windows_gen 0.9.1",
+]
+
+[[package]]
+name = "windows_macros"
 version = "0.21.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "81cc2357b1b03c19f056cb0e6d06011f80f54beadb4e36aee2ca98493c7cfc3c"
 dependencies = [
  "syn",
- "windows_gen",
+ "windows_gen 0.21.1",
  "windows_quote",
  "windows_reader",
 ]
@@ -3583,7 +3629,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f0cc832b8c66c42b3ee6b625c124fe2d0b3ff7fb2cec18b28926e9c4bfdb72da"
 dependencies = [
  "strum 0.21.0",
- "windows",
+ "windows 0.21.1",
  "xml-rs",
 ]
 

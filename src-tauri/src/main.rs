@@ -54,6 +54,8 @@ fn main() {
       files_api::create_dir_recursive,
       files_api::open_in_terminal,
       files_api::open_in_vscode,
+      files_api::get_trashed_items,
+      files_api::delete_file,
       drives::get_drives,
       storage::write_data,
       storage::read_data,
