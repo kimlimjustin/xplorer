@@ -150,7 +150,7 @@ pub fn is_dir(path: &Path) -> Result<bool, String> {
   }
 }
 #[tauri::command]
-pub fn read_directory(dir: &Path) -> Result<FolderInformation, String> {
+pub async fn read_directory(dir: &Path) -> Result<FolderInformation, String> {
   let paths = fs::read_dir(dir).map_err(|err| err.to_string())?;
   let mut number_of_files: u16 = 0;
   let mut files = Vec::new();
@@ -171,6 +171,16 @@ pub fn read_directory(dir: &Path) -> Result<FolderInformation, String> {
     files,
     skipped_files,
   })
+}
+
+#[tauri::command]
+pub async fn get_files_in_directory(dir: &Path) -> Result<Vec<String>, String> {
+  let paths = fs::read_dir(dir).map_err(|err| err.to_string())?;
+  let mut files = Vec::new();
+  for path in paths {
+    files.push(path.unwrap().path().display().to_string());
+  }
+  Ok(files)
 }
 
 #[tauri::command]
