@@ -1,6 +1,15 @@
-import path from 'path';
-import { IMAGE_TYPES } from '../Config/file.config';
+import FileAPI from '../../Api/files';
+import { IMAGE_TYPES } from '../../Config/file.config';
+import getBasename from '../Functions/path/basename';
 
+const getExtension = (filename: string): string => {
+	const basename = getBasename(filename);
+	const index = basename.lastIndexOf('.');
+	if (index === -1) {
+		return '';
+	}
+	return basename.substr(index + 1);
+};
 /**
  * Listen to mouse hovering
  * @returns {void}
@@ -19,16 +28,12 @@ const Hover = (): void => {
 
 		// Ignore workspace hovering
 		if ((e.target as HTMLElement).id === 'workspace') {
-			if (hoveringElement?.dataset?.path && displayName)
-				hoveringElement.querySelector('.file-grid-filename').innerHTML =
-					displayName;
+			if (hoveringElement?.dataset?.path && displayName) hoveringElement.querySelector('.file-grid-filename').innerHTML = displayName;
 			return;
 		}
 		hoveringElement?.classList?.remove('hovering');
 
-		const target = (e.target as HTMLElement)?.dataset?.path
-			? (e.target as HTMLElement)
-			: ((e.target as HTMLElement)?.parentNode as HTMLElement);
+		const target = (e.target as HTMLElement)?.dataset?.path ? (e.target as HTMLElement) : ((e.target as HTMLElement)?.parentNode as HTMLElement);
 
 		const filenameGrid = target.querySelector('.file-grid-filename');
 
@@ -41,17 +46,11 @@ const Hover = (): void => {
 
 		timeOut = window.setTimeout(() => {
 			displayName = filenameGrid.innerHTML;
-			filenameGrid.innerHTML = path.basename(
-				unescape(target.dataset.path)
-			);
+			filenameGrid.innerHTML = getBasename(unescape(target.dataset.path));
 			target?.classList?.add('hovering');
 
-			if (
-				IMAGE_TYPES.indexOf(path.extname(filenameGrid.innerHTML)) !== -1
-			) {
-				hoverPreviewElement.innerHTML = `<img src="${unescape(
-					target.dataset.path
-				)}">`;
+			if (IMAGE_TYPES.indexOf(getExtension(filenameGrid.innerHTML)) !== -1) {
+				hoverPreviewElement.innerHTML = `<img src="${new FileAPI(unescape(target.dataset.path)).readAsset()}">`;
 				hoverPreviewElement.classList.add('hover-preview');
 				hoverPreviewElement.style.top = y + 'px';
 				hoverPreviewElement.style.left = x + 'px';

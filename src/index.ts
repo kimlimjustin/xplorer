@@ -11,6 +11,7 @@ import CLIInformations from './Api/cli';
 import Storage from './Api/storage';
 import Setting from './Components/Setting/setting';
 import ContextMenu from './Components/ContextMenu/contextMenu';
+import Hover from './Components/Layout/hover';
 // Wait DOM Loaded to be loaded
 document.addEventListener('DOMContentLoaded', async () => {
 	// Listen to minimize, maximize, exit and reload button
@@ -50,4 +51,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 	Setting();
 	// Initialize context menu
 	ContextMenu();
+	// Initialize hover handler
+	Hover();
 });
