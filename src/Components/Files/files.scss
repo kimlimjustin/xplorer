@@ -32,7 +32,8 @@
 
 	.file-modifiedAt,
 	.file-size,
-	.file-type {
+	.file-type,
+	.file-original-parent {
 		display: none;
 	}
 	.file-grid-preview {
