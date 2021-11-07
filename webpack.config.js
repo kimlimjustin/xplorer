@@ -14,10 +14,14 @@ module.exports = {
 				test: /\.svg/,
 				type: 'asset/inline',
 			},
+			{
+				test: /\.png$/,
+				type: 'asset/inline',
+			},
 		],
 	},
 	resolve: {
-		extensions: ['.tsx', '.ts', '.js', '.svg'],
+		extensions: ['.tsx', '.ts', '.js', '.svg', '.png'],
 	},
 	output: {
 		filename: 'index.js',

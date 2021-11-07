@@ -4,6 +4,7 @@ import windowName, { listenWindowClose } from '../../Api/window';
 import { OpenDir } from '../Open/open';
 import focusingPath from '../Functions/focusingPath';
 import getDirname from '../Functions/path/dirname';
+import createSidebar from './sidebar';
 /**
  * Reload the page
  * @returns {Promise<void>}
@@ -12,8 +13,8 @@ const reload = async (): Promise<void> => {
 	const tabs = await Storage.get(`tabs-${windowName}`);
 	OpenDir(tabs.tabs[tabs.focus].position);
 	//closePreviewFile();
-	document.querySelector<HTMLElement>('.properties').style.animation =
-		'close-properties 1s forwards';
+	document.querySelector<HTMLElement>('.properties').style.animation = 'close-properties 1s forwards';
+	createSidebar();
 };
 
 /**
@@ -63,18 +64,11 @@ const windowManager = (): void => {
 	// Refresh the page
 	document.querySelector('#refresh').addEventListener('click', reload);
 
-	document
-		.querySelector('#go-parent-dir')
-		.addEventListener('click', goParentDir);
+	document.querySelector('#go-parent-dir').addEventListener('click', goParentDir);
 
-	document
-		.querySelector('.path-navigator')
-		.addEventListener(
-			'change',
-			(event: Event & { target: HTMLInputElement }) => {
-				OpenDir(event.target.value);
-			}
-		);
+	document.querySelector('.path-navigator').addEventListener('change', (event: Event & { target: HTMLInputElement }) => {
+		OpenDir(event.target.value);
+	});
 	listenWindowClose().then(() => {
 		Storage.remove(`tabs-${windowName}`);
 		Storage.remove(`operations-${windowName}`);

@@ -8,86 +8,61 @@ import Preference from './Preference/preference';
 
 /**
  * Setting initializer function
- * @returns {void}
+ * @returns {Promise<void>}
  */
-const Setting = (): void => {
+const Setting = async (): Promise<void> => {
 	const settingsItem = ['Appearance', 'Preference', 'About'];
 	const defaultTab = settingsItem[0];
 
 	const setActiveTab = (tab: string) => {
 		settingsItem.forEach((tabs: string) => {
 			if (tabs === tab) {
-				document
-					.getElementById(tabs.toLowerCase())
-					.parentElement.classList.add('active');
-			} else
-				document
-					.getElementById(tabs.toLowerCase())
-					.parentElement.classList.remove('active');
+				document.getElementById(tab.toLowerCase()).parentElement.classList.add('active');
+			} else document.getElementById(tabs.toLowerCase()).parentElement.classList.remove('active');
 		});
 		updateTheme();
-		Array.from(
-			document.getElementsByClassName(
-				'settings-sidebar-item'
-			) as HTMLCollectionOf<HTMLElement>
-		).forEach((element) => {
-			if (!element.classList.contains('active'))
-				element.style.background = '';
+		Array.from(document.getElementsByClassName('settings-sidebar-item') as HTMLCollectionOf<HTMLElement>).forEach((element) => {
+			if (!element.classList.contains('active')) element.style.background = '';
 		});
 	};
 
-	document
-		.querySelector('.sidebar-setting-btn')
-		.addEventListener('click', () => {
-			document.querySelector<HTMLElement>('.settings').style.animation =
-				'open-setting 1s forwards';
-			document.querySelector('.settings-sidebar-heading').innerHTML =
-				Translate('Settings');
-			const settingsSidebarItems = document.querySelector(
-				'.settings-sidebar-items'
-			);
-			settingsSidebarItems.innerHTML = '';
+	document.querySelector('.sidebar-setting-btn').addEventListener('click', async () => {
+		document.querySelector<HTMLElement>('.settings').style.animation = 'open-setting 1s forwards';
+		document.querySelector('.settings-sidebar-heading').innerHTML = await Translate('Settings');
+		const settingsSidebarItems = document.querySelector('.settings-sidebar-items');
+		settingsSidebarItems.innerHTML = '';
 
-			settingsItem.map((item) => {
-				const settingsItem = document.createElement('span');
-				settingsItem.classList.add(
-					'settings-sidebar-item',
-					'sidebar-hover-effect'
-				);
-				settingsItem.innerHTML = `<img src="${fileThumbnail(
-					item,
-					'settings',
-					false
-				)}"><span id=${item.toLowerCase()}>${Translate(item)}</span>`;
-				settingsSidebarItems.appendChild(settingsItem);
+		for (const item of settingsItem) {
+			const settingsItem = document.createElement('span');
+			settingsItem.classList.add('settings-sidebar-item', 'sidebar-hover-effect');
+			settingsItem.innerHTML = `<img src="${await fileThumbnail(item, 'settings', false)}"><span id=${item.toLowerCase()}>${await Translate(
+				item
+			)}</span>`;
+			settingsSidebarItems.appendChild(settingsItem);
 
-				settingsItem.addEventListener('click', () => {
-					setActiveTab(item);
-					switch (item) {
-						case 'Appearance':
-							Appearance();
-							break;
-						case 'Preference':
-							Preference();
-							break;
-						case 'About':
-							About();
-							break;
-					}
-				});
+			settingsItem.addEventListener('click', () => {
+				setActiveTab(item);
+				switch (item) {
+					case 'Appearance':
+						Appearance();
+						break;
+					case 'Preference':
+						Preference();
+						break;
+					case 'About':
+						About();
+						break;
+				}
 			});
-			updateTheme();
-			Appearance();
+		}
+		updateTheme();
+		Appearance();
 
-			setActiveTab(defaultTab);
-			document
-				.querySelector('.exit-setting-btn')
-				.addEventListener('click', () => {
-					document.querySelector<HTMLElement>(
-						'.settings'
-					).style.animation = 'close-setting 1s forwards';
-				});
+		setActiveTab(defaultTab);
+		document.querySelector('.exit-setting-btn').addEventListener('click', () => {
+			document.querySelector<HTMLElement>('.settings').style.animation = 'close-setting 1s forwards';
 		});
+	});
 };
 
 export default Setting;

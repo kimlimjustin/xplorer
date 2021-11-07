@@ -97,7 +97,7 @@
 			position: absolute;
 			left: 60px;
 			top: 4px;
-			width: max-content;
+			width: calc(75vw - 60px);
 		}
 
 		.toggle-box {
@@ -151,7 +151,7 @@
 	}
 
 	.settings-about-content {
-		width: 20vw;
+		width: 30vw;
 
 		ul {
 			list-style: none;
