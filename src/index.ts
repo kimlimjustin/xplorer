@@ -10,6 +10,7 @@ import { SelectInit } from './Components/Files/File Operation/select';
 import CLIInformations from './Api/cli';
 import Storage from './Api/storage';
 import Setting from './Components/Setting/setting';
+import ContextMenu from './Components/ContextMenu/contextMenu';
 // Wait DOM Loaded to be loaded
 document.addEventListener('DOMContentLoaded', async () => {
 	// Listen to minimize, maximize, exit and reload button
@@ -47,4 +48,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 	document.getElementById('workspace').dataset.hideHiddenFiles = String(_preference.hideHiddenFiles ?? true);
 	// Initialize settings
 	Setting();
+	// Initialize context menu
+	ContextMenu();
 });

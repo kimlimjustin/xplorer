@@ -1,51 +1,43 @@
-import { Preview } from '../../Files/File Preview/preview';
-import vscodeInstalled from '../../Constants/isVSCodeInstalled';
+//import { Preview } from '../../Files/File Preview/preview';
+import { isVSCodeInstalled } from '../../../Api/app';
 import contextMenuItem from '../../../Typings/contextMenuItem';
-import storage from 'electron-json-storage-sync';
-import { open, openFileWithDefaultApp } from '../../Files/File Operation/open';
 import { createNewTab } from '../../Layout/tab';
-import openInTerminal from '../../Functions/openInTerminal';
+import reveal from '../../../Api/reveal';
 import Cut from '../../Files/File Operation/cut';
 import Copy from '../../Files/File Operation/copy';
 import copyLocation from '../../Files/File Operation/location';
 import Rename from '../../Files/File Operation/rename';
-import {
-	PermanentDelete,
-	Restore,
-	Trash,
-} from '../../Files/File Operation/trash';
+import { PermanentDelete, Trash } from '../../Files/File Operation/trash';
 import Pin from '../../Files/File Operation/pin';
-import Properties from '../../Properties/properties';
+//import Properties from '../../Properties/properties';
 import focusingPath from '../../Functions/focusingPath';
 import Translate from '../../I18n/i18n';
-
+import { OpenDir } from '../../Open/open';
+import FileAPI from '../../../Api/files';
+import Storage from '../../../Api/storage';
 interface Favorites {
 	name: string;
 	path: string;
 }
 
-const FileMenu = (
-	target: HTMLElement,
-	filePath: string
-): contextMenuItem[][] => {
-	const favorites: Favorites[] = storage.get('sidebar')?.data?.favorites;
-	const isPinned =
-		!!favorites?.filter((favorite) => favorite.path === filePath).length ??
-		false;
+const FileMenu = async (target: HTMLElement, filePath: string): Promise<contextMenuItem[][]> => {
+	const favorites: Favorites[] = (await Storage.get('sidebar'))?.favorites;
+	const isPinned = !!favorites?.filter((favorite) => favorite.path === filePath).length ?? false;
+	const _focusingPath = await focusingPath();
 	return [
 		[
 			{
-				menu: Translate('Open'),
+				menu: await Translate('Open'),
 				shortcut: 'Enter',
 				icon: 'open',
 				role: () => {
 					if (target.dataset.isdir !== 'true') {
-						openFileWithDefaultApp(filePath);
-					} else open(filePath);
+						new FileAPI(filePath).openFile();
+					} else OpenDir(filePath);
 				},
 			},
 			{
-				menu: Translate('Open in new tab'),
+				menu: await Translate('Open in new tab'),
 				visible: target?.dataset?.isdir === 'true',
 				icon: 'open in new tab',
 				role: () => {
@@ -53,47 +45,46 @@ const FileMenu = (
 				},
 			},
 			{
-				menu: Translate('Open in terminal'),
+				menu: await Translate('Open in terminal'),
 				visible: target?.dataset?.isdir === 'true',
 				shortcut: 'Alt+T',
 				icon: 'terminal',
 				role: () => {
-					openInTerminal(filePath);
+					reveal(filePath, 'terminal');
 				},
 			},
 			{
-				menu: Translate('Open in VSCcode'),
-				visible: vscodeInstalled,
+				menu: await Translate('Open in VSCcode'),
+				visible: await isVSCodeInstalled(),
 				shortcut: 'Shift+Enter',
 				icon: 'vscode',
 				role: () => {
-					const { execSync } = require('child_process');
-					execSync(`code "${filePath.replaceAll('"', '\\"')}"`);
+					reveal(filePath, 'vscode');
 				},
 			},
-			{
-				menu: Translate('Preview'),
+			/*{
+				menu: await Translate('Preview'),
 				visible: target?.dataset?.isdir !== 'true',
 				shortcut: 'Ctrl+O',
 				icon: 'preview',
 				role: () => Preview(filePath),
-			},
+			},*/
 		],
 		[
 			{
-				menu: Translate('Cut'),
+				menu: await Translate('Cut'),
 				shortcut: 'Ctrl+X',
 				icon: 'cut',
 				role: () => Cut([filePath]),
 			},
 			{
-				menu: Translate('Copy'),
+				menu: await Translate('Copy'),
 				shortcut: 'Ctrl+C',
 				icon: 'copy',
 				role: () => Copy([filePath]),
 			},
 			{
-				menu: Translate('Copy Location Path'),
+				menu: await Translate('Copy Location Path'),
 				shortcut: 'Alt+Shift+C',
 				icon: 'location',
 				role: () => copyLocation(target),
@@ -101,51 +92,46 @@ const FileMenu = (
 		],
 		[
 			{
-				menu: Translate('Rename'),
+				menu: await Translate('Rename'),
 				shortcut: 'F2',
 				icon: 'rename',
 				role: () => Rename(filePath),
 			},
 			{
-				menu: Translate('Delete'),
-				visible: focusingPath() !== 'xplorer://Trash',
+				menu: await Translate('Delete'),
+				visible: _focusingPath !== 'xplorer://Trash',
 				shortcut: 'Del',
 				icon: 'delete',
 				role: () => Trash([filePath]),
 			},
-			{
-				menu: Translate('Restore'),
+			/*{
+				menu: await Translate('Restore'),
 				icon: 'delete',
-				visible: focusingPath() === 'xplorer://Trash',
+				visible: _focusingPath === 'xplorer://Trash',
 				role: () => Restore(filePath),
-			},
+			},*/
 			{
-				menu: Translate('Permanently Delete'),
+				menu: await Translate('Permanently Delete'),
 				icon: 'delete',
-				visible: focusingPath() === 'xplorer://Trash',
+				visible: _focusingPath === 'xplorer://Trash',
 				shortcut: 'Shift+Del',
-				role: () =>
-					PermanentDelete([unescape(target.dataset.realPath)]),
+				role: () => PermanentDelete([unescape(target.dataset.realPath)]),
 			},
 			{
-				menu: Translate(
-					isPinned ? 'Unpin from Sidebar' : 'Pin to Sidebar'
-				),
+				menu: await Translate(isPinned ? 'Unpin from Sidebar' : 'Pin to Sidebar'),
 				shortcut: 'Alt+P',
 				icon: 'pin',
 				role: () => Pin([filePath]),
 			},
 		],
-		[
+		/*[
 			{
-				menu: Translate('Properties'),
+				menu: await Translate('Properties'),
 				shortcut: 'Ctrl+P',
-				icon: target?.dataset?.isdir
-					? 'folder setting'
-					: 'file setting',
+				icon: target?.dataset?.isdir ? 'folder setting' : 'file setting',
 				role: () => Properties(filePath),
 			},
-		],
+		],*/
 	];
 };
 
