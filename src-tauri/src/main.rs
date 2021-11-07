@@ -63,6 +63,7 @@ fn check_vscode_installed() -> Result<bool, String> {
     Ok(false)
   }
 }
+
 fn main() {
   tauri::Builder::default()
     .invoke_handler(tauri::generate_handler![
@@ -77,6 +78,7 @@ fn main() {
       files_api::open_in_vscode,
       files_api::get_trashed_items,
       files_api::delete_file,
+      files_api::get_files_in_directory,
       drives::get_drives,
       storage::write_data,
       storage::read_data,
