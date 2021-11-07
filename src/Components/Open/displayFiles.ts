@@ -56,7 +56,6 @@ const displayFiles = async (
 		files = files.filter((file) => !file.is_system);
 	}
 
-	console.log((preference.imageAsThumbnail ?? 'smalldir') === 'smalldir', files.length);
 	const imageAsThumbnail = (preference.imageAsThumbnail ?? 'smalldir') === 'smalldir' ? files.length < 100 : preference.imageAsThumbnail === 'yes';
 	for (const file of files) {
 		const fileType = getType(file.basename, file.is_dir);
