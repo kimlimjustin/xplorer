@@ -7,6 +7,7 @@ import type FileMetaData from '../../Typings/fileMetaData';
 import { Select } from '../Files/File Operation/select';
 import normalizeSlash from '../Functions/path/normalizeSlash';
 import joinPath from '../Functions/path/joinPath';
+import getDefaultSort from './defaultSort';
 /**
  * Display files into Xplorer main section
  * @param {fileData[]} files - array of files of a directory
@@ -26,7 +27,7 @@ const displayFiles = async (
 	const hideSystemFile = preference?.hideSystemFiles ?? true;
 	const dirAlongsideFiles = preference?.dirAlongsideFiles ?? false;
 	const layout = (await Storage.get('layout'))?.[dir] ?? preference?.layout ?? 'd';
-	const sort = (await Storage.get('sort'))?.[dir] ?? 'A';
+	const sort = (await Storage.get('sort'))?.[dir] ?? (await getDefaultSort(dir)) ?? 'a';
 
 	files = files.sort((a, b) => {
 		switch (sort) {
