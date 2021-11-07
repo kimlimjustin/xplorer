@@ -1,7 +1,4 @@
-import folderConfig, {
-	customThumbnail,
-	defaultThumbnail,
-} from '../../Config/folder.config';
+import folderConfig, { customThumbnail, defaultThumbnail } from '../../Config/folder.config';
 import FileConfig, { IMAGE_TYPES, VIDEO_TYPES } from '../../Config/file.config';
 import getBasename from '../Functions/path/basename';
 import Storage from '../../Api/storage';
@@ -37,24 +34,16 @@ const videoPreview = async (filename: string): Promise<string> => {
  * @param {string} filename - name of the file/folder
  * @param {string} category - category of the file/folder (optional)
  * @param {boolean} HTMLFormat - return with the HTML format (optional)
+ * @param {boolean} imageAsThumbnail - return image as thumbnail (optional)
  * @returns {Promise<string>} the preview of the file/folder
  */
-const fileThumbnail = async (
-	filePath: string,
-	category = 'folder',
-	HTMLFormat = true
-): Promise<string> => {
+const fileThumbnail = async (filePath: string, category = 'folder', HTMLFormat = true, imageAsThumbnail = true): Promise<string> => {
 	const ext = filePath.split('.').pop().toLowerCase(); // Get extension of filename
 	const basename = getBasename(filePath);
 
 	if (IMAGE_TYPES.indexOf(ext) !== -1) {
-		const preference = await Storage.get('preference');
-		const imageAsThumbnail = preference?.imageAsThumbnail ?? true;
 		if (imageAsThumbnail) {
-			return imageThumbnail(
-				new FileAPI(filePath).readAsset(),
-				HTMLFormat
-			);
+			return imageThumbnail(new FileAPI(filePath).readAsset(), HTMLFormat);
 		} else {
 			return imageThumbnail(DEFAULT_IMAGE_THUMBNAIL, HTMLFormat);
 		}
@@ -65,66 +54,40 @@ const fileThumbnail = async (
 
 	const filename = filePath.toLowerCase(); // Lowercase filename
 	if (category === 'contextmenu') {
-		return imageThumbnail(
-			await require(`../../Icon/contextmenu/${filePath + '.svg'}`)
-		);
+		return imageThumbnail(await require(`../../Icon/contextmenu/${filePath + '.svg'}`));
 	}
 
 	if (category === 'file') {
 		for (const fileType of FileConfig()) {
-			if (
-				fileType?.fileNames?.indexOf(basename) !== undefined &&
-				fileType?.fileNames?.indexOf(basename) !== -1
-			) {
+			if (fileType?.fileNames?.indexOf(basename) !== undefined && fileType?.fileNames?.indexOf(basename) !== -1) {
 				const thumbnailPath = fileType.thumbnail?.(filePath);
 				if (thumbnailPath) {
-					return imageThumbnail(
-						require(`../../Icon/${thumbnailPath}`),
-						HTMLFormat
-					);
+					return imageThumbnail(require(`../../Icon/${thumbnailPath}`), HTMLFormat);
 				}
 			}
 		}
 		for (const fileType of FileConfig()) {
-			if (
-				fileType.extension?.indexOf(ext) !== undefined &&
-				fileType.extension?.indexOf(ext) !== -1
-			) {
+			if (fileType.extension?.indexOf(ext) !== undefined && fileType.extension?.indexOf(ext) !== -1) {
 				const thumbnailPath = fileType.thumbnail?.(filePath);
 				if (thumbnailPath) {
-					return imageThumbnail(
-						require(`../../Icon/${thumbnailPath}`),
-						HTMLFormat
-					);
+					return imageThumbnail(require(`../../Icon/${thumbnailPath}`), HTMLFormat);
 				}
 			}
 		}
-		return imageThumbnail(
-			require(`../../Icon/${defaultThumbnail.DEFAULT_FILE_THUMBNAIL}`),
-			HTMLFormat
-		);
+		return imageThumbnail(require(`../../Icon/${defaultThumbnail.DEFAULT_FILE_THUMBNAIL}`), HTMLFormat);
 	} else {
 		if (category !== 'folder') {
 			const _key = `${category}-${filename}`;
 			if (Object.keys(customThumbnail).indexOf(_key) !== -1) {
-				return imageThumbnail(
-					require(`../../Icon/${customThumbnail[_key]}`),
-					HTMLFormat
-				);
+				return imageThumbnail(require(`../../Icon/${customThumbnail[_key]}`), HTMLFormat);
 			}
 		}
 		for (const fldr of folderConfig()) {
 			if (fldr.folderNames?.indexOf(basename) !== -1) {
-				return imageThumbnail(
-					require(`../../Icon/${fldr.thumbnail}`),
-					HTMLFormat
-				);
+				return imageThumbnail(require(`../../Icon/${fldr.thumbnail}`), HTMLFormat);
 			}
 		}
-		return imageThumbnail(
-			require(`../../Icon/${defaultThumbnail.DEFAULT_FOLDER_THUMBNAIL}`),
-			HTMLFormat
-		);
+		return imageThumbnail(require(`../../Icon/${defaultThumbnail.DEFAULT_FOLDER_THUMBNAIL}`), HTMLFormat);
 	}
 };
 

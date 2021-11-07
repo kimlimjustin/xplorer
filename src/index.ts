@@ -9,6 +9,7 @@ import { Shortcut } from './Components/Shortcut/shortcut';
 import { SelectInit } from './Components/Files/File Operation/select';
 import CLIInformations from './Api/cli';
 import Storage from './Api/storage';
+import Setting from './Components/Setting/setting';
 // Wait DOM Loaded to be loaded
 document.addEventListener('DOMContentLoaded', async () => {
 	// Listen to minimize, maximize, exit and reload button
@@ -25,10 +26,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 		Home();
 	} else {
 		let reveal = false;
-		if (
-			cli.flags.indexOf('--reveal') !== -1 ||
-			cli.flags.indexOf('-r') !== -1
-		) {
+		if (cli.flags.indexOf('--reveal') !== -1 || cli.flags.indexOf('-r') !== -1) {
 			reveal = true;
 		}
 		OpenDir(cli.args[0], reveal);
@@ -46,7 +44,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 	SelectInit();
 	// Initialize user preference
 	const _preference = await Storage.get('preference');
-	document.getElementById('workspace').dataset.hideHiddenFiles = String(
-		_preference.hideHiddenFiles
-	);
+	document.getElementById('workspace').dataset.hideHiddenFiles = String(_preference.hideHiddenFiles ?? true);
+	// Initialize settings
+	Setting();
 });

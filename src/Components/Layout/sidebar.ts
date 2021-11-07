@@ -2,7 +2,6 @@ import fileThumbnail from '../Thumbnail/thumbnail';
 import { sidebarDrivesElement } from '../Drives/drives';
 import { updateTheme } from '../Theme/theme';
 import Translate from '../I18n/i18n';
-//import Setting from '../Setting/setting';
 import FavoritesAPI from '../../Api/favorites';
 import DirectoryAPI from '../../Api/directory';
 import Storage from '../../Api/storage';
@@ -35,33 +34,18 @@ const createSidebar = async (): Promise<void> => {
 	// Functions to get favorites element
 	const getFavoritesElement = async (favorites: Favorites[]) => {
 		let favoritesElement = '';
-		const defaultFavoritesList = (await defaultFavorites()).map(
-			(favorite) => favorite.name
-		);
+		const defaultFavoritesList = (await defaultFavorites()).map((favorite) => favorite.name);
 		for (const favorite of favorites) {
-			const isdir = favorite.path.startsWith('xplorer://')
-				? true
-				: await new DirectoryAPI(favorite.path).isDir();
+			const isdir = favorite.path.startsWith('xplorer://') ? true : await new DirectoryAPI(favorite.path).isDir();
 			favoritesElement += `<span data-path = "${
 				favorite.path
 			}" data-isdir="${isdir}" class="sidebar-hover-effect sidebar-item"><img src="${await fileThumbnail(
 				favorite.name,
-				defaultFavoritesList.indexOf(favorite.name) === -1 &&
-					favorite.path !== 'xplorer://Home'
-					? isdir
-						? 'folder'
-						: 'file'
-					: 'sidebar',
+				defaultFavoritesList.indexOf(favorite.name) === -1 && favorite.path !== 'xplorer://Home' ? (isdir ? 'folder' : 'file') : 'sidebar',
 				false
-			)}" alt="${
-				favorite.name
-			} icon"><span class="sidebar-text">${await Translate(
-				favorite.name
-			)}</span></span>`;
+			)}" alt="${favorite.name} icon"><span class="sidebar-text">${await Translate(favorite.name)}</span></span>`;
 		}
-		const result = `<div class="sidebar-nav-item ${
-			sidebar?.hideSection?.favorites ? 'nav-hide-item' : ''
-		}">
+		const result = `<div class="sidebar-nav-item ${sidebar?.hideSection?.favorites ? 'nav-hide-item' : ''}">
         <div class="sidebar-hover-effect">
             <span class="sidebar-nav-item-dropdown-btn" data-section="favorites"><img src="${await fileThumbnail(
 				'Favorites',
@@ -93,9 +77,7 @@ const createSidebar = async (): Promise<void> => {
 				{ name: 'Trash', path: 'xplorer://Trash' }, // eslint-disable-next-line no-mixed-spaces-and-tabs
 		  ];
 	// get drives element
-	const sidebarNavElement = document.querySelector(
-		'#sidebar-nav'
-	) as HTMLDivElement;
+	const sidebarNavElement = document.querySelector('#sidebar-nav') as HTMLDivElement;
 	sidebarNavElement.innerHTML = `
 			${await getFavoritesElement(_favorites)}
 			${await sidebarDrivesElement()}
@@ -106,11 +88,7 @@ const createSidebar = async (): Promise<void> => {
 	const settingBtn = document.querySelector('.sidebar-setting-btn');
 	settingBtn.innerHTML = `
 		<div class="sidebar-setting-btn-inner">
-			<img src="${await fileThumbnail(
-				'setting',
-				'sidebar',
-				false
-			)}" alt="Setting icon" class="sidebar-setting-btn-icon" />
+			<img src="${await fileThumbnail('setting', 'sidebar', false)}" alt="Setting icon" class="sidebar-setting-btn-icon" />
 
 			<span class="sidebar-setting-btn-text">
 				${await Translate('Settings')}
@@ -118,38 +96,25 @@ const createSidebar = async (): Promise<void> => {
 		</div>`;
 
 	// Collapse section
-	sidebarElement
-		.querySelectorAll('.sidebar-nav-item-dropdown-btn')
-		.forEach((btn) => {
-			btn.addEventListener('click', async (e) => {
-				let sidebarNavItem = (e.target as Element).parentNode;
-				while (
-					!(sidebarNavItem as HTMLElement).classList.contains(
-						'sidebar-nav-item'
-					)
-				) {
-					sidebarNavItem = sidebarNavItem.parentNode;
-				}
-				(sidebarNavItem as HTMLElement).classList.toggle(
-					'nav-hide-item'
-				);
+	sidebarElement.querySelectorAll('.sidebar-nav-item-dropdown-btn').forEach((btn) => {
+		btn.addEventListener('click', async (e) => {
+			let sidebarNavItem = (e.target as Element).parentNode;
+			while (!(sidebarNavItem as HTMLElement).classList.contains('sidebar-nav-item')) {
+				sidebarNavItem = sidebarNavItem.parentNode;
+			}
+			(sidebarNavItem as HTMLElement).classList.toggle('nav-hide-item');
 
-				// Save preference into local storage
-				const sidebar = await Storage.get('sidebar');
-				console.log(sidebar);
-				if (!sidebar?.hideSection) sidebar.hideSection = {}; // Initialize if it's not exist
-				sidebar.hideSection[
-					(sidebarNavItem as HTMLElement).querySelector<HTMLElement>(
-						'[data-section]'
-					).dataset.section
-				] = (sidebarNavItem as HTMLElement).classList.contains(
-					'nav-hide-item'
-				);
-				Storage.set('sidebar', sidebar);
-			});
+			// Save preference into local storage
+			const sidebar = await Storage.get('sidebar');
+			console.log(sidebar);
+			if (!sidebar?.hideSection) sidebar.hideSection = {}; // Initialize if it's not exist
+			sidebar.hideSection[(sidebarNavItem as HTMLElement).querySelector<HTMLElement>('[data-section]').dataset.section] = (
+				sidebarNavItem as HTMLElement
+			).classList.contains('nav-hide-item');
+			Storage.set('sidebar', sidebar);
 		});
+	});
 	changeSidebar(sidebarElement);
-	//Setting();
 };
 
 export default createSidebar;

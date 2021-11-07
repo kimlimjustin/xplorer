@@ -25,36 +25,21 @@ const displayFiles = async (
 	const preference = await Storage.get('preference');
 	const hideSystemFile = preference?.hideSystemFiles ?? true;
 	const dirAlongsideFiles = preference?.dirAlongsideFiles ?? false;
-	const layout =
-		(await Storage.get('layout'))?.[dir] ?? preference?.layout ?? 'd';
+	const layout = (await Storage.get('layout'))?.[dir] ?? preference?.layout ?? 'd';
 	const sort = (await Storage.get('sort'))?.[dir] ?? 'A';
 
 	files = files.sort((a, b) => {
 		switch (sort) {
 			case 'A': // A-Z
-				return a.basename.toLowerCase() > b.basename.toLowerCase()
-					? 1
-					: -1;
+				return a.basename.toLowerCase() > b.basename.toLowerCase() ? 1 : -1;
 			case 'Z': // Z-A
-				return a.basename.toLowerCase() < b.basename.toLowerCase()
-					? 1
-					: -1;
+				return a.basename.toLowerCase() < b.basename.toLowerCase() ? 1 : -1;
 			case 'L': // Last Modified
-				return new Date(
-					a.last_modified?.secs_since_epoch ?? a.time_deleted
-				) <
-					new Date(
-						b.last_modified?.secs_since_epoch ?? b.time_deleted
-					)
+				return new Date(a.last_modified?.secs_since_epoch ?? a.time_deleted) < new Date(b.last_modified?.secs_since_epoch ?? b.time_deleted)
 					? 1
 					: -1;
 			case 'F': // First Modified
-				return new Date(
-					a.last_modified?.secs_since_epoch ?? a.time_deleted
-				) >
-					new Date(
-						b.last_modified?.secs_since_epoch ?? b.time_deleted
-					)
+				return new Date(a.last_modified?.secs_since_epoch ?? a.time_deleted) > new Date(b.last_modified?.secs_since_epoch ?? b.time_deleted)
 					? 1
 					: -1;
 			case 'S': // Size
@@ -70,12 +55,11 @@ const displayFiles = async (
 		files = files.filter((file) => !file.is_system);
 	}
 
+	console.log((preference.imageAsThumbnail ?? 'smalldir') === 'smalldir', files.length);
+	const imageAsThumbnail = (preference.imageAsThumbnail ?? 'smalldir') === 'smalldir' ? files.length < 100 : preference.imageAsThumbnail === 'yes';
 	for (const file of files) {
 		const fileType = getType(file.basename, file.is_dir);
-		const preview = await fileThumbnail(
-			file.file_path,
-			file.is_dir ? 'folder' : 'file'
-		);
+		const preview = await fileThumbnail(file.file_path, file.is_dir ? 'folder' : 'file', true, imageAsThumbnail);
 		const fileGrid = document.createElement('div');
 		fileGrid.className = 'file-grid grid-hover-effect file';
 		if (file.is_trash) fileGrid.dataset.isTrash = 'true';
@@ -83,17 +67,11 @@ const displayFiles = async (
 		switch (layout) {
 			case 'm':
 				fileGrid.classList.add('medium-grid-view');
-				displayName =
-					file.basename.length > 30
-						? file.basename.substring(0, 30) + '...'
-						: file.basename;
+				displayName = file.basename.length > 30 ? file.basename.substring(0, 30) + '...' : file.basename;
 				break;
 			case 'l':
 				fileGrid.classList.add('large-grid-view');
-				displayName =
-					file.basename.length > 40
-						? file.basename.substring(0, 40) + '...'
-						: file.basename;
+				displayName = file.basename.length > 40 ? file.basename.substring(0, 40) + '...' : file.basename;
 				break;
 			case 'd':
 				fileGrid.classList.add('detail-view');
@@ -101,54 +79,34 @@ const displayFiles = async (
 				break;
 			default:
 				fileGrid.classList.add('small-grid-view');
-				displayName =
-					file.basename.length > 20
-						? file.basename.substring(0, 20) + '...'
-						: file.basename;
+				displayName = file.basename.length > 20 ? file.basename.substring(0, 20) + '...' : file.basename;
 				break;
 		}
 
 		fileGrid.setAttribute('draggable', 'true');
 		if (!file.is_trash) {
 			fileGrid.dataset.modifiedAt = String(
-				new Date(
-					file.last_modified.secs_since_epoch * 1000
-				).toLocaleString(navigator.language, { hour12: false })
+				new Date(file.last_modified.secs_since_epoch * 1000).toLocaleString(navigator.language, { hour12: false })
 			);
-			fileGrid.dataset.createdAt = String(
-				new Date(file.created.secs_since_epoch * 1000).toLocaleString(
-					navigator.language,
-					{ hour12: false }
-				)
-			);
+			fileGrid.dataset.createdAt = String(new Date(file.created.secs_since_epoch * 1000).toLocaleString(navigator.language, { hour12: false }));
 			fileGrid.dataset.accessedAt = String(
-				new Date(
-					file.last_accessed.secs_since_epoch * 1000
-				).toLocaleString(navigator.language, { hour12: false })
+				new Date(file.last_accessed.secs_since_epoch * 1000).toLocaleString(navigator.language, { hour12: false })
 			);
 		}
 		fileGrid.dataset.isdir = String(file.is_dir);
-		if (file.time_deleted)
-			fileGrid.dataset.trashDeletionDate = String(file.time_deleted);
+		if (file.time_deleted) fileGrid.dataset.trashDeletionDate = String(file.time_deleted);
 		if (file.is_hidden) fileGrid.dataset.hiddenFile = 'true';
-		if (file.is_trash)
-			fileGrid.dataset.realPath = escape(
-				joinPath(file.original_parent, file.basename)
-			);
+		if (file.is_trash) fileGrid.dataset.realPath = escape(joinPath(file.original_parent, file.basename));
 
 		fileGrid.dataset.path = escape(normalizeSlash(file.file_path));
 		fileGrid.innerHTML = `
             ${preview}
             <span class="file-grid-filename" id="file-filename">${displayName}</span>
-			${
-				file.original_parent
-					? `<span class="file-original-parent">${file.original_parent}</span>`
-					: ''
-			}
-			<span class="file-modifiedAt" id="file-timestamp">${new Date(
-				(file.last_modified?.secs_since_epoch ?? file.time_deleted) *
-					1000
-			).toLocaleString(navigator.language, { hour12: false })}</span>
+			${file.original_parent ? `<span class="file-original-parent">${file.original_parent}</span>` : ''}
+			<span class="file-modifiedAt" id="file-timestamp">${new Date((file.last_modified?.secs_since_epoch ?? file.time_deleted) * 1000).toLocaleString(
+				navigator.language,
+				{ hour12: false }
+			)}</span>
             ${
 				file.size > 0 && !file.is_dir
 					? `<span class="file-size" id="file-size">${formatBytes(
@@ -161,13 +119,7 @@ const displayFiles = async (
 		FilesElement.appendChild(fileGrid);
 	}
 	if (options?.reveal) {
-		Select(
-			document.querySelector<HTMLElement>(
-				`.file[data-path="${escape(options?.revealDir)}"]`
-			),
-			false,
-			false
-		);
+		Select(document.querySelector<HTMLElement>(`.file[data-path="${escape(options?.revealDir)}"]`), false, false);
 	}
 
 	OpenLog(dir);
