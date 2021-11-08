@@ -1,5 +1,5 @@
 import DirectoryAPI from '../../Api/directory';
-import { startLoading, stopLoading } from '../Functions/Loading/loading';
+import { startLoading, stopLoading, isLoading } from '../Functions/Loading/loading';
 import { updateTheme } from '../Theme/theme';
 import LAZY_LOAD from '../Functions/lazyLoadingImage';
 import FileAPI from '../../Api/files';
@@ -7,7 +7,7 @@ import changePosition from '../Functions/changePosition';
 import Recent from './recent';
 import Home from '../Layout/home';
 import displayFiles from './displayFiles';
-import { OpenLog } from '../Functions/log';
+import { InfoLog, OpenLog } from '../Functions/log';
 import getDirname from '../Functions/path/dirname';
 import normalizeSlash from '../Functions/path/normalizeSlash';
 import { changeWindowTitle } from '../../Api/window';
@@ -25,7 +25,13 @@ let directoryInfo: DirectoryAPI;
  * @returns {Promise<void>}
  */
 const OpenDir = async (dir: string, reveal?: boolean): Promise<void> => {
-	new DirectoryAPI(await focusingPath()).unlisten();
+	if (isLoading()) {
+		InfoLog(`Something is still loading, refusing to open dir ${dir}`);
+		return;
+	}
+	// Check if the user is just want to reload the current directory
+	const isReload = (await focusingPath()) === dir;
+	if (!isReload) directoryInfo?.unlisten?.();
 	startLoading();
 	changePosition(dir);
 	const MAIN_ELEMENT = document.getElementById('workspace');
@@ -74,10 +80,11 @@ const OpenDir = async (dir: string, reveal?: boolean): Promise<void> => {
 					updateTheme();
 					LAZY_LOAD();
 					changeWindowTitle(getBasename(getDirname(dir)));
+					if (!isReload) directoryInfo.listen(() => reload());
 				}
 			});
 		} else {
-			const directoryInfo = new DirectoryAPI(dir);
+			directoryInfo = new DirectoryAPI(dir);
 			directoryInfo.getFiles().then(async (files) => {
 				if (!files.files.length) {
 					MAIN_ELEMENT.classList.add('empty-dir-notification');
@@ -89,7 +96,7 @@ const OpenDir = async (dir: string, reveal?: boolean): Promise<void> => {
 					updateTheme();
 					LAZY_LOAD();
 					changeWindowTitle(getBasename(dir));
-					directoryInfo.listen(() => reload());
+					if (!isReload) directoryInfo.listen(() => reload());
 				}
 			});
 		}
