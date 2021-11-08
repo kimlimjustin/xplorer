@@ -2,8 +2,8 @@ import joinPath from '../Components/Functions/path/joinPath';
 import normalizeSlash from '../Components/Functions/path/normalizeSlash';
 import { invoke } from '@tauri-apps/api';
 import type FileMetaData from '../Typings/fileMetaData';
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let interval: any;
+import { getCurrent } from '@tauri-apps/api/window';
+let listener: any;
 interface DirectoryData {
 	files: FileMetaData[];
 	number_of_files: number;
@@ -15,7 +15,6 @@ interface DirectoryData {
 class DirectoryAPI {
 	readonly dirName: string;
 	readonly parentDir: string;
-	private _files: string[] = [];
 	files: FileMetaData[];
 	constructor(dirName: string, parentDir?: string) {
 		if (parentDir) {
@@ -67,19 +66,15 @@ class DirectoryAPI {
 	 * @returns {any}
 	 */
 	async listen(cb: () => void): Promise<void> {
-		clearInterval(interval);
-		this._files = await invoke('get_files_in_directory', { dir: this.dirName });
-		interval = setInterval(
-			async () => {
-				const files = (await invoke('get_files_in_directory', { dir: this.dirName })) as string[];
-				if (JSON.stringify(files) !== JSON.stringify(this._files)) {
-					console.log('a');
-					cb();
-				}
-				this._files = files;
-			},
-			this._files.length > 200 ? this._files.length * 5 : 500
-		);
+		invoke('listen_dir', { dir: this.dirName });
+		listener = await getCurrent().listen('changes', (e) => {
+			console.log(e);
+			cb();
+		});
+	}
+	async unlisten(): Promise<void> {
+		listener?.();
+		return getCurrent().emit('unlisten_dir');
 	}
 }
 

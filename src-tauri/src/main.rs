@@ -79,6 +79,7 @@ fn main() {
       files_api::get_trashed_items,
       files_api::delete_file,
       files_api::get_files_in_directory,
+      files_api::listen_dir,
       drives::get_drives,
       storage::write_data,
       storage::read_data,
