@@ -15,7 +15,9 @@ import getBasename from '../Functions/path/basename';
 import { getTrashedFiles } from '../../Api/trash';
 import OS from '../../Api/platform';
 import { reload } from '../Layout/windowManager';
+import focusingPath from '../Functions/focusingPath';
 let platform: string;
+let directoryInfo: DirectoryAPI;
 /**
  * Open a directory on Xplorer
  * @param {string} dir - Dir path to open
@@ -23,6 +25,7 @@ let platform: string;
  * @returns {Promise<void>}
  */
 const OpenDir = async (dir: string, reveal?: boolean): Promise<void> => {
+	new DirectoryAPI(await focusingPath()).unlisten();
 	startLoading();
 	changePosition(dir);
 	const MAIN_ELEMENT = document.getElementById('workspace');
@@ -56,7 +59,7 @@ const OpenDir = async (dir: string, reveal?: boolean): Promise<void> => {
 		Recent();
 	} else {
 		if (reveal) {
-			const directoryInfo = new DirectoryAPI(getDirname(dir));
+			directoryInfo = new DirectoryAPI(getDirname(dir));
 			directoryInfo.getFiles().then(async (files) => {
 				if (!files.files.length) {
 					MAIN_ELEMENT.classList.add('empty-dir-notification');

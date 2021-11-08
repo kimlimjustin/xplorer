@@ -2,8 +2,12 @@ use std::fs;
 use std::path::Path;
 use std::process::Command;
 use std::time::SystemTime;
+extern crate notify;
 extern crate open;
 extern crate trash;
+
+use notify::{raw_watcher, RawEvent, RecursiveMode, Watcher};
+use std::sync::mpsc::channel;
 
 #[cfg(windows)]
 use std::os::windows::prelude::*;
@@ -51,6 +55,12 @@ pub struct FolderInformation {
 #[derive(serde::Serialize)]
 pub struct TrashInformation {
   files: Vec<TrashMetaData>,
+}
+
+#[derive(serde::Serialize)]
+pub struct Event {
+  pub path: String,
+  pub event: String,
 }
 
 fn get_basename(file_path: String) -> String {
@@ -292,4 +302,56 @@ pub fn get_trashed_items() -> Result<TrashInformation, String> {
 #[tauri::command]
 pub fn delete_file(paths: Vec<String>) -> bool {
   trash::delete_all(paths).is_ok()
+}
+
+#[tauri::command]
+pub async fn listen_dir(dir: String, window: tauri::Window) -> Result<String, String> {
+  let (tx, rx) = channel();
+
+  let watcher = std::sync::Arc::new(std::sync::Mutex::new(raw_watcher(tx).unwrap()));
+
+  watcher
+    .lock()
+    .unwrap()
+    .watch(dir.clone(), RecursiveMode::NonRecursive)
+    .unwrap();
+
+  window.once("unlisten_dir", move |_| {
+    watcher.lock().unwrap().unwatch(dir.clone()).unwrap();
+  });
+  loop {
+    match rx.recv() {
+      Ok(RawEvent {
+        path: Some(path),
+        op: Ok(op),
+        ..
+      }) => {
+        //window.emit("changes", path.to_str().unwrap().to_string());
+        let event: String;
+        if op.contains(notify::op::CREATE) {
+          event = "create".to_string();
+        } else if op.contains(notify::op::REMOVE) {
+          event = "remove".to_string();
+        } else if op.contains(notify::op::RENAME) {
+          event = "rename".to_string();
+        } else {
+          event = "unknown".to_string();
+        }
+        if event != "unknown" {
+          window
+            .emit(
+              "changes",
+              Event {
+                path: path.to_str().unwrap().to_string(),
+                event: event,
+              },
+            )
+            .unwrap();
+        }
+        println!("{:?} {:?} {:?}", op, path.clone(), window.label());
+      }
+      Ok(event) => println!("broken event: {:?}", event),
+      Err(e) => break Err(e.to_string()),
+    }
+  }
 }
