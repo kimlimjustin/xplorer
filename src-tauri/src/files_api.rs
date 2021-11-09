@@ -63,6 +63,13 @@ pub struct Event {
   pub event: String,
 }
 
+#[derive(serde::Serialize)]
+pub struct ReturnInformation {
+  pub status: bool,
+  pub message: String,
+  pub request_confirmation: bool,
+}
+
 fn get_basename(file_path: String) -> String {
   Path::new(&file_path)
     .file_name()
@@ -304,48 +311,113 @@ pub fn delete_file(paths: Vec<String>) -> bool {
 }
 
 #[tauri::command]
-pub fn purge_trashes(paths: Vec<String>) -> bool {
-  let mut status = true;
-  for path in paths {
-    let result =
-      trash::os_limited::purge_all(trash::os_limited::list().unwrap().into_iter().filter(|x| {
-        Path::new(&x.id.to_str().unwrap().to_string())
-          .normalize()
-          .unwrap()
-          == Path::new(&path).normalize().unwrap()
-      }));
-    if result.is_err() {
-      status = false;
+pub fn purge_trashes(paths: Vec<String>) -> Result<bool, String> {
+  if cfg!(target_os = "macos") {
+    Err("macOS is not supported currently".into())
+  } else {
+    let mut status = true;
+    for path in paths {
+      let result =
+        trash::os_limited::purge_all(trash::os_limited::list().unwrap().into_iter().filter(|x| {
+          Path::new(&x.id.to_str().unwrap().to_string())
+            .normalize()
+            .unwrap()
+            == Path::new(&path).normalize().unwrap()
+        }));
+      if result.is_err() {
+        status = false;
+      }
     }
+    Ok(status)
   }
-  status
 }
 
 #[tauri::command]
-pub fn restore_trash(original_parent: String, basename: String) -> bool {
-  trash::os_limited::restore_all(trash::os_limited::list().unwrap().into_iter().filter(|x| {
-    (x.name.clone() == basename.clone())
-      && (Path::new(&x.original_parent.clone()).normalize().unwrap()
-        == Path::new(&original_parent).normalize().unwrap())
-  }))
-  .is_ok()
-}
-#[tauri::command]
-pub fn restore_files(paths: Vec<String>) -> bool {
-  let mut status = true;
-  for path in paths {
+pub fn restore_trash(
+  original_parent: String,
+  basename: String,
+) -> Result<ReturnInformation, String> {
+  if cfg!(target_os = "macos") {
+    Ok(ReturnInformation {
+      status: false,
+      message: "macOS is not supported currently".to_string(),
+      request_confirmation: false,
+    })
+  } else {
+    let status = false;
+    let mut status = true;
+    let mut message = String::new();
+    let mut request_confirmation = false;
     let result =
       trash::os_limited::restore_all(trash::os_limited::list().unwrap().into_iter().filter(|x| {
-        Path::new(&x.id.to_str().unwrap().to_string())
-          .normalize()
-          .unwrap()
-          == Path::new(&path).normalize().unwrap()
+        (x.name.clone() == basename.clone())
+          && (Path::new(&x.original_parent.clone()).normalize().unwrap()
+            == Path::new(&original_parent).normalize().unwrap())
       }));
     if result.is_err() {
       status = false;
+      message = result.err().unwrap().to_string();
     }
+    Ok(ReturnInformation {
+      status: status,
+      message: message,
+      request_confirmation: request_confirmation,
+    })
   }
-  status
+}
+#[tauri::command]
+pub fn restore_files(paths: Vec<String>, force: bool) -> Result<ReturnInformation, String> {
+  if cfg!(target_os = "macos") {
+    Ok(ReturnInformation {
+      status: false,
+      message: "macOS is not supported currently".to_string(),
+      request_confirmation: false,
+    })
+  } else {
+    let mut status = true;
+    let mut message = String::new();
+    let mut request_confirmation = false;
+    for path in paths {
+      let trash_items = trash::os_limited::list().unwrap().into_iter().filter(|x| {
+        if Path::new(&x.id.to_str().unwrap().to_string())
+          .normalize()
+          .unwrap()
+          == Path::new(&path).normalize().unwrap()
+        {
+          let target = Path::new(&x.original_parent).join(x.name.clone());
+          if target.clone().exists() {
+            if force {
+              let metadata = fs::metadata(target.clone()).unwrap();
+              if metadata.is_dir() {
+                fs::remove_dir_all(target).unwrap()
+              } else {
+                fs::remove_file(target).unwrap()
+              };
+              true
+            } else {
+              status = false;
+              message = "Target directory with the same name already exist.".to_string();
+              request_confirmation = true;
+              false
+            }
+          } else {
+            fs::create_dir_all(x.original_parent.clone()).is_ok()
+          }
+        } else {
+          false
+        }
+      });
+      let result = trash::os_limited::restore_all(trash_items);
+      if result.is_err() {
+        status = false;
+      }
+    }
+    Ok(ReturnInformation {
+      status: status,
+      message: message,
+      request_confirmation: request_confirmation,
+    })
+  }
 }
 
 #[tauri::command]

@@ -16,7 +16,12 @@ const Restore = async (filePaths: string[]): Promise<void> => {
 	if (!platform) platform = await OS();
 	if (platform === 'darwin') return;
 
-	RestoreFiles(filePaths);
+	const result = await RestoreFiles(filePaths);
+	if (result.request_confirmation) {
+		const confirm = await ConfirmDialog('Something went wrong when trying to restore the file/dir', result.message, 'Yes');
+		if (!confirm) return;
+		RestoreFiles(filePaths, true);
+	}
 	reload();
 };
 
@@ -54,12 +59,12 @@ const Trash = async (filePaths: string[]): Promise<void> => {
  * Restore file from trash by known original parent and basename
  * @param {string} original_parent
  * @param {string} basename
- * @returns {any}
+ * @returns {Promise<any>}
  */
-const RestoreFile = async (original_parent: string, basename: string) => {
+const RestoreFile = async (original_parent: string, basename: string): Promise<void> => {
 	if (!platform) platform = await OS();
 	if (platform === 'darwin') return;
-	RestoreFileAPI(original_parent, basename);
+	await RestoreFileAPI(original_parent, basename);
 };
 
 /**
