@@ -1,65 +1,36 @@
 import { OperationLog } from '../../Functions/log';
 import PromptError from '../../Prompt/error';
 import OS from '../../../Api/platform';
-import { DeleteFiles } from '../../../Api/trash';
+import { DeleteFiles, PurgeFiles, RestoreFiles, RestoreFile as RestoreFileAPI } from '../../../Api/trash';
 import OperationAPI from '../../../Api/operation';
 import ConfirmDialog from '../../Prompt/confirm';
+import { reload } from '../../Layout/windowManager';
 let platform: string;
 
 /**
  * Restore file/folder from trash
- * @param {string} filePath - file you want to restore
- * @returns {void}
+ * @param {string[]} filePath - file you want to restore
+ * @returns {Promise<void>}
  */
-/*const Restore = (filePath: string): void => {
-	let fileInfo;
-	let __uuid;
-	if (
-		fs.existsSync(
-			path.join(INFO_PATH, path.basename(filePath) + '.trashinfo')
-		)
-	) {
-		fileInfo = fs.readFileSync(
-			path.join(INFO_PATH, path.basename(filePath) + '.trashinfo'),
-			'utf8'
-		);
-	} else {
-		fs.readdirSync(INFO_PATH).forEach((info) => {
-			if (
-				unescape(
-					fs
-						.readFileSync(path.join(INFO_PATH, info), 'utf-8')
-						.split('\n')[1]
-						.split('=')[1]
-				) === filePath
-			) {
-				fileInfo = fs.readFileSync(path.join(INFO_PATH, info), 'utf-8');
-				__uuid = info
-					.split('.')
-					.splice(0, info.split('.').length - 1)
-					.join('.');
-			}
-		});
-	}
-	const trashSourcePath = fileInfo.split('\n')[1].split('=')[1];
-	mv(
-		path.join(FILES_PATH, __uuid ?? path.basename(filePath)),
-		unescape(trashSourcePath),
-		(err) => {
-			if (err) ErrorLog(err);
-		}
+const Restore = async (filePaths: string[]): Promise<void> => {
+	if (!platform) platform = await OS();
+	if (platform === 'darwin') return;
+
+	RestoreFiles(filePaths);
+	reload();
+};
+
+const Purge = async (filePaths: string[]): Promise<void> => {
+	if (!platform) platform = await OS();
+	if (platform === 'darwin') return;
+	const confirm = await ConfirmDialog(
+		'Permanently delete file',
+		"Are you sure to permanently delete these files/dirs? This can't be undone.",
+		'Yes'
 	);
-	fs.unlink(
-		path.join(
-			INFO_PATH,
-			__uuid
-				? __uuid + '.trashinfo'
-				: path.basename(filePath) + '.trashinfo'
-		),
-		(err) => {
-			if (err) ErrorLog(err);
-		}
-	);
+	if (!confirm) return;
+	PurgeFiles(filePaths);
+	reload();
 };
 
 /**
@@ -72,14 +43,23 @@ const Trash = async (filePaths: string[]): Promise<void> => {
 	try {
 		DeleteFiles(filePaths);
 	} catch (err) {
-		PromptError(
-			'Failed to delete files/dirs',
-			`Failed to move ` + filePaths.join(', ') + ` to trash. [${err}]`
-		);
+		PromptError('Failed to delete files/dirs', `Failed to move ` + filePaths.join(', ') + ` to trash. [${err}]`);
 	}
 	if (platform !== 'darwin') {
 		OperationLog('delete', filePaths);
 	}
+};
+
+/**
+ * Restore file from trash by known original parent and basename
+ * @param {string} original_parent
+ * @param {string} basename
+ * @returns {any}
+ */
+const RestoreFile = async (original_parent: string, basename: string) => {
+	if (!platform) platform = await OS();
+	if (platform === 'darwin') return;
+	RestoreFileAPI(original_parent, basename);
 };
 
 /**
@@ -99,4 +79,4 @@ const PermanentDelete = async (filePaths: string[]): Promise<void> => {
 	}
 };
 
-export { Trash, PermanentDelete };
+export { Trash, PermanentDelete, Restore, Purge, RestoreFile };

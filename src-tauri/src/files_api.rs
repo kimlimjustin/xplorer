@@ -5,7 +5,7 @@ use std::time::SystemTime;
 extern crate notify;
 extern crate open;
 extern crate trash;
-
+use normpath::PathExt;
 use notify::{raw_watcher, RawEvent, RecursiveMode, Watcher};
 use std::sync::mpsc::channel;
 
@@ -214,7 +214,7 @@ pub fn create_file(file_path: String) -> bool {
 #[tauri::command]
 pub fn open_in_terminal(folder_path: String) {
   if cfg!(target_os = "windows") {
-    let result = Command::new("cmd")
+    Command::new("cmd")
       .args([
         "/C",
         format!(
@@ -226,7 +226,6 @@ pub fn open_in_terminal(folder_path: String) {
       ])
       .output()
       .expect("failed to execute process");
-    println!("{:?}", result);
   } else if cfg!(target_os = "linux") {
     Command::new("sh")
       .arg("-c")
@@ -302,6 +301,51 @@ pub fn get_trashed_items() -> Result<TrashInformation, String> {
 #[tauri::command]
 pub fn delete_file(paths: Vec<String>) -> bool {
   trash::delete_all(paths).is_ok()
+}
+
+#[tauri::command]
+pub fn purge_trashes(paths: Vec<String>) -> bool {
+  let mut status = true;
+  for path in paths {
+    let result =
+      trash::os_limited::purge_all(trash::os_limited::list().unwrap().into_iter().filter(|x| {
+        Path::new(&x.id.to_str().unwrap().to_string())
+          .normalize()
+          .unwrap()
+          == Path::new(&path).normalize().unwrap()
+      }));
+    if result.is_err() {
+      status = false;
+    }
+  }
+  status
+}
+
+#[tauri::command]
+pub fn restore_trash(original_parent: String, basename: String) -> bool {
+  trash::os_limited::restore_all(trash::os_limited::list().unwrap().into_iter().filter(|x| {
+    (x.name.clone() == basename.clone())
+      && (Path::new(&x.original_parent.clone()).normalize().unwrap()
+        == Path::new(&original_parent).normalize().unwrap())
+  }))
+  .is_ok()
+}
+#[tauri::command]
+pub fn restore_files(paths: Vec<String>) -> bool {
+  let mut status = true;
+  for path in paths {
+    let result =
+      trash::os_limited::restore_all(trash::os_limited::list().unwrap().into_iter().filter(|x| {
+        Path::new(&x.id.to_str().unwrap().to_string())
+          .normalize()
+          .unwrap()
+          == Path::new(&path).normalize().unwrap()
+      }));
+    if result.is_err() {
+      status = false;
+    }
+  }
+  status
 }
 
 #[tauri::command]

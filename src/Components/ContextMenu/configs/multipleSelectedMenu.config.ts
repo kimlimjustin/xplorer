@@ -4,11 +4,13 @@ import { isVSCodeInstalled } from '../../../Api/app';
 import { createNewTab } from '../../Layout/tab';
 import Cut from '../../Files/File Operation/cut';
 import Copy from '../../Files/File Operation/copy';
-import { Trash } from '../../Files/File Operation/trash';
+import { Purge, Restore, Trash } from '../../Files/File Operation/trash';
 import Pin from '../../Files/File Operation/pin';
 import Translate from '../../I18n/i18n';
 import reveal from '../../../Api/reveal';
 import focusingPath from '../../Functions/focusingPath';
+import { PurgeFiles, RestoreFiles } from '../../../Api/trash';
+import { reload } from '../../Layout/windowManager';
 
 const MultipleSelectedMenu = async (_: HTMLElement, filePath: string): Promise<contextMenuItem[][]> => {
 	const _focusingPath = await focusingPath();
@@ -73,6 +75,30 @@ const MultipleSelectedMenu = async (_: HTMLElement, filePath: string): Promise<c
 						paths.push(unescape(element.dataset.path));
 					}
 					Trash(paths);
+				},
+			},
+		],
+		[
+			{
+				menu: await Translate('Restore these files'),
+				visible: _focusingPath === 'xplorer://Trash',
+				role: () => {
+					const filePaths = [];
+					for (const element of getSelected()) {
+						filePaths.push(unescape(element.dataset.path));
+					}
+					Restore(filePaths);
+				},
+			},
+			{
+				menu: await Translate('Permanently these files'),
+				visible: _focusingPath === 'xplorer://Trash',
+				role: () => {
+					const filePaths = [];
+					for (const element of getSelected()) {
+						filePaths.push(unescape(element.dataset.path));
+					}
+					Purge(filePaths);
 				},
 			},
 		],
