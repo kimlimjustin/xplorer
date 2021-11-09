@@ -7,7 +7,7 @@ import Cut from '../../Files/File Operation/cut';
 import Copy from '../../Files/File Operation/copy';
 import copyLocation from '../../Files/File Operation/location';
 import Rename from '../../Files/File Operation/rename';
-import { PermanentDelete, Trash } from '../../Files/File Operation/trash';
+import { Purge, Restore, Trash } from '../../Files/File Operation/trash';
 import Pin from '../../Files/File Operation/pin';
 //import Properties from '../../Properties/properties';
 import focusingPath from '../../Functions/focusingPath';
@@ -15,6 +15,7 @@ import Translate from '../../I18n/i18n';
 import { OpenDir } from '../../Open/open';
 import FileAPI from '../../../Api/files';
 import Storage from '../../../Api/storage';
+import { reload } from '../../Layout/windowManager';
 interface Favorites {
 	name: string;
 	path: string;
@@ -104,18 +105,22 @@ const FileMenu = async (target: HTMLElement, filePath: string): Promise<contextM
 				icon: 'delete',
 				role: () => Trash([filePath]),
 			},
-			/*{
+			{
 				menu: await Translate('Restore'),
 				icon: 'delete',
 				visible: _focusingPath === 'xplorer://Trash',
-				role: () => Restore(filePath),
-			},*/
+				role: () => {
+					Restore([unescape(filePath)]);
+				},
+			},
 			{
 				menu: await Translate('Permanently Delete'),
 				icon: 'delete',
 				visible: _focusingPath === 'xplorer://Trash',
 				shortcut: 'Shift+Del',
-				role: () => PermanentDelete([unescape(target.dataset.realPath)]),
+				role: () => {
+					Purge([unescape(filePath)]);
+				},
 			},
 			{
 				menu: await Translate(isPinned ? 'Unpin from Sidebar' : 'Pin to Sidebar'),

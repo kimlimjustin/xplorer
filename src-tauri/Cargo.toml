@@ -23,6 +23,7 @@ open = {version = "2.0"}
 path-absolutize = "3.0.11"
 trash = "2.0.2"
 notify = "4.0.17"
+normpath = "0.3.1"
 
 [features]
 default = [ "custom-protocol" ]

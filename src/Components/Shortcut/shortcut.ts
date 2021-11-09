@@ -21,7 +21,7 @@ import toggleHiddenFiles from '../Functions/toggleHiddenFiles';
 import Rename from '../Files/File Operation/rename';
 import Undo from '../Files/File Operation/undo';
 import Redo from '../Files/File Operation/redo';
-import { Trash, PermanentDelete } from '../Files/File Operation/trash';
+import { Trash, PermanentDelete, Purge } from '../Files/File Operation/trash';
 let selectedAll = true;
 let pauseEnterListener = false;
 /**
@@ -58,14 +58,8 @@ const Shortcut = (): void => {
 		// Open file shorcut (Enter)
 		if (e.key === 'Enter') {
 			for (const selected of getSelected()) {
-				const targetPath =
-					unescape(selected.dataset.path) === 'undefined'
-						? _focusingPath
-						: unescape(selected.dataset.path);
-				if (
-					(await new DirectoryAPI(targetPath).exists()) &&
-					!pauseEnterListener
-				) {
+				const targetPath = unescape(selected.dataset.path) === 'undefined' ? _focusingPath : unescape(selected.dataset.path);
+				if ((await new DirectoryAPI(targetPath).exists()) && !pauseEnterListener) {
 					// Open file in vscode (Shift + Enter)
 					if (e.shiftKey) {
 						reveal(targetPath, 'vscode');
@@ -98,11 +92,7 @@ const Shortcut = (): void => {
 
 		// Open in terminal shortcut (Alt + T)
 		else if (e.altKey && e.key === 't') {
-			const _to_reveal = NormalizeSlash(
-				selectedFilePath && selectedFilePath !== 'undefined'
-					? selectedFilePath
-					: _focusingPath
-			);
+			const _to_reveal = NormalizeSlash(selectedFilePath && selectedFilePath !== 'undefined' ? selectedFilePath : _focusingPath);
 			if (_to_reveal.startsWith('xplorer://')) return;
 			reveal(_to_reveal, 'terminal');
 		}
@@ -139,13 +129,9 @@ const Shortcut = (): void => {
 			} else {
 				const tab = document.getElementById(`tab${tabs.focus}`);
 				tab.parentElement.removeChild(tab);
-				tabs.focusHistory = tabs.focusHistory.filter(
-					(tabIndex: number) => String(tabIndex) !== tabs.focus
-				);
+				tabs.focusHistory = tabs.focusHistory.filter((tabIndex: number) => String(tabIndex) !== tabs.focus);
 				delete tabs.tabs[tabs.focus];
-				tabs.focus = String(
-					tabs.focusHistory[tabs.focusHistory.length - 1]
-				);
+				tabs.focus = String(tabs.focusHistory[tabs.focusHistory.length - 1]);
 				console.log(tabs);
 				Storage.set(`tabs-${windowName}`, tabs);
 			}
@@ -167,10 +153,7 @@ const Shortcut = (): void => {
 			Undo();
 		}
 		// Redo file action (Ctrl+Shift+Z OR Ctrl+Y)
-		else if (
-			(e.ctrlKey && e.shiftKey && e.key === 'Z') ||
-			(e.ctrlKey && e.key === 'y')
-		) {
+		else if ((e.ctrlKey && e.shiftKey && e.key === 'Z') || (e.ctrlKey && e.key === 'y')) {
 			Redo();
 		}
 		// Previous tab shortcut (Alt+Arrow Left)
@@ -186,8 +169,7 @@ const Shortcut = (): void => {
 		// Go to parent directory (Alt + Arrow Up)
 		else if (e.altKey && e.key === 'ArrowUp') {
 			const _dirPath = getDirname(_focusingPath);
-			if (!_focusingPath.startsWith('xplorer://') && _dirPath !== '.')
-				OpenDir(_dirPath);
+			if (!_focusingPath.startsWith('xplorer://') && _dirPath !== '.') OpenDir(_dirPath);
 		}
 
 		// Copy location path (Alt + Shift + C)
@@ -204,14 +186,12 @@ const Shortcut = (): void => {
 			if (e.shiftKey) {
 				const filePaths = [];
 				for (const element of getSelected()) {
-					filePaths.push(
-						_focusingPath === 'xplorer://Trash'
-							? unescape(element.dataset.realPath)
-							: unescape(element.dataset.path)
-					);
+					filePaths.push(_focusingPath === 'xplorer://Trash' ? unescape(element.dataset.realPath) : unescape(element.dataset.path));
 				}
-				PermanentDelete(filePaths);
+				if (_focusingPath === 'xplorer://Trash') Purge(filePaths);
+				else PermanentDelete(filePaths);
 			} else {
+				if (_focusingPath === 'xplorer://Trash') return;
 				const filePaths = [];
 				for (const element of getSelected()) {
 					filePaths.push(unescape(element.dataset.path));
@@ -228,13 +208,8 @@ const Shortcut = (): void => {
 			e.preventDefault();
 			selectedAll = !selectedAll;
 			if (selectedAll) {
-				document
-					.querySelectorAll('.file')
-					.forEach((element) => element.classList.add('selected'));
-			} else
-				document
-					.querySelectorAll('.file')
-					.forEach((element) => element.classList.remove('selected'));
+				document.querySelectorAll('.file').forEach((element) => element.classList.add('selected'));
+			} else document.querySelectorAll('.file').forEach((element) => element.classList.remove('selected'));
 		}
 		// Internal Reload (F5)
 		if (e.key === 'F5') {

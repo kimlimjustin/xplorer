@@ -12,6 +12,7 @@ import reveal from '../../../Api/reveal';
 import Translate from '../../I18n/i18n';
 import New from '../../Functions/new';
 import { isVSCodeInstalled } from '../../../Api/app';
+import { Purge, Restore } from '../../Files/File Operation/trash';
 
 interface Favorites {
 	name: string;
@@ -149,19 +150,35 @@ const BodyMenu = async (target: HTMLElement, filePath: string): Promise<contextM
 		],
 		[
 			{
-				menu: 'Open in Terminal',
+				menu: await Translate('Open in Terminal'),
 				visible: !_focusingPath.startsWith('xplorer://'),
 				shortcut: 'Alt+T',
 				icon: 'terminal',
 				role: () => reveal(filePath, 'terminal'),
 			},
 			{
-				menu: 'Open in VSCode',
+				menu: await Translate('Open in VSCode'),
 				visible: (await isVSCodeInstalled()) && !_focusingPath.startsWith('xplorer://'),
 				shortcut: 'Shift+Enter',
 				icon: 'vscode',
 				role: () => {
 					reveal(filePath, 'vscode');
+				},
+			},
+			{
+				menu: await Translate('Restore all files'),
+				visible: _focusingPath === 'xplorer://Trash',
+				role: () => {
+					const filePaths = [...document.querySelectorAll<HTMLElement>('.file')].map((file) => unescape(file.dataset.path));
+					Restore(filePaths);
+				},
+			},
+			{
+				menu: await Translate('Permanently delete all files'),
+				visible: _focusingPath === 'xplorer://Trash',
+				role: () => {
+					const filePaths = [...document.querySelectorAll<HTMLElement>('.file')].map((file) => unescape(file.dataset.path));
+					Purge(filePaths);
 				},
 			},
 			{
