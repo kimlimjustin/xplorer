@@ -90,7 +90,6 @@
 		"highlight.js": "^11.2.0",
 		"mammoth": "^1.4.18",
 		"marked": "^3.0.2",
-		"moment": "^2.29.1",
 		"xlsx": "^0.17.1"
 	},
 	"optionalDependencies": {}
