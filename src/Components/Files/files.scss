@@ -121,11 +121,11 @@
 	}
 }
 
-[data-hide-hidden-files='true'] [data-hidden-file] {
+[data-hide-hidden-files='true'] [data-is-hidden='true'] {
 	display: none;
 }
 
-[data-hidden-file] .file-grid-preview {
+[data-is-hidden='true'] .file-grid-preview {
 	opacity: 0.5;
 }
 

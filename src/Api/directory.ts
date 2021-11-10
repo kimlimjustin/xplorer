@@ -72,9 +72,21 @@ class DirectoryAPI {
 			cb();
 		});
 	}
+	/**
+	 * Unlisten to previous listener
+	 * @returns {Promise<void>}
+	 */
 	async unlisten(): Promise<void> {
 		listener?.();
 		return getCurrent().emit('unlisten_dir');
+	}
+
+	/**
+	 * Get size of a directory
+	 * @returns {Promise<number>}
+	 */
+	async getSize(): Promise<number> {
+		return await invoke('get_dir_size', { dir: this.dirName });
 	}
 }
 

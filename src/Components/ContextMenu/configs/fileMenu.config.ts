@@ -9,13 +9,12 @@ import copyLocation from '../../Files/File Operation/location';
 import Rename from '../../Files/File Operation/rename';
 import { Purge, Restore, Trash } from '../../Files/File Operation/trash';
 import Pin from '../../Files/File Operation/pin';
-//import Properties from '../../Properties/properties';
+import Properties from '../../Properties/properties';
 import focusingPath from '../../Functions/focusingPath';
 import Translate from '../../I18n/i18n';
 import { OpenDir } from '../../Open/open';
 import FileAPI from '../../../Api/files';
 import Storage from '../../../Api/storage';
-import { reload } from '../../Layout/windowManager';
 interface Favorites {
 	name: string;
 	path: string;
@@ -129,14 +128,14 @@ const FileMenu = async (target: HTMLElement, filePath: string): Promise<contextM
 				role: () => Pin([filePath]),
 			},
 		],
-		/*[
+		[
 			{
 				menu: await Translate('Properties'),
 				shortcut: 'Ctrl+P',
 				icon: target?.dataset?.isdir ? 'folder setting' : 'file setting',
 				role: () => Properties(filePath),
 			},
-		],*/
+		],
 	];
 };
 

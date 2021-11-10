@@ -149,6 +149,29 @@ fn get_file_properties(file_path: String) -> Result<FileMetaData, std::io::Error
 }
 
 #[tauri::command]
+pub async fn get_dir_size(dir: String) -> u64 {
+  let mut total_size: u64 = 0;
+  let mut stack = vec![dir];
+  while let Some(path) = stack.pop() {
+    let entry = fs::read_dir(path);
+    let entry = match entry {
+      Ok(result) => result,
+      Err(e) => continue,
+    };
+    for file in entry {
+      let file = file.unwrap();
+      let metadata = file.metadata().unwrap();
+      if metadata.is_dir() {
+        stack.push(file.path().to_str().unwrap().to_string());
+      } else {
+        total_size += metadata.len();
+      }
+    }
+  }
+  total_size
+}
+
+#[tauri::command]
 pub fn get_file_meta_data(file_path: String) -> Result<FileMetaData, String> {
   let properties = get_file_properties(file_path);
   if properties.is_err() {
@@ -344,10 +367,9 @@ pub fn restore_trash(
       request_confirmation: false,
     })
   } else {
-    let status = false;
     let mut status = true;
     let mut message = String::new();
-    let mut request_confirmation = false;
+    let request_confirmation = false;
     let result =
       trash::os_limited::restore_all(trash::os_limited::list().unwrap().into_iter().filter(|x| {
         (x.name.clone() == basename.clone())
