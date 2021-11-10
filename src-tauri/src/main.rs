@@ -83,6 +83,7 @@ fn main() {
       files_api::restore_files,
       files_api::purge_trashes,
       files_api::restore_trash,
+      files_api::get_dir_size,
       drives::get_drives,
       storage::write_data,
       storage::read_data,

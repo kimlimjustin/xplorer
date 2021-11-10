@@ -62,7 +62,6 @@ const displayFiles = async (
 		const preview = await fileThumbnail(file.file_path, file.is_dir ? 'folder' : 'file', true, imageAsThumbnail);
 		const fileGrid = document.createElement('div');
 		fileGrid.className = 'file-grid grid-hover-effect file';
-		if (file.is_trash) fileGrid.dataset.isTrash = 'true';
 		let displayName: string;
 		switch (layout) {
 			case 'm':
@@ -95,10 +94,14 @@ const displayFiles = async (
 		}
 		fileGrid.dataset.isdir = String(file.is_dir);
 		if (file.time_deleted) fileGrid.dataset.trashDeletionDate = String(file.time_deleted);
-		if (file.is_hidden) fileGrid.dataset.hiddenFile = 'true';
 		if (file.is_trash) fileGrid.dataset.realPath = escape(joinPath(file.original_parent, file.basename));
 
 		fileGrid.dataset.path = escape(normalizeSlash(file.file_path));
+		fileGrid.dataset.isSystem = String(file.is_system);
+		fileGrid.dataset.isTrash = String(file.is_trash);
+		fileGrid.dataset.isDir = String(file.is_dir);
+		fileGrid.dataset.isHidden = String(file.is_hidden);
+		fileGrid.dataset.isReadOnly = String(file.readonly);
 		fileGrid.innerHTML = `
             ${preview}
             <span class="file-grid-filename" id="file-filename">${displayName}</span>

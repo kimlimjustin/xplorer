@@ -22,6 +22,7 @@ import Rename from '../Files/File Operation/rename';
 import Undo from '../Files/File Operation/undo';
 import Redo from '../Files/File Operation/redo';
 import { Trash, PermanentDelete, Purge } from '../Files/File Operation/trash';
+import Properties from '../Properties/properties';
 let selectedAll = true;
 let pauseEnterListener = false;
 /**
@@ -200,7 +201,7 @@ const Shortcut = (): void => {
 			}
 		}
 	};
-	const KeyDownShortcutsHandler = (e: KeyboardEvent) => {
+	const KeyDownShortcutsHandler = async (e: KeyboardEvent) => {
 		// Don't react if cursor is over input field
 		if (document.activeElement.tagName === 'INPUT') return;
 		// Select all shortcut (Ctrl + A)
@@ -210,6 +211,14 @@ const Shortcut = (): void => {
 			if (selectedAll) {
 				document.querySelectorAll('.file').forEach((element) => element.classList.add('selected'));
 			} else document.querySelectorAll('.file').forEach((element) => element.classList.remove('selected'));
+		}
+
+		// File properties (Ctrl+P)
+		else if (e.ctrlKey && e.key === 'p') {
+			e.preventDefault();
+			const selectedFile = getSelected()?.[0];
+			const selectedFilePath = unescape(selectedFile?.dataset?.path);
+			Properties(selectedFilePath === 'undefined' ? await focusingPath() : selectedFilePath);
 		}
 		// Internal Reload (F5)
 		if (e.key === 'F5') {
@@ -287,36 +296,9 @@ import New from '../Functions/new';
 		)
 			return;
 
-		
-		
-		// Cut file shortcut (Ctrl+X)
-		else if (e.ctrlKey && e.key === 'x') {
-			const filePaths = [];
-			for (const element of getSelected()) {
-				filePaths.push(unescape(element.dataset.path));
-			}
-			Cut(filePaths);
-		}
-		// Pin to sidebar shortcut (Alt+P)
-		else if (e.altKey && e.key === 'p') {
-			let filePaths = [];
-			for (const element of getSelected()) {
-				filePaths.push(unescape(element.dataset.path));
-			}
-			if (!filePaths.length) filePaths = [focusingPath()];
-			Pin(filePaths);
-		}
 		// Preview file shortcut (Ctrl+O)
 		else if (e.ctrlKey && e.key === 'o') {
 			Preview(selectedFilePath);
-		}
-		// File properties (Ctrl+P)
-		else if (e.ctrlKey && e.key === 'p') {
-			Properties(
-				selectedFilePath === 'undefined'
-					? focusingPath()
-					: selectedFilePath
-			);
 		}
 		
 	};
