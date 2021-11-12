@@ -1,6 +1,3 @@
-import getType from '../Files/File Type/type';
-import Storage from '../../Api/storage';
-import getFolderSize from 'get-folder-size';
 import formatBytes from '../Functions/filesize';
 import DirectoryAPI from '../../Api/directory';
 /**

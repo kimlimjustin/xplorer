@@ -5,6 +5,7 @@ use std::time::SystemTime;
 extern crate notify;
 extern crate open;
 extern crate trash;
+use crate::file_lib;
 use normpath::PathExt;
 use notify::{raw_watcher, RawEvent, RecursiveMode, Watcher};
 use std::sync::mpsc::channel;
@@ -16,6 +17,7 @@ use std::os::windows::prelude::*;
 pub struct FileMetaData {
   file_path: String,
   basename: String,
+  file_type: String,
   is_dir: bool,
   is_hidden: bool,
   is_file: bool,
@@ -31,6 +33,7 @@ pub struct FileMetaData {
 pub struct TrashMetaData {
   file_path: String,
   basename: String,
+  file_type: String,
   original_parent: String,
   time_deleted: i64,
   is_trash: bool,
@@ -103,8 +106,7 @@ fn check_is_system_file(file_path: String) -> bool {
 fn check_is_system_file(_: String) -> bool {
   false
 }
-
-fn get_file_properties(file_path: String) -> Result<FileMetaData, std::io::Error> {
+async fn get_file_properties(file_path: String) -> Result<FileMetaData, std::io::Error> {
   let metadata = fs::metadata(file_path.clone());
   let metadata = match metadata {
     Ok(result) => result,
@@ -132,6 +134,7 @@ fn get_file_properties(file_path: String) -> Result<FileMetaData, std::io::Error
   let basename = get_basename(file_path.clone());
   let is_hidden = check_is_hidden(file_path.clone());
   let is_system = check_is_system_file(file_path.clone());
+  let file_type = file_lib::get_type(basename.clone(), is_dir).await;
   Ok(FileMetaData {
     is_system,
     is_hidden,
@@ -143,6 +146,7 @@ fn get_file_properties(file_path: String) -> Result<FileMetaData, std::io::Error
     last_accessed,
     created,
     file_path,
+    file_type,
     basename,
     is_trash: false,
   })
@@ -156,7 +160,7 @@ pub async fn get_dir_size(dir: String) -> u64 {
     let entry = fs::read_dir(path);
     let entry = match entry {
       Ok(result) => result,
-      Err(e) => continue,
+      Err(_) => continue,
     };
     for file in entry {
       let file = file.unwrap();
@@ -172,8 +176,8 @@ pub async fn get_dir_size(dir: String) -> u64 {
 }
 
 #[tauri::command]
-pub fn get_file_meta_data(file_path: String) -> Result<FileMetaData, String> {
-  let properties = get_file_properties(file_path);
+pub async fn get_file_meta_data(file_path: String) -> Result<FileMetaData, String> {
+  let properties = get_file_properties(file_path).await;
   if properties.is_err() {
     Err("Error reading meta data".into())
   } else {
@@ -198,7 +202,7 @@ pub async fn read_directory(dir: &Path) -> Result<FolderInformation, String> {
   for path in paths {
     number_of_files += 1;
     let file_name = path.unwrap().path().display().to_string();
-    let file_info = get_file_properties(file_name.clone());
+    let file_info = get_file_properties(file_name.clone()).await;
     if file_info.is_err() {
       skipped_files.push(file_name);
       continue;
@@ -294,14 +298,14 @@ pub fn open_in_vscode(path: String) {
 }
 
 #[tauri::command]
-pub fn get_trashed_items() -> Result<TrashInformation, String> {
+pub async fn get_trashed_items() -> Result<TrashInformation, String> {
   if cfg!(target_os = "macos") {
     Err("macOS is not supported currently".into())
   } else {
     let _trash_items = trash::os_limited::list().map_err(|err| err.to_string())?;
     let mut trash_files = Vec::new();
     for item in _trash_items {
-      let properties = get_file_properties(item.id.to_str().unwrap().to_string());
+      let properties = get_file_properties(item.id.to_str().unwrap().to_string()).await;
       if properties.is_err() {
         continue;
       } else {
@@ -310,6 +314,7 @@ pub fn get_trashed_items() -> Result<TrashInformation, String> {
           file_path: item.id.to_str().unwrap().to_string(),
           basename: item.name.clone(),
           original_parent: item.original_parent.into_os_string().into_string().unwrap(),
+          file_type: properties.file_type,
           time_deleted: item.time_deleted,
           is_trash: true,
           is_dir: properties.is_dir,

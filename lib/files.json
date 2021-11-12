@@ -1,0 +1,234 @@
+[
+	{
+		"extensions": ["js"],
+		"type": "JavaScript"
+	},
+	{
+		"extensions": ["ts"],
+		"type": "TypeScript"
+	},
+	{
+		"extensions": ["html", "htm", "xhtml", "html_vm", "asp"],
+		"type": "HyperText Markup Language"
+	},
+	{
+		"extensions": ["pdf"],
+		"type": "Portable Document Format"
+	},
+	{
+		"extensions": ["doc", "docb", "docm", "dot", "dotm", "docx", "rtf"],
+		"type": "Word Document"
+	},
+	{
+		"extensions": ["xlsx", "xls", "xlsb", "xls", "ods", "fods", "csv"],
+		"type": "Excel Document"
+	},
+	{
+		"extensions": ["pot", "potm", "potx", "ppam", "pps", "ppsm", "ppsx", "ppt", "pptn", "pptx"],
+		"type": "Powerpoint Document"
+	},
+	{
+		"extensions": ["7z", "brotli", "bzip2", "gz", "gzip", "rar", "tgz", "xz", "zip"],
+		"type": "Archive"
+	},
+	{
+		"extensions": ["accdb", "db", "db3", "mdb", "pdb", "pgsql", "pkb", "pks", "postgres", "psql", "sql", "sqlite", "sqlite3"],
+		"type": "Database"
+	},
+	{
+		"extensions": ["bat"],
+		"type": "Batch"
+	},
+	{
+		"extensions": ["exe"],
+		"type": "Executable"
+	},
+	{
+		"extensions": ["cc", "cpp", "cxx", "c++", "cp", "mm", "mii", "ii"],
+		"type": "C++ Program"
+	},
+	{
+		"extensions": ["c"],
+		"type": "C Program"
+	},
+	{
+		"extensions": ["h"],
+		"type": "C Header File"
+	},
+	{
+		"extensions": ["py", "py3"],
+		"type": "Python Program"
+	},
+	{
+		"extensions": ["pyc", "pylintrc", "python-version"],
+		"type": "Python Program"
+	},
+	{
+		"extensions": ["txt"],
+		"type": "Text Document"
+	},
+	{
+		"extensions": "IMAGE_TYPES",
+		"type": "Image"
+	},
+	{
+		"extensions": "VIDEO_TYPES",
+		"type": "Video"
+	},
+	{
+		"extensions": ["deb", "msi", "snap"],
+		"type": "Installer"
+	},
+	{
+		"extensions": ["iso"],
+		"type": "Disk Image File"
+	},
+	{
+		"extensions": ["dockerfile", "dockerignore"],
+		"fileNames": [
+			"dockerfile",
+			"dockerfile.prod",
+			"dockerfile.production",
+			"dockerfile.alpha",
+			"dockerfile.beta",
+			"dockerfile.stage",
+			"dockerfile.staging",
+			"dockerfile.dev",
+			"dockerfile.development",
+			"dockerfile.local",
+			"dockerfile.test",
+			"dockerfile.testing",
+			"dockerfile.ci",
+			"dockerfile.web",
+			"dockerfile.worker",
+			"docker-compose.yml",
+			"docker-compose.override.yml",
+			"docker-compose.prod.yml",
+			"docker-compose.production.yml",
+			"docker-compose.alpha.yml",
+			"docker-compose.beta.yml",
+			"docker-compose.stage.yml",
+			"docker-compose.staging.yml",
+			"docker-compose.dev.yml",
+			"docker-compose.development.yml",
+			"docker-compose.local.yml",
+			"docker-compose.test.yml",
+			"docker-compose.testing.yml",
+			"docker-compose.ci.yml",
+			"docker-compose.web.yml",
+			"docker-compose.worker.yml",
+			"docker-compose.yaml",
+			"docker-compose.override.yaml",
+			"docker-compose.prod.yaml",
+			"docker-compose.production.yaml",
+			"docker-compose.alpha.yaml",
+			"docker-compose.beta.yaml",
+			"docker-compose.stage.yaml",
+			"docker-compose.staging.yaml",
+			"docker-compose.dev.yaml",
+			"docker-compose.development.yaml",
+			"docker-compose.local.yaml",
+			"docker-compose.test.yaml",
+			"docker-compose.testing.yaml",
+			"docker-compose.ci.yaml",
+			"docker-compose.web.yaml",
+			"docker-compose.worker.yaml"
+		],
+		"type": "Docker Image"
+	},
+	{
+		"extensions": ["md", "markdown", "rst"],
+		"type": "Markdown"
+	},
+	{
+		"extensions": ["json", "tsbuildinfo", "json5", "jsonl", "ndjson"],
+		"type": "JavaScript Object Notation"
+	},
+	{
+		"type": "Git",
+		"fileNames": [".gitignore", ".gitignore_global", ".gitconfig", ".gitattributes", ".gitmodules", ".gitkeep", "git-history"]
+	},
+	{
+		"extensions": ["yml", "yaml"],
+		"type": "Yet Anoter Markup Language"
+	},
+	{
+		"fileNames": [".prettierignore", ".prettierrc.json"],
+		"type": "Prettier configuration file"
+	},
+	{
+		"fileNames": ["binding.gyp"],
+		"type": "Node JS C++ Binding"
+	},
+	{
+		"fileNames": ["LICENSE", "LICENSE.md", "LICENSE.txt"],
+		"type": "License"
+	},
+	{
+		"fileNames": [
+			"copying",
+			"copying.md",
+			"copying.txt",
+			"copyright",
+			"copyright.txt",
+			"copyright.md",
+			"license",
+			"license.md",
+			"license.txt",
+			"licence",
+			"licence.md",
+			"licence.txt"
+		],
+		"extensions": ["cer", "cert", "crt"],
+		"type": "Certificate"
+	},
+	{
+		"extensions": [
+			"ini",
+			"dlc",
+			"dll",
+			"config",
+			"conf",
+			"properties",
+			"prop",
+			"settings",
+			"option",
+			"props",
+			"toml",
+			"prefs",
+			"sln.dotsettings",
+			"sln.dotsettings.user",
+			"cfg"
+		],
+		"fileNames": [".jshintignore", ".buildignore", ".mrconfig", ".yardopts", "manifest.mf", ".clang-format", ".clang-tidy"],
+		"type": "Settings"
+	},
+	{
+		"type": "Visual Studio",
+		"extensions": ["csproj", "ruleset", "sln", "suo", "vb", "vbs", "vcxitems", "vcxitems.filters", "vcxproj", "vcxproj.filters"]
+	},
+	{
+		"extensions": ["go"],
+		"type": "Go Program"
+	},
+	{
+		"extensions": ["java", "jsp"],
+		"type": "Java Program"
+	},
+	{
+		"extensions": ["jsx"],
+		"type": "React Program"
+	},
+	{
+		"extensions": ["tsx"],
+		"type": "Typescript React Program"
+	},
+	{
+		"extensions": ["psd"],
+		"type": "Photoshop"
+	},
+	{
+		"type": "Yarn Package Manager",
+		"fileNames": [".yarnrc", "yarn.lock", ".yarnclean", ".yarn-integrity", "yarn-error.log", ".yarnrc.yml", ".yarnrc.yaml"]
+	}
+]

@@ -2,7 +2,6 @@ import { OpenLog } from '../Functions/log';
 import Storage from '../../Api/storage';
 import fileThumbnail from '../Thumbnail/thumbnail';
 import formatBytes from '../Functions/filesize';
-import getType from '../Files/File Type/type';
 import type FileMetaData from '../../Typings/fileMetaData';
 import { Select } from '../Files/File Operation/select';
 import normalizeSlash from '../Functions/path/normalizeSlash';
@@ -20,7 +19,6 @@ const displayFiles = async (
 	dir: string,
 	onElement?: HTMLElement,
 	options?: { reveal: boolean; revealDir: string }
-	//options?: { reveal: boolean; initialDirToOpen: string }
 ): Promise<HTMLElement> => {
 	const FilesElement = onElement ?? document.createElement('div');
 	const preference = await Storage.get('preference');
@@ -46,7 +44,7 @@ const displayFiles = async (
 			case 'S': // Size
 				return a.size > b.size ? 1 : -1;
 			case 'T':
-				return getType(a.basename) > getType(b.basename) ? 1 : -1;
+				return a.file_type > b.file_type ? 1 : -1;
 		}
 	});
 	if (!dirAlongsideFiles) {
@@ -58,7 +56,7 @@ const displayFiles = async (
 
 	const imageAsThumbnail = (preference.imageAsThumbnail ?? 'smalldir') === 'smalldir' ? files.length < 100 : preference.imageAsThumbnail === 'yes';
 	for (const file of files) {
-		const fileType = getType(file.basename, file.is_dir);
+		const fileType = file.file_type;
 		const preview = await fileThumbnail(file.file_path, file.is_dir ? 'folder' : 'file', true, imageAsThumbnail);
 		const fileGrid = document.createElement('div');
 		fileGrid.className = 'file-grid grid-hover-effect file';

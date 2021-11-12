@@ -3,6 +3,7 @@
   windows_subsystem = "windows"
 )]
 mod drives;
+mod file_lib;
 mod files_api;
 mod storage;
 use std::env;
@@ -88,6 +89,7 @@ fn main() {
       storage::write_data,
       storage::read_data,
       storage::delete_storage_data,
+      //file_lib::get_type,
       get_cli_args,
       check_vscode_installed
     ])

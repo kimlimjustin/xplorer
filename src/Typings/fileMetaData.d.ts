@@ -6,6 +6,7 @@ interface SystemTime {
 interface FileMetaData {
 	file_path: string;
 	basename: string;
+	file_type: string;
 	original_parent?: string;
 	time_deleted?: number;
 	is_trash: boolean;

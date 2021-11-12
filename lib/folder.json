@@ -1,0 +1,62 @@
+[
+	{
+		"folderNames": [".git", "git", "patch"],
+		"type": "Version Control System"
+	},
+	{
+		"folderNames": ["node_modules"],
+		"type": "Node Package Modules"
+	},
+	{
+		"folderNames": ["bower_components"],
+		"type": "Bower Package Modules"
+	},
+	{
+		"folderNames": ["vendor"],
+		"type": "Vendor"
+	},
+	{
+		"folderNames": ["webpack"],
+		"type": "Webpack"
+	},
+	{
+		"folderNames": [".github"],
+		"type": "GitHub Configuration"
+	},
+	{
+		"folderNames": [".husy"],
+		"type": "Husky Configuration"
+	},
+	{
+		"folderNames": [".vscode"],
+		"type": "Visual Studio Code Configuration"
+	},
+	{
+		"folderNames": [".vs"],
+		"type": "Visual Studio Configuration"
+	},
+	{
+		"folderNames": ["__pycache__"],
+		"type": "Python Cache"
+	},
+	{
+		"folderNames": [".idea"],
+		"type": "IntelliJ IDEA Configuration"
+	},
+	{
+		"folderNames": ["archival", "archive", "archives", "backup", "backups"],
+		"type": "Archived"
+	},
+	{
+		"folderNames": ["asset", "assets", "report", "reports", "res", "resources", "resource", "src", "static"],
+		"type": "Resources"
+	},
+	{
+		"folderNames": ["bin", "dist", "build", "out", "outs", "release"],
+		"type": "Packaged Distributions"
+	},
+	{
+		"folderNames": ["database", "data", "db", "databases"],
+		"type": "Database"
+	}
+]
