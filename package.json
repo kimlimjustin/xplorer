@@ -38,7 +38,8 @@
 		"build": "tauri build",
 		"native_build": "node-gyp rebuild",
 		"install": "node scripts/install.js",
-		"postinstall": "husky install"
+		"postinstall": "husky install",
+		"fakefiles": "python scripts/generate-fake-files.py 1000"
 	},
 	"keywords": [
 		"Xplorer",
