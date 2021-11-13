@@ -4,6 +4,8 @@ import Translate from '../I18n/i18n';
 import windowName from '../../Api/window';
 import { OpenDir } from '../Open/open';
 import { close } from './windowManager';
+import basename from '../Functions/path/basename';
+import Home from './home';
 /**
  * Function to create new tab
  * @param {string} path - path to be focused on the new tab
@@ -17,49 +19,17 @@ const createNewTab = async (path?: string): Promise<void> => {
 	const newTab = document.createElement('div');
 	newTab.classList.add('tab');
 	newTab.classList.add('tab-hover-effect');
-	newTab.innerHTML = `<span id='tab-position'>${await Translate(
-		'Home'
-	)}</span><span class='close-tab-btn'>&times;</span>`;
+	newTab.innerHTML = `<span id='tab-position'>${await Translate('Home')}</span><span class='close-tab-btn'>&times;</span>`;
 	tabsInfo.latestIndex += 1;
 	newTab.dataset.tabIndex = tabsInfo.latestIndex;
 	newTab.id = `tab${tabsInfo.latestIndex}`;
 
 	updateTheme(); // Update the theme
-	// Listen to close tab button
-	newTab
-		.querySelector('.close-tab-btn')
-		.addEventListener('click', async (e) => {
-			e.stopPropagation();
-			// Close the window if user close the only tab
-			if (document.querySelectorAll('.tab').length === 1) {
-				close();
-			} else {
-				const tabs = await Storage.get(`tabs-${windowName}`);
-				tabs.focusHistory = tabs.focusHistory.filter(
-					(tabIndex: number) =>
-						String(tabIndex) !== String(newTab.dataset.tabIndex)
-				);
-				if (String(tabsInfo.focus) === String(newTab.dataset.tabIndex))
-					tabs.focus = String(
-						tabs.focusHistory[tabs.focusHistory.length - 1]
-					);
-				delete tabs.tabs[newTab.dataset.tabIndex];
-				Storage.set(`tabs-${windowName}`, tabs);
-				newTab.parentElement.removeChild(newTab);
-
-				OpenDir(tabs.tabs[tabs.focus].position);
-			}
-		});
 	createNewTabElement.parentElement.insertBefore(newTab, createNewTabElement); // Insert the new tab
-	(newTab.parentNode as HTMLElement).scrollLeft =
-		window.pageXOffset +
-		newTab.getBoundingClientRect().left +
-		newTab.offsetWidth; // Scroll the tabs scrollbar
+	(newTab.parentNode as HTMLElement).scrollLeft = window.pageXOffset + newTab.getBoundingClientRect().left + newTab.offsetWidth; // Scroll the tabs scrollbar
 
 	// Scroll the tab to the right end
-	(newTab.parentNode as HTMLElement).scrollLeft = (
-		newTab.parentNode as HTMLElement
-	).scrollWidth;
+	(newTab.parentNode as HTMLElement).scrollLeft = (newTab.parentNode as HTMLElement).scrollWidth;
 
 	// Edit tabs information
 	tabsInfo.tabs[String(tabsInfo.latestIndex)] = {
@@ -73,7 +43,8 @@ const createNewTab = async (path?: string): Promise<void> => {
 
 	OpenDir(path || 'xplorer://Home');
 
-	newTab.addEventListener('click', () => {
+	newTab.addEventListener('click', (e) => {
+		if ((e.target as HTMLElement).classList.contains('close-tab-btn')) return;
 		SwitchTab(newTab.dataset.tabIndex);
 	});
 	return;
@@ -112,19 +83,18 @@ const goBack = async (): Promise<void> => {
 const goForward = async (): Promise<void> => {
 	const tabs = await Storage.get(`tabs-${windowName}`);
 	const _focusingTab = tabs.tabs[tabs.focus];
-	if (
-		_focusingTab.currentIndex >= 0 &&
-		_focusingTab.history?.[_focusingTab.currentIndex + 1]
-	) {
+	if (_focusingTab.currentIndex >= 0 && _focusingTab.history?.[_focusingTab.currentIndex + 1]) {
 		OpenDir(_focusingTab.history[_focusingTab.currentIndex + 1]);
 	}
 };
 /**
  * Tab initiliazer function
+ * @param {boolean} reveal - is the window opened in reveal mode
  * @returns {Promise<void>}
  */
-const Tab = async (): Promise<void> => {
-	const tabsInfo = {
+const Tab = async (reveal = false): Promise<void> => {
+	const _preference = await Storage.get('preference');
+	const defaultTabsInfo = {
 		focus: '1',
 		tabs: {
 			1: {
@@ -136,8 +106,51 @@ const Tab = async (): Promise<void> => {
 		focusHistory: [1],
 		latestIndex: 1,
 	}; // default tabs information
-	// Store default tabs information into local storage
-	Storage.set(`tabs-${windowName}`, tabsInfo);
+	if (_preference.on_startup === 'new') {
+		// Store default tabs information into local storage
+		Storage.set(`tabs-${windowName}`, defaultTabsInfo);
+	} else {
+		const tabsInfo = await Storage.get(`tabs-${windowName}`);
+		if (!tabsInfo.tabs || reveal) {
+			Storage.set(`tabs-${windowName}`, defaultTabsInfo);
+			Home();
+		} else {
+			let _first = true;
+			const createNewTabElement = document.querySelector('.create-new-tab');
+			for (const index in Object.keys(tabsInfo.tabs)) {
+				if (_first) {
+					if (Object.keys(tabsInfo.tabs).length > 1) {
+						const tabIndex = Object.keys(tabsInfo.tabs)[index];
+						const tabPosition = tabsInfo.tabs[Object.keys(tabsInfo.tabs)[index]].position;
+						document.querySelector('#tab1').id = `tab${tabIndex}`;
+						document.getElementById(`tab${tabIndex}`).querySelector<HTMLInputElement>('#tab-position').innerText = await Translate(
+							basename(tabPosition) === '' ? tabPosition : basename(tabPosition)
+						);
+					} else {
+						document.querySelector('#tab1').id = `tab${Object.keys(tabsInfo.tabs)[index]}`;
+						await OpenDir(tabsInfo.tabs[Object.keys(tabsInfo.tabs)[index]].position, false, true);
+					}
+					_first = false;
+				} else {
+					const tabIndex = Object.keys(tabsInfo.tabs)[index];
+					const tabPosition = tabsInfo.tabs[Object.keys(tabsInfo.tabs)[index]].position;
+					const newTab = document.createElement('div');
+					newTab.classList.add('tab');
+					newTab.classList.add('tab-hover-effect');
+					newTab.innerHTML = `<span id='tab-position'>${await Translate('Home')}</span><span class='close-tab-btn'>&times;</span>`;
+					newTab.dataset.tabIndex = tabIndex;
+					newTab.id = `tab${tabIndex}`;
+
+					createNewTabElement.parentElement.insertBefore(newTab, createNewTabElement); // Insert the new tab
+					OpenDir(tabPosition ?? 'xplorer://Home');
+					document.getElementById(`tab${tabIndex}`).querySelector<HTMLInputElement>('#tab-position').innerText = await Translate(
+						basename(tabPosition) === '' ? tabPosition : basename(tabPosition)
+					);
+				}
+			}
+			updateTheme(); // Update the theme
+		}
+	}
 
 	const arrayOfTabs = document.querySelectorAll<HTMLElement>('.tab');
 	// Add close tab button
@@ -145,40 +158,38 @@ const Tab = async (): Promise<void> => {
 		const tab = arrayOfTabs[index];
 		const closeTab = document.createElement('span');
 		closeTab.innerHTML = '&times;';
-		tab.dataset.tabIndex = String(index + 1);
+		tab.dataset.tabIndex = String(parseInt(tab.id.replace('tab', ''))) || '1';
 		closeTab.classList.add('close-tab-btn');
-		// Listen to close tab button
-		closeTab.addEventListener('click', async (e) => {
-			e.stopPropagation();
-			// Close the window if user close the only tab
-			if (document.querySelectorAll('.tab').length === 1) {
-				close();
-			} else {
-				tab.parentElement.removeChild(tab);
-				const tabs = await Storage.get(`tabs-${windowName}`);
-				tabs.focusHistory = tabs.focusHistory.filter(
-					(tabIndex: number) => tabIndex !== index + 1
-				);
-				tabs.focus = String(
-					tabs.focusHistory[tabs.focusHistory.length - 1]
-				);
-				delete tabs.tabs[index + 1];
-				Storage.set(`tabs-${windowName}`, tabs);
-
-				OpenDir(tabs.tabs[tabs.focus].position);
-			}
-		});
 		tab.appendChild(closeTab);
 
-		tab.querySelector<HTMLElement>('#tab-position').innerText =
-			await Translate(
-				tab.querySelector<HTMLElement>('#tab-position').innerText
-			);
+		tab.querySelector<HTMLElement>('#tab-position').innerText = await Translate(tab.querySelector<HTMLElement>('#tab-position').innerText);
 
-		tab.addEventListener('click', () => {
+		tab.addEventListener('click', (e) => {
+			if ((e.target as HTMLElement).classList.contains('close-tab-btn')) return;
 			SwitchTab(index + 1);
 		});
 	}
+
+	document.addEventListener('click', async (e) => {
+		if ((e.target as HTMLElement).classList.contains('close-tab-btn')) {
+			e.stopPropagation();
+			// Close the window if user close the only tab
+			if (document.querySelectorAll('.tab').length === 1) {
+				Storage.remove(`tabs-${windowName}`);
+				close();
+			} else {
+				const tab = (e.target as HTMLElement).parentNode as HTMLElement;
+				const index = parseInt(tab.dataset.tabIndex);
+				tab.parentElement.removeChild(tab);
+				const tabs = await Storage.get(`tabs-${windowName}`);
+				tabs.focusHistory = tabs.focusHistory.filter((tabIndex: number) => tabIndex !== index);
+				tabs.focus = String(tabs.focusHistory[tabs.focusHistory.length - 1]);
+				delete tabs.tabs[index];
+				Storage.set(`tabs-${windowName}`, tabs);
+				OpenDir(tabs.tabs[tabs.focus].position);
+			}
+		}
+	});
 
 	const createNewTabElement = document.querySelector('.create-new-tab');
 
@@ -192,12 +203,8 @@ const Tab = async (): Promise<void> => {
 			: (document.querySelector('.tabs-manager').scrollLeft -= 25);
 	});
 
-	document
-		.getElementById('go-back')
-		.addEventListener('click', () => goBack());
-	document
-		.getElementById('go-forward')
-		.addEventListener('click', () => goForward());
+	document.getElementById('go-back').addEventListener('click', () => goBack());
+	document.getElementById('go-forward').addEventListener('click', () => goForward());
 };
 
 export { Tab, createNewTab, goBack, goForward };

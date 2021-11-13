@@ -14,18 +14,23 @@ import ContextMenu from './Components/ContextMenu/contextMenu';
 import Hover from './Components/Layout/hover';
 // Wait DOM Loaded to be loaded
 document.addEventListener('DOMContentLoaded', async () => {
+	// Read user preferences
+	const _preference = await Storage.get('preference');
 	// Listen to minimize, maximize, exit and reload button
 	windowManager();
 	// Initialize drive detection
 	detectDriveInit();
 	// Build sidebar
 	createSidebar();
-	// Initialize Tabs
-	Tab();
 	// Initialize folder to open
 	const cli = await CLIInformations();
 	if (!cli.args.length) {
-		Home();
+		if (_preference.on_startup === 'new') {
+			Home();
+		}
+		// Initialize Tabs
+
+		Tab();
 	} else {
 		let reveal = false;
 		if (cli.flags.indexOf('--reveal') !== -1 || cli.flags.indexOf('-r') !== -1) {
@@ -35,6 +40,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 		for (let i = 1; i < cli.args.length; i++) {
 			createNewTab(cli.args[i]);
 		}
+
+		// Initialize Tabs
+		Tab(reveal);
 	}
 	// Update the page styling
 	updateTheme();
@@ -45,7 +53,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 	// Initialize select files listener
 	SelectInit();
 	// Initialize user preference
-	const _preference = await Storage.get('preference');
 	document.getElementById('workspace').dataset.hideHiddenFiles = String(_preference.hideHiddenFiles ?? true);
 	// Initialize settings
 	Setting();

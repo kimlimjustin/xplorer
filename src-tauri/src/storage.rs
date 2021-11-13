@@ -9,16 +9,17 @@ pub struct StorageData {
 }
 
 #[tauri::command]
-pub fn write_data(key: String, data: String) {
+pub fn write_data(key: String, data: String) -> bool {
   let storage_dir = Path::new(&local_data_dir().unwrap()).join("Xplorer");
-  match fs::create_dir_all(storage_dir.clone()) {
-    Ok(..) => {}
-    Err(..) => {}
-  }
-  match fs::write(storage_dir.join(key), data) {
-    Ok(..) => {}
-    Err(..) => {}
+  let mut result = match fs::create_dir_all(storage_dir.clone()) {
+    Ok(..) => true,
+    Err(..) => false,
   };
+  result = match fs::write(storage_dir.join(key), data) {
+    Ok(..) => true && result,
+    Err(..) => false,
+  };
+  result
 }
 
 #[tauri::command]

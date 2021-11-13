@@ -64,7 +64,6 @@ const OpenLog = async (path: String): Promise<void> => {
 	const log = await Storage.get('log');
 	let openLog = log?.opens ?? [];
 	log.opens = [...openLog, { path, timestamp: new Date() }];
-	console.log(log);
 	Storage.set('log', log);
 };
 

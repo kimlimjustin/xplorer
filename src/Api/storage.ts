@@ -9,7 +9,7 @@ import { invoke } from '@tauri-apps/api';
  * @returns {Promise<void>}
  */
 const set = async (key: string, data: any): Promise<void> => {
-	await invoke('write_data', { key, data: JSON.stringify(data) });
+	return await invoke('write_data', { key, data: JSON.stringify(data) });
 };
 
 /**

@@ -51,9 +51,9 @@ const goParentDir = async (): Promise<void> => {
 
 /**
  * Window manager initializer function
- * @returns {void}
+ * @returns {Promise<void>}
  */
-const windowManager = (): void => {
+const windowManager = async (): Promise<void> => {
 	// Minimize the screen
 	document.querySelector('#minimize').addEventListener('click', minimize);
 	// Maximize the screen
@@ -69,8 +69,10 @@ const windowManager = (): void => {
 	document.querySelector('.path-navigator').addEventListener('change', (event: Event & { target: HTMLInputElement }) => {
 		OpenDir(event.target.value);
 	});
+	const _preference = await Storage.get('preference');
+	console.log(_preference);
 	listenWindowClose().then(() => {
-		Storage.remove(`tabs-${windowName}`);
+		if (_preference.on_startup === 'new') Storage.remove(`tabs-${windowName}`);
 		Storage.remove(`operations-${windowName}`);
 		Storage.remove('clipboard');
 	});
