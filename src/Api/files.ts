@@ -1,6 +1,7 @@
 import { fs, invoke, tauri } from '@tauri-apps/api';
 import joinPath from '../Components/Functions/path/joinPath';
 import dirname from '../Components/Functions/path/dirname';
+import FileMetaData from '../Typings/fileMetaData';
 
 /** Invoke Rust command to handle files */
 class FileAPI {
@@ -23,9 +24,7 @@ class FileAPI {
 	 */
 	readFile(): Promise<string> {
 		return new Promise((resolve) => {
-			fs.readTextFile(this.fileName).then((fileContent) =>
-				resolve(fileContent)
-			);
+			fs.readTextFile(this.fileName).then((fileContent) => resolve(fileContent));
 		});
 	}
 	/**
@@ -67,6 +66,23 @@ class FileAPI {
 			dirPath: dirname(this.fileName),
 		});
 		return await invoke('create_file', { filePath: this.fileName });
+	}
+	/**
+	 * Read properties of a file
+	 * @returns {Promise<FileMetaData>}
+	 */
+	async properties(): Promise<FileMetaData> {
+		return await invoke('get_file_properties', { filePath: this.fileName });
+	}
+
+	/**
+	 * Check if given path is directory
+	 * @returns {Promise<boolean>}
+	 */
+	async isDir(): Promise<boolean> {
+		return new Promise((resolve) => {
+			invoke('is_dir', { path: this.fileName }).then((result: boolean) => resolve(result));
+		});
 	}
 }
 

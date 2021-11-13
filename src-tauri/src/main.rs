@@ -85,11 +85,11 @@ fn main() {
       files_api::purge_trashes,
       files_api::restore_trash,
       files_api::get_dir_size,
+      files_api::get_file_properties,
       drives::get_drives,
       storage::write_data,
       storage::read_data,
       storage::delete_storage_data,
-      //file_lib::get_type,
       get_cli_args,
       check_vscode_installed
     ])
