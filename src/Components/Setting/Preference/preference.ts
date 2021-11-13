@@ -19,12 +19,14 @@ const Preference = async (): Promise<void> => {
 	const hideSystemFiles = _preference?.hideSystemFiles ?? true;
 	const dirAlongsideFiles = _preference?.dirAlongsideFiles ?? false;
 	const settingsMain = document.querySelector('.settings-main');
+	const on_startup = _preference?.on_startup ?? 'new';
 
 	const appLanguage_i18n = await Translate('App Language');
 	const fileAndFolders_i18n = await Translate('Files and Folders');
 	const hideHiddenFiles_i18n = await Translate('Hide hidden files');
 	const hideSystemFiles_i18n = await Translate('Hide system files');
 	const dirAlongsideFiles_i18n = await Translate('List and sort directories alongside files');
+	const on_startup_i18n = await Translate('On startup');
 	const preferencePage = `<h3 class="settings-title">${appLanguage_i18n}</h3>
 	<select name="language">
 	${Object.keys(localesData.AVAILABLE_LOCALES)
@@ -57,7 +59,12 @@ const Preference = async (): Promise<void> => {
 			<span class="toggle-slider"></span>
 			<span class="toggle-label">${dirAlongsideFiles_i18n}</span>
 		</label>
-	</div>`;
+	</div>
+	<h3 class="settings-title">${on_startup_i18n}</h3>
+	<select name="on_startup">
+		<option ${on_startup === 'new' ? 'selected' : ''} value="new">New tab</option>
+		<option ${on_startup === 'continue' ? 'selected' : ''} value="continue">Continue previous session</option>
+	</select>`;
 	settingsMain.innerHTML = preferencePage;
 	settingsMain.querySelector(`[name="language"]`).addEventListener('change', async (event: Event & { target: HTMLInputElement }) => {
 		const preference = await Storage.get('preference');
@@ -83,6 +90,12 @@ const Preference = async (): Promise<void> => {
 	settingsMain.querySelector(`[name="dirAlongsideFiles"]`).addEventListener('change', async (event: Event & { target: HTMLInputElement }) => {
 		const preference = await Storage.get('preference');
 		preference.dirAlongsideFiles = event.target.checked;
+		Storage.set('preference', preference);
+		reload();
+	});
+	settingsMain.querySelector(`[name="on_startup"]`).addEventListener('change', async (event: Event & { target: HTMLInputElement }) => {
+		const preference = await Storage.get('preference');
+		preference.on_startup = event.target.value;
 		Storage.set('preference', preference);
 		reload();
 	});

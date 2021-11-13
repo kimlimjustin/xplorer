@@ -22,18 +22,19 @@ let directoryInfo: DirectoryAPI;
  * Open a directory on Xplorer
  * @param {string} dir - Dir path to open
  * @param {boolean} reveal - Open the parent directory and select the file/dir
+ * @param {forceOpen} boolean - Force open the directory without checking if it's focusing path
  * @returns {Promise<void>}
  */
-const OpenDir = async (dir: string, reveal?: boolean): Promise<void> => {
-	if (isLoading()) {
+const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promise<void> => {
+	if (isLoading() && !forceOpen) {
 		InfoLog(`Something is still loading, refusing to open dir ${dir}`);
 		return;
 	}
 	// Check if the user is just want to reload the current directory
-	const isReload = (await focusingPath()) === dir;
+	const isReload = (await focusingPath()) === dir && !forceOpen;
 	if (!isReload) directoryInfo?.unlisten?.();
 	startLoading();
-	changePosition(dir);
+	changePosition(dir, forceOpen);
 	const MAIN_ELEMENT = document.getElementById('workspace');
 	MAIN_ELEMENT.innerHTML = '';
 	if (MAIN_ELEMENT.classList.contains('empty-dir-notification')) MAIN_ELEMENT.classList.remove('empty-dir-notification'); // Remove class if exist
@@ -85,20 +86,20 @@ const OpenDir = async (dir: string, reveal?: boolean): Promise<void> => {
 			});
 		} else {
 			directoryInfo = new DirectoryAPI(dir);
-			directoryInfo.getFiles().then(async (files) => {
-				if (!files.files.length) {
-					MAIN_ELEMENT.classList.add('empty-dir-notification');
-					MAIN_ELEMENT.innerText = 'This folder is empty.';
-					stopLoading();
-				} else {
-					await displayFiles(files.files, dir, MAIN_ELEMENT);
-					stopLoading();
-					updateTheme();
-					LAZY_LOAD();
-					changeWindowTitle(getBasename(dir));
-					if (!isReload) directoryInfo.listen(() => reload());
-				}
-			});
+			const files = await directoryInfo.getFiles();
+			if (!files.files.length) {
+				MAIN_ELEMENT.classList.add('empty-dir-notification');
+				MAIN_ELEMENT.innerText = 'This folder is empty.';
+				stopLoading();
+			} else {
+				await displayFiles(files.files, dir, MAIN_ELEMENT);
+				stopLoading();
+				updateTheme();
+				LAZY_LOAD();
+				changeWindowTitle(getBasename(dir));
+				if (!isReload) directoryInfo.listen(() => reload());
+				return;
+			}
 		}
 	}
 };
