@@ -27,7 +27,6 @@ lazy_static! {
         }
       }
     }
-    println!("{:?}", file_types);
     file_types
   };
 }

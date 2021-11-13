@@ -74,12 +74,11 @@ pub struct ReturnInformation {
 }
 
 fn get_basename(file_path: String) -> String {
-  Path::new(&file_path)
-    .file_name()
-    .unwrap()
-    .to_str()
-    .unwrap()
-    .to_string()
+  let basename = Path::new(&file_path).file_name();
+  match basename {
+    Some(basename) => basename.to_str().unwrap().to_string(),
+    None => file_path,
+  }
 }
 
 #[cfg(windows)]
@@ -106,11 +105,13 @@ fn check_is_system_file(file_path: String) -> bool {
 fn check_is_system_file(_: String) -> bool {
   false
 }
-async fn get_file_properties(file_path: String) -> Result<FileMetaData, std::io::Error> {
+
+#[tauri::command]
+pub async fn get_file_properties(file_path: String) -> Result<FileMetaData, String> {
   let metadata = fs::metadata(file_path.clone());
   let metadata = match metadata {
     Ok(result) => result,
-    Err(e) => return Err(e),
+    Err(e) => return Err(e.to_string()),
   };
   let is_dir = metadata.is_dir();
   let is_file = metadata.is_file();
@@ -119,17 +120,17 @@ async fn get_file_properties(file_path: String) -> Result<FileMetaData, std::io:
   let last_modified = metadata.modified();
   let last_modified = match last_modified {
     Ok(result) => result,
-    Err(e) => return Err(e),
+    Err(e) => return Err(e.to_string()),
   };
   let last_accessed = metadata.accessed();
   let last_accessed = match last_accessed {
     Ok(result) => result,
-    Err(e) => return Err(e),
+    Err(e) => return Err(e.to_string()),
   };
   let created = metadata.created();
   let created = match created {
     Ok(result) => result,
-    Err(e) => return Err(e),
+    Err(e) => return Err(e.to_string()),
   };
   let basename = get_basename(file_path.clone());
   let is_hidden = check_is_hidden(file_path.clone());

@@ -29,7 +29,6 @@ const OpenDir = async (dir: string, reveal?: boolean): Promise<void> => {
 		InfoLog(`Something is still loading, refusing to open dir ${dir}`);
 		return;
 	}
-	console.log(dir);
 	// Check if the user is just want to reload the current directory
 	const isReload = (await focusingPath()) === dir;
 	if (!isReload) directoryInfo?.unlisten?.();

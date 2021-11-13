@@ -4,7 +4,7 @@ import isValid from './validChecker';
 
 interface OpenLogType {
 	path: string;
-	date: string;
+	timestamp: Date;
 }
 /**
  * Write an error log
@@ -38,13 +38,7 @@ const InfoLog = async (info: any): Promise<void> => {
  * @returns {Promise<void>}
  */
 const OperationLog = async (
-	operationType:
-		| 'copy'
-		| 'cut'
-		| 'delete'
-		| 'newfile'
-		| 'newfolder'
-		| 'rename',
+	operationType: 'copy' | 'cut' | 'delete' | 'newfile' | 'newfolder' | 'rename',
 	sources?: string | string[],
 	destination?: string
 ): Promise<void> => {
@@ -54,15 +48,8 @@ const OperationLog = async (
 			operations: [],
 			currentIndex: -1,
 		};
-	if (
-		JSON.stringify(
-			operationLogs.operations[operationLogs.currentIndex + 1]
-		) !== JSON.stringify({ operationType, sources, destination })
-	)
-		operationLogs.operations = operationLogs.operations.slice(
-			0,
-			operationLogs.currentIndex + 1
-		);
+	if (JSON.stringify(operationLogs.operations[operationLogs.currentIndex + 1]) !== JSON.stringify({ operationType, sources, destination }))
+		operationLogs.operations = operationLogs.operations.slice(0, operationLogs.currentIndex + 1);
 	operationLogs.currentIndex += 1;
 	operationLogs.operations.push({ operationType, sources, destination });
 	Storage.set(`operations-${windowName}`, operationLogs);
@@ -77,6 +64,7 @@ const OpenLog = async (path: String): Promise<void> => {
 	const log = await Storage.get('log');
 	let openLog = log?.opens ?? [];
 	log.opens = [...openLog, { path, timestamp: new Date() }];
+	console.log(log);
 	Storage.set('log', log);
 };
 
