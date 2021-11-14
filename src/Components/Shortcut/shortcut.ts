@@ -23,6 +23,7 @@ import Undo from '../Files/File Operation/undo';
 import Redo from '../Files/File Operation/redo';
 import { Trash, PermanentDelete, Purge } from '../Files/File Operation/trash';
 import Properties from '../Properties/properties';
+import Preview from '../Files/File Preview/preview';
 let selectedAll = true;
 let pauseEnterListener = false;
 /**
@@ -119,6 +120,10 @@ const Shortcut = (): void => {
 		// Toggle hidden files shortcut (Ctrl+H)
 		else if (e.ctrlKey && e.key === 'h') {
 			toggleHiddenFiles();
+		}
+		// Open file in preview shortcut (Ctrl+O)
+		else if (e.ctrlKey && e.key === 'o') {
+			Preview(selectedFilePath);
 		}
 
 		// Exit tab shortcut (Ctrl + W)
@@ -258,59 +263,3 @@ const Shortcut = (): void => {
 	});
 };
 export { Shortcut, changeSelectedAllStatus, getSelectedAllStatus, pauseEnter };
-/*import copyLocation from '../Files/File Operation/location';
-import { getSelected } from '../Files/File Operation/select';
-import { updateTheme } from '../Theme/theme';
-import {
-	toggleHideHiddenFilesValue,
-	getHideHiddenFilesValue,
-} from '../Functions/toggleHiddenFiles';
-import Copy from '../Files/File Operation/copy';
-import Cut from '../Files/File Operation/cut';
-import Paste from '../Files/File Operation/paste';
-import Pin from '../Files/File Operation/pin';
-import { Trash, PermanentDelete } from '../Files/File Operation/trash';
-import { Preview } from '../Files/File Preview/preview';
-import windowGUID from '../Constants/windowGUID';
-import remote from '@electron/remote';
-import focusingPath from '../Functions/focusingPath';
-import Properties from '../Properties/properties';
-import Undo from '../Files/File Operation/undo';
-import Redo from '../Files/File Operation/redo';
-import openInTerminal from '../Functions/openInTerminal';
-import New from '../Functions/new';
-*/
-
-/**
- * Shortcut initializer function for Xplorer
- * @returns {void}
- */
-/*const Shortcut = (): void => {
-	const { reload, minimize, maximize } = require('../Layout/windowManager'); //eslint-disable-line
-	const { createNewTab, goBack, goForward } = require('../Layout/tab'); //eslint-disable-line
-
-	const KeyboardShortcutsHandler = (e: KeyboardEvent) => {
-		e.preventDefault();
-		const selectedFilePath = unescape(getSelected()?.[0]?.dataset?.path);
-		const isDir = getSelected()?.[0]?.dataset.isdir === 'true';
-
-		// Check if file navigator input is in focus, if it is then ignore key shortcuts
-		if (
-			document.querySelector('.path-navigator') === document.activeElement
-		)
-			return;
-
-		// Preview file shortcut (Ctrl+O)
-		else if (e.ctrlKey && e.key === 'o') {
-			Preview(selectedFilePath);
-		}
-		
-	};
-	document.addEventListener('keyup', KeyboardShortcutsHandler);
-	document.addEventListener('mouseup', MouseShortcutsHandler);
-
-	window.addEventListener('beforeunload', () => {
-		document.removeEventListener('keyup', KeyboardShortcutsHandler, false);
-		document.addEventListener('mouseup', MouseShortcutsHandler);
-	});
-};*/

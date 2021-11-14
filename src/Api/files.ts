@@ -27,6 +27,11 @@ class FileAPI {
 			fs.readTextFile(this.fileName).then((fileContent) => resolve(fileContent));
 		});
 	}
+
+	async readBuffer(): Promise<Buffer> {
+		const Buffer = require('buffer/').Buffer;
+		return Buffer.from(await fs.readBinaryFile(this.fileName));
+	}
 	/**
 	 * Open file on default app
 	 * @returns {Promise<void>}
