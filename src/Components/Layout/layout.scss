@@ -235,31 +235,6 @@ $edge-radius: 10px;
 	}
 }
 
-.menu {
-	vertical-align: middle;
-	width: 1rem;
-	position: relative;
-	.menu-dropdown {
-		display: none;
-		position: absolute;
-		right: 0;
-		z-index: 1;
-		padding: 5px 8px;
-		width: max-content;
-	}
-	&:active .menu-dropdown,
-	&:hover .menu-dropdown,
-	&:hover .menu-dropdown {
-		display: block;
-	}
-	.menu-svg {
-		vertical-align: sub;
-		width: 1rem;
-		fill: inherit;
-		cursor: pointer;
-	}
-}
-
 .workspace-split {
 	overflow: auto;
 	flex: 1;

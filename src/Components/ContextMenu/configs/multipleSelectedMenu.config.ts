@@ -9,10 +9,8 @@ import Pin from '../../Files/File Operation/pin';
 import Translate from '../../I18n/i18n';
 import reveal from '../../../Api/reveal';
 import focusingPath from '../../Functions/focusingPath';
-import { PurgeFiles, RestoreFiles } from '../../../Api/trash';
-import { reload } from '../../Layout/windowManager';
 
-const MultipleSelectedMenu = async (_: HTMLElement, filePath: string): Promise<contextMenuItem[][]> => {
+const MultipleSelectedMenu = async (_: HTMLElement, _filePath: string): Promise<contextMenuItem[][]> => {
 	const _focusingPath = await focusingPath();
 	return [
 		[
