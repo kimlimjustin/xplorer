@@ -6,7 +6,7 @@ import Undo from '../../Files/File Operation/undo';
 import Redo from '../../Files/File Operation/redo';
 import copyLocation from '../../Files/File Operation/location';
 import Pin from '../../Files/File Operation/pin';
-//import Properties from '../../Properties/properties';
+import Properties from '../../Properties/properties';
 import focusingPath from '../../Functions/focusingPath';
 import reveal from '../../../Api/reveal';
 import Translate from '../../I18n/i18n';
@@ -200,14 +200,14 @@ const BodyMenu = async (target: HTMLElement, filePath: string): Promise<contextM
 					Pin([filePath]);
 				},
 			},
-			/*{
+			{
 				menu: await Translate('Properties'),
 				shortcut: 'Ctrl+P',
 				icon: target?.dataset?.isdir ? 'folder setting' : 'file setting',
 				role: () => {
 					Properties(filePath);
 				},
-			},*/
+			},
 		],
 	];
 };

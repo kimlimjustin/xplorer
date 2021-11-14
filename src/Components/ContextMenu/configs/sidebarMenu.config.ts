@@ -2,7 +2,7 @@ import contextMenuItem from '../../../Typings/contextMenuItem';
 import { createNewTab } from '../../Layout/tab';
 import Pin from '../../Files/File Operation/pin';
 import Translate from '../../I18n/i18n';
-//import { Preview } from '../../Files/File Preview/preview';
+import Preview from '../../Files/File Preview/preview';
 import { OpenDir } from '../../Open/open';
 import FileAPI from '../../../Api/files';
 
@@ -24,7 +24,7 @@ const SidebarMenu = async (target: HTMLElement, filePath: string): Promise<conte
 					createNewTab(filePath);
 				},
 			},
-			/*{
+			{
 				menu: await Translate('Preview'),
 				shortcut: 'Ctrl+O',
 				visible: target?.dataset?.isdir !== 'true',
@@ -32,7 +32,7 @@ const SidebarMenu = async (target: HTMLElement, filePath: string): Promise<conte
 				role: () => {
 					Preview(filePath);
 				},
-			},*/
+			},
 		],
 		[
 			{

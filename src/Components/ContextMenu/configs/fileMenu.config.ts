@@ -1,4 +1,4 @@
-//import { Preview } from '../../Files/File Preview/preview';
+import Preview from '../../Files/File Preview/preview';
 import { isVSCodeInstalled } from '../../../Api/app';
 import contextMenuItem from '../../../Typings/contextMenuItem';
 import { createNewTab } from '../../Layout/tab';
@@ -62,13 +62,13 @@ const FileMenu = async (target: HTMLElement, filePath: string): Promise<contextM
 					reveal(filePath, 'vscode');
 				},
 			},
-			/*{
+			{
 				menu: await Translate('Preview'),
 				visible: target?.dataset?.isdir !== 'true',
 				shortcut: 'Ctrl+O',
 				icon: 'preview',
 				role: () => Preview(filePath),
-			},*/
+			},
 		],
 		[
 			{
