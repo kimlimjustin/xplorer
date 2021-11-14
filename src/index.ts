@@ -12,6 +12,7 @@ import Storage from './Api/storage';
 import Setting from './Components/Setting/setting';
 import ContextMenu from './Components/ContextMenu/contextMenu';
 import Hover from './Components/Layout/hover';
+import LAZY_LOAD_INIT from './Components/Functions/lazyLoadingImage';
 // Wait DOM Loaded to be loaded
 document.addEventListener('DOMContentLoaded', async () => {
 	// Read user preferences
@@ -60,4 +61,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 	ContextMenu();
 	// Initialize hover handler
 	Hover();
+	// Initialize lazy loading image handler (for performance)
+	LAZY_LOAD_INIT();
 });

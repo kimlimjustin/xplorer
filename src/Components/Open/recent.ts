@@ -1,7 +1,6 @@
 import { startLoading, stopLoading } from '../Functions/Loading/loading';
 import Storage from '../../Api/storage';
 import fileThumbnail from '../Thumbnail/thumbnail';
-import LAZY_LOAD from '../Functions/lazyLoadingImage';
 import { updateTheme } from '../Theme/theme';
 import type { OpenLogType } from '../Functions/log';
 import FileAPI from '../../Api/files';
@@ -126,7 +125,6 @@ const Recent = async (): Promise<void> => {
 			MAIN_ELEMENT.appendChild(fileGrid);
 		}
 		updateTheme();
-		LAZY_LOAD();
 	}
 	stopLoading();
 };

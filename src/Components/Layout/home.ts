@@ -3,7 +3,6 @@ import Favorites from '../Favorites/favorites';
 import { updateTheme } from '../Theme/theme';
 import { startLoading, stopLoading } from '../Functions/Loading/loading';
 import OS from '../../Api/platform';
-import LAZY_LOAD from '../Functions/lazyLoadingImage';
 import DirectoryAPI from '../../Api/directory';
 import FavoritesAPI from '../../Api/favorites';
 import displayFiles from '../Open/displayFiles';
@@ -22,8 +21,7 @@ const Home = async (): Promise<void> => {
 	startLoading();
 	// Get the main element
 	const MAIN_ELEMENT = document.getElementById('workspace');
-	if (MAIN_ELEMENT.classList.contains('empty-dir-notification'))
-		MAIN_ELEMENT.classList.remove('empty-dir-notification'); // Remove class if exist
+	if (MAIN_ELEMENT.classList.contains('empty-dir-notification')) MAIN_ELEMENT.classList.remove('empty-dir-notification'); // Remove class if exist
 	const favorites = await Favorites();
 	const drives = await Drives();
 	MAIN_ELEMENT.innerHTML = favorites + drives;
@@ -38,11 +36,7 @@ const Home = async (): Promise<void> => {
 		homeElement.innerHTML = '<h1 class="section-title">Files</section>';
 
 		const homeFiles = await directoryInfo.getFiles();
-		const homeSection = await displayFiles(
-			homeFiles.files,
-			favoritesData.HOMEDIR_PATH,
-			homeElement
-		);
+		const homeSection = await displayFiles(homeFiles.files, favoritesData.HOMEDIR_PATH, homeElement);
 		// Update the content in the main page ...
 		MAIN_ELEMENT.innerHTML = favorites + drives;
 		MAIN_ELEMENT.appendChild(homeSection);
@@ -50,7 +44,6 @@ const Home = async (): Promise<void> => {
 		// And also the theme :)
 		updateTheme();
 		stopLoading();
-		LAZY_LOAD();
 	}
 	// Update the content in the main page ...
 	// And also the theme :)
