@@ -1,8 +1,18 @@
-import folderConfig, { customThumbnail, defaultThumbnail } from '../../Config/folder.config';
-import FileConfig, { IMAGE_TYPES, VIDEO_TYPES } from '../../Config/file.config';
+import { customThumbnail, defaultThumbnail } from '../../Config/folder.config';
+import { IMAGE_TYPES, VIDEO_TYPES } from '../../Config/file.config';
 import getBasename from '../Functions/path/basename';
 import Storage from '../../Api/storage';
 import FileAPI from '../../Api/files';
+import FileLib from '../../../lib/files.json';
+import FolderLib from '../../../lib/folder.json';
+import ThumbnailExtensionTrie from './thumbnailExtensionTrie';
+import ThumbnailFileTrie from './thumbnailFileTrie';
+import ThumbnailFolderTrie from './thumbnailFolderTrie';
+
+let trieInitilized = false;
+const extensionThumbnailTrie = new ThumbnailExtensionTrie();
+const filenameThumbnailTrie = new ThumbnailFileTrie();
+const folderThumbnailTrie = new ThumbnailFolderTrie();
 
 const DEFAULT_FILE_THUMBNAIL = require(`../../Icon/${defaultThumbnail.DEFAULT_FILE_THUMBNAIL}`);
 const DEFAULT_IMAGE_THUMBNAIL = require(`../../Icon/${defaultThumbnail.DEFAULT_IMAGE_THUMBNAIL}`);
@@ -41,6 +51,28 @@ const videoPreview = async (filename: string): Promise<string> => {
  * @returns {Promise<string>} the preview of the file/folder
  */
 const fileThumbnail = async (filePath: string, category = 'folder', HTMLFormat = true, imageAsThumbnail = true): Promise<string> => {
+	if (!trieInitilized) {
+		for (const category of FileLib) {
+			if (category.extensions?.length && category.thumbnail) {
+				for (const extension of category.extensions) {
+					extensionThumbnailTrie.insert(extension, category.thumbnail);
+				}
+			}
+			if (category.fileNames?.length && category.thumbnail) {
+				for (const fileName of category.fileNames) {
+					filenameThumbnailTrie.insert(fileName, category.thumbnail);
+				}
+			}
+		}
+		for (const category of FolderLib) {
+			if (category.folderNames?.length && category.thumbnail) {
+				for (const folderName of category.folderNames) {
+					folderThumbnailTrie.insert(folderName, category.thumbnail);
+				}
+			}
+		}
+		trieInitilized = true;
+	}
 	const ext = filePath.split('.').pop().toLowerCase(); // Get extension of filename
 	const basename = getBasename(filePath);
 
@@ -61,23 +93,10 @@ const fileThumbnail = async (filePath: string, category = 'folder', HTMLFormat =
 	}
 
 	if (category === 'file') {
-		for (const fileType of FileConfig()) {
-			if (fileType?.fileNames?.indexOf(basename) !== undefined && fileType?.fileNames?.indexOf(basename) !== -1) {
-				const thumbnailPath = fileType.thumbnail?.(filePath);
-				if (thumbnailPath) {
-					return imageThumbnail(thumbnailPath, HTMLFormat);
-				}
-			}
-		}
-		for (const fileType of FileConfig()) {
-			if (fileType.extension?.indexOf(ext) !== undefined && fileType.extension?.indexOf(ext) !== -1) {
-				const thumbnailPath = fileType.thumbnail?.(filePath);
-				if (thumbnailPath) {
-					return imageThumbnail(thumbnailPath, HTMLFormat);
-				}
-			}
-		}
-		return imageThumbnail(defaultThumbnail.DEFAULT_FILE_THUMBNAIL, HTMLFormat);
+		return imageThumbnail(
+			filenameThumbnailTrie.search(basename) ?? extensionThumbnailTrie.search(ext) ?? defaultThumbnail.DEFAULT_FILE_THUMBNAIL,
+			HTMLFormat
+		);
 	} else {
 		if (category !== 'folder') {
 			const _key = `${category}-${filename}`;
@@ -85,12 +104,7 @@ const fileThumbnail = async (filePath: string, category = 'folder', HTMLFormat =
 				return imageThumbnail(customThumbnail[_key], HTMLFormat);
 			}
 		}
-		for (const fldr of folderConfig()) {
-			if (fldr.folderNames?.indexOf(basename) !== -1) {
-				return imageThumbnail(fldr.thumbnail, HTMLFormat);
-			}
-		}
-		return imageThumbnail(defaultThumbnail.DEFAULT_FOLDER_THUMBNAIL, HTMLFormat);
+		return imageThumbnail(folderThumbnailTrie.search(basename) ?? defaultThumbnail.DEFAULT_FOLDER_THUMBNAIL, HTMLFormat);
 	}
 };
 

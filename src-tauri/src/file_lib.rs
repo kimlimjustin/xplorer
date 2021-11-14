@@ -67,8 +67,13 @@ lazy_static! {
           Some(folder_names) => folder_names,
           None => continue,
         };
+        let folder_type = obj["type"].as_str();
+        let folder_type = match folder_type {
+          Some(folder_type) => folder_type.to_string(),
+          None => continue,
+        };
         for folder_name in folder_names {
-          let folder_type = obj["type"].as_str().unwrap().to_string();
+          let folder_type = folder_type.clone();
           folder_types.insert(folder_name.as_str().unwrap().to_string(), folder_type);
         }
       }
