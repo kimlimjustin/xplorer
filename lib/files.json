@@ -1,87 +1,108 @@
 [
 	{
 		"extensions": ["js"],
-		"type": "JavaScript"
+		"type": "JavaScript",
+		"thumbnail": "extension/javascript.svg"
 	},
 	{
 		"extensions": ["ts"],
-		"type": "TypeScript"
+		"type": "TypeScript",
+		"thumbnail": "extension/typescript.svg"
 	},
 	{
 		"extensions": ["html", "htm", "xhtml", "html_vm", "asp"],
-		"type": "HyperText Markup Language"
+		"type": "HyperText Markup Language",
+		"thumbnail": "extension/html.svg"
 	},
 	{
 		"extensions": ["pdf"],
-		"type": "Portable Document Format"
+		"type": "Portable Document Format",
+		"thumbnail": "extension/pdf.svg"
 	},
 	{
 		"extensions": ["doc", "docb", "docm", "dot", "dotm", "docx", "rtf"],
-		"type": "Word Document"
+		"type": "Word Document",
+		"thumbnail": "extension/word.svg"
 	},
 	{
 		"extensions": ["xlsx", "xls", "xlsb", "xls", "ods", "fods", "csv"],
-		"type": "Excel Document"
+		"type": "Excel Document",
+		"thumbnail": "extension/excel.svg"
 	},
 	{
 		"extensions": ["pot", "potm", "potx", "ppam", "pps", "ppsm", "ppsx", "ppt", "pptn", "pptx"],
-		"type": "Powerpoint Document"
+		"type": "Powerpoint Document",
+		"thumbnail": "extension/powerpoint.svg"
 	},
 	{
 		"extensions": ["7z", "brotli", "bzip2", "gz", "gzip", "rar", "tgz", "xz", "zip"],
-		"type": "Archive"
+		"type": "Archive",
+		"thumbnail": "extension/zip.svg"
 	},
 	{
 		"extensions": ["accdb", "db", "db3", "mdb", "pdb", "pgsql", "pkb", "pks", "postgres", "psql", "sql", "sqlite", "sqlite3"],
-		"type": "Database"
+		"type": "Database",
+		"thumbnail": "extension/database.svg"
 	},
 	{
 		"extensions": ["bat"],
-		"type": "Batch"
+		"type": "Batch",
+		"thumbnail": "extension/bat.svg"
 	},
 	{
 		"extensions": ["exe"],
-		"type": "Executable"
+		"type": "Executable",
+		"thumbnail": "extension/exe.svg"
 	},
 	{
 		"extensions": ["cc", "cpp", "cxx", "c++", "cp", "mm", "mii", "ii"],
-		"type": "C++ Program"
+		"type": "C++ Program",
+		"thumbnail": "extension/cpp.svg"
 	},
 	{
 		"extensions": ["c"],
-		"type": "C Program"
+		"type": "C Program",
+		"thumbnail": "extension/c.svg"
 	},
 	{
 		"extensions": ["h"],
-		"type": "C Header File"
+		"type": "C Header File",
+		"thumbnail": "extension/h.svg"
 	},
 	{
 		"extensions": ["py", "py3"],
-		"type": "Python Program"
+		"type": "Python Program",
+		"thumbnail": "extension/python.svg"
 	},
 	{
 		"extensions": ["pyc", "pylintrc", "python-version"],
-		"type": "Python Program"
+		"type": "Python Program",
+		"thumbnail": "extension/python-misc.svg"
 	},
 	{
 		"extensions": ["txt"],
-		"type": "Text Document"
+		"type": "Text Document",
+		"thumbnail": "extension/txt.svg"
 	},
 	{
-		"extensions": "IMAGE_TYPES",
-		"type": "Image"
+		"extensions": ["jpg", "png", "gif", "bmp", "jpeg", "jpe", "jif", "jfif", "jfi", "webp", "tiff", "tif", "ico", "svg", "webp"],
+		"type": "Image",
+		"thumbnail": "extension/image.svg"
 	},
 	{
-		"extensions": "VIDEO_TYPES",
-		"type": "Video"
+		"extensions": ["mp4", "webm", "mpg", "mp2", "mpeg", "mpe", "mpv", "ocg", "m4p", "m4v", "avi", "wmv", "mov", "qt", "flv", "swf"],
+		"type": "Video",
+		"thumbnail": "extension/video.svg"
 	},
 	{
 		"extensions": ["deb", "msi", "snap"],
-		"type": "Installer"
+		"type": "Installer",
+		"thumbnail": "extension/exe.svg"
 	},
 	{
 		"extensions": ["iso"],
-		"type": "Disk Image File"
+		"type": "Disk Image File",
+		"thumbnail": "extension/disc.svg"
 	},
 	{
 		"extensions": ["dockerfile", "dockerignore"],
@@ -134,35 +155,43 @@
 			"docker-compose.web.yaml",
 			"docker-compose.worker.yaml"
 		],
-		"type": "Docker Image"
+		"type": "Docker Image",
+		"thumbnail": "extension/docker.svg"
 	},
 	{
 		"extensions": ["md", "markdown", "rst"],
-		"type": "Markdown"
+		"type": "Markdown",
+		"thumbnail": "extension/markdown.svg"
 	},
 	{
 		"extensions": ["json", "tsbuildinfo", "json5", "jsonl", "ndjson"],
-		"type": "JavaScript Object Notation"
+		"type": "JavaScript Object Notation",
+		"thumbnail": "extension/json.svg"
 	},
 	{
 		"type": "Git",
-		"fileNames": [".gitignore", ".gitignore_global", ".gitconfig", ".gitattributes", ".gitmodules", ".gitkeep", "git-history"]
+		"fileNames": [".gitignore", ".gitignore_global", ".gitconfig", ".gitattributes", ".gitmodules", ".gitkeep", "git-history"],
+		"thumbnail": "extension/git.svg"
 	},
 	{
 		"extensions": ["yml", "yaml"],
-		"type": "Yet Anoter Markup Language"
+		"type": "Yet Anoter Markup Language",
+		"thumbnail": "extension/yaml.svg"
 	},
 	{
 		"fileNames": [".prettierignore", ".prettierrc.json"],
-		"type": "Prettier configuration file"
+		"type": "Prettier configuration file",
+		"thumbnail": "extension/prettier.svg"
 	},
 	{
 		"fileNames": ["binding.gyp"],
-		"type": "Node JS C++ Binding"
+		"type": "Node JS C++ Binding",
+		"thumbnail": "extension/python.svg"
 	},
 	{
 		"fileNames": ["LICENSE", "LICENSE.md", "LICENSE.txt"],
-		"type": "License"
+		"type": "License",
+		"thumbnail": "extension/certificate.svg"
 	},
 	{
 		"fileNames": [
@@ -180,7 +209,8 @@
 			"licence.txt"
 		],
 		"extensions": ["cer", "cert", "crt"],
-		"type": "Certificate"
+		"type": "Certificate",
+		"thumbnail": "extension/certificate.svg"
 	},
 	{
 		"extensions": [
@@ -201,34 +231,42 @@
 			"cfg"
 		],
 		"fileNames": [".jshintignore", ".buildignore", ".mrconfig", ".yardopts", "manifest.mf", ".clang-format", ".clang-tidy"],
-		"type": "Settings"
+		"type": "Settings",
+		"thumbnail": "extension/settings.svg"
 	},
 	{
 		"type": "Visual Studio",
-		"extensions": ["csproj", "ruleset", "sln", "suo", "vb", "vbs", "vcxitems", "vcxitems.filters", "vcxproj", "vcxproj.filters"]
+		"extensions": ["csproj", "ruleset", "sln", "suo", "vb", "vbs", "vcxitems", "vcxitems.filters", "vcxproj", "vcxproj.filters"],
+		"thumbnail": "extension/visualstudio.svg"
 	},
 	{
 		"extensions": ["go"],
-		"type": "Go Program"
+		"type": "Go Program",
+		"thumbnail": "extension/go.svg"
 	},
 	{
 		"extensions": ["java", "jsp"],
-		"type": "Java Program"
+		"type": "Java Program",
+		"thumbnail": "extension/java.svg"
 	},
 	{
 		"extensions": ["jsx"],
-		"type": "React Program"
+		"type": "React Program",
+		"thumbnail": "extension/react.svg"
 	},
 	{
 		"extensions": ["tsx"],
-		"type": "Typescript React Program"
+		"type": "Typescript React Program",
+		"thumbnail": "extension/react_ts.svg"
 	},
 	{
 		"extensions": ["psd"],
-		"type": "Photoshop"
+		"type": "Photoshop",
+		"thumbnail": "extension/psd.svg"
 	},
 	{
 		"type": "Yarn Package Manager",
-		"fileNames": [".yarnrc", "yarn.lock", ".yarnclean", ".yarn-integrity", "yarn-error.log", ".yarnrc.yml", ".yarnrc.yaml"]
+		"fileNames": [".yarnrc", "yarn.lock", ".yarnclean", ".yarn-integrity", "yarn-error.log", ".yarnrc.yml", ".yarnrc.yaml"],
+		"thumbnail": "extension/yarn.svg"
 	}
 ]

@@ -1,7 +1,7 @@
-import { dialog } from '@electron/remote';
 import path from 'path';
 import { updateTheme } from '../../Theme/theme';
-import FileConfig from '../../Config/file.config';
+import PromptError from '../../Prompt/error';
+import FileConfig from '../../../Config/file.config';
 
 /**
  * Close the preview file
@@ -9,9 +9,7 @@ import FileConfig from '../../Config/file.config';
  */
 const closePreviewFile = (): void => {
 	document.getElementById('workspace').classList.remove('workspace-split');
-	document
-		.querySelectorAll('.preview')
-		.forEach((element) => element.parentNode.removeChild(element));
+	document.querySelectorAll('.preview').forEach((element) => element.parentNode.removeChild(element));
 	document.querySelector<HTMLElement>('.main-box').style.overflowY = 'auto';
 };
 /**
@@ -35,43 +33,29 @@ const Preview = (filePath: string): void => {
                 `;
 
 		document.querySelector<HTMLElement>('.main-box').scrollTop = 0;
-		document.querySelector<HTMLElement>('.main-box').style.overflowY =
-			'hidden';
-		document
-			.getElementById('workspace')
-			.classList.toggle('workspace-split');
+		document.querySelector<HTMLElement>('.main-box').style.overflowY = 'hidden';
+		document.getElementById('workspace').classList.toggle('workspace-split');
 		document.querySelector('.main-box').appendChild(previewElement);
-		previewElement
-			.querySelector('.preview-exit-btn')
-			.addEventListener('click', () => closePreviewFile());
+		previewElement.querySelector('.preview-exit-btn').addEventListener('click', () => closePreviewFile());
 	};
 
 	const ext = filePath.split('.').pop().toLowerCase();
 	const basename = path.basename(filePath);
 	let previewed = false;
 	for (const type of FileConfig()) {
-		if (
-			type.fileNames?.indexOf(basename) !== undefined &&
-			type.fileNames?.indexOf(basename) !== -1
-		) {
+		if (type.fileNames?.indexOf(basename) !== undefined && type.fileNames?.indexOf(basename) !== -1) {
 			type?.preview?.(filePath, (html) => changePreview(html));
 			previewed = true;
 		}
 	}
 	for (const type of FileConfig()) {
-		if (
-			type.extension?.indexOf(ext) !== undefined &&
-			type.extension?.indexOf(ext) !== -1
-		) {
+		if (type.extension?.indexOf(ext) !== undefined && type.extension?.indexOf(ext) !== -1) {
 			type?.preview?.(filePath, (html) => changePreview(html));
 			previewed = true;
 		}
 	}
-	if (!previewed)
-		dialog.showErrorBox(
-			'No preview handler',
-			'There is no preview handler for this file type yet.'
-		);
+
+	if (!previewed) PromptError('No preview handler', 'There is no preview handler for this file type yet.');
 	updateTheme();
 };
 

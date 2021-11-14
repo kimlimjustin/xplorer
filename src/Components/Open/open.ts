@@ -30,6 +30,7 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promis
 		InfoLog(`Something is still loading, refusing to open dir ${dir}`);
 		return;
 	}
+	console.time(dir);
 	// Check if the user is just want to reload the current directory
 	const isReload = (await focusingPath()) === dir && !forceOpen;
 	if (!isReload) directoryInfo?.unlisten?.();
@@ -99,6 +100,7 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promis
 				LOAD_IMAGE();
 				changeWindowTitle(getBasename(dir));
 				if (!isReload) directoryInfo.listen(() => reload());
+				console.timeEnd(dir);
 				return;
 			}
 		}

@@ -70,7 +70,6 @@ const windowManager = async (): Promise<void> => {
 		OpenDir(event.target.value);
 	});
 	const _preference = await Storage.get('preference');
-	console.log(_preference);
 	listenWindowClose().then(() => {
 		if (_preference.on_startup === 'new') Storage.remove(`tabs-${windowName}`);
 		Storage.remove(`operations-${windowName}`);
