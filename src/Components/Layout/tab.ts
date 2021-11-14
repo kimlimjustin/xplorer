@@ -6,6 +6,11 @@ import { OpenDir } from '../Open/open';
 import { close } from './windowManager';
 import basename from '../Functions/path/basename';
 import Home from './home';
+
+let tabsManager: HTMLElement;
+document.addEventListener('DOMContentLoaded', () => {
+	tabsManager = document.querySelector('.tabs-manager');
+});
 /**
  * Function to create new tab
  * @param {string} path - path to be focused on the new tab
@@ -47,6 +52,8 @@ const createNewTab = async (path?: string): Promise<void> => {
 		if ((e.target as HTMLElement).classList.contains('close-tab-btn')) return;
 		SwitchTab(newTab.dataset.tabIndex);
 	});
+	if (tabsManager.scrollWidth > tabsManager.clientWidth) tabsManager.removeAttribute('data-tauri-drag-region');
+	else tabsManager.setAttribute('data-tauri-drag-region', '');
 	return;
 };
 
@@ -109,10 +116,12 @@ const Tab = async (reveal = false): Promise<void> => {
 	if (_preference.on_startup === 'new') {
 		// Store default tabs information into local storage
 		Storage.set(`tabs-${windowName}`, defaultTabsInfo);
+		tabsManager.setAttribute('data-tauri-drag-region', '');
 	} else {
 		const tabsInfo = await Storage.get(`tabs-${windowName}`);
 		if (!tabsInfo.tabs || reveal) {
 			Storage.set(`tabs-${windowName}`, defaultTabsInfo);
+			tabsManager.setAttribute('data-tauri-drag-region', '');
 			Home();
 		} else {
 			let _first = true;
@@ -187,6 +196,8 @@ const Tab = async (reveal = false): Promise<void> => {
 				delete tabs.tabs[index];
 				Storage.set(`tabs-${windowName}`, tabs);
 				OpenDir(tabs.tabs[tabs.focus].position);
+				if (tabsManager.scrollWidth > tabsManager.clientWidth) tabsManager.removeAttribute('data-tauri-drag-region');
+				else tabsManager.setAttribute('data-tauri-drag-region', '');
 			}
 		}
 	});
