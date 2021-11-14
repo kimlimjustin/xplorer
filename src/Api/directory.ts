@@ -3,7 +3,8 @@ import normalizeSlash from '../Components/Functions/path/normalizeSlash';
 import { invoke } from '@tauri-apps/api';
 import type FileMetaData from '../Typings/fileMetaData';
 import { getCurrent } from '@tauri-apps/api/window';
-let listener: any;
+import { UnlistenFn } from '@tauri-apps/api/event';
+let listener: UnlistenFn;
 interface DirectoryData {
 	files: FileMetaData[];
 	number_of_files: number;
