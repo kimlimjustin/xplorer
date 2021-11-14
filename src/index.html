@@ -4,11 +4,7 @@
 		<meta charset="UTF-8" />
 		<title>Xplorer</title>
 		<link rel="stylesheet" href="Public/style.css" />
-		<link
-			rel="shortcut icon"
-			href="Public/favicon.ico"
-			type="image/x-icon"
-		/>
+		<link rel="shortcut icon" href="Public/favicon.ico" type="image/x-icon" />
 		<script src="./index.js"></script>
 	</head>
 
@@ -22,7 +18,7 @@
 			<div class="main">
 				<div class="topbar" data-tauri-drag-region>
 					<div class="row">
-						<div class="tabs-manager" data-tauri-drag-region>
+						<div class="tabs-manager">
 							<div class="tab tab-hover-effect" id="tab1">
 								<span id="tab-position">Home</span>
 							</div>
@@ -36,42 +32,17 @@
 					</div>
 					<div class="row">
 						<div class="navigator">
-							<span
-								id="go-back"
-								title="Go Back (Alt + Left Arrow)"
-								>&larr;</span
-							>
-							<span
-								id="go-forward"
-								title="Go Forward (Alt + Right Arrow)"
-								>&rarr;</span
-							>
-							<span
-								id="go-parent-dir"
-								title="Parent Directory (Alt + Up Arrow)"
-								>&uarr;</span
-							>
-							<span id="refresh" title="Reload (f5)"
-								>&#10227;</span
-							>
+							<span id="go-back" title="Go Back (Alt + Left Arrow)">&larr;</span>
+							<span id="go-forward" title="Go Forward (Alt + Right Arrow)">&rarr;</span>
+							<span id="go-parent-dir" title="Parent Directory (Alt + Up Arrow)">&uarr;</span>
+							<span id="refresh" title="Reload (f5)">&#10227;</span>
 						</div>
-						<input
-							class="path-navigator"
-							type="text"
-							value="xplorer://Home"
-							spellcheck="false"
-						/>
+						<input class="path-navigator" type="text" value="xplorer://Home" spellcheck="false" />
 						<div class="menu">
-							<img
-								src="./Icon/menu.svg"
-								class="menu-svg"
-								title="Menu Option"
-							/>
+							<img src="./Icon/menu.svg" class="menu-svg" title="Menu Option" />
 							<div class="menu-dropdown">
 								<input type="checkbox" id="show-hidden-files" />
-								<label for="show-hidden-files"
-									>Show hidden files</label
-								>
+								<label for="show-hidden-files">Show hidden files</label>
 							</div>
 						</div>
 					</div>
@@ -86,13 +57,7 @@
 		</div>
 		<div class="settings">
 			<div class="settings-sidebar">
-				<div
-					class="
-						settings-sidebar-header
-						exit-setting-btn
-						sidebar-hover-effect
-					"
-				>
+				<div class="settings-sidebar-header exit-setting-btn sidebar-hover-effect">
 					<span class="exit-setting-icon">←</span>
 					<span class="settings-sidebar-heading">Settings</span>
 				</div>

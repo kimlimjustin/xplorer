@@ -133,8 +133,12 @@ const Shortcut = (): void => {
 				tabs.focusHistory = tabs.focusHistory.filter((tabIndex: number) => String(tabIndex) !== tabs.focus);
 				delete tabs.tabs[tabs.focus];
 				tabs.focus = String(tabs.focusHistory[tabs.focusHistory.length - 1]);
-				console.log(tabs);
 				Storage.set(`tabs-${windowName}`, tabs);
+				OpenDir(tabs.tabs[tabs.focus].position);
+
+				const tabsManager = document.querySelector('.tabs-manager');
+				if (tabsManager.scrollWidth > tabsManager.clientWidth) tabsManager.removeAttribute('data-tauri-drag-region');
+				else tabsManager.setAttribute('data-tauri-drag-region', '');
 			}
 		}
 		// Copy file shortcut (Ctrl + V)
