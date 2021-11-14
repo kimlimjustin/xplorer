@@ -78,7 +78,7 @@ const Restore = (filePath: string): void => {
 	);
 };
 
-const pad = (number: number) => (number < 10 ? '0' + number : number);
+const pad = (number: number) => number.toString().padStart(2, 0);
 
 const getDeletionDate = (date: Date) =>
 	date.getFullYear() +
