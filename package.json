@@ -36,8 +36,6 @@
 		"css:minify": "cleancss --batch --batch-suffix \"\" out/**/*.css ",
 		"prebuild": "yarn compile && yarn grunt && yarn css:minify",
 		"build": "tauri build",
-		"native_build": "node-gyp rebuild",
-		"install": "node scripts/install.js",
 		"postinstall": "husky install",
 		"fakefiles": "python scripts/generate-fake-files.py 1000"
 	},
