@@ -1,4 +1,5 @@
-const lazy_load_frequency = 500;
+import FileAPI from '../../Api/files';
+
 const FETCHED_ICONS: string[] = []; // Array of fetch icons
 
 /**
@@ -8,44 +9,54 @@ const FETCHED_ICONS: string[] = []; // Array of fetch icons
  */
 export const isElementInViewport = (el: HTMLElement): boolean => {
 	const rect = el.getBoundingClientRect();
+	const windowHeight = window.innerHeight || document.documentElement.clientHeight;
 	return (
 		rect.top >= 0 &&
 		rect.left >= 0 &&
-		rect.bottom <=
-			(window.innerHeight || document.documentElement.clientHeight) &&
-		rect.right <=
-			(window.innerWidth || document.documentElement.clientWidth)
+		rect.bottom - windowHeight <= windowHeight &&
+		rect.right <= (window.innerWidth || document.documentElement.clientWidth)
 	);
 };
 
 /**
- * Load images only when the images appear on user viewport
+ * Load lazy-load image when user open a directory
  * @returns {void}
  */
-const LAZY_LOAD = (): void => {
-	const MAIN_ELEMENT = document.getElementById('workspace');
-	// Only show image when its visible in viewport to reduce latency
-	MAIN_ELEMENT.querySelectorAll('img').forEach((img) => {
-		(function _detectImg() {
-			let n: NodeJS.Timeout; //eslint-disable-line
-			if (img.dataset.src) {
-				if (isElementInViewport(img)) {
-					img.src = img.dataset.src;
-					if (FETCHED_ICONS.indexOf(img.dataset.src) === -1)
-						FETCHED_ICONS.push(img.dataset.src);
-					img.removeAttribute('data-src');
-					global.clearTimeout(n);
-				} else {
-					// Directly show icons if it was fetched before
-					if (FETCHED_ICONS.indexOf(img.dataset.src) !== -1) {
-						img.src = img.dataset.src;
-						global.clearTimeout(n);
-					}
-				}
+export const LOAD_IMAGE = (): void => {
+	const images = document.querySelectorAll('img[data-src]');
+	images.forEach((image: HTMLImageElement) => {
+		if (isElementInViewport(image)) {
+			if (image.dataset.isImg === 'true') {
+				image.src = new FileAPI(image.dataset.src).readAsset();
+			} else {
+				image.src = require(`../../Icon/${image.dataset.src}`);
 			}
-			n = setTimeout(_detectImg, lazy_load_frequency);
-		})();
+			if (FETCHED_ICONS.indexOf(image.dataset.src) === -1) FETCHED_ICONS.push(image.dataset.src);
+			image.removeAttribute('data-src');
+		}
 	});
 };
 
-export default LAZY_LOAD;
+/**
+ * Lazy load initializer, add listener to scrolling event toonly load images when they are visible in viewport
+ * @returns {void}
+ */
+const LAZY_LOAD_INIT = (): void => {
+	// Only show image when its visible in viewport to reduce latency
+	document.querySelector('.main-box').addEventListener('scroll', () => {
+		const images = document.querySelectorAll('img[data-src]');
+		images.forEach((image: HTMLImageElement) => {
+			if (isElementInViewport(image)) {
+				if (image.dataset.isImg === 'true') {
+					image.src = new FileAPI(image.dataset.src).readAsset();
+				} else {
+					image.src = require(`../../Icon/${image.dataset.src}`);
+				}
+				if (FETCHED_ICONS.indexOf(image.dataset.src) === -1) FETCHED_ICONS.push(image.dataset.src);
+				image.removeAttribute('data-src');
+			}
+		});
+	});
+};
+
+export default LAZY_LOAD_INIT;

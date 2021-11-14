@@ -10,11 +10,14 @@ const DEFAULT_IMAGE_THUMBNAIL = require(`../../Icon/${defaultThumbnail.DEFAULT_I
  * Return image view of preview
  * @param {string} source -Thumbnail source
  * @param {boolean} HTMLFormat - return with the HTML format
+ * @param {boolean} isImg - return image as thumbnail
  * @returns {string} HTML Result
  */
-const imageThumbnail = (source: string, HTMLFormat?: boolean): string => {
-	if (!HTMLFormat) return source;
-	return `<img data-src = "${source}" class="file-grid-preview" src="${DEFAULT_FILE_THUMBNAIL}" onerror="this.onerror=null;this.src='${DEFAULT_IMAGE_THUMBNAIL}'" />`;
+const imageThumbnail = (source: string, HTMLFormat?: boolean, isImg = false): string => {
+	if (!HTMLFormat) return require(`../../Icon/${source}`);
+	return source.startsWith('data:image/')
+		? `<img class="file-grid-preview" src="${source}" />`
+		: `<img data-src = "${source}" data-is-img=${isImg} class="file-grid-preview" src="${DEFAULT_FILE_THUMBNAIL}" onerror="this.onerror=null;this.src='${DEFAULT_IMAGE_THUMBNAIL}'" />`;
 };
 
 /**
@@ -43,7 +46,7 @@ const fileThumbnail = async (filePath: string, category = 'folder', HTMLFormat =
 
 	if (IMAGE_TYPES.indexOf(ext) !== -1) {
 		if (imageAsThumbnail) {
-			return imageThumbnail(new FileAPI(filePath).readAsset(), HTMLFormat);
+			return imageThumbnail(filePath, HTMLFormat, true);
 		} else {
 			return imageThumbnail(DEFAULT_IMAGE_THUMBNAIL, HTMLFormat);
 		}
@@ -54,7 +57,7 @@ const fileThumbnail = async (filePath: string, category = 'folder', HTMLFormat =
 
 	const filename = filePath.toLowerCase(); // Lowercase filename
 	if (category === 'contextmenu') {
-		return imageThumbnail(await require(`../../Icon/contextmenu/${filePath + '.svg'}`));
+		return imageThumbnail(`contextmenu/${filePath + '.svg'}`);
 	}
 
 	if (category === 'file') {
@@ -62,7 +65,7 @@ const fileThumbnail = async (filePath: string, category = 'folder', HTMLFormat =
 			if (fileType?.fileNames?.indexOf(basename) !== undefined && fileType?.fileNames?.indexOf(basename) !== -1) {
 				const thumbnailPath = fileType.thumbnail?.(filePath);
 				if (thumbnailPath) {
-					return imageThumbnail(require(`../../Icon/${thumbnailPath}`), HTMLFormat);
+					return imageThumbnail(thumbnailPath, HTMLFormat);
 				}
 			}
 		}
@@ -70,24 +73,24 @@ const fileThumbnail = async (filePath: string, category = 'folder', HTMLFormat =
 			if (fileType.extension?.indexOf(ext) !== undefined && fileType.extension?.indexOf(ext) !== -1) {
 				const thumbnailPath = fileType.thumbnail?.(filePath);
 				if (thumbnailPath) {
-					return imageThumbnail(require(`../../Icon/${thumbnailPath}`), HTMLFormat);
+					return imageThumbnail(thumbnailPath, HTMLFormat);
 				}
 			}
 		}
-		return imageThumbnail(require(`../../Icon/${defaultThumbnail.DEFAULT_FILE_THUMBNAIL}`), HTMLFormat);
+		return imageThumbnail(defaultThumbnail.DEFAULT_FILE_THUMBNAIL, HTMLFormat);
 	} else {
 		if (category !== 'folder') {
 			const _key = `${category}-${filename}`;
 			if (Object.keys(customThumbnail).indexOf(_key) !== -1) {
-				return imageThumbnail(require(`../../Icon/${customThumbnail[_key]}`), HTMLFormat);
+				return imageThumbnail(customThumbnail[_key], HTMLFormat);
 			}
 		}
 		for (const fldr of folderConfig()) {
 			if (fldr.folderNames?.indexOf(basename) !== -1) {
-				return imageThumbnail(require(`../../Icon/${fldr.thumbnail}`), HTMLFormat);
+				return imageThumbnail(fldr.thumbnail, HTMLFormat);
 			}
 		}
-		return imageThumbnail(require(`../../Icon/${defaultThumbnail.DEFAULT_FOLDER_THUMBNAIL}`), HTMLFormat);
+		return imageThumbnail(defaultThumbnail.DEFAULT_FOLDER_THUMBNAIL, HTMLFormat);
 	}
 };
 

@@ -1,7 +1,6 @@
 import DirectoryAPI from '../../Api/directory';
 import { startLoading, stopLoading, isLoading } from '../Functions/Loading/loading';
 import { updateTheme } from '../Theme/theme';
-import LAZY_LOAD from '../Functions/lazyLoadingImage';
 import FileAPI from '../../Api/files';
 import changePosition from '../Functions/changePosition';
 import Recent from './recent';
@@ -16,6 +15,7 @@ import { getTrashedFiles } from '../../Api/trash';
 import OS from '../../Api/platform';
 import { reload } from '../Layout/windowManager';
 import focusingPath from '../Functions/focusingPath';
+import { LOAD_IMAGE } from '../Functions/lazyLoadingImage';
 let platform: string;
 let directoryInfo: DirectoryAPI;
 /**
@@ -57,7 +57,7 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promis
 					await displayFiles(trashedFiles.files, dir, MAIN_ELEMENT);
 					stopLoading();
 					updateTheme();
-					LAZY_LOAD();
+					LOAD_IMAGE();
 					changeWindowTitle(getBasename(dir));
 				}
 			});
@@ -79,8 +79,9 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promis
 					});
 					stopLoading();
 					updateTheme();
-					LAZY_LOAD();
+					LOAD_IMAGE();
 					changeWindowTitle(getBasename(getDirname(dir)));
+					console.timeEnd(dir);
 					if (!isReload) directoryInfo.listen(() => reload());
 				}
 			});
@@ -95,7 +96,7 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promis
 				await displayFiles(files.files, dir, MAIN_ELEMENT);
 				stopLoading();
 				updateTheme();
-				LAZY_LOAD();
+				LOAD_IMAGE();
 				changeWindowTitle(getBasename(dir));
 				if (!isReload) directoryInfo.listen(() => reload());
 				return;
