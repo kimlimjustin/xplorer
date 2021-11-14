@@ -75,7 +75,7 @@ const fileThumbnail = async (filePath: string, category = 'folder', HTMLFormat =
 	}
 	const ext = filePath.split('.').pop().toLowerCase(); // Get extension of filename
 	const basename = getBasename(filePath);
-
+	const preference = await Storage.get('preference');
 	if (IMAGE_TYPES.indexOf(ext) !== -1) {
 		if (imageAsThumbnail) {
 			return imageThumbnail(filePath, HTMLFormat, true);
@@ -85,6 +85,8 @@ const fileThumbnail = async (filePath: string, category = 'folder', HTMLFormat =
 	} else if (VIDEO_TYPES.indexOf(ext) !== -1) {
 		const assetSrc = new FileAPI(filePath).readAsset();
 		return HTMLFormat ? await videoPreview(assetSrc) : assetSrc;
+	} else if ((preference.extractExeIcon ?? false) && (ext === 'exe' || ext === 'msi')) {
+		return imageThumbnail(await new FileAPI(filePath).extractIcon(), HTMLFormat, true);
 	}
 
 	const filename = filePath.toLowerCase(); // Lowercase filename

@@ -89,6 +89,10 @@ class FileAPI {
 			invoke('is_dir', { path: this.fileName }).then((result: boolean) => resolve(result));
 		});
 	}
+
+	async extractIcon(): Promise<string> {
+		return await invoke('extract_icon', { filePath: this.fileName });
+	}
 }
 
 export default FileAPI;

@@ -499,3 +499,30 @@ pub async fn listen_dir(dir: String, window: tauri::Window) -> Result<String, St
     }
   }
 }
+use tauri::api::path::local_data_dir;
+// Extract exe icon, only for windows
+#[tauri::command]
+pub async fn extract_icon(file_path: String) -> Result<String, String> {
+  if cfg!(target_os = "windows") {
+    let storage_dir = Path::new(&local_data_dir().unwrap()).join("Xplorer/cache");
+    fs::create_dir_all(storage_dir.clone()).unwrap();
+    let basename = get_basename(file_path.clone());
+    let icon_path = storage_dir.join(basename.clone() + ".png");
+    if icon_path.exists() {
+      Ok(icon_path.to_str().unwrap().to_string())
+    } else {
+      Command::new("powershell")
+        .args(&[
+          "./src/extractIcon.ps1",
+          file_path.as_str(),
+          icon_path.to_str().unwrap(),
+        ])
+        .output()
+        .expect("Failed to extract icon");
+
+      Ok(icon_path.to_str().unwrap().to_string())
+    }
+  } else {
+    Err("Not supported".to_string())
+  }
+}

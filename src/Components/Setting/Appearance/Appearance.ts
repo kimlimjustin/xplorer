@@ -100,7 +100,7 @@ const Appearance = async (): Promise<void> => {
 	settingsMain.querySelector(`[name="extract-exe-icon"]`)?.addEventListener('change', (event: Event & { target: HTMLInputElement }) => {
 		const preference = _preference ?? {};
 		preference.extractExeIcon = event.target.checked;
-		//storage.set('preference', preference);
+		Storage.set('preference', preference);
 		reload();
 	});
 	settingsMain.querySelector('[name="imageAsThumbnail"]')?.addEventListener('change', (event: Event & { target: HTMLInputElement }) => {
