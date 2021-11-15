@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	contextMenuSubmenus = document.getElementById('contextmenu-submenus');
 });
 
-const MenuToElements = async (menu: contextMenuItem[][]) => {
+const MenuToElements = async (menu: contextMenuItem[][]): Promise<void> => {
 	for (let index = 0; index < menu.length; index++) {
 		const section = menu[index];
 		for (let i = 0; i < section.length; i++) {
@@ -98,6 +98,7 @@ const MenuToElements = async (menu: contextMenuItem[][]) => {
 		}
 		if (index !== menu.length - 1 && section.filter((menu) => menu.visible !== false).length > 0) contextMenu.innerHTML += `<hr />`;
 	}
+	return;
 };
 
 /**
@@ -121,15 +122,15 @@ const ContextMenu = (): void => {
 
 		// Create the context menu
 		if (getSelected().length > 1) {
-			MenuToElements(await MultipleSelectedMenu(target, filePath));
+			await MenuToElements(await MultipleSelectedMenu(target, filePath));
 		} else if (target.classList.contains('sidebar-item')) {
-			MenuToElements(await SidebarMenu(target, filePath));
+			await MenuToElements(await SidebarMenu(target, filePath));
 		} else if (target.classList.contains('drive-item')) {
-			MenuToElements(await SidebarDriveMenu(target, filePath));
+			await MenuToElements(await SidebarDriveMenu(target, filePath));
 		} else if (target === document.getElementById('workspace')) {
-			MenuToElements(await BodyMenu(target, filePath));
+			await MenuToElements(await BodyMenu(target, filePath));
 		} else {
-			MenuToElements(await FileMenu(target, filePath));
+			await MenuToElements(await FileMenu(target, filePath));
 		}
 
 		if (coorY + contextMenu.offsetHeight > window.innerHeight && coorY - contextMenu.offsetHeight > -50) {
