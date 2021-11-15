@@ -32,16 +32,8 @@
 		"thumbnail": "folder/folder-trash.svg"
 	},
 	{
-		"folderNames": ["setting", "settings"],
-		"thumbnail": "folder/folder-setting.svg"
-	},
-	{
 		"folderNames": ["recent", "recents"],
 		"thumbnail": "folder/folder-recent.svg"
-	},
-	{
-		"folderNames": ["favorite", "favorites"],
-		"thumbnail": "folder/folder-favorite.svg"
 	},
 	{
 		"folderNames": ["about"],
@@ -150,7 +142,7 @@
 	},
 	{
 		"folderNames": ["function", "functions", "math"],
-		"thumbnail": "folder/folder-function.svg"
+		"thumbnail": "folder/folder-functions.svg"
 	},
 	{
 		"folderNames": ["html", "page", "pages", "screen", "screens", "view", "views"],
