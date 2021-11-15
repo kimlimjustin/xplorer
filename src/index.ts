@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 	// Initialize folder to open
 	const cli = await CLIInformations();
 	if (!cli.args.length) {
-		if (_preference.on_startup === 'new') {
+		if ((_preference.on_startup ?? 'new') === 'new') {
 			Home();
 		}
 		// Initialize Tabs

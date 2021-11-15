@@ -24,6 +24,8 @@
 	"System Default": "System Default",
 	"Automatically play video file as thumbnail (May consume high amount of RAM)": "Automatically play video file as thumbnail (May consume high amount of RAM)",
 	"Extract exe file icon and make it as the thumbnail (Turning it on might crashes Xplorer)": "Extract exe file icon and make it as the thumbnail (Turning it on might crashes Xplorer)",
+	"Preview image on hover": "Preview image on hover",
+	"Font Family": "Font Family",
 	"Preference": "Preference",
 	"App Language": "App Language",
 	"Files and Folders": "Files and Folders",

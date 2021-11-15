@@ -22,14 +22,16 @@ let themeJSON:themeValue; // user preference theme json
 import * as defaultThemeData from "./theme.json"
 const defaultThemeJSON:Theme = defaultThemeData
 
+let currentTheme:string;
+
 /**
  * Get style of an element
  * @param {string} variable - What style you wanna get?
  * @param {string} theme - the current theme
  * @returns {string|null} style of the [variable] of the element
  */
-const getElementStyle = (variable:string, theme:string): string|null => {
-    return themeJSON?.[variable] || defaultThemeJSON[theme]?.[variable]
+const getElementStyle = (variable:string, theme?:string): string|null => {
+    return themeJSON?.[variable] || defaultThemeJSON[theme ?? currentTheme]?.[variable]
 }
 
 /**
@@ -56,13 +58,21 @@ const getXYCoordinates = (e: MouseEvent): { x: number; y: number } => {
 /**
  * Change page theme
  * @param {string} theme - The current theme
- * @returns {void}
+ * @returns {Promise<void>}
  */
-const changeTheme = (theme?:string): void => {
+const changeTheme = async (theme?:string): Promise<void> => {
+    const appearance = await Storage.get("appearance");
     changeElementTheme(document.querySelector(".main-box"), "mainBackground", "background", theme)
     changeElementTheme(document.body, "textColor", "color", theme)
-    changeElementTheme(document.body, "fontSize", "fontSize", theme)
-    changeElementTheme(document.body, "fontFamily", "fontFamily", theme)
+    if(appearance?.fontSize){
+        document.body.style.fontSize = appearance.fontSize
+
+    }
+    else changeElementTheme(document.body, "fontSize", "fontSize", theme)
+    if(appearance?.fontFamily){
+        document.body.style.fontFamily = appearance.fontFamily
+    } 
+    else changeElementTheme(document.body, "fontFamily", "fontFamily", theme)
     document.body.style.setProperty("--scrollbar-track", themeJSON ? themeJSON.scrollbarTrackBackground : defaultThemeJSON[theme]?.scrollbarTrackBackground)
     document.body.style.setProperty("--scrollbar-thumb", themeJSON ? themeJSON.scrollbarThumbBackground : defaultThemeJSON[theme]?.scrollbarThumbBackground)
     document.body.style.setProperty("--scrollbar-thumb-hover", themeJSON ? themeJSON.scrollbarThumbHoverBackground : defaultThemeJSON[theme]?.scrollbarThumbHoverBackground)
@@ -229,10 +239,12 @@ const updateTheme = async ():Promise<void> => {
     const data:themeData = await Storage.get("theme")
     // If user has no preference theme
     if (!data || !Object.keys(data).length) {
+        currentTheme = defaultTheme
         await changeTheme( defaultTheme)
     } else {
         // If user preference is default color theme...
         if (Object.keys(defaultThemeJSON).indexOf(data.theme) !== -1) {
+            currentTheme = defaultTheme
             await changeTheme( data.theme)
         }
         else { // Otherwise read user theme json file
@@ -242,15 +254,17 @@ const updateTheme = async ():Promise<void> => {
                         // eslint-disable-next-line
                         const customStylesheetScript:any = require(i.source);
                         themeJSON = customStylesheetScript.default()
+                        currentTheme = defaultTheme
                         await changeTheme( data.theme)
                     }
                 }
             } else {
-                await changeTheme(defaultTheme)
+                    currentTheme = defaultTheme
+                    await changeTheme(defaultTheme)
             }
         }
     }
     return;
 }
 
-export { changeTheme, updateTheme, detectDefaultTheme, updateNativeTheme }
+export { changeTheme, updateTheme, detectDefaultTheme, updateNativeTheme, getElementStyle }

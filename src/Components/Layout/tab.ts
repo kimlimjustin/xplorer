@@ -113,7 +113,7 @@ const Tab = async (reveal = false): Promise<void> => {
 		focusHistory: [1],
 		latestIndex: 1,
 	}; // default tabs information
-	if (_preference.on_startup === 'new') {
+	if ((_preference.on_startup ?? 'new') === 'new') {
 		// Store default tabs information into local storage
 		Storage.set(`tabs-${windowName}`, defaultTabsInfo);
 		tabsManager.setAttribute('data-tauri-drag-region', '');

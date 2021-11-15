@@ -20,7 +20,7 @@ interface RecentType {
 const Recent = async (): Promise<void> => {
 	startLoading();
 	// Preference data
-	const layout = (await Storage.get('layout'))?.['Recent'] ?? (await Storage.get('preference'))?.layout ?? 's';
+	const layout = (await Storage.get('layout'))?.['Recent'] ?? (await Storage.get('appearance'))?.layout ?? 's';
 	const sort = (await Storage.get('sort'))?.['Recent'] ?? 'F';
 	// Get the main element
 	const MAIN_ELEMENT = document.getElementById('workspace');

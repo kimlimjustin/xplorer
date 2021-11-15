@@ -6,4 +6,9 @@ const isVSCodeInstalled = async (): Promise<boolean> => {
 	}
 	return _vscodeInstalled;
 };
-export { isVSCodeInstalled };
+
+const getAvailableFonts = async (): Promise<string[]> => {
+	return await invoke('get_available_fonts');
+};
+
+export { isVSCodeInstalled, getAvailableFonts };

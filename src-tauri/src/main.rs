@@ -6,6 +6,7 @@ mod drives;
 mod file_lib;
 mod files_api;
 mod storage;
+use font_loader::system_fonts;
 use std::env;
 use std::path::Path;
 use std::process::Command;
@@ -65,6 +66,12 @@ fn check_vscode_installed() -> Result<bool, String> {
   }
 }
 
+#[tauri::command]
+fn get_available_fonts() -> Result<Vec<String>, String> {
+  let fonts = system_fonts::query_all();
+  Ok(fonts)
+}
+
 fn main() {
   tauri::Builder::default()
     .invoke_handler(tauri::generate_handler![
@@ -92,7 +99,8 @@ fn main() {
       storage::read_data,
       storage::delete_storage_data,
       get_cli_args,
-      check_vscode_installed
+      check_vscode_installed,
+      get_available_fonts
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
