@@ -22,9 +22,10 @@ const displayFiles = async (
 ): Promise<HTMLElement> => {
 	const FilesElement = onElement ?? document.createElement('div');
 	const preference = await Storage.get('preference');
+	const appearance = await Storage.get('appearance');
 	const hideSystemFile = preference?.hideSystemFiles ?? true;
 	const dirAlongsideFiles = preference?.dirAlongsideFiles ?? false;
-	const layout = (await Storage.get('layout'))?.[dir] ?? preference?.layout ?? 'd';
+	const layout = (await Storage.get('layout'))?.[dir] ?? appearance?.layout ?? 'd';
 	const sort = (await Storage.get('sort'))?.[dir] ?? (await getDefaultSort(dir)) ?? 'a';
 
 	files = files.sort((a, b) => {
@@ -54,7 +55,7 @@ const displayFiles = async (
 		files = files.filter((file) => !file.is_system);
 	}
 
-	const imageAsThumbnail = (preference.imageAsThumbnail ?? 'smalldir') === 'smalldir' ? files.length < 100 : preference.imageAsThumbnail === 'yes';
+	const imageAsThumbnail = (appearance.imageAsThumbnail ?? 'smalldir') === 'smalldir' ? files.length < 100 : appearance.imageAsThumbnail === 'yes';
 	for (const file of files) {
 		const fileType = file.file_type;
 		const preview = await fileThumbnail(file.file_path, file.is_dir ? 'folder' : 'file', true, imageAsThumbnail);

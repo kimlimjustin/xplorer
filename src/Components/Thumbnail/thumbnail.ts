@@ -36,9 +36,9 @@ const imageThumbnail = (source: string, HTMLFormat?: boolean, isImg = false): st
  * @returns {string} HTML Result
  */
 const videoPreview = async (filename: string): Promise<string> => {
-	const preference = await Storage.get('preference');
+	const appearance = await Storage.get('appearance');
 	const alt = require(`../../Icon/${defaultThumbnail.DEFAULT_VIDEO_THUMBNAIL}`);
-	return preference?.videoAsThumbnail
+	return appearance?.videoAsThumbnail
 		? `<video autoplay loop muted class="file-grid-preview"><source src = "${filename}" /><img src = "${alt}" /></video>`
 		: imageThumbnail(alt, true);
 };
@@ -75,7 +75,7 @@ const fileThumbnail = async (filePath: string, category = 'folder', HTMLFormat =
 	}
 	const ext = filePath.split('.').pop().toLowerCase(); // Get extension of filename
 	const basename = getBasename(filePath);
-	const preference = await Storage.get('preference');
+	const appearance = await Storage.get('appearance');
 	if (IMAGE_TYPES.indexOf(ext) !== -1) {
 		if (imageAsThumbnail) {
 			return imageThumbnail(filePath, HTMLFormat, true);
@@ -85,7 +85,7 @@ const fileThumbnail = async (filePath: string, category = 'folder', HTMLFormat =
 	} else if (VIDEO_TYPES.indexOf(ext) !== -1) {
 		const assetSrc = new FileAPI(filePath).readAsset();
 		return HTMLFormat ? await videoPreview(assetSrc) : assetSrc;
-	} else if ((preference.extractExeIcon ?? false) && (ext === 'exe' || ext === 'msi')) {
+	} else if ((appearance.extractExeIcon ?? false) && (ext === 'exe' || ext === 'msi')) {
 		return imageThumbnail(await new FileAPI(filePath).extractIcon(), HTMLFormat, true);
 	}
 

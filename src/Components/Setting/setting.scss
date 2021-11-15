@@ -220,6 +220,49 @@
 		overflow: hidden;
 		white-space: nowrap;
 	}
+	.number-ctrl {
+		width: fit-content;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		cursor: pointer;
+		transition: all 0.2s ease-in-out;
+		&:hover {
+		}
+		.number-ctrl-minus {
+			border-radius: 25% 0 0 25%;
+		}
+		.number-ctrl-plus {
+			border-radius: 0 25% 25% 0;
+		}
+		.number-ctrl-minus,
+		.number-ctrl-plus {
+			background-color: #f1f1f1;
+			text-align: center;
+			width: 2rem;
+			font-size: 1.5rem;
+			padding: 0.2rem !important;
+			text-overflow: ellipsis;
+			overflow: hidden;
+			white-space: nowrap;
+		}
+		.number-ctrl-input {
+			background-color: #e1e1e1;
+			width: 3rem;
+			text-align: center;
+			border: none;
+			outline: none;
+			font-size: 1.5rem;
+			padding: 0.2rem;
+			text-overflow: ellipsis;
+			overflow: hidden;
+			white-space: nowrap;
+			&::-webkit-inner-spin-button {
+				-webkit-appearance: none;
+				margin: 0;
+			}
+		}
+	}
 }
 
 @keyframes open-setting {
