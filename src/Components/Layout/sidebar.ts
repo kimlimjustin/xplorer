@@ -22,6 +22,10 @@ const changeSidebar = (newElement: HTMLElement) => {
 
 let FavoritesData: FavoritesAPI;
 
+const isDefaultFavorite = async (filePath: string) => {
+	return (await defaultFavorites()).some((favorite) => favorite.path === filePath);
+};
+
 /**
  * Sidebar initializer function
  * @returns {Promise<void>}
@@ -41,7 +45,7 @@ const createSidebar = async (): Promise<void> => {
 			favoritesElement += `<span data-path = "${
 				favorite.path
 			}" data-isdir="${isdir}" class="sidebar-hover-effect sidebar-item"><img src="${await fileThumbnail(
-				(await new FileAPI(favorite.path).exists()) ? favorite.path : favorite.name,
+				(await new FileAPI(favorite.path).exists()) && !(await isDefaultFavorite(favorite.path)) ? favorite.path : favorite.name,
 				defaultFavoritesList.indexOf(favorite.name) === -1 && favorite.path !== 'xplorer://Home' ? (isdir ? 'folder' : 'file') : 'sidebar',
 				false
 			)}" alt="${favorite.name} icon"><span class="sidebar-text">${await Translate(favorite.name)}</span></span>`;
