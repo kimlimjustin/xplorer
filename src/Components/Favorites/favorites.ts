@@ -7,6 +7,10 @@ import defaultFavorites from './defaultFavorites';
 import FileAPI from '../../Api/files';
 let FavoritesData: FavoritesAPI;
 
+const isDefaultFavorite = async (filePath: string) => {
+	return (await defaultFavorites()).some((favorite) => favorite.path === filePath);
+};
+
 /**
  * Create favorites section
  * @returns {{Promise<string>} Favorites section HTML code
@@ -24,11 +28,12 @@ const Favorites = async (): Promise<string> => {
 	const defaultFavoritesList = (await defaultFavorites()).map((favorite) => favorite.name);
 	for (const favorite of favorites) {
 		if (favorite.path === 'xplorer://Home') continue;
+		const exists = await new FileAPI(favorite.path).exists();
+		if (!exists && !(await isDefaultFavorite(favorite.path))) continue;
 		let icon = favorite.icon;
 		if (!icon) {
 			if (defaultFavoritesList.indexOf(favorite.name) === -1) {
 				const isdir = await new DirectoryAPI(favorite.path).isDir();
-				const exists = await new FileAPI(favorite.path).exists();
 				icon = await fileThumbnail(exists ? favorite.path : favorite.name, isdir ? 'folder' : 'file', false);
 			} else {
 				icon = await fileThumbnail(favorite.name.toLowerCase(), 'folder', false);

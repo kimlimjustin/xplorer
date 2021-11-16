@@ -41,11 +41,13 @@ const createSidebar = async (): Promise<void> => {
 		let favoritesElement = '';
 		const defaultFavoritesList = (await defaultFavorites()).map((favorite) => favorite.name);
 		for (const favorite of favorites) {
+			const exists = await new FileAPI(favorite.path).exists();
+			if (!(await isDefaultFavorite(favorite.path)) && !exists) continue;
 			const isdir = favorite.path.startsWith('xplorer://') ? true : await new DirectoryAPI(favorite.path).isDir();
 			favoritesElement += `<span data-path = "${
 				favorite.path
 			}" data-isdir="${isdir}" class="sidebar-hover-effect sidebar-item"><img src="${await fileThumbnail(
-				(await new FileAPI(favorite.path).exists()) && !(await isDefaultFavorite(favorite.path)) ? favorite.path : favorite.name,
+				exists && !(await isDefaultFavorite(favorite.path)) ? favorite.path : favorite.name,
 				defaultFavoritesList.indexOf(favorite.name) === -1 && favorite.path !== 'xplorer://Home' ? (isdir ? 'folder' : 'file') : 'sidebar',
 				false
 			)}" alt="${favorite.name} icon"><span class="sidebar-text">${await Translate(favorite.name)}</span></span>`;
