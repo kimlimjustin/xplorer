@@ -23,8 +23,8 @@ const DEFAULT_IMAGE_THUMBNAIL = require(`../../Icon/${defaultThumbnail.DEFAULT_I
  * @param {boolean} isImg - return image as thumbnail
  * @returns {string} HTML Result
  */
-const imageThumbnail = (source: string, HTMLFormat?: boolean, isImg = false): string => {
-	if (!HTMLFormat) return require(`../../Icon/${source}`);
+const imageThumbnail = async (source: string, HTMLFormat?: boolean, isImg = false): Promise<string> => {
+	if (!HTMLFormat) return (await new FileAPI(source).exists()) ? new FileAPI(source).readAsset() : require(`../../Icon/${source}`);
 	return source.startsWith('data:image/')
 		? `<img class="file-grid-preview" src="${source}" />`
 		: `<img data-src = "${source}" data-is-img=${isImg} class="file-grid-preview" src="${DEFAULT_FILE_THUMBNAIL}" onerror="this.onerror=null;this.src='${DEFAULT_IMAGE_THUMBNAIL}'" />`;
