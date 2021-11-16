@@ -7,6 +7,7 @@ import DirectoryAPI from '../../Api/directory';
 import Storage from '../../Api/storage';
 import IsValid from '../Functions/validChecker';
 import defaultFavorites from '../Favorites/defaultFavorites';
+import FileAPI from '../../Api/files';
 interface Favorites {
 	name: string;
 	path: string;
@@ -40,7 +41,7 @@ const createSidebar = async (): Promise<void> => {
 			favoritesElement += `<span data-path = "${
 				favorite.path
 			}" data-isdir="${isdir}" class="sidebar-hover-effect sidebar-item"><img src="${await fileThumbnail(
-				favorite.name,
+				(await new FileAPI(favorite.path).exists()) ? favorite.path : favorite.name,
 				defaultFavoritesList.indexOf(favorite.name) === -1 && favorite.path !== 'xplorer://Home' ? (isdir ? 'folder' : 'file') : 'sidebar',
 				false
 			)}" alt="${favorite.name} icon"><span class="sidebar-text">${await Translate(favorite.name)}</span></span>`;
