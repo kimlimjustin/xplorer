@@ -1,4 +1,4 @@
-import ThumbnailFileNode from './ThumbnailFileNode';
+import ThumbnailFileNode from './thumbnailFileNode';
 
 class ThumbnailFileTrie {
 	public _root: ThumbnailFileNode;
