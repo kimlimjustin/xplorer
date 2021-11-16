@@ -1,4 +1,4 @@
-import ThumbnailFolderNode from './ThumbnailFolderNode';
+import ThumbnailFolderNode from './thumbnailFolderNode';
 
 class ThumbnailFolderTrie {
 	public _root: ThumbnailFolderNode;
