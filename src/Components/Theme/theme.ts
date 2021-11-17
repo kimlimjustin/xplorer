@@ -62,17 +62,23 @@ const getXYCoordinates = (e: MouseEvent): { x: number; y: number } => {
  */
 const changeTheme = async (theme?:string): Promise<void> => {
     const appearance = await Storage.get("appearance");
+    document.body.style.setProperty('--edge-radius', appearance.frameStyle === 'os'? '0px': '10px')
     changeElementTheme(document.querySelector(".main-box"), "mainBackground", "background", theme)
     changeElementTheme(document.body, "textColor", "color", theme)
     if(appearance?.fontSize){
         document.body.style.fontSize = appearance.fontSize
-
+        document.documentElement.style.fontSize = appearance.fontSize
     }
     else changeElementTheme(document.body, "fontSize", "fontSize", theme)
     if(appearance?.fontFamily){
         document.body.style.fontFamily = appearance.fontFamily
+        document.documentElement.style.fontFamily = appearance.fontFamily
     } 
     else changeElementTheme(document.body, "fontFamily", "fontFamily", theme)
+    if(appearance?.transparentSidebar ?? true) document.body.style.setProperty('--sidebar-transparency', appearance?.windowTransparency ?? '0.9')
+    if(appearance?.transparentWorkspace ?? false) document.body.style.setProperty('--workspace-transparency', appearance?.windowTransparency ?? '0.9')
+    if(appearance?.transparentTopbar ?? false) document.body.style.setProperty('--topbar-transparency', appearance?.windowTransparency ?? '0.9')    
+
     document.body.style.setProperty("--scrollbar-track", themeJSON ? themeJSON.scrollbarTrackBackground : defaultThemeJSON[theme]?.scrollbarTrackBackground)
     document.body.style.setProperty("--scrollbar-thumb", themeJSON ? themeJSON.scrollbarThumbBackground : defaultThemeJSON[theme]?.scrollbarThumbBackground)
     document.body.style.setProperty("--scrollbar-thumb-hover", themeJSON ? themeJSON.scrollbarThumbHoverBackground : defaultThemeJSON[theme]?.scrollbarThumbHoverBackground)
@@ -123,6 +129,12 @@ const changeTheme = async (theme?:string): Promise<void> => {
     changeElementTheme(document.querySelector(".prompt-exit-btn"), "exitColor", "color", theme)
     changeElementTheme(document.querySelector(".prompt-ok"), "promptOkColor", "color", theme)
     changeElementTheme(document.querySelector(".prompt-ok"), "promptOkBackground", "background", theme)
+    changeElementTheme(document.querySelector(".number-ctrl-minus"), "settingsNumberCtrlControllerBackground", "background", theme)
+    changeElementTheme(document.querySelector(".number-ctrl-plus"), "settingsNumberCtrlControllerBackground", "background", theme)
+    changeElementTheme(document.querySelector(".number-ctrl-input"), "settingsNumberCtrlInputBackground", "background", theme)
+    changeElementTheme(document.querySelector(".number-ctrl-minus"), "settingsNumberCtrlControllerColor", "color", theme)
+    changeElementTheme(document.querySelector(".number-ctrl-plus"), "settingsNumberCtrlControllerColor", "color", theme)
+    changeElementTheme(document.querySelector(".number-ctrl-input"), "settingsNumberCtrlInputColor", "color", theme)
     document.querySelector<HTMLElement>(".preview-object")?.style?.setProperty("--preview-object-table-border", themeJSON ? themeJSON.previewObjectTableBorder : defaultThemeJSON[theme].previewObjectTableBorder)
     document.querySelector<HTMLElement>(".preview-object")?.style?.setProperty("--preview-object-table-row-even-bg", themeJSON ? themeJSON.previewObjectTableRowEvenBackground : defaultThemeJSON[theme].previewObjectTableRowEvenBackground)
     document.querySelector<HTMLElement>(".preview-object")?.style?.setProperty("--preview-object-table-row-even-color", themeJSON ? themeJSON.previewObjectTableRowEvenColor : defaultThemeJSON[theme].previewObjectTableRowEvenColor)

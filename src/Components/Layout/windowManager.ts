@@ -1,6 +1,6 @@
 import { appWindow } from '@tauri-apps/api/window';
 import Storage from '../../Api/storage';
-import windowName, { listenWindowClose } from '../../Api/window';
+import windowName, { listenWindowClose, setDecorations } from '../../Api/window';
 import { OpenDir } from '../Open/open';
 import focusingPath from '../Functions/focusingPath';
 import getDirname from '../Functions/path/dirname';
@@ -54,12 +54,17 @@ const goParentDir = async (): Promise<void> => {
  * @returns {Promise<void>}
  */
 const windowManager = async (): Promise<void> => {
+	const appearance = await Storage.get('appearance');
+	if (appearance.frameStyle === 'os') {
+		document.querySelector('.window-manager').parentNode.removeChild(document.querySelector('.window-manager'));
+	}
+	setDecorations(appearance.frameStyle === 'os');
 	// Minimize the screen
-	document.querySelector('#minimize').addEventListener('click', minimize);
+	document.querySelector('#minimize')?.addEventListener('click', minimize);
 	// Maximize the screen
-	document.querySelector('#maximize').addEventListener('click', maximize);
+	document.querySelector('#maximize')?.addEventListener('click', maximize);
 	// Exit window
-	document.querySelector('#exit').addEventListener('click', close);
+	document.querySelector('#exit')?.addEventListener('click', close);
 
 	// Refresh the page
 	document.querySelector('#refresh').addEventListener('click', reload);

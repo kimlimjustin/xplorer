@@ -5,10 +5,13 @@
 	position: fixed;
 	animation-fill-mode: forwards;
 	z-index: 5;
+	border-radius: var(--edge-radius);
 
 	.settings-sidebar {
 		flex: 1;
 		min-width: 250px;
+		opacity: var(--sidebar-transparency);
+		border-radius: var(--edge-radius) 0 0 var(--edge-radius);
 		.settings-sidebar-header {
 			padding: 1rem;
 			text-align: left;
@@ -32,11 +35,15 @@
 	.settings-main {
 		flex: 4;
 		padding: 1rem;
+		overflow-y: auto;
+		border-radius: 0 var(--edge-radius) var(--edge-radius) 0;
+		opacity: var(--workspace-transparency);
 		select {
 			background: inherit;
 			padding: 0.25rem 0.5rem;
 			border-radius: 2px;
 			color: inherit;
+			font-size: 1rem;
 		}
 
 		.toggle {
@@ -97,15 +104,19 @@
 			position: absolute;
 			left: 60px;
 			top: 4px;
-			width: calc(75vw - 60px);
+			width: calc(75vw - 80px);
 		}
 
 		.toggle-box {
 			margin: 10px 0;
 		}
+		.transparency-slider {
+			width: 15rem;
+		}
 	}
 
 	.exit-setting-btn {
+		border-radius: var(--edge-radius) 0 0 0;
 		cursor: pointer;
 	}
 	.exit-setting-icon {
@@ -227,8 +238,6 @@
 		align-items: center;
 		cursor: pointer;
 		transition: all 0.2s ease-in-out;
-		&:hover {
-		}
 		.number-ctrl-minus {
 			border-radius: 25% 0 0 25%;
 		}
@@ -237,23 +246,22 @@
 		}
 		.number-ctrl-minus,
 		.number-ctrl-plus {
-			background-color: #f1f1f1;
 			text-align: center;
 			width: 2rem;
 			font-size: 1.5rem;
-			padding: 0.2rem !important;
+			height: 2rem;
 			text-overflow: ellipsis;
 			overflow: hidden;
 			white-space: nowrap;
 		}
 		.number-ctrl-input {
-			background-color: #e1e1e1;
 			width: 3rem;
+			height: 1.5rem;
 			text-align: center;
 			border: none;
 			outline: none;
 			font-size: 1.5rem;
-			padding: 0.2rem;
+			padding: 0.25rem;
 			text-overflow: ellipsis;
 			overflow: hidden;
 			white-space: nowrap;
