@@ -1,5 +1,6 @@
 import fileThumbnail from '../Thumbnail/thumbnail';
 import FavoritesAPI from '../../Api/favorites';
+import IsValid from '../Functions/validChecker';
 let FavoritesData: FavoritesAPI;
 interface Favorites {
 	name: string;
@@ -7,7 +8,7 @@ interface Favorites {
 	icon: string;
 }
 export default async function defaultFavorites(): Promise<Favorites[]> {
-	if (!FavoritesData) {
+	if (!IsValid(FavoritesData)) {
 		FavoritesData = new FavoritesAPI();
 		await FavoritesData.build();
 	}
