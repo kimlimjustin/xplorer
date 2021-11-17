@@ -7,6 +7,7 @@ import FileAPI from '../../Api/files';
 import FileMetaData from '../../Typings/fileMetaData';
 import NormalizeSlash from '../Functions/path/normalizeSlash';
 import formatBytes from '../Functions/filesize';
+import { LOAD_IMAGE } from '../Functions/lazyLoadingImage';
 
 interface RecentType {
 	path: string;
@@ -31,10 +32,12 @@ const Recent = async (): Promise<void> => {
 	let recents = await Promise.all(
 		_recents.map(async (_recent) => {
 			const FileData = new FileAPI(_recent.path);
+			if (!(await FileData.exists())) return null;
 			const properties = await FileData.properties();
 			return { path: _recent.path, timestamp: _recent.timestamp, properties };
 		})
 	);
+	recents = recents.filter((recent) => recent !== null);
 	if (!recents) {
 		MAIN_ELEMENT.classList.add('empty-dir-notification');
 		MAIN_ELEMENT.innerText = 'This folder is empty.';
@@ -125,6 +128,7 @@ const Recent = async (): Promise<void> => {
 			MAIN_ELEMENT.appendChild(fileGrid);
 		}
 		updateTheme();
+		LOAD_IMAGE();
 	}
 	stopLoading();
 };
