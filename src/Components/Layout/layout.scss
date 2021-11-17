@@ -1,5 +1,3 @@
-$edge-radius: 10px;
-
 .xplorer-brand {
 	font-size: 1.5rem;
 	text-align: center;
@@ -22,9 +20,9 @@ $edge-radius: 10px;
 	display: flex;
 	flex-direction: column;
 	height: 100vh;
-	border-radius: $edge-radius 0 0 $edge-radius;
+	border-radius: var(--edge-radius) 0 0 var(--edge-radius);
 	overflow: auto;
-	opacity: 0.9;
+	opacity: var(--sidebar-transparency);
 	#sidebar-nav {
 		flex-grow: 1;
 		margin: 1rem 0;
@@ -32,7 +30,6 @@ $edge-radius: 10px;
 		overflow: auto;
 		width: -webkit-fill-available;
 		.sidebar-nav-item {
-			// margin: 1rem 0.5rem;
 			.sidebar-nav-item-dropdown-btn {
 				cursor: pointer;
 				font-size: 1rem;
@@ -40,6 +37,7 @@ $edge-radius: 10px;
 				flex-direction: row;
 				padding: 0.7rem;
 				gap: 1rem;
+				font-size: inherit;
 				img {
 					width: 1.5rem;
 					vertical-align: bottom;
@@ -117,8 +115,9 @@ $edge-radius: 10px;
 		margin: 2rem 0;
 	}
 	.topbar {
-		border-radius: 0 $edge-radius 0 0;
+		border-radius: 0 var(--edge-radius) 0 0;
 		padding: 15px;
+		opacity: var(--topbar-transparency);
 		&:focus {
 			cursor: grabbing;
 		}
@@ -220,12 +219,13 @@ $edge-radius: 10px;
 		}
 	}
 	.main-box {
-		border-radius: 0 0 $edge-radius 0;
+		border-radius: 0 0 var(--edge-radius) 0;
 		overflow-x: hidden;
 		overflow-y: auto;
 		height: 100%;
 		box-sizing: border-box;
 		display: flex;
+		opacity: var(--workspace-transparency);
 
 		#workspace {
 			padding: 1rem;

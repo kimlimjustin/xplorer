@@ -1,9 +1,10 @@
-import { reload } from '../../Layout/windowManager';
+import { reload, minimize, maximize, close } from '../../Layout/windowManager';
 import Translate from '../../I18n/i18n';
 import Storage from '../../../Api/storage';
 import OS from '../../../Api/platform';
 import { getAvailableFonts } from '../../../Api/app';
-import { getElementStyle } from '../../Theme/theme';
+import { getElementStyle, updateTheme } from '../../Theme/theme';
+import { setDecorations } from '../../../Api/window';
 let platform: string;
 /**
  * Create appearence section
@@ -24,6 +25,11 @@ const Appearance = async (): Promise<void> => {
 	const settingsMain = document.querySelector('.settings-main');
 	const fontFamily = _appearance?.fontFamily ?? getElementStyle('fontFamily');
 	const fontSize = parseInt(_appearance?.fontSize ?? getElementStyle('fontSize'));
+	const windowTransparency = parseInt(_appearance?.windowTransparency ?? 90);
+	const transparentSidebar = _appearance?.transparentSidebar ?? true;
+	const transparentTopbar = _appearance?.transparentTopbar ?? false;
+	const transparentWorkspace = _appearance?.transparentWorkspace ?? false;
+	const frameStyle = _appearance?.frameStyle ?? 'default';
 
 	const availableThemes = [
 		{ name: 'Light', identifier: 'light', category: 'light' },
@@ -32,6 +38,7 @@ const Appearance = async (): Promise<void> => {
 		{ name: 'Dark+', identifier: 'dark+', category: 'dark' },
 	].concat(_theme?.availableThemes ?? []);
 	const availableFonts = await getAvailableFonts();
+	const default_i18n = await Translate('Default');
 	const appTheme_i18n = await Translate('App Theme');
 	const filePreview_i18n = await Translate('File Preview');
 	const defaultFileLayout_i18n = await Translate('Default File Layout');
@@ -42,6 +49,11 @@ const Appearance = async (): Promise<void> => {
 	const previewImageOnHover_i18n = await Translate('Preview image on hover');
 	const fontFamily_i18n = await Translate('Font Family');
 	const fontSize_i18n = await Translate('Font Size');
+	const windowTransparency_i18n = await Translate('Window Transparency');
+	const transparentSidebar_i18n = await Translate('Transparent Sidebar');
+	const transparentTopbar_i18n = await Translate('Transparent Topbar');
+	const transparentWorkspace_i18n = await Translate('Transparent Workspace');
+	const frameStyle_i18n = await Translate('Frame Style');
 	const appearancePage = `<h3 class="settings-title">${appTheme_i18n}</h3>
 	<select name="theme">
 		<option>${systemDefault_i18n}</option>
@@ -65,7 +77,35 @@ const Appearance = async (): Promise<void> => {
 		<input type="number" name="fontSize" value="${fontSize}" step="1" class="number-ctrl-input">
 		<div class="number-ctrl-plus">+</div>
 	</div>
+	<h3 class="settings-title">${windowTransparency_i18n}: <span id='transparency-label'>${windowTransparency}</span>%</h3>
+		<input type="range" value="${windowTransparency}" min="5" max="100" class="transparency-slider">
 	</div>
+	<div class="toggle-box">
+		<label class="toggle">
+			<input type="checkbox" name="transparent-sidebar" ${transparentSidebar ? 'checked' : ''}>
+			<span class="toggle-slider"></span>
+			<span class="toggle-label">${transparentSidebar_i18n}</span>
+		</label>
+	</div>
+	<div class="toggle-box">
+		<label class="toggle">
+			<input type="checkbox" name="transparent-topbar" ${transparentTopbar ? 'checked' : ''}>
+			<span class="toggle-slider"></span>
+			<span class="toggle-label">${transparentTopbar_i18n}</span>
+		</label>
+	</div>
+	<div class="toggle-box">
+		<label class="toggle">
+			<input type="checkbox" name="transparent-workspace" ${transparentWorkspace ? 'checked' : ''}>
+			<span class="toggle-slider"></span>
+			<span class="toggle-label">${transparentWorkspace_i18n}</span>
+		</label>
+	</div>
+	<h3 class="settings-title">${frameStyle_i18n}</h3>
+	<select name="frame-style">
+		<option value="default" ${frameStyle === 'default' ? 'selected' : ''}>${default_i18n}</option>
+		<option value="os" ${frameStyle === 'os' ? 'selected' : ''}>${systemDefault_i18n}</option>
+	</select>
 	<h3 class="settings-title">${filePreview_i18n}</h3>
 	<div class="toggle-box">
 		<label class="toggle">
@@ -108,28 +148,100 @@ const Appearance = async (): Promise<void> => {
 		<option ${layout === 'd' ? 'selected' : ''} value="d">Detail View</option>
 	</select>`;
 	settingsMain.innerHTML = appearancePage;
+	updateTheme();
 	settingsMain.querySelectorAll('.number-ctrl').forEach((ctrl) => {
 		const number = ctrl.querySelector<HTMLInputElement>('.number-ctrl-input');
 		ctrl.querySelector('.number-ctrl-minus').addEventListener('click', () => {
 			number.value = (parseInt(number.value) - 1).toString();
 			const appearance = _appearance ?? {};
-			appearance.fontSize = `${parseInt(number.value) - 1}px`;
-			document.body.style.fontSize = `${parseInt(number.value) - 1}px`;
+			appearance.fontSize = `${number.value}px`;
+			document.body.style.fontSize = `${number.value}px`;
+			document.documentElement.style.fontSize = `${number.value}px`;
 			Storage.set('appearance', appearance);
 		});
 		ctrl.querySelector('.number-ctrl-plus').addEventListener('click', () => {
 			number.value = (parseInt(number.value) + 1).toString();
 			const appearance = _appearance ?? {};
-			appearance.fontSize = `${parseInt(number.value) + 1}px`;
-			document.body.style.fontSize = `${parseInt(number.value) + 1}px`;
+			appearance.fontSize = `${number.value}px`;
+			document.body.style.fontSize = `${number.value}px`;
+			document.documentElement.style.fontSize = `${number.value}px`;
 			Storage.set('appearance', appearance);
 		});
 	});
-	console.log(settingsMain.querySelector('[name="fontSize"]'));
+	settingsMain.querySelector('.transparency-slider').addEventListener('input', (event: Event & { target: HTMLInputElement }) => {
+		const value = parseInt(event.target.value);
+		const appearance = _appearance ?? {};
+		appearance.windowTransparency = `${value}%`;
+		document.getElementById('transparency-label').innerHTML = String(value);
+		if (appearance?.transparentSidebar ?? true)
+			document.body.style.setProperty('--sidebar-transparency', appearance?.windowTransparency ?? '0.9');
+		if (appearance?.transparentWorkspace ?? false)
+			document.body.style.setProperty('--workspace-transparency', appearance?.windowTransparency ?? '0.9');
+		if (appearance?.transparentTopbar ?? false) document.body.style.setProperty('--topbar-transparency', appearance?.windowTransparency ?? '0.9');
+		Storage.set('appearance', appearance);
+	});
+	settingsMain.querySelector('[name="transparent-sidebar"]').addEventListener('change', (event: Event & { target: HTMLInputElement }) => {
+		const value = event.target.checked;
+		const appearance = _appearance ?? {};
+		appearance.transparentSidebar = value;
+		if (value) {
+			document.body.style.setProperty('--sidebar-transparency', appearance?.windowTransparency ?? '0.9');
+		} else {
+			document.body.style.removeProperty('--sidebar-transparency');
+		}
+		Storage.set('appearance', appearance);
+	});
+	settingsMain.querySelector('[name="transparent-workspace"]').addEventListener('change', (event: Event & { target: HTMLInputElement }) => {
+		const value = event.target.checked;
+		const appearance = _appearance ?? {};
+		appearance.transparentWorkspace = value;
+		if (value) {
+			document.body.style.setProperty('--workspace-transparency', appearance?.windowTransparency ?? '0.9');
+		} else {
+			document.body.style.removeProperty('--workspace-transparency');
+		}
+		Storage.set('appearance', appearance);
+	});
+	settingsMain.querySelector('[name="transparent-topbar"]').addEventListener('change', (event: Event & { target: HTMLInputElement }) => {
+		const value = event.target.checked;
+		const appearance = _appearance ?? {};
+		appearance.transparentTopbar = value;
+		if (value) {
+			document.body.style.setProperty('--topbar-transparency', appearance?.windowTransparency ?? '0.9');
+		} else {
+			document.body.style.removeProperty('--topbar-transparency');
+		}
+		Storage.set('appearance', appearance);
+	});
+	settingsMain.querySelector('[name="frame-style"]').addEventListener('change', (event: Event & { target: HTMLInputElement }) => {
+		const value = event.target.value;
+		const appearance = _appearance ?? {};
+		appearance.frameStyle = value;
+		setDecorations(value === 'os');
+		if (value === 'os') {
+			document.querySelector('.window-manager').parentNode.removeChild(document.querySelector('.window-manager'));
+		} else {
+			const windowManager = document.createElement('div');
+			windowManager.classList.add('window-manager');
+			windowManager.innerHTML = `<span id="minimize" title="Minimize"></span>
+			<span id="maximize" title="Maximize"></span>
+			<span id="exit" title="Exit (Ctrl + w)"></span>`;
+			document.querySelector('.tabs-manager').appendChild(windowManager);
+			updateTheme();
+			// Minimize the screen
+			windowManager.querySelector('#minimize').addEventListener('click', minimize);
+			// Maximize the screen
+			windowManager.querySelector('#maximize').addEventListener('click', maximize);
+			// Exit window
+			windowManager.querySelector('#exit').addEventListener('click', close);
+		}
+		Storage.set('appearance', appearance);
+	});
 	settingsMain.querySelector('[name="fontSize"]')?.addEventListener('input', (event: Event & { target: HTMLInputElement }) => {
 		const appearance = _appearance ?? {};
 		appearance.fontSize = `${event.target.value}px`;
 		document.body.style.fontSize = `${event.target.value}px`;
+		document.documentElement.style.fontSize = `${parseInt(event.target.value)}px`;
 		Storage.set('appearance', appearance);
 	});
 	settingsMain.querySelector('[name="theme"]')?.addEventListener('change', async (event: Event & { target: HTMLInputElement }) => {

@@ -20,5 +20,9 @@ const changeWindowTitle = (title: string): void => {
 	window.getCurrent().setTitle(`${title} - Xplorer`);
 };
 
+const setDecorations = (decorations: boolean): void => {
+	window.getCurrent().setDecorations(decorations);
+};
+
 export default windowName;
-export { listenWindowClose, createNewWindow, changeWindowTitle };
+export { listenWindowClose, createNewWindow, changeWindowTitle, setDecorations };

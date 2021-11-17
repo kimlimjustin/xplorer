@@ -87,7 +87,12 @@
 		"promptOkBackground": "#3879d9",
 		"promptOkColor": "#fff",
 		"promptCancelBackground": "#87c1ce",
-		"promptCancelColor": "#000"
+		"promptCancelColor": "#000",
+
+		"settingsNumberCtrlInputBackground": "rgb(135, 193, 206)",
+		"settingsNumberCtrlControllerBackground": "#4e8895",
+		"settingsNumberCtrlInputColor": "#000",
+		"settingsNumberCtrlControllerColor": "#122430"
 	},
 	"dark": {
 		"themeCategory": "dark",
@@ -177,7 +182,12 @@
 		"promptOkBackground": "#3879d9",
 		"promptOkColor": "#fff",
 		"promptCancelBackground": "#87c1ce",
-		"promptCancelColor": "#000"
+		"promptCancelColor": "#000",
+
+		"settingsNumberCtrlInputBackground": "rgb(135, 193, 206)",
+		"settingsNumberCtrlControllerBackground": "#4e8895",
+		"settingsNumberCtrlInputColor": "#000",
+		"settingsNumberCtrlControllerColor": "#122430"
 	},
 	"light": {
 		"themeCategory": "light",
@@ -188,9 +198,9 @@
 		"scrollbarThumbBackground": "rgb(163, 163, 163)",
 		"scrollbarThumbHoverBackground": "#888",
 
-		"sidebarBackground": "#F7F7F7",
-		"mainBackground": "#ffffff",
-		"topbarBackground": "#F7F7F7",
+		"sidebarBackground": "#cbccd1",
+		"mainBackground": "#d5d6db",
+		"topbarBackground": "#cbccd1",
 
 		"minimizeBackground": "#fbd914",
 		"minimizeColor": "#14141b",
@@ -213,8 +223,8 @@
 		"menuDropdownBackground": "#e0e0e0",
 		"menuDropdownColor": "#202124",
 
-		"settingsSidebarBackground": "#F7F7F7",
-		"settingsMainBackground": "#FCFCFC",
+		"settingsSidebarBackground": "#cbccd1",
+		"settingsMainBackground": "#d5d6db",
 		"settingButtonBackground": "inherit",
 		"settingButtonColor": "inherit",
 		"settingsActiveTab": "rgb(220, 220, 220)",
@@ -232,7 +242,7 @@
 		"pendriveTotalCapacityBackground": "#eee",
 		"pendriveUsedCapacityBackground": "#8989e2",
 
-		"gridBackground": "#F7F7F7",
+		"gridBackground": "#e0e0e0",
 		"gridColor": "#202124",
 		"selectedGridBorder": "2px solid #1e88e5",
 		"selectedGridBackground": "#e0e0e0",
@@ -267,7 +277,12 @@
 		"promptOkBackground": "#3879d9",
 		"promptOkColor": "#fff",
 		"promptCancelBackground": "#87c1ce",
-		"promptCancelColor": "#000"
+		"promptCancelColor": "#000",
+
+		"settingsNumberCtrlInputBackground": "#ebeaea",
+		"settingsNumberCtrlControllerBackground": "#e1e1e1",
+		"settingsNumberCtrlInputColor": "#000",
+		"settingsNumberCtrlControllerColor": "#000"
 	},
 	"light+": {
 		"themeCategory": "light",
@@ -357,6 +372,11 @@
 		"promptOkBackground": "#3879d9",
 		"promptOkColor": "#fff",
 		"promptCancelBackground": "#87c1ce",
-		"promptCancelColor": "#000"
+		"promptCancelColor": "#000",
+
+		"settingsNumberCtrlInputBackground": "#e1e1e1",
+		"settingsNumberCtrlControllerBackground": "#f1f1f1",
+		"settingsNumberCtrlInputColor": "#000",
+		"settingsNumberCtrlControllerColor": "#000"
 	}
 }
