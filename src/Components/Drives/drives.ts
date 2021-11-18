@@ -27,7 +27,7 @@ const drivesToElements = async (drives: Drive[]): Promise<string> => {
 	let result = drives.length
 		? `<h1 class="section-title">${await Translate(
 				platform === 'linux' ? 'Pendrives' : 'Drives'
-		  )}</h1>` //eslint-disable-line
+		  )}</h1>`
 		: ''; // Element Result
 	for (const drive of drives) {
 		const driveName =

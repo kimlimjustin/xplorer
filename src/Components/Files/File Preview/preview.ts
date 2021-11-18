@@ -8,7 +8,6 @@ import { eURLify, URLify } from '../../Functions/urlify';
 import hljs from 'highlight.js';
 import ConfirmDialog from '../../Prompt/confirm';
 import marked from 'marked';
-import joinPath from '../../Functions/path/joinPath';
 import getDirname from '../../Functions/path/dirname';
 
 const isValidURL = (text: string) => {
@@ -36,23 +35,6 @@ const closePreviewFile = (): void => {
  */
 const Preview = async (filePath: string): Promise<void> => {
 	closePreviewFile();
-
-	// const renderer = {
-	// 	image(href: string, title: string, text: string): string {
-	// 		console.log(
-	// 			isValidURL(href),
-	// 			filePath,
-	// 			getDirname(filePath),
-	// 			joinPath(getDirname(filePath), href),
-	// 			isValidURL(href) ? href : new FileAPI(joinPath(getDirname(filePath), href)).readAsset()
-	// 		);
-	// 		return `<img src="${
-	// 			isValidURL(href) ? href : new FileAPI(joinPath(getDirname(filePath), href)).readAsset()
-	// 		}" alt="${text}" title="${title}">`;
-	// 	},
-	// };
-
-	// marked.use({ renderer });
 
 	const previewElement = document.createElement('div');
 	previewElement.classList.add('preview');
