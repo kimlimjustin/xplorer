@@ -16,6 +16,7 @@ import OS from '../../Api/platform';
 import { reload } from '../Layout/windowManager';
 import focusingPath from '../Functions/focusingPath';
 import { LOAD_IMAGE } from '../Functions/lazyLoadingImage';
+import PromptError from '../Prompt/error';
 let platform: string;
 let directoryInfo: DirectoryAPI;
 /**
@@ -39,7 +40,6 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promis
 	const MAIN_ELEMENT = document.getElementById('workspace');
 	MAIN_ELEMENT.innerHTML = '';
 	if (MAIN_ELEMENT.classList.contains('empty-dir-notification')) MAIN_ELEMENT.classList.remove('empty-dir-notification'); // Remove class if exist
-
 	if (dir === 'xplorer://Home') {
 		Home();
 	} else if (dir === 'xplorer://Trash') {
@@ -57,7 +57,7 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promis
 				} else {
 					await displayFiles(trashedFiles.files, dir, MAIN_ELEMENT);
 					stopLoading();
-					updateTheme();
+					updateTheme('grid');
 					LOAD_IMAGE();
 					changeWindowTitle(getBasename(dir));
 				}
@@ -68,6 +68,11 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promis
 	} else {
 		if (reveal) {
 			directoryInfo = new DirectoryAPI(getDirname(dir));
+			if (!(await directoryInfo.exists())) {
+				PromptError('Directory not exists', "Directory you're looking for does not exist.");
+				stopLoading();
+				return;
+			}
 			directoryInfo.getFiles().then(async (files) => {
 				if (!files.files.length) {
 					MAIN_ELEMENT.classList.add('empty-dir-notification');
@@ -79,7 +84,7 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promis
 						revealDir: normalizeSlash(dir),
 					});
 					stopLoading();
-					updateTheme();
+					updateTheme('grid');
 					LOAD_IMAGE();
 					changeWindowTitle(getBasename(getDirname(dir)));
 					console.timeEnd(dir);
@@ -88,6 +93,11 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promis
 			});
 		} else {
 			directoryInfo = new DirectoryAPI(dir);
+			if (!(await directoryInfo.exists())) {
+				PromptError('Directory not exists', "Directory you're looking for does not exist.");
+				stopLoading();
+				return;
+			}
 			const files = await directoryInfo.getFiles();
 			if (!files.files.length) {
 				MAIN_ELEMENT.classList.add('empty-dir-notification');
@@ -96,7 +106,7 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promis
 			} else {
 				await displayFiles(files.files, dir, MAIN_ELEMENT);
 				stopLoading();
-				updateTheme();
+				updateTheme('grid');
 				LOAD_IMAGE();
 				changeWindowTitle(getBasename(dir));
 				if (!isReload) directoryInfo.listen(() => reload());
