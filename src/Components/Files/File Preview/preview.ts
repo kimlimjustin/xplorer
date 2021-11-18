@@ -1,12 +1,25 @@
 import { updateTheme } from '../../Theme/theme';
 import PromptError from '../../Prompt/error';
-import { HTML_TYPE, IMAGE_TYPES, VIDEO_TYPES, PLAIN_TEXT } from '../../../Config/file.config';
+import { HTML_TYPE, IMAGE_TYPES, VIDEO_TYPES, PLAIN_TEXT, MARKDOWN_TYPES } from '../../../Config/file.config';
 import getBasename from '../../Functions/path/basename';
 import xlsx from 'xlsx';
 import FileAPI from '../../../Api/files';
 import { eURLify, URLify } from '../../Functions/urlify';
 import hljs from 'highlight.js';
 import ConfirmDialog from '../../Prompt/confirm';
+import marked from 'marked';
+import joinPath from '../../Functions/path/joinPath';
+import getDirname from '../../Functions/path/dirname';
+
+const isValidURL = (text: string) => {
+	let url;
+	try {
+		url = new URL(text);
+	} catch (_) {
+		return false;
+	}
+	return (url.protocol === 'http:' || url.protocol === 'https:') && url.hostname !== window.location.hostname;
+};
 /**
  * Close the preview file
  * @returns {void}
@@ -23,6 +36,24 @@ const closePreviewFile = (): void => {
  */
 const Preview = async (filePath: string): Promise<void> => {
 	closePreviewFile();
+
+	// const renderer = {
+	// 	image(href: string, title: string, text: string): string {
+	// 		console.log(
+	// 			isValidURL(href),
+	// 			filePath,
+	// 			getDirname(filePath),
+	// 			joinPath(getDirname(filePath), href),
+	// 			isValidURL(href) ? href : new FileAPI(joinPath(getDirname(filePath), href)).readAsset()
+	// 		);
+	// 		return `<img src="${
+	// 			isValidURL(href) ? href : new FileAPI(joinPath(getDirname(filePath), href)).readAsset()
+	// 		}" alt="${text}" title="${title}">`;
+	// 	},
+	// };
+
+	// marked.use({ renderer });
+
 	const previewElement = document.createElement('div');
 	previewElement.classList.add('preview');
 
@@ -41,6 +72,7 @@ const Preview = async (filePath: string): Promise<void> => {
 		document.getElementById('workspace').classList.toggle('workspace-split');
 		document.querySelector('.main-box').appendChild(previewElement);
 		previewElement.querySelector('.preview-exit-btn').addEventListener('click', () => closePreviewFile());
+		return;
 	};
 
 	const ext = filePath.split('.').pop().toLowerCase();
@@ -75,6 +107,25 @@ const Preview = async (filePath: string): Promise<void> => {
 		);
 	} else if (PLAIN_TEXT.indexOf(ext) !== -1) {
 		changePreview(`<div class='preview-object' data-type="txt">${new FileAPI(filePath).readFile()}</div>`);
+	} else if (MARKDOWN_TYPES.indexOf(ext) !== -1) {
+		const html = marked(await new FileAPI(filePath).readFile());
+		changePreview(`<div class='preview-object' data-type="md">${eURLify(html)}</div>`);
+		previewElement.querySelectorAll('img').forEach(async (img) => {
+			console.log(isValidURL(img.src), img.src);
+			if (!isValidURL(img.src)) {
+				let imgData = new FileAPI(img.src);
+				if (!(await imgData.exists())) {
+					let imgPath = new URL(img.src).pathname;
+					if (imgPath.charAt(0) === '/') imgPath = imgPath.substr(1);
+					imgData = new FileAPI(`${getDirname(filePath)}${imgPath}`);
+					if (await imgData.exists()) {
+						img.src = imgData.readAsset();
+					}
+				} else {
+					img.src = await imgData.readFile();
+				}
+			}
+		});
 	} else {
 		try {
 			const fileData = new FileAPI(filePath);
