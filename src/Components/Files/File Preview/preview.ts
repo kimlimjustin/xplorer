@@ -7,7 +7,7 @@ import FileAPI from '../../../Api/files';
 import { eURLify, URLify } from '../../Functions/urlify';
 import hljs from 'highlight.js';
 import ConfirmDialog from '../../Prompt/confirm';
-import marked from 'marked';
+import { marked } from 'marked';
 import getDirname from '../../Functions/path/dirname';
 
 const isValidURL = (text: string) => {
