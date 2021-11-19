@@ -339,22 +339,8 @@ const updateTheme = async (
 			currentTheme = data.theme;
 			await changeTheme(data.theme, category);
 		} else {
-			// Otherwise read user theme json file
-			if (data.availableThemes?.filter((theme: any) => theme.identifier === data.theme).length > 0) {
-				//eslint-disable-line
-				for (const i of data.availableThemes) {
-					if (i.identifier === data.theme) {
-						// eslint-disable-next-line
-						const customStylesheetScript: any = require(i.source);
-						themeJSON = customStylesheetScript.default();
-						currentTheme = data.theme;
-						await changeTheme(data.theme, category);
-					}
-				}
-			} else {
-				currentTheme = defaultTheme;
-				await changeTheme(defaultTheme, category);
-			}
+			currentTheme = defaultTheme;
+			await changeTheme(defaultTheme, category);
 		}
 	}
 	return;
