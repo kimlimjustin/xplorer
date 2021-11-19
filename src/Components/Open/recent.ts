@@ -127,7 +127,7 @@ const Recent = async (): Promise<void> => {
             `;
 			MAIN_ELEMENT.appendChild(fileGrid);
 		}
-		updateTheme();
+		updateTheme('grid');
 		LOAD_IMAGE();
 	}
 	stopLoading();

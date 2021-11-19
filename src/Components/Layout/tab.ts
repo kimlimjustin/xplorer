@@ -29,7 +29,7 @@ const createNewTab = async (path?: string): Promise<void> => {
 	newTab.dataset.tabIndex = tabsInfo.latestIndex;
 	newTab.id = `tab${tabsInfo.latestIndex}`;
 
-	updateTheme(); // Update the theme
+	updateTheme('tabbing'); // Update the theme
 	createNewTabElement.parentElement.insertBefore(newTab, createNewTabElement); // Insert the new tab
 	(newTab.parentNode as HTMLElement).scrollLeft = window.pageXOffset + newTab.getBoundingClientRect().left + newTab.offsetWidth; // Scroll the tabs scrollbar
 
@@ -157,9 +157,9 @@ const Tab = async (reveal = false): Promise<void> => {
 					);
 				}
 			}
-			updateTheme(); // Update the theme
 		}
 	}
+	updateTheme('tabbing'); // Update the theme
 
 	const arrayOfTabs = document.querySelectorAll<HTMLElement>('.tab');
 	// Add close tab button

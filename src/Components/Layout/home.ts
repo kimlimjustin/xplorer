@@ -42,12 +42,12 @@ const Home = async (): Promise<void> => {
 		MAIN_ELEMENT.appendChild(homeSection);
 
 		// And also the theme :)
-		updateTheme();
+		updateTheme('favorites');
 		stopLoading();
 	}
 	// Update the content in the main page ...
 	// And also the theme :)
-	updateTheme();
+	updateTheme('favorites');
 	stopLoading();
 };
 

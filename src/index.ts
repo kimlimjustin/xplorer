@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 		Tab(reveal);
 	}
 	// Update the page styling
-	updateTheme();
+	updateTheme('root');
 	// Initialize open dir/files listener
 	OpenInit();
 	// Intialize shortcuts
