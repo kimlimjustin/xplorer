@@ -1,70 +1,46 @@
-name: Build
-
+name: 'publish'
 on:
     push:
         branches: [master]
+
 jobs:
-    build-win:
-        runs-on: windows-latest
-
-        strategy:
-            matrix:
-                node-version: [14.x]
-
-        steps:
-            - uses: actions/checkout@v2
-
-            - name: Use Node.js
-              uses: actions/setup-node@v2
-              with:
-                  cache: 'npm'
-
-            - name: Update npm
-              run: npm install --global npm@latest
-
-            - name: Patch node-gyp to support Visual Studio 2019
-              shell: powershell
-              run: |
-                  npm install --global node-gyp@latest
-                  npm prefix -g | % {npm config set node_gyp "$_\node_modules\node-gyp\bin\node-gyp.js"}
-            - run: yarn install --frozen-lockfile
-            - name: Build on Windows
-              env:
-                  GH_TOKEN: ${{ secrets.GH_TOKEN }}
-              run: yarn build --publish=always
-
-    build-mac:
-        runs-on: macos-latest
-        strategy:
-            matrix:
-                node-version: [14.x]
-
-        steps:
-            - uses: actions/checkout@v2
-            - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v2
-              with:
-                  node-version: ${{ matrix.node-version }}
-            - run: yarn install --frozen-lockfile
-            - name: Build on macOS
-              env:
-                  GH_TOKEN: ${{ secrets.GH_TOKEN }}
-              run: yarn build --publish=always
-
-    build-linux:
+    empty-draft:
         runs-on: ubuntu-latest
+        steps:
+            - name: Empty drafts
+              uses: hugo19941994/delete-draft-releases@v1.0.0
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+    publish-tauri:
         strategy:
+            fail-fast: false
             matrix:
-                node-version: [14.x]
+                platform: [macos-latest, ubuntu-latest, windows-latest]
 
+        runs-on: ${{ matrix.platform }}
         steps:
             - uses: actions/checkout@v2
-            - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v2
+            - name: setup node
+              uses: actions/setup-node@v1
               with:
-                  node-version: ${{ matrix.node-version }}
-            - run: yarn install --frozen-lockfile
-            - name: Build on Linux
+                  node-version: 12
+            - name: install Rust stable
+              uses: actions-rs/toolchain@v1
+              with:
+                  toolchain: stable
+            - name: install webkit2gtk (ubuntu only)
+              if: matrix.platform == 'ubuntu-latest'
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y webkit2gtk-4.0
+            - name: install app dependencies and build it
+              run: yarn && yarn build
+            - uses: tauri-apps/tauri-action@v0
               env:
-                  GH_TOKEN: ${{ secrets.GH_TOKEN }}
-              run: yarn build --publish=always
+                  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+              with:
+                  tagName: app-v__VERSION__
+                  releaseName: 'App v__VERSION__'
+                  releaseBody: 'See the assets to download this version and install.'
+                  releaseDraft: true
+                  prerelease: false
