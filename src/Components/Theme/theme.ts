@@ -18,6 +18,11 @@ const updateNativeTheme = (): void => {
 	updateTheme('*');
 };
 
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+	defaultTheme = e.matches ? 'dark' : 'light';
+	updateTheme('*');
+});
+
 let themeJSON: themeValue; // user preference theme json
 import * as defaultThemeData from './theme.json';
 const defaultThemeJSON: Theme = defaultThemeData;
@@ -66,7 +71,6 @@ const changeTheme = async (
 ): Promise<void> => {
 	if (!category) category = '*';
 	const appearance = await Storage.get('appearance');
-	console.log(currentTheme);
 	if (category === '*' || category === 'root') {
 		document.body.style.setProperty('--edge-radius', appearance.frameStyle === 'os' ? '0px' : '10px');
 		changeElementTheme(document.querySelector('.main-box'), 'mainBackground', 'background', theme);
