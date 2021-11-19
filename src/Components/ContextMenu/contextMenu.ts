@@ -108,6 +108,9 @@ const MenuToElements = async (menu: contextMenuItem[][]): Promise<void> => {
 const ContextMenu = (): void => {
 	document.addEventListener('contextmenu', async (e) => {
 		e.preventDefault();
+		document.querySelectorAll('.hover-preview').forEach((element) => {
+			element.parentNode.removeChild(element);
+		});
 		contextMenu.innerHTML = '';
 		contextMenuSubmenus.innerHTML = '';
 		let coorX = e.pageX;
