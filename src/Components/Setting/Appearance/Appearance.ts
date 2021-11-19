@@ -227,7 +227,7 @@ const Appearance = async (): Promise<void> => {
 			<span id="maximize" title="Maximize"></span>
 			<span id="exit" title="Exit (Ctrl + w)"></span>`;
 			document.querySelector('.tabs-manager').appendChild(windowManager);
-			updateTheme('settings');
+			updateTheme('windowmanager');
 			// Minimize the screen
 			windowManager.querySelector('#minimize').addEventListener('click', minimize);
 			// Maximize the screen
