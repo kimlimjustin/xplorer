@@ -42,7 +42,7 @@ const Favorites = async (): Promise<string> => {
 		}
 		result += `<div
 		class="favorite file card-hover-effect"
-		data-isdir="${await fileData.isDir()}"
+		data-isdir="${(await isDefaultFavorite(favorite.path)) ? true : await fileData.isDir()}"
 		data-path="${favorite.path}"
 	>
 		<h3 class="favorite-title">
