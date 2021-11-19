@@ -22,8 +22,12 @@ const changeSidebar = (newElement: HTMLElement) => {
 
 let FavoritesData: FavoritesAPI;
 
+let _defaultFavorites: Favorites[] = [];
 const isDefaultFavorite = async (filePath: string) => {
-	return (await defaultFavorites()).some((favorite) => favorite.path === filePath);
+	if (!IsValid(_defaultFavorites)) {
+		_defaultFavorites = await defaultFavorites();
+	}
+	return _defaultFavorites.some((favorite) => favorite.path === filePath);
 };
 
 /**
@@ -42,7 +46,9 @@ const createSidebar = async (): Promise<void> => {
 		const defaultFavoritesList = (await defaultFavorites()).map((favorite) => favorite.name);
 		for (const favorite of favorites) {
 			const exists = await new FileAPI(favorite.path).exists();
-			if (!(await isDefaultFavorite(favorite.path)) && !exists) continue;
+			if (!(await isDefaultFavorite(favorite.path)) && !favorite.path.startsWith('xplorer://')) {
+				if (!exists) continue;
+			}
 			const isdir = favorite.path.startsWith('xplorer://') ? true : await new DirectoryAPI(favorite.path).isDir();
 			favoritesElement += `<span data-path = "${
 				favorite.path
