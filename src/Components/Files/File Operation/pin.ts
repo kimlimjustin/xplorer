@@ -15,20 +15,11 @@ interface Favorites {
  */
 const Pin = async (filePaths: string[]): Promise<void> => {
 	const data = await Storage.get('favorites');
-	let favorites = data?.favorites ?? [
-		{ path: 'xplorer://Home', name: 'Home' },
-		...(await defaultFavorites()),
-	];
+	let favorites = data?.favorites ?? [{ path: 'xplorer://Home', name: 'Home' }, ...(await defaultFavorites())];
 	favorites.forEach((v: Favorites) => delete v.icon);
 	for (const filePath of filePaths) {
-		if (
-			favorites.filter(
-				(favorite: Favorites) => favorite.path === filePath
-			).length
-		) {
-			favorites = favorites.filter(
-				(favorite: Favorites) => favorite.path !== filePath
-			);
+		if (favorites.filter((favorite: Favorites) => favorite.path === filePath).length) {
+			favorites = favorites.filter((favorite: Favorites) => favorite.path !== filePath);
 		} else {
 			favorites.push({ name: basename(filePath), path: filePath });
 		}
