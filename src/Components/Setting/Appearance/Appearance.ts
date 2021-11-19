@@ -148,7 +148,7 @@ const Appearance = async (): Promise<void> => {
 		<option ${layout === 'd' ? 'selected' : ''} value="d">Detail View</option>
 	</select>`;
 	settingsMain.innerHTML = appearancePage;
-	updateTheme();
+	updateTheme('settings');
 	settingsMain.querySelectorAll('.number-ctrl').forEach((ctrl) => {
 		const number = ctrl.querySelector<HTMLInputElement>('.number-ctrl-input');
 		ctrl.querySelector('.number-ctrl-minus').addEventListener('click', () => {
@@ -227,7 +227,7 @@ const Appearance = async (): Promise<void> => {
 			<span id="maximize" title="Maximize"></span>
 			<span id="exit" title="Exit (Ctrl + w)"></span>`;
 			document.querySelector('.tabs-manager').appendChild(windowManager);
-			updateTheme();
+			updateTheme('settings');
 			// Minimize the screen
 			windowManager.querySelector('#minimize').addEventListener('click', minimize);
 			// Maximize the screen
@@ -251,7 +251,7 @@ const Appearance = async (): Promise<void> => {
 		themes['theme'] = event.target.value;
 		themes['category'] = category;
 		Storage.set('theme', themes);
-		reload();
+		updateTheme('*');
 	});
 	settingsMain.querySelector('[name="font"]')?.addEventListener('change', (event: Event & { target: HTMLInputElement }) => {
 		const appearance = _appearance ?? {};

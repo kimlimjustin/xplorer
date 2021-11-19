@@ -2,6 +2,5 @@ build
 dist
 out
 node_modules
-src/Components/Theme/theme.ts
 *.min.
 packages/**/*.ejs

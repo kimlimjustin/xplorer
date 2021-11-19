@@ -16,7 +16,7 @@ interface Favorites {
 const changeSidebar = (newElement: HTMLElement) => {
 	const sidebarElement = document.body.querySelector('.sidebar');
 	sidebarElement.parentElement.replaceChild(newElement, sidebarElement);
-	updateTheme();
+	updateTheme('root');
 	return;
 };
 

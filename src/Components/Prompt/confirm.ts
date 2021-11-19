@@ -2,15 +2,9 @@ import { updateTheme } from '../Theme/theme';
 import dragElement from '../Functions/dragElement';
 import { pauseEnter } from '../Shortcut/shortcut';
 
-const ConfirmDialog = (
-	title: string,
-	message: string,
-	defaultValue?: 'Yes' | 'No'
-): Promise<boolean> => {
+const ConfirmDialog = (title: string, message: string, defaultValue?: 'Yes' | 'No'): Promise<boolean> => {
 	return new Promise<boolean>((resolve) => {
-		document
-			.querySelectorAll('.prompt')
-			.forEach((el) => el.parentNode.removeChild(el));
+		document.querySelectorAll('.prompt').forEach((el) => el.parentNode.removeChild(el));
 		const promptElement = document.createElement('div');
 		promptElement.className = 'prompt';
 		promptElement.innerHTML = `<div class="prompt-frame">
@@ -22,28 +16,19 @@ const ConfirmDialog = (
         <button class="prompt-cancel">No</button>
         <button class="prompt-ok">Yes</button>
         </div>`;
-		promptElement
-			.querySelector('.prompt-exit-btn')
-			.addEventListener('click', () => {
-				promptElement.parentNode.removeChild(promptElement);
-				resolve(false);
-			});
-		promptElement
-			.querySelector('.prompt-cancel')
-			.addEventListener('click', () => {
-				promptElement.parentNode.removeChild(promptElement);
-				resolve(false);
-			});
-		promptElement
-			.querySelector('.prompt-ok')
-			.addEventListener('click', () => {
-				promptElement.parentNode.removeChild(promptElement);
-				resolve(true);
-			});
-		dragElement(
-			promptElement.querySelector('.prompt-frame'),
-			promptElement
-		);
+		promptElement.querySelector('.prompt-exit-btn').addEventListener('click', () => {
+			promptElement.parentNode.removeChild(promptElement);
+			resolve(false);
+		});
+		promptElement.querySelector('.prompt-cancel').addEventListener('click', () => {
+			promptElement.parentNode.removeChild(promptElement);
+			resolve(false);
+		});
+		promptElement.querySelector('.prompt-ok').addEventListener('click', () => {
+			promptElement.parentNode.removeChild(promptElement);
+			resolve(true);
+		});
+		dragElement(promptElement.querySelector('.prompt-frame'), promptElement);
 		const keydownhandler = (event: KeyboardEvent) => {
 			if (event.key === 'Enter') {
 				pauseEnter();
@@ -54,7 +39,7 @@ const ConfirmDialog = (
 		};
 		document.addEventListener('keydown', keydownhandler);
 		document.body.appendChild(promptElement);
-		updateTheme();
+		updateTheme('prompt');
 	});
 };
 

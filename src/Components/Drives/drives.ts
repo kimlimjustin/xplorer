@@ -24,44 +24,22 @@ let driveInfo: DrivesAPI;
  * @returns {Promise<string>} Result
  */
 const drivesToElements = async (drives: Drive[]): Promise<string> => {
-	let result = drives.length
-		? `<h1 class="section-title">${await Translate(
-				platform === 'linux' ? 'Pendrives' : 'Drives'
-		  )}</h1>`
-		: ''; // Element Result
+	let result = drives.length ? `<h1 class="section-title">${await Translate(platform === 'linux' ? 'Pendrives' : 'Drives')}</h1>` : ''; // Element Result
 	for (const drive of drives) {
-		const driveName =
-			drive.mount_point.split('/')[
-				drive.mount_point.split('/').length - 1
-			]; // Get name of drive
+		const driveName = drive.mount_point.split('/')[drive.mount_point.split('/').length - 1]; // Get name of drive
 		result += `
-        <div class="pendrive file card-hover-effect" data-isdir="true" data-path = "${escape(
-			drive.mount_point
-		)}">
-            <img src="${await fileThumbnail(
-				drive.is_removable ? 'usb' : 'hard-disk',
-				'favorites',
-				false
-			)}" alt="USB icon" class="pendrive-icon">
+        <div class="pendrive file card-hover-effect" data-isdir="true" data-path = "${escape(drive.mount_point)}">
+            <img src="${await fileThumbnail(drive.is_removable ? 'usb' : 'hard-disk', 'favorites', false)}" alt="USB icon" class="pendrive-icon">
             <div class="pendrive-info">
                 ${
 					drive.name ?? drive.disk_type
-						? `<h4 class="pendrive-title">${
-								drive.name && /[^?]/.test(drive.name)
-									? drive.name
-									: drive.disk_type
-						  } (${driveName})</h4>` //eslint-disable-line
+						? `<h4 class="pendrive-title">${drive.name && /[^?]/.test(drive.name) ? drive.name : drive.disk_type} (${driveName})</h4>` //eslint-disable-line
 						: `<h4 class="pendrive-title">${driveName}</h4>`
 				}
                 <div class="pendrive-total-capacity"><span class="pendrive-used-capacity" style="width: ${
-					((drive.total_space - drive.available_space) /
-						drive.total_space) *
-						100 +
-					'%'
+					((drive.total_space - drive.available_space) / drive.total_space) * 100 + '%'
 				}"></span></div>
-                <p>${formatBytes(drive.available_space)} ${await Translate(
-			'free of'
-		)} ${formatBytes(drive.total_space)}</p>
+                <p>${formatBytes(drive.available_space)} ${await Translate('free of')} ${formatBytes(drive.total_space)}</p>
             </div>
         </div>
         `;
@@ -77,15 +55,11 @@ const Drives = async (): Promise<string> => {
 	//if (focusingPath() === 'xplorer://Home') {
 	switch (platform) {
 		case 'win32':
-			return `<section class="home-section" id="drives">${await drivesToElements(
-				driveInfo.DRIVES
-			)}</section>`;
+			return `<section class="home-section" id="drives">${await drivesToElements(driveInfo.DRIVES)}</section>`;
 		case 'darwin':
 			return ''; // Xplorer does not support drives for macOS currently
 		default:
-			return `<section class="home-section" id="drives">${await drivesToElements(
-				driveInfo.DRIVES
-			)}</section>`;
+			return `<section class="home-section" id="drives">${await drivesToElements(driveInfo.DRIVES)}</section>`;
 	}
 	//} else return '';
 };
@@ -97,8 +71,7 @@ const Drives = async (): Promise<string> => {
 const sidebarDrivesElement = async (): Promise<string> => {
 	const data = await Storage.get('sidebar'); // Get user favorites data on sidebar
 	const drives = driveInfo.DRIVES;
-	if (!drives.length || platform === 'darwin')
-		return `<div class="sidebar-nav-item" id="sidebar-drives"></div>`;
+	if (!drives.length || platform === 'darwin') return `<div class="sidebar-nav-item" id="sidebar-drives"></div>`;
 	// Return basic sidebar item element if there's no drives detected or its running on macOS
 	else {
 		let drivesElement = '';
@@ -119,18 +92,14 @@ const sidebarDrivesElement = async (): Promise<string> => {
 				false
 			)}" alt="${driveName}"><span class="sidebar-text">${driveName}</span></span>`;
 		}
-		const result = `<div class="sidebar-nav-item sidebar-nav-drives ${
-			data?.hideSection?.drives ? 'nav-hide-item' : ''
-		}" id="sidebar-drives">
+		const result = `<div class="sidebar-nav-item sidebar-nav-drives ${data?.hideSection?.drives ? 'nav-hide-item' : ''}" id="sidebar-drives">
 			<div class="sidebar-hover-effect">
 			<span class="sidebar-nav-item-dropdown-btn" data-section="drives"><img src="${await fileThumbnail(
 				'hard-disk',
 				'favorites',
 				false
 			)}" alt="Drives icon"><span class="sidebar-text">${
-			platform === 'win32'
-				? await Translate('Drives')
-				: await Translate('Pendrives')
+			platform === 'win32' ? await Translate('Drives') : await Translate('Pendrives')
 		}</span><div class="sidebar-nav-item-dropdown-spacer"></div></span>
 			</div>
 			<div class="sidebar-nav-item-dropdown-container">
@@ -152,25 +121,16 @@ const detectDriveInit = async (): Promise<void> => {
 		await driveInfo.build();
 	}
 	driveInfo.detectChange(async () => {
-		if (
-			document.querySelector<HTMLInputElement>('.path-navigator')
-				.value === 'xplorer://Home'
-		) {
+		if (document.querySelector<HTMLInputElement>('.path-navigator').value === 'xplorer://Home') {
 			const MAIN_DRIVES_ELEMENT = document.getElementById('drives');
-			if (MAIN_DRIVES_ELEMENT.classList.contains('hidden'))
-				MAIN_DRIVES_ELEMENT.classList.remove('hidden');
+			if (MAIN_DRIVES_ELEMENT.classList.contains('hidden')) MAIN_DRIVES_ELEMENT.classList.remove('hidden');
 			const _driveSection = await Drives();
 			MAIN_DRIVES_ELEMENT.innerHTML = _driveSection;
 		}
 		const _newElement = document.createElement('div');
 		_newElement.innerHTML = (await sidebarDrivesElement()).trim();
-		document
-			.getElementById('sidebar-drives')
-			.parentNode.replaceChild(
-				_newElement.firstChild,
-				document.getElementById('sidebar-drives')
-			);
-		updateTheme();
+		document.getElementById('sidebar-drives').parentNode.replaceChild(_newElement.firstChild, document.getElementById('sidebar-drives'));
+		updateTheme('favorites');
 	});
 };
 

@@ -141,7 +141,7 @@ const ContextMenu = (): void => {
 		contextMenu.style.left = coorX + 'px';
 		contextMenu.style.top = coorY + 'px';
 
-		updateTheme();
+		updateTheme('contextmenu');
 		document.addEventListener('click', exitContextMenu);
 	});
 	const exitContextMenu = () => {
