@@ -28,7 +28,8 @@ const Favorites = async (): Promise<string> => {
 	const defaultFavoritesList = (await defaultFavorites()).map((favorite) => favorite.name);
 	for (const favorite of favorites) {
 		if (favorite.path === 'xplorer://Home') continue;
-		const exists = await new FileAPI(favorite.path).exists();
+		const fileData = new FileAPI(favorite.path);
+		const exists = await fileData.exists();
 		if (!exists && !(await isDefaultFavorite(favorite.path))) continue;
 		let icon = favorite.icon;
 		if (!icon) {
@@ -41,7 +42,7 @@ const Favorites = async (): Promise<string> => {
 		}
 		result += `<div
 		class="favorite file card-hover-effect"
-		data-isdir="true"
+		data-isdir="${await fileData.isDir()}"
 		data-path="${favorite.path}"
 	>
 		<h3 class="favorite-title">
