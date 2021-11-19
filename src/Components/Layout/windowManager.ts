@@ -47,7 +47,9 @@ const close = (): void => {
  * @returns {Promise<void>}
  */
 const goParentDir = async (): Promise<void> => {
-	OpenDir(getDirname(await focusingPath()));
+	const dirName = getDirname(await focusingPath());
+	if (dirName && !dirName.startsWith('xplorer://')) OpenDir(getDirname(await focusingPath()));
+	else OpenDir('xplorer://Home');
 };
 
 /**
