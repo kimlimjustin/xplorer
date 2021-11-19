@@ -18,6 +18,7 @@ const Preference = async (): Promise<void> => {
 	const hideHiddenFiles = _preference?.hideHiddenFiles ?? true;
 	const hideSystemFiles = _preference?.hideSystemFiles ?? true;
 	const dirAlongsideFiles = _preference?.dirAlongsideFiles ?? false;
+	const detectDriveChange = _preference?.detectDriveChange ?? false;
 	const settingsMain = document.querySelector('.settings-main');
 	const on_startup = _preference?.on_startup ?? 'new';
 
@@ -27,6 +28,7 @@ const Preference = async (): Promise<void> => {
 	const hideSystemFiles_i18n = await Translate('Hide system files');
 	const dirAlongsideFiles_i18n = await Translate('List and sort directories alongside files');
 	const on_startup_i18n = await Translate('On startup');
+	const detectDriveChange_i18n = await Translate('Detect Drive Change');
 	const preferencePage = `<h3 class="settings-title">${appLanguage_i18n}</h3>
 	<select name="language">
 	${Object.keys(localesData.AVAILABLE_LOCALES)
@@ -58,6 +60,13 @@ const Preference = async (): Promise<void> => {
 			<input type="checkbox" name="dirAlongsideFiles" ${dirAlongsideFiles ? 'checked' : ''}>
 			<span class="toggle-slider"></span>
 			<span class="toggle-label">${dirAlongsideFiles_i18n}</span>
+		</label>
+	</div>
+	<div class="toggle-box">
+		<label class="toggle">
+			<input type="checkbox" name="detect-drive-change" ${detectDriveChange ? 'checked' : ''}>
+			<span class="toggle-slider"></span>
+			<span class="toggle-label">${detectDriveChange_i18n}</span>
 		</label>
 	</div>
 	<h3 class="settings-title">${on_startup_i18n}</h3>
@@ -92,6 +101,11 @@ const Preference = async (): Promise<void> => {
 		preference.dirAlongsideFiles = event.target.checked;
 		Storage.set('preference', preference);
 		reload();
+	});
+	settingsMain.querySelector(`[name="detect-drive-change"]`).addEventListener('change', async (event: Event & { target: HTMLInputElement }) => {
+		const preference = await Storage.get('preference');
+		preference.detectDriveChange = event.target.checked;
+		Storage.set('preference', preference);
 	});
 	settingsMain.querySelector(`[name="on_startup"]`).addEventListener('change', async (event: Event & { target: HTMLInputElement }) => {
 		const preference = await Storage.get('preference');
