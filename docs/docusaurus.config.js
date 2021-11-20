@@ -43,7 +43,7 @@ module.exports = {
 					position: 'left',
 					label: 'Tutorial',
 				},
-				{ to: 'https://dev.to/kimlimjustinhttps://dev.to/t/xplorer', label: 'Blog', position: 'left' },
+				{ to: 'https://dev.to/t/xplorer', label: 'Blog', position: 'left' },
 				{ to: 'https://discord.gg/kK7rwxPt', label: 'Discord', position: 'left' },
 				{
 					type: 'localeDropdown',
