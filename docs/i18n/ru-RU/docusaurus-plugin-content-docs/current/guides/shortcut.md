@@ -1,35 +1,38 @@
 # Горячие клавиши
 
-| Клавиша             | Описание                        |
-| ------------------- | ------------------------------- |
-| `Ctrl + A`          | Выбрать всё                     |
-| `Ctrl + C`          | Копировать                      |
-| `Ctrl + E`          | Закрыть вкладку                 |
-| `Ctrl + H`          | Вкл./выкл. показ скрытых файлов |
-| `Ctrl + O`          | Предпросмотр файла              |
-| `Ctrl + P`          | Свойства файлов и папок         |
-| `Ctrl + R`          | Перезагрузить                   |
-| `Ctrl + T`          | Новая вкладка                   |
-| `Ctrl + V`          | Вставить                        |
-| `Ctrl + X`          | Вырезать                        |
-| `Ctrl + W`          | Выйти из Xplorer                |
-| `Alt + Left Arrow`  | Назад                           |
-| `Alt + Right Arrow` | Вперёд                          |
-| `Alt + Up Arrow`    | развернуть                      |
-| `Alt + Down Arrow`  | свернуть                        |
-| `Alt + T`           | Открыть в терминале             |
-| `Alt + P`           | Закрепить в боковой панели      |
-| `Alt + Shift + C`   | Скопировать путь                |
-| `F2`                | Переименовать                   |
-| `F5`                | Обновить                        |
-| `F10`               | Свернуть                        |
-| `F11`               | Развернуть                      |
-| `Shift + N`         | Новая папка                     |
-| `Shift + Del`       | Удалить навсегда                |
-| `Shift + Enter`     | Открыть в vscode                |
-| `Enter`             | Открыть                         |
-| `Del`               | Удалить файл                    |
+| Клавиша             | Описание                |
+| ------------------- | ----------------------- |
+| `Ctrl + A`          | Выбрать всё             |
+| `Ctrl + C`          | Копировать              |
+| `Ctrl + H`          | Toggle Hidden Files     |
+| `Ctrl + N`          | New window shortcut     |
+| `Ctrl + O`          | Open file in preview    |
+| `Ctrl + P`          | Свойства файлов и папок |
+| `Ctrl + R`          | Перезагрузить           |
+| `Ctrl + T`          | Новая вкладка           |
+| `Ctrl + V`          | Вставить                |
+| `Ctrl + X`          | Вырезать                |
+| `Ctrl + W`          | Exit Tab                |
+| `Ctrl + Y`          | Redo                    |
+| `Ctrl + Z`          | Undo                    |
+| `Ctrl + Shift + Z`  | Redo                    |
+| `Alt + Left Arrow`  | Go Back                 |
+| `Alt + Right Arrow` | Go Forward              |
+| `Alt + Up Arrow`    | Go to parent directory  |
+| `Alt + N`           | New File                |
+| `Alt + T`           | Open in terminal        |
+| `Alt + P`           | Pin to sidebar          |
+| `Alt + Shift + C`   | Copy location path      |
+| `F2`                | Rename                  |
+| `F5`                | Refresh                 |
+| `F10`               | Minimize                |
+| `F11`               | Maximize                |
+| `Shift + N`         | New Folders             |
+| `Shift + Del`       | Permanent Delete        |
+| `Shift + Enter`     | Open in vscode          |
+| `Enter`             | Open                    |
+| `Del`               | Delete file             |
 
-::note Разница между `перезагрузкой` и `обновлением` `Перезагрузка` обновляет внутренний HTML, а `Обновление` обновляет весь процесс Electron.
+:::note Difference between `reload` and `refresh` `Reload` refreshes the internal process while `Refresh` refreshes the whole process.
 
 :::

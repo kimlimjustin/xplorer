@@ -4,19 +4,22 @@
 | ------------------- | ------------------------ |
 | `Ctrl + A`          | Select All               |
 | `Ctrl + C`          | Copy                     |
-| `Ctrl + E`          | Close Tab                |
 | `Ctrl + H`          | Toggle Hidden Files      |
-| `Ctrl + O`          | Preview file             |
+| `Ctrl + N`          | New window shortcut      |
+| `Ctrl + O`          | Open file in preview     |
 | `Ctrl + P`          | Files/Folders Properties |
 | `Ctrl + R`          | Reload                   |
 | `Ctrl + T`          | New Tab                  |
 | `Ctrl + V`          | Paste                    |
 | `Ctrl + X`          | Cut                      |
-| `Ctrl + W`          | Exit Xplorer             |
+| `Ctrl + W`          | Exit Tab                 |
+| `Ctrl + Y`          | Redo                     |
+| `Ctrl + Z`          | Undo                     |
+| `Ctrl + Shift + Z`  | Redo                     |
 | `Alt + Left Arrow`  | Go Back                  |
 | `Alt + Right Arrow` | Go Forward               |
-| `Alt + Up Arrow`    | maximize                 |
-| `Alt + Down Arrow`  | minimize                 |
+| `Alt + Up Arrow`    | Go to parent directory   |
+| `Alt + N`           | New File                 |
 | `Alt + T`           | Open in terminal         |
 | `Alt + P`           | Pin to sidebar           |
 | `Alt + Shift + C`   | Copy location path       |
@@ -30,6 +33,6 @@
 | `Enter`             | Open                     |
 | `Del`               | Delete file              |
 
-:::note Difference between `reload` and `refresh` `Reload` refreshes the internal HTML while `Refresh` refreshes the whole Electron process.
+:::note Difference between `reload` and `refresh` `Reload` refreshes the internal process while `Refresh` refreshes the whole process.
 
 :::

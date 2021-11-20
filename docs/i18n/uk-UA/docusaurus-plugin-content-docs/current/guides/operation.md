@@ -6,47 +6,41 @@ You can copy files by right clicking it and click `Copy` option or select the fi
 
 :::info
 
-On Windows and macOS, Xplorer will copy the file paths into the local clipboard, because of this, you can copy a file from Xplorer and paste it into any folder in another system. However, on Linux, we create a string of Xplorer commands and copy it into the user clipboard, Xplorer will read the user's clipboard when pasting the file (because we haven't found any idea to implement it, feel free to [open a PR](/community/Contributing/#pull-requests) if you can help us). The string of the Xplorer command looks like this:
+For current implementation, Xplorer write down what to copy locally (not copying to clipboard).
 
-```
-Xplorer command - COPY
-~/xplorer
-~/test
-```
+TODO: implement copy to clipboard
 
 :::
 
 ## Copy Location Path
 
-You can copy a file/folder location path into your clipboard by right clicking it and click `Copy Location Path` or select the file then press `Alt + Shift + C` as shortcut.
+You can copy a file/folder location path into your clipboard by right-clicking it and click `Copy Location Path` or select the file then press `Alt + Shift + C` as a shortcut.
 
 ## Cut files
 
-You can cut files by right clicking it and click `Cut` option or select the file then press `Ctrl + X` as shortcut and paste it by clicking `Paste` option or press `Ctrl + V` on the destination folder.
+You can cut files by right-clicking it and click the `Cut` option or select the file then press `Ctrl + X` as a shortcut and paste it by clicking the `Paste` option or press `Ctrl + V` on the destination folder.
 
-:::info This is done by creating a string of Xplorer command and copies it into the user clipboard to be used when pasting file (this is not integrated with the platform because we haven't found any idea, feel free to [open a PR](/community/Contributing/#pull-requests) if you can help us.). The string of Xplorer command looks like this:
+:::info
 
-```
-Xplorer command - CUT
-E://xplorer
-E://test
-```
+For current implementation, Xplorer write down what to cut locally (not copying to clipboard).
 
 :::
 
 ## Delete files
 
-You can cut files by right-clicking it and click the `Delete` option or select the file then press `Del` as a shortcut. The trashed file can be accessed at `xplorer://Trash`.
+You can cut files by right-clicking it and click the `Delete` option or select the file then press `Del` as a shortcut.
 
-:::info
+### Trashed files
 
--   On Windows, this is done by creating a `Trash` folder on `C:` drive and moving the file into it.
--   On Linux, this feature is fully integrated with the sytem
--   On macOS, this is done by creating a `.local/Trash` folder on `homedir` and moving the file into it.
+The trashed file can be accessed at `xplorer://Trash` or your system trash folder. :::danger Open Issue
 
-We are still working on Windows on macOS to integrate the `Trash` folder, which will be released before the stable version came out. Feel free to [open a PR](/community/Contributing/#pull-requests) if you can help us.
+Please note that Trash folder cannot be accessed on macos via Xplorer since the [trash crate](https://github.com/Byron/trash-rs) Xplorer relies to does not support it (see [this issue](https://github.com/Byron/trash-rs/issues/8) for more details).
 
-:::
+Any contributions to either the trash crate or Xplorer itself for this topic are welcome. :::
+
+### Restore files
+
+You can restore files by opening the `xplorer://Trash` and right-clicking it and click the `Restore` option
 
 ### Permanently delete
 
@@ -65,15 +59,15 @@ You can permanently delete a file by:
 
 ### New file
 
-You can create a new file by right clicking the workspace, expand the `New` option and select `file` option or press `Alt + N` as shortcut.
+You can create a new file by right-clicking the workspace, expand the `New` option and select the `file` option, or press `Alt + N` as a shortcut.
 
 ### New folder
 
-You can create a new folder by right clicking the workspace, expand the `New` option and select `folder` option or press `Shift + N` as shortcut.
+You can create a new folder by right-clicking the workspace, expand the `New` option and select the `folder` option, or press `Shift + N` as a shortcut.
 
 ## Open file
 
-You can open a file on default application by double-clicking it or select the file then press `Enter` as shortcut.
+You can open a file on the default application by double-clicking it or select the file then press `Enter` as a shortcut.
 
 ### Open in Terminal
 
@@ -85,11 +79,11 @@ This is a built-in function by Xplorer. You can open a file/folder on VSCode by 
 
 ## Pin to Sidebar
 
-You can pin a file/folder into sidebar by right clicking it and click `Pin to Sidebar` or select the file then press `Alt + P` as shortcut.
+You can pin a file/folder into the sidebar by right-clicking it and click `Pin to Sidebar` or select the file then press `Alt + P` as a shortcut.
 
 ## Preview file
 
-You can preview a file directly from Xplorer by right-clicking it and click `Preview` otioin or select the file then press `Ctrl+O`.
+You can preview a file directly from Xplorer by right-clicking it and click the `Preview` option or select the file then press `Ctrl+O`.
 
 ![Preview Demo](/img/docs/preview.png)
 
@@ -100,71 +94,12 @@ You can preview a file directly from Xplorer by right-clicking it and click `Pre
 Files available to preview for now:
 </summary>
 
-```json
-[
-    ".pdf",
-    ".html",
-    ".docx",
-    ".htm",
-    ".xlsx",
-    ".xls",
-    ".xlsb",
-    "xls",
-    ".ods",
-    ".fods",
-    ".csv",
-    ".txt",
-    ".py",
-    ".js",
-    ".bat",
-    ".css",
-    ".c++",
-    ".cpp",
-    ".cc",
-    ".c",
-    ".diff",
-    ".patch",
-    ".go",
-    ".java",
-    ".json",
-    ".php",
-    ".ts",
-    ".tsx",
-    ".jsx",
-    ".jpg",
-    ".png",
-    ".gif",
-    ".bmp",
-    ".jpeg",
-    ".jpe",
-    ".jif",
-    ".jfif",
-    ".jfi",
-    ".webp",
-    ".tiff",
-    ".tif",
-    ".ico",
-    ".svg",
-    ".webp",
-    ".mp4",
-    ".webm",
-    ".mpg",
-    ".mp2",
-    ".mpeg",
-    ".mpe",
-    ".mpv",
-    ".ocg",
-    ".m4p",
-    ".m4v",
-    ".avi",
-    ".wmv",
-    ".mov",
-    ".qt",
-    ".flv",
-    ".swf",
-    ".md"
-]
-```
+* Markdown files
+* Image files
+* Text files
+* Video files
+* Pdfs
+* Almost all programming language with syntax highlighting
 
 </details>
 

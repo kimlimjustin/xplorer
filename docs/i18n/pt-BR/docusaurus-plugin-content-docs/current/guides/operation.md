@@ -6,165 +6,100 @@ Você pode copiar arquivos clicando com o botão direito e clicar na opção `Co
 
 :::info
 
-No Windows e no macOS, o Xplorer irá copiar o caminho dos arquivos para a área de transferência local, por isso, você pode copiar um arquivo do Xplorer e colá-lo em qualquer pasta em outro sistema. No entanto, no Linux, nós criamos uma string nos comandos do Xplorer e a copiamos para a área de transferência do usuário, o Xplorer irá ler a área de transferência do usuário ao colar o arquivo (porque não encontramos nenhuma ideia para implementá-lo, sinta-se à vontade para [abrir um PR](/community/Contributing/#pull-requests) se você puder nos ajudar). A string nos comandos do Xplorer se parece dessa forma:
+For current implementation, Xplorer write down what to copy locally (not copying to clipboard).
 
-```
-Xplorer command - COPY
-~/xplorer
-~/test
-```
+TODO: implement copy to clipboard
 
 :::
 
 ## Copiar caminho de localização
 
-Você pode copiar um caminho de localização de arquivo/pasta para a área de transferência clicando com o botão direito do mouse e clicando em `Copiar caminho de localização` ou selecione o arquivo e pressione `Alt + Shift + C` no teclado.
+You can copy a file/folder location path into your clipboard by right-clicking it and click `Copy Location Path` or select the file then press `Alt + Shift + C` as a shortcut.
 
 ## Recortar arquivo
 
-Você pode recortar arquivos clicando com o botão direito e clicando na opção `Recortar` ou selecione o arquivo e pressione `Ctrl + X` no teclado, e para colá-lo clicando no botão `Colar` ou pressione ` Ctrl + V ` na pasta de destino.
+You can cut files by right-clicking it and click the `Cut` option or select the file then press `Ctrl + X` as a shortcut and paste it by clicking the `Paste` option or press `Ctrl + V` on the destination folder.
 
-:::info Isso é feito criando uma string nos comandos do Xplorer e a copia para a área de transferência do usuário para ser usada ao colar o arquivo (não está integrado com a plataforma porque não encontramos nenhuma ideia, sinta-se à vontade para [abrir um PR](/community/Contributing/#pull-requests) se você puder nos ajudar.). A string nos comandos do Xplorer se parece dessa forma:
+:::info
 
-```
-Xplorer command - CUT
-E://xplorer
-E://test
-```
+For current implementation, Xplorer write down what to cut locally (not copying to clipboard).
 
 :::
 
 ## Apagar arquivos
 
-Você pode apagar arquivos clicando com o botão direito e selecionando a opção `Delete` ou selecionando o arquivo e pressionando `Del` no teclado. O arquivo na lixeira pode ser acessado em `xplorer://Trash`.
+You can cut files by right-clicking it and click the `Delete` option or select the file then press `Del` as a shortcut.
 
-:::info
+### Trashed files
 
--   No Windows, isto é feito criando uma pasta `Lixeira` em `Disco Local C:` e movendo o arquivo até ela.
--   No Linux, esta função está totalmente integrada com o sistema.
--   No macOS, isso é feito criando uma pasta `.local/Lixeira` no diretório `homedir` e movendo o arquivo para ele.
+The trashed file can be accessed at `xplorer://Trash` or your system trash folder. :::danger Open Issue
 
-Nós estamos trabalhando para integrar a `Lixeira` no Windows e macOS, será lançado antes do lançamento da versão estável. Sinta-se livre para [abrir um PR](/community/Contributing/#pull-requests) se você puder nos ajudar.
+Please note that Trash folder cannot be accessed on macos via Xplorer since the [trash crate](https://github.com/Byron/trash-rs) Xplorer relies to does not support it (see [this issue](https://github.com/Byron/trash-rs/issues/8) for more details).
+
+Any contributions to either the trash crate or Xplorer itself for this topic are welcome. :::
+
+### Restore files
+
+You can restore files by opening the `xplorer://Trash` and right-clicking it and click the `Restore` option
+
+### Permanently delete
+
+:::danger A permanently deleted file cannot be restored. Please check again before permanently delete any files.
 
 :::
 
-### Excluir permanentemente
-
-:::danger Um arquivo excluído permanentemente não pode ser restaurado. Por favor, verifique novamente antes de excluir permanentemente os arquivos.
-
-:::
-
-Você pode excluir um arquivo permanentemente das seguintes formas:
+You can permanently delete a file by:
 
 1. Exclua-o na `Lixeira`, clique com o botão direito e clique na opção `Excluir Permanentemente`
 2. Selecione o arquivo e pressione `Shift + Del` no teclado
 
 ## Novo
 
-:::caution Tenha cuidado com o novo nome de arquivo/pasta Tratamentos do Xplorer `/` no nome/pasta do arquivo como subdir/subarquivo :::
+:::caution Be careful with new file/folder name Xplorer treats `/` on file name/folder as subdir/subfile :::
 
-### Novo arquivo
+### New file
 
-Você pode criar um novo arquivo clicando com o botão direito do mouse na área de trabalho, selecione a opção `Novo` e selecione a opção `Arquivo` ou pressione `Alt + N` no teclado.
+You can create a new file by right-clicking the workspace, expand the `New` option and select the `file` option, or press `Alt + N` as a shortcut.
 
-### Nova Pasta
+### New folder
 
-Você pode criar uma nova pasta clicando com o botão direito do mouse na área de trabalho, selecione a opção `Novo` e selecione a opção `Pasta` ou pressione `Shift + N` no teclado.
+You can create a new folder by right-clicking the workspace, expand the `New` option and select the `folder` option, or press `Shift + N` as a shortcut.
 
 ## Abrir arquivo
 
-Você pode abrir um arquivo com o aplicativo padrão clicando duas vezes com o mouse ou selecionando o arquivo e pressionando `Enter` no teclado.
+You can open a file on the default application by double-clicking it or select the file then press `Enter` as a shortcut.
 
-### Abrir no terminal
+### Open in Terminal
 
-Esta é uma função integrada do Xplorer. Você pode abrir uma pasta no Terminal clicando com o botão direito e clique na opção `Abrir no terminal` ou selecionando a pasta e pressione `Alt + T` no teclado.
+This is a built-in function by Xplorer. You can open a folder on Terminal by right-clicking it and click the `Open in terminal` option or select the folder then press `Alt + T` as a shortcut.
 
-### Abrir no VSCode
+### Open in VSCode
 
-Esta é uma função integrada do Xplorer. Você pode abrir um arquivo/pasta no VSCode clicando com o botão direito e clicando na opção `Abrir no VSCode` ou selecionando o arquivo e pressione `Ctrl + Enter` no teclado. Você não será capaz de fazer isso se não tiver o VSCode instalado.
+This is a built-in function by Xplorer. You can open a file/folder on VSCode by right-clicking it and click the `Open in vscode` option or select the file then press `Ctrl + Enter` as a shortcut. You won't able to do this if you don't have VSCode installed.
 
 ## Fixar na Barra Lateral
 
-Você pode fixar um arquivo/pasta na barra lateral clicando com o botão direito e clicando em `Fixar na barra lateral` ou selecionando o arquivo e pressionando `Alt + P` no teclado.
+You can pin a file/folder into the sidebar by right-clicking it and click `Pin to Sidebar` or select the file then press `Alt + P` as a shortcut.
 
 ## Pré-visualizar arquivo
 
-Você pode pré-visualizar um arquivo diretamente do Xplorer clicando com o botão direito do mouse sobre ele e clique em `Pré-visualizar` ou selecione o arquivo, em seguida, pressione `Ctrl + O` no teclado.
+You can preview a file directly from Xplorer by right-clicking it and click the `Preview` option or select the file then press `Ctrl+O`.
 
-![Pré-visualizar demonstração](/img/docs/preview.png)
+![Preview Demo](/img/docs/preview.png)
 
 :::info
 
 <details>
 <summary>
-Arquivos disponíveis para pré-visualização agora:
+Files available to preview for now:
 </summary>
 
-```json
-[
-    ".pdf",
-    ".html",
-    ".docx",
-    ".htm",
-    ".xlsx",
-    ".xls",
-    ".xlsb",
-    "xls",
-    ".ods",
-    ".fods",
-    ".csv",
-    ".txt",
-    ".py",
-    ".js",
-    ".bat",
-    ".css",
-    ".c++",
-    ".cpp",
-    ".cc",
-    ".c",
-    ".diff",
-    ".patch",
-    ".go",
-    ".java",
-    ".json",
-    ".php",
-    ".ts",
-    ".tsx",
-    ".jsx",
-    ".jpg",
-    ".png",
-    ".gif",
-    ".bmp",
-    ".jpeg",
-    ".jpe",
-    ".jif",
-    ".jfif",
-    ".jfi",
-    ".webp",
-    ".tiff",
-    ".tif",
-    ".ico",
-    ".svg",
-    ".webp",
-    ".mp4",
-    ".webm",
-    ".mpg",
-    ".mp2",
-    ".mpeg",
-    ".mpe",
-    ".mpv",
-    ".ocg",
-    ".m4p",
-    ".m4v",
-    ".avi",
-    ".wmv",
-    ".mov",
-    ".qt",
-    ".flv",
-    ".swf",
-    ".md"
-]
-```
+* Markdown files
+* Image files
+* Text files
+* Video files
+* Pdfs
+* Almost all programming language with syntax highlighting
 
 </details>
 
@@ -172,7 +107,7 @@ Arquivos disponíveis para pré-visualização agora:
 
 ## Propriedades
 
-Você pode ver as propriedades de um arquivo ou pasta clicando com o botão direito e selecionando a opção `Propriedades` ou selecionando o arquivo e pressionando `Ctrl + P` no teclado. Propriedades disponíveis por agora (serão melhoradas na próxima versão):
+You can view properties of a file/folder by right-clicking it and click `Properties` or select the file then press `Ctrl + P` as a shortcut. Available properties for now (will be improved at the next version):
 
 -   Tamanho
 -   Caminho do Arquivo
@@ -183,4 +118,4 @@ Você pode ver as propriedades de um arquivo ou pasta clicando com o botão dire
 
 ## Renomear o arquivo/pasta
 
-Você pode renomear um arquivo/pasta clicando com o botão direito do mouse nele e clique na opção `Renomear` ou selecione o arquivo e pressione `F2` no teclado. Ele irá solicitar um diálogo, digite o novo nome e o arquivo/pasta serão renomeados.
+You can rename a file/folder by right-clicking it and click the `Rename` option or select the file then press `F2` as a shortcut. It will prompt a dialog, enter the new name and the file/folder will be renamed.
