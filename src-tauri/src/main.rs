@@ -8,6 +8,8 @@ mod files_api;
 mod storage;
 use font_loader::system_fonts;
 use std::env;
+#[cfg(target_os = "windows")]
+use std::os::windows::process::CommandExt;
 use std::path::Path;
 use std::process::Command;
 
@@ -45,20 +47,30 @@ fn get_cli_args() -> Result<ArgsStruct, String> {
   }
   Ok(ArgsStruct { args, flags })
 }
+
+#[cfg(target_os = "windows")]
 #[tauri::command]
-fn check_vscode_installed() -> Result<bool, String> {
-  let output = if cfg!(target_os = "windows") {
-    Command::new("cmd")
-      .args(["/C", "code -v"])
-      .output()
-      .expect("failed to execute process")
+async fn check_vscode_installed() -> Result<bool, String> {
+  let output = Command::new("cmd")
+    .args(["/C", "code -v"])
+    .creation_flags(0x08000000)
+    .output()
+    .expect("failed to execute process");
+  if output.status.success() {
+    Ok(true)
   } else {
-    Command::new("sh")
-      .arg("-c")
-      .arg("code -v")
-      .output()
-      .expect("failed to execute process")
-  };
+    Ok(false)
+  }
+}
+
+#[cfg(not(target_os = "windows"))]
+#[tauri::command]
+async fn check_vscode_installed() -> Result<bool, String> {
+  let output = Command::new("sh")
+    .arg("-c")
+    .arg("code -v")
+    .output()
+    .expect("failed to execute process");
   if output.status.success() {
     Ok(true)
   } else {
