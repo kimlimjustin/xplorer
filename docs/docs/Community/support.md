@@ -8,7 +8,7 @@ Xplorer is an open-source project which you can freely join and seek support ðŸ˜
 
 On this page, we've listed some communities/forums you can participate in to seek support or help others.
 
-Before participating in Xplorer's communities, please read our [Code Of Conduct](/community/CODE_OF_CONDUCT/).
+Before participating in Xplorer's communities, please read our [Code Of Conduct](/docs/community/CODE_OF_CONDUCT/).
 
 ## Issues
 
