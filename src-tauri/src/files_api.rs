@@ -13,6 +13,8 @@ use std::sync::mpsc::channel;
 
 #[cfg(windows)]
 use std::os::windows::prelude::*;
+#[cfg(target_os = "windows")]
+use std::os::windows::process::CommandExt;
 
 #[derive(serde::Serialize)]
 pub struct FileMetaData {
@@ -513,29 +515,33 @@ pub async fn listen_dir(dir: String, window: tauri::Window) -> Result<String, St
   }
 }
 use tauri::api::path::local_data_dir;
-// Extract exe icon, only for windows
+
+#[cfg(target_os = "windows")]
 #[tauri::command]
 pub async fn extract_icon(file_path: String) -> Result<String, String> {
-  if cfg!(target_os = "windows") {
-    let storage_dir = Path::new(&local_data_dir().unwrap()).join("Xplorer/cache");
-    fs::create_dir_all(storage_dir.clone()).unwrap();
-    let basename = get_basename(file_path.clone());
-    let icon_path = storage_dir.join(basename.clone() + ".png");
-    if icon_path.exists() {
-      Ok(icon_path.to_str().unwrap().to_string())
-    } else {
-      Command::new("powershell")
-        .args(&[
-          "./src/extractIcon.ps1",
-          file_path.as_str(),
-          icon_path.to_str().unwrap(),
-        ])
-        .output()
-        .expect("Failed to extract icon");
-
-      Ok(icon_path.to_str().unwrap().to_string())
-    }
+  let storage_dir = Path::new(&local_data_dir().unwrap()).join("Xplorer/cache");
+  fs::create_dir_all(storage_dir.clone()).unwrap();
+  let basename = get_basename(file_path.clone());
+  let icon_path = storage_dir.join(basename.clone() + ".png");
+  if icon_path.exists() {
+    Ok(icon_path.to_str().unwrap().to_string())
   } else {
-    Err("Not supported".to_string())
+    Command::new("powershell")
+      .args(&[
+        "./src/extractIcon.ps1",
+        file_path.as_str(),
+        icon_path.to_str().unwrap(),
+      ])
+      .creation_flags(0x08000000)
+      .output()
+      .expect("Failed to extract icon");
+
+    Ok(icon_path.to_str().unwrap().to_string())
   }
+}
+
+#[cfg(not(target_os = "windows"))]
+#[tauri::command]
+pub async fn extract_icon(_file_path: String) -> Result<String, String> {
+  Err("Not supported".to_string())
 }
