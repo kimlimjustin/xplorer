@@ -3,7 +3,7 @@
 </div>
 
 <p align="center"><span><b>Xplorer</b>, a customizable, modern and cross-platform File Explorer.</span></p>
-<h4 align="center"><span><a href="https://xplorer.vercel.app/community/support/">Supports</a></span> • <span><a href="https://github.com/kimlimjustin/xplorer/discussions">Discussions</a></span> • <span><a href="https://xplorer.vercel.app">Documentation</a></span></h4>
+<h4 align="center"><span><a href="https://xplorer.vercel.app/community/support/">Supports</a></span> • <span><a href="https://github.com/kimlimjustin/xplorer/discussions">Discussions</a></span> • <span><a href="https://xplorer.vercel.app">Documentation</a></span> • <span><a href="https://discord.gg/kK7rwxPt">Discord</a></span></h4>
 
 <div align="center">
 
@@ -32,7 +32,7 @@ View More Screenshots
 
 Xplorer is a file explorer built from ground-up to be fully customizable. And even without any customization, it already looks modern!
 
-Xplorer is a cross-platform application built using [Electron](https://www.electronjs.org/), and you can run it on Windows, MacOS, or Linux without having much trouble. One of the key feature is Xplorer allows you to preview the files you have directly inside Xplorer. And it's not only limited to picture or document preview, but also video preview.
+Xplorer is a cross-platform application built using [Tauri](https://tauri.studio), and you can run it on Windows, MacOS, or Linux without having much trouble. One of the key feature is Xplorer allows you to preview the files you have directly inside Xplorer. And it's not only limited to picture or document preview, but also video preview.
 
 To summarize, Xplorer's features contain:
 
@@ -40,9 +40,11 @@ To summarize, Xplorer's features contain:
 -   Easy to use
 -   Cross-platform
 -   [File Preview](https://xplorer.vercel.app/docs/guides/operation/#preview-file), even for videos!
+-   Customizable
+-   Supports multiple tab
 -   Most importantly, Free and Open Source Software(FOSS), which means you can change components inside if you see fit
 
-Xplorer is currently under heavy development. You can give your suggestions and feedbacks in our [Discussions](https://github.com/kimlimjustin/xplorer/discussions/) page. If you feel comfortable in writing code using Typescript, we highly encourage you to [contribute to this project](https://xplorer.vercel.app/community/Contributing/).
+Xplorer is currently under heavy development. You can give your suggestions and feedbacks in our [Discussions](https://github.com/kimlimjustin/xplorer/discussions/) page. If you feel comfortable in writing code using Typescript and Rust, we highly encourage you to [contribute to this project](https://xplorer.vercel.app/community/Contributing/).
 
 ---
 
@@ -56,6 +58,10 @@ If you want to install Xplorer in your system, you can download the installer fo
 
 If you find any bug, please report it by submitting an issue in our [issue page](https://github.com/kimlimjustin/xplorer/issues) with detailed explanation. Giving some screenshots would also be very helpful.
 
+## Feature Request
+
+You can also submit a feature request in our [issue page](https://github.com/kimlimjustin/xplorer) or [discussions](https://github.com/kimlimjustin/xplorer/discussions) and we will try to implement it as soon as possible. If you want to contribute to this project, please [contribute to this project](https://xplorer.vercel.app/community/Contributing/).
+
 ---
 
 ## Common Problems
@@ -64,37 +70,29 @@ If you find any bug, please report it by submitting an issue in our [issue page]
 
 <details>
 <summary>
-Xplorer keep loading and crashes.
-</summary>
-Try open cmd by typing <code>Win + R</code> and type <code>cmd</code>.
-Enter following command:
-
-```
-wmic
-```
-
-If the output says the `wmic` is not recognized as internal or internal command, please follow the steps given on [this article](https://superuser.com/questions/1178674/wmic-is-not-recognized-as-an-internal-or-external-command-operable-program-or) or [this article](https://knowledge.informatica.com/s/article/156865?language=en_US).
-
-Also, please make sure that windows defender isn't blocking Xplorer from accessing your documents.
-
-</details>
-<details>
-<summary>
 Opening folder like <code>Documents</code>, <code>Desktop</code>, <code>Downloads</code> makes Xplorer crash
 </summary>
 
-Disable the [`Extract exe file icon and make it as preview`](https://xplorer.vercel.app/docs/guides/setting/#extract-exe-file-icon-and-make-it-a-preview) setting.
+Try disabling the [`Extract exe file icon and make it as preview`](https://xplorer.vercel.app/docs/guides/setting/#extract-exe-file-icon-and-make-it-a-preview) option on `Preference` page on Settings.
 
 Also, please make sure that windows defender isn't blocking Xplorer from accessing your documents.
 
 </details>
 <details>
 <summary>
-Xplorer is unstable after installing it.
+Xplorer crashes when opening a folder.
 </summary>
-Simply restart, Xplorer will fix itself, if it doesn't, please address an issue <a href="https://github.com/kimlimjustin/xplorer/issues">over here</a>
+Simply close and reopen Xplorer, Xplorer will fix itself, if it doesn't, please address an issue <a href="https://github.com/kimlimjustin/xplorer/issues">over here</a>
 
 </details>
+
+---
+
+## Architecture
+
+Xplorer is a cross-platform application built using the [Tauri](https://tauri.studio) framework. Tauri is based on Microsoft Edge-similar webview and Rust to work. Read about tauri [here](https://tauri.studio/en/docs/about/intro)
+
+Xplorer is a polygot application. Xplorer relies on Rust api for file operations and TS, SCSS for the webview. Rust code are under `src-tauri` directory whereas the webview code are under `src` directory. The API that connects webview with the Rust code is under `src/Api` directory.
 
 ---
 
@@ -106,23 +104,25 @@ If you want to run this project in your local system, please follow this guide:
 
 2. Clone the project to your local system using this command
 
+3. Follow [this guide](https://tauri.studio/en/docs/getting-started/intro/#setting-up-your-environment) to set up Tauri environment
+
 ```sh
 $ git clone https://github.com/<your_github_username>/xplorer.git
 ```
 
-3. Change directory to the root directory of this project
+4. Change directory to the root directory of this project
 
 ```sh
 $ cd xplorer
 ```
 
-4. Install all dependencies using [`yarn`](https://yarnpkg.com/)
+5. Install all dependencies using [`yarn`](https://yarnpkg.com/)
 
 ```sh
 $ yarn install
 ```
 
-5. Run the project in development mode
+6. Run the project in development mode. Please note that it might takes some times for Cargo to install dependencies for the first run.
 
 ```sh
 $ yarn dev

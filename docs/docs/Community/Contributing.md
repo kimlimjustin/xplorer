@@ -6,7 +6,7 @@ sidebar_position: 2
 
 👍🎉 First off, thanks for taking the time to contribute! 🎉👍
 
-Xplorer is currently under development. We are welcoming contributors to collaborate on Xplorer.
+Xplorer is currently under heavy development. We are welcoming contributors to collaborate on Xplorer.
 
 ## Get involved
 
@@ -32,7 +32,7 @@ When [opening a new issue](https://github.com/kimlimjustin/xplorer/issues), alwa
 
 ### Feature Request {#feat}
 
-We use [GitHub Discussions](https://github.com/kimlimjustin/xplorer/discussions) to track ideas from users. Suggest a new feature [here](https://github.com/kimlimjustin/xplorer/discussions/new)!
+We use [GitHub Discussions](https://github.com/kimlimjustin/xplorer/discussions) and [GitHub Issues](https://github.com/kimlimjustin/xplorer) to track ideas from users. Suggest a new feature [here](https://github.com/kimlimjustin/xplorer/discussions/new)!
 Great Feature Requests tend to have:
 
 -   A quick idea summary.
@@ -43,19 +43,16 @@ Great Feature Requests tend to have:
 
 ### Prerequisite
 
+-   [Tauri environment](https://tauri.studio/en/docs/getting-started/intro#setting-up-your-environment)
 -   [Node JS](https://nodejs.org/en/)
 -   [Git](https://git-scm.com/)
 -   [yarn](https://yarnpkg.com/)
--   [GCC Compiler](https://gcc.gnu.org/)
 -   Code Editor, we recommend you to use [VS Code](https://code.visualstudio.com/)
 
 ### Installation
 
 1. After cloning the repository, run `yarn` in the root of the repository and run `yarn` in the `docs` folder (if you want to working on Xplorer Docs).
-2. To start Xplorer locally:
-
-    - run `yarn start` in the root of the repository if you **don't want** the hot reload feature.
-    - run `yarn dev` in the root of the repository if you **want** the hot reload feature.
+2. To start Xplorer locally, run `yarn dev`.
 
     To start a local development server serving the Docusaurus docs, go into the `docs` directory and run `yarn start`
 
@@ -166,9 +163,7 @@ We host our locales on the [crowdin](https://crwd.in/xplorer). To translate it, 
 #### Priority Files to translate on Crowdin
 
 1. `src/Locales` files
-2. `docs/docs` files
-3. `docs/i18n/en` files
-4. `docs/community` files
+2. `docs/` files
 
 #### Production
 
@@ -176,16 +171,6 @@ Once the files on `src/Locales` have been translated for more than 80%, we will 
 
 Please comment [here](https://github.com/kimlimjustin/xplorer/discussions/30) if you have any questions!
 
-### Files Icon
+### File Library
 
-Files icons are available on [`src/Icon`](https://github.com/kimlimjustin/xplorer/tree/master/src/Icon).
-You can add an icon by doing these steps:
-
--   Paste the new icon in `src/icon`
--   Edit the value of [`src/Components/Files/File Icon/icon.json`](https://github.com/kimlimjustin/xplorer/tree/master/src/Components/Files/File%20Icon/icon.json)
-
-### File Type library
-
-The files type library is available on [`src/Components/Files/File Type/type.json`](https://github.com/kimlimjustin/xplorer/tree/master/src/Components/Files/File%20Type/type.json).
-
-You can add the type of file extension by adding value to the file.
+The json library of file types and thumbnail are found under `lib` folder and the icons are found under `src/Icons` folder. You may add file types and icons for file extensions you want to use and submit a PR.

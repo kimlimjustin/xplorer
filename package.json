@@ -16,7 +16,7 @@
 		"linux"
 	],
 	"scripts": {
-		"start": "tauri start",
+		"start": "yarn dev",
 		"serve": "live-server ./out/src --no-browser",
 		"dev": "yarn compile && concurrently --kill-others \"yarn compile:watch\" \"yarn sass:watch\" \"yarn serve\" \"tauri dev\"",
 		"clean": "rimraf out",
