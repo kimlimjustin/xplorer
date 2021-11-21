@@ -1,30 +1,29 @@
-import fs from 'fs';
-import path from 'path';
-import storage from 'electron-json-storage-sync';
+import Storage from '../../Api/storage';
+import LocalesAPI from '../../Api/locales';
+
+let localesInformation: LocalesAPI;
 
 /**
  * Translate a source into user's preferenced language
  * @param {string} source - The source you want to be translated
- * @returns {string} translated string
+ * @returns {Promise<string>} translated string
  */
-const Translate = (source: string): string => {
+const Translate = async (source: string): Promise<string> => {
 	// Read available language
-	const files = fs.readdirSync(path.join(__dirname, '../../Locales'));
-	const lang = storage.get('preference')?.data?.language
-		? storage.get('preference')?.data?.language
-		: navigator.language;
-	for (const file of files) {
+	if (!localesInformation?.LOCALES) {
+		localesInformation = new LocalesAPI();
+		await localesInformation.build();
+	}
+	const lang = (await Storage.get('preference')).language ?? navigator.language;
+	for (const locale of Object.values(localesInformation.AVAILABLE_LOCALES)) {
 		// Check if the inputed lang available
-		if (file.indexOf(lang) !== -1) {
-			// Read the language file
-			const langSrc = fs.readFileSync(
-				path.join(__dirname, '../../Locales/', file),
-				'utf-8'
-			);
-			// Replace all text
-			Object.keys(JSON.parse(langSrc)).forEach((key) => {
-				if (source === key) source = JSON.parse(langSrc)[key];
-			});
+		if (locale === lang) {
+			if (localesInformation.LOCALES[locale]) {
+				// Replace all text
+				Object.keys(localesInformation.LOCALES[locale]).forEach((key) => {
+					if (source === key) source = localesInformation.LOCALES[locale][key];
+				});
+			}
 			// Return translated text
 			return source;
 		}

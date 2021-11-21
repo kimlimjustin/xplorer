@@ -1,24 +1,25 @@
-import storage from 'electron-json-storage-sync';
-import windowGUID from '../../Constants/windowGUID';
 import Copy from './copy';
 import Paste from './paste';
-import fs from 'fs';
-import mv from 'mv';
-import { dialog } from '@electron/remote';
-import { ErrorLog } from '../../Functions/log';
-import path from 'path';
+import windowName from '../../../Api/window';
+import Storage from '../../../Api/storage';
+import NewFile from './new';
+import getBasename from '../../Functions/path/basename';
+import getDirname from '../../Functions/path/dirname';
+import NewFolder from '../../Folder/new';
+import DirectoryAPI from '../../../Api/directory';
+import ConfirmDialog from '../../Prompt/confirm';
+import OperationAPI from '../../../Api/operation';
+import joinPath from '../../Functions/path/joinPath';
 import { Trash } from './trash';
 /**
- * The the _undo_ed Operation
- * @returns {any}
+ * Redo the _undo_ed Operation
+ * @returns {Promise<void>}
  */
-const Redo = (): void => {
-	const operationLogs = storage.get(`operations-${windowGUID}`)?.data;
-	const latestOperation =
-		operationLogs.operations[operationLogs.currentIndex + 1];
+const Redo = async (): Promise<void> => {
+	const operationLogs = await Storage.get(`operations-${windowName}`);
+	const latestOperation = operationLogs.operations[operationLogs.currentIndex + 1];
 	const increaseIndex = () => {
-		if (operationLogs.currentIndex + 1 > operationLogs.operations.length)
-			operationLogs.currentIndex++;
+		if (operationLogs.currentIndex + 2 >= operationLogs.operations.length) operationLogs.currentIndex = operationLogs.currentIndex + 1;
 	};
 	switch (latestOperation.operationType) {
 		case 'copy':
@@ -27,32 +28,30 @@ const Redo = (): void => {
 			break;
 		case 'cut':
 			for (const source of latestOperation.sources) {
-				mv(
-					source,
-					path.join(
-						latestOperation.destination,
-						path.basename(source)
-					),
-					(err) => {
-						if (err) {
-							dialog.showMessageBoxSync({
-								message:
-									'Something went wrong, please try again or open an issue on GitHub.',
-								type: 'error',
-							});
-							ErrorLog(err);
-						}
+				const dest = joinPath(latestOperation.destination, getBasename(source));
+				if (await new DirectoryAPI(dest).exists()) {
+					if (
+						!(await ConfirmDialog(
+							'Target file exists',
+							'Target directory with the same file/dir name exists, do you want to overwrite it?',
+							'No'
+						))
+					)
+						return;
+					else {
+						await new OperationAPI(dest).unlink();
 					}
-				);
+				}
+				await new OperationAPI(source, dest).rename();
 			}
 			increaseIndex();
 			break;
 		case 'newfile':
-			fs.writeFileSync(latestOperation.destination, '');
+			NewFile(getBasename(latestOperation.destination), getDirname(latestOperation.destination), false);
 			increaseIndex();
 			break;
 		case 'newfolder':
-			fs.mkdirSync(latestOperation.destination);
+			NewFolder(getBasename(latestOperation.destination), getDirname(latestOperation.destination), false);
 			increaseIndex();
 			break;
 		case 'delete':
@@ -60,23 +59,11 @@ const Redo = (): void => {
 			increaseIndex();
 			break;
 		case 'rename':
-			fs.rename(
-				latestOperation.sources,
-				latestOperation.destination,
-				(err) => {
-					if (err) {
-						dialog.showMessageBoxSync({
-							message:
-								'Something went wrong, please try again or open an issue on GitHub.',
-							type: 'error',
-						});
-						ErrorLog(err);
-					}
-				}
-			);
+			await new OperationAPI(latestOperation.sources, latestOperation.destination).rename();
 			increaseIndex();
 			break;
 	}
-	storage.set(`operations-${windowGUID}`, operationLogs);
+	console.log(operationLogs);
+	Storage.set(`operations-${windowName}`, operationLogs);
 };
 export default Redo;

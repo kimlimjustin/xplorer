@@ -7,3 +7,6 @@ temp
 yarn-error.log
 .DS_Store
 .idea
+target
+WixTools
+fake-files

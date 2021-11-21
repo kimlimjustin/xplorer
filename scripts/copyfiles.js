@@ -9,7 +9,7 @@ const cpy = require('cpy');
 			'build/**/*',
 			'!src/**/*.scss',
 		],
-		'outs',
+		'out',
 		{
 			parents: true,
 		}

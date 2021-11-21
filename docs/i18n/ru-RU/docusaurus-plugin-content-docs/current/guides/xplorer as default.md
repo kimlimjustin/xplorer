@@ -12,7 +12,7 @@
 4. Перейдите в `Компьютер\HKEY_CURRENT_USER\Software\Classes\Directory`
 5. Create a key named `shell` if not existed by right and set the default key-value to `openinxplorer`
 6. Создайте раздел `openinxplorer` под `shell`
-7. Create a key named `command` under `openinxplorer` and set the default key-value to `"C:\Users\User\AppData\Local\Programs\Microsoft VS Code\Code.exe" "%V"`
+7. Create a key named `command` under `openinxplorer` and set the default key-value to `"C:\Program Files\Xplorer\Xplorer.exe" "%V"`. (You may have to change `C:\Program Files\Xplorer\` to the location you installed Xplorer)
 
 ![Структура реестра](/img/docs/registry.png)
 

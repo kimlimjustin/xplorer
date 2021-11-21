@@ -1,17 +1,26 @@
-import os from 'os';
-import storage from 'electron-json-storage-sync';
-import windowGUID from '../Constants/windowGUID';
+import OS from '../../Api/platform';
+import FavoritesAPI from '../../Api/favorites';
 
+let favoriteData: FavoritesAPI;
+let platform: string;
 /**
  * Get the tab focusing path
- * @returns {string}
+ * @returns {Promise<string>}
  */
-const focusingPath = (): string => {
-	const tabs = storage.get(`tabs-${windowGUID}`)?.data;
-	return tabs.tabs[tabs.focus].position === 'xplorer://Home' &&
-		process.platform === 'linux'
-		? os.homedir()
-		: tabs.tabs[tabs.focus].position;
+const focusingPath = async (): Promise<string> => {
+	const PathNavigator = document.querySelector(
+		'.path-navigator'
+	) as HTMLInputElement;
+	if (!favoriteData) {
+		favoriteData = new FavoritesAPI();
+		await favoriteData.build();
+	}
+	if (!platform) {
+		platform = await OS();
+	}
+	return PathNavigator.value === 'xplorer://Home' && platform === 'linux'
+		? favoriteData.HOMEDIR_PATH
+		: PathNavigator.value;
 };
 
 export default focusingPath;

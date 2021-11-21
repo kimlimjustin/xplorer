@@ -3,8 +3,8 @@ module.exports = function (grunt) {
 		// define source files and their destinations
 		uglify: {
 			files: {
-				src: ['outs/**/*.js'],
-				dest: 'outs',
+				src: ['out/**/*.js'],
+				dest: 'out',
 				expand: true,
 				cwd: '.',
 				rename: (_, src) => src,

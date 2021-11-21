@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="1.4142" version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <linearGradient id="linearGradient821">
+      <stop style="stop-color:#42a5f5;stop-opacity:1" offset="0" id="stop817"/>
+      <stop style="stop-color:#d891ef;stop-opacity:1" offset="1" id="stop819"/>
+    </linearGradient>
+    <linearGradient id="linearGradient823" x1="2" y1="8" x2="14" y2="8" gradientUnits="userSpaceOnUse" gradientTransform="matrix(1, 0, 0, 1, 10.298719, 7.652916)" xlink:href="#linearGradient821"/>
+  </defs>
+  <path d="m10 4h-6c-1.11 0-2 .89-2 2v12c0 1.097.903 2 2 2h16c1.097 0 2-.903 2-2v-10c0-1.11-.9-2-2-2h-8l-2-2z" fill-rule="nonzero" style="fill: rgb(115, 99, 141);"/>
+  <path style="fill: url(#linearGradient823); fill-opacity: 1; stroke: none; border-block-color: rgb(77, 77, 77); border-color: rgb(77, 77, 77); border-inline-color: rgb(77, 77, 77); caret-color: rgb(77, 77, 77); color: rgb(77, 77, 77); column-rule-color: rgb(77, 77, 77); outline-color: rgb(77, 77, 77); text-decoration: none solid rgb(77, 77, 77); -webkit-text-emphasis-color: rgb(77, 77, 77); -webkit-text-fill-color: rgb(77, 77, 77); -webkit-text-stroke-color: rgb(77, 77, 77);" d="M 18.299 9.653 L 17.592 10.352 L 17.596 10.356 L 12.299 15.651 L 12.299 15.653 L 12.299 16.653 L 13.307 16.653 L 13.307 20.653 L 13.299 20.653 L 13.299 21.653 L 23.299 21.653 L 23.299 20.653 L 23.299 16.653 L 24.299 16.653 L 24.299 15.653 L 24.299 15.651 L 23.156 14.508 L 22.455 15.21 L 22.898 15.653 L 22.299 15.653 L 22.299 20.653 L 19.299 20.653 L 19.299 17.653 L 17.299 17.653 L 17.299 20.653 L 14.299 20.653 L 14.299 16.653 L 14.299 15.653 L 13.699 15.653 L 18.297 11.057 L 18.299 11.059 L 18.301 11.057 L 19.742 12.497 L 20.443 11.795 L 19.002 10.356 L 19.006 10.352 L 18.299 9.653 Z M 21.299 10.653 L 21.299 13.653 L 22.307 13.653 L 22.307 10.653 L 21.299 10.653 Z" class="ColorScheme-Text" id="path4"/>
+</svg>

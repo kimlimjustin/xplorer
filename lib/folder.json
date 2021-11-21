@@ -1,0 +1,179 @@
+[
+	{
+		"folderNames": ["document", "documents", "article", "articles", "documentation", "doc", "docs", "post", "posts"],
+		"thumbnail": "folder/folder-document.svg"
+	},
+	{
+		"folderNames": ["download", "downloads"],
+		"thumbnail": "folder/folder-download.svg"
+	},
+	{
+		"folderNames": ["picture", "pictures", "ico", "icon", "image", "icons", "images", "img", "screenshot", "screenshots"],
+		"thumbnail": "folder/folder-picture.svg"
+	},
+	{
+		"folderNames": ["music"],
+		"thumbnail": "folder/folder-music.svg"
+	},
+	{
+		"folderNames": ["desktop"],
+		"thumbnail": "folder/folder-desktop.svg"
+	},
+	{
+		"folderNames": ["video", "videos"],
+		"thumbnail": "folder/folder-video.svg"
+	},
+	{
+		"folderNames": ["home"],
+		"thumbnail": "folder/folder-home.svg"
+	},
+	{
+		"folderNames": ["trash"],
+		"thumbnail": "folder/folder-trash.svg"
+	},
+	{
+		"folderNames": ["recent", "recents"],
+		"thumbnail": "folder/folder-recent.svg"
+	},
+	{
+		"folderNames": ["about"],
+		"thumbnail": "folder/setting-about.svg"
+	},
+	{
+		"folderNames": ["appearance"],
+		"thumbnail": "folder/setting-appearance.svg"
+	},
+	{
+		"folderNames": ["preference"],
+		"thumbnail": "folder/setting-preference.svg"
+	},
+	{
+		"folderNames": ["android"],
+		"thumbnail": "folder/folder-android.svg"
+	},
+	{
+		"folderNames": [".git", "git", "patch"],
+		"type": "Version Control System",
+		"thumbnail": "folder/folder-git.svg"
+	},
+	{
+		"folderNames": ["node_modules"],
+		"type": "Node Package Modules",
+		"thumbnail": "folder/folder-node.svg"
+	},
+	{
+		"folderNames": ["bower_components"],
+		"type": "Bower Package Modules",
+		"thumbnail": "folder/folder-bower.svg"
+	},
+	{
+		"folderNames": ["vendor"],
+		"type": "Vendor"
+	},
+	{
+		"folderNames": ["webpack"],
+		"type": "Webpack",
+		"thumbnail": "folder/folder-webpack.svg"
+	},
+	{
+		"folderNames": [".github"],
+		"type": "GitHub Configuration",
+		"thumbnail": "folder/folder-github.svg"
+	},
+	{
+		"folderNames": [".husky"],
+		"type": "Husky Configuration",
+		"thumbnail": "folder/folder-husky.svg"
+	},
+	{
+		"folderNames": [".vscode"],
+		"type": "Visual Studio Code Configuration",
+		"thumbnail": "folder/folder-vscode.svg"
+	},
+	{
+		"folderNames": [".vs"],
+		"type": "Visual Studio Configuration"
+	},
+	{
+		"folderNames": ["__pycache__"],
+		"type": "Python Cache",
+		"thumbnail": "folder/folder-python.svg"
+	},
+	{
+		"folderNames": [".idea"],
+		"type": "IntelliJ IDEA Configuration",
+		"thumbnail": "folder/folder-intellij.svg"
+	},
+	{
+		"folderNames": ["app", "apps"],
+		"thumbnail": "folder/folder-app.svg"
+	},
+	{
+		"folderNames": ["archival", "archive", "archives", "backup", "backups"],
+		"type": "Archived",
+		"thumbnail": "folder/folder-archive.svg"
+	},
+	{
+		"folderNames": ["asset", "assets", "report", "reports", "res", "resources", "resource", "src", "static"],
+		"type": "Resources",
+		"thumbnail": "folder/folder-resource.svg"
+	},
+	{
+		"folderNames": ["backend", "server", "servers"],
+		"thumbnail": "folder/folder-server.svg"
+	},
+	{
+		"folderNames": ["bin", "dist", "build", "out", "outs", "release"],
+		"type": "Packaged Distributions",
+		"thumbnail": "folder/folder-dist.svg"
+	},
+
+	{
+		"folderNames": ["client", "clients", "frontend", "pwa"],
+		"thumbnail": "folder/folder-client.svg"
+	},
+	{
+		"folderNames": ["database", "data", "db", "databases"],
+		"type": "Database"
+	},
+	{
+		"folderNames": ["font", "fonts"],
+		"thumbnail": "folder/folder-font.svg"
+	},
+	{
+		"folderNames": ["function", "functions", "math"],
+		"thumbnail": "folder/folder-functions.svg"
+	},
+	{
+		"folderNames": ["html", "page", "pages", "screen", "screens", "view", "views"],
+		"thumbnail": "folder/folder-view.svg"
+	},
+	{
+		"folderNames": ["javascript", "js"],
+		"thumbnail": "folder/folder-javascript.svg"
+	},
+	{
+		"folderNames": ["lib", "libraries", "library", "third-party", "vendor", "vendors"],
+		"thumbnail": "folder/folder-lib.svg"
+	},
+	{
+		"folderNames": ["project", "projects"],
+		"thumbnail": "folder/folder-project.svg"
+	},
+	{
+		"folderNames": ["python", "py"],
+		"thumbnail": "folder/folder-python.svg"
+	},
+	{
+		"folderNames": ["script", "scripts"],
+		"thumbnail": "folder/folder-scripts.svg"
+	},
+	{
+		"folderNames": ["template", "templates"],
+		"thumbnail": "folder/folder-template.svg"
+	},
+	{
+		"folderNames": ["test", "jest", "mocha"],
+		"thumbnail": "folder/folder-test.svg"
+	}
+]

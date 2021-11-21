@@ -1,6 +1,16 @@
-import path from 'path';
-import { IMAGE_TYPES } from '../Config/file.config';
+import FileAPI from '../../Api/files';
+import { IMAGE_TYPES } from '../../Config/file.config';
+import getBasename from '../Functions/path/basename';
+import Storage from '../../Api/storage';
 
+const getExtension = (filename: string): string => {
+	const basename = getBasename(filename);
+	const index = basename.lastIndexOf('.');
+	if (index === -1) {
+		return '';
+	}
+	return basename.substr(index + 1);
+};
 /**
  * Listen to mouse hovering
  * @returns {void}
@@ -17,18 +27,16 @@ const Hover = (): void => {
 		window.clearTimeout(timeOut);
 		hoverPreviewElement?.parentNode?.removeChild(hoverPreviewElement);
 
+		const focusingPath = document.querySelector<HTMLInputElement>('.path-navigator').value;
+
 		// Ignore workspace hovering
 		if ((e.target as HTMLElement).id === 'workspace') {
-			if (hoveringElement?.dataset?.path && displayName)
-				hoveringElement.querySelector('.file-grid-filename').innerHTML =
-					displayName;
+			if (hoveringElement?.dataset?.path && displayName) hoveringElement.querySelector('.file-grid-filename').innerHTML = displayName;
 			return;
 		}
 		hoveringElement?.classList?.remove('hovering');
 
-		const target = (e.target as HTMLElement)?.dataset?.path
-			? (e.target as HTMLElement)
-			: ((e.target as HTMLElement)?.parentNode as HTMLElement);
+		const target = (e.target as HTMLElement)?.dataset?.path ? (e.target as HTMLElement) : ((e.target as HTMLElement)?.parentNode as HTMLElement);
 
 		const filenameGrid = target.querySelector('.file-grid-filename');
 
@@ -39,19 +47,15 @@ const Hover = (): void => {
 		}
 		hoveringElement = target;
 
-		timeOut = window.setTimeout(() => {
+		timeOut = window.setTimeout(async () => {
 			displayName = filenameGrid.innerHTML;
-			filenameGrid.innerHTML = path.basename(
-				unescape(target.dataset.path)
-			);
+			const path = focusingPath === 'xplorer://Trash' ? unescape(target.dataset.realPath) : unescape(target.dataset.path);
+			filenameGrid.innerHTML = getBasename(path);
 			target?.classList?.add('hovering');
 
-			if (
-				IMAGE_TYPES.indexOf(path.extname(filenameGrid.innerHTML)) !== -1
-			) {
-				hoverPreviewElement.innerHTML = `<img src="${unescape(
-					target.dataset.path
-				)}">`;
+			const previewImageOnHover = (await Storage.get('appearance')).previewImageOnHover ?? true;
+			if (IMAGE_TYPES.indexOf(getExtension(filenameGrid.innerHTML)) !== -1 && previewImageOnHover) {
+				hoverPreviewElement.innerHTML = `<img src="${new FileAPI(path).readAsset()}">`;
 				hoverPreviewElement.classList.add('hover-preview');
 				hoverPreviewElement.style.top = y + 'px';
 				hoverPreviewElement.style.left = x + 'px';

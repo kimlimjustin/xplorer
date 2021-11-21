@@ -1,108 +1,117 @@
-import storage from 'electron-json-storage-sync';
-import fs from 'fs';
-import path from 'path';
 import { reload } from '../../Layout/windowManager';
-import ejs from 'ejs';
 import Translate from '../../I18n/i18n';
+import LocalesAPI from '../../../Api/locales';
+import Storage from '../../../Api/storage';
+let localesData: LocalesAPI;
 /**
  * Create preference section
- * @returns {void}
+ * @returns {Promise<void>}
  */
-const Preference = (): void => {
-	const availableLanguages = JSON.parse(
-		fs.readFileSync(
-			path.join(__dirname, '../../../Locales/index.json'),
-			'utf-8'
-		)
-	)?.availableLanguages;
-	let language =
-		storage.get('preference')?.data?.language ?? navigator.language;
-	if (Object.values(availableLanguages).indexOf(language) === -1)
-		language = 'en-US';
-	const hideHiddenFiles =
-		storage.get('preference')?.data?.hideHiddenFiles ?? true;
-	const hideSystemFiles =
-		storage.get('preference')?.data?.hideSystemFiles ?? true;
-	const dirAlongsideFiles =
-		storage.get('preference')?.data?.dirAlongsideFiles ?? false;
+const Preference = async (): Promise<void> => {
+	if (!localesData) {
+		localesData = new LocalesAPI();
+		localesData.build();
+	}
+	const _preference = await Storage.get('preference');
+	let language = _preference?.language ?? navigator.language;
+	if (Object.values(localesData.AVAILABLE_LOCALES).indexOf(language) === -1) language = 'en-US';
+	const hideHiddenFiles = _preference?.hideHiddenFiles ?? true;
+	const hideSystemFiles = _preference?.hideSystemFiles ?? true;
+	const dirAlongsideFiles = _preference?.dirAlongsideFiles ?? false;
+	const detectDriveChange = _preference?.detectDriveChange ?? false;
 	const settingsMain = document.querySelector('.settings-main');
+	const on_startup = _preference?.on_startup ?? 'new';
 
-	const appLanguage_i18n = Translate('App Language');
-	const fileAndFolders_i18n = Translate('Files and Folders');
-	const hideHiddenFiles_i18n = Translate('Hide hidden files');
-	const hideSystemFiles_i18n = Translate('Hide system files');
-	const dirAlongsideFiles_i18n = Translate(
-		'List and sort directories alongside files'
-	);
-	ejs.renderFile(path.join(__dirname, 'preference.ejs'), {
-		language,
-		hideHiddenFiles,
-		hideSystemFiles,
-		dirAlongsideFiles,
-		availableLanguages,
-		appLanguage_i18n,
-		fileAndFolders_i18n,
-		hideHiddenFiles_i18n,
-		hideSystemFiles_i18n,
-		dirAlongsideFiles_i18n,
-	}).then((result) => {
-		settingsMain.innerHTML = result;
-		settingsMain
-			.querySelector(`[name="language"]`)
-			.addEventListener(
-				'change',
-				(event: Event & { target: HTMLInputElement }) => {
-					const preference = storage.get('preference')?.data ?? {};
-					preference.language = event.target.value;
-					storage.set('preference', preference);
-					reload();
+	const appLanguage_i18n = await Translate('App Language');
+	const fileAndFolders_i18n = await Translate('Files and Folders');
+	const hideHiddenFiles_i18n = await Translate('Hide hidden files');
+	const hideSystemFiles_i18n = await Translate('Hide system files');
+	const dirAlongsideFiles_i18n = await Translate('List and sort directories alongside files');
+	const on_startup_i18n = await Translate('On startup');
+	const detectDriveChange_i18n = await Translate('Detect Drive Change');
+	const preferencePage = `<h3 class="settings-title">${appLanguage_i18n}</h3>
+	<select name="language">
+	${Object.keys(localesData.AVAILABLE_LOCALES)
+		.map(
+			(lang) =>
+				`<option value="${localesData.AVAILABLE_LOCALES[lang]}" ${
+					localesData.AVAILABLE_LOCALES[lang] === language ? 'selected' : ''
+				}>${lang}</option>`
+		)
+		.join('')}
+	</select>
+	<h3 class="settings-title">${fileAndFolders_i18n}</h3>
+	<div class="toggle-box">
+		<label class="toggle">
+			<input type="checkbox" name="hide-hidden-files" ${hideHiddenFiles ? 'checked' : ''}>
+			<span class="toggle-slider"></span>
+			<span class="toggle-label">${hideHiddenFiles_i18n}</span>
+		</label>
+	</div>
+	<div class="toggle-box">
+		<label class="toggle">
+			<input type="checkbox" name="hide-system-files"${hideSystemFiles ? 'checked' : ''}>
+			<span class="toggle-slider"></span>
+			<span class="toggle-label">${hideSystemFiles_i18n}</span>
+		</label>
+	</div>
+	<div class="toggle-box">
+		<label class="toggle">
+			<input type="checkbox" name="dirAlongsideFiles" ${dirAlongsideFiles ? 'checked' : ''}>
+			<span class="toggle-slider"></span>
+			<span class="toggle-label">${dirAlongsideFiles_i18n}</span>
+		</label>
+	</div>
+	<div class="toggle-box">
+		<label class="toggle">
+			<input type="checkbox" name="detect-drive-change" ${detectDriveChange ? 'checked' : ''}>
+			<span class="toggle-slider"></span>
+			<span class="toggle-label">${detectDriveChange_i18n}</span>
+		</label>
+	</div>
+	<h3 class="settings-title">${on_startup_i18n}</h3>
+	<select name="on_startup">
+		<option ${on_startup === 'new' ? 'selected' : ''} value="new">New tab</option>
+		<option ${on_startup === 'continue' ? 'selected' : ''} value="continue">Continue previous session</option>
+	</select>`;
+	settingsMain.innerHTML = preferencePage;
+	settingsMain.querySelector(`[name="language"]`).addEventListener('change', async (event: Event & { target: HTMLInputElement }) => {
+		const preference = await Storage.get('preference');
+		preference.language = event.target.value;
+		Storage.set('preference', preference);
+		reload();
 
-					document.querySelector(
-						'.sidebar-setting-btn-text'
-					).innerHTML = Translate('Settings');
-					Preference();
-				}
-			);
-		settingsMain
-			.querySelector(`[name="hide-hidden-files"]`)
-			.addEventListener(
-				'change',
-				(event: Event & { target: HTMLInputElement }) => {
-					const preference = storage.get('preference')?.data ?? {};
-					preference.hideHiddenFiles = event.target.checked;
-					storage.set('preference', preference);
-					document.getElementById(
-						'workspace'
-					).dataset.hideHiddenFiles = String(event.target.checked);
-					(
-						document.getElementById(
-							'show-hidden-files'
-						) as HTMLInputElement
-					).checked = !event.target.checked;
-				}
-			);
-		settingsMain
-			.querySelector(`[name="hide-system-files"]`)
-			.addEventListener(
-				'change',
-				(event: Event & { target: HTMLInputElement }) => {
-					const preference = storage.get('preference')?.data ?? {};
-					preference.hideSystemFiles = event.target.checked;
-					storage.set('preference', preference);
-					reload();
-				}
-			);
-		settingsMain
-			.querySelector(`[name="dirAlongsideFiles"]`)
-			.addEventListener(
-				'change',
-				(event: Event & { target: HTMLInputElement }) => {
-					const preference = storage.get('preference')?.data ?? {};
-					preference.dirAlongsideFiles = event.target.checked;
-					storage.set('preference', preference);
-					reload();
-				}
-			);
+		document.querySelector('.sidebar-setting-btn-text').innerHTML = await Translate('Settings');
+		Preference();
+	});
+	settingsMain.querySelector(`[name="hide-hidden-files"]`).addEventListener('change', async (event: Event & { target: HTMLInputElement }) => {
+		const preference = await Storage.get('preference');
+		preference.hideHiddenFiles = event.target.checked;
+		Storage.set('preference', preference);
+		document.getElementById('workspace').dataset.hideHiddenFiles = String(event.target.checked);
+	});
+	settingsMain.querySelector(`[name="hide-system-files"]`).addEventListener('change', async (event: Event & { target: HTMLInputElement }) => {
+		const preference = await Storage.get('preference');
+		preference.hideSystemFiles = event.target.checked;
+		Storage.set('preference', preference);
+		reload();
+	});
+	settingsMain.querySelector(`[name="dirAlongsideFiles"]`).addEventListener('change', async (event: Event & { target: HTMLInputElement }) => {
+		const preference = await Storage.get('preference');
+		preference.dirAlongsideFiles = event.target.checked;
+		Storage.set('preference', preference);
+		reload();
+	});
+	settingsMain.querySelector(`[name="detect-drive-change"]`).addEventListener('change', async (event: Event & { target: HTMLInputElement }) => {
+		const preference = await Storage.get('preference');
+		preference.detectDriveChange = event.target.checked;
+		Storage.set('preference', preference);
+	});
+	settingsMain.querySelector(`[name="on_startup"]`).addEventListener('change', async (event: Event & { target: HTMLInputElement }) => {
+		const preference = await Storage.get('preference');
+		preference.on_startup = event.target.value;
+		Storage.set('preference', preference);
+		reload();
 	});
 };
 

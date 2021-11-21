@@ -1,1 +1,0 @@
-## Theme generator for Xplorer

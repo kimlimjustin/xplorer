@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Xplorer</title>
+		<link rel="stylesheet" href="Public/style.css" />
+		<link rel="shortcut icon" href="Public/favicon.ico" type="image/x-icon" />
+		<script src="./index.js"></script>
+	</head>
+
+	<body>
+		<div class="container">
+			<div class="sidebar">
+				<span class="xplorer-brand">Xplorer</span>
+				<div id="sidebar-nav"></div>
+				<div class="sidebar-setting-btn sidebar-hover-effect"></div>
+			</div>
+			<div class="main">
+				<div class="topbar" data-tauri-drag-region>
+					<div class="row">
+						<div class="tabs-manager">
+							<div class="tab tab-hover-effect" id="tab1">
+								<span id="tab-position">Home</span>
+							</div>
+							<span class="create-new-tab"> &plus; </span>
+						</div>
+						<div class="window-manager">
+							<span id="minimize" title="Minimize"></span>
+							<span id="maximize" title="Maximize"></span>
+							<span id="exit" title="Exit (Ctrl + w)"></span>
+						</div>
+					</div>
+					<div class="row">
+						<div class="navigator">
+							<span id="go-back" title="Go Back (Alt + Left Arrow)">&larr;</span>
+							<span id="go-forward" title="Go Forward (Alt + Right Arrow)">&rarr;</span>
+							<span id="go-parent-dir" title="Parent Directory (Alt + Up Arrow)">&uarr;</span>
+							<span id="refresh" title="Reload (f5)">&#10227;</span>
+						</div>
+						<input class="path-navigator" type="text" value="xplorer://Home" spellcheck="false" />
+					</div>
+				</div>
+				<div class="loading-bar" data-loading="false">
+					<span class="loader"></span>
+				</div>
+				<div class="main-box">
+					<div id="workspace" data-path="xplorer://Home"></div>
+				</div>
+			</div>
+		</div>
+		<div class="settings">
+			<div class="settings-sidebar">
+				<div class="settings-sidebar-header exit-setting-btn sidebar-hover-effect">
+					<span class="exit-setting-icon">←</span>
+					<span class="settings-sidebar-heading">Settings</span>
+				</div>
+				<div class="settings-sidebar-items"></div>
+			</div>
+			<div class="settings-main"></div>
+		</div>
+		<div class="contextmenu"></div>
+		<div id="contextmenu-submenus"></div>
+		<div class="properties">
+			<div class="properties-heading">
+				<span class="properties-heading-title"> Properties </span>
+				<span class="properties-heading-exit">&times;</span>
+			</div>
+			<div class="properties-body"></div>
+		</div>
+	</body>
+</html>

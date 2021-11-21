@@ -3,28 +3,14 @@ api_token_env: 'CROWDIN_PERSONAL_TOKEN'
 preserve_hierarchy: true
 files:
     [
+        { source: '/docs/i18n/en/**/*', translation: '/docs/i18n/%locale%/**/%original_file_name%' },
+        { source: '/docs/docs/*', translation: '/docs/i18n/%locale%/docusaurus-plugin-content-docs/current/%original_file_name%' },
+        { source: '/docs/docs/guides/*', translation: '/docs/i18n/%locale%/docusaurus-plugin-content-docs/current/guides/%original_file_name%' },
         {
-            source: '/docs/community/**/*',
-            translation: '/docs/i18n/%locale%/docusaurus-plugin-content-docs-community/current/**/%original_file_name%',
+            source: '/docs/docs/Community/Contributing.md',
+            translation: '/docs/i18n/%locale%/docusaurus-plugin-content-docs/current/Community/Contributing.md',
         },
-        {
-            source: '/docs/i18n/en/**/*',
-            translation: '/docs/i18n/%locale%/**/%original_file_name%',
-        },
-        {
-            source: '/docs/docs/**/*',
-            translation: '/docs/i18n/%locale%/docusaurus-plugin-content-docs/current/**/%original_file_name%',
-        },
-        {
-            source: '/docs/blog/**/*',
-            translation: '/docs/i18n/%locale%/docusaurus-plugin-content-blog/**/%original_file_name%',
-        },
-        {
-            source: '/src/Locales/base.json',
-            translation: '/src/Locales/%locale%.json',
-        },
-        {
-            source: '/docs/src/pages/**/*',
-            translation: '/docs/i18n/%locale%/docusaurus-plugin-content-pages/**/%original_file_name%',
-        },
+        { source: '/docs/docs/Community/support.md', translation: '/docs/i18n/%locale%/docusaurus-plugin-content-docs/current/Community/support.md' },
+        { source: '/src/Locales/base.json', translation: '/src/Locales/%locale%.json' },
+        { source: '/docs/src/pages/**/*', translation: '/docs/i18n/%locale%/docusaurus-plugin-content-pages/**/%original_file_name%' },
     ]
