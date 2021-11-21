@@ -8,7 +8,8 @@ RUN sudo apt-get update \
     # window manager
     && sudo apt-get install -y jwm \
     # electron
-    && sudo apt-get install -y libgtk-3-0 libnss3 libasound2 \
+    && sudo apt-get install -y libgtk-3-0 libnss3 libasound2 \ 
+    # I am keeping these intact since the rebrand might be using this. Don't remove!
     # native-keymap
     && sudo apt-get install -y libx11-dev libxkbfile-dev
 RUN sudo apt-get update \
@@ -17,7 +18,7 @@ RUN sudo apt-get update \
         libgtk-3-dev \
         libnss3-dev
         
-RUN sudo apt update && sudo apt install libwebkit2gtk-4.0-dev \
+RUN sudo apt update && sudo apt install -y libwebkit2gtk-4.0-dev \
     build-essential \
     curl \
     wget \
@@ -31,3 +32,5 @@ RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.2/install.sh | b
 
 RUN nvm install node --latest-npm
 RUN nvm use node
+RUN rustc --version
+
