@@ -1,0 +1,82 @@
+{
+	"package": {
+		"productName": "Xplorer",
+		"version": "0.2.0"
+	},
+	"build": {
+		"distDir": "../out/src",
+		"devPath": "http://localhost:8080",
+		"beforeDevCommand": "",
+		"beforeBuildCommand": "",
+		"withGlobalTauri": true
+	},
+	"tauri": {
+		"bundle": {
+			"active": true,
+			"targets": "all",
+			"identifier": "Justin Maximillian Kimlim",
+			"icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"],
+			"resources": ["../lib/files.json", "../lib/folder.json", "./src/extractIcon.ps1"],
+			"externalBin": [],
+			"copyright": "Apache-2.0",
+			"category": "DeveloperTool",
+			"shortDescription": "",
+			"longDescription": "",
+			"deb": {
+				"depends": [],
+				"useBootstrapper": false
+			},
+			"macOS": {
+				"frameworks": [],
+				"minimumSystemVersion": "",
+				"useBootstrapper": false,
+				"exceptionDomain": "",
+				"signingIdentity": null,
+				"entitlements": null,
+				"license": "../LICENSE"
+			},
+			"windows": {
+				"certificateThumbprint": null,
+				"digestAlgorithm": "sha256",
+				"timestampUrl": "",
+				"wix": {
+					"template": "./installer.wxs",
+					"license": "../LICENSE"
+				}
+			}
+		},
+		"updater": {
+			"active": false
+		},
+		"allowlist": {
+			"all": true,
+			"fs": {
+				"all": true,
+				"copyFile": true,
+				"createDir": true,
+				"readBinaryFile": true,
+				"readDir": true,
+				"readTextFile": true,
+				"removeDir": true,
+				"removeFile": true,
+				"renameFile": true,
+				"writeBinaryFile": true,
+				"writeFile": true
+			}
+		},
+		"windows": [
+			{
+				"title": "Xplorer",
+				"width": 1000,
+				"height": 700,
+				"resizable": true,
+				"fullscreen": false,
+				"decorations": false,
+				"transparent": true
+			}
+		],
+		"security": {
+			"csp": "default-src asset: blob: data: filesystem: ws: wss: http: https: tauri: 'unsafe-eval' 'unsafe-inline' 'self' img-src: 'self'"
+		}
+	}
+}

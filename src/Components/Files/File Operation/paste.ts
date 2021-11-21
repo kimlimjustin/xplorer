@@ -1,158 +1,94 @@
-import { clipboard, ipcRenderer } from 'electron';
-import path from 'path';
-import fs from 'fs';
-import cpy from 'cpy';
-import { dialog } from '@electron/remote';
-import { ErrorLog, InfoLog, OperationLog } from '../../Functions/log';
-import { reload } from '../../Layout/windowManager';
-import mv from 'mv';
-
-/**
- * copy a file
- * @param {Array<string>} filePaths - array of file paths to be copied
- * @param {string} target - desitnation of copying file
- * @returns {Promise<void>}
- */
-const COPY = (filePaths: Array<string>, target: string): Promise<void> => {
-	const operationDone = (filePath: string) => {
-		ipcRenderer.sendSync(
-			'operation-done',
-			path.join(target, path.basename(filePath))
-		);
-		reload();
-	};
-	return new Promise<void>((resolve) => {
-		for (const filePath of filePaths) {
-			const copyAFileDone = (file: string) => {
-				operationDone(filePath);
-				if (file !== filePaths[filePaths.length - 1]) return;
-				else {
-					resolve();
-				}
-			};
-			ipcRenderer.send(
-				'operation',
-				path.join(target, path.basename(filePath))
-			);
-			if (fs.lstatSync(filePath).isDirectory()) {
-				if (target === path.dirname(filePath)) {
-					cpy(
-						filePath,
-						path.join(target, path.basename(filePath) + ' - Copy')
-					).then(() => {
-						copyAFileDone(filePath);
-					});
-				} else if (
-					fs.existsSync(path.join(target, path.basename(filePath)))
-				) {
-					const options = {
-						buttons: ['Replace', 'Skip'],
-						message: `Another folder with the same name already exists in "${target}". Replacing it will overwrite its content.`,
-						title: `Replace folder ${path.basename(filePath)}`,
-					};
-					if (dialog.showMessageBoxSync(options) === 0)
-						cpy(
-							filePath,
-							path.join(target, path.basename(filePath))
-						).then(() => {
-							copyAFileDone(filePath);
-						});
-				} else {
-					cpy(
-						filePath,
-						path.join(target, path.basename(filePath))
-					).then(() => {
-						copyAFileDone(filePath);
-					});
-				}
-			} else {
-				if (target === path.dirname(filePath)) {
-					cpy(filePath, target, {
-						rename: (basename) =>
-							`${basename
-								.split('.')
-								.splice(0, basename.split('.').length - 1)
-								.join('.')} - Copy.${basename
-								.split('.')
-								.splice(basename.split('.').length - 1)}`,
-					}).then(() => {
-						copyAFileDone(filePath);
-					});
-				} else if (
-					fs.existsSync(path.join(target, path.basename(filePath)))
-				) {
-					const options = {
-						buttons: ['Replace', 'Skip'],
-						message: `Another file with the same name already exists in "${target}". Replacing it will overwrite its content.`,
-						title: `Replace file ${path.basename(filePath)}`,
-					};
-					if (dialog.showMessageBoxSync(options) === 0)
-						cpy(filePath, target).then(() => {
-							copyAFileDone(filePath);
-						});
-				} else {
-					cpy(filePath, target).then(() => {
-						copyAFileDone(filePath);
-					});
-				}
-			}
-		}
-	});
+import Storage from '../../../Api/storage';
+import OperationAPI from '../../../Api/operation';
+import DirectoryAPI from '../../../Api/directory';
+import joinPath from '../../Functions/path/joinPath';
+import getBasename from '../../Functions/path/basename';
+import getDirname from '../../Functions/path/dirname';
+import NormalizeSlash from '../../Functions/path/normalizeSlash';
+import FileAPI from '../../../Api/files';
+import ConfirmDialog from '../../Prompt/confirm';
+import normalizeSlash from '../../Functions/path/normalizeSlash';
+import { OperationLog } from '../../Functions/log';
+const cpy = async (src: string, dest: string) => {
+	dest = joinPath(dest, getBasename(src));
+	if (NormalizeSlash(getDirname(src)) === NormalizeSlash(dest)) {
+		dest += ' - COPY';
+	}
+	if (await new FileAPI(dest).exists()) {
+		if (
+			!(await ConfirmDialog(
+				'Target file exists',
+				'Target directory with the same file name exists, do you want to overwrite it?',
+				'No'
+			))
+		)
+			return;
+	}
+	new OperationAPI(src, dest).copyFile();
 };
-
-/**
- * Paste copied files into a folder
- * @param {string} target - Folder you want to paste copied files into
- * @returns {void}
- */
 const Paste = async (target: string): Promise<void> => {
-	const clipboardText = clipboard.readText();
-	let clipboardExFilePaths;
-	if (process.platform !== 'linux') {
-		const clipboardEx = require('electron-clipboard-ex'); //eslint-disable-line
-		clipboardExFilePaths = clipboardEx.readFilePaths();
-	}
-	if (clipboardExFilePaths?.length) {
-		await COPY(clipboardExFilePaths, target);
-		InfoLog(`Copy ${clipboardExFilePaths.length} files into ${target}`);
-		OperationLog('copy', clipboardExFilePaths, target);
-	}
-	// CHeck if the copied text is Xplorer command
-	else if (!clipboardText.startsWith('Xplorer command')) {
-		return;
-	} else {
-		const commandType = clipboardText
-			.split('\n')[0]
-			.replace('Xplorer command - ', '');
-		const filePaths: string[] = [];
-		for (let i = 1; i < clipboardText.split('\n').length; i++) {
-			filePaths.push(clipboardText.split('\n')[i]);
+	const clipboard = await Storage.get('clipboard');
+
+	const recuriveCopy = async (
+		_path: string,
+		_target: string,
+		firstRecursion = false
+	) => {
+		let useCopySuffix = false;
+		if (
+			firstRecursion &&
+			normalizeSlash(getDirname(_path)) === normalizeSlash(_target)
+		) {
+			useCopySuffix = true;
 		}
-		if (commandType === 'COPY') {
-			await COPY(filePaths, target);
-			InfoLog(`Copy ${filePaths.length} files into ${target}`);
-			OperationLog('copy', filePaths, target);
-		} else if (commandType === 'CUT') {
-			for (const filePath of filePaths) {
-				mv(
-					filePath,
-					path.join(target, path.basename(filePath)),
-					(err) => {
-						if (err) {
-							dialog.showMessageBoxSync({
-								message:
-									'Something went wrong, please try again or open an issue on GitHub.',
-								type: 'error',
-							});
-							ErrorLog(err);
-						}
+		const subdirInfo = new DirectoryAPI(normalizeSlash(_path));
+		if (await subdirInfo.isDir()) {
+			let _dest = joinPath(_target, getBasename(_path));
+			if (useCopySuffix) _dest += '- COPY';
+			await new DirectoryAPI(_dest).mkdir();
+			(await subdirInfo.getFiles()).files.forEach(async (subsubdir) => {
+				await recuriveCopy(subsubdir.file_path, _dest);
+			});
+		} else {
+			cpy(_path, _target);
+		}
+	};
+	for (const file of clipboard.files) {
+		const dirInfo = new DirectoryAPI(file);
+		const dest = joinPath(target, getBasename(file));
+		switch (clipboard.command) {
+			case 'cp':
+				if (await dirInfo.isDir()) {
+					await recuriveCopy(file, target, true);
+				} else {
+					cpy(file, target);
+				}
+				break;
+			case 'cut':
+				if (await new DirectoryAPI(dest).exists()) {
+					if (
+						!(await ConfirmDialog(
+							'Target file exists',
+							'Target directory with the same file/dir name exists, do you want to overwrite it?',
+							'No'
+						))
+					)
+						return;
+					else {
+						await new OperationAPI(dest).unlink();
 					}
-				);
-			}
-			InfoLog(`Cut ${filePaths.length} files into ${target}`);
-			OperationLog('cut', filePaths, target);
+				}
+				await new OperationAPI(file, dest).rename();
+				break;
 		}
+	}
+	switch (clipboard.command) {
+		case 'cp':
+			OperationLog('copy', clipboard.files, target);
+			break;
+		case 'cut':
+			OperationLog('cut', clipboard.files, target);
+			break;
 	}
 };
-
 export default Paste;

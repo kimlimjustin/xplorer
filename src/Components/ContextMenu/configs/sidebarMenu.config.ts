@@ -1,23 +1,23 @@
 import contextMenuItem from '../../../Typings/contextMenuItem';
 import { createNewTab } from '../../Layout/tab';
 import Pin from '../../Files/File Operation/pin';
-import { open } from '../../Files/File Operation/open';
 import Translate from '../../I18n/i18n';
-import { Preview } from '../../Files/File Preview/preview';
+import Preview from '../../Files/File Preview/preview';
+import { OpenDir } from '../../Open/open';
+import FileAPI from '../../../Api/files';
 
-const SidebarMenu = (
-	target: HTMLElement,
-	filePath: string
-): contextMenuItem[][] => {
+const SidebarMenu = async (target: HTMLElement, filePath: string): Promise<contextMenuItem[][]> => {
 	return [
 		[
 			{
-				menu: Translate('Open'),
+				menu: await Translate('Open'),
 				icon: 'open',
-				role: () => open(filePath),
+				role: () => {
+					target?.dataset?.isdir === 'true' ? OpenDir(filePath) : new FileAPI(filePath).openFile();
+				},
 			},
 			{
-				menu: Translate('Open in New Tab'),
+				menu: await Translate('Open in New Tab'),
 				visible: target?.dataset?.isdir === 'true',
 				icon: 'open in new tab',
 				role: () => {
@@ -25,7 +25,7 @@ const SidebarMenu = (
 				},
 			},
 			{
-				menu: Translate('Preview'),
+				menu: await Translate('Preview'),
 				shortcut: 'Ctrl+O',
 				visible: target?.dataset?.isdir !== 'true',
 				icon: 'preview',
@@ -36,7 +36,7 @@ const SidebarMenu = (
 		],
 		[
 			{
-				menu: Translate('Unpin from Sidebar'),
+				menu: await Translate('Unpin from Sidebar'),
 				icon: 'pin',
 				role: () => {
 					Pin([filePath]);

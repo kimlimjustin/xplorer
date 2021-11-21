@@ -1,22 +1,14 @@
-import fs from 'fs';
-import getType from '../Files/File Type/type';
-import storage from 'electron-json-storage-sync';
-import { isHiddenFile as checkIsHiddenFile } from 'is-hidden-file';
-import moment from 'moment';
-import getFolderSize from 'get-folder-size';
 import formatBytes from '../Functions/filesize';
+import DirectoryAPI from '../../Api/directory';
+import { updateTheme } from '../Theme/theme';
 /**
  * Render file/folder properties into HTML
  * @param {Record<string, unknown>} options - File/folder's properties
  */
 const RenderProperties = (options: Record<string, unknown>) => {
-	const PROPERTIES_ELEMENT =
-		document.querySelector<HTMLElement>('.properties');
-	const PROPERTIES_BODY =
-		PROPERTIES_ELEMENT.querySelector('.properties-body');
-	PROPERTIES_ELEMENT.querySelector(
-		'.properties-heading-exit'
-	).addEventListener('click', () => {
+	const PROPERTIES_ELEMENT = document.querySelector<HTMLElement>('.properties');
+	const PROPERTIES_BODY = PROPERTIES_ELEMENT.querySelector('.properties-body');
+	PROPERTIES_ELEMENT.querySelector('.properties-heading-exit').addEventListener('click', () => {
 		PROPERTIES_ELEMENT.style.animation = 'close-properties 1s forwards';
 	});
 	PROPERTIES_ELEMENT.style.animation = 'properties 1s forwards';
@@ -41,56 +33,23 @@ const RenderProperties = (options: Record<string, unknown>) => {
  * @returns {void}
  */
 const Properties = (filePath: string): void => {
-	const fileElement = document.querySelector<HTMLElement>(
-		`[data-path="${escape(filePath)}"]`
-	);
-	let size: string,
-		createdAt,
-		modifiedAt,
-		accessedAt,
-		isHiddenFile,
-		fileType,
-		isDirectory;
-	try {
-		size = fileElement.querySelector('.file-size').innerHTML;
-		if (fileElement.dataset.realPath)
-			filePath = fileElement.dataset.realPath;
-		createdAt = fileElement.dataset.createdAt;
-		modifiedAt = fileElement.dataset.modifiedAt;
-		accessedAt = fileElement.dataset.accessedAt;
-		isHiddenFile = !!fileElement.dataset.hiddenFile;
-		fileType = fileElement.querySelector('.file-type').innerHTML;
-		isDirectory = fs.lstatSync(filePath).isDirectory();
-	} catch (_) {
-		const hideSystemFile =
-			storage.get('preference')?.data?.hideSystemFiles ?? true;
-		let getAttributesSync: any; //eslint-disable-line
-		if (process.platform === 'win32')
-			getAttributesSync = require('fswin').getAttributesSync; //eslint-disable-line
-		isHiddenFile = checkIsHiddenFile(filePath); //eslint-disable-line
-		fileType = getType(filePath, isDirectory);
-		try {
-			const stat = fs.statSync(filePath);
-			createdAt = stat.ctime;
-			modifiedAt = stat.mtime;
-			accessedAt = stat.atime;
-			size = String(stat.size);
-		} catch (_) {
-			if (process.platform === 'win32' && !hideSystemFile) {
-				const stat = getAttributesSync(filePath);
-				if (stat) {
-					createdAt = stat.CREATION_TIME;
-					modifiedAt = stat.LAST_WRITE_TIME;
-					accessedAt = stat.LAST_ACCESS_TIME;
-					size = stat.SIZE;
-				}
-			}
-		}
-	}
+	const fileElement = document.querySelector<HTMLElement>(`[data-path="${escape(filePath)}"]`);
+
+	const size = fileElement.querySelector('.file-size').innerHTML;
+	if (fileElement.dataset.realPath) filePath = fileElement.dataset.realPath;
+	const createdAt = fileElement.dataset.createdAt;
+	const modifiedAt = fileElement.dataset.modifiedAt;
+	const accessedAt = fileElement.dataset.accessedAt;
+	const fileType = fileElement.querySelector('.file-type').innerHTML;
+	const file_attrs = [];
+	if (fileElement.dataset.isHidden === 'true') file_attrs.push('Hidden');
+	if (fileElement.dataset.isSystem === 'true') file_attrs.push('System file');
+	if (fileElement.dataset.isReadonly === 'true') file_attrs.push('Read only');
+	const isDirectory = fileElement.dataset.isDir === 'true';
+	const file_attr = file_attrs.join(', ');
 	if (isDirectory) {
-		getFolderSize(filePath, (err, bytes) => {
-			document.querySelector(`[data-calculating="size"]`).innerHTML =
-				formatBytes(bytes);
+		new DirectoryAPI(filePath).getSize().then((size) => {
+			document.querySelector(`[data-calculating="size"]`).innerHTML = formatBytes(size);
 		});
 	}
 
@@ -98,13 +57,12 @@ const Properties = (filePath: string): void => {
 		Size: size ? size : 'calculating',
 		'File Path': filePath,
 		'File Type': fileType,
-		'Created At': moment(createdAt).format('MMMM DD, YYYY (hh:mm A)'),
-		'Modified At': moment(modifiedAt).format('MMMM DD, YYYY (hh:mm A)'),
-		'Accessed At': moment(accessedAt).format('MMMM DD, YYYY (hh:mm A)'),
-		'Is Hidden':
-			String(isHiddenFile)[0].toUpperCase() +
-			String(isHiddenFile).substring(1, String(isHiddenFile).length),
+		'Created At': createdAt,
+		'Modified At': modifiedAt,
+		'Accessed At': accessedAt,
+		'File Attribute': file_attr,
 	});
+	updateTheme('properties');
 };
 
 export default Properties;

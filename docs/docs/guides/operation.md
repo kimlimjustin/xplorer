@@ -6,13 +6,9 @@ You can copy files by right-clicking it and click the `Copy` option or select th
 
 :::info
 
-On Windows and macOS, Xplorer will copy the file paths into the local clipboard, because of this, you can copy a file from Xplorer and paste it into any folder in another system. However, on Linux, we create a string of Xplorer commands and copy it into the user clipboard, Xplorer will read the user's clipboard when pasting the file (because we haven't found any idea to implement it, feel free to [open a PR](/community/Contributing/#pull-requests) if you can help us). The string of the Xplorer command looks like this:
+For current implementation, Xplorer write down what to copy locally (not copying to clipboard).
 
-```
-Xplorer command - COPY
-~/xplorer
-~/test
-```
+TODO: implement copy to clipboard
 
 :::
 
@@ -25,29 +21,28 @@ You can copy a file/folder location path into your clipboard by right-clicking i
 You can cut files by right-clicking it and click the `Cut` option or select the file then press `Ctrl + X` as a shortcut and paste it by clicking the `Paste` option or press `Ctrl + V` on the destination folder.
 
 :::info
-This is done by creating a string of Xplorer command and copies it into the user clipboard to be used when pasting file (this is not integrated with the platform because we haven't found any idea, feel free to [open a PR](/community/Contributing/#pull-requests) if you can help us.). The string of Xplorer command looks like this:
 
-```
-Xplorer command - CUT
-E://xplorer
-E://test
-```
+For current implementation, Xplorer write down what to cut locally (not copying to clipboard).
 
 :::
 
 ## Delete files
 
-You can cut files by right-clicking it and click the `Delete` option or select the file then press `Del` as a shortcut. The trashed file can be accessed at `xplorer://Trash`.
+You can cut files by right-clicking it and click the `Delete` option or select the file then press `Del` as a shortcut.
 
-:::info
+### Trashed files
 
--   On Windows, this is done by creating a `Trash` folder on the `C:` drive and moving the file into it.
--   On Linux, this feature is fully integrated with the system.
--   On macOS, this is done by creating a `.local/Trash` folder on `homedir` and moving the file into it.
+The trashed file can be accessed at `xplorer://Trash` or your system trash folder.
+:::danger Open Issue
 
-We are still working on Windows on macOS to integrate the `Trash` folder, which will be released before the stable version came out. Feel free to [open a PR](/community/Contributing/#pull-requests) if you can help us.
+Please note that Trash folder cannot be accessed on macos via Xplorer since the [trash crate](https://github.com/Byron/trash-rs) Xplorer relies to does not support it (see [this issue](https://github.com/Byron/trash-rs/issues/8) for more details).
 
+Any contributions to either the trash crate or Xplorer itself for this topic are welcome.
 :::
+
+### Restore files
+
+You can restore files by opening the `xplorer://Trash` and right-clicking it and click the `Restore` option
 
 ### Permanently delete
 
@@ -103,72 +98,12 @@ You can preview a file directly from Xplorer by right-clicking it and click the 
 <summary>
 Files available to preview for now:
 </summary>
-
-```json
-[
-	".pdf",
-	".html",
-	".docx",
-	".htm",
-	".xlsx",
-	".xls",
-	".xlsb",
-	"xls",
-	".ods",
-	".fods",
-	".csv",
-	".txt",
-	".py",
-	".js",
-	".bat",
-	".css",
-	".c++",
-	".cpp",
-	".cc",
-	".c",
-	".diff",
-	".patch",
-	".go",
-	".java",
-	".json",
-	".php",
-	".ts",
-	".tsx",
-	".jsx",
-	".jpg",
-	".png",
-	".gif",
-	".bmp",
-	".jpeg",
-	".jpe",
-	".jif",
-	".jfif",
-	".jfi",
-	".webp",
-	".tiff",
-	".tif",
-	".ico",
-	".svg",
-	".webp",
-	".mp4",
-	".webm",
-	".mpg",
-	".mp2",
-	".mpeg",
-	".mpe",
-	".mpv",
-	".ocg",
-	".m4p",
-	".m4v",
-	".avi",
-	".wmv",
-	".mov",
-	".qt",
-	".flv",
-	".swf",
-	".md"
-]
-```
+* Markdown files
+* Image files
+* Text files
+* Video files
+* Pdfs
+* Almost all programming language with syntax highlighting
 
 </details>
 

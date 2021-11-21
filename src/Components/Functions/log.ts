@@ -1,23 +1,33 @@
-import log from 'electron-log';
-import storage from 'electron-json-storage-sync';
-import windowGUID from '../Constants/windowGUID';
+import windowName from '../../Api/window';
+import Storage from '../../Api/storage';
+import isValid from './validChecker';
 
+interface OpenLogType {
+	path: string;
+	timestamp: Date;
+}
 /**
  * Write an error log
  * @param {any} err - error message
- * @returns {void}
+ * @returns {Promise<void>}
  */
-const ErrorLog = (err: any): void => {
-	log.error(err);
+const ErrorLog = async (err: any): Promise<void> => {
+	const log = await Storage.get('log');
+	let errorLog = log?.errors ?? [];
+	log.errors = [...errorLog, { err, timestamp: new Date() }];
+	Storage.set('log', log);
 };
 
 /**
  * Write an info log
  * @param {any} info - information
- * @returns {void}
+ * @returns {Promise<void>}
  */
-const InfoLog = (info: any): void => {
-	log.info(info);
+const InfoLog = async (info: any): Promise<void> => {
+	const log = await Storage.get('log');
+	let infoLog = log?.info ?? [];
+	log.info = [...infoLog, { info, timestamp: new Date() }];
+	Storage.set('log', log);
 };
 
 /**
@@ -25,35 +35,36 @@ const InfoLog = (info: any): void => {
  * @param {string} operationType - type of the operation
  * @param {string|string[]} sources - files being operated
  * @param {string} destination - destination of the file operation (optional)
- * @returns {void}
+ * @returns {Promise<void>}
  */
-const OperationLog = (
-	operationType:
-		| 'copy'
-		| 'cut'
-		| 'delete'
-		| 'newfile'
-		| 'newfolder'
-		| 'rename',
+const OperationLog = async (
+	operationType: 'copy' | 'cut' | 'delete' | 'newfile' | 'newfolder' | 'rename',
 	sources?: string | string[],
 	destination?: string
-): void => {
-	const operationLogs = storage.get(`operations-${windowGUID}`)?.data ?? {
-		operations: [],
-		currentIndex: -1,
-	};
-	if (
-		JSON.stringify(
-			operationLogs.operations[operationLogs.currentIndex + 1]
-		) !== JSON.stringify({ operationType, sources, destination })
-	)
-		operationLogs.operations = operationLogs.operations.slice(
-			0,
-			operationLogs.currentIndex + 1
-		);
+): Promise<void> => {
+	let operationLogs = await Storage.get(`operations-${windowName}`);
+	if (!isValid(operationLogs))
+		operationLogs = {
+			operations: [],
+			currentIndex: -1,
+		};
+	if (JSON.stringify(operationLogs.operations[operationLogs.currentIndex + 1]) !== JSON.stringify({ operationType, sources, destination }))
+		operationLogs.operations = operationLogs.operations.slice(0, operationLogs.currentIndex + 1);
 	operationLogs.currentIndex += 1;
 	operationLogs.operations.push({ operationType, sources, destination });
-	storage.set(`operations-${windowGUID}`, operationLogs);
+	Storage.set(`operations-${windowName}`, operationLogs);
 };
 
-export { ErrorLog, InfoLog, OperationLog };
+/**
+ * Write down open directory log
+ * @param {String} path - File/Dir path
+ * @returns {Promise<void>}
+ */
+const OpenLog = async (path: String): Promise<void> => {
+	const log = await Storage.get('log');
+	let openLog = log?.opens ?? [];
+	log.opens = [...openLog, { path, timestamp: new Date() }];
+	Storage.set('log', log);
+};
+
+export { ErrorLog, InfoLog, OperationLog, OpenLog, OpenLogType };

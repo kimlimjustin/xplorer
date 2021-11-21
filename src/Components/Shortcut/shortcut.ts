@@ -1,74 +1,87 @@
+import { createNewTab, goBack, goForward } from '../Layout/tab';
+import focusingPath from '../Functions/focusingPath';
+import { OpenDir } from '../Open/open';
+import getDirname from '../Functions/path/dirname';
 import copyLocation from '../Files/File Operation/location';
 import { getSelected } from '../Files/File Operation/select';
-import { exec } from 'child_process';
-import { updateTheme } from '../Theme/theme';
-import storage from 'electron-json-storage-sync';
-import {
-	toggleHideHiddenFilesValue,
-	getHideHiddenFilesValue,
-} from '../Functions/toggleHiddenFiles';
-import Copy from '../Files/File Operation/copy';
-import Cut from '../Files/File Operation/cut';
-import Paste from '../Files/File Operation/paste';
 import Pin from '../Files/File Operation/pin';
-import { Trash, PermanentDelete } from '../Files/File Operation/trash';
-import { Preview } from '../Files/File Preview/preview';
-import windowGUID from '../Constants/windowGUID';
-import remote from '@electron/remote';
-import focusingPath from '../Functions/focusingPath';
-import Properties from '../Properties/properties';
+import New from '../Functions/new';
+import { createNewWindow } from '../../Api/window';
+import Storage from '../../Api/storage';
+import windowName from '../../Api/window';
+import FileAPI from '../../Api/files';
+import DirectoryAPI from '../../Api/directory';
+import reveal from '../../Api/reveal';
+import NormalizeSlash from '../Functions/path/normalizeSlash';
+import { reload } from '../Layout/windowManager';
+import Cut from '../Files/File Operation/cut';
+import Copy from '../Files/File Operation/copy';
+import Paste from '../Files/File Operation/paste';
+import toggleHiddenFiles from '../Functions/toggleHiddenFiles';
+import Rename from '../Files/File Operation/rename';
 import Undo from '../Files/File Operation/undo';
 import Redo from '../Files/File Operation/redo';
-import vscodeInstalled from '../Constants/isVSCodeInstalled';
-import openInTerminal from '../Functions/openInTerminal';
-import New from '../Functions/new';
-import Rename from '../Files/File Operation/rename';
-
+import { Trash, PermanentDelete, Purge } from '../Files/File Operation/trash';
+import Properties from '../Properties/properties';
+import Preview from '../Files/File Preview/preview';
 let selectedAll = true;
-
+let pauseEnterListener = false;
 /**
  * Get if currently selecting all files
  * @returns {boolean} currently selecting all files
  */
-const getSelectedStatus = (): boolean => selectedAll;
+const getSelectedAllStatus = (): boolean => selectedAll;
 /**
  * Change selected all status
  * @returns {void}
  */
-const changeSelectedStatus = (): void => {
+const changeSelectedAllStatus = (): void => {
 	selectedAll = false;
 };
 
+const pauseEnter = (): void => {
+	pauseEnterListener = true;
+};
+
 /**
- * Shortcut initializer function for Xplorer
+ * Initialize shortcut keys
  * @returns {void}
  */
 const Shortcut = (): void => {
-	const { reload, minimize, maximize } = require('../Layout/windowManager'); //eslint-disable-line
-	const { createNewTab, goBack, goForward } = require('../Layout/tab'); //eslint-disable-line
+	const KeyUpShortcutsHandler = async (e: KeyboardEvent) => {
+		const selectedFile = getSelected()?.[0];
+		const selectedFilePath = unescape(selectedFile?.dataset?.path);
+		const isDir = selectedFile?.dataset.isdir === 'true';
+		const _focusingPath = await focusingPath();
 
-	const KeyboardShortcutsHandler = (e: KeyboardEvent) => {
-		e.preventDefault();
-		const selectedFilePath = unescape(getSelected()?.[0]?.dataset?.path);
-		const isDir = getSelected()?.[0]?.dataset.isdir === 'true';
+		// Don't react if cursor is over input field
+		if (document.activeElement.tagName === 'INPUT') return;
 
-		// Check if file navigator input is in focus, if it is then ignore key shortcuts
-		if (
-			document.querySelector('.path-navigator') === document.activeElement
-		)
-			return;
-
-		// Select all shortcut (Ctrl + A)
-		if (e.key === 'a' && e.ctrlKey) {
-			selectedAll = !selectedAll;
-			if (selectedAll) {
-				document
-					.querySelectorAll('.file')
-					.forEach((element) => element.classList.add('selected'));
-			} else
-				document
-					.querySelectorAll('.file')
-					.forEach((element) => element.classList.remove('selected'));
+		// Open file shorcut (Enter)
+		if (e.key === 'Enter') {
+			for (const selected of getSelected()) {
+				const targetPath = unescape(selected.dataset.path) === 'undefined' ? _focusingPath : unescape(selected.dataset.path);
+				if ((await new DirectoryAPI(targetPath).exists()) && !pauseEnterListener) {
+					// Open file in vscode (Shift + Enter)
+					if (e.shiftKey) {
+						reveal(targetPath, 'vscode');
+					} else {
+						if (isDir) {
+							OpenDir(targetPath);
+						} else {
+							new FileAPI(targetPath).openFile();
+						}
+					}
+				} else pauseEnterListener = false;
+			}
+		}
+		// New tab shortcut
+		else if (e.key === 't' && e.ctrlKey) {
+			createNewTab();
+		}
+		// New window shortcut (Ctrl + N)
+		else if (e.key === 'n' && e.ctrlKey) {
+			createNewWindow();
 		}
 		// New file shortcut (Alt + N)
 		else if (e.key === 'n' && e.altKey && !e.shiftKey) {
@@ -77,114 +90,13 @@ const Shortcut = (): void => {
 		// New folder shortcut (Shift + N)
 		else if (e.key === 'N' && !e.altKey && e.shiftKey) {
 			New('folder');
-		} else if (e.key === 'F2') {
-			if (getSelected()[0]) Rename(getSelected()[0].dataset.path);
 		}
-		// Open file shorcut (Enter)
-		else if (e.key === 'Enter') {
-			for (const selected of getSelected()) {
-				// Open file in vscode (Shift + Enter)
-				if (e.shiftKey && vscodeInstalled) {
-					const targetPath =
-						unescape(selected.dataset.path) === 'undefined'
-							? focusingPath()
-							: unescape(selected.dataset.path);
-					exec(`code "${targetPath.replaceAll('"', '\\"')}"`);
-				} else {
-					const {
-						open,
-						openFileWithDefaultApp,
-					} = require('../Files/File Operation/open'); //eslint-disable-line
-					if (isDir) {
-						open(selectedFilePath);
-					} else {
-						openFileWithDefaultApp(selectedFilePath);
-					}
-				}
-			}
-		}
-		// Copy location path (Alt + Shift + C)
-		else if (e.key === 'C' && e.altKey && e.shiftKey) {
-			copyLocation(getSelected()[0]);
-		}
-		// Refresh page shortcut (Ctrl+R, F5)
-		else if ((e.ctrlKey && e.key === 'r') || e.key === 'F5') reload();
-		// Minimze window shortcut (Alt+Arrow Down, F10)
-		else if ((e.altKey && e.key === 'ArrowDown') || e.key === 'F10')
-			minimize();
-		// Maximize window shortcut (Alt+Arrow Up, F11)
-		else if ((e.altKey && e.key === 'ArrowUp') || e.key === 'F11')
-			maximize();
-		// New tab shortcut (Ctrl+T)
-		else if (e.ctrlKey && e.key === 't') {
-			createNewTab();
-			updateTheme();
-		}
-		// Exit tab shortcut (Ctrl+E)
-		else if (e.ctrlKey && e.key === 'e') {
-			const tabs = storage.get(`tabs-${windowGUID}`)?.data;
-			if (document.querySelectorAll('.tab').length === 1) {
-				const electronWindow = remote.BrowserWindow.getFocusedWindow();
-				electronWindow.close();
-			} else {
-				const tab = document.getElementById(`tab${tabs.focus}`);
-				tab.parentElement.removeChild(tab);
-				tabs.focusHistory = tabs.focusHistory.filter(
-					(tabIndex: number) => String(tabIndex) !== tabs.focus
-				);
-				tabs.focus = String(
-					tabs.focusHistory[tabs.focusHistory.length - 1]
-				);
-				delete tabs.tabs[tabs.focus];
-				storage.set(`tabs-${windowGUID}`, tabs);
-			}
-		}
-		// Previous tab shortcut (Alt+Arrow Left)
-		else if (e.altKey && e.key === 'ArrowLeft') {
-			goBack();
-		}
-		// Next tab shortcut (Alt+Arrow Right)
-		else if (e.altKey && e.key === 'ArrowRight') {
-			goForward();
-		}
-		// Toggle hidden files shortcut (Ctrl+H)
-		else if (e.ctrlKey && e.key === 'h') {
-			const userPreference = storage.get('preference')?.data; // Read user preference
-			toggleHideHiddenFilesValue();
-			const hideHiddenFiles = getHideHiddenFilesValue();
-			storage.set(
-				'preference',
-				Object.assign({}, userPreference, { hideHiddenFiles })
-			);
-			document.getElementById('workspace').dataset.hideHiddenFiles =
-				String(hideHiddenFiles);
-			(
-				document.getElementById('show-hidden-files') as HTMLInputElement
-			).checked = !hideHiddenFiles;
-		}
+
 		// Open in terminal shortcut (Alt + T)
 		else if (e.altKey && e.key === 't') {
-			openInTerminal(selectedFilePath ?? focusingPath());
-		}
-		// Copy file shortcut (Ctrl+C)
-		else if (e.ctrlKey && e.key === 'c') {
-			const filePaths = [];
-			for (const element of getSelected()) {
-				filePaths.push(unescape(element.dataset.path));
-			}
-			Copy(filePaths);
-		}
-		// Cut file shortcut (Ctrl+X)
-		else if (e.ctrlKey && e.key === 'x') {
-			const filePaths = [];
-			for (const element of getSelected()) {
-				filePaths.push(unescape(element.dataset.path));
-			}
-			Cut(filePaths);
-		}
-		// Paste file shortcut (Ctrl+V)
-		else if (e.ctrlKey && e.key === 'v') {
-			Paste(focusingPath());
+			const _to_reveal = NormalizeSlash(selectedFilePath && selectedFilePath !== 'undefined' ? selectedFilePath : _focusingPath);
+			if (_to_reveal.startsWith('xplorer://')) return;
+			reveal(_to_reveal, 'terminal');
 		}
 		// Pin to sidebar shortcut (Alt+P)
 		else if (e.altKey && e.key === 'p') {
@@ -192,22 +104,104 @@ const Shortcut = (): void => {
 			for (const element of getSelected()) {
 				filePaths.push(unescape(element.dataset.path));
 			}
-			if (!filePaths.length) filePaths = [focusingPath()];
+			if (!filePaths.length) filePaths = [_focusingPath];
 			Pin(filePaths);
+		}
+
+		// Copy file shortcut (Ctrl + C)
+		else if (e.ctrlKey && e.key === 'c') {
+			const filePaths = [];
+			for (const element of getSelected()) {
+				filePaths.push(unescape(element.dataset.path));
+			}
+			Copy(filePaths);
+		}
+
+		// Toggle hidden files shortcut (Ctrl+H)
+		else if (e.ctrlKey && e.key === 'h') {
+			toggleHiddenFiles();
+		}
+		// Open file in preview shortcut (Ctrl+O)
+		else if (e.ctrlKey && e.key === 'o') {
+			Preview(selectedFilePath);
+		}
+
+		// Exit tab shortcut (Ctrl + W)
+		else if (e.ctrlKey && e.key === 'w') {
+			const tabs = await Storage.get(`tabs-${windowName}`);
+
+			if (document.querySelectorAll('.tab').length === 1) {
+				close();
+			} else {
+				const tab = document.getElementById(`tab${tabs.focus}`);
+				tab.parentElement.removeChild(tab);
+				tabs.focusHistory = tabs.focusHistory.filter((tabIndex: number) => String(tabIndex) !== tabs.focus);
+				delete tabs.tabs[tabs.focus];
+				tabs.focus = String(tabs.focusHistory[tabs.focusHistory.length - 1]);
+				Storage.set(`tabs-${windowName}`, tabs);
+				OpenDir(tabs.tabs[tabs.focus].position);
+
+				const tabsManager = document.querySelector('.tabs-manager');
+				if (tabsManager.scrollWidth > tabsManager.clientWidth) tabsManager.removeAttribute('data-tauri-drag-region');
+				else tabsManager.setAttribute('data-tauri-drag-region', '');
+			}
+		}
+		// Copy file shortcut (Ctrl + V)
+		else if (e.ctrlKey && e.key === 'v') {
+			Paste(_focusingPath);
+		}
+		// Copy file shortcut (Ctrl + X)
+		else if (e.ctrlKey && e.key === 'x') {
+			const filePaths = [];
+			for (const element of getSelected()) {
+				filePaths.push(unescape(element.dataset.path));
+			}
+			Cut(filePaths);
+		}
+		// Undo file action (Ctrl+Z)
+		else if (e.ctrlKey && e.key === 'z') {
+			Undo();
+		}
+		// Redo file action (Ctrl+Shift+Z OR Ctrl+Y)
+		else if ((e.ctrlKey && e.shiftKey && e.key === 'Z') || (e.ctrlKey && e.key === 'y')) {
+			Redo();
+		}
+		// Previous tab shortcut (Alt+Arrow Left)
+		else if (e.altKey && e.key === 'ArrowLeft') {
+			goBack();
+		}
+
+		// Next tab shortcut (Alt+Arrow Right)
+		else if (e.altKey && e.key === 'ArrowRight') {
+			goForward();
+		}
+
+		// Go to parent directory (Alt + Arrow Up)
+		else if (e.altKey && e.key === 'ArrowUp') {
+			const _dirPath = getDirname(_focusingPath);
+			if (!_focusingPath.startsWith('xplorer://') && _dirPath !== '.') OpenDir(_dirPath);
+		}
+
+		// Copy location path (Alt + Shift + C)
+		else if (e.altKey && e.shiftKey && e.key === 'C') {
+			copyLocation(selectedFile);
+		}
+
+		// Rename file shortcut (F2)
+		else if (e.key === 'F2') {
+			if (selectedFile) Rename(selectedFilePath);
 		}
 		// Delete file shortcut (Del)
 		else if (e.key === 'Delete') {
 			if (e.shiftKey) {
 				const filePaths = [];
 				for (const element of getSelected()) {
-					filePaths.push(
-						focusingPath() === 'xplorer://Trash'
-							? unescape(element.dataset.realPath)
-							: unescape(element.dataset.path)
-					);
+					filePaths.push(_focusingPath === 'xplorer://Trash' ? unescape(element.dataset.realPath) : unescape(element.dataset.path));
 				}
-				PermanentDelete(filePaths);
+				if (_focusingPath === 'xplorer://Trash') Purge(filePaths);
+				else PermanentDelete(filePaths);
 			} else {
+				if (_focusingPath === 'xplorer://Trash') return;
 				const filePaths = [];
 				for (const element of getSelected()) {
 					filePaths.push(unescape(element.dataset.path));
@@ -215,37 +209,36 @@ const Shortcut = (): void => {
 				Trash(filePaths);
 			}
 		}
-		// Preview file shortcut (Ctrl+O)
-		else if (e.ctrlKey && e.key === 'o') {
-			Preview(selectedFilePath);
+	};
+	const KeyDownShortcutsHandler = async (e: KeyboardEvent) => {
+		// Don't react if cursor is over input field
+		if (document.activeElement.tagName === 'INPUT') return;
+		// Select all shortcut (Ctrl + A)
+		if (e.key === 'a' && e.ctrlKey) {
+			e.preventDefault();
+			selectedAll = !selectedAll;
+			if (selectedAll) {
+				document.querySelectorAll('.file').forEach((element) => element.classList.add('selected'));
+			} else document.querySelectorAll('.file').forEach((element) => element.classList.remove('selected'));
 		}
+
 		// File properties (Ctrl+P)
 		else if (e.ctrlKey && e.key === 'p') {
-			Properties(
-				selectedFilePath === 'undefined'
-					? focusingPath()
-					: selectedFilePath
-			);
+			e.preventDefault();
+			const selectedFile = getSelected()?.[0];
+			const selectedFilePath = unescape(selectedFile?.dataset?.path);
+			Properties(selectedFilePath === 'undefined' ? await focusingPath() : selectedFilePath);
 		}
-		// Undo file action (Ctrl+Z)
-		else if (e.ctrlKey && e.key === 'z') {
-			Undo();
-		}
-		// Redo file action (Ctrl+Shift+Z OR Ctrl+Y)
-		else if (
-			(e.ctrlKey && e.shiftKey && e.key === 'z') ||
-			(e.ctrlKey && e.key === 'y')
-		) {
-			Redo();
+		// Internal Reload (F5)
+		if (e.key === 'F5') {
+			e.preventDefault();
+			reload();
 		}
 	};
 
 	const MouseShortcutsHandler = (e: MouseEvent) => {
-		// Don't react if cursor is over path navigator
-		if (
-			document.querySelector('.path-navigator') === document.activeElement
-		)
-			return;
+		// Don't react if cursor is over input field
+		if (document.activeElement.tagName === 'INPUT') return;
 
 		switch (e.button) {
 			// Back button
@@ -255,16 +248,18 @@ const Shortcut = (): void => {
 			// Forward button
 			case 4:
 				goForward();
+				break;
 		}
 	};
 
-	document.addEventListener('keyup', KeyboardShortcutsHandler);
+	document.addEventListener('keyup', KeyUpShortcutsHandler);
+	document.addEventListener('keydown', KeyDownShortcutsHandler);
 	document.addEventListener('mouseup', MouseShortcutsHandler);
 
 	window.addEventListener('beforeunload', () => {
-		document.removeEventListener('keyup', KeyboardShortcutsHandler, false);
-		document.addEventListener('mouseup', MouseShortcutsHandler);
+		document.removeEventListener('keyup', KeyUpShortcutsHandler, false);
+		document.removeEventListener('keydown', KeyDownShortcutsHandler, false);
+		document.removeEventListener('mouseup', MouseShortcutsHandler);
 	});
 };
-
-export { Shortcut, selectedAll, changeSelectedStatus, getSelectedStatus };
+export { Shortcut, changeSelectedAllStatus, getSelectedAllStatus, pauseEnter };

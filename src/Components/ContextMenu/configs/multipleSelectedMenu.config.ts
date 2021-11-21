@@ -1,21 +1,21 @@
 import { getSelected } from '../../Files/File Operation/select';
 import contextMenuItem from '../../../Typings/contextMenuItem';
-import vscodeInstalled from '../../Constants/isVSCodeInstalled';
+import { isVSCodeInstalled } from '../../../Api/app';
 import { createNewTab } from '../../Layout/tab';
 import Cut from '../../Files/File Operation/cut';
 import Copy from '../../Files/File Operation/copy';
-import { Trash } from '../../Files/File Operation/trash';
+import { Purge, Restore, Trash } from '../../Files/File Operation/trash';
 import Pin from '../../Files/File Operation/pin';
 import Translate from '../../I18n/i18n';
+import reveal from '../../../Api/reveal';
+import focusingPath from '../../Functions/focusingPath';
 
-const MultipleSelectedMenu = (
-	_: HTMLElement,
-	filePath: string
-): contextMenuItem[][] => {
+const MultipleSelectedMenu = async (_: HTMLElement, _filePath: string): Promise<contextMenuItem[][]> => {
+	const _focusingPath = await focusingPath();
 	return [
 		[
 			{
-				menu: Translate('Open in New Tab'),
+				menu: await Translate('Open in New Tab'),
 				role: () => {
 					for (const element of getSelected()) {
 						if (element.dataset.isdir === 'true') {
@@ -26,31 +26,21 @@ const MultipleSelectedMenu = (
 				icon: 'open in new tab',
 			},
 			{
-				menu: Translate('Open in VSCode'),
+				menu: await Translate('Open in VSCode'),
 				role: () => {
-					const os = require('os');
-					const { exec } = require('child_process');
-					for (const element of getSelected()) {
-						const selectedPath = unescape(element.dataset.path);
-						if (
-							process.platform === 'linux' &&
-							filePath === 'xplorer://Home'
-						)
-							exec(`code ${os.homedir()}`);
-						else
-							exec(
-								`code "${selectedPath.replaceAll('"', '\\"')}"`
-							);
+					for (const selected of getSelected()) {
+						const targetPath = unescape(selected.dataset.path) === 'undefined' ? _focusingPath : unescape(selected.dataset.path);
+						reveal(targetPath, 'vscode');
 					}
 				},
 				shortcut: 'Shift+Enter',
-				visible: vscodeInstalled,
+				visible: await isVSCodeInstalled(),
 				icon: 'vscode',
 			},
 		],
 		[
 			{
-				menu: Translate('Cut'),
+				menu: await Translate('Cut'),
 				shortcut: 'Ctrl+X',
 				icon: 'cut',
 				role: () => {
@@ -62,7 +52,7 @@ const MultipleSelectedMenu = (
 				},
 			},
 			{
-				menu: Translate('Copy'),
+				menu: await Translate('Copy'),
 				shortcut: 'Ctrl+C',
 				icon: 'copy',
 				role: () => {
@@ -74,7 +64,7 @@ const MultipleSelectedMenu = (
 				},
 			},
 			{
-				menu: Translate('Delete'),
+				menu: await Translate('Delete'),
 				shortcut: 'Del',
 				icon: 'delete',
 				role: () => {
@@ -88,7 +78,31 @@ const MultipleSelectedMenu = (
 		],
 		[
 			{
-				menu: Translate('Pin to Sidebar'),
+				menu: await Translate('Restore these files'),
+				visible: _focusingPath === 'xplorer://Trash',
+				role: () => {
+					const filePaths = [];
+					for (const element of getSelected()) {
+						filePaths.push(unescape(element.dataset.path));
+					}
+					Restore(filePaths);
+				},
+			},
+			{
+				menu: await Translate('Permanently these files'),
+				visible: _focusingPath === 'xplorer://Trash',
+				role: () => {
+					const filePaths = [];
+					for (const element of getSelected()) {
+						filePaths.push(unescape(element.dataset.path));
+					}
+					Purge(filePaths);
+				},
+			},
+		],
+		[
+			{
+				menu: await Translate('Pin to Sidebar'),
 				shortcut: 'Alt+P',
 				icon: 'pin',
 				role: () => {

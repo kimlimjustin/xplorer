@@ -3,9 +3,8 @@
 	"description": "Xplorer, a customizable, modern file manager",
 	"version": "0.2.0",
 	"author": "Justin Maximillian Kimlim <kimlimjustin@gmail.com>",
-	"main": "outs/src/main.js",
 	"icon": "build/icon.icns",
-	"private": "true",
+	"private": false,
 	"homepage": "https://xplorer.vercel.app",
 	"repository": {
 		"type": "git",
@@ -17,71 +16,28 @@
 		"linux"
 	],
 	"scripts": {
-		"electron": "electron ./outs/src/main.js",
-		"start": "yarn compile && yarn sass && yarn electron",
-		"dev": "yarn compile && concurrently \"yarn compile:watch\" \"yarn sass:watch\" \"yarn copyfiles:watch\" \"yarn electron\"",
-		"clean": "rimraf outs",
-		"sass": "sass src/Public/style.scss outs/src/Public/style.css",
-		"sass:watch": "sass src/Public/style.scss outs/src/Public/style.css -w",
+		"start": "yarn dev",
+		"serve": "live-server ./out/src --no-browser",
+		"dev": "yarn compile && concurrently --kill-others \"yarn compile:watch\" \"yarn sass:watch\" \"yarn serve\" \"tauri dev\"",
+		"clean": "rimraf out",
+		"sass": "sass src/Public/style.scss out/src/Public/style.css",
+		"sass:watch": "node scripts/sass-watcher.js",
 		"docs": "yarn --cwd ./docs start",
 		"pretest": "yarn compile",
 		"test": "jest",
 		"copyfiles": "node scripts/copyfiles",
-		"copyfiles:watch": "node scripts/ejs-watcher",
-		"compile": "tsc && yarn sass && yarn copyfiles",
-		"compile:watch": "tsc -w",
+		"compile": "webpack && yarn sass && yarn copyfiles",
+		"compile:watch": "webpack --watch",
 		"crowdin": "crowdin",
 		"crowdin:sync": "yarn --cwd ./docs write-translations && crowdin upload && crowdin download",
 		"lint": "eslint -c .eslintrc.yml --ext .ts ./src",
 		"prettier": "prettier --write src",
 		"grunt": "grunt",
-		"css:minify": "cleancss --batch --batch-suffix \"\" outs/**/*.css ",
+		"css:minify": "cleancss --batch --batch-suffix \"\" out/**/*.css ",
 		"prebuild": "yarn compile && yarn grunt && yarn css:minify",
-		"build": "electron-builder",
-		"build:win": "electron-builder --win",
-		"build:linux": "electron-builder --linux",
-		"build:mac": "electron-builder --mac",
-		"native_build": "node-gyp rebuild",
-		"install": "node scripts/install.js",
-		"postinstall": "patch-package && husky install"
-	},
-	"build": {
-		"files": [
-			"**/*",
-			"!test/**/*",
-			"!dist/**/*",
-			"!patches/**/*",
-			"!scripts/**/*",
-			"!docs/**/*",
-			"!src/**/*",
-			"!scripts/**/*",
-			"!paths/**/*",
-			"!.vscode/**/*",
-			"!packages/**/*",
-			"!.github/**/*",
-			"!.git/**/*"
-		],
-		"directories": {
-			"buildResources": "icons"
-		},
-		"win": {
-			"target": [
-				"nsis"
-			]
-		},
-		"nsis": {
-			"license": "LICENSE",
-			"runAfterFinish": true
-		},
-		"linux": {
-			"target": [
-				"AppImage",
-				"deb"
-			]
-		},
-		"appId": "app.vercel.xplorer",
-		"productName": "Xplorer",
-		"copyright": "Copyright 2021 Justin Maximillian Kimlim and the Xplorer Contributors"
+		"build": "tauri build",
+		"postinstall": "husky install",
+		"fakefiles": "python scripts/generate-fake-files.py 1000"
 	},
 	"keywords": [
 		"Xplorer",
@@ -91,70 +47,45 @@
 		"Folders",
 		"Directory"
 	],
-	"workspaces": [
-		"packages/*"
-	],
 	"license": "Apache-2.0",
 	"devDependencies": {
 		"@crowdin/cli": "^3.6.5",
-		"@types/ejs": "^3.1.0",
-		"@types/get-folder-size": "2",
-		"@types/marked": "^3.0.0",
-		"@types/mv": "^2.1.2",
-		"@types/uuid": "^8.3.1",
-		"@typescript-eslint/eslint-plugin": "^4.30.0",
-		"@typescript-eslint/parser": "^4.30.0",
+		"@tauri-apps/cli": "^1.0.0-beta.10",
+		"@types/jest": "^27.0.2",
+		"@types/marked": "^4.0.1",
+		"@typescript-eslint/eslint-plugin": "^5.4.0",
+		"@typescript-eslint/parser": "^5.4.0",
+		"buffer": "^6.0.3",
 		"clean-css-cli": "^5.3.3",
 		"concurrently": "^6.2.1",
-		"electron": "13.1.4",
-		"electron-builder": "^22.11.7",
-		"electron-reloader": "^1.2.1",
-		"eslint": "^7.32.0",
-		"eslint-config-prettier": "^8.3.0",
+		"cpy": "^8.1.2",
+		"eslint": "^8.2.0",
 		"grunt": "^1.4.1",
 		"grunt-cli": "^1.4.3",
 		"grunt-contrib-uglify": "^5.0.1",
 		"grunt-contrib-watch": "^1.1.0",
 		"husky": "^7.0.2",
 		"jest": "^27.1.0",
-		"lerna": "^4.0.0",
+		"live-server": "^1.2.1",
 		"node-sass": "^6.0.1",
 		"node-watch": "^0.7.1",
 		"patch-package": "^6.4.7",
 		"postinstall-postinstall": "^2.1.0",
-		"prettier": "2.3.2",
+		"prettier": "2.4.1",
 		"rimraf": "^3.0.2",
-		"sass": "1.42.1",
-		"typescript": "^4.4.2"
+		"sass": "1.43.4",
+		"ts-jest": "^27.0.7",
+		"ts-loader": "^9.2.6",
+		"typescript": "^4.4.2",
+		"webpack": "^5.58.2",
+		"webpack-cli": "^4.9.0"
 	},
 	"dependencies": {
-		"@electron/remote": "1.2.1",
-		"cpy": "^8.1.2",
-		"ejs": "^3.1.6",
-		"electron-acrylic-window": "^0.5.8",
-		"electron-is-dev": "^2.0.0",
-		"electron-json-storage-sync": "^1.2.0",
-		"electron-log": "^4.4.1",
-		"electron-prompt": "^1.7.0",
-		"electron-updater": "^4.3.9",
-		"electron-window-state": "^5.0.3",
-		"fswin": "^3.21.905",
-		"get-folder-size": "2",
+		"@tauri-apps/api": "^1.0.0-beta.8",
 		"highlight.js": "^11.2.0",
-		"is-hidden-file": "1.1.2",
 		"mammoth": "^1.4.18",
-		"marked": "^3.0.2",
-		"moment": "^2.29.1",
-		"mv": "^2.1.1",
-		"node-disk-info": "^1.3.0",
-		"node-mv": "^0.1.3",
-		"platform-folders": "^0.5.4",
-		"trash": "^7.2.0",
-		"uuid": "^8.3.2",
-		"xlsx": "^0.17.1",
-		"yargs": "^17.2.1"
+		"marked": "4.0.1",
+		"xlsx": "^0.17.1"
 	},
-	"optionalDependencies": {
-		"electron-clipboard-ex": "^1.3.3"
-	}
+	"optionalDependencies": {}
 }

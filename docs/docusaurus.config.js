@@ -15,24 +15,13 @@ module.exports = {
 	trailingSlash: true,
 	i18n: {
 		defaultLocale: 'en',
-		locales: [
-			'en',
-			'id-ID',
-			'zh-CN',
-			'zh-TW',
-			'ru-RU',
-			'pt-BR',
-			'de-DE',
-			'es-ES',
-			'uk-UA',
-		],
+		locales: ['en', 'id-ID', 'zh-CN', 'zh-TW', 'ru-RU', 'pt-BR', 'de-DE', 'es-ES', 'uk-UA'],
 	},
 	themeConfig: {
 		hideableSidebar: true,
 		announcementBar: {
 			id: 'support_us',
-			content:
-				'Xplorer is still under heavy development, any features might change anytime.',
+			content: 'Xplorer is still under heavy development, any features might change anytime.',
 			backgroundColor: '#fafbfc',
 			textColor: '#091E42',
 		},
@@ -45,7 +34,7 @@ module.exports = {
 			title: 'Xplorer',
 			logo: {
 				alt: 'Xplorer Logo',
-				src: 'img/icon.svg',
+				src: 'img/icon.png',
 			},
 			items: [
 				{
@@ -54,12 +43,8 @@ module.exports = {
 					position: 'left',
 					label: 'Tutorial',
 				},
-				{ to: '/blog', label: 'Blog', position: 'left' },
-				{
-					to: '/community/support',
-					label: 'Community',
-					position: 'left',
-				},
+				{ to: 'https://dev.to/t/xplorer', label: 'Blog', position: 'left' },
+				{ to: 'https://discord.gg/kK7rwxPt', label: 'Discord', position: 'left' },
 				{
 					type: 'localeDropdown',
 					position: 'right',
@@ -94,6 +79,10 @@ module.exports = {
 						{
 							label: 'GitHub Discussions',
 							href: 'https://github.com/kimlimjustin/xplorer/discussions',
+						},
+						{
+							label: 'Discord',
+							href: 'https://discord.gg/kK7rwxPt',
 						},
 					],
 				},
@@ -145,31 +134,10 @@ module.exports = {
 	plugins: [
 		'plugin-image-zoom',
 		[
-			'@docusaurus/plugin-content-docs',
-			{
-				path: 'community',
-				id: 'community',
-				routeBasePath: 'community',
-				editUrl: ({ locale, docPath }) => {
-					if (locale === 'en') {
-						return `https://github.com/kimlimjustin/xplorer/edit/master/docs/community/${docPath}`;
-					} else {
-						return `https://crowdin.com/project/xplorer`;
-					}
-				},
-				showLastUpdateAuthor: true,
-				showLastUpdateTime: true,
-			},
-		],
-		[
 			'@docusaurus/plugin-pwa',
 			{
 				debug: true,
-				offlineModeActivationStrategies: [
-					'appInstalled',
-					'standalone',
-					'queryString',
-				],
+				offlineModeActivationStrategies: ['appInstalled', 'standalone', 'queryString'],
 				pwaHead: [
 					{
 						tagName: 'link',

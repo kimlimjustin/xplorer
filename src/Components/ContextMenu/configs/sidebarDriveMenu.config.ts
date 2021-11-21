@@ -1,23 +1,21 @@
-import { open } from '../../Files/File Operation/open';
+import { OpenDir } from '../../Open/open';
 import { createNewTab } from '../../Layout/tab';
 import contextMenuItem from '../../../Typings/contextMenuItem';
 import Translate from '../../I18n/i18n';
+import FileAPI from '../../../Api/files';
 
-const SidebarDriveMenu = (
-	target: HTMLElement,
-	filePath: string
-): contextMenuItem[][] => {
+const SidebarDriveMenu = async (target: HTMLElement, filePath: string): Promise<contextMenuItem[][]> => {
 	return [
 		[
 			{
-				menu: Translate('Open'),
+				menu: await Translate('Open'),
 				icon: 'open',
 				role: () => {
-					open(filePath);
+					target?.dataset?.isdir === 'true' ? OpenDir(filePath) : new FileAPI(filePath).openFile();
 				},
 			},
 			{
-				menu: Translate('Open in New Tab'),
+				menu: await Translate('Open in New Tab'),
 				visible: target?.dataset?.isdir === 'true',
 				icon: 'open in new tab',
 				role: () => {

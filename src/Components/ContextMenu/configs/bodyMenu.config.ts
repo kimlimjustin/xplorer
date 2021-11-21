@@ -1,6 +1,5 @@
-import vscodeInstalled from '../../Constants/isVSCodeInstalled';
 import contextMenuItem from '../../../Typings/contextMenuItem';
-import storage from 'electron-json-storage-sync';
+import Storage from '../../../Api/storage';
 import { reload } from '../../Layout/windowManager';
 import Paste from '../../Files/File Operation/paste';
 import Undo from '../../Files/File Operation/undo';
@@ -9,59 +8,55 @@ import copyLocation from '../../Files/File Operation/location';
 import Pin from '../../Files/File Operation/pin';
 import Properties from '../../Properties/properties';
 import focusingPath from '../../Functions/focusingPath';
-import openInTerminal from '../../Functions/openInTerminal';
+import reveal from '../../../Api/reveal';
 import Translate from '../../I18n/i18n';
 import New from '../../Functions/new';
+import { isVSCodeInstalled } from '../../../Api/app';
+import { Purge, Restore } from '../../Files/File Operation/trash';
 
 interface Favorites {
 	name: string;
 	path: string;
 }
-const BodyMenu = (
-	target: HTMLElement,
-	filePath: string
-): contextMenuItem[][] => {
-	const favorites: Favorites[] = storage.get('sidebar')?.data?.favorites;
-	const isPinned =
-		!!favorites?.filter((favorite) => favorite.path === filePath).length ??
-		false;
+const BodyMenu = async (target: HTMLElement, filePath: string): Promise<contextMenuItem[][]> => {
+	const favorites: Favorites[] = (await Storage.get('sidebar'))?.favorites;
+	const isPinned = !!favorites?.filter((favorite) => favorite.path === filePath).length ?? false;
+	const _focusingPath = await focusingPath();
 
-	const changeLayout = (selectedLayout: 'l' | 'm' | 's' | 'd') => {
-		const layout = storage.get('layout')?.data ?? {};
-		layout[focusingPath()] = selectedLayout;
-		storage.set('layout', layout);
+	const changeLayout = async (selectedLayout: 'l' | 'm' | 's' | 'd') => {
+		const layout = (await Storage.get('layout')) ?? {};
+		layout[_focusingPath] = selectedLayout;
+		Storage.set('layout', layout);
 		reload();
 	};
-	const changeSortMethod = (
-		selectedMethod: 'A' | 'Z' | 'L' | 'F' | 'S' | 'T'
-	) => {
-		const sort = storage.get('layout')?.data ?? {};
-		sort[focusingPath()] = selectedMethod;
-		storage.set('sort', sort);
+	const changeSortMethod = async (selectedMethod: 'A' | 'Z' | 'L' | 'F' | 'S' | 'T') => {
+		const sort = (await Storage.get('layout')) ?? {};
+		sort[_focusingPath] = selectedMethod;
+		Storage.set('sort', sort);
 		reload();
 	};
 	return [
 		[
 			{
-				menu: Translate('Layout Mode'),
+				menu: await Translate('Layout Mode'),
 				submenu: [
 					{
-						name: Translate('Grid View (Large)'),
+						name: await Translate('Grid View (Large)'),
 						role: () => changeLayout('l'),
 						icon: 'grid_large',
 					},
 					{
-						name: Translate('Grid View (Medium)'),
+						name: await Translate('Grid View (Medium)'),
 						role: () => changeLayout('m'),
 						icon: 'grid_medium',
 					},
 					{
-						name: Translate('Grid View (Small)'),
+						name: await Translate('Grid View (Small)'),
 						role: () => changeLayout('s'),
 						icon: 'grid_small',
 					},
 					{
-						name: Translate('Detail View'),
+						name: await Translate('Detail View'),
 						role: () => changeLayout('d'),
 						icon: 'detail',
 					},
@@ -69,37 +64,37 @@ const BodyMenu = (
 				icon: 'layout',
 			},
 			{
-				menu: Translate('Sort By'),
+				menu: await Translate('Sort By'),
 				submenu: [
 					{
-						name: Translate('A-Z'),
+						name: await Translate('A-Z'),
 						role: () => changeSortMethod('A'),
 					},
 					{
-						name: Translate('Z-A'),
+						name: await Translate('Z-A'),
 						role: () => changeSortMethod('Z'),
 					},
 					{
-						name: Translate('Last Modified'),
+						name: await Translate('Last Modified'),
 						role: () => changeSortMethod('L'),
 					},
 					{
-						name: Translate('First Modified'),
+						name: await Translate('First Modified'),
 						role: () => changeSortMethod('F'),
 					},
 					{
-						name: Translate('Size'),
+						name: await Translate('Size'),
 						role: () => changeSortMethod('S'),
 					},
 					{
-						name: Translate('Type'),
+						name: await Translate('Type'),
 						role: () => changeSortMethod('T'),
 					},
 				],
 				icon: 'sort',
 			},
 			{
-				menu: Translate('Reload'),
+				menu: await Translate('Reload'),
 				role: () => {
 					reload();
 				},
@@ -109,8 +104,8 @@ const BodyMenu = (
 		],
 		[
 			{
-				menu: Translate('Paste'),
-				visible: !focusingPath().startsWith('xplorer://'),
+				menu: await Translate('Paste'),
+				visible: !_focusingPath.startsWith('xplorer://'),
 				shortcut: 'Ctrl+V',
 				icon: 'paste',
 				role: () => {
@@ -118,8 +113,8 @@ const BodyMenu = (
 				},
 			},
 			{
-				menu: Translate('Undo Action'),
-				visible: !focusingPath().startsWith('xplorer://'),
+				menu: await Translate('Undo Action'),
+				visible: !_focusingPath.startsWith('xplorer://'),
 				shortcut: 'Ctrl+Z',
 				icon: 'undo',
 				role: () => {
@@ -127,8 +122,8 @@ const BodyMenu = (
 				},
 			},
 			{
-				menu: Translate('Redo Action'),
-				visible: !focusingPath().startsWith('xplorer://'),
+				menu: await Translate('Redo Action'),
+				visible: !_focusingPath.startsWith('xplorer://'),
 				shortcut: 'Ctrl+Y',
 				icon: 'redo',
 				role: () => {
@@ -136,7 +131,7 @@ const BodyMenu = (
 				},
 			},
 			{
-				menu: Translate('Copy Location Path'),
+				menu: await Translate('Copy Location Path'),
 				shortcut: 'Alt+Shift+C',
 				icon: 'location',
 				role: () => {
@@ -144,55 +139,61 @@ const BodyMenu = (
 				},
 			},
 			{
-				menu: Translate('Clear Recent List'),
+				menu: await Translate('Clear Recent List'),
 				icon: 'delete',
-				visible: focusingPath() === 'xplorer://Recent',
+				visible: _focusingPath === 'xplorer://Recent',
 				role: () => {
-					storage.set('recent', []);
+					Storage.set('recent', []);
 					reload();
 				},
 			},
 		],
 		[
 			{
-				menu: 'Open in Terminal',
-				visible: !focusingPath().startsWith('xplorer://'),
+				menu: await Translate('Open in Terminal'),
+				visible: !_focusingPath.startsWith('xplorer://'),
 				shortcut: 'Alt+T',
 				icon: 'terminal',
-				role: () => openInTerminal(filePath),
+				role: () => reveal(filePath, 'terminal'),
 			},
 			{
-				menu: 'Open in VSCode',
-				visible:
-					vscodeInstalled && !focusingPath().startsWith('xplorer://'),
+				menu: await Translate('Open in VSCode'),
+				visible: (await isVSCodeInstalled()) && !_focusingPath.startsWith('xplorer://'),
 				shortcut: 'Shift+Enter',
 				icon: 'vscode',
 				role: () => {
-					const { execSync } = require('child_process');
-					const os = require('os');
-					if (
-						process.platform === 'linux' &&
-						filePath === 'xplorer://Home'
-					)
-						execSync(`code ${os.homedir()}`);
-					else execSync(`code "${filePath.replaceAll('"', '\\"')}"`);
+					reveal(filePath, 'vscode');
 				},
 			},
 			{
-				menu: Translate('New'),
-				visible: !focusingPath().startsWith('xplorer://'),
+				menu: await Translate('Restore all files'),
+				visible: _focusingPath === 'xplorer://Trash',
+				role: () => {
+					const filePaths = [...document.querySelectorAll<HTMLElement>('.file')].map((file) => unescape(file.dataset.path));
+					Restore(filePaths);
+				},
+			},
+			{
+				menu: await Translate('Permanently delete all files'),
+				visible: _focusingPath === 'xplorer://Trash',
+				role: () => {
+					const filePaths = [...document.querySelectorAll<HTMLElement>('.file')].map((file) => unescape(file.dataset.path));
+					Purge(filePaths);
+				},
+			},
+			{
+				menu: await Translate('New'),
+				visible: !_focusingPath.startsWith('xplorer://'),
 				submenu: [
-					{ name: Translate('Folder'), shortcut: 'Shift+N', role: () => New('folder') },
-					{ name: Translate('File'), shortcut: 'Alt+N', role: () => New('file') },
+					{ name: await Translate('Folder'), shortcut: 'Shift+N', role: () => New('folder') },
+					{ name: await Translate('File'), shortcut: 'Alt+N', role: () => New('file') },
 				],
 				icon: 'new',
 			},
 		],
 		[
 			{
-				menu: Translate(
-					isPinned ? 'Unpin from Sidebar' : 'Pin to Sidebar'
-				),
+				menu: await Translate(isPinned ? 'Unpin from Sidebar' : 'Pin to Sidebar'),
 				shortcut: 'Alt+P',
 				icon: 'pin',
 				role: () => {
@@ -200,11 +201,9 @@ const BodyMenu = (
 				},
 			},
 			{
-				menu: Translate('Properties'),
+				menu: await Translate('Properties'),
 				shortcut: 'Ctrl+P',
-				icon: target?.dataset?.isdir
-					? 'folder setting'
-					: 'file setting',
+				icon: target?.dataset?.isdir ? 'folder setting' : 'file setting',
 				role: () => {
 					Properties(filePath);
 				},

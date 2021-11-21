@@ -21,40 +21,30 @@ document.addEventListener('DOMContentLoaded', () => {
 	contextMenuSubmenus = document.getElementById('contextmenu-submenus');
 });
 
-const MenuToElements = (menu: contextMenuItem[][]) => {
-	menu.forEach((section, index) => {
-		section.forEach((item) => {
+const MenuToElements = async (menu: contextMenuItem[][]): Promise<void> => {
+	for (let index = 0; index < menu.length; index++) {
+		const section = menu[index];
+		for (let i = 0; i < section.length; i++) {
+			const item = section[i];
 			if (item.visible || item.visible === undefined) {
 				const menu = document.createElement('span');
 				menu.classList.add('contextmenu-item');
 
 				if (item.icon) {
 					if (item.shortcut)
-						menu.innerHTML = `<img src = "${fileThumbnail(
+						menu.innerHTML = `<img src = "${await fileThumbnail(
 							item.icon,
 							'contextmenu',
 							false
-						)}">${item?.menu.trim()}<span class="contextmenu-item-shortcut">${
-							item.shortcut
-						}</span>`;
-					else
-						menu.innerHTML = `<img src = "${fileThumbnail(
-							item.icon,
-							'contextmenu',
-							false
-						)}" >${item?.menu?.trim()}`;
+						)}">${item?.menu.trim()}<span class="contextmenu-item-shortcut">${item.shortcut}</span>`;
+					else menu.innerHTML = `<img src = "${await fileThumbnail(item.icon, 'contextmenu', false)}" >${item?.menu?.trim()}`;
 				} else {
-					if (item.shortcut)
-						menu.innerHTML = `${item?.menu?.trim()}<span class="contextmenu-item-shortcut">${
-							item.shortcut
-						}</span>`;
+					if (item.shortcut) menu.innerHTML = `${item?.menu?.trim()}<span class="contextmenu-item-shortcut">${item.shortcut}</span>`;
 					else menu.innerHTML = item?.menu?.trim();
 				}
 
 				if (typeof item?.role === 'function') {
-					const roleIdentifier =
-						Math.random().toString(36).substr(2, 10) +
-						item?.menu?.replace(/\W/g, '')?.trim();
+					const roleIdentifier = Math.random().toString(36).substr(2, 10) + item?.menu?.replace(/\W/g, '')?.trim();
 					menu.setAttribute('role', roleIdentifier);
 					menuRoles[roleIdentifier] = item?.role;
 				}
@@ -71,61 +61,44 @@ const MenuToElements = (menu: contextMenuItem[][]) => {
 					submenu.id = submenuId;
 
 					contextMenuSubmenus.appendChild(submenu);
-					item.submenu.forEach((submenuItem) => {
-						const submenuItemElement =
-							document.createElement('span');
+					for (let j = 0; j < item.submenu.length; j++) {
+						const submenuItem = item.submenu[j];
+						const submenuItemElement = document.createElement('span');
 						submenuItemElement.classList.add('contextmenu-item');
 
 						if (submenuItem.icon) {
 							if (submenuItem.shortcut)
-								submenuItemElement.innerHTML = `<img src = "${fileThumbnail(
-									submenuItem.icon,
-									'contextmenu',
-									false
-								)}">${
+								submenuItemElement.innerHTML = `<img src = "${await fileThumbnail(submenuItem.icon, 'contextmenu', false)}">${
 									submenuItem.name ?? submenuItem
-								}<span class="contextmenu-item-shortcut">${
-									submenuItem.shortcut
-								}</span>`;
+								}<span class="contextmenu-item-shortcut">${submenuItem.shortcut}</span>`;
 							else
-								submenuItemElement.innerHTML = `<img src = "${fileThumbnail(
+								submenuItemElement.innerHTML = `<img src = "${await fileThumbnail(
 									submenuItem.icon,
 									'contextmenu',
 									false
 								)}" >${submenuItem?.name?.trim()}`;
 						} else {
 							if (submenuItem.shortcut)
-								submenuItemElement.innerHTML = `${
-									submenuItem.name ?? submenuItem
-								}<span class="contextmenu-item-shortcut">${
+								submenuItemElement.innerHTML = `${submenuItem.name ?? submenuItem}<span class="contextmenu-item-shortcut">${
 									submenuItem.shortcut
 								}</span>`;
-							else
-								submenuItemElement.innerHTML = submenuItem.name;
+							else submenuItemElement.innerHTML = submenuItem.name;
 						}
 
 						if (typeof submenuItem?.role === 'function') {
-							const roleIdentifier =
-								Math.random().toString(36).substr(2, 10) +
-								submenuItem?.name?.replace(/\W/g, '')?.trim();
-							submenuItemElement.setAttribute(
-								'role',
-								roleIdentifier
-							);
+							const roleIdentifier = Math.random().toString(36).substr(2, 10) + submenuItem?.name?.replace(/\W/g, '')?.trim();
+							submenuItemElement.setAttribute('role', roleIdentifier);
 							menuRoles[roleIdentifier] = submenuItem?.role;
 						}
 
 						submenu.appendChild(submenuItemElement);
-					});
+					}
 				}
 			}
-		});
-		if (
-			index !== menu.length - 1 &&
-			section.filter((menu) => menu.visible !== false).length > 0
-		)
-			contextMenu.innerHTML += `<hr />`;
-	});
+		}
+		if (index !== menu.length - 1 && section.filter((menu) => menu.visible !== false).length > 0) contextMenu.innerHTML += `<hr />`;
+	}
+	return;
 };
 
 /**
@@ -133,7 +106,11 @@ const MenuToElements = (menu: contextMenuItem[][]) => {
  * @returns {void}
  */
 const ContextMenu = (): void => {
-	document.addEventListener('contextmenu', (e) => {
+	document.addEventListener('contextmenu', async (e) => {
+		e.preventDefault();
+		document.querySelectorAll('.hover-preview').forEach((element) => {
+			element.parentNode.removeChild(element);
+		});
 		contextMenu.innerHTML = '';
 		contextMenuSubmenus.innerHTML = '';
 		let coorX = e.pageX;
@@ -148,30 +125,26 @@ const ContextMenu = (): void => {
 
 		// Create the context menu
 		if (getSelected().length > 1) {
-			MenuToElements(MultipleSelectedMenu(target, filePath));
+			await MenuToElements(await MultipleSelectedMenu(target, filePath));
 		} else if (target.classList.contains('sidebar-item')) {
-			MenuToElements(SidebarMenu(target, filePath));
+			await MenuToElements(await SidebarMenu(target, filePath));
 		} else if (target.classList.contains('drive-item')) {
-			MenuToElements(SidebarDriveMenu(target, filePath));
+			await MenuToElements(await SidebarDriveMenu(target, filePath));
 		} else if (target === document.getElementById('workspace')) {
-			MenuToElements(BodyMenu(target, filePath));
+			await MenuToElements(await BodyMenu(target, filePath));
 		} else {
-			MenuToElements(FileMenu(target, filePath));
+			await MenuToElements(await FileMenu(target, filePath));
 		}
 
-		if (
-			coorY + contextMenu.offsetHeight > window.innerHeight &&
-			coorY - contextMenu.offsetHeight > -50
-		) {
+		if (coorY + contextMenu.offsetHeight > window.innerHeight && coorY - contextMenu.offsetHeight > -50) {
 			coorY -= contextMenu.offsetHeight;
 		}
-		if (coorX + contextMenu.offsetWidth > window.innerWidth)
-			coorX = window.innerWidth - contextMenu.offsetWidth;
+		if (coorX + contextMenu.offsetWidth > window.innerWidth) coorX = window.innerWidth - contextMenu.offsetWidth;
 
 		contextMenu.style.left = coorX + 'px';
 		contextMenu.style.top = coorY + 'px';
 
-		updateTheme();
+		updateTheme('contextmenu');
 		document.addEventListener('click', exitContextMenu);
 	});
 	const exitContextMenu = () => {
@@ -185,49 +158,29 @@ const ContextMenu = (): void => {
 	document.addEventListener('mousemove', (e) => {
 		// Expand contextmenu
 		if (
-			(e.pageX >= contextMenu.offsetLeft + contextMenu.offsetWidth - 15 ||
-				e.pageX <= contextMenu.offsetLeft + 15) &&
+			(e.pageX >= contextMenu.offsetLeft + contextMenu.offsetWidth - 15 || e.pageX <= contextMenu.offsetLeft + 15) &&
 			e.pageX < contextMenu.offsetLeft + contextMenu.offsetWidth + 100
 		) {
 			return;
 		}
 
-		if (
-			!(
-				(e.target as HTMLElement).parentNode as HTMLElement
-			).className.startsWith('contextmenu-submenu')
-		) {
-			document
-				.querySelectorAll('.contextmenu-submenu')
-				.forEach(
-					(submenu) =>
-						((submenu as HTMLElement).style.display = 'none')
-				);
+		if (!((e.target as HTMLElement).parentNode as HTMLElement).className.startsWith('contextmenu-submenu')) {
+			document.querySelectorAll('.contextmenu-submenu').forEach((submenu) => ((submenu as HTMLElement).style.display = 'none'));
 		}
 		if (
 			(e.target as HTMLElement).dataset.submenu ||
-			(
-				(e.target as HTMLElement).parentNode as HTMLElement
-			).className.startsWith('contextmenu-submenu')
+			((e.target as HTMLElement).parentNode as HTMLElement).className.startsWith('contextmenu-submenu')
 		) {
-			const submenuElement = document.getElementById(
-				(e.target as HTMLElement).dataset.submenu
-			);
+			const submenuElement = document.getElementById((e.target as HTMLElement).dataset.submenu);
 			if (!submenuElement) return;
 
-			const menuCoordinate = (
-				e.target as HTMLElement
-			).getBoundingClientRect();
+			const menuCoordinate = (e.target as HTMLElement).getBoundingClientRect();
 
 			submenuElement.style.display = 'block';
 
 			let submenuCoorX = contextMenu.offsetLeft + contextMenu.offsetWidth;
-			if (
-				submenuCoorX + submenuElement.offsetWidth * 0.5 >=
-				window.innerWidth
-			) {
-				submenuCoorX =
-					contextMenu.offsetLeft - submenuElement.offsetWidth;
+			if (submenuCoorX + submenuElement.offsetWidth * 0.5 >= window.innerWidth) {
+				submenuCoorX = contextMenu.offsetLeft - submenuElement.offsetWidth;
 			}
 			submenuElement.style.left = submenuCoorX + 'px';
 			submenuElement.style.top = menuCoordinate.top + 'px';
