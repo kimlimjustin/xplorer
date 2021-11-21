@@ -16,3 +16,18 @@ RUN sudo apt-get update \
         libasound2-dev \
         libgtk-3-dev \
         libnss3-dev
+        
+RUN sudo apt update && sudo apt install libwebkit2gtk-4.0-dev \
+    build-essential \
+    curl \
+    wget \
+    libssl-dev \
+    libgtk-3-dev \
+    libappindicator3-dev \
+    patchelf \
+    librsvg2-dev
+    
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.2/install.sh | bash
+
+RUN nvm install node --latest-npm
+RUN nvm use node
