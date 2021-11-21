@@ -15,13 +15,7 @@ const cpy = async (src: string, dest: string) => {
 		dest += ' - COPY';
 	}
 	if (await new FileAPI(dest).exists()) {
-		if (
-			!(await ConfirmDialog(
-				'Target file exists',
-				'Target directory with the same file name exists, do you want to overwrite it?',
-				'No'
-			))
-		)
+		if (!(await ConfirmDialog('Target file exists', 'Target directory with the same file name exists, do you want to overwrite it?', 'No')))
 			return;
 	}
 	new OperationAPI(src, dest).copyFile();
@@ -29,16 +23,9 @@ const cpy = async (src: string, dest: string) => {
 const Paste = async (target: string): Promise<void> => {
 	const clipboard = await Storage.get('clipboard');
 
-	const recuriveCopy = async (
-		_path: string,
-		_target: string,
-		firstRecursion = false
-	) => {
+	const recuriveCopy = async (_path: string, _target: string, firstRecursion = false) => {
 		let useCopySuffix = false;
-		if (
-			firstRecursion &&
-			normalizeSlash(getDirname(_path)) === normalizeSlash(_target)
-		) {
+		if (firstRecursion && normalizeSlash(getDirname(_path)) === normalizeSlash(_target)) {
 			useCopySuffix = true;
 		}
 		const subdirInfo = new DirectoryAPI(normalizeSlash(_path));
@@ -78,7 +65,7 @@ const Paste = async (target: string): Promise<void> => {
 						await new OperationAPI(dest).unlink();
 					}
 				}
-				await new OperationAPI(file, dest).rename();
+				await new OperationAPI(file, dest).cut();
 				break;
 		}
 	}
