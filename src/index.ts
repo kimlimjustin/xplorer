@@ -13,6 +13,7 @@ import Setting from './Components/Setting/setting';
 import ContextMenu from './Components/ContextMenu/contextMenu';
 import Hover from './Components/Layout/hover';
 import LAZY_LOAD_INIT from './Components/Functions/lazyLoadingImage';
+import Infobar from './Components/Layout/infobar';
 // Wait DOM Loaded to be loaded
 document.addEventListener('DOMContentLoaded', async () => {
 	// Read user preferences
@@ -57,6 +58,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 	document.getElementById('workspace').dataset.hideHiddenFiles = String(_preference.hideHiddenFiles ?? true);
 	// Initialize settings
 	Setting();
+	// Initialize info bar
+	Infobar();
 	// Initialize context menu
 	ContextMenu();
 	// Initialize hover handler

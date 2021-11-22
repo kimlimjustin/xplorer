@@ -17,6 +17,7 @@ import { reload } from '../Layout/windowManager';
 import focusingPath from '../Functions/focusingPath';
 import { LOAD_IMAGE } from '../Functions/lazyLoadingImage';
 import PromptError from '../Prompt/error';
+import { UpdateInfo } from '../Layout/infobar';
 let platform: string;
 let directoryInfo: DirectoryAPI;
 /**
@@ -50,6 +51,7 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promis
 			stopLoading();
 		} else {
 			getTrashedFiles().then(async (trashedFiles) => {
+				UpdateInfo('number-of-files', `${trashedFiles.files.length} files`);
 				if (!trashedFiles.files.length) {
 					MAIN_ELEMENT.classList.add('empty-dir-notification');
 					MAIN_ELEMENT.innerText = 'This folder is empty.';
@@ -74,6 +76,7 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promis
 				return;
 			}
 			directoryInfo.getFiles().then(async (files) => {
+				UpdateInfo('number-of-files', `${files.number_of_files - files.skipped_files.length} files`);
 				if (!files.files.length) {
 					MAIN_ELEMENT.classList.add('empty-dir-notification');
 					MAIN_ELEMENT.innerText = 'This folder is empty.';
@@ -99,6 +102,7 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promis
 				return;
 			}
 			const files = await directoryInfo.getFiles();
+			UpdateInfo('number-of-files', `${files.number_of_files - files.skipped_files.length} files`);
 			if (!files.files.length) {
 				MAIN_ELEMENT.classList.add('empty-dir-notification');
 				MAIN_ELEMENT.innerText = 'This folder is empty.';
