@@ -233,6 +233,12 @@
 			width: -webkit-fill-available;
 		}
 	}
+	.infobar {
+		display: flex;
+		.infobar-item {
+			padding: 2.5px 10px;
+		}
+	}
 }
 
 .workspace-split {

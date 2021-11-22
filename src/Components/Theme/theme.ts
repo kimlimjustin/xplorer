@@ -67,7 +67,19 @@ const getXYCoordinates = (e: MouseEvent): { x: number; y: number } => {
  */
 const changeTheme = async (
 	theme?: string,
-	category?: '*' | 'root' | 'windowmanager' | 'tabbing' | 'settings' | 'favorites' | 'grid' | 'contextmenu' | 'prompt' | 'preview' | 'properties'
+	category?:
+		| '*'
+		| 'root'
+		| 'windowmanager'
+		| 'tabbing'
+		| 'settings'
+		| 'favorites'
+		| 'grid'
+		| 'contextmenu'
+		| 'prompt'
+		| 'preview'
+		| 'properties'
+		| 'infobar'
 ): Promise<void> => {
 	if (!category) category = '*';
 	const appearance = await Storage.get('appearance');
@@ -316,12 +328,16 @@ const changeTheme = async (
 				});
 			}
 		});
+		document.querySelectorAll<HTMLElement>('.file-grid').forEach((grid) => {
+			changeElementTheme(grid, 'gridBackground', 'background', theme);
+			changeElementTheme(grid, 'gridColor', 'color', theme);
+		});
+	}
+	if (category === '*' || category === 'infobar') {
+		changeElementTheme(document.querySelector('.infobar'), 'infobarBackground', 'background', theme);
+		changeElementTheme(document.querySelector('.infobar'), 'infobarColor', 'color', theme);
 	}
 
-	document.querySelectorAll<HTMLElement>('.file-grid').forEach((grid) => {
-		changeElementTheme(grid, 'gridBackground', 'background', theme);
-		changeElementTheme(grid, 'gridColor', 'color', theme);
-	});
 	return;
 };
 
@@ -330,7 +346,19 @@ const changeTheme = async (
  * @returns {Promise<void>}
  */
 const updateTheme = async (
-	category?: '*' | 'root' | 'windowmanager' | 'tabbing' | 'settings' | 'favorites' | 'grid' | 'contextmenu' | 'prompt' | 'preview' | 'properties'
+	category?:
+		| '*'
+		| 'root'
+		| 'windowmanager'
+		| 'tabbing'
+		| 'settings'
+		| 'favorites'
+		| 'grid'
+		| 'contextmenu'
+		| 'prompt'
+		| 'preview'
+		| 'properties'
+		| 'infobar'
 ): Promise<void> => {
 	const data: themeData = await Storage.get('theme');
 	// If user has no preference theme
