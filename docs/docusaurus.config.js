@@ -44,7 +44,7 @@ module.exports = {
 					label: 'Tutorial',
 				},
 				{ to: 'https://dev.to/t/xplorer', label: 'Blog', position: 'left' },
-				{ to: 'https://discord.gg/kK7rwxPt', label: 'Discord', position: 'left' },
+				{ to: 'https://discord.gg/MHGtSWvfUS', label: 'Discord', position: 'left' },
 				{
 					type: 'localeDropdown',
 					position: 'right',
@@ -82,7 +82,7 @@ module.exports = {
 						},
 						{
 							label: 'Discord',
-							href: 'https://discord.gg/kK7rwxPt',
+							href: 'https://discord.gg/MHGtSWvfUS',
 						},
 					],
 				},
