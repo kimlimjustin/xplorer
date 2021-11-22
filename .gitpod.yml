@@ -5,8 +5,29 @@ image:
 
 # Now, there are specific tasks for dependencies, servers, noVNC, ports and even pre-builds so that you start without delay.
 tasks:
+  - before: Initialising Dependency install
+    name: Deps for Tauri
+    init: touch /tmp/.applock
+    command: |
+        sudo apt update && sudo apt install -y libwebkit2gtk-4.0-dev \
+          build-essential \
+          curl \
+          wget \
+          libssl-dev \
+          libgtk-3-dev \
+          libappindicator3-dev \
+          patchelf \
+          librsvg2-dev
+    
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.2/install.sh | bash
+
+        nvm install node --latest-npm
+        nvm use node
+        rustc --version
+        rm /tmp/.applock
+
   - name: Yarn App Server
-    init: echo "Starting app server"
+    init: sleep 1 && while [ -f /tmp/.applock ]; do sleep 1; done
     command: |
           yarn
           yarn dev
@@ -16,6 +37,7 @@ tasks:
           cd docs
           yarn
           yarn start
+  
 
 vscode:
   extensions:
