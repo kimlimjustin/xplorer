@@ -27,8 +27,6 @@ const Hover = (): void => {
 		window.clearTimeout(timeOut);
 		hoverPreviewElement?.parentNode?.removeChild(hoverPreviewElement);
 
-		const focusingPath = document.querySelector<HTMLInputElement>('.path-navigator').value;
-
 		// Ignore workspace hovering
 		if ((e.target as HTMLElement).id === 'workspace') {
 			if (hoveringElement?.dataset?.path && displayName) hoveringElement.querySelector('.file-grid-filename').innerHTML = displayName;
@@ -49,7 +47,7 @@ const Hover = (): void => {
 
 		timeOut = window.setTimeout(async () => {
 			displayName = filenameGrid.innerHTML;
-			const path = focusingPath === 'xplorer://Trash' ? unescape(target.dataset.realPath) : unescape(target.dataset.path);
+			const path = unescape(target.dataset.path);
 			filenameGrid.innerHTML = getBasename(path);
 			target?.classList?.add('hovering');
 
