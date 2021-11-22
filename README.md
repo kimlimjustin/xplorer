@@ -3,7 +3,7 @@
 </div>
 
 <p align="center"><span><b>Xplorer</b>, a customizable, modern and cross-platform File Explorer.</span></p>
-<h4 align="center"><span><a href="https://xplorer.vercel.app/community/support/">Supports</a></span> • <span><a href="https://github.com/kimlimjustin/xplorer/discussions">Discussions</a></span> • <span><a href="https://xplorer.vercel.app">Documentation</a></span> • <span><a href="https://discord.gg/kK7rwxPt">Discord</a></span></h4>
+<h4 align="center"><span><a href="https://xplorer.vercel.app/community/support/">Supports</a></span> • <span><a href="https://github.com/kimlimjustin/xplorer/discussions">Discussions</a></span> • <span><a href="https://xplorer.vercel.app">Documentation</a></span> • <span><a href="https://discord.gg/MHGtSWvfUS">Discord</a></span></h4>
 
 <div align="center">
 
@@ -27,6 +27,9 @@ View More Screenshots
 ![Demo](docs/static/img/Xplorer_dark+.png)
 ![Demo](docs/static/img/Xplorer_light.png)
 ![Demo](docs/static/img/Xplorer_light+.png)
+![Demo](docs/static/img/Xplorer_mac_light.png)
+![Demo](docs/static/img/Xplorer_mac_dark.png)
+![Demo](docs/static/img/Xplorer_linux.png)
 
 </details>
 
