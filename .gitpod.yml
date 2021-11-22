@@ -5,7 +5,7 @@ image:
 
 # Now, there are specific tasks for dependencies, servers, noVNC, ports and even pre-builds so that you start without delay.
 tasks:
-  - before: Initialising Dependency install
+  - before: echo "Initialising Dependency install"
     name: Deps for Tauri
     init: touch /tmp/.applock
     command: |
