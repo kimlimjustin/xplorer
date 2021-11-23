@@ -19,7 +19,8 @@ const Infobar = async (): Promise<void> => {
 	infoBarElement.classList.add('infobar');
 	infoBarElement.id = 'infobar';
 	infoBarElement.innerHTML = `
-	<div class="infobar-item" id="number-of-files"><div>
+	<div class="infobar-item" id="number-of-files"></div>
+	<div class="infobar-item" id="selected-files"></div>
 	`;
 	document.querySelector('.main').appendChild(infoBarElement);
 	updateTheme('infobar');
