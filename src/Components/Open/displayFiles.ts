@@ -23,7 +23,6 @@ const displayFiles = async (
 	const FilesElement = onElement ?? document.createElement('div');
 	const preference = await Storage.get('preference');
 	const appearance = await Storage.get('appearance');
-	const hideSystemFile = preference?.hideSystemFiles ?? true;
 	const dirAlongsideFiles = preference?.dirAlongsideFiles ?? false;
 	const layout = (await Storage.get('layout'))?.[dir] ?? appearance?.layout ?? 'd';
 	const sort = (await Storage.get('sort'))?.[dir] ?? (await getDefaultSort(dir)) ?? 'a';
@@ -50,9 +49,6 @@ const displayFiles = async (
 	});
 	if (!dirAlongsideFiles) {
 		files = files.sort((a, b) => -(Number(a.is_dir) - Number(b.is_dir)));
-	}
-	if (hideSystemFile) {
-		files = files.filter((file) => !file.is_system);
 	}
 
 	const imageAsThumbnail = (appearance.imageAsThumbnail ?? 'smalldir') === 'smalldir' ? files.length < 100 : appearance.imageAsThumbnail === 'yes';
