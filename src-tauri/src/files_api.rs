@@ -545,3 +545,16 @@ pub async fn extract_icon(file_path: String) -> Result<String, String> {
 pub async fn extract_icon(_file_path: String) -> Result<String, String> {
   Err("Not supported".to_string())
 }
+
+#[tauri::command]
+pub async fn calculate_files_total_size(files: Vec<String>) -> u64 {
+  let mut total_size: u64 = 0;
+  for file in files {
+    let metadata = fs::metadata(file.clone()).unwrap();
+    if metadata.is_dir() {
+      total_size += get_dir_size(file).await;
+    }
+    total_size += metadata.len();
+  }
+  total_size
+}
