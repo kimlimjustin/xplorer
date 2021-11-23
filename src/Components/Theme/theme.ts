@@ -302,7 +302,7 @@ const changeTheme = async (
 	}
 	if (category === '*' || category === 'grid') {
 		document.querySelectorAll<HTMLElement>('.grid-hover-effect').forEach((obj) => {
-			changeElementTheme(obj, 'gridBackground', 'background', theme);
+			changeElementTheme(obj, 'gridBackground', 'background', null);
 			if (obj.getAttribute('being-listened') !== 'true') {
 				obj.setAttribute('being-listened', 'true');
 				obj.addEventListener('mousemove', (e) => {
@@ -310,7 +310,7 @@ const changeTheme = async (
 
 					obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle('gridHoverEffectBackground', currentTheme)} )`;
 					obj.onmouseleave = () => {
-						obj.style.background = getElementStyle('gridBackground', currentTheme);
+						obj.style.background = null;
 						obj.style.borderImage = null;
 					};
 				});
@@ -319,8 +319,8 @@ const changeTheme = async (
 	}
 
 	document.querySelectorAll<HTMLElement>('.file-grid').forEach((grid) => {
-		changeElementTheme(grid, 'gridBackground', 'background', theme);
-		changeElementTheme(grid, 'gridColor', 'color', theme);
+		changeElementTheme(grid, 'gridBackground', 'background', null);
+		changeElementTheme(grid, 'gridColor', 'color', null);
 	});
 	return;
 };
