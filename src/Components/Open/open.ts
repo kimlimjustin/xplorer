@@ -43,6 +43,7 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promis
 	if (MAIN_ELEMENT.classList.contains('empty-dir-notification')) MAIN_ELEMENT.classList.remove('empty-dir-notification'); // Remove class if exist
 	if (dir === 'xplorer://Home') {
 		Home();
+		UpdateInfo('number-of-files', '');
 	} else if (dir === 'xplorer://Trash') {
 		if (!platform) platform = await OS();
 		if (platform === 'darwin') {
@@ -67,6 +68,7 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promis
 		}
 	} else if (dir === 'xplorer://Recent') {
 		Recent();
+		UpdateInfo('number-of-files', '');
 	} else {
 		if (reveal) {
 			directoryInfo = new DirectoryAPI(getDirname(dir));
