@@ -219,7 +219,6 @@
 		}
 	}
 	.main-box {
-		border-radius: 0 0 var(--edge-radius) 0;
 		overflow-x: hidden;
 		overflow-y: auto;
 		height: 100%;
@@ -234,11 +233,16 @@
 		}
 	}
 	.infobar {
+		border-radius: 0 0 var(--edge-radius) 0;
 		display: flex;
 		.infobar-item {
 			padding: 2.5px 10px;
 		}
 	}
+}
+
+[data-infobar-enabled='false'] .main-box {
+	border-radius: 0 0 var(--edge-radius) 0;
 }
 
 .workspace-split {

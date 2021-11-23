@@ -14,6 +14,7 @@ const UpdateInfo = (key: string, value: string): void => {
  */
 const Infobar = async (): Promise<void> => {
 	const appearance = await Storage.get('appearance');
+	document.body.dataset.infobarEnabled = appearance.showInfoBar ?? true;
 	if (!(appearance.showInfoBar ?? true)) return;
 	infoBarElement = document.createElement('div');
 	infoBarElement.classList.add('infobar');
