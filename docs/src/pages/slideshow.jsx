@@ -33,30 +33,52 @@ const slides = [
 	},
 ];
 
+const SLIDE_INTERVAL = 2500;
+
 export default function Slideshow() {
 	const [index, setIndex] = useState(0);
+	const [handle, setHandle] = useState(null);
+
+	const destroyIntervalTimer = () => {
+		clearInterval(handle);
+		setHandle(null);
+	};
+
+	const createIntervalTimer = () => {
+		destroyIntervalTimer();
+		setHandle(setInterval(() => setIndex((i) => (i + 1) % slides.length), SLIDE_INTERVAL));
+	};
+
+	const handleSlideSelect = (idx) => {
+		createIntervalTimer();
+		setIndex(idx);
+	};
+
 	useEffect(() => {
-		const handle = setInterval(() => setIndex((i) => (i + 1) % slides.length), 2500);
-		return () => clearInterval(handle);
+		createIntervalTimer();
+		return destroyIntervalTimer;
 	}, []);
+
 	return (
-		<>
+		<div>
 			<div className="slideshow-container">
 				{slides.map((e, i) => (
 					<div key={i} className={`slide${index === i ? ' active' : ''}`}>
 						<div className="slide-numbertext">
 							{i + 1} / {slides.length}
 						</div>
+
 						<img src={e.src} alt={e.alt} />
-						<div className="slide-caption">{e.name}</div>
+						<p className="slide-caption">{e.name}</p>
 					</div>
 				))}
 			</div>
+
 			<div className="slide-dots">
-				{slides.map((e, i) => {
-					return <span key={e.name} className={`slide-dot${i === index ? ' active' : ''}`} />;
-				})}
+				{slides.map((e, i) => (
+					<button type="button" onClick={() => handleSlideSelect(i)} key={e.name} className={`slide-dot${i === index ? ' active' : ''}`} />
+				))}
 			</div>
-		</>
+		</div>
 	);
 }
