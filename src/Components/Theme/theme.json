@@ -85,6 +85,9 @@
 		"promptCancelBackground": "#87c1ce",
 		"promptCancelColor": "#000",
 
+		"infobarBackground": "#14141b",
+		"infobarColor": "inherit",
+
 		"settingsNumberCtrlInputBackground": "rgb(135, 193, 206)",
 		"settingsNumberCtrlControllerBackground": "#4e8895",
 		"settingsNumberCtrlInputColor": "#000",
@@ -175,6 +178,9 @@
 		"promptOkColor": "#fff",
 		"promptCancelBackground": "#87c1ce",
 		"promptCancelColor": "#000",
+
+		"infobarBackground": "#1f2336",
+		"infobarColor": "inherit",
 
 		"settingsNumberCtrlInputBackground": "rgb(135, 193, 206)",
 		"settingsNumberCtrlControllerBackground": "#4e8895",
@@ -267,6 +273,9 @@
 		"promptCancelBackground": "#87c1ce",
 		"promptCancelColor": "#000",
 
+		"infobarBackground": "#d0d3dd",
+		"infobarColor": "inherit",
+
 		"settingsNumberCtrlInputBackground": "#ebeaea",
 		"settingsNumberCtrlControllerBackground": "#e1e1e1",
 		"settingsNumberCtrlInputColor": "#000",
@@ -357,6 +366,9 @@
 		"promptOkColor": "#fff",
 		"promptCancelBackground": "#87c1ce",
 		"promptCancelColor": "#000",
+
+		"infobarBackground": "#FAFAFA",
+		"infobarColor": "inherit",
 
 		"settingsNumberCtrlInputBackground": "#e1e1e1",
 		"settingsNumberCtrlControllerBackground": "#f1f1f1",

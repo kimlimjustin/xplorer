@@ -5,15 +5,15 @@ import FileMetaData from '../Typings/fileMetaData';
 
 /** Invoke Rust command to handle files */
 class FileAPI {
-	readonly fileName: string;
+	readonly fileName: string | string[];
 	readonly parentDir: string;
 	/**
 	 * Construct FileAPI Class
 	 * @param {string} fileName - Your file path
 	 * @param {string} parentDir - Parent directory of the file
 	 */
-	constructor(fileName: string, parentDir?: string) {
-		if (parentDir) {
+	constructor(fileName: string | string[], parentDir?: string) {
+		if (parentDir && typeof fileName === 'string') {
 			this.parentDir = parentDir;
 			this.fileName = joinPath(parentDir, fileName);
 		} else this.fileName = fileName;
@@ -23,14 +23,20 @@ class FileAPI {
 	 * @returns {Promise<any>}
 	 */
 	readFile(): Promise<string> {
-		return new Promise((resolve) => {
-			fs.readTextFile(this.fileName).then((fileContent) => resolve(fileContent));
+		return new Promise((resolve, reject) => {
+			if (typeof this.fileName === 'string') {
+				fs.readTextFile(this.fileName).then((fileContent) => resolve(fileContent));
+			} else {
+				reject('File name is not a string');
+			}
 		});
 	}
 
 	async readBuffer(): Promise<Buffer> {
 		const Buffer = require('buffer/').Buffer;
-		return Buffer.from(await fs.readBinaryFile(this.fileName));
+		if (typeof this.fileName === 'string') {
+			return Buffer.from(await fs.readBinaryFile(this.fileName));
+		}
 	}
 	/**
 	 * Open file on default app
@@ -44,7 +50,7 @@ class FileAPI {
 	 * @returns {string}
 	 */
 	readAsset(): string {
-		return tauri.convertFileSrc(this.fileName);
+		return typeof this.fileName === 'string' ? tauri.convertFileSrc(this.fileName) : '';
 	}
 	/**
 	 * Read file and return as JSON
@@ -67,10 +73,12 @@ class FileAPI {
 	 * @returns {Promise<void>}
 	 */
 	async createFile(): Promise<void> {
-		await invoke('create_dir_recursive', {
-			dirPath: dirname(this.fileName),
-		});
-		return await invoke('create_file', { filePath: this.fileName });
+		if (typeof this.fileName === 'string') {
+			await invoke('create_dir_recursive', {
+				dirPath: dirname(this.fileName),
+			});
+			return await invoke('create_file', { filePath: this.fileName });
+		}
 	}
 	/**
 	 * Read properties of a file
@@ -90,8 +98,20 @@ class FileAPI {
 		});
 	}
 
+	/**
+	 * Extract icon of executable file
+	 * @returns {Promise<string>}
+	 */
 	async extractIcon(): Promise<string> {
 		return await invoke('extract_icon', { filePath: this.fileName });
+	}
+
+	/**
+	 * Calculate total size of given file paths
+	 * @returns {number} - Size in bytes
+	 */
+	async calculateFilesSize(): Promise<number> {
+		return await invoke('calculate_files_total_size', { files: this.fileName });
 	}
 }
 

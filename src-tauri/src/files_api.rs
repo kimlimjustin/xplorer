@@ -6,9 +6,11 @@ extern crate notify;
 extern crate open;
 extern crate trash;
 use crate::file_lib;
+use crate::storage;
 #[cfg(not(target_os = "macos"))]
 use normpath::PathExt;
 use notify::{raw_watcher, RawEvent, RecursiveMode, Watcher};
+use serde_json::Value;
 use std::sync::mpsc::channel;
 
 #[cfg(windows)]
@@ -199,6 +201,18 @@ pub fn is_dir(path: &Path) -> Result<bool, String> {
 }
 #[tauri::command]
 pub async fn read_directory(dir: &Path) -> Result<FolderInformation, String> {
+  let preference = storage::read_data("preference".to_string());
+  let preference = match preference {
+    Ok(result) => result,
+    Err(_) => return Err("Error reading preference".into()),
+  };
+  let preference: Result<Value, serde_json::Error> = serde_json::from_str(&preference.data);
+  let preference = match preference {
+    Ok(result) => result,
+    Err(_) => return Err("Error parsing preference".into()),
+  };
+  let hide_system_files = &preference["hideSystemFiles"];
+  let hide_system_files = hide_system_files.as_bool().unwrap();
   let paths = fs::read_dir(dir).map_err(|err| err.to_string())?;
   let mut number_of_files: u16 = 0;
   let mut files = Vec::new();
@@ -211,7 +225,12 @@ pub async fn read_directory(dir: &Path) -> Result<FolderInformation, String> {
       skipped_files.push(file_name);
       continue;
     } else {
-      files.push(file_info.unwrap())
+      let file_info = file_info.unwrap();
+      if hide_system_files && file_info.is_system {
+        skipped_files.push(file_name);
+        continue;
+      }
+      files.push(file_info)
     };
   }
   Ok(FolderInformation {
@@ -544,4 +563,17 @@ pub async fn extract_icon(file_path: String) -> Result<String, String> {
 #[tauri::command]
 pub async fn extract_icon(_file_path: String) -> Result<String, String> {
   Err("Not supported".to_string())
+}
+
+#[tauri::command]
+pub async fn calculate_files_total_size(files: Vec<String>) -> u64 {
+  let mut total_size: u64 = 0;
+  for file in files {
+    let metadata = fs::metadata(file.clone()).unwrap();
+    if metadata.is_dir() {
+      total_size += get_dir_size(file).await;
+    }
+    total_size += metadata.len();
+  }
+  total_size
 }
