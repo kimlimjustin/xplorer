@@ -5,6 +5,7 @@ import OS from '../../../Api/platform';
 import { getAvailableFonts } from '../../../Api/app';
 import { getElementStyle, updateTheme } from '../../Theme/theme';
 import { setDecorations } from '../../../Api/window';
+import Infobar from '../../Layout/infobar';
 let platform: string;
 /**
  * Create appearence section
@@ -30,6 +31,7 @@ const Appearance = async (): Promise<void> => {
 	const transparentTopbar = _appearance?.transparentTopbar ?? false;
 	const transparentWorkspace = _appearance?.transparentWorkspace ?? false;
 	const frameStyle = _appearance?.frameStyle ?? 'default';
+	const showInfoBar = _appearance?.showInfoBar ?? true;
 
 	const availableThemes = [
 		{ name: 'Light', identifier: 'light', category: 'light' },
@@ -54,6 +56,8 @@ const Appearance = async (): Promise<void> => {
 	const transparentTopbar_i18n = await Translate('Transparent Topbar');
 	const transparentWorkspace_i18n = await Translate('Transparent Workspace');
 	const frameStyle_i18n = await Translate('Frame Style');
+	const workspace_i18n = await Translate('Workspace');
+	const showInfoBar_i18n = await Translate('Show Info Bar');
 	const appearancePage = `<h3 class="settings-title">${appTheme_i18n}</h3>
 	<select name="theme">
 		<option>${systemDefault_i18n}</option>
@@ -146,7 +150,16 @@ const Appearance = async (): Promise<void> => {
 		<option ${layout === 'm' ? 'selected' : ''} value="m">Medium Grid View</option>
 		<option ${layout === 'l' ? 'selected' : ''} value="l">Large Grid View</option>
 		<option ${layout === 'd' ? 'selected' : ''} value="d">Detail View</option>
-	</select>`;
+	</select>
+	<h3 class="settings-title">${workspace_i18n}</h3>
+	<div class="toggle-box">
+		<label class="toggle">
+			<input type="checkbox" name="show-info-bar" ${showInfoBar ? 'checked' : ''}>
+			<span class="toggle-slider"></span>
+			<span class="toggle-label">${showInfoBar_i18n}</span>
+		</label>
+	</div>
+	`;
 	settingsMain.innerHTML = appearancePage;
 	updateTheme('settings');
 	settingsMain.querySelectorAll('.number-ctrl').forEach((ctrl) => {
@@ -288,6 +301,18 @@ const Appearance = async (): Promise<void> => {
 		appearance.imageAsThumbnail = event.target.value;
 		Storage.set('appearance', appearance);
 		reload();
+	});
+	settingsMain.querySelector('[name="show-info-bar"]').addEventListener('change', (event: Event & { target: HTMLInputElement }) => {
+		const value = event.target.checked;
+		const appearance = _appearance ?? {};
+		appearance.showInfoBar = value;
+		Storage.set('appearance', appearance);
+		if (value) {
+			Infobar();
+			reload();
+		} else {
+			document.getElementById('infobar')?.parentNode?.removeChild?.(document.getElementById('infobar'));
+		}
 	});
 };
 

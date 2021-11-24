@@ -3,7 +3,7 @@ import focusingPath from '../Functions/focusingPath';
 import { OpenDir } from '../Open/open';
 import getDirname from '../Functions/path/dirname';
 import copyLocation from '../Files/File Operation/location';
-import { getSelected } from '../Files/File Operation/select';
+import { ChangeSelectedEvent, getSelected } from '../Files/File Operation/select';
 import Pin from '../Files/File Operation/pin';
 import New from '../Functions/new';
 import { createNewWindow } from '../../Api/window';
@@ -220,6 +220,7 @@ const Shortcut = (): void => {
 			if (selectedAll) {
 				document.querySelectorAll('.file').forEach((element) => element.classList.add('selected'));
 			} else document.querySelectorAll('.file').forEach((element) => element.classList.remove('selected'));
+			ChangeSelectedEvent();
 		}
 
 		// File properties (Ctrl+P)

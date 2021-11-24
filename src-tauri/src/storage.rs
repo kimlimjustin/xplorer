@@ -4,8 +4,8 @@ use tauri::api::path::local_data_dir;
 
 #[derive(serde::Serialize)]
 pub struct StorageData {
-  data: String,
-  status: bool,
+  pub data: String,
+  pub status: bool,
 }
 
 #[tauri::command]
