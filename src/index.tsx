@@ -15,8 +15,17 @@ import Hover from './Components/Layout/hover';
 import LAZY_LOAD_INIT from './Components/Functions/lazyLoadingImage';
 import Infobar from './Components/Layout/infobar';
 
+import React from 'react';
+import ReactDOM from 'react-dom';
+import App from './App';
+
 // Wait DOM Loaded to be loaded
 document.addEventListener('DOMContentLoaded', async () => {
+	ReactDOM.render(
+		<App />,
+		document.getElementById("main")
+	);
+
 	// Read user preferences
 	const _preference = await Storage.get('preference');
 	// Listen to minimize, maximize, exit and reload button
