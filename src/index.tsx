@@ -14,6 +14,7 @@ import ContextMenu from './Components/ContextMenu/contextMenu';
 import Hover from './Components/Layout/hover';
 import LAZY_LOAD_INIT from './Components/Functions/lazyLoadingImage';
 import Infobar from './Components/Layout/infobar';
+
 // Wait DOM Loaded to be loaded
 document.addEventListener('DOMContentLoaded', async () => {
 	// Read user preferences
