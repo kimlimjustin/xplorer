@@ -8,6 +8,10 @@ import { updateTheme } from '../../Theme/theme';
 import { OpenLog } from '../../Functions/log';
 import { OpenDir } from '../../Open/open';
 
+const stopSearchingProcess = async (): Promise<void> => {
+	if (await new DirectoryAPI('').stopSearching()) stopLoading();
+};
+
 /**
  * Process searching
  * @param {string} to_search - glob pattern to search
@@ -90,4 +94,4 @@ const Search = async (): Promise<void> => {
 	});
 };
 export default Search;
-export { processSearch };
+export { processSearch, stopSearchingProcess };

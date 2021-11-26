@@ -18,7 +18,7 @@ import focusingPath from '../Functions/focusingPath';
 import { LOAD_IMAGE } from '../Functions/lazyLoadingImage';
 import PromptError from '../Prompt/error';
 import { UpdateInfo } from '../Layout/infobar';
-import { processSearch } from '../Files/File Operation/search';
+import { processSearch, stopSearchingProcess } from '../Files/File Operation/search';
 let platform: string;
 let directoryInfo: DirectoryAPI;
 /**
@@ -29,6 +29,7 @@ let directoryInfo: DirectoryAPI;
  * @returns {Promise<void>}
  */
 const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promise<void> => {
+	await stopSearchingProcess();
 	if (isLoading() && !forceOpen) {
 		InfoLog(`Something is still loading, refusing to open dir ${dir}`);
 		return;
@@ -42,7 +43,6 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promis
 	const MAIN_ELEMENT = document.getElementById('workspace');
 	MAIN_ELEMENT.innerHTML = '';
 	if (MAIN_ELEMENT.classList.contains('empty-dir-notification')) MAIN_ELEMENT.classList.remove('empty-dir-notification'); // Remove class if exist
-	console.log(dir);
 	if (dir === 'xplorer://Home') {
 		Home();
 		UpdateInfo('number-of-files', '');

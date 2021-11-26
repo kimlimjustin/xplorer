@@ -91,11 +91,31 @@ class DirectoryAPI {
 		return await invoke('get_dir_size', { dir: this.dirName });
 	}
 
-	async search(pattern: string, callback: (partialFound: FileMetaData[]) => void): Promise<FileMetaData[]> {
+	/**
+	 * Stop all searching progress
+	 * @returns {Promise<boolean>}
+	 */
+	async stopSearching(): Promise<boolean> {
+		const listenerExist = searchListener !== null && searchListener !== undefined;
 		searchListener?.();
+		return listenerExist;
+	}
+
+	/**
+	 * Search for a file/folder in a directory
+	 * @param {string} pattern - glob pattern
+	 * @param {FileMetaData[] => void} callback - progress callback
+	 * @returns {any}
+	 */
+	async search(pattern: string, callback: (partialFound: FileMetaData[]) => void): Promise<FileMetaData[]> {
 		await getCurrent().emit('unsearch');
-		searchListener = await getCurrent().listen('search_partial_result', (res) => callback(res.payload as FileMetaData[]));
-		return await invoke('search_in_dir', { dirPath: this.dirName, pattern });
+		searchListener = await getCurrent().listen('search_partial_result', (res) => {
+			if (searchListener !== null && searchListener !== undefined) callback(res.payload as FileMetaData[]);
+		});
+		const res = await invoke('search_in_dir', { dirPath: this.dirName, pattern });
+		searchListener?.();
+		searchListener = null;
+		return res as FileMetaData[];
 	}
 }
 
