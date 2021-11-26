@@ -98,6 +98,7 @@ class DirectoryAPI {
 	async stopSearching(): Promise<boolean> {
 		const listenerExist = searchListener !== null && searchListener !== undefined;
 		searchListener?.();
+		await getCurrent().emit('unsearch');
 		return listenerExist;
 	}
 
@@ -108,12 +109,11 @@ class DirectoryAPI {
 	 * @returns {any}
 	 */
 	async search(pattern: string, callback: (partialFound: FileMetaData[]) => void): Promise<FileMetaData[]> {
-		await getCurrent().emit('unsearch');
 		searchListener = await getCurrent().listen('search_partial_result', (res) => {
 			if (searchListener !== null && searchListener !== undefined) callback(res.payload as FileMetaData[]);
 		});
 		const res = await invoke('search_in_dir', { dirPath: this.dirName, pattern });
-		searchListener?.();
+		await this.stopSearching();
 		searchListener = null;
 		return res as FileMetaData[];
 	}

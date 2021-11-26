@@ -7,8 +7,10 @@ import { LOAD_IMAGE } from '../../Functions/lazyLoadingImage';
 import { updateTheme } from '../../Theme/theme';
 import { OpenLog } from '../../Functions/log';
 import { OpenDir } from '../../Open/open';
+let being_watch: string;
 
 const stopSearchingProcess = async (): Promise<void> => {
+	being_watch = null;
 	if (await new DirectoryAPI('').stopSearching()) stopLoading();
 };
 
@@ -28,10 +30,13 @@ const processSearch = async (to_search: string, search_in: string): Promise<void
 	let foundSomething = false;
 
 	const finalResult = await new DirectoryAPI(search_in).search(to_search, async (partialFound) => {
-		const _el = document.createElement('div');
+		let _el = document.createElement('div') as HTMLElement;
 		foundSomething = true;
 		if (document.querySelector<HTMLInputElement>('.path-navigator').value.startsWith('Search: '))
-			MAIN_ELEMENT.appendChild(await displayFiles(partialFound, search_path, _el, null, true));
+			_el = await displayFiles(partialFound, search_path, _el, null, true);
+		for (const childEl of _el.children) {
+			MAIN_ELEMENT.appendChild(childEl);
+		}
 	});
 	const _el = document.createElement('div');
 	MAIN_ELEMENT.appendChild(await displayFiles(finalResult, search_path, _el, null, true));
@@ -74,7 +79,6 @@ const getFocusingPath = async (): Promise<string> => {
  */
 const Search = async (): Promise<void> => {
 	let listener: ReturnType<typeof setTimeout>;
-	let being_watch: string;
 	document.querySelector('.search-bar').addEventListener('keydown', async (e: KeyboardEvent) => {
 		clearTimeout(listener);
 		if (e.ctrlKey && e.key === 'f') {
