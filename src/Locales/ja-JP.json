@@ -39,6 +39,8 @@
 	"Hide hidden files": "隠されたファイルを隠す",
 	"List and sort directories alongside files": "ファイルと一緒にディレクトリをリストとソートする",
 	"On startup": "起動時",
+	"Workspace": "Workspace",
+	"Show Info Bar": "Show Info Bar",
 	"About": "アバウト",
 	"Layout Mode": "レイアウトモード",
 	"Grid View (Large)": "グリッドビュー (大)",
