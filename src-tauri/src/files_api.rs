@@ -587,7 +587,13 @@ pub async fn search_in_dir(
   pattern: String,
   window: tauri::Window,
 ) -> Vec<FileMetaData> {
-  let glob_pattern = format!("{}/**/{}", dir_path, pattern);
+  let glob_pattern = match dir_path.as_ref() {
+    "xplorer://Home" => match cfg!(target_os = "windows") {
+      true => "C://**/".to_string() + &pattern,
+      false => "~/**/".to_string() + &pattern,
+    },
+    _ => format!("{}/**/{}", dir_path, pattern),
+  };
   let glob_option = MatchOptions {
     case_sensitive: false,
     require_literal_separator: false,
