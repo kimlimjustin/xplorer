@@ -230,6 +230,13 @@ const Shortcut = (): void => {
 			const selectedFilePath = unescape(selectedFile?.dataset?.path);
 			Properties(selectedFilePath === 'undefined' ? await focusingPath() : selectedFilePath);
 		}
+		// Find files (Ctrl+F)
+		else if (e.ctrlKey && e.key === 'f') {
+			e.preventDefault();
+			const searchElement = document.querySelector<HTMLInputElement>('.search-bar');
+			searchElement.select();
+			searchElement.focus();
+		}
 		// Internal Reload (F5)
 		if (e.key === 'F5') {
 			e.preventDefault();

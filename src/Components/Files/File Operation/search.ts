@@ -30,7 +30,8 @@ const processSearch = async (to_search: string, search_in: string): Promise<void
 	const finalResult = await new DirectoryAPI(search_in).search(to_search, async (partialFound) => {
 		const _el = document.createElement('div');
 		foundSomething = true;
-		MAIN_ELEMENT.appendChild(await displayFiles(partialFound, search_path, _el, null, true));
+		if (document.querySelector<HTMLInputElement>('.path-navigator').value.startsWith('Search: '))
+			MAIN_ELEMENT.appendChild(await displayFiles(partialFound, search_path, _el, null, true));
 	});
 	const _el = document.createElement('div');
 	MAIN_ELEMENT.appendChild(await displayFiles(finalResult, search_path, _el, null, true));
@@ -74,9 +75,11 @@ const getFocusingPath = async (): Promise<string> => {
 const Search = async (): Promise<void> => {
 	let listener: ReturnType<typeof setTimeout>;
 	let being_watch: string;
-	document.querySelector('.search-bar').addEventListener('keyup', async (e: KeyboardEvent) => {
+	document.querySelector('.search-bar').addEventListener('keydown', async (e: KeyboardEvent) => {
 		clearTimeout(listener);
-		if (e.key === 'Enter') {
+		if (e.ctrlKey && e.key === 'f') {
+			return;
+		} else if (e.key === 'Enter') {
 			const value = (e.target as HTMLInputElement).value;
 			if (value !== being_watch) {
 				processSearch(value, await getFocusingPath());
