@@ -12,5 +12,4 @@ files:
         },
         { source: '/docs/docs/Community/support.md', translation: '/docs/i18n/%locale%/docusaurus-plugin-content-docs/current/Community/support.md' },
         { source: '/src/Locales/base.json', translation: '/src/Locales/%locale%.json' },
-        { source: '/docs/src/pages/**/*', translation: '/docs/i18n/%locale%/docusaurus-plugin-content-pages/**/%original_file_name%' },
     ]
