@@ -107,6 +107,7 @@ fn main() {
       files_api::get_file_properties,
       files_api::extract_icon,
       files_api::calculate_files_total_size,
+      files_api::search_in_dir,
       drives::get_drives,
       storage::write_data,
       storage::read_data,

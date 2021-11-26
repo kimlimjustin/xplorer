@@ -7,18 +7,21 @@ extern crate open;
 extern crate trash;
 use crate::file_lib;
 use crate::storage;
+use glob::{glob_with, MatchOptions};
 #[cfg(not(target_os = "macos"))]
 use normpath::PathExt;
 use notify::{raw_watcher, RawEvent, RecursiveMode, Watcher};
 use serde_json::Value;
 use std::sync::mpsc::channel;
+use tauri::api::path::local_data_dir;
+use tauri::Manager;
 
 #[cfg(windows)]
 use std::os::windows::prelude::*;
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
 
-#[derive(serde::Serialize)]
+#[derive(serde::Serialize, Clone)]
 pub struct FileMetaData {
   file_path: String,
   basename: String,
@@ -34,6 +37,7 @@ pub struct FileMetaData {
   created: SystemTime,
   is_trash: bool,
 }
+
 #[derive(serde::Serialize)]
 pub struct TrashMetaData {
   file_path: String,
@@ -533,7 +537,6 @@ pub async fn listen_dir(dir: String, window: tauri::Window) -> Result<String, St
     }
   }
 }
-use tauri::api::path::local_data_dir;
 
 #[cfg(target_os = "windows")]
 #[tauri::command]
@@ -576,4 +579,50 @@ pub async fn calculate_files_total_size(files: Vec<String>) -> u64 {
     total_size += metadata.len();
   }
   total_size
+}
+
+#[tauri::command]
+pub async fn search_in_dir(
+  dir_path: String,
+  pattern: String,
+  window: tauri::Window,
+) -> Vec<FileMetaData> {
+  let glob_pattern = format!("{}/**/{}", dir_path, pattern);
+  let glob_option = MatchOptions {
+    case_sensitive: false,
+    require_literal_separator: false,
+    require_literal_leading_dot: false,
+    ..Default::default()
+  };
+  let continue_search = std::sync::Arc::new(std::sync::Mutex::new(true));
+  let id = window.listen("unsearch", {
+    let continue_search = continue_search.clone();
+    move |_| {
+      *continue_search.lock().unwrap() = false;
+    }
+  });
+  let mut files = Vec::new();
+  let glob_result = glob_with(&glob_pattern, glob_option).unwrap();
+  for entry in glob_result {
+    if continue_search.lock().unwrap().clone() {
+      match entry {
+        Ok(path) => {
+          files.push(
+            get_file_properties(path.to_str().unwrap().to_string())
+              .await
+              .unwrap(),
+          );
+          if files.len() % 100 == 0 {
+            window.emit("search_partial_result", files.clone()).unwrap();
+            files.clear();
+          }
+        }
+        Err(e) => println!("{:?}", e),
+      }
+    } else {
+      break;
+    }
+  }
+  window.unlisten(id);
+  files
 }
