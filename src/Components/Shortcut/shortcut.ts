@@ -196,7 +196,7 @@ const Shortcut = (): void => {
 			if (e.shiftKey) {
 				const filePaths = [];
 				for (const element of getSelected()) {
-					filePaths.push(_focusingPath === 'xplorer://Trash' ? unescape(element.dataset.realPath) : unescape(element.dataset.path));
+					filePaths.push(unescape(element.dataset.path));
 				}
 				if (_focusingPath === 'xplorer://Trash') Purge(filePaths);
 				else PermanentDelete(filePaths);
