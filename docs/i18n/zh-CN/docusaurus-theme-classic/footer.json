@@ -15,8 +15,12 @@
     "message": "GitHub 讨论",
     "description": "The label of footer link with label=GitHub Discussions linking to https://github.com/kimlimjustin/xplorer/discussions"
   },
+  "link.item.label.Discord": {
+    "message": "Discord",
+    "description": "The label of footer link with label=Discord linking to https://discord.gg/MHGtSWvfUS"
+  },
   "copyright": {
-    "message": "© 2021 Justin Maximillian Kimlim. 使用 <a href=\"https://docusaurus.io\" target=\"_blank\">Docusaurus</a> 建设的网站。",
+    "message": "Copyright © 2021 Justin Maximillian Kimlim and <a href=\"https://github.com/kimlimjustin/xplorer/graphs/contributors\" target=\"_blank\">contributors</a>. Website Built with <a href=\"https://docusaurus.io\" target=\"_blank\">Docusaurus</a>.",
     "description": "The footer copyright"
   }
 }

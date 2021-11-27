@@ -29,6 +29,8 @@
 		"compile": "webpack && yarn sass && yarn copyfiles",
 		"compile:watch": "webpack --watch",
 		"crowdin": "crowdin",
+		"crowdin:pull": "crowdin pull",
+		"postcrowdin:pull": "node scripts/post_crowdin_pull.js",
 		"crowdin:sync": "yarn --cwd ./docs write-translations && crowdin upload && crowdin download",
 		"lint": "eslint -c .eslintrc.yml --ext .ts ./src",
 		"prettier": "prettier --write src",

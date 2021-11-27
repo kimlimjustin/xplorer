@@ -10,32 +10,23 @@ import PromptError from '../../Prompt/error';
  * @param {boolean} writeLog - does the operation need to be written
  * @returns {Promise<void>}
  */
-const NewFile = async (
-	fileName: string,
-	parentDir?: string,
-	writeLog = true
-): Promise<void> => {
+const NewFile = async (fileName: string, parentDir?: string, writeLog = true): Promise<void> => {
 	if (!parentDir) parentDir = await focusingPath();
 	const newFile = new FileAPI(fileName, parentDir);
 
 	if (await newFile.exists()) {
-		PromptError(
-			'Error creating file',
-			`Failed to create file ${newFile.fileName}: File already existed`
-		);
+		PromptError('Error creating file', `Failed to create file ${newFile.fileName}: File already existed`);
 	} else {
 		try {
 			await newFile.createFile();
 		} catch (err) {
-			PromptError(
-				'Error creating file',
-				`Failed to create file ${newFile.fileName}: Something went wrong (${err})`
-			);
+			PromptError('Error creating file', `Failed to create file ${newFile.fileName}: Something went wrong (${err})`);
 		}
 
 		if (writeLog) {
-			console.log(writeLog);
-			OperationLog('newfile', null, newFile.fileName);
+			if (typeof newFile.fileName === 'string') {
+				OperationLog('newfile', null, newFile.fileName);
+			}
 		}
 	}
 };

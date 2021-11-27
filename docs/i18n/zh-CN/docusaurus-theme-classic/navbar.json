@@ -11,9 +11,9 @@
     "message": "博客",
     "description": "Navbar item with label Blog"
   },
-  "item.label.Community": {
-    "message": "社群",
-    "description": "Navbar item with label Community"
+  "item.label.Discord": {
+    "message": "Discord",
+    "description": "Navbar item with label Discord"
   },
   "item.label.GitHub": {
     "message": "GitHub",

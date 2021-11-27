@@ -1,3 +1,0 @@
-# Operasi Berkas
-
-## Duplikasi File
