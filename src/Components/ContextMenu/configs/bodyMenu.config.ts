@@ -168,6 +168,7 @@ const BodyMenu = async (target: HTMLElement, filePath: string): Promise<contextM
 			{
 				menu: await Translate('Restore all files'),
 				visible: _focusingPath === 'xplorer://Trash',
+				icon: 'delete',
 				role: () => {
 					const filePaths = [...document.querySelectorAll<HTMLElement>('.file')].map((file) => unescape(file.dataset.path));
 					Restore(filePaths);
@@ -176,6 +177,7 @@ const BodyMenu = async (target: HTMLElement, filePath: string): Promise<contextM
 			{
 				menu: await Translate('Permanently delete all files'),
 				visible: _focusingPath === 'xplorer://Trash',
+				icon: 'delete',
 				role: () => {
 					const filePaths = [...document.querySelectorAll<HTMLElement>('.file')].map((file) => unescape(file.dataset.path));
 					Purge(filePaths);
