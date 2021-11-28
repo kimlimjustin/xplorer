@@ -1,5 +1,6 @@
 import { updateTheme } from '../Theme/theme';
 import dragElement from '../Functions/dragElement';
+
 interface AskOptions {
 	value: string;
 }
@@ -32,8 +33,8 @@ const Ask = async (title: string, message: string, options?: AskOptions): Promis
 	updateTheme('prompt');
 
 	const promptInput = promptElement.querySelector<HTMLInputElement>('.prompt-input');
+	promptInput.setSelectionRange(0, promptInput.value.lastIndexOf('.'));
 	promptInput.focus();
-	promptInput.select();
 	return new Promise((resolve) => {
 		promptElement.querySelector('.prompt-ok').addEventListener('click', () => {
 			promptElement.parentNode.removeChild(promptElement);
