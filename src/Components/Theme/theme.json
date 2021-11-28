@@ -30,6 +30,8 @@
 		"navigatorColor": "#4fe0be",
 		"pathNavigatorBackground": "#5f6b94",
 		"pathNavigatorColor": "#a2b7ff",
+		"searchBarBackground": "#5f6b94",
+		"searchBarColor": "#a2b7ff",
 
 		"settingsSidebarBackground": "#14141b",
 		"settingsMainBackground": "#1a1b26",
@@ -124,6 +126,8 @@
 		"navigatorColor": "#87c1ce",
 		"pathNavigatorBackground": "#39496a",
 		"pathNavigatorColor": "#87c1ce",
+		"searchBarBackground": "#39496a",
+		"searchBarColor": "#87c1ce",
 
 		"settingsSidebarBackground": "#1b1e2e",
 		"settingsMainBackground": "#24283b",
@@ -218,6 +222,8 @@
 		"navigatorColor": "#202124",
 		"pathNavigatorBackground": "#e0e0e0",
 		"pathNavigatorColor": "#202124",
+		"searchBarBackground": "#e0e0e0",
+		"searchBarColor": "inherit",
 
 		"settingsSidebarBackground": "#cbccd1",
 		"settingsMainBackground": "#d5d6db",
@@ -312,6 +318,8 @@
 		"navigatorColor": "#202124",
 		"pathNavigatorBackground": "#dfdfdf",
 		"pathNavigatorColor": "#202124",
+		"searchBarBackground": "#ebebeb",
+		"searchBarColor": "inherit",
 
 		"settingsSidebarBackground": "#FAFAFA",
 		"settingsMainBackground": "#FEFEFE",

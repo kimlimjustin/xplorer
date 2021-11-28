@@ -14,6 +14,7 @@ import ContextMenu from './Components/ContextMenu/contextMenu';
 import Hover from './Components/Layout/hover';
 import LAZY_LOAD_INIT from './Components/Functions/lazyLoadingImage';
 import Infobar from './Components/Layout/infobar';
+import Search from './Components/Files/File Operation/search';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -74,6 +75,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 	ContextMenu();
 	// Initialize hover handler
 	Hover();
+	// Initialize search feature
+	Search();
 	// Initialize lazy loading image handler (for performance)
 	LAZY_LOAD_INIT();
 });

@@ -1,1 +1,1 @@
-Please see https://xplorer.vercel.app/community/Contributing/
+Please see https://xplorer.vercel.app/docs/Community/Contributing/
