@@ -12,13 +12,17 @@ import getDefaultSort from './defaultSort';
  * @param {fileData[]} files - array of files of a directory
  * @param {string} dir - directory base path
  * @param {HTMLElement} onElement - element to append files element
+ * @param {{reveal: boolean, revealDir: boolean}} options - options
+ * @param {boolean} isSearch - if true, files are searched
+ *
  * @returns {Promise<HTMLElement>}
  */
 const displayFiles = async (
 	files: FileMetaData[],
 	dir: string,
 	onElement?: HTMLElement,
-	options?: { reveal: boolean; revealDir: string }
+	options?: { reveal: boolean; revealDir: string },
+	isSearch?: boolean
 ): Promise<HTMLElement> => {
 	const FilesElement = onElement ?? document.createElement('div');
 	const preference = await Storage.get('preference');
@@ -76,6 +80,7 @@ const displayFiles = async (
 				displayName = file.basename.length > 20 ? file.basename.substring(0, 20) + '...' : file.basename;
 				break;
 		}
+		if (isSearch) displayName = file.file_path;
 
 		fileGrid.setAttribute('draggable', 'true');
 		if (!file.is_trash) {
@@ -120,7 +125,6 @@ const displayFiles = async (
 		Select(document.querySelector<HTMLElement>(`.file[data-path="${escape(options?.revealDir)}"]`), false, false);
 	}
 
-	OpenLog(dir);
 	return FilesElement;
 };
 

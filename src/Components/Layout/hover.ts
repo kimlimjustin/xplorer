@@ -32,6 +32,8 @@ const Hover = (): void => {
 			if (hoveringElement?.dataset?.path && displayName) hoveringElement.querySelector('.file-grid-filename').innerHTML = displayName;
 			return;
 		}
+		const isOnSearch = document.querySelector<HTMLInputElement>('.path-navigator').value.startsWith('Search: ');
+
 		hoveringElement?.classList?.remove('hovering');
 
 		const target = (e.target as HTMLElement)?.dataset?.path ? (e.target as HTMLElement) : ((e.target as HTMLElement)?.parentNode as HTMLElement);
@@ -48,7 +50,7 @@ const Hover = (): void => {
 		timeOut = window.setTimeout(async () => {
 			displayName = filenameGrid.innerHTML;
 			const path = unescape(target.dataset.path);
-			filenameGrid.innerHTML = getBasename(path);
+			filenameGrid.innerHTML = isOnSearch ? path : getBasename(path);
 			target?.classList?.add('hovering');
 
 			const previewImageOnHover = (await Storage.get('appearance')).previewImageOnHover ?? true;

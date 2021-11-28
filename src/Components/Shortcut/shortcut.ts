@@ -196,7 +196,7 @@ const Shortcut = (): void => {
 			if (e.shiftKey) {
 				const filePaths = [];
 				for (const element of getSelected()) {
-					filePaths.push(_focusingPath === 'xplorer://Trash' ? unescape(element.dataset.realPath) : unescape(element.dataset.path));
+					filePaths.push(unescape(element.dataset.path));
 				}
 				if (_focusingPath === 'xplorer://Trash') Purge(filePaths);
 				else PermanentDelete(filePaths);
@@ -229,6 +229,13 @@ const Shortcut = (): void => {
 			const selectedFile = getSelected()?.[0];
 			const selectedFilePath = unescape(selectedFile?.dataset?.path);
 			Properties(selectedFilePath === 'undefined' ? await focusingPath() : selectedFilePath);
+		}
+		// Find files (Ctrl+F)
+		else if (e.ctrlKey && e.key === 'f') {
+			e.preventDefault();
+			const searchElement = document.querySelector<HTMLInputElement>('.search-bar');
+			searchElement.select();
+			searchElement.focus();
 		}
 		// Internal Reload (F5)
 		if (e.key === 'F5') {

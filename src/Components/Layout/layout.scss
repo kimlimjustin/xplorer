@@ -209,12 +209,23 @@
 				}
 			}
 			.path-navigator {
+				flex: 3;
+				margin: 0 1rem;
+				border: none;
+				border-radius: 5px;
+				padding: 0.5rem;
+				vertical-align: middle;
+			}
+			.search-bar {
 				flex: 1;
 				margin: 0 1rem;
 				border: none;
 				border-radius: 5px;
 				padding: 0.5rem;
 				vertical-align: middle;
+				&::-webkit-input-placeholder {
+					color: inherit;
+				}
 			}
 		}
 	}

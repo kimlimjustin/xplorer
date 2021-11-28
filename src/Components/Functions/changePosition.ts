@@ -31,7 +31,11 @@ const changePosition = async (newPath: string, forceChange = false): Promise<voi
 	tabs.tabs[String(tabs.focus)] = _focusingTab;
 
 	document.getElementById(`tab${tabs.focus}`).querySelector<HTMLInputElement>('#tab-position').innerText = await Translate(
-		basename(newPath) === '' ? newPath : basename(newPath)
+		document.querySelector<HTMLInputElement>('.path-navigator').value.startsWith('Search: ')
+			? newPath
+			: basename(newPath) === ''
+			? newPath
+			: basename(newPath)
 	);
 	Storage.set(`tabs-${windowName}`, tabs);
 	changeSelectedAllStatus();
