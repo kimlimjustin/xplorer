@@ -1,3 +1,4 @@
+import { listenStylesheetChange } from '../../Api/app';
 import Storage from '../../Api/storage';
 import { themeValue, themeData, Theme } from '../../Typings/theme';
 /**
@@ -358,9 +359,18 @@ const updateTheme = async (
 		| 'prompt'
 		| 'preview'
 		| 'properties'
-		| 'infobar'
+		| 'infobar',
+	customStyleSheet?: JSON
 ): Promise<void> => {
 	const data: themeData = await Storage.get('theme');
+	if (customStyleSheet) {
+		themeJSON = customStyleSheet as unknown as themeValue;
+		document.body.dataset.usingCustomTheme = 'true';
+		listenStylesheetChange((styles) => {
+			themeJSON = styles as unknown as themeValue;
+			changeTheme(data.theme, '*');
+		});
+	}
 	// If user has no preference theme
 	if (!data || !Object.keys(data).length) {
 		currentTheme = defaultTheme;

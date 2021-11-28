@@ -26,28 +26,27 @@ document.addEventListener('DOMContentLoaded', async () => {
 	createSidebar();
 	// Initialize folder to open
 	const cli = await CLIInformations();
-	if (!cli.args.length) {
+	if (!cli.dirs.length) {
 		if ((_preference.on_startup ?? 'new') === 'new') {
 			Home();
 		}
 		// Initialize Tabs
-
 		Tab();
 	} else {
-		let reveal = false;
-		if (cli.flags.indexOf('--reveal') !== -1 || cli.flags.indexOf('-r') !== -1) {
-			reveal = true;
-		}
-		OpenDir(cli.args[0], reveal);
-		for (let i = 1; i < cli.args.length; i++) {
-			createNewTab(cli.args[i]);
+		OpenDir(cli.dirs[0], cli.is_reveal);
+		for (let i = 1; i < cli.dirs.length; i++) {
+			createNewTab(cli.dirs[i]);
 		}
 
 		// Initialize Tabs
-		Tab(reveal);
+		Tab(cli.is_reveal);
 	}
 	// Update the page styling
-	updateTheme('root');
+	if (cli.custom_style_sheet) {
+		updateTheme('root', cli.custom_style_sheet);
+	} else {
+		updateTheme('root');
+	}
 	// Initialize open dir/files listener
 	OpenInit();
 	// Intialize shortcuts

@@ -4,7 +4,7 @@
 	"version": "0.2.0",
 	"author": "Justin Maximillian Kimlim <kimlimjustin@gmail.com>",
 	"icon": "build/icon.icns",
-	"private": false,
+	"private": true,
 	"homepage": "https://xplorer.vercel.app",
 	"repository": {
 		"type": "git",
@@ -18,7 +18,7 @@
 	"scripts": {
 		"start": "yarn dev",
 		"serve": "live-server ./out/src --no-browser",
-		"dev": "yarn compile && concurrently --kill-others \"yarn compile:watch\" \"yarn sass:watch\" \"yarn serve\" \"tauri dev\"",
+		"dev": "yarn compile && concurrently --kill-others \"yarn compile:watch\" \"yarn sass:watch\" \"yarn serve\" \"tauri dev -- --theme E:\\\\xplorer\\example\\themes\\garuda-color-theme.json\"",
 		"clean": "rimraf out",
 		"sass": "sass src/Public/style.scss out/src/Public/style.css",
 		"sass:watch": "node scripts/sass-watcher.js",
@@ -42,6 +42,9 @@
 		"postinstall": "husky install",
 		"fakefiles": "python scripts/generate-fake-files.py 1000"
 	},
+	"workspaces": [
+		"packages/*"
+	],
 	"keywords": [
 		"Xplorer",
 		"File explorer",
@@ -69,6 +72,7 @@
 		"grunt-contrib-watch": "^1.1.0",
 		"husky": "^7.0.2",
 		"jest": "^27.1.0",
+		"lerna": "^4.0.0",
 		"live-server": "^1.2.1",
 		"node-sass": "^6.0.1",
 		"node-watch": "^0.7.1",
