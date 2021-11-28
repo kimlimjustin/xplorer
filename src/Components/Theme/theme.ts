@@ -178,6 +178,8 @@ const changeTheme = async (
 	if (category === '*' || category === 'tabbing') {
 		changeElementTheme(document.querySelector('.path-navigator'), 'pathNavigatorBackground', 'background', theme);
 		changeElementTheme(document.querySelector('.path-navigator'), 'pathNavigatorColor', 'color', theme);
+		changeElementTheme(document.querySelector('.search-bar'), 'searchBarBackground', 'background', theme);
+		changeElementTheme(document.querySelector('.search-bar'), 'searchBarColor', 'color', theme);
 		document
 			.querySelector<HTMLElement>('.tabs-manager')
 			.style.setProperty('--tabs-scrollbar-track', themeJSON ? themeJSON.tabsScrollbarTrack : defaultThemeJSON[theme]?.tabsScrollbarTrack);

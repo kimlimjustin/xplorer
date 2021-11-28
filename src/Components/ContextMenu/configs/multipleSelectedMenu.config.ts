@@ -80,6 +80,7 @@ const MultipleSelectedMenu = async (_: HTMLElement, _filePath: string): Promise<
 			{
 				menu: await Translate('Restore these files'),
 				visible: _focusingPath === 'xplorer://Trash',
+				icon: 'delete',
 				role: () => {
 					const filePaths = [];
 					for (const element of getSelected()) {
@@ -89,8 +90,9 @@ const MultipleSelectedMenu = async (_: HTMLElement, _filePath: string): Promise<
 				},
 			},
 			{
-				menu: await Translate('Permanently these files'),
+				menu: await Translate('Permanently delete these files'),
 				visible: _focusingPath === 'xplorer://Trash',
+				icon: 'delete',
 				role: () => {
 					const filePaths = [];
 					for (const element of getSelected()) {
