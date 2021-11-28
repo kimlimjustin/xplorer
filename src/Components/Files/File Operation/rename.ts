@@ -14,31 +14,19 @@ import ConfirmDialog from '../../Prompt/confirm';
  * @returns {void}
  */
 const Rename = (filePath: string): void => {
-	Ask('Rename', 'New File Name:', { value: basename(filePath) }).then(
-		async (newName: string) => {
-			const target =
-				getDirname(newName) === '.'
-					? joinPath(await focusingPath(), newName)
-					: joinPath(getDirname(filePath), newName);
-			if (await new FileAPI(target).exists()) {
-				const confirm = await ConfirmDialog(
-					'File Exists',
-					'The new name already exists, do you want to overwrite it?',
-					'No'
-				);
-				if (!confirm) return;
-			}
-			try {
-				new OperationAPI(filePath, target).rename();
-			} catch (err) {
-				PromptError(
-					'Error renaming file',
-					`Failed to rename ${filePath} [${err}]`
-				);
-			}
-			OperationLog('rename', unescape(filePath), target);
+	Ask('Rename', 'New File Name:', { value: basename(filePath) }).then(async (newName: string) => {
+		const target = getDirname(newName) === '.' ? joinPath(await focusingPath(), newName) : joinPath(getDirname(filePath), newName);
+		if (await new FileAPI(target).exists()) {
+			const confirm = await ConfirmDialog('File Exists', 'The new name already exists, do you want to overwrite it?', 'No');
+			if (!confirm) return;
 		}
-	);
+		try {
+			new OperationAPI(filePath, target).rename();
+		} catch (err) {
+			PromptError('Error renaming file', `Failed to rename ${filePath} [${err}]`);
+		}
+		OperationLog('rename', unescape(filePath), target);
+	});
 };
 
 export default Rename;
