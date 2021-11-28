@@ -19,7 +19,7 @@ const Ask = async (title: string, message: string, options?: AskOptions): Promis
 		<span class="prompt-exit-btn"></span>
 	</div>
 	${message ? `<div class="prompt-message">${message}</div>` : ''}
-	<input type="text" class="prompt-input" ${options?.value ? `value=${options?.value}` : ''} />
+	<input type="text" class="prompt-input" ${options?.value ? `value="${options?.value}"` : ''} />
 	<div class="prompt-confirmations">
 	<button class="prompt-cancel">Cancel</button>
 	<button class="prompt-ok">Ok</button>
