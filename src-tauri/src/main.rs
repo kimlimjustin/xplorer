@@ -2,11 +2,14 @@
   all(not(debug_assertions), target_os = "windows"),
   windows_subsystem = "windows"
 )]
+
 mod drives;
 mod file_lib;
 mod files_api;
 mod storage;
+use clap::{App, Arg, ArgMatches};
 use font_loader::system_fonts;
+use lazy_static::lazy_static;
 use std::env;
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
@@ -18,36 +21,123 @@ use path_absolutize::*;
 
 #[derive(serde::Serialize)]
 struct ArgsStruct {
-  args: Vec<String>,
-  flags: Vec<String>,
+  dirs: Vec<String>,
+  is_reveal: bool,
+  custom_style_sheet: serde_json::Value,
 }
+lazy_static! {
+  static ref ARGS_STRUCT: ArgMatches = {
+    const VERSION: &'static str = env!("CARGO_PKG_VERSION");
+    App::new("Xplorer")
+      .version(VERSION)
+      .about("Xplorer, customizable, modern file manager")
+      .arg(
+        Arg::new("reveal")
+          .short('r')
+          .long("reveal")
+          .about("Reveal file in Xplorer")
+          .takes_value(true),
+      )
+      .arg(
+        Arg::new("dir")
+          .about("Directories to open in Xplorer")
+          .multiple_values(true)
+          .takes_value(true),
+      )
+      .arg(
+        Arg::new("theme")
+          .short('t')
+          .long("theme")
+          .about("Custom color theme")
+          .takes_value(true),
+      )
+      .get_matches()
+  };
+}
+use notify::{raw_watcher, RawEvent, RecursiveMode, Watcher};
+use std::sync::mpsc::channel;
 #[tauri::command]
-fn get_cli_args() -> Result<ArgsStruct, String> {
-  let mut args = Vec::new();
-  let mut flags = Vec::new();
-  for arg in env::args().skip(1) {
-    if arg.starts_with("-") {
-      flags.push(arg)
-    } else {
-      let dir = Path::new(&arg);
-      let absolute_path = dir.absolutize();
-      if absolute_path.is_err() {
-        println!("{:?}", absolute_path.err());
-      } else {
-        args.push(
-          absolute_path
-            .unwrap()
-            .into_owned()
-            .into_os_string()
-            .into_string()
-            .unwrap(),
-        )
+async fn listen_stylesheet_change(window: tauri::Window) {
+  if ARGS_STRUCT.value_of("theme").is_some() {
+    // listen to file_path file changes
+    let (tx, rx) = channel();
+    let mut watcher = raw_watcher(tx).unwrap();
+    watcher
+      .watch(
+        Path::new(&ARGS_STRUCT.value_of("theme").unwrap()),
+        RecursiveMode::NonRecursive,
+      )
+      .unwrap();
+    loop {
+      match rx.recv() {
+        Ok(RawEvent {
+          path: Some(path),
+          op: Ok(op),
+          ..
+        }) => {
+          println!("{:?} {:?}", path, op);
+          let value = serde_json::from_str(
+            std::fs::read(path)
+              .map_err(|e| format!("{}", e))
+              .map(|v| String::from_utf8(v).unwrap())
+              .unwrap_or("".to_string())
+              .as_str(),
+          );
+          window
+            .emit(
+              "stylesheet_changes",
+              value.unwrap_or(serde_json::Value::Null),
+            )
+            .unwrap();
+        }
+        Ok(event) => println!("broken event: {:?}", event),
+        Err(e) => println!("watch error: {:?}", e),
       }
     }
   }
-  Ok(ArgsStruct { args, flags })
 }
 
+#[tauri::command]
+fn get_cli_args() -> Result<ArgsStruct, String> {
+  let is_reveal = ARGS_STRUCT
+    .value_of("reveal")
+    .unwrap_or("false")
+    .to_string();
+  let custom_style_sheet = ARGS_STRUCT.value_of("theme").unwrap_or("").to_string();
+  let custom_style_sheet = match custom_style_sheet.as_str() {
+    "" => serde_json::Value::Null,
+    _ => serde_json::from_str(
+      std::fs::read(custom_style_sheet.as_str())
+        .map_err(|e| format!("{}", e))
+        .map(|v| String::from_utf8(v).unwrap())
+        .unwrap_or("".to_string())
+        .as_str(),
+    )
+    .unwrap_or(serde_json::Value::Null),
+  };
+  if let Some(dirs_arg) = ARGS_STRUCT.values_of("dir") {
+    let dirs = dirs_arg
+      .map(|s| {
+        let dir = Path::new(s).absolutize();
+        if dir.is_err() {
+          return dir.unwrap_err().to_string();
+        }
+        return dir.unwrap().to_str().unwrap().to_string();
+      })
+      .collect();
+    Ok(ArgsStruct {
+      dirs,
+      is_reveal: is_reveal == "true",
+      custom_style_sheet,
+    })
+  } else {
+    Ok(ArgsStruct {
+      dirs: vec![],
+      is_reveal: is_reveal == "true",
+      custom_style_sheet,
+    })
+  }
+}
 #[cfg(target_os = "windows")]
 #[tauri::command]
 async fn check_vscode_installed() -> Result<bool, String> {
@@ -113,7 +203,8 @@ fn main() {
       storage::delete_storage_data,
       get_cli_args,
       check_vscode_installed,
-      get_available_fonts
+      get_available_fonts,
+      listen_stylesheet_change
     ])
     .run(tauri::generate_context!())
     .expect("error while running tauri application");

@@ -1,0 +1,21 @@
+{
+	"name": "<%= extensionIdentifier %>",
+	"extensionName": "<%= extensionName %>",
+	"description": "",
+	"category": "<%= extensionType %>",
+	"version": "0.1.0",
+	"license": "MIT",
+	"scripts": {
+		"start": "xplorer --theme ./themes/<%= extensionIdentifier%>-color-theme.json",
+		"build": "xplorer --register-theme ./themes/<%= extensionIdentifier%>-color-theme.json"
+	},
+	"xplorerExtensionConfig": {
+		"themes": [
+			{
+				"name": "<%= extensionName %>",
+				"category": "<%= themeCategory %>",
+				"path": "./themes/<%= extensionIdentifier%>-color-theme.json"
+			}
+		]
+	}
+}

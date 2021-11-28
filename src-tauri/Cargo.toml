@@ -26,6 +26,7 @@ notify = "4.0.17"
 normpath = "0.3.1"
 lazy_static = "1.4.0"
 font-loader = "0.11.0"
+clap = "3.0.0-beta.5"
 
 [features]
 default = [ "custom-protocol" ]

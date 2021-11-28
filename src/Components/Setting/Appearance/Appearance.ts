@@ -15,6 +15,7 @@ const Appearance = async (): Promise<void> => {
 	if (!platform) {
 		platform = await OS();
 	}
+	const developingTheme = document.body.dataset.usingCustomTheme === 'true';
 	const _theme = await Storage.get('theme');
 	const _appearance = await Storage.get('appearance');
 	const theme = _theme?.theme;
@@ -60,11 +61,12 @@ const Appearance = async (): Promise<void> => {
 	const showInfoBar_i18n = await Translate('Show Info Bar');
 	const appearancePage = `<h3 class="settings-title">${appTheme_i18n}</h3>
 	<select name="theme">
-		<option>${systemDefault_i18n}</option>
+		<option  ${developingTheme ? 'disabled' : ''}>${systemDefault_i18n}</option>
+		${developingTheme ? '<option selected>Dev mode</option>' : ''}
 		${availableThemes.map((availableTheme) => {
-			return `<option value="${availableTheme.identifier}" ${availableTheme.identifier === theme ? 'selected' : ''}>${
-				availableTheme.name
-			}</option>`;
+			return `<option value="${availableTheme.identifier}" ${availableTheme.identifier === theme && !developingTheme ? 'selected' : ''} ${
+				developingTheme ? 'disabled' : ''
+			}>${availableTheme.name}</option>`;
 		})}
 	</select>
 	<h3 class="settings-title">${fontFamily_i18n}</h3>

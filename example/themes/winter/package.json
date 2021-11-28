@@ -1,0 +1,21 @@
+{
+	"name": "winter",
+	"extensionName": "Winter",
+	"description": "",
+	"category": "theme",
+	"version": "0.1.0",
+	"license": "MIT",
+	"scripts": {
+		"start": "xplorer --theme ./themes/winter-color-theme.json",
+		"build": "xplorer --register-theme ./themes/winter-color-theme.json"
+	},
+	"xplorerExtensionConfig": {
+		"themes": [
+			{
+				"name": "Winter",
+				"category": "light",
+				"path": "./themes/winter-color-theme.json"
+			}
+		]
+	}
+}
