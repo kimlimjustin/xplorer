@@ -10,11 +10,13 @@ mod storage;
 use clap::{App, Arg, ArgMatches};
 use font_loader::system_fonts;
 use lazy_static::lazy_static;
+use notify::{raw_watcher, RawEvent, RecursiveMode, Watcher};
 use std::env;
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
 use std::path::Path;
 use std::process::Command;
+use std::sync::mpsc::channel;
 
 extern crate path_absolutize;
 use path_absolutize::*;
@@ -54,8 +56,65 @@ lazy_static! {
       .get_matches()
   };
 }
-use notify::{raw_watcher, RawEvent, RecursiveMode, Watcher};
-use std::sync::mpsc::channel;
+
+fn get_custom_stylesheet_filepath() -> String {
+  let custom_style_sheet = ARGS_STRUCT.value_of("theme").unwrap_or("").to_string();
+  let custom_style_sheet = match custom_style_sheet.as_str() {
+    "" => "".to_string(),
+    _ => match files_api::file_exist(custom_style_sheet.clone()) {
+      true => custom_style_sheet.clone(),
+      false => {
+        let package_json_path = Path::new(&env::current_dir().unwrap()).join("package.json");
+        let package_json_file: Result<serde_json::Value, serde_json::Error> =
+          serde_json::from_str(std::fs::read_to_string(package_json_path).unwrap().as_str());
+        let package_json_file = match package_json_file {
+          Ok(file) => file,
+          Err(_) => {
+            return "".to_string();
+          }
+        };
+        let package_json_file = package_json_file.as_object().unwrap();
+        let extension_field = package_json_file.get("xplorerExtensionConfig");
+        let extension_field = match extension_field {
+          Some(field) => field,
+          None => {
+            return "".to_string();
+          }
+        };
+        let extension_field = extension_field.as_object().unwrap();
+        let themes_field = extension_field.get("themes");
+        let themes_field = match themes_field {
+          Some(field) => field,
+          None => {
+            return "".to_string();
+          }
+        };
+        let themes_field = themes_field.as_array().unwrap();
+        let theme_field = themes_field
+          .iter()
+          .find(|theme| {
+            theme
+              .as_object()
+              .unwrap()
+              .get("identifier")
+              .unwrap()
+              .as_str()
+              .unwrap()
+              == custom_style_sheet.as_str()
+          })
+          .unwrap();
+        theme_field
+          .get("path")
+          .unwrap()
+          .as_str()
+          .unwrap()
+          .to_string()
+      }
+    },
+  };
+  custom_style_sheet
+}
+
 #[tauri::command]
 async fn listen_stylesheet_change(window: tauri::Window) {
   if ARGS_STRUCT.value_of("theme").is_some() {
@@ -64,33 +123,21 @@ async fn listen_stylesheet_change(window: tauri::Window) {
     let mut watcher = raw_watcher(tx).unwrap();
     watcher
       .watch(
-        Path::new(&ARGS_STRUCT.value_of("theme").unwrap()),
+        Path::new(&get_custom_stylesheet_filepath()),
         RecursiveMode::NonRecursive,
       )
       .unwrap();
     loop {
       match rx.recv() {
-        Ok(RawEvent {
-          path: Some(path),
-          op: Ok(op),
-          ..
-        }) => {
-          println!("{:?} {:?}", path, op);
-          let value = serde_json::from_str(
-            std::fs::read(path)
-              .map_err(|e| format!("{}", e))
-              .map(|v| String::from_utf8(v).unwrap())
-              .unwrap_or("".to_string())
-              .as_str(),
-          );
-          window
-            .emit(
-              "stylesheet_changes",
-              value.unwrap_or(serde_json::Value::Null),
-            )
-            .unwrap();
+        Ok(RawEvent { .. }) => {
+          let value = get_custom_stylesheet_filepath();
+          let value = match value.as_str() {
+            "" => serde_json::Value::Null,
+            _ => serde_json::from_str(std::fs::read_to_string(value).unwrap().as_str())
+              .unwrap_or(serde_json::Value::Null),
+          };
+          window.emit("stylesheet_changes", value).unwrap();
         }
-        Ok(event) => println!("broken event: {:?}", event),
         Err(e) => println!("watch error: {:?}", e),
       }
     }
@@ -103,14 +150,12 @@ fn get_cli_args() -> Result<ArgsStruct, String> {
     .value_of("reveal")
     .unwrap_or("false")
     .to_string();
-  let custom_style_sheet = ARGS_STRUCT.value_of("theme").unwrap_or("").to_string();
+  let custom_style_sheet = get_custom_stylesheet_filepath();
   let custom_style_sheet = match custom_style_sheet.as_str() {
     "" => serde_json::Value::Null,
     _ => serde_json::from_str(
-      std::fs::read(custom_style_sheet.as_str())
-        .map_err(|e| format!("{}", e))
-        .map(|v| String::from_utf8(v).unwrap())
-        .unwrap_or("".to_string())
+      std::fs::read_to_string(custom_style_sheet)
+        .unwrap()
         .as_str(),
     )
     .unwrap_or(serde_json::Value::Null),

@@ -12,6 +12,7 @@
 	"xplorerExtensionConfig": {
 		"themes": [
 			{
+				"identifier": "shadesofpurple",
 				"name": "Shades of Purple",
 				"category": "dark",
 				"path": "./themes/shadesofpurple-color-theme.json"
