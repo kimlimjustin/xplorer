@@ -12,6 +12,7 @@
 	"xplorerExtensionConfig": {
 		"themes": [
 			{
+				"identifier": "winter",
 				"name": "Winter",
 				"category": "light",
 				"path": "./themes/winter-color-theme.json"
