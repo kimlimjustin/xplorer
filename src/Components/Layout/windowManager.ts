@@ -28,10 +28,11 @@ const minimize = (): void => {
 
 /**
  * Maximize Xplorer window
- * @returns {void}
+ * @returns {Promise<void>}
  */
-const maximize = (): void => {
-	appWindow.maximize();
+const maximize = async (): Promise<void> => {
+	if (await appWindow.isMaximized()) appWindow.unmaximize();
+	else appWindow.maximize();
 };
 
 /**

@@ -6,6 +6,7 @@ mod drives;
 mod file_lib;
 mod files_api;
 mod storage;
+mod tests;
 use font_loader::system_fonts;
 use std::env;
 #[cfg(target_os = "windows")]
@@ -106,6 +107,8 @@ fn main() {
       files_api::get_dir_size,
       files_api::get_file_properties,
       files_api::extract_icon,
+      files_api::calculate_files_total_size,
+      files_api::search_in_dir,
       drives::get_drives,
       storage::write_data,
       storage::read_data,

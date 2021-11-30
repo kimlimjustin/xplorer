@@ -15,7 +15,7 @@ module.exports = {
 	trailingSlash: true,
 	i18n: {
 		defaultLocale: 'en',
-		locales: ['en', 'id-ID', 'zh-CN', 'zh-TW', 'ru-RU', 'pt-BR', 'de-DE', 'es-ES', 'uk-UA'],
+		locales: ['en', 'fr', 'pt', 'ru', 'uk', 'zh-CN'],
 	},
 	themeConfig: {
 		hideableSidebar: true,
@@ -44,7 +44,7 @@ module.exports = {
 					label: 'Tutorial',
 				},
 				{ to: 'https://dev.to/t/xplorer', label: 'Blog', position: 'left' },
-				{ to: 'https://discord.gg/kK7rwxPt', label: 'Discord', position: 'left' },
+				{ to: 'https://discord.gg/MHGtSWvfUS', label: 'Discord', position: 'left' },
 				{
 					type: 'localeDropdown',
 					position: 'right',
@@ -82,7 +82,7 @@ module.exports = {
 						},
 						{
 							label: 'Discord',
-							href: 'https://discord.gg/kK7rwxPt',
+							href: 'https://discord.gg/MHGtSWvfUS',
 						},
 					],
 				},

@@ -5,6 +5,7 @@ import type FileMetaData from '../Typings/fileMetaData';
 import { getCurrent } from '@tauri-apps/api/window';
 import { UnlistenFn } from '@tauri-apps/api/event';
 let listener: UnlistenFn;
+let searchListener: UnlistenFn;
 interface DirectoryData {
 	files: FileMetaData[];
 	number_of_files: number;
@@ -88,6 +89,33 @@ class DirectoryAPI {
 	 */
 	async getSize(): Promise<number> {
 		return await invoke('get_dir_size', { dir: this.dirName });
+	}
+
+	/**
+	 * Stop all searching progress
+	 * @returns {Promise<boolean>}
+	 */
+	async stopSearching(): Promise<boolean> {
+		const listenerExist = searchListener !== null && searchListener !== undefined;
+		searchListener?.();
+		await getCurrent().emit('unsearch');
+		return listenerExist;
+	}
+
+	/**
+	 * Search for a file/folder in a directory
+	 * @param {string} pattern - glob pattern
+	 * @param {FileMetaData[] => void} callback - progress callback
+	 * @returns {any}
+	 */
+	async search(pattern: string, callback: (partialFound: FileMetaData[]) => void): Promise<FileMetaData[]> {
+		searchListener = await getCurrent().listen('search_partial_result', (res) => {
+			if (searchListener !== null && searchListener !== undefined) callback(res.payload as FileMetaData[]);
+		});
+		const res = await invoke('search_in_dir', { dirPath: this.dirName, pattern });
+		await this.stopSearching();
+		searchListener = null;
+		return res as FileMetaData[];
 	}
 }
 
