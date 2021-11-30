@@ -104,6 +104,7 @@ Files available to preview for now:
 * Video files
 * Pdfs
 * Almost all programming language with syntax highlighting
+
 </details>
 
 :::

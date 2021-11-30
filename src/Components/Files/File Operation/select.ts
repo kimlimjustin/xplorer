@@ -1,9 +1,26 @@
 import { isElementInViewport } from '../../Functions/lazyLoadingImage';
 import { elementClassNameContains } from '../../Functions/elementClassNameContains';
 import Storage from '../../../Api/storage';
+import { UpdateInfo } from '../../Layout/infobar';
+import FileAPI from '../../../Api/files';
+import formatBytes from '../../Functions/filesize';
 
 let latestSelected: HTMLElement;
 let latestShiftSelected: HTMLElement;
+
+/**
+ * Call this function whenever user selected (a) file grid(s).
+ * @returns {Promise<void>}
+ */
+const ChangeSelectedEvent = async (): Promise<void> => {
+	const selectedFileGrid = document.querySelectorAll('.file-grid.selected');
+	if (!selectedFileGrid.length) UpdateInfo('selected-files', '');
+	else {
+		const selectedFilePaths = Array.from(selectedFileGrid).map((element) => unescape((element as HTMLElement).dataset.path));
+		const total_sizes = await new FileAPI(selectedFilePaths).calculateFilesSize();
+		UpdateInfo('selected-files', `${selectedFileGrid.length} file${selectedFileGrid.length > 1 ? 's' : ''} selected ${formatBytes(total_sizes)}`);
+	}
+};
 /**
  * Select a file grid...
  *
@@ -42,6 +59,7 @@ const Select = (element: HTMLElement, ctrl: boolean, shift: boolean): void => {
 		latestSelected = element;
 		latestShiftSelected = element;
 	}
+	ChangeSelectedEvent();
 	ensureElementInViewPort(element);
 };
 
@@ -62,6 +80,7 @@ const selectFirstFile = async (): Promise<void> => {
 	const hideHiddenFiles = (await Storage.get('preference'))?.hideHiddenFiles ?? true;
 	const firstFileElement = document.getElementById('workspace').querySelector(`.file${hideHiddenFiles ? ':not([data-hidden-file])' : ''}`);
 	firstFileElement.classList.add('selected');
+	ChangeSelectedEvent();
 	latestSelected = firstFileElement as HTMLElement;
 };
 
@@ -84,11 +103,10 @@ const SelectInit = (): void => {
 			latestSelected = null;
 			latestShiftSelected = null;
 		}
-		//Select(element, e.ctrlKey, e.shiftKey, elements);
-		// If target clicked is not a file grid, just ignore it
 		let fileTarget = e.target as HTMLElement;
 		while (!fileTarget.classList.contains('file')) fileTarget = fileTarget.parentNode as HTMLElement;
 		if (fileTarget.id === 'workspace') return;
+
 		Select(fileTarget, e.ctrlKey, e.shiftKey);
 	});
 
@@ -124,6 +142,7 @@ const SelectInit = (): void => {
  */
 const unselectAllSelected = (): void => {
 	document.querySelectorAll('.selected').forEach((element) => element.classList.remove('selected'));
+	ChangeSelectedEvent();
 	return;
 };
 
@@ -164,6 +183,7 @@ const arrowRightHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => 
 			latestSelected = nextSibling;
 			nextSibling.classList.add('selected');
 		}
+		ChangeSelectedEvent();
 	}
 };
 
@@ -195,6 +215,7 @@ const arrowLeftHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
 			latestSelected = previousSibling;
 			previousSibling.classList.add('selected');
 		}
+		ChangeSelectedEvent();
 	}
 };
 
@@ -231,6 +252,7 @@ const arrowDownHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
 			latestSelected = elementBelow;
 			elementBelow.classList.add('selected');
 		}
+		ChangeSelectedEvent();
 	}
 };
 
@@ -267,7 +289,8 @@ const arrowUpHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
 			latestSelected = elementAbove;
 			elementAbove.classList.add('selected');
 		}
+		ChangeSelectedEvent();
 	}
 };
 
-export { Select, SelectInit, getSelected };
+export { Select, SelectInit, getSelected, ChangeSelectedEvent };

@@ -1,9 +1,4 @@
-import {
-	copyFile,
-	renameFile,
-	removeDir,
-	removeFile,
-} from '@tauri-apps/api/fs';
+import { copyFile, renameFile, removeDir, removeFile } from '@tauri-apps/api/fs';
 import DirectoryAPI from './directory';
 /**
  * Invoke Rust command to operate files/dirs
@@ -30,6 +25,16 @@ class OperationAPI {
 		return await renameFile(this.src, this.dest);
 	}
 
+	async cut(): Promise<void> {
+		await this.copyFile();
+		await this.unlink();
+		return;
+	}
+
+	/**
+	 * Unlink files/dirs
+	 * @returns {Promise<void>}
+	 */
 	async unlink(): Promise<void> {
 		if (await new DirectoryAPI(this.src).isDir()) {
 			return await removeDir(this.src, { recursive: true });

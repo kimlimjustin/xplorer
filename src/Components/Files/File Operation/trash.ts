@@ -73,13 +73,15 @@ const RestoreFile = async (original_parent: string, basename: string): Promise<v
  * @returns {void}
  */
 const PermanentDelete = async (filePaths: string[]): Promise<void> => {
+	const confirm = await ConfirmDialog(
+		'Permanently delete file',
+		filePaths.length > 1
+			? "Are you sure to permanently delete these files/dirs? This can't be undone."
+			: "Are you sure to permanently delete this file/dir? This can't be undone.",
+		'Yes'
+	);
+	if (!confirm) return;
 	for (const filePath of filePaths) {
-		const confirm = await ConfirmDialog(
-			'Permanently delete file',
-			"Are you sure to permanently delete this file/dir? This can't be undone.",
-			'Yes'
-		);
-		if (!confirm) return;
 		await new OperationAPI(filePath).unlink();
 	}
 };

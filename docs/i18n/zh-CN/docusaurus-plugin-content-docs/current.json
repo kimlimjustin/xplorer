@@ -3,12 +3,12 @@
     "message": "下一步",
     "description": "The label for version current"
   },
-  "sidebar.tutorialSidebar.category.Installation": {
-    "message": "安装",
-    "description": "The label for category Installation in sidebar tutorialSidebar"
-  },
   "sidebar.tutorialSidebar.category.Guides": {
     "message": "指引",
     "description": "The label for category Guides in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Community": {
+    "message": "Community",
+    "description": "The label for category Community in sidebar tutorialSidebar"
   }
 }

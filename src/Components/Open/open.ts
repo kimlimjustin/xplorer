@@ -17,6 +17,8 @@ import { reload } from '../Layout/windowManager';
 import focusingPath from '../Functions/focusingPath';
 import { LOAD_IMAGE } from '../Functions/lazyLoadingImage';
 import PromptError from '../Prompt/error';
+import { UpdateInfo } from '../Layout/infobar';
+import { processSearch, stopSearchingProcess } from '../Files/File Operation/search';
 let platform: string;
 let directoryInfo: DirectoryAPI;
 /**
@@ -27,6 +29,7 @@ let directoryInfo: DirectoryAPI;
  * @returns {Promise<void>}
  */
 const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promise<void> => {
+	await stopSearchingProcess();
 	if (isLoading() && !forceOpen) {
 		InfoLog(`Something is still loading, refusing to open dir ${dir}`);
 		return;
@@ -42,6 +45,8 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promis
 	if (MAIN_ELEMENT.classList.contains('empty-dir-notification')) MAIN_ELEMENT.classList.remove('empty-dir-notification'); // Remove class if exist
 	if (dir === 'xplorer://Home') {
 		Home();
+		UpdateInfo('number-of-files', '');
+		OpenLog(dir);
 	} else if (dir === 'xplorer://Trash') {
 		if (!platform) platform = await OS();
 		if (platform === 'darwin') {
@@ -50,6 +55,7 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promis
 			stopLoading();
 		} else {
 			getTrashedFiles().then(async (trashedFiles) => {
+				UpdateInfo('number-of-files', `${trashedFiles.files.length} files`);
 				if (!trashedFiles.files.length) {
 					MAIN_ELEMENT.classList.add('empty-dir-notification');
 					MAIN_ELEMENT.innerText = 'This folder is empty.';
@@ -63,8 +69,36 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promis
 				}
 			});
 		}
+		OpenLog(dir);
 	} else if (dir === 'xplorer://Recent') {
 		Recent();
+		UpdateInfo('number-of-files', '');
+		OpenLog(dir);
+	} else if (dir.startsWith('Search')) {
+		// Search path pattern: Search: [[search-query]] inside [[search-path]]
+		const splitBySearchKeyword = dir.split('Search: ');
+		splitBySearchKeyword.shift();
+		const query = splitBySearchKeyword.join('Search: ');
+		const splitByInsideKeyword = query.split(' inside ');
+		if (splitByInsideKeyword.length === 2) {
+			const searchQuery = splitByInsideKeyword[0].slice(2, -2);
+			const searchPath = splitByInsideKeyword[1].slice(2, -2);
+			processSearch(searchQuery, searchPath);
+		} else {
+			for (let i = 0; i < splitByInsideKeyword.length; i++) {
+				if (splitByInsideKeyword[i]?.endsWith(']]') && splitByInsideKeyword[i + 1]?.startsWith('[[')) {
+					const searchQuery = splitByInsideKeyword
+						.slice(0, i + 1)
+						.join(' inside ')
+						.slice(2, -2);
+					const searchPath = splitByInsideKeyword
+						.slice(i + 1)
+						.join(' inside ')
+						.slice(2, -2);
+					processSearch(searchQuery, searchPath);
+				}
+			}
+		}
 	} else {
 		if (reveal) {
 			directoryInfo = new DirectoryAPI(getDirname(dir));
@@ -74,6 +108,7 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promis
 				return;
 			}
 			directoryInfo.getFiles().then(async (files) => {
+				UpdateInfo('number-of-files', `${files.number_of_files - files.skipped_files.length} files`);
 				if (!files.files.length) {
 					MAIN_ELEMENT.classList.add('empty-dir-notification');
 					MAIN_ELEMENT.innerText = 'This folder is empty.';
@@ -99,6 +134,7 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promis
 				return;
 			}
 			const files = await directoryInfo.getFiles();
+			UpdateInfo('number-of-files', `${files.number_of_files - files.skipped_files.length} files`);
 			if (!files.files.length) {
 				MAIN_ELEMENT.classList.add('empty-dir-notification');
 				MAIN_ELEMENT.innerText = 'This folder is empty.';
@@ -114,6 +150,7 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promis
 				return;
 			}
 		}
+		OpenLog(dir);
 	}
 };
 /**

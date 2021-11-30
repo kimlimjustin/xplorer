@@ -160,6 +160,10 @@ html[data-theme='dark'] .docusaurus-highlight-code-line {
     width: 100%;
 }
 
+.features--list > .col--4 > img {
+	object-fit: contain;
+}
+
 @media only screen and (max-width: 996px) {
     .built-with-web h1 {
         font-size: 2rem;
@@ -229,6 +233,10 @@ html[data-theme='dark'] .docusaurus-highlight-code-line {
     border-radius: 50%;
     display: inline-block;
     transition: background-color 0.6s ease;
+	
+	/* Removing button styling */
+	cursor: pointer;
+	border: none;
 }
 
 .slide-dot.active {

@@ -3,7 +3,7 @@
 </div>
 
 <p align="center"><span><b>Xplorer</b>, a customizable, modern and cross-platform File Explorer.</span></p>
-<h4 align="center"><span><a href="https://xplorer.vercel.app/community/support/">Supports</a></span> • <span><a href="https://github.com/kimlimjustin/xplorer/discussions">Discussions</a></span> • <span><a href="https://xplorer.vercel.app">Documentation</a></span> • <span><a href="https://discord.gg/kK7rwxPt">Discord</a></span></h4>
+<h4 align="center"><span><a href="https://xplorer.vercel.app/community/support/">Supports</a></span> • <span><a href="https://github.com/kimlimjustin/xplorer/discussions">Discussions</a></span> • <span><a href="https://xplorer.vercel.app">Documentation</a></span> • <span><a href="https://discord.gg/MHGtSWvfUS">Discord</a></span></h4>
 
 <div align="center">
 
@@ -27,12 +27,15 @@ View More Screenshots
 ![Demo](docs/static/img/Xplorer_dark+.png)
 ![Demo](docs/static/img/Xplorer_light.png)
 ![Demo](docs/static/img/Xplorer_light+.png)
+![Demo](docs/static/img/Xplorer_mac_light.png)
+![Demo](docs/static/img/Xplorer_mac_dark.png)
+![Demo](docs/static/img/Xplorer_linux.png)
 
 </details>
 
 Xplorer is a file explorer built from ground-up to be fully customizable. And even without any customization, it already looks modern!
 
-Xplorer is a cross-platform application built using [Tauri](https://tauri.studio), and you can run it on Windows, MacOS, or Linux without having much trouble. One of the key feature is Xplorer allows you to preview the files you have directly inside Xplorer. And it's not only limited to picture or document preview, but also video preview.
+Xplorer is a cross-platform application built using [Tauri](https://tauri.studio), and you can run it on Windows, MacOS, or Linux without having much trouble. One of the key features is Xplorer allows you to preview the files you have directly inside Xplorer. And it's not only limited to picture or document previews, but also video previews.
 
 To summarize, Xplorer's features contain:
 
@@ -41,48 +44,48 @@ To summarize, Xplorer's features contain:
 -   Cross-platform
 -   [File Preview](https://xplorer.vercel.app/docs/guides/operation/#preview-file), even for videos!
 -   Customizable
--   Supports multiple tab
+-   Supports multiple tabs
 -   Most importantly, Free and Open Source Software(FOSS), which means you can change components inside if you see fit
 
-Xplorer is currently under heavy development. You can give your suggestions and feedbacks in our [Discussions](https://github.com/kimlimjustin/xplorer/discussions/) page. If you feel comfortable in writing code using Typescript and Rust, we highly encourage you to [contribute to this project](https://xplorer.vercel.app/community/Contributing/).
+Xplorer is currently under heavy development. You can give your suggestions and feedback on our [Discussions](https://github.com/kimlimjustin/xplorer/discussions/) page. If you feel comfortable in writing code using Typescript and Rust, we highly encourage you to [contribute to this project](https://xplorer.vercel.app/community/Contributing/).
 
 ---
 
 ## Installation
 
-If you want to install Xplorer in your system, you can download the installer for your operating system [in the release page](https://github.com/kimlimjustin/xplorer/releases). Please note that the current version is not stable yet, and you may encounter various bugs.
+If you want to install Xplorer on your system, you can download the installer for your operating system [on the release page](https://github.com/kimlimjustin/xplorer/releases). Please note that the current version is not stable yet, and you may encounter various bugs.
 
 ---
 
 ## Bug Reporting
 
-If you find any bug, please report it by submitting an issue in our [issue page](https://github.com/kimlimjustin/xplorer/issues) with detailed explanation. Giving some screenshots would also be very helpful.
+If you find any bugs, please report it by submitting an issue on our [issue page](https://github.com/kimlimjustin/xplorer/issues) with a detailed explanation. Giving some screenshots would also be very helpful.
 
 ## Feature Request
 
-You can also submit a feature request in our [issue page](https://github.com/kimlimjustin/xplorer) or [discussions](https://github.com/kimlimjustin/xplorer/discussions) and we will try to implement it as soon as possible. If you want to contribute to this project, please [contribute to this project](https://xplorer.vercel.app/community/Contributing/).
+You can also submit a feature request on our [issue page](https://github.com/kimlimjustin/xplorer) or [discussions](https://github.com/kimlimjustin/xplorer/discussions) and we will try to implement it as soon as possible. If you want to contribute to this project, please [contribute to this project](https://xplorer.vercel.app/community/Contributing/).
 
 ---
 
 ## Common Problems
 
-**NB: For installation common problems, please visit this page [here](https://xplorer.vercel.app/docs/install/#common-problems)**
+**NB: For common installation problems, please visit this page [here](https://xplorer.vercel.app/docs/install/#common-problems)**
 
 <details>
 <summary>
-Opening folder like <code>Documents</code>, <code>Desktop</code>, <code>Downloads</code> makes Xplorer crash
+Opening folders like <code>Documents</code>, <code>Desktop</code>, <code>Downloads</code> makes Xplorer crash
 </summary>
 
 Try disabling the [`Extract exe file icon and make it as preview`](https://xplorer.vercel.app/docs/guides/setting/#extract-exe-file-icon-and-make-it-a-preview) option on `Preference` page on Settings.
 
-Also, please make sure that windows defender isn't blocking Xplorer from accessing your documents.
+Also, please make sure that Windows Defender isn't blocking Xplorer from accessing your documents.
 
 </details>
 <details>
 <summary>
 Xplorer crashes when opening a folder.
 </summary>
-Simply close and reopen Xplorer, Xplorer will fix itself, if it doesn't, please address an issue <a href="https://github.com/kimlimjustin/xplorer/issues">over here</a>
+Simply close and reopen Xplorer, Xplorer will fix itself. If it doesn't, please address an issue <a href="https://github.com/kimlimjustin/xplorer/issues">over here</a>
 
 </details>
 
