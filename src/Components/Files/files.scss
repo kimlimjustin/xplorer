@@ -134,6 +134,9 @@
 }
 
 .selected {
+	box-shadow: inset 0px 0px 0px 2px var(--selected-grid-border);
+	-webkit-box-shadow: inset 0px 0px 0px 2px var(--selected-grid-border);
+	-moz-box-shadow: inset 0px 0px 0px 2px var(--selected-grid-border);
 	background: var(--selected-grid-background) !important;
 	color: var(--selected-grid-color) !important;
 }
