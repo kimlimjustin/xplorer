@@ -123,6 +123,7 @@ const changeTheme = async (
 		changeElementTheme(document.querySelector('.sidebar-setting-btn'), 'settingButtonColor', 'color', theme);
 
 		document.querySelectorAll<HTMLElement>('.sidebar-hover-effect').forEach((obj) => {
+			obj.style.borderRadius = '6px';
 			changeElementTheme(obj, 'sidebarBackground', 'background', theme);
 			if (obj.getAttribute('being-listened') !== 'true') {
 				obj.setAttribute('being-listened', 'true');
