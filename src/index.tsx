@@ -18,12 +18,17 @@ import Search from './Components/Files/File Operation/search';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+
 import App from './App';
+import store from './Store';
 
 // Wait DOM Loaded to be loaded
 document.addEventListener('DOMContentLoaded', async () => {
 	ReactDOM.render(
-		<App />,
+		<Provider store={store}>
+			<App />
+		</Provider>,
 		document.getElementById("main")
 	);
 
