@@ -1,30 +1,64 @@
-import React from 'react';
+import React, { useState, FormEvent } from 'react';
+import SubHeader from './SubHeader';
 
-const Header = () => (
-  <div className="topbar" data-tauri-drag-region>
-    <div className="row">
-      <div className="tabs-manager">
-        <div className="tab tab-hover-effect" id="tab1">
-          <span id="tab-position">Home</span>
+export interface ITab {
+  name: string,
+  path: string
+}
+
+const Header = () => {
+  const [tabs, setTabs] = useState<ITab[]>([{ name: "Home", path: "xplorer://Home" }]);
+  const [activeTab, setActiveTab] = useState<ITab>(tabs[0]);
+
+  const createNewTab = () => {
+    console.log('new tab created');
+    const newTab = { name: "Home", path: "/" };
+    setTabs([...tabs, newTab]);
+    setActiveTab(newTab);
+  }
+
+  const handlePathChange = (tab: ITab) => (e: FormEvent) => {
+    e.preventDefault();
+    console.log(`changing active file path to "${tab.path}"`);
+  }
+
+  return (
+    <div id="header-container" className="topbar" data-tauri-drag-region>
+      <div className="row">
+        <div className="tabs-manager">
+          {tabs.map((tab) => (
+            <button
+              type="button"
+              onClick={() => setActiveTab(tab)}
+              className="tab tab-hover-effect"
+            >
+              <span id="tab-position">{tab.name}</span>
+            </button>
+          ))}
+
+          <button
+            type="button"
+            onClick={createNewTab}
+            className="create-new-tab"
+          >
+            +
+          </button>
         </div>
-        <span className="create-new-tab">+</span>
+
+        <div className="window-manager">
+          <span id="minimize" title="Minimize"></span>
+          <span id="maximize" title="Maximize"></span>
+          <span id="exit" title="Exit (Ctrl + w)"></span>
+        </div>
       </div>
-      <div className="window-manager">
-        <span id="minimize" title="Minimize"></span>
-        <span id="maximize" title="Maximize"></span>
-        <span id="exit" title="Exit (Ctrl + w)"></span>
-      </div>
+
+      <SubHeader
+        tab={activeTab}
+        setPath={(path: string) => setActiveTab({ ...activeTab, path })}
+        handlePathChange={handlePathChange}
+      />
     </div>
-    <div className="row">
-      <div className="navigator">
-        <span id="go-back" title="Go Back (Alt + Left Arrow)">&larr;</span>
-        <span id="go-forward" title="Go Forward (Alt + Right Arrow)">&rarr;</span>
-        <span id="go-parent-dir" title="Parent Directory (Alt + Up Arrow)">&uarr;</span>
-        <span id="refresh" title="Reload (f5)">&#10227;</span>
-      </div>
-      <input className="path-navigator" type="text" value="xplorer://Home" />
-    </div>
-  </div>
-);
+  );
+};
 
 export default Header;
