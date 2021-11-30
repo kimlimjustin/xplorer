@@ -6,6 +6,7 @@ mod drives;
 mod file_lib;
 mod files_api;
 mod storage;
+mod tests;
 use font_loader::system_fonts;
 use std::env;
 #[cfg(target_os = "windows")]

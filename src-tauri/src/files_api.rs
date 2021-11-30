@@ -292,7 +292,7 @@ pub fn create_dir_recursive(dir_path: String) -> bool {
 
 /// Create a file
 #[tauri::command]
-pub fn create_file(file_path: String) -> bool {
+pub async fn create_file(file_path: String) -> bool {
   fs::write(file_path, "").is_ok()
 }
 
