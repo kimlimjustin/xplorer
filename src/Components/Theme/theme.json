@@ -298,7 +298,7 @@
 		"pendriveColor": "#202124",
 		"pendriveTotalCapacityBackground": "#eee",
 		"pendriveUsedCapacityBackground": "#8989e2",
-		"gridBackground": "#f5f4f4",
+		"gridBackground": "transparent",
 		"gridColor": "#202124",
 		"selectedGridBorder": "#1e88e5",
 		"selectedGridBackground": "#dbdbdc",

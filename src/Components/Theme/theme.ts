@@ -325,7 +325,7 @@ const changeTheme = async (
 
 					obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle('gridHoverEffectBackground', currentTheme)} )`;
 					obj.onmouseleave = () => {
-						obj.style.background = null;
+						obj.style.background = getElementStyle('gridBackground', currentTheme);
 						obj.style.borderImage = null;
 					};
 				});
