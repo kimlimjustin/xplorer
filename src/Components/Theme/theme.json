@@ -7,21 +7,17 @@
 		"scrollbarTrackBackground": "rgb(139, 164, 248)",
 		"scrollbarThumbBackground": "rgb(116, 118, 231)",
 		"scrollbarThumbHoverBackground": "rgb(103, 105, 238)",
-
 		"sidebarBackground": "#14141b",
 		"mainBackground": "#1a1b26",
 		"topbarBackground": "#14141b",
-
 		"minimizeBackground": "#fbd914",
 		"minimizeColor": "#14141b",
 		"maximizeBackground": "#00ca4e",
 		"maximizeColor": "#14141b",
 		"exitBackground": "#ff4743",
 		"exitColor": "#14141b",
-
 		"loadingBar": "#14141b",
 		"loader": "#4fe0be",
-
 		"tabBackground": "#5f6b94",
 		"tabColor": "#a2b7ff",
 		"newTabBackground": "#5f6b94",
@@ -38,34 +34,28 @@
 		"settingButtonBackground": "inherit",
 		"settingButtonColor": "#98aec1",
 		"settingsActiveTab": "rgb(43, 46, 86)",
-
 		"tabsScrollbarTrack": "rgb(139, 164, 248)",
 		"tabsScrollbarThumb": "rgb(116, 118, 231)",
 		"tabsScrollbarThumbHover": "rgb(103, 105, 238)",
-
 		"favoriteBackground": "transparent",
 		"favoriteColor": "#4fe0be",
 		"pendriveBackground": "#transparent",
 		"pendriveColor": "#4fe0be",
 		"pendriveTotalCapacityBackground": "#eee",
 		"pendriveUsedCapacityBackground": "#8989e2",
-
 		"gridBackground": "transparent",
 		"gridColor": "inherit",
 		"selectedGridBorder": "none",
 		"selectedGridBackground": "#a2b7ff",
 		"selectedGridColor": "#202124",
-
 		"gridHoverEffectBackground": "rgba(79, 86, 109, 1),rgba(35, 35, 53, .5)",
 		"cardHoverEffectBackground": "rgba(140, 162, 210, 0.5),rgba(27, 30, 46 , 0.7)",
 		"sidebarHoverEffectBackground": "rgba(45, 45, 57, 0.7),rgba(20, 20, 27, 0.8)",
 		"tabHoverEffectBackground": "rgba(140, 162, 210, 0.5),rgba(27, 30, 46 , 0.7)",
-
 		"contextMenuBackground": "#1b1e2e",
 		"contextMenuColor": "inherit",
 		"contextMenuSubmenuBackground": "#1b1e2e",
 		"contextMenuSubmenuColor": "inherit",
-
 		"previewFileBackground": "#a2b7ff",
 		"previewFileColor": "#202124",
 		"previewExitButtonBackground": "rgb(198, 203, 228)",
@@ -77,7 +67,6 @@
 		"previewObjectTableRowEvenColor": "#1a1b26",
 		"previewObjectTableRowOddBackground": "inherit",
 		"previewObjectTableRowOddColor": "#a2b7ff",
-
 		"propertiesBackground": "#0a0f19",
 		"promptBackground": "#1b1e2e",
 		"promptInputBackground": "#292c40",
@@ -103,21 +92,17 @@
 		"scrollbarTrackBackground": "rgb(128, 128, 128)",
 		"scrollbarThumbBackground": "rgb(77, 77, 77)",
 		"scrollbarThumbHoverBackground": "rgb(59, 59, 59)",
-
 		"sidebarBackground": "#1b1e2e",
 		"mainBackground": "#24283b",
 		"topbarBackground": "#1b1e2e",
-
 		"minimizeBackground": "#fbd914",
 		"minimizeColor": "#14141b",
 		"maximizeBackground": "#00ca4e",
 		"maximizeColor": "#14141b",
 		"exitBackground": "#ff4743",
 		"exitColor": "#14141b",
-
 		"loadingBar": "#1b1e2e",
 		"loader": "#87c1ce",
-
 		"tabBackground": "#39496a",
 		"tabColor": "#87c1ce",
 		"newTabBackground": "#39496a",
@@ -134,34 +119,28 @@
 		"settingButtonBackground": "inherit",
 		"settingButtonColor": "#98aec1",
 		"settingsActiveTab": "rgba(140, 162, 210 , 0.25)",
-
 		"tabsScrollbarTrack": "rgb(128, 128, 128)",
 		"tabsScrollbarThumb": "rgb(77, 77, 77)",
 		"tabsScrollbarThumbHover": "rgb(59, 59, 59)",
-
 		"favoriteBackground": "transparent",
 		"favoriteColor": "#87c1ce",
 		"pendriveBackground": "transparent",
 		"pendriveColor": "#87c1ce",
 		"pendriveTotalCapacityBackground": "#eee",
 		"pendriveUsedCapacityBackground": "#8989e2",
-
 		"gridBackground": "transparent",
 		"gridColor": "#87c1ce",
-		"selectedGridBorder": "2px solid #1e88e5",
+		"selectedGridBorder": "#1e88e5",
 		"selectedGridBackground": "#2893a0",
 		"selectedGridColor": "inherit",
-
 		"gridHoverEffectBackground": "rgba(140, 162, 210 , 0.4),#24283b",
 		"cardHoverEffectBackground": "rgba(140, 162, 210 , 0.7),rgba(140, 162, 210, 0.2)",
 		"sidebarHoverEffectBackground": "rgba(140, 162, 210, 0.2),rgba(27, 30, 46 , 0.7)",
 		"tabHoverEffectBackground": "rgba(140, 162, 210, 0.2),rgba(27, 30, 46 , 0.7)",
-
 		"contextMenuBackground": "#1b1e2e",
 		"contextMenuColor": "inherit",
 		"contextMenuSubmenuBackground": "#1b1e2e",
 		"contextMenuSubmenuColor": "inherit",
-
 		"previewFileBackground": "#39496a",
 		"previewFileColor": "inherit",
 		"previewExitButtonBackground": "#3e537d",
@@ -173,7 +152,6 @@
 		"previewObjectTableRowEvenColor": "inherit",
 		"previewObjectTableRowOddBackground": "inherit",
 		"previewObjectTableRowOddColor": "inherit",
-
 		"propertiesBackground": "#39496a",
 		"promptBackground": "#1b1e2e",
 		"promptInputBackground": "#292c40",
@@ -199,21 +177,17 @@
 		"scrollbarTrackBackground": "rgb(185, 185, 185)",
 		"scrollbarThumbBackground": "rgb(163, 163, 163)",
 		"scrollbarThumbHoverBackground": "#888",
-
 		"sidebarBackground": "#d5d7e1",
 		"mainBackground": "#e3e4eb",
 		"topbarBackground": "#d0d3dd",
-
 		"minimizeBackground": "#e9cc21",
 		"minimizeColor": "#14141b",
 		"maximizeBackground": "#00ca4e",
 		"maximizeColor": "#14141b",
 		"exitBackground": "#ff4743",
 		"exitColor": "#14141b",
-
 		"loadingBar": "#cbccd1",
 		"loader": "#6d94a2",
-
 		"tabBackground": "#e0e0e0",
 		"tabColor": "#202124 ",
 		"newTabBackground": "#d5d6db",
@@ -230,34 +204,28 @@
 		"settingButtonBackground": "inherit",
 		"settingButtonColor": "inherit",
 		"settingsActiveTab": "rgb(220, 220, 220)",
-
 		"tabsScrollbarTrack": "rgb(185, 185, 185)",
 		"tabsScrollbarThumb": "rgb(163, 163, 163)",
 		"tabsScrollbarThumbHover": "#888",
-
 		"favoriteBackground": "transparent",
 		"favoriteColor": "#202124",
 		"pendriveBackground": "transparent",
 		"pendriveColor": "#202124",
 		"pendriveTotalCapacityBackground": "#eee",
 		"pendriveUsedCapacityBackground": "#8989e2",
-
 		"gridBackground": "#e0e0e0",
 		"gridColor": "#202124",
-		"selectedGridBorder": "2px solid #1e88e5",
-		"selectedGridBackground": "#e0e0e0",
+		"selectedGridBorder": "#1e88e5",
+		"selectedGridBackground": "#cbcdd6",
 		"selectedGridColor": "#202124",
-
-		"gridHoverEffectBackground": "rgba(187,188,193,255),#c5ccd2",
+		"gridHoverEffectBackground": "rgba(213, 215, 225),#d5d7e1",
 		"cardHoverEffectBackground": "rgba(187,188,193,255),rgba(224,224,224,255)",
 		"sidebarHoverEffectBackground": "rgba(224,224,224,255),rgba(203,204,209,255)",
 		"tabHoverEffectBackground": "rgba(224,224,224,255),rgba(203,204,209,255)",
-
 		"contextMenuBackground": "#cbccd1",
 		"contextMenuColor": "inherit",
 		"contextMenuSubmenuBackground": "#cbccd1",
 		"contextMenuSubmenuColor": "inherit",
-
 		"previewFileBackground": "#cbccd1",
 		"previewFileColor": "#202124",
 		"previewExitButtonBackground": "rgb(226, 227, 232)",
@@ -269,7 +237,6 @@
 		"previewObjectTableRowEvenColor": "inherit",
 		"previewObjectTableRowOddBackground": "inherit",
 		"previewObjectTableRowOddColor": "inherit",
-
 		"propertiesBackground": "#e0e0e0",
 		"promptBackground": "#f7f7f7",
 		"promptInputBackground": "#ebe9e9",
@@ -295,21 +262,17 @@
 		"scrollbarTrackBackground": "rgb(229, 229, 233)",
 		"scrollbarThumbBackground": "rgb(195, 195, 201)",
 		"scrollbarThumbHoverBackground": "rgb(187, 187, 187)",
-
 		"sidebarBackground": "#FAFAFA",
 		"mainBackground": "#ffffff",
 		"topbarBackground": "#FAFAFA",
-
 		"minimizeBackground": "#fbd914",
 		"minimizeColor": "#14141b",
 		"maximizeBackground": "#00ca4e",
 		"maximizeColor": "#14141b",
 		"exitBackground": "#ff4743",
 		"exitColor": "#14141b",
-
 		"loadingBar": "#eeeeee",
 		"loader": "#8c9a97",
-
 		"tabBackground": "#dfdfdf",
 		"tabColor": "#202124",
 		"newTabBackground": "#dfdfdf",
@@ -326,34 +289,28 @@
 		"settingButtonBackground": "inherit",
 		"settingButtonColor": "inherit",
 		"settingsActiveTab": "rgb(220, 220, 220)",
-
 		"tabsScrollbarTrack": "rgb(229, 229, 233)",
 		"tabsScrollbarThumb": "rgb(195, 195, 201)",
 		"tabsScrollbarThumbHover": "rgb(187, 187, 187)",
-
 		"favoriteBackground": "transparent",
 		"favoriteColor": "#202124",
 		"pendriveBackground": "transparent",
 		"pendriveColor": "#202124",
 		"pendriveTotalCapacityBackground": "#eee",
 		"pendriveUsedCapacityBackground": "#8989e2",
-
 		"gridBackground": "#f5f4f4",
 		"gridColor": "#202124",
-		"selectedGridBorder": "2px solid #1e88e5",
+		"selectedGridBorder": "#1e88e5",
 		"selectedGridBackground": "#dbdbdc",
 		"selectedGridColor": "#202124",
-
 		"gridHoverEffectBackground": "rgba(234,234,234,255),#c5ccd2",
 		"cardHoverEffectBackground": "rgba(234,234,234,255),rgba(215,215,216,255)",
 		"sidebarHoverEffectBackground": "rgba(234,234,234,255),rgba(203,204,209,255)",
 		"tabHoverEffectBackground": "rgba(234,234,234,255),rgba(203,204,209,255)",
-
 		"contextMenuBackground": "#d1d1d8",
 		"contextMenuColor": "inherit",
 		"contextMenuSubmenuBackground": "#d1d1d8",
 		"contextMenuSubmenuColor": "inherit",
-
 		"previewFileBackground": "#eeeeee",
 		"previewFileColor": "#202124",
 		"previewExitButtonBackground": "#dedede",
@@ -365,7 +322,6 @@
 		"previewObjectTableRowEvenColor": "inherit",
 		"previewObjectTableRowOddBackground": "inherit",
 		"previewObjectTableRowOddColor": "inherit",
-
 		"propertiesBackground": "#e0e0e0",
 		"promptBackground": "#f7f7f7",
 		"promptInputBackground": "#ebe9e9",

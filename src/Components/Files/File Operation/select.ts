@@ -103,15 +103,11 @@ const SelectInit = (): void => {
 			latestSelected = null;
 			latestShiftSelected = null;
 		}
-		//Select(element, e.ctrlKey, e.shiftKey, elements);
-		// If target clicked is not a file grid, just ignore it
-		if (!(e.target as HTMLElement).className.startsWith('file')) return;
-		else {
-			let fileTarget = e.target as HTMLElement;
-			while (!fileTarget.classList.contains('file')) fileTarget = fileTarget.parentNode as HTMLElement;
-			if (fileTarget.id === 'workspace') return;
-			Select(fileTarget, e.ctrlKey, e.shiftKey);
-		}
+		let fileTarget = e.target as HTMLElement;
+		while (!fileTarget.classList.contains('file')) fileTarget = fileTarget.parentNode as HTMLElement;
+		if (fileTarget.id === 'workspace') return;
+
+		Select(fileTarget, e.ctrlKey, e.shiftKey);
 	});
 
 	const selectShortcut = async (e: KeyboardEvent) => {
