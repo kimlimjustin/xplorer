@@ -96,10 +96,10 @@ const changeTheme = async (
 			document.documentElement.style.fontFamily = appearance.fontFamily;
 		} else changeElementTheme(document.body, 'fontFamily', 'fontFamily', theme);
 		if (appearance?.transparentSidebar ?? true)
-			document.body.style.setProperty('--sidebar-transparency', appearance?.windowTransparency ?? '0.9');
+			document.body.style.setProperty('--sidebar-transparency', appearance?.windowTransparency ?? '0.8');
 		if (appearance?.transparentWorkspace ?? false)
-			document.body.style.setProperty('--workspace-transparency', appearance?.windowTransparency ?? '0.9');
-		if (appearance?.transparentTopbar ?? false) document.body.style.setProperty('--topbar-transparency', appearance?.windowTransparency ?? '0.9');
+			document.body.style.setProperty('--workspace-transparency', appearance?.windowTransparency ?? '0.8');
+		if (appearance?.transparentTopbar ?? false) document.body.style.setProperty('--topbar-transparency', appearance?.windowTransparency ?? '0.8');
 
 		document.body.style.setProperty(
 			'--scrollbar-track',

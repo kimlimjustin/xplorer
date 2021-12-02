@@ -11,4 +11,8 @@ const getAvailableFonts = async (): Promise<string[]> => {
 	return await invoke('get_available_fonts');
 };
 
-export { isVSCodeInstalled, getAvailableFonts };
+const changeTransparentEffect = async (transparentEffect: 'blur' | 'acrylic' | 'none'): Promise<void> => {
+	return await invoke('change_transparent_effect', { effect: transparentEffect });
+};
+
+export { isVSCodeInstalled, getAvailableFonts, changeTransparentEffect };

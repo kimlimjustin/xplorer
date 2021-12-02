@@ -2,7 +2,7 @@ use std::fs;
 use std::path::Path;
 use tauri::api::path::local_data_dir;
 
-#[derive(serde::Serialize)]
+#[derive(serde::Serialize, Debug)]
 pub struct StorageData {
   pub data: serde_json::Value,
   pub status: bool,
