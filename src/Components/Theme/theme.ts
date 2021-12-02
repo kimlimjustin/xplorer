@@ -97,10 +97,10 @@ const changeTheme = async (
 			document.documentElement.style.fontFamily = appearance.fontFamily;
 		} else changeElementTheme(document.body, 'fontFamily', 'fontFamily', theme);
 		if (appearance?.transparentSidebar ?? true)
-			document.body.style.setProperty('--sidebar-transparency', appearance?.windowTransparency ?? '0.9');
+			document.body.style.setProperty('--sidebar-transparency', appearance?.windowTransparency ?? '0.8');
 		if (appearance?.transparentWorkspace ?? false)
-			document.body.style.setProperty('--workspace-transparency', appearance?.windowTransparency ?? '0.9');
-		if (appearance?.transparentTopbar ?? false) document.body.style.setProperty('--topbar-transparency', appearance?.windowTransparency ?? '0.9');
+			document.body.style.setProperty('--workspace-transparency', appearance?.windowTransparency ?? '0.8');
+		if (appearance?.transparentTopbar ?? false) document.body.style.setProperty('--topbar-transparency', appearance?.windowTransparency ?? '0.8');
 
 		document.body.style.setProperty(
 			'--scrollbar-track',
@@ -136,6 +136,7 @@ const changeTheme = async (
 		changeElementTheme(document.querySelector('.sidebar-setting-btn'), 'settingButtonColor', 'color', theme);
 
 		document.querySelectorAll<HTMLElement>('.sidebar-hover-effect').forEach((obj) => {
+			obj.style.borderRadius = '6px';
 			changeElementTheme(obj, 'sidebarBackground', 'background', theme);
 			if (obj.getAttribute('being-listened') !== 'true') {
 				obj.setAttribute('being-listened', 'true');
@@ -317,7 +318,7 @@ const changeTheme = async (
 	}
 	if (category === '*' || category === 'grid') {
 		document.querySelectorAll<HTMLElement>('.grid-hover-effect').forEach((obj) => {
-			changeElementTheme(obj, 'gridBackground', 'background', theme);
+			changeElementTheme(obj, 'gridBackground', 'background', null);
 			if (obj.getAttribute('being-listened') !== 'true') {
 				obj.setAttribute('being-listened', 'true');
 				obj.addEventListener('mousemove', (e) => {

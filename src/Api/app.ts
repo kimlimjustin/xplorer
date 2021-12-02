@@ -1,6 +1,5 @@
 import { invoke } from '@tauri-apps/api';
 import { getCurrent } from '@tauri-apps/api/window';
-import { convertToHtml } from 'mammoth';
 let _vscodeInstalled: boolean | undefined;
 const isVSCodeInstalled = async (): Promise<boolean> => {
 	if (_vscodeInstalled === undefined) {
@@ -23,4 +22,8 @@ const listenStylesheetChange = async (cb: (stylesheet: JSON) => void): Promise<v
 	}
 };
 
-export { isVSCodeInstalled, getAvailableFonts, listenStylesheetChange };
+const changeTransparentEffect = async (transparentEffect: 'blur' | 'acrylic' | 'none'): Promise<void> => {
+	return await invoke('change_transparent_effect', { effect: transparentEffect });
+};
+
+export { isVSCodeInstalled, getAvailableFonts, changeTransparentEffect, listenStylesheetChange };
