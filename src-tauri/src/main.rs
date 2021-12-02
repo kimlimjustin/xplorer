@@ -13,6 +13,8 @@ use std::env;
 use std::os::windows::process::CommandExt;
 use std::path::Path;
 use std::process::Command;
+use tauri::Manager;
+use tauri_plugin_vibrancy::Vibrancy;
 
 extern crate path_absolutize;
 use path_absolutize::*;
@@ -84,6 +86,14 @@ fn get_available_fonts() -> Result<Vec<String>, String> {
   let fonts = system_fonts::query_all();
   Ok(fonts)
 }
+#[tauri::command]
+fn change_transparent_effect(effect: String, window: tauri::Window) {
+  if effect == "blur".to_string() {
+    window.set_blur();
+  } else if effect == "acrylic".to_string() {
+    window.set_acrylic();
+  }
+}
 
 fn main() {
   tauri::Builder::default()
@@ -115,8 +125,24 @@ fn main() {
       storage::delete_storage_data,
       get_cli_args,
       check_vscode_installed,
-      get_available_fonts
+      get_available_fonts,
+      change_transparent_effect
     ])
+    .setup(|app| {
+      let window = app.get_window("main").unwrap();
+      let preference = storage::read_data("preference".to_string()).unwrap();
+      println!("{:?}", preference);
+      let transparent_effect = match preference.status {
+        true => preference.data["transparentEffect"].to_string(),
+        false => "blur".to_string(),
+      };
+      if transparent_effect == "blur".to_string() || transparent_effect == "null".to_string() {
+        window.set_blur();
+      } else if transparent_effect == "acrylic".to_string() {
+        window.set_acrylic();
+      }
+      Ok(())
+    })
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }
