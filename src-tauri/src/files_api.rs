@@ -11,7 +11,6 @@ use glob::{glob_with, MatchOptions};
 #[cfg(not(target_os = "macos"))]
 use normpath::PathExt;
 use notify::{raw_watcher, RawEvent, RecursiveMode, Watcher};
-use serde_json::Value;
 use std::sync::mpsc::channel;
 use tauri::api::path::local_data_dir;
 use tauri::Manager;
@@ -230,11 +229,12 @@ pub async fn read_directory(dir: &Path) -> Result<FolderInformation, String> {
     Ok(result) => result,
     Err(_) => return Err("Error reading preference".into()),
   };
-  let preference: Result<Value, serde_json::Error> = serde_json::from_str(&preference.data);
-  let hide_system_files = match preference {
-    Ok(result) => result["hideSystemFiles"].as_bool().unwrap_or(false),
-    Err(_) => true,
+  let preference = if preference.status {
+    preference.data
+  } else {
+    return Err("Error reading preference".into());
   };
+  let hide_system_files = preference["hideSystemFiles"].as_bool().unwrap_or(true);
   let paths = fs::read_dir(dir).map_err(|err| err.to_string())?;
   let mut number_of_files: u16 = 0;
   let mut files = Vec::new();
