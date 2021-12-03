@@ -55,7 +55,8 @@ const displayFiles = async (
 		files = files.sort((a, b) => -(Number(a.is_dir) - Number(b.is_dir)));
 	}
 
-	const imageAsThumbnail = (appearance.imageAsThumbnail ?? 'smalldir') === 'smalldir' ? files.length < 100 : appearance.imageAsThumbnail === 'yes';
+	const imageAsThumbnail =
+		(appearance?.imageAsThumbnail ?? 'smalldir') === 'smalldir' ? files.length < 100 : appearance?.imageAsThumbnail === 'yes';
 	for (const file of files) {
 		const fileType = file.file_type;
 		const preview = await fileThumbnail(file.file_path, file.is_dir ? 'folder' : 'file', true, imageAsThumbnail);

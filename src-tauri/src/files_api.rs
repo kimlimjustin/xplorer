@@ -229,12 +229,15 @@ pub async fn read_directory(dir: &Path) -> Result<FolderInformation, String> {
     Ok(result) => result,
     Err(_) => return Err("Error reading preference".into()),
   };
-  let preference = if preference.status {
+  let preference = if preference.status || preference.data == serde_json::Value::Null {
     preference.data
   } else {
     return Err("Error reading preference".into());
   };
-  let hide_system_files = preference["hideSystemFiles"].as_bool().unwrap_or(true);
+  let hide_system_files = match preference {
+    serde_json::Value::Null => true,
+    _ => preference["hideSystemFiles"].as_bool().unwrap_or(true),
+  };
   let paths = fs::read_dir(dir).map_err(|err| err.to_string())?;
   let mut number_of_files: u16 = 0;
   let mut files = Vec::new();

@@ -76,7 +76,7 @@ const Preference = async (): Promise<void> => {
 	</select>`;
 	settingsMain.innerHTML = preferencePage;
 	settingsMain.querySelector(`[name="language"]`).addEventListener('change', async (event: Event & { target: HTMLInputElement }) => {
-		const preference = await Storage.get('preference');
+		const preference = (await Storage.get('preference')) ?? {};
 		preference.language = event.target.value;
 		Storage.set('preference', preference);
 		reload();
@@ -85,30 +85,30 @@ const Preference = async (): Promise<void> => {
 		Preference();
 	});
 	settingsMain.querySelector(`[name="hide-hidden-files"]`).addEventListener('change', async (event: Event & { target: HTMLInputElement }) => {
-		const preference = await Storage.get('preference');
+		const preference = (await Storage.get('preference')) ?? {};
 		preference.hideHiddenFiles = event.target.checked;
 		Storage.set('preference', preference);
 		document.getElementById('workspace').dataset.hideHiddenFiles = String(event.target.checked);
 	});
 	settingsMain.querySelector(`[name="hide-system-files"]`).addEventListener('change', async (event: Event & { target: HTMLInputElement }) => {
-		const preference = await Storage.get('preference');
+		const preference = (await Storage.get('preference')) ?? {};
 		preference.hideSystemFiles = event.target.checked;
 		Storage.set('preference', preference);
 		reload();
 	});
 	settingsMain.querySelector(`[name="dirAlongsideFiles"]`).addEventListener('change', async (event: Event & { target: HTMLInputElement }) => {
-		const preference = await Storage.get('preference');
+		const preference = (await Storage.get('preference')) ?? {};
 		preference.dirAlongsideFiles = event.target.checked;
 		Storage.set('preference', preference);
 		reload();
 	});
 	settingsMain.querySelector(`[name="detect-drive-change"]`).addEventListener('change', async (event: Event & { target: HTMLInputElement }) => {
-		const preference = await Storage.get('preference');
+		const preference = (await Storage.get('preference')) ?? {};
 		preference.detectDriveChange = event.target.checked;
 		Storage.set('preference', preference);
 	});
 	settingsMain.querySelector(`[name="on_startup"]`).addEventListener('change', async (event: Event & { target: HTMLInputElement }) => {
-		const preference = await Storage.get('preference');
+		const preference = (await Storage.get('preference')) ?? {};
 		preference.on_startup = event.target.value;
 		Storage.set('preference', preference);
 		reload();
