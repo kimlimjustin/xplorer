@@ -119,9 +119,10 @@ const ContextMenu = (): void => {
 		let coorY = e.pageY;
 
 		let target = e.target as HTMLElement;
-		while (!target.dataset.path) {
+		while (target.dataset && !target.dataset.path) {
 			target = target.parentNode as HTMLElement;
 		}
+		if (!target?.dataset?.path) return;
 
 		const filePath = unescape(target.dataset.path);
 

@@ -104,8 +104,8 @@ const SelectInit = (): void => {
 			latestShiftSelected = null;
 		}
 		let fileTarget = e.target as HTMLElement;
-		while (!fileTarget.classList.contains('file')) fileTarget = fileTarget.parentNode as HTMLElement;
-		if (fileTarget.id === 'workspace') return;
+		while (fileTarget?.classList && !fileTarget.classList.contains('file')) fileTarget = fileTarget.parentNode as HTMLElement;
+		if (fileTarget.id === 'workspace' || !fileTarget?.classList?.contains('file')) return;
 
 		Select(fileTarget, e.ctrlKey, e.shiftKey);
 	});
