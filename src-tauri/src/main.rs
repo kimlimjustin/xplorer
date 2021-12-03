@@ -131,7 +131,6 @@ fn main() {
     .setup(|app| {
       let window = app.get_window("main").unwrap();
       let preference = storage::read_data("preference".to_string()).unwrap();
-      println!("{:?}", preference);
       let transparent_effect = match preference.status {
         true => preference.data["transparentEffect"].to_string(),
         false => "blur".to_string(),

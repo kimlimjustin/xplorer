@@ -86,7 +86,7 @@ const fileThumbnail = async (filePath: string, category = 'folder', HTMLFormat =
 	} else if (VIDEO_TYPES.indexOf(ext) !== -1) {
 		const assetSrc = new FileAPI(filePath).readAsset();
 		return HTMLFormat ? await videoPreview(assetSrc) : assetSrc;
-	} else if ((appearance.extractExeIcon ?? false) && (ext === 'exe' || ext === 'msi')) {
+	} else if ((appearance?.extractExeIcon ?? false) && (ext === 'exe' || ext === 'msi')) {
 		return imageThumbnail(await new FileAPI(filePath).extractIcon(), HTMLFormat, true);
 	}
 
