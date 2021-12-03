@@ -112,6 +112,8 @@ const ContextMenu = (): void => {
 			element.parentNode.removeChild(element);
 		});
 		contextMenu.innerHTML = '';
+		contextMenu.style.height = 'initial';
+		contextMenu.style.overflowY = 'initial';
 		contextMenuSubmenus.innerHTML = '';
 		let coorX = e.pageX;
 		let coorY = e.pageY;
@@ -140,6 +142,12 @@ const ContextMenu = (): void => {
 			coorY -= contextMenu.offsetHeight;
 		}
 		if (coorX + contextMenu.offsetWidth > window.innerWidth) coorX = window.innerWidth - contextMenu.offsetWidth;
+		if (contextMenu.offsetHeight + coorY > window.innerHeight) {
+			contextMenu.style.height = `${
+				window.innerHeight - coorY - parseInt(window.getComputedStyle(contextMenu).getPropertyValue('padding-top')) * 2
+			}px`;
+			contextMenu.style.overflowY = 'auto';
+		}
 
 		contextMenu.style.left = coorX + 'px';
 		contextMenu.style.top = coorY + 'px';
@@ -177,10 +185,20 @@ const ContextMenu = (): void => {
 			const menuCoordinate = (e.target as HTMLElement).getBoundingClientRect();
 
 			submenuElement.style.display = 'block';
+			submenuElement.style.height = 'initial';
+			submenuElement.style.overflowY = 'initial';
 
 			let submenuCoorX = contextMenu.offsetLeft + contextMenu.offsetWidth;
 			if (submenuCoorX + submenuElement.offsetWidth * 0.5 >= window.innerWidth) {
 				submenuCoorX = contextMenu.offsetLeft - submenuElement.offsetWidth;
+			}
+			if (submenuElement.offsetHeight + menuCoordinate.top > window.innerHeight) {
+				submenuElement.style.height = `${
+					window.innerHeight -
+					submenuElement.offsetHeight -
+					parseInt(window.getComputedStyle(submenuElement).getPropertyValue('padding-top')) * 2
+				}px`;
+				submenuElement.style.overflowY = 'auto';
 			}
 			submenuElement.style.left = submenuCoorX + 'px';
 			submenuElement.style.top = menuCoordinate.top + 'px';
