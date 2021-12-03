@@ -1,5 +1,6 @@
 .contextmenu,
 .contextmenu-submenu {
+	direction: rtl;
 	position: fixed;
 	padding: 10px;
 	border-radius: 2px;
@@ -9,6 +10,7 @@
 	-webkit-box-orient: vertical;
 
 	.contextmenu-item {
+		direction: ltr;
 		padding: 0.5rem;
 		display: block;
 		cursor: pointer;
