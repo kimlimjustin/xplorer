@@ -2,7 +2,6 @@
 mod tests {
   use crate::files_api::*;
   extern crate path_absolutize;
-  use path_absolutize::*;
   #[test]
   fn test_get_basename() {
     assert_eq!(get_basename("/home/user/file.txt".to_string()), "file.txt");
@@ -78,46 +77,31 @@ mod tests {
       false
     );
   }
-  #[test]
-  fn test_create_dir_recursive() {
+  #[tokio::test]
+  async fn test_file_operation() {
     let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
       .join("../temp/a/b")
       .to_str()
       .unwrap()
       .to_string();
-    create_dir_recursive(dir.clone());
+    create_dir_recursive(dir.clone()).await;
     assert_eq!(is_dir(std::path::Path::new(dir.as_str())).unwrap(), true);
     assert_eq!(file_exist(dir.clone()), true);
-  }
-  #[tokio::test]
-  async fn test_create_file() {
-    let file = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-      .join("../temp/a/b/c.txt")
-      .absolutize()
-      .unwrap()
-      .into_owned()
-      .into_os_string()
-      .into_string()
-      .unwrap();
-    create_file(file.clone()).await;
-    assert_eq!(file_exist(file.clone()), true);
-    assert_eq!(is_dir(std::path::Path::new(file.as_str())).unwrap(), false);
-  }
 
-  #[test]
-  fn test_delete_file() {
     let file = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
       .join("../temp/a/b/c.txt")
       .to_str()
       .unwrap()
       .to_string();
+    create_file(file.clone()).await;
+    assert_eq!(file_exist(file.clone()), true);
+    assert_eq!(is_dir(std::path::Path::new(file.as_str())).unwrap(), false);
+
     let mut files = Vec::new();
     files.push(file.clone());
-    delete_file(files);
+    delete_file(files).await;
     assert_eq!(file_exist(file.clone()), false);
-  }
-  #[test]
-  fn test_delete_dir() {
+
     let dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
       .join("../temp")
       .to_str()
@@ -125,7 +109,7 @@ mod tests {
       .to_string();
     let mut dirs = Vec::new();
     dirs.push(dir.clone());
-    delete_file(dirs);
+    delete_file(dirs.clone()).await;
     assert_eq!(file_exist(dir.clone()), false);
   }
 }

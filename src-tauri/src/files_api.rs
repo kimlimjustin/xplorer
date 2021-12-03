@@ -229,15 +229,12 @@ pub async fn read_directory(dir: &Path) -> Result<FolderInformation, String> {
     Ok(result) => result,
     Err(_) => return Err("Error reading preference".into()),
   };
-  let preference = if preference.status || preference.data == serde_json::Value::Null {
+  let preference = if preference.status {
     preference.data
   } else {
     return Err("Error reading preference".into());
   };
-  let hide_system_files = match preference {
-    serde_json::Value::Null => true,
-    _ => preference["hideSystemFiles"].as_bool().unwrap_or(true),
-  };
+  let hide_system_files = preference["hideSystemFiles"].as_bool().unwrap_or(true);
   let paths = fs::read_dir(dir).map_err(|err| err.to_string())?;
   let mut number_of_files: u16 = 0;
   let mut files = Vec::new();
@@ -289,13 +286,20 @@ pub fn file_exist(file_path: String) -> bool {
 
 /// Create directory recursively
 #[tauri::command]
-pub fn create_dir_recursive(dir_path: String) -> bool {
+pub async fn create_dir_recursive(dir_path: String) -> bool {
   fs::create_dir_all(dir_path).is_ok()
 }
 
 /// Create a file
 #[tauri::command]
 pub async fn create_file(file_path: String) -> bool {
+  let parent_dir = Path::new(&file_path)
+    .parent()
+    .unwrap()
+    .to_str()
+    .unwrap()
+    .to_string();
+  create_dir_recursive(parent_dir).await;
   fs::write(file_path, "").is_ok()
 }
 
@@ -397,7 +401,7 @@ pub async fn get_trashed_items() -> Result<TrashInformation, String> {
 
 /// Delete a file or directory
 #[tauri::command]
-pub fn delete_file(paths: Vec<String>) -> bool {
+pub async fn delete_file(paths: Vec<String>) -> bool {
   trash::delete_all(paths).is_ok()
 }
 
