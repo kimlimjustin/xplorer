@@ -152,6 +152,7 @@ const ContextMenu = (): void => {
 
 		contextMenu.style.left = coorX + 'px';
 		contextMenu.style.top = coorY + 'px';
+		contextMenu.scrollTop = 0;
 
 		updateTheme('contextmenu');
 		document.addEventListener('click', exitContextMenu);
@@ -203,6 +204,7 @@ const ContextMenu = (): void => {
 			}
 			submenuElement.style.left = submenuCoorX + 'px';
 			submenuElement.style.top = menuCoordinate.top + 'px';
+			submenuElement.scrollTop = 0;
 		}
 	});
 
