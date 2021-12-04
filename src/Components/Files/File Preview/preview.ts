@@ -88,7 +88,7 @@ const Preview = async (filePath: string): Promise<void> => {
 			).readAsset()}"></video></div>`
 		);
 	} else if (PLAIN_TEXT.indexOf(ext) !== -1) {
-		changePreview(`<div class='preview-object' data-type="txt">${new FileAPI(filePath).readFile()}</div>`);
+		changePreview(`<div class='preview-object' data-type="txt">${await new FileAPI(filePath).readFile()}</div>`);
 	} else if (MARKDOWN_TYPES.indexOf(ext) !== -1) {
 		const html = marked(await new FileAPI(filePath).readFile());
 		changePreview(`<div class='preview-object' data-type="md">${eURLify(html)}</div>`);
