@@ -19,6 +19,7 @@ const Preference = async (): Promise<void> => {
 	const hideSystemFiles = _preference?.hideSystemFiles ?? true;
 	const dirAlongsideFiles = _preference?.dirAlongsideFiles ?? false;
 	const detectDriveChange = _preference?.detectDriveChange ?? false;
+	const automaticallyChangePreviewFile = _preference?.automaticallyChangePreviewFile ?? true;
 	const settingsMain = document.querySelector('.settings-main');
 	const on_startup = _preference?.on_startup ?? 'new';
 
@@ -29,6 +30,7 @@ const Preference = async (): Promise<void> => {
 	const dirAlongsideFiles_i18n = await Translate('List and sort directories alongside files');
 	const on_startup_i18n = await Translate('On startup');
 	const detectDriveChange_i18n = await Translate('Detect Drive Change');
+	const automaticallyChangePreviewFile_i18n = await Translate('Automatically change preview file with selected file');
 	const preferencePage = `<h3 class="settings-title">${appLanguage_i18n}</h3>
 	<select name="language">
 	${Object.keys(localesData.AVAILABLE_LOCALES)
@@ -69,6 +71,13 @@ const Preference = async (): Promise<void> => {
 			<span class="toggle-label">${detectDriveChange_i18n}</span>
 		</label>
 	</div>
+	<div class="toggle-box">
+		<label class="toggle">
+			<input type="checkbox" name="automatically-change-preview-file" ${automaticallyChangePreviewFile ? 'checked' : ''}>
+			<span class="toggle-slider"></span>
+			<span class="toggle-label">${automaticallyChangePreviewFile_i18n}</span>
+		</label>
+	</div>
 	<h3 class="settings-title">${on_startup_i18n}</h3>
 	<select name="on_startup">
 		<option ${on_startup === 'new' ? 'selected' : ''} value="new">New tab</option>
@@ -107,6 +116,13 @@ const Preference = async (): Promise<void> => {
 		preference.detectDriveChange = event.target.checked;
 		Storage.set('preference', preference);
 	});
+	settingsMain
+		.querySelector(`[name="automatically-change-preview-file"]`)
+		.addEventListener('change', async (event: Event & { target: HTMLInputElement }) => {
+			const preference = (await Storage.get('preference')) ?? {};
+			preference.automaticallyChangePreviewFile = event.target.checked;
+			Storage.set('preference', preference);
+		});
 	settingsMain.querySelector(`[name="on_startup"]`).addEventListener('change', async (event: Event & { target: HTMLInputElement }) => {
 		const preference = (await Storage.get('preference')) ?? {};
 		preference.on_startup = event.target.value;

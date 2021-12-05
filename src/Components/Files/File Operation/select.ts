@@ -4,6 +4,7 @@ import Storage from '../../../Api/storage';
 import { UpdateInfo } from '../../Layout/infobar';
 import FileAPI from '../../../Api/files';
 import formatBytes from '../../Functions/filesize';
+import Preview from '../File Preview/preview';
 
 let latestSelected: HTMLElement;
 let latestShiftSelected: HTMLElement;
@@ -19,6 +20,13 @@ const ChangeSelectedEvent = async (): Promise<void> => {
 		const selectedFilePaths = Array.from(selectedFileGrid).map((element) => unescape((element as HTMLElement).dataset.path));
 		const total_sizes = await new FileAPI(selectedFilePaths).calculateFilesSize();
 		UpdateInfo('selected-files', `${selectedFileGrid.length} file${selectedFileGrid.length > 1 ? 's' : ''} selected ${formatBytes(total_sizes)}`);
+		if (
+			selectedFilePaths.length === 1 &&
+			document.querySelectorAll('.preview').length > 0 &&
+			((await Storage.get('preference'))?.automaticallyChangePreviewFile ?? true)
+		) {
+			Preview(selectedFilePaths[0]);
+		}
 	}
 };
 /**
