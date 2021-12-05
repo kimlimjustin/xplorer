@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 	// Initialize folder to open
 	const cli = await CLIInformations();
 	if (!cli.dirs.length) {
-		if ((_preference.on_startup ?? 'new') === 'new') {
+		if ((_preference?.on_startup ?? 'new') === 'new') {
 			Home();
 		}
 		// Initialize Tabs
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 	// Initialize select files listener
 	SelectInit();
 	// Initialize user preference
-	document.getElementById('workspace').dataset.hideHiddenFiles = String(_preference.hideHiddenFiles ?? true);
+	document.getElementById('workspace').dataset.hideHiddenFiles = String(_preference?.hideHiddenFiles ?? true);
 	// Initialize settings
 	Setting();
 	// Initialize info bar
