@@ -59,10 +59,10 @@ const goParentDir = async (): Promise<void> => {
  */
 const windowManager = async (): Promise<void> => {
 	const appearance = await Storage.get('appearance');
-	if (appearance.frameStyle === 'os') {
+	if (appearance?.frameStyle === 'os') {
 		document.querySelector('.window-manager').parentNode.removeChild(document.querySelector('.window-manager'));
 	}
-	setDecorations(appearance.frameStyle === 'os');
+	setDecorations(appearance?.frameStyle === 'os');
 	// Minimize the screen
 	document.querySelector('#minimize')?.addEventListener('click', minimize);
 	// Maximize the screen
@@ -81,7 +81,7 @@ const windowManager = async (): Promise<void> => {
 	updateTheme('windowmanager');
 	const _preference = await Storage.get('preference');
 	listenWindowClose().then(() => {
-		if (_preference.on_startup === 'new') Storage.remove(`tabs-${windowName}`);
+		if (_preference?.on_startup === 'new') Storage.remove(`tabs-${windowName}`);
 		Storage.remove(`operations-${windowName}`);
 		Storage.remove('clipboard');
 	});

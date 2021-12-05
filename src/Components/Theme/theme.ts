@@ -85,16 +85,16 @@ const changeTheme = async (
 	if (!category) category = '*';
 	const appearance = await Storage.get('appearance');
 	if (category === '*' || category === 'root') {
-		document.body.style.setProperty('--edge-radius', appearance.frameStyle === 'os' ? '0px' : '10px');
+		document.body.style.setProperty('--edge-radius', appearance?.frameStyle === 'os' ? '0px' : '10px');
 		changeElementTheme(document.querySelector('.main-box'), 'mainBackground', 'background', theme);
 		changeElementTheme(document.body, 'textColor', 'color', theme);
 		if (appearance?.fontSize) {
-			document.body.style.fontSize = appearance.fontSize;
-			document.documentElement.style.fontSize = appearance.fontSize;
+			document.body.style.fontSize = appearance?.fontSize;
+			document.documentElement.style.fontSize = appearance?.fontSize;
 		} else changeElementTheme(document.body, 'fontSize', 'fontSize', theme);
 		if (appearance?.fontFamily) {
-			document.body.style.fontFamily = appearance.fontFamily;
-			document.documentElement.style.fontFamily = appearance.fontFamily;
+			document.body.style.fontFamily = appearance?.fontFamily;
+			document.documentElement.style.fontFamily = appearance?.fontFamily;
 		} else changeElementTheme(document.body, 'fontFamily', 'fontFamily', theme);
 		if (appearance?.transparentSidebar ?? true)
 			document.body.style.setProperty('--sidebar-transparency', appearance?.windowTransparency ?? '0.8');

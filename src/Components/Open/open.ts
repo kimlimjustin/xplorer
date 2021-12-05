@@ -160,9 +160,10 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promis
  */
 const OpenHandler = (e: Event): void => {
 	let element = e.target as HTMLElement;
-	while (!element.dataset.path) {
+	while (element?.dataset && !element.dataset.path) {
 		element = element.parentNode as HTMLElement;
 	}
+	if (!element?.dataset?.path) return;
 	if (element.id === 'workspace') return;
 
 	const filePath = unescape(element.dataset.path);
