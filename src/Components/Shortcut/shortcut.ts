@@ -23,7 +23,7 @@ import Undo from '../Files/File Operation/undo';
 import Redo from '../Files/File Operation/redo';
 import { Trash, PermanentDelete, Purge } from '../Files/File Operation/trash';
 import Properties from '../Properties/properties';
-import Preview from '../Files/File Preview/preview';
+import Preview, { closePreviewFile } from '../Files/File Preview/preview';
 let selectedAll = true;
 let pauseEnterListener = false;
 /**
@@ -123,7 +123,9 @@ const Shortcut = (): void => {
 		}
 		// Open file in preview shortcut (Ctrl+O)
 		else if (e.ctrlKey && e.key === 'o') {
-			Preview(selectedFilePath);
+			if (document.querySelectorAll('.preview').length > 0) {
+				closePreviewFile();
+			} else Preview(selectedFilePath);
 		}
 
 		// Exit tab shortcut (Ctrl + W)
