@@ -1,13 +1,13 @@
 {
 	"name": "winter",
 	"extensionName": "Winter",
-	"description": "",
+	"description": "My Extension Description",
 	"category": "theme",
 	"version": "0.1.0",
 	"license": "MIT",
 	"scripts": {
-		"start": "xplorer --theme ./themes/winter-color-theme.json",
-		"build": "xplorer --register-theme ./themes/winter-color-theme.json"
+		"start": "xplorer --theme winter",
+		"build": "xplorer build-extension themes"
 	},
 	"xplorerExtensionConfig": {
 		"themes": [

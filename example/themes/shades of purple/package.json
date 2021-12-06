@@ -1,13 +1,13 @@
 {
 	"name": "shadesofpurple",
 	"extensionName": "Shades of Purple",
-	"description": "",
+	"description": "My Extension Description",
 	"category": "theme",
 	"version": "0.1.0",
 	"license": "MIT",
 	"scripts": {
-		"start": "xplorer --theme ./themes/shadesofpurple-color-theme.json",
-		"build": "xplorer --register-theme ./themes/shadesofpurple-color-theme.json"
+		"start": "xplorer --theme shadesofpurple",
+		"build": "xplorer build-extension themes"
 	},
 	"xplorerExtensionConfig": {
 		"themes": [
