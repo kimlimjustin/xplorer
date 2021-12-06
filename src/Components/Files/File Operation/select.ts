@@ -301,4 +301,4 @@ const arrowUpHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
 	}
 };
 
-export { Select, SelectInit, getSelected, ChangeSelectedEvent };
+export { Select, SelectInit, getSelected, ChangeSelectedEvent, unselectAllSelected };

@@ -3,7 +3,7 @@ import focusingPath from '../Functions/focusingPath';
 import { OpenDir } from '../Open/open';
 import getDirname from '../Functions/path/dirname';
 import copyLocation from '../Files/File Operation/location';
-import { ChangeSelectedEvent, getSelected } from '../Files/File Operation/select';
+import { ChangeSelectedEvent, getSelected, unselectAllSelected } from '../Files/File Operation/select';
 import Pin from '../Files/File Operation/pin';
 import New from '../Functions/new';
 import { createNewWindow } from '../../Api/window';
@@ -48,6 +48,8 @@ const pauseEnter = (): void => {
  * @returns {void}
  */
 const Shortcut = (): void => {
+	let searchingFileName = '';
+	let _searchListener: ReturnType<typeof setTimeout>;
 	const KeyUpShortcutsHandler = async (e: KeyboardEvent) => {
 		const selectedFile = getSelected()?.[0];
 		const selectedFilePath = unescape(selectedFile?.dataset?.path);
@@ -210,6 +212,27 @@ const Shortcut = (): void => {
 				}
 				Trash(filePaths);
 			}
+		} else if (e.keyCode >= 65 && e.keyCode <= 90) {
+			// ignore some keys that has its own function
+			if (e.ctrlKey && (e.key === 'a' || e.key === 'p' || e.key === 'f')) return;
+			searchingFileName += e.key.toLowerCase();
+
+			const _files = document.querySelectorAll('.file');
+			unselectAllSelected();
+			clearInterval(_searchListener);
+			for (const _file of _files) {
+				const _fileName = _file.querySelector('#file-filename').innerHTML.toLowerCase();
+				if (_fileName.startsWith(searchingFileName)) {
+					_file.classList.add('selected');
+					ChangeSelectedEvent();
+					break;
+				}
+			}
+
+			_searchListener = setInterval(() => {
+				searchingFileName = '';
+				clearInterval(_searchListener);
+			}, 500);
 		}
 	};
 	const KeyDownShortcutsHandler = async (e: KeyboardEvent) => {
