@@ -82,6 +82,8 @@ module.exports = class extends Generator {
 			...this.options,
 		};
 		this.fs.copyTpl(this.templatePath('package.json'), this.destinationPath('package.json'), templateData);
+		this.fs.copyTpl(this.templatePath('.gitignore'), this.destinationPath('.gitignore'), templateData);
+		this.fs.copyTpl(this.templatePath('README.md'), this.destinationPath('README.md'), templateData);
 		this.fs.copyTpl(
 			this.answers['themeCategory'] === 'light' ? this.templatePath('light-theme.json') : this.templatePath('dark-theme.json'),
 			this.destinationPath(`./themes/${this.answers['extensionIdentifier']}-color-theme.json`),

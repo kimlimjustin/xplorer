@@ -4,6 +4,7 @@
 )]
 
 mod drives;
+mod extensions;
 mod file_lib;
 mod files_api;
 mod storage;
@@ -11,27 +12,15 @@ use clap::{App, Arg, ArgMatches};
 mod tests;
 use font_loader::system_fonts;
 use lazy_static::lazy_static;
-use notify::{raw_watcher, RawEvent, RecursiveMode, Watcher};
 use std::env;
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
-use std::path::Path;
 use std::process::Command;
-use std::sync::mpsc::channel;
 use tauri::Manager;
 use tauri_plugin_vibrancy::Vibrancy;
 
-extern crate path_absolutize;
-use path_absolutize::*;
-
-#[derive(serde::Serialize)]
-struct ArgsStruct {
-  dirs: Vec<String>,
-  is_reveal: bool,
-  custom_style_sheet: serde_json::Value,
-}
 lazy_static! {
-  static ref ARGS_STRUCT: ArgMatches = {
+  pub static ref ARGS_STRUCT: ArgMatches = {
     const VERSION: &'static str = env!("CARGO_PKG_VERSION");
     App::new("Xplorer")
       .version(VERSION)
@@ -42,6 +31,11 @@ lazy_static! {
           .long("reveal")
           .about("Reveal file in Xplorer")
           .takes_value(true),
+      )
+      .subcommand(
+        App::new("build-extension")
+          .about("Package and build extensions")
+          .subcommand(App::new("themes").about("Build themes")),
       )
       .arg(
         Arg::new("dir")
@@ -60,132 +54,6 @@ lazy_static! {
   };
 }
 
-fn get_custom_stylesheet_filepath() -> String {
-  let custom_style_sheet = ARGS_STRUCT.value_of("theme").unwrap_or("").to_string();
-  let custom_style_sheet = match custom_style_sheet.as_str() {
-    "" => "".to_string(),
-    _ => match files_api::file_exist(custom_style_sheet.clone()) {
-      true => custom_style_sheet.clone(),
-      false => {
-        let package_json_path = Path::new(&env::current_dir().unwrap()).join("package.json");
-        let package_json_file: Result<serde_json::Value, serde_json::Error> =
-          serde_json::from_str(std::fs::read_to_string(package_json_path).unwrap().as_str());
-        let package_json_file = match package_json_file {
-          Ok(file) => file,
-          Err(_) => {
-            return "".to_string();
-          }
-        };
-        let package_json_file = package_json_file.as_object().unwrap();
-        let extension_field = package_json_file.get("xplorerExtensionConfig");
-        let extension_field = match extension_field {
-          Some(field) => field,
-          None => {
-            return "".to_string();
-          }
-        };
-        let extension_field = extension_field.as_object().unwrap();
-        let themes_field = extension_field.get("themes");
-        let themes_field = match themes_field {
-          Some(field) => field,
-          None => {
-            return "".to_string();
-          }
-        };
-        let themes_field = themes_field.as_array().unwrap();
-        let theme_field = themes_field
-          .iter()
-          .find(|theme| {
-            theme
-              .as_object()
-              .unwrap()
-              .get("identifier")
-              .unwrap()
-              .as_str()
-              .unwrap()
-              == custom_style_sheet.as_str()
-          })
-          .unwrap();
-        theme_field
-          .get("path")
-          .unwrap()
-          .as_str()
-          .unwrap()
-          .to_string()
-      }
-    },
-  };
-  custom_style_sheet
-}
-
-#[tauri::command]
-async fn listen_stylesheet_change(window: tauri::Window) {
-  if ARGS_STRUCT.value_of("theme").is_some() {
-    // listen to file_path file changes
-    let (tx, rx) = channel();
-    let mut watcher = raw_watcher(tx).unwrap();
-    watcher
-      .watch(
-        Path::new(&get_custom_stylesheet_filepath()),
-        RecursiveMode::NonRecursive,
-      )
-      .unwrap();
-    loop {
-      match rx.recv() {
-        Ok(RawEvent { .. }) => {
-          let value = get_custom_stylesheet_filepath();
-          let value = match value.as_str() {
-            "" => serde_json::Value::Null,
-            _ => serde_json::from_str(std::fs::read_to_string(value).unwrap().as_str())
-              .unwrap_or(serde_json::Value::Null),
-          };
-          window.emit("stylesheet_changes", value).unwrap();
-        }
-        Err(e) => println!("watch error: {:?}", e),
-      }
-    }
-  }
-}
-
-#[tauri::command]
-fn get_cli_args() -> Result<ArgsStruct, String> {
-  let is_reveal = ARGS_STRUCT
-    .value_of("reveal")
-    .unwrap_or("false")
-    .to_string();
-  let custom_style_sheet = get_custom_stylesheet_filepath();
-  let custom_style_sheet = match custom_style_sheet.as_str() {
-    "" => serde_json::Value::Null,
-    _ => serde_json::from_str(
-      std::fs::read_to_string(custom_style_sheet)
-        .unwrap()
-        .as_str(),
-    )
-    .unwrap_or(serde_json::Value::Null),
-  };
-  if let Some(dirs_arg) = ARGS_STRUCT.values_of("dir") {
-    let dirs = dirs_arg
-      .map(|s| {
-        let dir = Path::new(s).absolutize();
-        if dir.is_err() {
-          return dir.unwrap_err().to_string();
-        }
-        return dir.unwrap().to_str().unwrap().to_string();
-      })
-      .collect();
-    Ok(ArgsStruct {
-      dirs,
-      is_reveal: is_reveal == "true",
-      custom_style_sheet,
-    })
-  } else {
-    Ok(ArgsStruct {
-      dirs: vec![],
-      is_reveal: is_reveal == "true",
-      custom_style_sheet,
-    })
-  }
-}
 #[cfg(target_os = "windows")]
 #[tauri::command]
 async fn check_vscode_installed() -> Result<bool, String> {
@@ -231,6 +99,13 @@ fn change_transparent_effect(effect: String, window: tauri::Window) {
 }
 
 fn main() {
+  if ARGS_STRUCT.subcommand_matches("build-extension").is_some() {
+    let extension_type = ARGS_STRUCT.subcommand_matches("build-extension").unwrap();
+    if extension_type.subcommand_matches("themes").is_some() {
+      extensions::build_themes();
+      std::process::exit(0);
+    }
+  }
   tauri::Builder::default()
     .invoke_handler(tauri::generate_handler![
       files_api::read_directory,
@@ -258,10 +133,10 @@ fn main() {
       storage::write_data,
       storage::read_data,
       storage::delete_storage_data,
-      get_cli_args,
+      extensions::listen_stylesheet_change,
+      extensions::get_cli_args,
       check_vscode_installed,
       get_available_fonts,
-      listen_stylesheet_change,
       change_transparent_effect
     ])
     .setup(|app| {
