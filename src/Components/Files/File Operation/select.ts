@@ -1,10 +1,10 @@
-import { isElementInViewport } from '../../Functions/lazyLoadingImage';
 import { elementClassNameContains } from '../../Functions/elementClassNameContains';
 import Storage from '../../../Api/storage';
 import { UpdateInfo } from '../../Layout/infobar';
 import FileAPI from '../../../Api/files';
 import formatBytes from '../../Functions/filesize';
 import Preview from '../File Preview/preview';
+import { ensureElementInViewPort } from '../../Functions/viewport';
 
 let latestSelected: HTMLElement;
 let latestShiftSelected: HTMLElement;
@@ -69,15 +69,6 @@ const Select = (element: HTMLElement, ctrl: boolean, shift: boolean): void => {
 	}
 	ChangeSelectedEvent();
 	ensureElementInViewPort(element);
-};
-
-/**
- * Ensure an element in view port
- * @param {HTMLElement} element - element you want to ensure
- * @returns {void}
- */
-const ensureElementInViewPort = (element: HTMLElement): void => {
-	if (!isElementInViewport(element)) element.scrollIntoView();
 };
 
 /**

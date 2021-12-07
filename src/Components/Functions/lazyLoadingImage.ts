@@ -2,21 +2,7 @@ import FileAPI from '../../Api/files';
 
 const FETCHED_ICONS: string[] = []; // Array of fetch icons
 
-/**
- * Check if element in viewport
- * @param {HTMLElement} el - Element to check
- * @returns {boolean} if element in viewport
- */
-export const isElementInViewport = (el: HTMLElement): boolean => {
-	const rect = el.getBoundingClientRect();
-	const windowHeight = window.innerHeight || document.documentElement.clientHeight;
-	return (
-		rect.top >= 0 &&
-		rect.left >= 0 &&
-		rect.bottom - windowHeight <= windowHeight &&
-		rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-	);
-};
+import { isElementInViewport } from './viewport';
 
 /**
  * Load lazy-load image when user open a directory
