@@ -5,11 +5,10 @@
  */
 const isElementInViewport = (el: HTMLElement): boolean => {
 	const rect = el.getBoundingClientRect();
-	const windowHeight = window.innerHeight || document.documentElement.clientHeight;
 	return (
 		rect.top >= 0 &&
 		rect.left >= 0 &&
-		rect.bottom - windowHeight <= windowHeight &&
+		rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
 		rect.right <= (window.innerWidth || document.documentElement.clientWidth)
 	);
 };
@@ -23,4 +22,4 @@ const ensureElementInViewPort = (element: HTMLElement): void => {
 	if (!isElementInViewport(element)) element.scrollIntoView({ block: 'center', behavior: 'smooth' });
 };
 
-export { isElementInViewport, ensureElementInViewPort };
+export { ensureElementInViewPort };

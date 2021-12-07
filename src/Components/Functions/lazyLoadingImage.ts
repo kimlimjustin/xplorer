@@ -2,7 +2,21 @@ import FileAPI from '../../Api/files';
 
 const FETCHED_ICONS: string[] = []; // Array of fetch icons
 
-import { isElementInViewport } from './viewport';
+/**
+ * Check if element in viewport
+ * @param {HTMLElement} el - Element to check
+ * @returns {boolean} if element in viewport
+ */
+const isOnImageViewport = (el: HTMLElement): boolean => {
+	const rect = el.getBoundingClientRect();
+	const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+	return (
+		rect.top >= 0 &&
+		rect.left >= 0 &&
+		rect.bottom - windowHeight <= windowHeight &&
+		rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+	);
+};
 
 /**
  * Load lazy-load image when user open a directory
@@ -11,7 +25,7 @@ import { isElementInViewport } from './viewport';
 export const LOAD_IMAGE = (): void => {
 	const images = document.querySelectorAll('img[data-src]');
 	images.forEach((image: HTMLImageElement) => {
-		if (isElementInViewport(image)) {
+		if (isOnImageViewport(image)) {
 			if (image.dataset.isImg === 'true') {
 				image.src = new FileAPI(image.dataset.src).readAsset();
 			} else {
@@ -32,7 +46,7 @@ const LAZY_LOAD_INIT = (): void => {
 	document.querySelector('.main-box').addEventListener('scroll', () => {
 		const images = document.querySelectorAll('img[data-src]');
 		images.forEach((image: HTMLImageElement) => {
-			if (isElementInViewport(image)) {
+			if (isOnImageViewport(image)) {
 				if (image.dataset.isImg === 'true') {
 					image.src = new FileAPI(image.dataset.src).readAsset();
 				} else {
