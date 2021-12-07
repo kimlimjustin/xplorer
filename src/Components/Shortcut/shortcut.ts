@@ -3,7 +3,7 @@ import focusingPath from '../Functions/focusingPath';
 import { OpenDir } from '../Open/open';
 import getDirname from '../Functions/path/dirname';
 import copyLocation from '../Files/File Operation/location';
-import { ChangeSelectedEvent, getSelected, unselectAllSelected } from '../Files/File Operation/select';
+import { ChangeSelectedEvent, getSelected, Select, unselectAllSelected } from '../Files/File Operation/select';
 import Pin from '../Files/File Operation/pin';
 import New from '../Functions/new';
 import { createNewWindow } from '../../Api/window';
@@ -224,8 +224,7 @@ const Shortcut = (): void => {
 			for (const _file of _files) {
 				const _fileName = _file.querySelector('#file-filename').innerHTML.toLowerCase();
 				if (_fileName.startsWith(searchingFileName)) {
-					_file.classList.add('selected');
-					_file.scrollIntoView({ block: 'center', behavior: 'smooth' });
+					Select(_file as HTMLElement, false, false);
 					ensureElementInViewPort(_file as HTMLElement);
 					ChangeSelectedEvent();
 					break;
