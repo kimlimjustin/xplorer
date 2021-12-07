@@ -15,19 +15,19 @@ export const getFiles = async (dirName: string): Promise<IDirectoryMeta> => invo
  * Check if given path is directory
  * @returns {Promise<boolean>}
  */
-export const isDir = async (dirName: string): Promise<boolean> => invoke<boolean>('is_dir', { path: dirName });
+export const isDir = async (path: string): Promise<boolean> => invoke<boolean>('is_dir', { path });
 
 /**
  * Return true if folder exist
   * @returns {boolean}
   */
-export const exists = async (dirName: string): Promise<boolean> => invoke<boolean>('file_exist', { filePath: dirName });
+export const exists = async (filePath: string): Promise<boolean> => invoke<boolean>('file_exist', { filePath });
 
 /**
  * Create dir if not exists
  * @returns {boolean}
  */
-export const mkdir = async (dirName: string): Promise<boolean> => invoke<boolean>('create_dir_recursive', { dirPath: dirName });
+export const mkdir = async (dirPath: string): Promise<boolean> => invoke<boolean>('create_dir_recursive', { dirPath });
 
 /**
  * Listen to changes in a directory

@@ -80,30 +80,30 @@ export const calculateFileSize = async (fileName: string): Promise<number> => in
  * Rename file/dir
  * @returns {any}
  */
-export const renameFile = async (src: string, dest: string): Promise<void> => renameFileNative(src, dest);
+export const renameFile = async (fileName: string, dest: string): Promise<void> => renameFileNative(fileName, dest);
 
 /**
  * Copy files/dirs
  * @returns {Promise<void>}
  */
-export const copyFile = async (src: string, dest: string): Promise<void> => copyFileNative(src, dest);
+export const copyFile = async (fileName: string, dest: string): Promise<void> => copyFileNative(fileName, dest);
 
 /**
  * Copy and delete files/dirs
  * @returns {Promise<void>}
  */
-export const cutFile = async (src: string, dest: string): Promise<void> => {
-  copyFile(src, dest);
-  removeFile(src);
+export const cutFile = async (fileName: string, dest: string): Promise<void> => {
+  copyFile(fileName, dest);
+  removeFile(fileName);
 }
 
 /**
  * Deletes files/dirs
  * @returns {Promise<void>}
  */
-export const removeFile = async (src: string): Promise<void> => {
-  if (isDirectory(src)) return removeDirNative(src, { recursive: true });
-  else return removeFileNative(src);
+export const removeFile = async (fileName: string): Promise<void> => {
+  if (isDirectory(fileName)) return removeDirNative(fileName, { recursive: true });
+  else return removeFileNative(fileName);
 }
 
 /**
@@ -136,6 +136,14 @@ export const getTrashedFiles = async (): Promise<TrashData> => invoke<TrashData>
 export const deleteFiles = async (paths: string[]): Promise<void> => invoke('delete_file', { paths });
 
 /**
+ * Restore a file according with original parent and basename known
+ * @param {string} original_parent
+ * @param {string} basename
+ * @returns {Promise<void>}
+ */
+export const restoreFile = async (originalParent: string, basename: string): Promise<void> => invoke('restore_trash', { originalParent, basename });
+
+/**
  * Restore files/dirs from trash
  * @param {string[]} paths - Paths to be restored
  * @param force - Force restore
@@ -149,11 +157,3 @@ export const restoreFiles = async (paths: string[], force = false): Promise<File
  * @returns {Promise<void>}
  */
 export const purgeFiles = (paths: string[]): Promise<void> => invoke('purge_trashes', { paths });
-
-/**
- * Restore a file according with original parent and basename known
- * @param {string} original_parent
- * @param {string} basename
- * @returns {Promise<void>}
- */
-export const restoreFile = async (originalParent: string, basename: string): Promise<void> => invoke('restore_trash', { originalParent, basename });
