@@ -24,6 +24,7 @@ import Redo from '../Files/File Operation/redo';
 import { Trash, PermanentDelete, Purge } from '../Files/File Operation/trash';
 import Properties from '../Properties/properties';
 import Preview, { closePreviewFile } from '../Files/File Preview/preview';
+import { ensureElementInViewPort } from '../Functions/viewport';
 let selectedAll = true;
 let pauseEnterListener = false;
 /**
@@ -224,6 +225,8 @@ const Shortcut = (): void => {
 				const _fileName = _file.querySelector('#file-filename').innerHTML.toLowerCase();
 				if (_fileName.startsWith(searchingFileName)) {
 					_file.classList.add('selected');
+					_file.scrollIntoView({ block: 'center', behavior: 'smooth' });
+					ensureElementInViewPort(_file as HTMLElement);
 					ChangeSelectedEvent();
 					break;
 				}
