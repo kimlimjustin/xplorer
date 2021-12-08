@@ -234,7 +234,7 @@ const Shortcut = (): void => {
 			_searchListener = setInterval(() => {
 				searchingFileName = '';
 				clearInterval(_searchListener);
-			}, 500);
+			}, 750);
 		}
 	};
 	const KeyDownShortcutsHandler = async (e: KeyboardEvent) => {
