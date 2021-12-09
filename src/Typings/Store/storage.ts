@@ -15,3 +15,9 @@ export type ReadDataFailure = AppActionBase<typeof READ_DATA, 'FAILURE'> & { mes
 export type RemoveDataRequest = AppActionBase<typeof REMOVE_DATA, 'REQUEST'> & { key: string };
 export type RemoveDataSuccess = AppActionBase<typeof REMOVE_DATA, 'SUCCESS'> & {};
 export type RemoveDataFailure = AppActionBase<typeof REMOVE_DATA, 'FAILURE'> & { message: string };
+
+export type StorageActions = WriteDataRequest | WriteDataSuccess | WriteDataFailure
+  | ReadDataRequest | ReadDataSuccess | ReadDataFailure
+  | RemoveDataRequest | RemoveDataSuccess | RemoveDataFailure;
+
+export type StorageActionTypes = typeof WRITE_DATA | typeof READ_DATA | typeof REMOVE_DATA;

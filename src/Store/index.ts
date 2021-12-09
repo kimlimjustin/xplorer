@@ -4,13 +4,20 @@ import { createLogger } from 'redux-logger';
 
 import rootSaga from './Sagas';
 import rootReducer from './Reducers';
+import { Actions } from '../Typings/Store/store';
 
 const sagaMiddleware = createSagaMiddleware();
 const loggerMiddleware = createLogger();
 
-const store = createStore(rootReducer, compose(
-  applyMiddleware(sagaMiddleware, loggerMiddleware)
-));
+const store = createStore<ReturnType<typeof rootReducer>, Actions, unknown, unknown>(
+  rootReducer,
+  compose(
+    applyMiddleware(
+      sagaMiddleware,
+      loggerMiddleware
+    )
+  )
+);
 
 sagaMiddleware.run(rootSaga);
 

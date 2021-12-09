@@ -22,3 +22,10 @@ export type ChangeWindowTitleFailure = AppActionBase<typeof CHANGE_WINDOW_TITLE,
 export type SetDecorationsRequest = AppActionBase<typeof SET_DECORATIONS, 'REQUEST'> & { decorations: boolean };
 export type SetDecorationsSuccess = AppActionBase<typeof SET_DECORATIONS, 'SUCCESS'> & {};
 export type SetDecorationsFailure = AppActionBase<typeof SET_DECORATIONS, 'FAILURE'> & { message: string };
+
+export type WindowActions = ListenWindowCloseRequest | ListenWindowCloseSuccess | ListenWindowCloseFailure
+  | CreateNewWindowRequest | CreateNewWindowSuccess | CreateNewWindowFailure
+  | ChangeWindowTitleRequest | ChangeWindowTitleSuccess | ChangeWindowTitleFailure
+  | SetDecorationsRequest | SetDecorationsSuccess | SetDecorationsFailure;
+
+export type WindowActionTypes = typeof LISTEN_WINDOW_CLOSE | typeof CREATE_WINDOW | typeof CHANGE_WINDOW_TITLE | typeof SET_DECORATIONS;

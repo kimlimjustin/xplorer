@@ -111,3 +111,30 @@ export type RestoreFilesFailure = AppActionBase<typeof RESTORE_FILES, 'FAILURE'>
 export type PurgeFilesRequest = AppActionBase<typeof PURGE_FILES, 'REQUEST'> & { paths: string[] };
 export type PurgeFilesSuccess = AppActionBase<typeof PURGE_FILES, 'SUCCESS'> & {};
 export type PurgeFilesFailure = AppActionBase<typeof PURGE_FILES, 'FAILURE'> & { message: string };
+
+export type FileActions = ReadFileRequest | ReadFileSuccess | ReadFileFailure
+  | ReadBufferRequest | ReadBufferSuccess | ReadBufferFailure
+  | OpenFileRequest | OpenFileSuccess | OpenFileFailure
+  | ReadAssetRequest | ReadAssetSuccess | ReadAssetFailure
+  | ReadJsonFileRequest | ReadJsonFileSuccess | ReadJsonFileFailure
+  | CreateFileRequest | CreateFileSuccess | CreateFileFailure
+  | FetchFilePropertiesRequest | FetchFilePropertiesSuccess | FetchFilePropertiesFailure
+  | IsDirectoryRequest | IsDirectorySuccess | IsDirectoryFailure
+  | ExtractIconRequest | ExtractIconSuccess | ExtractIconFailure
+  | CalculateFileSizeRequest | CalculateFileSizeSuccess | CalculateFileSizeFailure
+  | RenameFileRequest | RenameFileSuccess | RenameFileFailure
+  | CopyFileRequest | CopyFileSuccess | CopyFileFailure
+  | CutFileRequest | CutFileSuccess | CutFileFailure
+  | RemoveFileRequest | RemoveFileSuccess | RemoveFileFailure
+  | RevealFileRequest | RevealFileSuccess | RevealFileFailure
+  | GetTrashedFilesRequest | GetTrashedFilesSuccess | GetTrashedFilesFailure
+  | DeleteFilesRequest | DeleteFilesSuccess | DeleteFilesFailure
+  | RestoreFileRequest | RestoreFileSuccess | RestoreFileFailure
+  | RestoreFilesRequest | RestoreFilesSuccess | RestoreFilesFailure
+  | PurgeFilesRequest | PurgeFilesSuccess | PurgeFilesFailure;
+
+export type FileActionTypes = typeof READ_FILE | typeof READ_BUFFER | typeof OPEN_FILE | typeof READ_ASSET
+  | typeof READ_JSON_FILE | typeof CREATE_FILE | typeof FETCH_FILE_PROPERTIES | typeof IS_DIRECTORY | typeof EXTRACT_ICON
+  | typeof CALCULATE_FILE_SIZE | typeof RENAME_FILE | typeof COPY_FILE | typeof CUT_FILE
+  | typeof REMOVE_FILE | typeof REVEAL_FILE | typeof GET_TRASHED_FILES | typeof DELETE_FILES
+  | typeof RESTORE_FILE | typeof RESTORE_FILES | typeof PURGE_FILES;

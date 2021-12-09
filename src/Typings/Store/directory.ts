@@ -32,15 +32,15 @@ export type FetchIsDirectoryRequest = AppActionBase<typeof FETCH_IS_DIR, 'REQUES
 export type FetchIsDirectorySuccess = AppActionBase<typeof FETCH_IS_DIR, 'SUCCESS'> & { isDir: boolean };
 export type FetchIsDirectoryFailure = AppActionBase<typeof FETCH_IS_DIR, 'FAILURE'> & { message: string };
 
-export type FileExistsRequest = AppActionBase<typeof FETCH_FILE_EXISTS, 'REQUEST'> & { filePath: string };
-export type FileExistsSuccess = AppActionBase<typeof FETCH_FILE_EXISTS, 'SUCCESS'> & { exists: boolean };
-export type FileExistsFailure = AppActionBase<typeof FETCH_FILE_EXISTS, 'FAILURE'> & { message: string };
+export type FetchFileExistsRequest = AppActionBase<typeof FETCH_FILE_EXISTS, 'REQUEST'> & { filePath: string };
+export type FetchFileExistsSuccess = AppActionBase<typeof FETCH_FILE_EXISTS, 'SUCCESS'> & { exists: boolean };
+export type FetchFileExistsFailure = AppActionBase<typeof FETCH_FILE_EXISTS, 'FAILURE'> & { message: string };
 
 export type MakeDirectoryRequest = AppActionBase<typeof MAKE_DIRECTORY, 'REQUEST'> & { dirPath: string };
 export type MakeDirectorySuccess = AppActionBase<typeof MAKE_DIRECTORY, 'SUCCESS'> & {};
 export type MakeDirectoryFailure = AppActionBase<typeof MAKE_DIRECTORY, 'FAILURE'> & { message: string };
 
-export type ListenDirectoryRequest = AppActionBase<typeof LISTEN_DIRECTORY, 'REQUEST'> & { dirName: string };
+export type ListenDirectoryRequest = AppActionBase<typeof LISTEN_DIRECTORY, 'REQUEST'> & { dirPath: string };
 export type ListenDirectorySuccess = AppActionBase<typeof LISTEN_DIRECTORY, 'SUCCESS'> & { listener: UnlistenFn };
 export type ListenDirectoryFailure = AppActionBase<typeof LISTEN_DIRECTORY, 'FAILURE'> & { message: string };
 
@@ -48,14 +48,27 @@ export type UnlistenDirectoryRequest = AppActionBase<typeof UNLISTEN_DIRECTORY, 
 export type UnlistenDirectorySuccess = AppActionBase<typeof UNLISTEN_DIRECTORY, 'SUCCESS'> & {};
 export type UnlistenDirectoryFailure = AppActionBase<typeof UNLISTEN_DIRECTORY, 'FAILURE'> & { message: string };
 
-export type FetchFileSizeRequest = AppActionBase<typeof FETCH_DIRECTORY_SIZE, 'REQUEST'> & { dirName: string };
-export type FetchFileSizeSuccess = AppActionBase<typeof FETCH_DIRECTORY_SIZE, 'SUCCESS'> & { dirSize: number };
-export type FetchFileSizeFailure = AppActionBase<typeof FETCH_DIRECTORY_SIZE, 'FAILURE'> & { message: string };
+export type FetchDirectorySizeRequest = AppActionBase<typeof FETCH_DIRECTORY_SIZE, 'REQUEST'> & { dirName: string };
+export type FetchDirectorySizeSuccess = AppActionBase<typeof FETCH_DIRECTORY_SIZE, 'SUCCESS'> & { dirSize: number };
+export type FetchDirectorySizeFailure = AppActionBase<typeof FETCH_DIRECTORY_SIZE, 'FAILURE'> & { message: string };
 
-export type InitDirectorySearchReqeust = AppActionBase<typeof INIT_DIRECTORY_SEARCH, 'REQUEST'> & { dirName: string, pattern: string, callback: (partialFound: FileMetaData[]) => void };
+export type InitDirectorySearchRequest = AppActionBase<typeof INIT_DIRECTORY_SEARCH, 'REQUEST'> & { dirName: string, pattern: string, callback: (partialFound: FileMetaData[]) => void };
 export type InitDirectorySearchSuccess = AppActionBase<typeof INIT_DIRECTORY_SEARCH, 'SUCCESS'> & { results: FileMetaData[] };
 export type InitDirectorySearchFailure = AppActionBase<typeof INIT_DIRECTORY_SEARCH, 'FAILURE'> & { message: string };
 
-export type CancelDirectorySearchRequest = AppActionBase<typeof CANCEL_DIRECTORY_SEARCH, 'REQUEST'> & { listener: UnlistenFn };
+export type CancelDirectorySearchRequest = AppActionBase<typeof CANCEL_DIRECTORY_SEARCH, 'REQUEST'> & { listener?: UnlistenFn };
 export type CancelDirectorySearchSuccess = AppActionBase<typeof CANCEL_DIRECTORY_SEARCH, 'SUCCESS'> & {};
 export type CancelDirectorySearchFailure = AppActionBase<typeof CANCEL_DIRECTORY_SEARCH, 'FAILURE'> & { message: string };
+
+export type DirectoryActions = FetchFilesRequest | FetchFilesSuccess | FetchFilesFailure
+  | FetchIsDirectoryRequest | FetchIsDirectorySuccess | FetchIsDirectoryFailure
+  | FetchFileExistsRequest | FetchFileExistsSuccess | FetchFileExistsFailure
+  | MakeDirectoryRequest | MakeDirectorySuccess | MakeDirectoryFailure
+  | ListenDirectoryRequest | ListenDirectorySuccess | ListenDirectoryFailure
+  | UnlistenDirectoryRequest | UnlistenDirectorySuccess | UnlistenDirectoryFailure
+  | InitDirectorySearchRequest | InitDirectorySearchSuccess | InitDirectorySearchFailure
+  | CancelDirectorySearchRequest | CancelDirectorySearchSuccess | CancelDirectorySearchFailure;
+
+export type DirectoryActionTypes = typeof FETCH_FILES | typeof FETCH_IS_DIR | typeof FETCH_FILE_EXISTS | typeof MAKE_DIRECTORY
+  | typeof LISTEN_DIRECTORY | typeof UNLISTEN_DIRECTORY | typeof FETCH_DIRECTORY_SIZE | typeof INIT_DIRECTORY_SEARCH
+  | typeof CANCEL_DIRECTORY_SEARCH;
