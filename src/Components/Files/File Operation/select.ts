@@ -1,10 +1,10 @@
-import { isElementInViewport } from '../../Functions/lazyLoadingImage';
 import { elementClassNameContains } from '../../Functions/elementClassNameContains';
 import Storage from '../../../Api/storage';
 import { UpdateInfo } from '../../Layout/infobar';
 import FileAPI from '../../../Api/files';
 import formatBytes from '../../Functions/filesize';
 import Preview from '../File Preview/preview';
+import { ensureElementInViewPort } from '../../Functions/viewport';
 
 let latestSelected: HTMLElement;
 let latestShiftSelected: HTMLElement;
@@ -69,15 +69,6 @@ const Select = (element: HTMLElement, ctrl: boolean, shift: boolean): void => {
 	}
 	ChangeSelectedEvent();
 	ensureElementInViewPort(element);
-};
-
-/**
- * Ensure an element in view port
- * @param {HTMLElement} element - element you want to ensure
- * @returns {void}
- */
-const ensureElementInViewPort = (element: HTMLElement): void => {
-	if (!isElementInViewport(element)) element.scrollIntoView();
 };
 
 /**
@@ -169,7 +160,7 @@ const arrowRightHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => 
 	e.preventDefault();
 	let nextSibling = (e.shiftKey ? latestShiftSelected.nextSibling : latestSelected.nextSibling) as HTMLElement;
 	if (hideHiddenFiles) {
-		while (nextSibling && nextSibling.dataset.hiddenFile !== undefined) {
+		while (nextSibling && nextSibling.dataset.isHidden === 'true') {
 			nextSibling = nextSibling.nextSibling as HTMLElement;
 		}
 	}
@@ -180,7 +171,7 @@ const arrowRightHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => 
 			let start = false;
 			for (const sibling of latestSelected.parentNode.children) {
 				if (start || sibling === nextSibling || sibling === latestSelected) {
-					if (!(hideHiddenFiles && (sibling as HTMLElement).dataset.hiddenFile === 'true')) sibling.classList.add('selected');
+					if (!(hideHiddenFiles && (sibling as HTMLElement).dataset.isHidden === 'true')) sibling.classList.add('selected');
 				}
 				if (sibling === latestSelected) start = true;
 				if (sibling === nextSibling) break;
@@ -201,7 +192,7 @@ const arrowLeftHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
 	e.preventDefault();
 	let previousSibling = (e.shiftKey ? latestShiftSelected.previousSibling : latestSelected.previousSibling) as HTMLElement;
 	if (hideHiddenFiles) {
-		while (previousSibling && previousSibling.dataset.hiddenFile !== undefined) {
+		while (previousSibling && previousSibling.dataset.isHidden === 'true') {
 			previousSibling = previousSibling.previousSibling as HTMLElement;
 		}
 	}
@@ -212,7 +203,7 @@ const arrowLeftHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
 		if (e.shiftKey) {
 			for (const sibling of latestSelected.parentNode.children) {
 				if (start || sibling === previousSibling || sibling === latestSelected) {
-					if (!(hideHiddenFiles && (sibling as HTMLElement).dataset.hiddenFile === 'true')) sibling.classList.add('selected');
+					if (!(hideHiddenFiles && (sibling as HTMLElement).dataset.isHidden === 'true')) sibling.classList.add('selected');
 				}
 				if (sibling === previousSibling) start = true;
 				if (sibling === latestSelected) break;
@@ -238,7 +229,7 @@ const arrowDownHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
 	const siblings = latestSelected.parentNode.children;
 	let elementBelow = siblings[Array.from(siblings).indexOf(e.shiftKey ? latestShiftSelected : latestSelected) + totalGridInArrow] as HTMLElement;
 	if (hideHiddenFiles) {
-		while (elementBelow && elementBelow.dataset.hiddenFile !== undefined) {
+		while (elementBelow && elementBelow.dataset.isHidden === 'true') {
 			elementBelow = siblings[Array.from(siblings).indexOf(elementBelow) + totalGridInArrow] as HTMLElement;
 		}
 	}
@@ -249,7 +240,7 @@ const arrowDownHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
 		if (e.shiftKey) {
 			for (const sibling of latestSelected.parentNode.children) {
 				if (start || sibling === elementBelow || sibling === latestSelected) {
-					if (!(hideHiddenFiles && (sibling as HTMLElement).dataset.hiddenFile === 'true')) sibling.classList.add('selected');
+					if (!(hideHiddenFiles && (sibling as HTMLElement).dataset.isHidden === 'true')) sibling.classList.add('selected');
 				}
 				if (sibling === latestSelected) start = true;
 				if (sibling === elementBelow) break;
@@ -275,7 +266,7 @@ const arrowUpHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
 	const siblings = latestSelected.parentNode.children;
 	let elementAbove = siblings[Array.from(siblings).indexOf(e.shiftKey ? latestShiftSelected : latestSelected) - totalGridInArrow] as HTMLElement;
 	if (hideHiddenFiles) {
-		while (elementAbove && elementAbove.dataset.hiddenFile !== undefined) {
+		while (elementAbove && elementAbove.dataset.isHidden === 'true') {
 			elementAbove = siblings[Array.from(siblings).indexOf(elementAbove) - totalGridInArrow] as HTMLElement;
 		}
 	}
@@ -286,7 +277,7 @@ const arrowUpHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
 		if (e.shiftKey) {
 			for (const sibling of latestSelected.parentNode.children) {
 				if (start || sibling === elementAbove || sibling === latestSelected) {
-					if (!(hideHiddenFiles && (sibling as HTMLElement).dataset.hiddenFile === 'true')) sibling.classList.add('selected');
+					if (!(hideHiddenFiles && (sibling as HTMLElement).dataset.isHidden === 'true')) sibling.classList.add('selected');
 				}
 				if (sibling === elementAbove) start = true;
 				if (sibling === latestSelected) break;
@@ -301,4 +292,4 @@ const arrowUpHandler = (e: KeyboardEvent, hideHiddenFiles: boolean): void => {
 	}
 };
 
-export { Select, SelectInit, getSelected, ChangeSelectedEvent };
+export { Select, SelectInit, getSelected, ChangeSelectedEvent, unselectAllSelected };

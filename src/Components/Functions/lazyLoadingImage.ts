@@ -7,7 +7,7 @@ const FETCHED_ICONS: string[] = []; // Array of fetch icons
  * @param {HTMLElement} el - Element to check
  * @returns {boolean} if element in viewport
  */
-export const isElementInViewport = (el: HTMLElement): boolean => {
+const isOnImageViewport = (el: HTMLElement): boolean => {
 	const rect = el.getBoundingClientRect();
 	const windowHeight = window.innerHeight || document.documentElement.clientHeight;
 	return (
@@ -25,7 +25,7 @@ export const isElementInViewport = (el: HTMLElement): boolean => {
 export const LOAD_IMAGE = (): void => {
 	const images = document.querySelectorAll('img[data-src]');
 	images.forEach((image: HTMLImageElement) => {
-		if (isElementInViewport(image)) {
+		if (isOnImageViewport(image)) {
 			if (image.dataset.isImg === 'true') {
 				image.src = new FileAPI(image.dataset.src).readAsset();
 			} else {
@@ -46,7 +46,7 @@ const LAZY_LOAD_INIT = (): void => {
 	document.querySelector('.main-box').addEventListener('scroll', () => {
 		const images = document.querySelectorAll('img[data-src]');
 		images.forEach((image: HTMLImageElement) => {
-			if (isElementInViewport(image)) {
+			if (isOnImageViewport(image)) {
 				if (image.dataset.isImg === 'true') {
 					image.src = new FileAPI(image.dataset.src).readAsset();
 				} else {
