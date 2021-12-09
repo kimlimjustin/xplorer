@@ -15,6 +15,10 @@ export interface IUniqueDrive {
   name: string
 }
 
+export interface IDriveReducerState {
+  drives: Record<string, IDrive>
+}
+
 export const FETCH_DRIVES = 'FETCH_DRIVES';
 // export const FETCH_UNIQUE_DRIVES = 'FETCH_UNIQUE_DRIVES';
 

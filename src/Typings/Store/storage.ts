@@ -1,5 +1,9 @@
 import { AppActionBase } from "./actions";
 
+export interface IStorageReducerState {
+  [key: string]: any
+}
+
 export const WRITE_DATA = 'WRITE_DATA';
 export const READ_DATA = 'READ_DATA';
 export const REMOVE_DATA = 'REMOVE_DATA';

@@ -11,6 +11,20 @@ export interface FileTrashMeta {
   request_confirmation: boolean
 }
 
+export interface IFile {
+  metadata?: FileMetaData,
+  content?: string,
+  isDirectory?: boolean,
+  icon?: string,
+  size?: number
+}
+
+export interface IFilesReducerState {
+  files: Record<string, IFile>,
+  trashedFiles: Record<string, FileMetaData>,
+  buffers: Record<string, Buffer>,
+}
+
 export const READ_FILE = 'READ_FILE';
 export const READ_BUFFER = 'READ_BUFFER';
 export const OPEN_FILE = 'OPEN_FILE';

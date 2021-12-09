@@ -1,5 +1,9 @@
 import { AppActionBase } from "./actions";
 
+export interface IPlatformReducerState {
+  os: string
+}
+
 export const GET_OS = 'GET_OS';
 
 export type GetOSRequest = AppActionBase<typeof GET_OS, 'REQUEST'> & {};

@@ -2,6 +2,10 @@ import { WebviewWindow } from "@tauri-apps/api/window";
 
 import { AppActionBase } from "./actions";
 
+export interface IWindowReducerState {
+  windows: Record<string, WebviewWindow>
+}
+
 export const LISTEN_WINDOW_CLOSE = 'LISTEN_WINDOW_CLOSE';
 export const CREATE_WINDOW = 'CREATE_WINDOW';
 export const CHANGE_WINDOW_TITLE = 'CHANGE_WINDOW_TITLE';

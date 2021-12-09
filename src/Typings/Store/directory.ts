@@ -8,7 +8,7 @@ export interface IDirectoryMeta {
   skipped_files: string[]
 }
 
-export interface IDirectoryState {
+export interface IDirectoryReducerState {
   dir_name: string,
   parent_dir: string,
   files: Record<string, FileMetaData>

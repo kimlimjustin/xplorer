@@ -10,6 +10,10 @@ export interface IFavorites {
   HOMEDIR_PATH: string
 }
 
+export interface IFavoritesReducerState extends IFavorites {
+
+}
+
 export const FETCH_FAVORITES = 'FETCH_FAVORITES';
 
 export type FetchFavoritesRequest = AppActionBase<typeof FETCH_FAVORITES, 'REQUEST'> & {};

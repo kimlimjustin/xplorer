@@ -10,6 +10,11 @@ export interface ILocales {
   }
 }
 
+export interface ILocalesReducerState {
+  locales: ILocales,
+  availableLocales: IAvailableLocales
+}
+
 export const FETCH_LOCALES = 'FETCH_LOCALES';
 
 export type FetchLocalesRequest = AppActionBase<typeof FETCH_LOCALES, 'REQUEST'> & {};
