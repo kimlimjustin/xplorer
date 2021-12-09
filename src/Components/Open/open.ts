@@ -19,6 +19,7 @@ import { LOAD_IMAGE } from '../Functions/lazyLoadingImage';
 import PromptError from '../Prompt/error';
 import { UpdateInfo } from '../Layout/infobar';
 import { processSearch, stopSearchingProcess } from '../Files/File Operation/search';
+import Storage from '../../Api/storage';
 let platform: string;
 let directoryInfo: DirectoryAPI;
 /**
@@ -156,9 +157,17 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promis
 /**
  * Open file/folder handler
  * @param {any} e - event
- * @returns {void}
+ * @returns {Promise<void>}
  */
-const OpenHandler = (e: Event): void => {
+const OpenHandler = async (e: MouseEvent): Promise<void> => {
+	const preference = await Storage.get('preference');
+	if (document.querySelector('#sidebar-nav').contains(e.target as HTMLElement)) {
+		if (e.detail === 1 && preference.clickToOpenSidebar === 'double') return;
+	} else if ((await focusingPath()) === 'xplorer://Home') {
+		if (e.detail === 1 && preference.clickToOpenHome !== 'single') return;
+	} else {
+		if (e.detail === 1 && preference.clickToOpenFile !== 'single') return;
+	}
 	let element = e.target as HTMLElement;
 	while (element?.dataset && !element.dataset.path) {
 		element = element.parentNode as HTMLElement;
@@ -178,10 +187,11 @@ const OpenHandler = (e: Event): void => {
 };
 /**
  * Open directory/file listener initializer
- * @returns {void}
+ * @returns {Promise<void>}
  */
-const OpenInit = (): void => {
+const OpenInit = async (): Promise<void> => {
+	const preference = await Storage.get('preference');
 	document.querySelector('#sidebar-nav').addEventListener('click', OpenHandler);
-	document.querySelector('#workspace').addEventListener('dblclick', OpenHandler);
+	document.querySelector('#workspace').addEventListener('click', OpenHandler);
 };
 export { OpenInit, OpenDir };

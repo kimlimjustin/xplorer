@@ -3,7 +3,7 @@ import focusingPath from '../Functions/focusingPath';
 import { OpenDir } from '../Open/open';
 import getDirname from '../Functions/path/dirname';
 import copyLocation from '../Files/File Operation/location';
-import { ChangeSelectedEvent, getSelected } from '../Files/File Operation/select';
+import { ChangeSelectedEvent, getSelected, Select, unselectAllSelected } from '../Files/File Operation/select';
 import Pin from '../Files/File Operation/pin';
 import New from '../Functions/new';
 import { createNewWindow } from '../../Api/window';
@@ -24,6 +24,7 @@ import Redo from '../Files/File Operation/redo';
 import { Trash, PermanentDelete, Purge } from '../Files/File Operation/trash';
 import Properties from '../Properties/properties';
 import Preview, { closePreviewFile } from '../Files/File Preview/preview';
+import { ensureElementInViewPort } from '../Functions/viewport';
 let selectedAll = true;
 let pauseEnterListener = false;
 /**
@@ -48,6 +49,8 @@ const pauseEnter = (): void => {
  * @returns {void}
  */
 const Shortcut = (): void => {
+	let searchingFileName = '';
+	let _searchListener: ReturnType<typeof setTimeout>;
 	const KeyUpShortcutsHandler = async (e: KeyboardEvent) => {
 		const selectedFile = getSelected()?.[0];
 		const selectedFilePath = unescape(selectedFile?.dataset?.path);
@@ -210,6 +213,53 @@ const Shortcut = (): void => {
 				}
 				Trash(filePaths);
 			}
+		} else if (e.keyCode >= 65 && e.keyCode <= 90) {
+			// ignore some keys that has its own function
+			if (e.ctrlKey && (e.key === 'a' || e.key === 'p' || e.key === 'f')) return;
+			clearInterval(_searchListener);
+			if (e.key.toLowerCase() === searchingFileName.at(-1)) {
+				const _files = [...document.querySelectorAll('.file')].filter((file: HTMLElement) => {
+					return file
+						.querySelector('#file-filename')
+						.innerHTML.toLowerCase()
+						.normalize('NFD')
+						.replace(/[\u0300-\u036f]/g, '')
+						.startsWith(searchingFileName);
+				});
+				for (let i = 0; i < _files.length; i++) {
+					const _file = _files[i];
+					if (_file.classList.contains('selected')) {
+						unselectAllSelected();
+						Select((_files[i + 1] ?? _files[0]) as HTMLElement, false, false);
+						break;
+					}
+				}
+			} else {
+				searchingFileName += e.key.toLowerCase();
+
+				const _files = document.querySelectorAll('.file');
+				unselectAllSelected();
+				for (const _file of _files) {
+					const _fileName = _file.querySelector('#file-filename').innerHTML.toLowerCase();
+					console.log(_fileName.normalize('NFD').replace(/[\u0300-\u036f]/g, ''));
+					if (
+						_fileName
+							.normalize('NFD')
+							.replace(/[\u0300-\u036f]/g, '')
+							.startsWith(searchingFileName)
+					) {
+						Select(_file as HTMLElement, false, false);
+						ensureElementInViewPort(_file as HTMLElement);
+						ChangeSelectedEvent();
+						break;
+					}
+				}
+			}
+
+			_searchListener = setInterval(() => {
+				searchingFileName = '';
+				clearInterval(_searchListener);
+			}, 750);
 		}
 	};
 	const KeyDownShortcutsHandler = async (e: KeyboardEvent) => {
