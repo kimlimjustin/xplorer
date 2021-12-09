@@ -8,10 +8,18 @@ export interface IDirectoryMeta {
   skipped_files: string[]
 }
 
+export interface IDirectory {
+  files: Set<string>, // References file within file reducer
+  numFiles: number,
+  skippedFiles: string[]
+  dirName: string,
+  size: number
+}
+
 export interface IDirectoryReducerState {
-  dir_name: string,
-  parent_dir: string,
-  files: Record<string, FileMetaData>
+  directories: Record<string, Partial<IDirectory>>,
+  listeners: Record<string, UnlistenFn>,
+  searches: Record<string, boolean> //Directory identifier -> search in progress
 };
 
 export const FETCH_FILES = 'FETCH_FILES';
@@ -25,7 +33,7 @@ export const INIT_DIRECTORY_SEARCH = 'INIT_DIRECTORY_SEARCH';
 export const CANCEL_DIRECTORY_SEARCH = 'CANCEL_DIRECTORY_SEARCH';
 
 export type FetchFilesRequest = AppActionBase<typeof FETCH_FILES, 'REQUEST'> & { dirName: string };
-export type FetchFilesSuccess = AppActionBase<typeof FETCH_FILES, 'SUCCESS'> & { meta: IDirectoryMeta };
+export type FetchFilesSuccess = AppActionBase<typeof FETCH_FILES, 'SUCCESS'> & { dirName: string, meta: IDirectoryMeta };
 export type FetchFilesFailure = AppActionBase<typeof FETCH_FILES, 'FAILURE'> & { message: string };
 
 export type FetchIsDirectoryRequest = AppActionBase<typeof FETCH_IS_DIR, 'REQUEST'> & { path: string };
@@ -40,16 +48,16 @@ export type MakeDirectoryRequest = AppActionBase<typeof MAKE_DIRECTORY, 'REQUEST
 export type MakeDirectorySuccess = AppActionBase<typeof MAKE_DIRECTORY, 'SUCCESS'> & {};
 export type MakeDirectoryFailure = AppActionBase<typeof MAKE_DIRECTORY, 'FAILURE'> & { message: string };
 
-export type ListenDirectoryRequest = AppActionBase<typeof LISTEN_DIRECTORY, 'REQUEST'> & { dirPath: string };
-export type ListenDirectorySuccess = AppActionBase<typeof LISTEN_DIRECTORY, 'SUCCESS'> & { listener: UnlistenFn };
+export type ListenDirectoryRequest = AppActionBase<typeof LISTEN_DIRECTORY, 'REQUEST'> & { dirName: string };
+export type ListenDirectorySuccess = AppActionBase<typeof LISTEN_DIRECTORY, 'SUCCESS'> & { dirName: string, listener: UnlistenFn };
 export type ListenDirectoryFailure = AppActionBase<typeof LISTEN_DIRECTORY, 'FAILURE'> & { message: string };
 
-export type UnlistenDirectoryRequest = AppActionBase<typeof UNLISTEN_DIRECTORY, 'REQUEST'> & { listener: UnlistenFn };
-export type UnlistenDirectorySuccess = AppActionBase<typeof UNLISTEN_DIRECTORY, 'SUCCESS'> & {};
+export type UnlistenDirectoryRequest = AppActionBase<typeof UNLISTEN_DIRECTORY, 'REQUEST'> & { dirName: string };
+export type UnlistenDirectorySuccess = AppActionBase<typeof UNLISTEN_DIRECTORY, 'SUCCESS'> & { dirName: string };
 export type UnlistenDirectoryFailure = AppActionBase<typeof UNLISTEN_DIRECTORY, 'FAILURE'> & { message: string };
 
 export type FetchDirectorySizeRequest = AppActionBase<typeof FETCH_DIRECTORY_SIZE, 'REQUEST'> & { dirName: string };
-export type FetchDirectorySizeSuccess = AppActionBase<typeof FETCH_DIRECTORY_SIZE, 'SUCCESS'> & { dirSize: number };
+export type FetchDirectorySizeSuccess = AppActionBase<typeof FETCH_DIRECTORY_SIZE, 'SUCCESS'> & { dirName: string, dirSize: number };
 export type FetchDirectorySizeFailure = AppActionBase<typeof FETCH_DIRECTORY_SIZE, 'FAILURE'> & { message: string };
 
 export type InitDirectorySearchRequest = AppActionBase<typeof INIT_DIRECTORY_SEARCH, 'REQUEST'> & { dirName: string, pattern: string, callback: (partialFound: FileMetaData[]) => void };
@@ -66,6 +74,7 @@ export type DirectoryActions = FetchFilesRequest | FetchFilesSuccess | FetchFile
   | MakeDirectoryRequest | MakeDirectorySuccess | MakeDirectoryFailure
   | ListenDirectoryRequest | ListenDirectorySuccess | ListenDirectoryFailure
   | UnlistenDirectoryRequest | UnlistenDirectorySuccess | UnlistenDirectoryFailure
+  | FetchDirectorySizeRequest | FetchDirectorySizeSuccess | FetchDirectorySizeFailure
   | InitDirectorySearchRequest | InitDirectorySearchSuccess | InitDirectorySearchFailure
   | CancelDirectorySearchRequest | CancelDirectorySearchSuccess | CancelDirectorySearchFailure;
 

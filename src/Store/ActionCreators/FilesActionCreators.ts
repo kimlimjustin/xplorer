@@ -30,9 +30,10 @@ export const readFileRequest = (fileName: string): ReadFileRequest => ({
   fileName
 });
 
-export const readFileSuccess = (content: string): ReadFileSuccess => ({
+export const readFileSuccess = (fileName: string, content: string): ReadFileSuccess => ({
   type: 'READ_FILE',
   status: 'SUCCESS',
+  fileName,
   content
 });
 
@@ -48,9 +49,10 @@ export const readBufferRequest = (fileName: string): ReadBufferRequest => ({
   fileName
 });
 
-export const readBufferSuccess = (content: Buffer): ReadBufferSuccess => ({
+export const readBufferSuccess = (fileName: string, content: Buffer): ReadBufferSuccess => ({
   type: 'READ_BUFFER',
   status: 'SUCCESS',
+  fileName,
   content
 });
 
@@ -83,9 +85,10 @@ export const readAssetRequest = (fileName: string): ReadAssetRequest => ({
   fileName
 });
 
-export const readAssetSuccess = (content: string): ReadAssetSuccess => ({
+export const readAssetSuccess = (fileName: string, content: string): ReadAssetSuccess => ({
   type: 'READ_ASSET',
   status: 'SUCCESS',
+  fileName,
   content
 });
 
@@ -101,10 +104,11 @@ export const readJsonFileRequest = (fileName: string): ReadJsonFileRequest => ({
   fileName
 });
 
-export const readJsonFileSuccess = (file: JSON): ReadJsonFileSuccess => ({
+export const readJsonFileSuccess = (fileName: string, content: JSON): ReadJsonFileSuccess => ({
   type: 'READ_JSON_FILE',
   status: 'SUCCESS',
-  file
+  fileName,
+  content
 });
 
 export const readJsonFileFailure = (message: string): ReadJsonFileFailure => ({
@@ -136,9 +140,10 @@ export const fetchFilePropertiesRequest = (fileName: string): FetchFilePropertie
   fileName
 });
 
-export const fetchFilePropertiesSuccess = (metadata: FileMetaData): FetchFilePropertiesSuccess => ({
+export const fetchFilePropertiesSuccess = (fileName: string, metadata: FileMetaData): FetchFilePropertiesSuccess => ({
   type: 'FETCH_FILE_PROPERTIES',
   status: 'SUCCESS',
+  fileName,
   metadata
 });
 
@@ -154,9 +159,10 @@ export const isDirectoryRequest = (fileName: string): IsDirectoryRequest => ({
   fileName
 });
 
-export const isDirectorySuccess = (isDirectory: boolean): IsDirectorySuccess => ({
+export const isDirectorySuccess = (fileName: string, isDirectory: boolean): IsDirectorySuccess => ({
   type: 'IS_DIRECTORY',
   status: 'SUCCESS',
+  fileName,
   isDirectory
 });
 
@@ -172,9 +178,10 @@ export const extractIconRequest = (fileName: string): ExtractIconRequest => ({
   fileName
 });
 
-export const extractIconSuccess = (iconPath: string): ExtractIconSuccess => ({
+export const extractIconSuccess = (fileName: string, iconPath: string): ExtractIconSuccess => ({
   type: 'EXTRACT_ICON',
   status: 'SUCCESS',
+  fileName,
   iconPath
 });
 
@@ -190,9 +197,10 @@ export const calculateFileSizeRequest = (fileName: string): CalculateFileSizeReq
   fileName
 });
 
-export const calculateFileSizeSuccess = (size: number): CalculateFileSizeSuccess => ({
+export const calculateFileSizeSuccess = (fileName: string, size: number): CalculateFileSizeSuccess => ({
   type: 'CALCULATE_FILE_SIZE',
   status: 'SUCCESS',
+  fileName,
   size
 });
 
@@ -209,9 +217,11 @@ export const renameFileRequest = (fileName: string, dest: string): RenameFileReq
   dest
 });
 
-export const renameFileSuccess = (): RenameFileSuccess => ({
+export const renameFileSuccess = (fileName: string, dest: string): RenameFileSuccess => ({
   type: 'RENAME_FILE',
-  status: 'SUCCESS'
+  status: 'SUCCESS',
+  fileName,
+  dest
 });
 
 export const renameFileFailure = (message: string): RenameFileFailure => ({
@@ -262,9 +272,10 @@ export const removeFileRequest = (fileName: string): RemoveFileRequest => ({
   fileName
 });
 
-export const removeFileSuccess = (): RemoveFileSuccess => ({
+export const removeFileSuccess = (fileName: string): RemoveFileSuccess => ({
   type: 'REMOVE_FILE',
-  status: 'SUCCESS'
+  status: 'SUCCESS',
+  fileName
 });
 
 export const removeFileFailure = (message: string): RemoveFileFailure => ({
@@ -314,9 +325,10 @@ export const deleteFilesRequest = (paths: string[]): DeleteFilesRequest => ({
   paths
 });
 
-export const deleteFilesSuccess = (): DeleteFilesSuccess => ({
+export const deleteFilesSuccess = (paths: string[]): DeleteFilesSuccess => ({
   type: 'DELETE_FILES',
-  status: 'SUCCESS'
+  status: 'SUCCESS',
+  paths
 });
 
 export const deleteFilesFailure = (message: string): DeleteFilesFailure => ({
@@ -368,9 +380,10 @@ export const purgeFilesRequest = (paths: string[]): PurgeFilesRequest => ({
   paths
 });
 
-export const purgeFilesSuccess = (): PurgeFilesSuccess => ({
+export const purgeFilesSuccess = (paths: string[]): PurgeFilesSuccess => ({
   type: 'PURGE_FILES',
-  status: 'SUCCESS'
+  status: 'SUCCESS',
+  paths
 });
 
 export const purgeFilesFailure = (message: string): PurgeFilesFailure => ({

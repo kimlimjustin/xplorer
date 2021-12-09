@@ -22,14 +22,16 @@ export const listenWindowCloseFailure = (message: string): ListenWindowCloseFail
   message
 });
 
-export const createNewWindowRequest = (): CreateNewWindowRequest => ({
+export const createNewWindowRequest = (title: string): CreateNewWindowRequest => ({
   type: 'CREATE_WINDOW',
-  status: 'REQUEST'
+  status: 'REQUEST',
+  title
 });
 
-export const createNewWindowSuccess = (window: WebviewWindow): CreateNewWindowSuccess => ({
+export const createNewWindowSuccess = (title: string, window: WebviewWindow): CreateNewWindowSuccess => ({
   type: 'CREATE_WINDOW',
   status: 'SUCCESS',
+  title,
   window
 });
 
@@ -39,15 +41,18 @@ export const createNewWindowFailure = (message: string): CreateNewWindowFailure 
   message
 });
 
-export const changeWindowTitleRequest = (title: string): ChangeWindowTitleRequest => ({
+export const changeWindowTitleRequest = (title: string, dest: string): ChangeWindowTitleRequest => ({
   type: 'CHANGE_WINDOW_TITLE',
   status: 'REQUEST',
-  title
+  title,
+  dest
 });
 
-export const changeWindowTitleSuccess = (): ChangeWindowTitleSuccess => ({
+export const changeWindowTitleSuccess = (title: string, dest: string): ChangeWindowTitleSuccess => ({
   type: 'CHANGE_WINDOW_TITLE',
-  status: 'SUCCESS'
+  status: 'SUCCESS',
+  title,
+  dest
 });
 
 export const changeWindowTitleFailure = (message: string): ChangeWindowTitleFailure => ({

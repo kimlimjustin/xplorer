@@ -1,5 +1,5 @@
 import {
-  CliArguments,
+  ICliArguments,
   FetchCliInformationRequest, FetchCliInformationSuccess, FetchCliInformationFailure
 } from "../../Typings/Store/cli";
 
@@ -8,7 +8,7 @@ export const fetchCliInformationRequest = (): FetchCliInformationRequest => ({
   status: 'REQUEST'
 });
 
-export const fetchCliInformationSuccess = (cliArguments: CliArguments): FetchCliInformationSuccess => ({
+export const fetchCliInformationSuccess = (cliArguments: ICliArguments): FetchCliInformationSuccess => ({
   type: 'FETCH_CLI_INFORMATION',
   status: 'SUCCESS',
   cliArguments

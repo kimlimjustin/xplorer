@@ -21,9 +21,10 @@ export const fetchFilesRequest = (dirName: string): FetchFilesRequest => ({
   dirName
 });
 
-export const fetchFilesSuccess = (meta: IDirectoryMeta): FetchFilesSuccess => ({
+export const fetchFilesSuccess = (dirName: string, meta: IDirectoryMeta): FetchFilesSuccess => ({
   type: 'FETCH_FILES',
   status: 'SUCCESS',
+  dirName,
   meta
 });
 
@@ -86,15 +87,16 @@ export const makeDirectoryFailure = (message: string): MakeDirectoryFailure => (
   message
 });
 
-export const listenDirectoryRequest = (dirPath: string): ListenDirectoryRequest => ({
+export const listenDirectoryRequest = (dirName: string): ListenDirectoryRequest => ({
   type: 'LISTEN_DIRECTORY',
   status: 'REQUEST',
-  dirPath
+  dirName
 });
 
-export const listenDirectorySuccess = (listener: UnlistenFn): ListenDirectorySuccess => ({
+export const listenDirectorySuccess = (dirName: string, listener: UnlistenFn): ListenDirectorySuccess => ({
   type: 'LISTEN_DIRECTORY',
   status: 'SUCCESS',
+  dirName,
   listener
 });
 
@@ -104,15 +106,16 @@ export const listenDirectoryFailure = (message: string): ListenDirectoryFailure 
   message
 });
 
-export const unlistenDirectoryRequest = (listener: UnlistenFn): UnlistenDirectoryRequest => ({
+export const unlistenDirectoryRequest = (dirName: string): UnlistenDirectoryRequest => ({
   type: 'UNLISTEN_DIRECTORY',
   status: 'REQUEST',
-  listener
+  dirName
 });
 
-export const unlistenDirectorySuccess = (): UnlistenDirectorySuccess => ({
+export const unlistenDirectorySuccess = (dirName: string): UnlistenDirectorySuccess => ({
   type: 'UNLISTEN_DIRECTORY',
-  status: 'SUCCESS'
+  status: 'SUCCESS',
+  dirName
 });
 
 export const unlistenDirectoryFailure = (message: string): UnlistenDirectoryFailure => ({
@@ -127,9 +130,10 @@ export const fetchDirectorySizeRequest = (dirName: string): FetchDirectorySizeRe
   dirName
 });
 
-export const fetchDirectorySizeSuccess = (dirSize: number): FetchDirectorySizeSuccess => ({
+export const fetchDirectorySizeSuccess = (dirName: string, dirSize: number): FetchDirectorySizeSuccess => ({
   type: 'FETCH_DIRECTORY_SIZE',
   status: 'SUCCESS',
+  dirName,
   dirSize
 });
 

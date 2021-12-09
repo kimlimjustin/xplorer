@@ -1,7 +1,7 @@
 import { AppActionBase } from "./actions";
 
 export interface IStorageReducerState {
-  [key: string]: any
+  store: Record<string, any>
 }
 
 export const WRITE_DATA = 'WRITE_DATA';
@@ -13,11 +13,11 @@ export type WriteDataSuccess = AppActionBase<typeof WRITE_DATA, 'SUCCESS'> & {};
 export type WriteDataFailure = AppActionBase<typeof WRITE_DATA, 'FAILURE'> & { message: string };
 
 export type ReadDataRequest = AppActionBase<typeof READ_DATA, 'REQUEST'> & { key: string };
-export type ReadDataSuccess = AppActionBase<typeof READ_DATA, 'SUCCESS'> & { data: any };
+export type ReadDataSuccess = AppActionBase<typeof READ_DATA, 'SUCCESS'> & { key: string, data: any };
 export type ReadDataFailure = AppActionBase<typeof READ_DATA, 'FAILURE'> & { message: string };
 
 export type RemoveDataRequest = AppActionBase<typeof REMOVE_DATA, 'REQUEST'> & { key: string };
-export type RemoveDataSuccess = AppActionBase<typeof REMOVE_DATA, 'SUCCESS'> & {};
+export type RemoveDataSuccess = AppActionBase<typeof REMOVE_DATA, 'SUCCESS'> & { key: string };
 export type RemoveDataFailure = AppActionBase<typeof REMOVE_DATA, 'FAILURE'> & { message: string };
 
 export type StorageActions = WriteDataRequest | WriteDataSuccess | WriteDataFailure

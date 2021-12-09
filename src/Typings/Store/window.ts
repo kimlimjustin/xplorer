@@ -3,7 +3,7 @@ import { WebviewWindow } from "@tauri-apps/api/window";
 import { AppActionBase } from "./actions";
 
 export interface IWindowReducerState {
-  windows: Record<string, WebviewWindow>
+  windows: Record<string, WebviewWindow> // title -> window
 }
 
 export const LISTEN_WINDOW_CLOSE = 'LISTEN_WINDOW_CLOSE';
@@ -15,12 +15,12 @@ export type ListenWindowCloseRequest = AppActionBase<typeof LISTEN_WINDOW_CLOSE,
 export type ListenWindowCloseSuccess = AppActionBase<typeof LISTEN_WINDOW_CLOSE, 'SUCCESS'> & {};
 export type ListenWindowCloseFailure = AppActionBase<typeof LISTEN_WINDOW_CLOSE, 'FAILURE'> & { message: string };
 
-export type CreateNewWindowRequest = AppActionBase<typeof CREATE_WINDOW, 'REQUEST'> & {};
-export type CreateNewWindowSuccess = AppActionBase<typeof CREATE_WINDOW, 'SUCCESS'> & { window: WebviewWindow };
+export type CreateNewWindowRequest = AppActionBase<typeof CREATE_WINDOW, 'REQUEST'> & { title: string };
+export type CreateNewWindowSuccess = AppActionBase<typeof CREATE_WINDOW, 'SUCCESS'> & { title: string, window: WebviewWindow };
 export type CreateNewWindowFailure = AppActionBase<typeof CREATE_WINDOW, 'FAILURE'> & { message: string };
 
-export type ChangeWindowTitleRequest = AppActionBase<typeof CHANGE_WINDOW_TITLE, 'REQUEST'> & { title: string };
-export type ChangeWindowTitleSuccess = AppActionBase<typeof CHANGE_WINDOW_TITLE, 'SUCCESS'> & {};
+export type ChangeWindowTitleRequest = AppActionBase<typeof CHANGE_WINDOW_TITLE, 'REQUEST'> & { title: string, dest: string };
+export type ChangeWindowTitleSuccess = AppActionBase<typeof CHANGE_WINDOW_TITLE, 'SUCCESS'> & { title: string, dest: string };
 export type ChangeWindowTitleFailure = AppActionBase<typeof CHANGE_WINDOW_TITLE, 'FAILURE'> & { message: string };
 
 export type SetDecorationsRequest = AppActionBase<typeof SET_DECORATIONS, 'REQUEST'> & { decorations: boolean };

@@ -30,9 +30,10 @@ export const readDataRequest = (key: string): ReadDataRequest => ({
 });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const readDataSuccess = (data: any): ReadDataSuccess => ({
+export const readDataSuccess = (key: string, data: any): ReadDataSuccess => ({
   type: 'READ_DATA',
   status: 'SUCCESS',
+  key,
   data
 });
 
@@ -48,9 +49,10 @@ export const removeDataRequest = (key: string): RemoveDataRequest => ({
   key
 });
 
-export const removeDataSuccess = (): RemoveDataSuccess => ({
+export const removeDataSuccess = (key: string): RemoveDataSuccess => ({
   type: 'REMOVE_DATA',
-  status: 'SUCCESS'
+  status: 'SUCCESS',
+  key
 });
 
 export const removeDataFailure = (message: string): RemoveDataFailure => ({
