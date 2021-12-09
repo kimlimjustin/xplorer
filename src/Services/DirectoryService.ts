@@ -65,6 +65,7 @@ export const getSize = async (dirName: string): Promise<number> => invoke<number
  * @returns {any}
  */
 export const search = async (dirName: string, pattern: string, callback: (partialFound: FileMetaData[]) => void): Promise<FileMetaData[]> => {
+  // TODO move this into a saga listener
   await getCurrent().listen<FileMetaData[]>('search_partial_result', (res) => {
     callback(res.payload);
   });
