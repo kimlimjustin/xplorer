@@ -36,10 +36,10 @@ const Appearance = async (): Promise<void> => {
 	const showInfoBar = _appearance?.showInfoBar ?? true;
 
 	const availableThemes = [
-		{ name: 'Light', identifier: 'light', category: 'light' },
-		{ name: 'Dark', identifier: 'dark', category: 'dark' },
-		{ name: 'Light+', identifier: 'light+', category: 'light+' },
-		{ name: 'Dark+', identifier: 'dark+', category: 'dark' },
+		{ name: 'Light', identifier: 'light' },
+		{ name: 'Dark', identifier: 'dark' },
+		{ name: 'Light+', identifier: 'light+' },
+		{ name: 'Dark+', identifier: 'dark+' },
 	].concat(_theme?.availableThemes ?? []);
 	const availableFonts = await getAvailableFonts();
 	const default_i18n = await Translate('Default');
@@ -274,11 +274,8 @@ const Appearance = async (): Promise<void> => {
 		Storage.set('appearance', appearance);
 	});
 	settingsMain.querySelector('[name="theme"]')?.addEventListener('change', async (event: Event & { target: HTMLInputElement }) => {
-		const category = (event.target as unknown as HTMLSelectElement).options[(event.target as unknown as HTMLSelectElement).selectedIndex].dataset
-			.category;
-		const themes = await Storage.get('theme');
+		const themes = (await Storage.get('theme')) ?? {};
 		themes['theme'] = event.target.value;
-		themes['category'] = category;
 		Storage.set('theme', themes);
 		updateTheme('*');
 	});

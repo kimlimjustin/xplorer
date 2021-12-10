@@ -6,7 +6,7 @@
 	"version": "0.1.0",
 	"license": "MIT",
 	"scripts": {
-		"start": "xplorer --theme shadesofpurple",
+		"start": "E:/xplorer/src-tauri/target/debug/app.exe --theme shadesofpurple",
 		"build": "xplorer build-extension themes"
 	},
 	"xplorerExtensionConfig": {
