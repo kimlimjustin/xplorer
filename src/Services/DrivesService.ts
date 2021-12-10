@@ -15,6 +15,7 @@ export const fetchDrives = async (): Promise<IDrive[]> => {
   return filteredDrives;
 }
 
+// ! This should be a helper function
 export const fetchUniqueDrives = (drives: IDrive[]): IUniqueDrive[] => drives
   .map((drive) => ({
     mount_point: drive.mount_point, name: drive.name && /[^?]/.test(drive.name)

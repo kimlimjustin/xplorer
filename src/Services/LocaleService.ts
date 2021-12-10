@@ -4,7 +4,7 @@ import { ILocales, IAvailableLocales } from '../Typings/Store/locales';
 
 export const fetchLocales = async (): Promise<{ locales: ILocales, availableLocales: IAvailableLocales }> => {
   const availableLocales: IAvailableLocales = localesJSON.availableLanguages;
-  const locales = {};
+  const locales: ILocales = {};
 
   for (const localeName of Object.values(availableLocales)) {
     const localeJSON = await import(`../Locales/${localeName === 'en-US' ? 'base' : localeName}.json`);

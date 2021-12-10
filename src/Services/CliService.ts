@@ -1,4 +1,4 @@
 import { invoke } from '@tauri-apps/api';
-import { CliArguments } from '../Typings/Store/cli';
+import { ICliArguments } from '../Typings/Store/cli';
 
-export const fetchCliInformation = async (): Promise<CliArguments> => await invoke<CliArguments>('get_cli_args');
+export const fetchCliInformation = async (): Promise<ICliArguments> => await invoke<ICliArguments>('get_cli_args');

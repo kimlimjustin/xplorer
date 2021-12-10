@@ -1,7 +1,29 @@
-import { all } from "redux-saga/effects";
+import { all, fork } from "redux-saga/effects";
+
+import appSaga from './AppSaga';
+import cliSaga from './CliSaga';
+import directorySaga from './DirectorySaga';
+import drivesSaga from './DrivesSaga';
+import favoritesSaga from './FavoritesSaga';
+import filesSaga from './FilesSaga';
+import localeSaga from './LocaleSaga';
+import platformSaga from './PlatformService';
+import storageSaga from './StorageSaga';
+import windowSaga from './WindowSaga';
 
 function* rootSaga() {
-  yield all([]);
+  yield all([
+    fork(appSaga),
+    fork(cliSaga),
+    fork(directorySaga),
+    fork(drivesSaga),
+    fork(favoritesSaga),
+    fork(filesSaga),
+    fork(localeSaga),
+    fork(platformSaga),
+    fork(storageSaga),
+    fork(windowSaga)
+  ]);
 }
 
 export default rootSaga;

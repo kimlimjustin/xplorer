@@ -9,32 +9,32 @@ import { IDirectoryMeta } from '../Typings/Store/directory';
  * Get files inside a directory
  * @returns {Promise<DirectoryData>}
  */
-export const getFiles = async (dirName: string): Promise<IDirectoryMeta> => invoke<IDirectoryMeta>('read_directory', { dir: dirName });
+export const fetchFiles = async (dirName: string): Promise<IDirectoryMeta> => invoke<IDirectoryMeta>('read_directory', { dir: dirName });
 
 /**
  * Check if given path is directory
  * @returns {Promise<boolean>}
  */
-export const isDir = async (path: string): Promise<boolean> => invoke<boolean>('is_dir', { path });
+export const isDirectory = async (path: string): Promise<boolean> => invoke<boolean>('is_dir', { path });
 
 /**
  * Return true if folder exist
   * @returns {boolean}
   */
-export const exists = async (filePath: string): Promise<boolean> => invoke<boolean>('file_exist', { filePath });
+export const fileExists = async (filePath: string): Promise<boolean> => invoke<boolean>('file_exist', { filePath });
 
 /**
  * Create dir if not exists
  * @returns {boolean}
  */
-export const mkdir = async (dirPath: string): Promise<boolean> => invoke<boolean>('create_dir_recursive', { dirPath });
+export const makeDirectory = async (dirPath: string): Promise<boolean> => invoke<boolean>('create_dir_recursive', { dirPath });
 
 /**
  * Listen to changes in a directory
  * @param {() => void} callback - callback
  * @returns {UnlistenFn}
  */
-export const listen = async (dirName: string, callback: () => void = () => undefined): Promise<UnlistenFn> => {
+export const listenDirectory = async (dirName: string, callback: () => void = () => undefined): Promise<UnlistenFn> => {
   invoke('listen_dir', { dir: dirName });
   const listener = await getCurrent().listen('changes', (e) => {
     console.info(e);
@@ -47,7 +47,7 @@ export const listen = async (dirName: string, callback: () => void = () => undef
  * Unlisten to previous listener
  * @returns {Promise<void>}
  */
-export const unlisten = async (listener: UnlistenFn): Promise<void> => {
+export const unlistenDirectory = async (listener: UnlistenFn): Promise<void> => {
   listener();
   getCurrent().emit('unlisten_dir');
 }
@@ -56,29 +56,22 @@ export const unlisten = async (listener: UnlistenFn): Promise<void> => {
  * Get size of a directory
  * @returns {Promise<number>}
  */
-export const getSize = async (dirName: string): Promise<number> => invoke<number>('get_dir_size', { dir: dirName });
+export const fetchDirectorySize = async (dirName: string): Promise<number> => invoke<number>('get_dir_size', { dir: dirName });
 
 /**
  * Search for a file/folder in a directory
  * @param {string} pattern - glob pattern
- * @param {FileMetaData[] => void} callback - progress callback
  * @returns {any}
  */
-export const search = async (dirName: string, pattern: string, callback: (partialFound: FileMetaData[]) => void): Promise<FileMetaData[]> => {
-  // TODO move this into a saga listener
-  await getCurrent().listen<FileMetaData[]>('search_partial_result', (res) => {
-    callback(res.payload);
-  });
-  const res = await invoke<FileMetaData[]>('search_in_dir', { dirPath: dirName, pattern })
-  await stopSearching();
-  return res;
+export const initDirectorySearch = async (dirName: string, pattern: string): Promise<FileMetaData[]> => {
+  return invoke<FileMetaData[]>('search_in_dir', { dirPath: dirName, pattern })
 }
 
 /**
  * Stop all searching progress
  * @returns {Promise<boolean>}
  */
-export const stopSearching = async (searchListener?: UnlistenFn): Promise<boolean> => {
+export const cancelDirectorySearch = async (searchListener: UnlistenFn): Promise<boolean> => {
   searchListener?.();
   await getCurrent().emit('unsearch');
   return !!searchListener;

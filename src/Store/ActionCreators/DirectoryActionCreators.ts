@@ -10,7 +10,8 @@ import {
   InitDirectorySearchFailure, InitDirectorySearchRequest, InitDirectorySearchSuccess,
   ListenDirectoryFailure, ListenDirectoryRequest, ListenDirectorySuccess,
   MakeDirectoryFailure, MakeDirectoryRequest, MakeDirectorySuccess,
-  UnlistenDirectoryFailure, UnlistenDirectoryRequest, UnlistenDirectorySuccess
+  UnlistenDirectoryFailure, UnlistenDirectoryRequest, UnlistenDirectorySuccess,
+  DirectorySearchPartialResultSuccess, DirectorySearchPartialResultFailure
 } from "../../Typings/Store/directory";
 
 import FileMetaData from "../../Typings/fileMetaData";
@@ -87,10 +88,11 @@ export const makeDirectoryFailure = (message: string): MakeDirectoryFailure => (
   message
 });
 
-export const listenDirectoryRequest = (dirName: string): ListenDirectoryRequest => ({
+export const listenDirectoryRequest = (dirName: string, callback: () => void = () => undefined): ListenDirectoryRequest => ({
   type: 'LISTEN_DIRECTORY',
   status: 'REQUEST',
-  dirName
+  dirName,
+  callback
 });
 
 export const listenDirectorySuccess = (dirName: string, listener: UnlistenFn): ListenDirectorySuccess => ({
@@ -151,27 +153,41 @@ export const initDirectorySearchRequest = (dirName: string, pattern: string, cal
   callback
 });
 
-export const initDirectorySearchSuccess = (results: FileMetaData[]): InitDirectorySearchSuccess => ({
+export const directorySearchSuccess = (results: FileMetaData[]): InitDirectorySearchSuccess => ({
   type: 'INIT_DIRECTORY_SEARCH',
   status: 'SUCCESS',
   results
 });
 
-export const initDirectorySearchFailure = (message: string): InitDirectorySearchFailure => ({
+export const directorySearchFailure = (message: string): InitDirectorySearchFailure => ({
   type: 'INIT_DIRECTORY_SEARCH',
   status: 'FAILURE',
   message
 });
 
-export const cancelDirectorySearchRequest = (listener?: UnlistenFn): CancelDirectorySearchRequest => ({
+export const directorySearchPartialResultSuccess = (result: FileMetaData[]): DirectorySearchPartialResultSuccess => ({
+  type: 'DIRECTORY_SEARCH_PARTIAL_RESULT',
+  status: 'SUCCESS',
+  result
+});
+
+export const directorySearchPartialResultFailure = (message: string): DirectorySearchPartialResultFailure => ({
+  type: 'DIRECTORY_SEARCH_PARTIAL_RESULT',
+  status: 'FAILURE',
+  message
+});
+
+export const cancelDirectorySearchRequest = (dirName: string, listener: UnlistenFn): CancelDirectorySearchRequest => ({
   type: 'CANCEL_DIRECTORY_SEARCH',
   status: 'REQUEST',
+  dirName,
   listener
 });
 
-export const cancelDirectorySearchSuccess = (): CancelDirectorySearchSuccess => ({
+export const cancelDirectorySearchSuccess = (dirName: string): CancelDirectorySearchSuccess => ({
   type: 'CANCEL_DIRECTORY_SEARCH',
-  status: 'SUCCESS'
+  status: 'SUCCESS',
+  dirName
 });
 
 export const cancelDirectorySearchFailure = (message: string): CancelDirectorySearchFailure => ({

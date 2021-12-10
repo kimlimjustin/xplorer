@@ -3,12 +3,12 @@ import { WebviewWindow } from "@tauri-apps/api/window";
 
 export const listenWindowClose = async (): Promise<void> => new Promise(resolve => event.listen('tauri://close-requested', () => resolve()));
 
-export const createNewWindow = (): WebviewWindow => new WebviewWindow(
+export const createNewWindow = (title = 'Xplorer'): WebviewWindow => new WebviewWindow(
   Math.random().toString(),
   {
     decorations: false,
     transparent: true,
-    title: 'Xplorer'
+    title
   }
 );
 
