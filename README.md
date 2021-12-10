@@ -141,6 +141,8 @@ We highly encourage you to contribute to this project (even if you are a beginne
 
 ### Gitpod for Xplorer's development
 
+_Development in Gitpod is not functioning right now, a fix is on progress ([#174](https://github.com/kimlimjustin/xplorer/pull/174))_
+
 Gitpod is a Ready-to-Code environment in which you don't need to worry about dependency errors or lagging your computer. Hit the button below and log in to GitHub with your GitHub account. Then, after it loads, you end up with a VS Code-like environment where you can start developing and pushing your changes.
 
 **Very Important Note: Remember to reload the Gitpod website after it loads up since it won't start the servers immediately, but by reloading, you can get it started. If you are developing the app, go to the Remote Explorer on the sidebar and visit port _6080_ which opens the noVNC app server. If you are developing the docs, go to the Remote explorer but instead of port 6080, visit port _3000_. You can edit normally as you do in VS Code, but if you want to use it locally, click the hamburger menu button and click _Open in VS Code_.**
