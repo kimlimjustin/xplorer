@@ -1,53 +1,48 @@
 ---
 # The image is needed so that every Gitpod Workspace comes with gitpod/workspace-full-vnc whenever they start it.
 image:
-  file: .gitpod.Dockerfile
+    file: Dockerfile
 
 # Now, there are specific tasks for dependencies, servers, noVNC, ports and even pre-builds so that you start without delay.
 tasks:
-  - name: Yarn App Server
-    init: echo "Starting app server"
-    command: |
-          yarn
-          yarn dev
-  - name: Yarn Docs Server
-    init: echo "Starting docs server"
-    command: |
-          cd docs
-          yarn
-          yarn start
+    - name: Yarn App Server
+      init: echo "Starting app server"
+      command: yarn && yarn dev
+    - name: Yarn Docs Server
+      init: echo "Starting docs server"
+      command: cd docs && yarn && yarn start
 
 vscode:
-  extensions:
-    - kimlimjustin.jsdoc-generator
-    
-    - esbenp.prettier-vscode
+    extensions:
+        - kimlimjustin.jsdoc-generator
 
-    - orta.vscode-jest
-  
+        - esbenp.prettier-vscode
+
+        - orta.vscode-jest
+
 # Ports config
 ports:
-  - port: 3000
-    onOpen: open-preview
-  - port: 6080
-    onOpen: open-browser
-  - port: 5900
-    onOpen: ignore
+    - port: 3000
+      onOpen: open-preview
+    - port: 6080
+      onOpen: open-browser
+    - port: 5900
+      onOpen: ignore
 
 # GitHub Prebuilds
 github:
-  prebuilds:
-    # enable for the master/default branch (defaults to true)
-    master: true
-# enable for all branches in this repo (defaults to false)
-    branches: true
-# enable for pull requests coming from this repo (defaults to true)
-    pullRequests: true
-# enable for pull requests coming from forks (defaults to false)
-    pullRequestsFromForks: true
-# add a "Review in Gitpod" button as a comment to pull requests (defaults to true)
-    addComment: true
-# add a "Review in Gitpod" button to pull requests (defaults to false)
-    addBadge: true
-# add a label once the prebuild is ready to pull requests (defaults to false)
-    addLabel: prebuilt-in-gitpod
+    prebuilds:
+        # enable for the master/default branch (defaults to true)
+        master: true
+        # enable for all branches in this repo (defaults to false)
+        branches: true
+        # enable for pull requests coming from this repo (defaults to true)
+        pullRequests: true
+        # enable for pull requests coming from forks (defaults to false)
+        pullRequestsFromForks: true
+        # add a "Review in Gitpod" button as a comment to pull requests (defaults to true)
+        addComment: false
+        # add a "Review in Gitpod" button to pull requests (defaults to false)
+        addBadge: true
+        # add a label once the prebuild is ready to pull requests (defaults to false)
+        addLabel: prebuilt-in-gitpod
