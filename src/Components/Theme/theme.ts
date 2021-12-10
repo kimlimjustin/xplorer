@@ -159,6 +159,21 @@ const changeTheme = async (
 				});
 			}
 		});
+
+		const style = document.querySelector('style#theme-style') ?? document.createElement('style');
+		style.id = 'theme-style';
+		let styles = '';
+		for (const key of Object.keys(themeJSON ?? defaultThemeJSON[theme])) {
+			const value = themeJSON ? themeJSON[key] : defaultThemeJSON[theme]?.[key];
+			if (key.startsWith('hljs')) {
+				const formalKey = key.replace(/[A-Z]/g, (m) => '-' + m.toLowerCase());
+				const styleKey = formalKey.split('.').at(-1);
+				const className = formalKey.split('.').slice(0, -1).join('.').replace('hljs.', 'hljs-');
+				styles += `.${className} { ${styleKey}: ${value}; }\n`;
+			}
+		}
+		style.innerHTML = styles;
+		if (!document.head.contains(style)) document.head.appendChild(style);
 	}
 	if (category === '*' || category === 'windowmanager') {
 		changeElementTheme(document.querySelector('#minimize'), 'minimizeBackground', 'background', theme);
@@ -167,8 +182,6 @@ const changeTheme = async (
 		changeElementTheme(document.querySelector('#maximize'), 'maximizeColor', 'color', theme);
 		changeElementTheme(document.querySelector('#exit'), 'exitBackground', 'background', theme);
 		changeElementTheme(document.querySelector('#exit'), 'exitColor', 'color', theme);
-		changeElementTheme(document.querySelector('.create-new-tab'), 'newTabBackground', 'background', theme);
-		changeElementTheme(document.querySelector('.create-new-tab'), 'newTabColor', 'color', theme);
 		changeElementTheme(document.querySelector('#go-back'), 'navigatorBackground', 'background', theme);
 		changeElementTheme(document.querySelector('#go-back'), 'navigatorColor', 'color', theme);
 		changeElementTheme(document.querySelector('#go-forward'), 'navigatorBackground', 'background', theme);
@@ -177,6 +190,8 @@ const changeTheme = async (
 		changeElementTheme(document.querySelector('#refresh'), 'navigatorColor', 'color', theme);
 	}
 	if (category === '*' || category === 'tabbing') {
+		changeElementTheme(document.querySelector('.create-new-tab'), 'newTabBackground', 'background', theme);
+		changeElementTheme(document.querySelector('.create-new-tab'), 'newTabColor', 'color', theme);
 		changeElementTheme(document.querySelector('.path-navigator'), 'pathNavigatorBackground', 'background', theme);
 		changeElementTheme(document.querySelector('.path-navigator'), 'pathNavigatorColor', 'color', theme);
 		changeElementTheme(document.querySelector('.search-bar'), 'searchBarBackground', 'background', theme);

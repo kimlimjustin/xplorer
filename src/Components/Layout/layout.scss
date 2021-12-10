@@ -246,6 +246,7 @@
 	.infobar {
 		border-radius: 0 0 var(--edge-radius) 0;
 		display: flex;
+		opacity: var(--workspace-transparency);
 		.infobar-item {
 			padding: 2.5px 10px;
 		}
