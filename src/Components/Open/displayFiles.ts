@@ -29,14 +29,14 @@ const displayFiles = async (
 	const dirAlongsideFiles = preference?.dirAlongsideFiles ?? false;
 	const layout = (await Storage.get('layout'))?.[dir] ?? appearance?.layout ?? 'd';
 	const sort = (await Storage.get('sort'))?.[dir] ?? (await getDefaultSort(dir)) ?? 'A';
-	if (sort === 'A' || sort === 'Z') {
-		const compator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' }).compare;
+	const compator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' }).compare;
+	if (sort === 'A') {
 		files.sort((a, b) => {
-			if (sort === 'A') {
-				return compator(a.basename.toLowerCase(), b.basename.toLowerCase());
-			} else {
-				return compator(b.basename.toLowerCase(), a.basename.toLowerCase());
-			}
+			return compator(a.basename.toLowerCase(), b.basename.toLowerCase());
+		});
+	} else if (sort === 'Z') {
+		files.sort((a, b) => {
+			return compator(b.basename.toLowerCase(), a.basename.toLowerCase());
 		});
 	} else {
 		files = files.sort((a, b) => {
