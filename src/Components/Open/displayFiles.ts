@@ -28,35 +28,48 @@ const displayFiles = async (
 	const appearance = await Storage.get('appearance');
 	const dirAlongsideFiles = preference?.dirAlongsideFiles ?? false;
 	const layout = (await Storage.get('layout'))?.[dir] ?? appearance?.layout ?? 'd';
-	const sort = (await Storage.get('sort'))?.[dir] ?? (await getDefaultSort(dir)) ?? 'A';
-	const compator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' }).compare;
-	if (sort === 'A') {
-		files.sort((a, b) => {
-			return compator(a.basename.toLowerCase(), b.basename.toLowerCase());
-		});
-	} else if (sort === 'Z') {
-		files.sort((a, b) => {
-			return compator(b.basename.toLowerCase(), a.basename.toLowerCase());
-		});
-	} else {
-		files = files.sort((a, b) => {
-			switch (sort) {
-				case 'L': // Last Modified
-					return new Date(a.last_modified?.secs_since_epoch ?? a.time_deleted) <
-						new Date(b.last_modified?.secs_since_epoch ?? b.time_deleted)
-						? 1
-						: -1;
-				case 'F': // First Modified
-					return new Date(a.last_modified?.secs_since_epoch ?? a.time_deleted) >
-						new Date(b.last_modified?.secs_since_epoch ?? b.time_deleted)
-						? 1
-						: -1;
-				case 'S': // Size
-					return a.size > b.size ? 1 : -1;
-				case 'T':
-					return a.file_type > b.file_type ? 1 : -1;
+	const sort = (await Storage.get('sort'))?.[dir] ?? await getDefaultSort(dir);
+	switch (sort) {
+		case 'L': // Last Modified
+			files.sort((a, b) => {
+				return new Date(a.last_modified?.secs_since_epoch ?? a.time_deleted) <
+					new Date(b.last_modified?.secs_since_epoch ?? b.time_deleted)
+					? 1
+					: -1;
+			});
+			break;
+		case 'F': // First Modified
+			files.sort((a, b) => {
+				return new Date(a.last_modified?.secs_since_epoch ?? a.time_deleted) >
+					new Date(b.last_modified?.secs_since_epoch ?? b.time_deleted)
+					? 1
+					: -1;
+			});
+			break;
+		case 'S': // Size
+			files.sort((a, b) => a.size - b.size);
+			break;
+		case 'T': // Filetype
+			files.sort((a, b) => a.file_type - b.file_type);
+			break;
+
+		case 'A': // A-Z
+		case 'Z': // Z-A
+		default: {
+			const compator = new Intl.Collator(undefined, {
+				numeric: true,
+				sensitivity: 'base',
+			}).compare;
+			if (sort === 'Z') {
+				files.sort((a, b) => {
+					return compator(b.basename.toLowerCase(), a.basename.toLowerCase());
+				});
+			} else {
+				files.sort((a, b) => {
+					return compator(a.basename.toLowerCase(), b.basename.toLowerCase());
+				});
 			}
-		});
+		}
 	}
 	if (!dirAlongsideFiles) {
 		files = files.sort((a, b) => -(Number(a.is_dir) - Number(b.is_dir)));
