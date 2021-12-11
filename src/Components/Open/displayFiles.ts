@@ -1,4 +1,3 @@
-import { OpenLog } from '../Functions/log';
 import Storage from '../../Api/storage';
 import fileThumbnail from '../Thumbnail/thumbnail';
 import formatBytes from '../Functions/filesize';
@@ -29,28 +28,36 @@ const displayFiles = async (
 	const appearance = await Storage.get('appearance');
 	const dirAlongsideFiles = preference?.dirAlongsideFiles ?? false;
 	const layout = (await Storage.get('layout'))?.[dir] ?? appearance?.layout ?? 'd';
-	const sort = (await Storage.get('sort'))?.[dir] ?? (await getDefaultSort(dir)) ?? 'a';
-
-	files = files.sort((a, b) => {
-		switch (sort) {
-			case 'A': // A-Z
-				return a.basename.toLowerCase() > b.basename.toLowerCase() ? 1 : -1;
-			case 'Z': // Z-A
-				return a.basename.toLowerCase() < b.basename.toLowerCase() ? 1 : -1;
-			case 'L': // Last Modified
-				return new Date(a.last_modified?.secs_since_epoch ?? a.time_deleted) < new Date(b.last_modified?.secs_since_epoch ?? b.time_deleted)
-					? 1
-					: -1;
-			case 'F': // First Modified
-				return new Date(a.last_modified?.secs_since_epoch ?? a.time_deleted) > new Date(b.last_modified?.secs_since_epoch ?? b.time_deleted)
-					? 1
-					: -1;
-			case 'S': // Size
-				return a.size > b.size ? 1 : -1;
-			case 'T':
-				return a.file_type > b.file_type ? 1 : -1;
-		}
-	});
+	const sort = (await Storage.get('sort'))?.[dir] ?? (await getDefaultSort(dir)) ?? 'A';
+	if (sort === 'A' || sort === 'Z') {
+		const compator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' }).compare;
+		files.sort((a, b) => {
+			if (sort === 'A') {
+				return compator(a.basename.toLowerCase(), b.basename.toLowerCase());
+			} else {
+				return compator(b.basename.toLowerCase(), a.basename.toLowerCase());
+			}
+		});
+	} else {
+		files = files.sort((a, b) => {
+			switch (sort) {
+				case 'L': // Last Modified
+					return new Date(a.last_modified?.secs_since_epoch ?? a.time_deleted) <
+						new Date(b.last_modified?.secs_since_epoch ?? b.time_deleted)
+						? 1
+						: -1;
+				case 'F': // First Modified
+					return new Date(a.last_modified?.secs_since_epoch ?? a.time_deleted) >
+						new Date(b.last_modified?.secs_since_epoch ?? b.time_deleted)
+						? 1
+						: -1;
+				case 'S': // Size
+					return a.size > b.size ? 1 : -1;
+				case 'T':
+					return a.file_type > b.file_type ? 1 : -1;
+			}
+		});
+	}
 	if (!dirAlongsideFiles) {
 		files = files.sort((a, b) => -(Number(a.is_dir) - Number(b.is_dir)));
 	}
