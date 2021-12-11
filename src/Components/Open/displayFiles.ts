@@ -28,20 +28,18 @@ const displayFiles = async (
 	const appearance = await Storage.get('appearance');
 	const dirAlongsideFiles = preference?.dirAlongsideFiles ?? false;
 	const layout = (await Storage.get('layout'))?.[dir] ?? appearance?.layout ?? 'd';
-	const sort = (await Storage.get('sort'))?.[dir] ?? await getDefaultSort(dir);
+	const sort = (await Storage.get('sort'))?.[dir] ?? (await getDefaultSort(dir));
 	switch (sort) {
 		case 'L': // Last Modified
 			files.sort((a, b) => {
-				return new Date(a.last_modified?.secs_since_epoch ?? a.time_deleted) <
-					new Date(b.last_modified?.secs_since_epoch ?? b.time_deleted)
+				return new Date(a.last_modified?.secs_since_epoch ?? a.time_deleted) < new Date(b.last_modified?.secs_since_epoch ?? b.time_deleted)
 					? 1
 					: -1;
 			});
 			break;
 		case 'F': // First Modified
 			files.sort((a, b) => {
-				return new Date(a.last_modified?.secs_since_epoch ?? a.time_deleted) >
-					new Date(b.last_modified?.secs_since_epoch ?? b.time_deleted)
+				return new Date(a.last_modified?.secs_since_epoch ?? a.time_deleted) > new Date(b.last_modified?.secs_since_epoch ?? b.time_deleted)
 					? 1
 					: -1;
 			});
@@ -50,7 +48,7 @@ const displayFiles = async (
 			files.sort((a, b) => a.size - b.size);
 			break;
 		case 'T': // Filetype
-			files.sort((a, b) => a.file_type - b.file_type);
+			files.sort((a, b) => (a.file_type > b.file_type ? 1 : -1));
 			break;
 
 		case 'A': // A-Z
