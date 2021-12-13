@@ -1,4 +1,4 @@
-import { all, fork } from "redux-saga/effects";
+import { all, spawn } from "redux-saga/effects";
 
 import appSaga from './AppSaga';
 import cliSaga from './CliSaga';
@@ -14,17 +14,17 @@ import windowSaga from './WindowSaga';
 
 function* rootSaga() {
   yield all([
-    fork(appSaga),
-    fork(cliSaga),
-    fork(clipboardSaga),
-    fork(directorySaga),
-    fork(drivesSaga),
-    fork(favoritesSaga),
-    fork(filesSaga),
-    fork(localeSaga),
-    fork(platformSaga),
-    fork(storageSaga),
-    fork(windowSaga)
+    spawn(appSaga),
+    spawn(cliSaga),
+    spawn(clipboardSaga),
+    spawn(directorySaga),
+    spawn(drivesSaga),
+    spawn(favoritesSaga),
+    spawn(filesSaga),
+    spawn(localeSaga),
+    spawn(platformSaga),
+    spawn(storageSaga),
+    spawn(windowSaga)
   ]);
 }
 
