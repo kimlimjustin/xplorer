@@ -190,7 +190,6 @@ const OpenHandler = async (e: MouseEvent): Promise<void> => {
  * @returns {Promise<void>}
  */
 const OpenInit = async (): Promise<void> => {
-	const preference = await Storage.get('preference');
 	document.querySelector('#sidebar-nav').addEventListener('click', OpenHandler);
 	document.querySelector('#workspace').addEventListener('click', OpenHandler);
 };
