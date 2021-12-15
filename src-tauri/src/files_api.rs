@@ -12,8 +12,8 @@ use glob::{glob_with, MatchOptions};
 use normpath::PathExt;
 use notify::{raw_watcher, RawEvent, RecursiveMode, Watcher};
 use std::sync::mpsc::channel;
+#[cfg(target_os = "windows")]
 use tauri::api::path::local_data_dir;
-use tauri::Manager;
 
 #[cfg(windows)]
 use std::os::windows::prelude::*;
