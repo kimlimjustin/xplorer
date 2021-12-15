@@ -62,7 +62,6 @@ const Properties = (filePath: string): void => {
 		'Accessed At': accessedAt,
 		'File Attribute': file_attr,
 	});
-	updateTheme('properties');
 };
 
 export default Properties;

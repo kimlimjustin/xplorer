@@ -61,79 +61,47 @@ const getXYCoordinates = (e: MouseEvent): { x: number; y: number } => {
 	};
 };
 
+const ALLOWED_STYLES = [
+	'background',
+	'color',
+	'font',
+	'border',
+	'text',
+	'cursor',
+	'outline',
+	'--scrollbar',
+	'--tabs-scrollbar',
+	'--preview-object',
+	'--selected-grid',
+];
+
 /**
  * Change page theme
  * @param {string} theme - The current theme
  * @returns {Promise<void>}
  */
-const changeTheme = async (
-	theme?: string,
-	category?:
-		| '*'
-		| 'root'
-		| 'windowmanager'
-		| 'tabbing'
-		| 'settings'
-		| 'favorites'
-		| 'grid'
-		| 'contextmenu'
-		| 'prompt'
-		| 'preview'
-		| 'properties'
-		| 'infobar'
-): Promise<void> => {
+const changeTheme = async (theme?: string, category?: '*' | 'root' | 'tabbing' | 'favorites' | 'grid'): Promise<void> => {
 	if (!category) category = '*';
 	const appearance = await Storage.get('appearance');
 	if (category === '*' || category === 'root') {
+		1;
 		document.body.style.setProperty('--edge-radius', appearance?.frameStyle === 'os' ? '0px' : '10px');
-		changeElementTheme(document.querySelector('.main-box'), 'mainBackground', 'background', theme);
-		changeElementTheme(document.body, 'textColor', 'color', theme);
-		if (appearance?.fontSize) {
-			document.body.style.fontSize = appearance?.fontSize;
-			document.documentElement.style.fontSize = appearance?.fontSize;
-		} else changeElementTheme(document.body, 'fontSize', 'fontSize', theme);
-		if (appearance?.fontFamily) {
-			document.body.style.fontFamily = appearance?.fontFamily;
-			document.documentElement.style.fontFamily = appearance?.fontFamily;
-		} else changeElementTheme(document.body, 'fontFamily', 'fontFamily', theme);
-		if (appearance?.transparentSidebar ?? true)
-			document.body.style.setProperty('--sidebar-transparency', appearance?.windowTransparency ?? '0.8');
-		if (appearance?.transparentWorkspace ?? false)
-			document.body.style.setProperty('--workspace-transparency', appearance?.windowTransparency ?? '0.8');
-		if (appearance?.transparentTopbar ?? false) document.body.style.setProperty('--topbar-transparency', appearance?.windowTransparency ?? '0.8');
-
+		document.body.style.fontSize = appearance?.fontSize ?? '16px';
+		document.documentElement.style.fontSize = appearance?.fontSize ?? '16px';
+		document.body.style.fontFamily = appearance?.fontFamily ?? 'system-ui';
+		document.documentElement.style.fontFamily = appearance?.fontFamily ?? 'system-ui';
 		document.body.style.setProperty(
-			'--scrollbar-track',
-			themeJSON ? themeJSON.scrollbarTrackBackground : defaultThemeJSON[theme]?.scrollbarTrackBackground
+			'--sidebar-transparency',
+			appearance?.transparentSidebar ?? true ? appearance?.windowTransparency ?? '0.8' : '1'
 		);
 		document.body.style.setProperty(
-			'--scrollbar-thumb',
-			themeJSON ? themeJSON.scrollbarThumbBackground : defaultThemeJSON[theme]?.scrollbarThumbBackground
+			'--workspace-transparency',
+			appearance?.transparentWorkspace ?? false ? appearance?.windowTransparency ?? '0.8' : '1'
 		);
 		document.body.style.setProperty(
-			'--scrollbar-thumb-hover',
-			themeJSON ? themeJSON.scrollbarThumbHoverBackground : defaultThemeJSON[theme]?.scrollbarThumbHoverBackground
+			'--topbar-transparency',
+			appearance?.transparentTopbar ?? false ? appearance?.windowTransparency ?? '0.8' : '1'
 		);
-		document.body.style.setProperty(
-			'--selected-grid-border',
-			themeJSON ? themeJSON.selectedGridBorder : defaultThemeJSON[theme]?.selectedGridBorder
-		);
-		document.body.style.setProperty(
-			'--selected-grid-background',
-			themeJSON ? themeJSON.selectedGridBackground : defaultThemeJSON[theme]?.selectedGridBackground
-		);
-		document.body.style.setProperty(
-			'--selected-grid-color',
-			themeJSON ? themeJSON.selectedGridColor : defaultThemeJSON[theme]?.selectedGridColor
-		);
-
-		changeElementTheme(document.querySelector('.loading-bar'), 'loadingBar', 'background', theme);
-		changeElementTheme(document.querySelector('.loader'), 'loader', 'background', theme);
-
-		changeElementTheme(document.querySelector('.topbar'), 'topbarBackground', 'background', theme);
-		changeElementTheme(document.querySelector('.sidebar'), 'sidebarBackground', 'background', theme);
-		changeElementTheme(document.querySelector('.sidebar-setting-btn'), 'settingButtonBackground', 'background', theme);
-		changeElementTheme(document.querySelector('.sidebar-setting-btn'), 'settingButtonColor', 'color', theme);
 
 		document.querySelectorAll<HTMLElement>('.sidebar-hover-effect').forEach((obj) => {
 			obj.style.borderRadius = '6px';
@@ -147,12 +115,9 @@ const changeTheme = async (
 					const elementIsActive = obj.classList.contains('active');
 					if (elementIsActive) obj.onmouseleave = null;
 					else {
-						obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle(
-							'sidebarHoverEffectBackground',
-							currentTheme
-						)} )`;
+						obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle('animation.sidebar', currentTheme)} )`;
 						obj.onmouseleave = () => {
-							obj.style.background = getElementStyle('sidebarBackground', currentTheme);
+							obj.style.background = null;
 							obj.style.borderImage = null;
 						};
 					}
@@ -160,58 +125,61 @@ const changeTheme = async (
 			}
 		});
 
-		const style = document.querySelector('style#theme-style') ?? document.createElement('style');
-		style.id = 'theme-style';
+		const style = document.querySelector('style#root') ?? document.createElement('style');
+		style.id = 'root';
 		let styles = '';
+
+		// Generate CSS styles from user theme
 		for (const key of Object.keys(themeJSON ?? defaultThemeJSON[theme])) {
 			const value = themeJSON ? themeJSON[key] : defaultThemeJSON[theme]?.[key];
+			const formalKey = key.replace(/[A-Z]/g, (m) => '-' + m.toLowerCase());
+			const styleKey = formalKey.split('.').at(-1);
 			if (key.startsWith('hljs')) {
-				const formalKey = key.replace(/[A-Z]/g, (m) => '-' + m.toLowerCase());
-				const styleKey = formalKey.split('.').at(-1);
 				const className = formalKey.split('.').slice(0, -1).join('.').replace('hljs.', 'hljs-');
 				styles += `.${className} { ${styleKey}: ${value}; }\n`;
+			} else {
+				for (const _category of [
+					'root',
+					'windowmanager',
+					'tabs',
+					'settings',
+					'favorites',
+					'grid',
+					'contextmenu',
+					'prompt',
+					'preview',
+					'properties',
+				]) {
+					if (key.startsWith(_category)) {
+						const usingClassName = formalKey[_category.length] === '.';
+						const className = formalKey.split('.').slice(1, -1).join('.');
+						const idName = formalKey.split('#').slice(1).join('#').split('.')[0];
+						for (const allowed_style of ALLOWED_STYLES) {
+							if (styleKey.startsWith(allowed_style)) {
+								if (styleKey.startsWith('--')) {
+									styles += `:root { ${styleKey}: ${value}; }\n`;
+								} else {
+									styles += `${
+										usingClassName
+											? className === ''
+												? _category === 'root'
+													? ':root'
+													: '.' + _category
+												: '.' + className
+											: '#' + idName
+									}{ ${styleKey}: ${value}; }\n`;
+								}
+								break;
+							}
+						}
+					}
+				}
 			}
 		}
 		style.innerHTML = styles;
 		if (!document.head.contains(style)) document.head.appendChild(style);
 	}
-	if (category === '*' || category === 'windowmanager') {
-		changeElementTheme(document.querySelector('#minimize'), 'minimizeBackground', 'background', theme);
-		changeElementTheme(document.querySelector('#minimize'), 'minimizeColor', 'color', theme);
-		changeElementTheme(document.querySelector('#maximize'), 'maximizeBackground', 'background', theme);
-		changeElementTheme(document.querySelector('#maximize'), 'maximizeColor', 'color', theme);
-		changeElementTheme(document.querySelector('#exit'), 'exitBackground', 'background', theme);
-		changeElementTheme(document.querySelector('#exit'), 'exitColor', 'color', theme);
-		changeElementTheme(document.querySelector('#go-back'), 'navigatorBackground', 'background', theme);
-		changeElementTheme(document.querySelector('#go-back'), 'navigatorColor', 'color', theme);
-		changeElementTheme(document.querySelector('#go-forward'), 'navigatorBackground', 'background', theme);
-		changeElementTheme(document.querySelector('#go-forward'), 'navigatorColor', 'color', theme);
-		changeElementTheme(document.querySelector('#refresh'), 'navigatorBackground', 'background', theme);
-		changeElementTheme(document.querySelector('#refresh'), 'navigatorColor', 'color', theme);
-	}
 	if (category === '*' || category === 'tabbing') {
-		changeElementTheme(document.querySelector('.create-new-tab'), 'newTabBackground', 'background', theme);
-		changeElementTheme(document.querySelector('.create-new-tab'), 'newTabColor', 'color', theme);
-		changeElementTheme(document.querySelector('.path-navigator'), 'pathNavigatorBackground', 'background', theme);
-		changeElementTheme(document.querySelector('.path-navigator'), 'pathNavigatorColor', 'color', theme);
-		changeElementTheme(document.querySelector('.search-bar'), 'searchBarBackground', 'background', theme);
-		changeElementTheme(document.querySelector('.search-bar'), 'searchBarColor', 'color', theme);
-		document
-			.querySelector<HTMLElement>('.tabs-manager')
-			.style.setProperty('--tabs-scrollbar-track', themeJSON ? themeJSON.tabsScrollbarTrack : defaultThemeJSON[theme]?.tabsScrollbarTrack);
-		document
-			.querySelector<HTMLElement>('.tabs-manager')
-			.style.setProperty('--tabs-scrollbar-thumb', themeJSON ? themeJSON.tabsScrollbarThumb : defaultThemeJSON[theme]?.tabsScrollbarThumb);
-		document
-			.querySelector<HTMLElement>('.tabs-manager')
-			.style.setProperty(
-				'--tabs-scrollbar-thumb-hover',
-				themeJSON ? themeJSON.tabsScrollbarThumbHover : defaultThemeJSON[theme]?.tabsScrollbarThumbHover
-			);
-		document.querySelectorAll<HTMLElement>('.tab').forEach((tab) => {
-			changeElementTheme(tab, 'tabBackground', 'background', theme);
-			changeElementTheme(tab, 'tabColor', 'color', theme);
-		});
 		document.querySelectorAll<HTMLElement>('.tab-hover-effect').forEach((obj) => {
 			changeElementTheme(obj, 'tabBackground', 'background', theme);
 			if (obj.getAttribute('being-listened') !== 'true') {
@@ -220,109 +188,23 @@ const changeTheme = async (
 					const rect = (e.target as Element).getBoundingClientRect();
 					const x = e.clientX - rect.left;
 					const y = e.clientY - rect.top;
-					obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle('tabHoverEffectBackground', currentTheme)} )`;
+					obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle('animation.tab', currentTheme)} )`;
 					obj.onmouseleave = () => {
-						obj.style.background = getElementStyle('tabBackground', currentTheme);
+						obj.style.background = null;
 						obj.style.borderImage = null;
 					};
 				});
 			}
 		});
 	}
-	if (category === '*' || category === 'settings') {
-		changeElementTheme(document.querySelector('.settings-sidebar'), 'settingsSidebarBackground', 'background', theme);
-		changeElementTheme(document.querySelector('.settings-main'), 'settingsMainBackground', 'background', theme);
-		changeElementTheme(document.querySelector('.active'), 'settingsActiveTab', 'background', theme);
-		changeElementTheme(document.querySelector('.number-ctrl-minus'), 'settingsNumberCtrlControllerBackground', 'background', theme);
-		changeElementTheme(document.querySelector('.number-ctrl-plus'), 'settingsNumberCtrlControllerBackground', 'background', theme);
-		changeElementTheme(document.querySelector('.number-ctrl-input'), 'settingsNumberCtrlInputBackground', 'background', theme);
-		changeElementTheme(document.querySelector('.number-ctrl-minus'), 'settingsNumberCtrlControllerColor', 'color', theme);
-		changeElementTheme(document.querySelector('.number-ctrl-plus'), 'settingsNumberCtrlControllerColor', 'color', theme);
-		changeElementTheme(document.querySelector('.number-ctrl-input'), 'settingsNumberCtrlInputColor', 'color', theme);
-	}
-	if (category === '*' || category === 'contextmenu') {
-		changeElementTheme(document.querySelector('.contextmenu'), 'contextMenuBackground', 'background', theme);
-		changeElementTheme(document.querySelector('.contextmenu'), 'contextMenuColor', 'color', theme);
-		document.querySelectorAll<HTMLElement>('.contextmenu-submenu').forEach((submenu) => {
-			changeElementTheme(submenu, 'contextMenuSubmenuBackground', 'background', theme);
-			changeElementTheme(submenu, 'contextMenuSubmenuColor', 'color', theme);
-		});
-	}
-	if (category === '*' || category === 'preview') {
-		changeElementTheme(document.querySelector('.preview'), 'previewFileBackground', 'background', theme);
-		changeElementTheme(document.querySelector('.preview'), 'previewFileColor', 'color', theme);
-		changeElementTheme(document.querySelector('.preview-exit-btn'), 'previewExitButtonBackground', 'background', theme);
-		changeElementTheme(document.querySelector('.preview-exit-btn'), 'previewExitButtonColor', 'color', theme);
-		changeElementTheme(document.querySelector('.preview-object'), 'previewObjectBackground', 'background', theme);
-		changeElementTheme(document.querySelector('.preview-object'), 'previewObjectColor', 'color', theme);
-		document
-			.querySelector<HTMLElement>('.preview-object')
-			?.style?.setProperty(
-				'--preview-object-table-border',
-				themeJSON ? themeJSON.previewObjectTableBorder : defaultThemeJSON[theme].previewObjectTableBorder
-			);
-		document
-			.querySelector<HTMLElement>('.preview-object')
-			?.style?.setProperty(
-				'--preview-object-table-row-even-bg',
-				themeJSON ? themeJSON.previewObjectTableRowEvenBackground : defaultThemeJSON[theme].previewObjectTableRowEvenBackground
-			);
-		document
-			.querySelector<HTMLElement>('.preview-object')
-			?.style?.setProperty(
-				'--preview-object-table-row-even-color',
-				themeJSON ? themeJSON.previewObjectTableRowEvenColor : defaultThemeJSON[theme].previewObjectTableRowEvenColor
-			);
-		document
-			.querySelector<HTMLElement>('.preview-object')
-			?.style?.setProperty(
-				'--preview-object-table-row-odd-bg',
-				themeJSON ? themeJSON.previewObjectTableRowOddBackground : defaultThemeJSON[theme].previewObjectTableRowOddBackground
-			);
-		document
-			.querySelector<HTMLElement>('.preview-object')
-			?.style?.setProperty(
-				'--preview-object-table-row-odd-color',
-				themeJSON ? themeJSON.previewObjectTableRowOddColor : defaultThemeJSON[theme].previewObjectTableRowOddColor
-			);
-		document
-			.querySelector<HTMLElement>('.preview-object')
-			?.setAttribute('data-theme-category', themeJSON ? themeJSON.themeCategory : defaultThemeJSON[theme].themeCategory);
-	}
-	if (category === '*' || category === 'properties') {
-		changeElementTheme(document.querySelector('.properties'), 'propertiesBackground', 'background', theme);
-	}
-	if (category === '*' || category === 'prompt') {
-		changeElementTheme(document.querySelector('.prompt'), 'promptBackground', 'background', theme);
-		changeElementTheme(document.querySelector('.prompt-input'), 'promptInputColor', 'color', theme);
-		changeElementTheme(document.querySelector('.prompt-input'), 'promptInputBackground', 'background', theme);
-		changeElementTheme(document.querySelector('.prompt-exit-btn'), 'exitBackground', 'background', theme);
-		changeElementTheme(document.querySelector('.prompt-exit-btn'), 'exitColor', 'color', theme);
-		changeElementTheme(document.querySelector('.prompt-ok'), 'promptOkColor', 'color', theme);
-		changeElementTheme(document.querySelector('.prompt-ok'), 'promptOkBackground', 'background', theme);
-	}
 	if (category === '*' || category === 'favorites') {
-		document.querySelectorAll<HTMLElement>('.favorite').forEach((favorite) => {
-			changeElementTheme(favorite, 'favoriteBackground', 'background', theme);
-			changeElementTheme(favorite, 'favoriteColor', 'color', theme);
-		});
-		document.querySelectorAll<HTMLElement>('.pendrive').forEach((pendrive) => {
-			changeElementTheme(pendrive, 'pendriveBackground', 'background', theme);
-			changeElementTheme(pendrive, 'pendriveColor', 'color', theme);
-		});
-		document.querySelectorAll<HTMLElement>('.pendrive-total-capacity').forEach((bar) => {
-			changeElementTheme(bar, 'pendriveTotalCapacityBackground', 'background', theme);
-		});
-		document.querySelectorAll<HTMLElement>('.pendrive-used-capacity').forEach((bar) => {
-			changeElementTheme(bar, 'pendriveUsedCapacityBackground', 'background', theme);
-		});
 		document.querySelectorAll<HTMLElement>('.card-hover-effect').forEach((obj) => {
 			if (obj.getAttribute('being-listened') !== 'true') {
 				obj.setAttribute('being-listened', 'true');
 				obj.addEventListener('mousemove', (e) => {
 					const { x, y } = getXYCoordinates(e);
 
-					obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle('cardHoverEffectBackground', currentTheme)} )`;
+					obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle('animation.card', currentTheme)} )`;
 					obj.onmouseleave = () => {
 						obj.style.background = null;
 						obj.style.borderImage = null;
@@ -339,22 +221,14 @@ const changeTheme = async (
 				obj.addEventListener('mousemove', (e) => {
 					const { x, y } = getXYCoordinates(e);
 
-					obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle('gridHoverEffectBackground', currentTheme)} )`;
+					obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle('animation.grid', currentTheme)} )`;
 					obj.onmouseleave = () => {
-						obj.style.background = getElementStyle('gridBackground', currentTheme);
+						obj.style.background = null;
 						obj.style.borderImage = null;
 					};
 				});
 			}
 		});
-		document.querySelectorAll<HTMLElement>('.file-grid').forEach((grid) => {
-			changeElementTheme(grid, 'gridBackground', 'background', theme);
-			changeElementTheme(grid, 'gridColor', 'color', theme);
-		});
-	}
-	if (category === '*' || category === 'infobar') {
-		changeElementTheme(document.querySelector('.infobar'), 'infobarBackground', 'background', theme);
-		changeElementTheme(document.querySelector('.infobar'), 'infobarColor', 'color', theme);
 	}
 
 	return;
@@ -364,22 +238,7 @@ const changeTheme = async (
  * Update the entire page theme
  * @returns {Promise<void>}
  */
-const updateTheme = async (
-	category?:
-		| '*'
-		| 'root'
-		| 'windowmanager'
-		| 'tabbing'
-		| 'settings'
-		| 'favorites'
-		| 'grid'
-		| 'contextmenu'
-		| 'prompt'
-		| 'preview'
-		| 'properties'
-		| 'infobar',
-	customStyleSheet?: JSON
-): Promise<void> => {
+const updateTheme = async (category?: '*' | 'root' | 'tabbing' | 'favorites' | 'grid', customStyleSheet?: JSON): Promise<void> => {
 	const data: themeData = await Storage.get('theme');
 	if (customStyleSheet) {
 		themeJSON = customStyleSheet as unknown as themeValue;

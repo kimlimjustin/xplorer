@@ -171,7 +171,6 @@ const Appearance = async (): Promise<void> => {
 	</div>
 	`;
 	settingsMain.innerHTML = appearancePage;
-	updateTheme('settings');
 	settingsMain.querySelectorAll('.number-ctrl').forEach((ctrl) => {
 		const number = ctrl.querySelector<HTMLInputElement>('.number-ctrl-input');
 		ctrl.querySelector('.number-ctrl-minus').addEventListener('click', () => {
@@ -210,7 +209,7 @@ const Appearance = async (): Promise<void> => {
 		if (value) {
 			document.body.style.setProperty('--sidebar-transparency', appearance?.windowTransparency ?? '0.8');
 		} else {
-			document.body.style.removeProperty('--sidebar-transparency');
+			document.body.style.setProperty('--sidebar-transparency', '1');
 		}
 		Storage.set('appearance', appearance);
 	});
@@ -221,7 +220,7 @@ const Appearance = async (): Promise<void> => {
 		if (value) {
 			document.body.style.setProperty('--workspace-transparency', appearance?.windowTransparency ?? '0.8');
 		} else {
-			document.body.style.removeProperty('--workspace-transparency');
+			document.body.style.setProperty('--workspace-transparency', '1');
 		}
 		Storage.set('appearance', appearance);
 	});
@@ -232,7 +231,7 @@ const Appearance = async (): Promise<void> => {
 		if (value) {
 			document.body.style.setProperty('--topbar-transparency', appearance?.windowTransparency ?? '0.8');
 		} else {
-			document.body.style.removeProperty('--topbar-transparency');
+			document.body.style.setProperty('--topbar-transparency', '1');
 		}
 		Storage.set('appearance', appearance);
 	});
@@ -256,7 +255,6 @@ const Appearance = async (): Promise<void> => {
 			<span id="maximize" title="Maximize"></span>
 			<span id="exit" title="Exit (Ctrl + w)"></span>`;
 			document.querySelector('.tabs-manager').appendChild(windowManager);
-			updateTheme('windowmanager');
 			// Minimize the screen
 			windowManager.querySelector('#minimize').addEventListener('click', minimize);
 			// Maximize the screen

@@ -154,7 +154,6 @@ const ContextMenu = (): void => {
 		contextMenu.style.top = coorY + 'px';
 		contextMenu.scrollTop = 0;
 
-		updateTheme('contextmenu');
 		document.addEventListener('click', exitContextMenu);
 	});
 	const exitContextMenu = () => {

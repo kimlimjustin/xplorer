@@ -14,7 +14,6 @@
 			{
 				"identifier": "<%= extensionIdentifier %>",
 				"name": "<%= extensionName %>",
-				"category": "<%= themeCategory %>",
 				"path": "./themes/<%= extensionIdentifier%>-color-theme.json"
 			}
 		]

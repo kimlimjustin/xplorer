@@ -5,7 +5,6 @@ import { OpenDir } from '../Open/open';
 import focusingPath from '../Functions/focusingPath';
 import getDirname from '../Functions/path/dirname';
 import createSidebar from './sidebar';
-import { updateTheme } from '../Theme/theme';
 /**
  * Reload the page
  * @returns {Promise<void>}
@@ -78,7 +77,6 @@ const windowManager = async (): Promise<void> => {
 	document.querySelector('.path-navigator').addEventListener('change', (event: Event & { target: HTMLInputElement }) => {
 		OpenDir(event.target.value);
 	});
-	updateTheme('windowmanager');
 	const _preference = await Storage.get('preference');
 	listenWindowClose().then(() => {
 		if (_preference?.on_startup === 'new') Storage.remove(`tabs-${windowName}`);

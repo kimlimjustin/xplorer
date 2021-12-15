@@ -6,7 +6,7 @@
 	"version": "0.1.0",
 	"license": "MIT",
 	"scripts": {
-		"start": "E:/xplorer/src-tauri/target/debug/app.exe --theme shadesofpurple",
+		"start": "xplorer --theme shadesofpurple",
 		"build": "xplorer build-extension themes"
 	},
 	"xplorerExtensionConfig": {
@@ -14,7 +14,6 @@
 			{
 				"identifier": "shadesofpurple",
 				"name": "Shades of Purple",
-				"category": "dark",
 				"path": "./themes/shadesofpurple-color-theme.json"
 			}
 		]

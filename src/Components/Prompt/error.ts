@@ -1,6 +1,5 @@
 import beep from '../Functions/beep';
 import dragElement from '../Functions/dragElement';
-import { updateTheme } from '../Theme/theme';
 import { ErrorLog } from '../Functions/log';
 const PromptError = (title: string, message: string): void => {
 	document.querySelectorAll('.prompt').forEach((el) => el.parentNode.removeChild(el));
@@ -18,7 +17,6 @@ const PromptError = (title: string, message: string): void => {
 	document.body.appendChild(promptElement);
 	beep();
 	dragElement(promptElement.querySelector('.prompt-frame'), promptElement);
-	updateTheme('prompt');
 	ErrorLog(`[${title}] ${message}`);
 	document.addEventListener('keydown', (e) => {
 		if (e.key === 'Enter') {

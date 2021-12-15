@@ -145,7 +145,6 @@ pub fn get_cli_args() -> Result<ArgsStruct, String> {
 pub struct ThemeExtensionInformation {
   pub identifier: String,
   pub name: String,
-  pub category: String,
   pub value: serde_json::Value,
 }
 
@@ -185,11 +184,6 @@ pub fn build_themes() {
       Some(field) => field.as_str().unwrap(),
       None => panic!("There is no name field in your theme"),
     };
-    let category = theme.get("category");
-    let category = match category {
-      Some(field) => field.as_str().unwrap(),
-      None => panic!("There is no category field in your theme"),
-    };
     let path = theme.get("path");
     let path = match path {
       Some(field) => field.as_str().unwrap(),
@@ -206,7 +200,6 @@ pub fn build_themes() {
     theme_extension_informations.push(ThemeExtensionInformation {
       identifier: identifier.to_string(),
       name: name.to_string(),
-      category: category.to_string(),
       value: theme_value,
     });
   }

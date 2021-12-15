@@ -138,7 +138,6 @@ const Preview = async (filePath: string): Promise<void> => {
 	}
 
 	if (!previewed) PromptError('No preview handler', 'There is no preview handler for this file type yet.');
-	updateTheme('preview');
 };
 export default Preview;
 export { closePreviewFile };
