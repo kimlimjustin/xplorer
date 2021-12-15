@@ -56,7 +56,7 @@ module.exports = class extends Generator {
 				{
 					type: 'list',
 					name: 'themeCategory',
-					message: 'Select a theme category',
+					message: 'Select a starter theme',
 					choices: [
 						{ name: 'light', value: 'light' },
 						{ name: 'dark', value: 'dark' },

@@ -1,4 +1,3 @@
-import { updateTheme } from '../Theme/theme';
 import dragElement from '../Functions/dragElement';
 import { pauseEnter } from '../Shortcut/shortcut';
 
@@ -39,7 +38,6 @@ const ConfirmDialog = (title: string, message: string, defaultValue?: 'Yes' | 'N
 		};
 		document.addEventListener('keydown', keydownhandler);
 		document.body.appendChild(promptElement);
-		updateTheme('prompt');
 	});
 };
 

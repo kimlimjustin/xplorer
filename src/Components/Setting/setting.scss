@@ -10,7 +10,6 @@
 	.settings-sidebar {
 		flex: 1;
 		min-width: 250px;
-		opacity: var(--sidebar-transparency);
 		border-radius: var(--edge-radius) 0 0 var(--edge-radius);
 		.settings-sidebar-header {
 			padding: 1rem;
@@ -37,7 +36,6 @@
 		padding: 1rem;
 		overflow-y: auto;
 		border-radius: 0 var(--edge-radius) var(--edge-radius) 0;
-		opacity: var(--workspace-transparency);
 		select {
 			background: inherit;
 			padding: 0.25rem 0.5rem;

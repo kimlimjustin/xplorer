@@ -1,4 +1,3 @@
-import { updateTheme } from '../Theme/theme';
 import Storage from '../../Api/storage';
 let infoBarElement: HTMLElement;
 
@@ -24,7 +23,6 @@ const Infobar = async (): Promise<void> => {
 	<div class="infobar-item" id="selected-files"></div>
 	`;
 	document.querySelector('.main').appendChild(infoBarElement);
-	updateTheme('infobar');
 };
 export default Infobar;
 export { UpdateInfo };
