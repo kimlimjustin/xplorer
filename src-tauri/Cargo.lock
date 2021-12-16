@@ -48,6 +48,7 @@ dependencies = [
  "normpath",
  "notify",
  "open",
+ "parselnk",
  "path-absolutize",
  "serde",
  "serde_json",
@@ -2156,6 +2157,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "parselnk"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d098204d9ef47f80312460c1555a152972ea9f0a67487a77b2ab7e03fd510d4f"
+dependencies = [
+ "bitflags",
+ "byteorder",
+ "chrono",
+ "thiserror",
+ "widestring",
+]
+
+[[package]]
 name = "path-absolutize"
 version = "3.0.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3837,6 +3851,12 @@ checksum = "d743fdedc5c64377b5fc2bc036b01c7fd642205a0d96356034ae3404d49eb7fb"
 dependencies = [
  "cc",
 ]
+
+[[package]]
+name = "widestring"
+version = "0.4.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c168940144dd21fd8046987c16a46a33d5fc84eec29ef9dcddc2ac9e31526b7c"
 
 [[package]]
 name = "wildmatch"
