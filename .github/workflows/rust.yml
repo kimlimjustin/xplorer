@@ -1,7 +1,5 @@
 name: Test Rust Functions
-on:
-    push:
-        branches: [master]
+on: [push, pull_request]
 
 jobs:
     tests:
