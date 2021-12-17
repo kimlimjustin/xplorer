@@ -6,6 +6,7 @@ import { Select } from '../Files/File Operation/select';
 import normalizeSlash from '../Functions/path/normalizeSlash';
 import joinPath from '../Functions/path/joinPath';
 import getDefaultSort from './defaultSort';
+import { LnkData } from '../../Typings/fileMetaData';
 /**
  * Display files into Xplorer main section
  * @param {fileData[]} files - array of files of a directory
@@ -13,6 +14,7 @@ import getDefaultSort from './defaultSort';
  * @param {HTMLElement} onElement - element to append files element
  * @param {{reveal: boolean, revealDir: boolean}} options - options
  * @param {boolean} isSearch - if true, files are searched
+ * @param {LnkData[]} lnk_files - array of lnk files
  *
  * @returns {Promise<HTMLElement>}
  */
@@ -21,7 +23,8 @@ const displayFiles = async (
 	dir: string,
 	onElement?: HTMLElement,
 	options?: { reveal: boolean; revealDir: string },
-	isSearch?: boolean
+	isSearch?: boolean,
+	lnk_files?: LnkData[]
 ): Promise<HTMLElement> => {
 	const FilesElement = onElement ?? document.createElement('div');
 	const preference = await Storage.get('preference');
@@ -76,8 +79,6 @@ const displayFiles = async (
 	const imageAsThumbnail =
 		(appearance?.imageAsThumbnail ?? 'smalldir') === 'smalldir' ? files.length < 100 : appearance?.imageAsThumbnail === 'yes';
 	for (const file of files) {
-		const fileType = file.file_type;
-		const preview = await fileThumbnail(file.file_path, file.is_dir ? 'folder' : 'file', true, imageAsThumbnail);
 		const fileGrid = document.createElement('div');
 		fileGrid.className = 'file-grid grid-hover-effect file';
 		let displayName: string;
@@ -114,6 +115,18 @@ const displayFiles = async (
 		fileGrid.dataset.isdir = String(file.is_dir);
 		if (file.time_deleted) fileGrid.dataset.trashDeletionDate = String(file.time_deleted);
 		if (file.is_trash) fileGrid.dataset.realPath = escape(joinPath(file.original_parent, file.basename));
+		let preview: string;
+		if (file.file_type === 'Windows Shortcut') {
+			fileGrid.dataset.isLnk = 'true';
+			for (const lnk of lnk_files) {
+				if (file.file_path === lnk.file_path) {
+					preview = await fileThumbnail(lnk.icon, 'file', true, true);
+					break;
+				}
+			}
+		} else {
+			preview = await fileThumbnail(file.file_path, file.is_dir ? 'folder' : 'file', true, imageAsThumbnail);
+		}
 
 		fileGrid.dataset.path = escape(normalizeSlash(file.file_path));
 		fileGrid.dataset.isSystem = String(file.is_system);
@@ -136,7 +149,7 @@ const displayFiles = async (
 					  )}</span>`
 					: `<span class="file-size" id="file-size"></span>`
 			}
-            <span class="file-type">${fileType}</span>
+            <span class="file-type">${file.file_type}</span>
             `;
 		FilesElement.appendChild(fileGrid);
 	}
