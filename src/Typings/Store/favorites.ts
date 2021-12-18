@@ -1,6 +1,9 @@
 import { AppActionBase } from "./actions";
 
-export interface IFavorites {
+// * Allows for iteration over objects of type IFavorites, IFavoritesReducerState
+interface IFavoritesBase { [k: string]: string }
+
+export interface IFavorites extends IFavoritesBase {
   DOCUMENT_PATH: string,
   DOWNLOAD_PATH: string,
   DESKTOP_PATH: string,
