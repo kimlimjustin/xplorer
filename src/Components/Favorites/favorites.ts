@@ -27,6 +27,7 @@ const Favorites = async (): Promise<string> => {
 	result += `<h1 class="section-title">${await Translate('Favorites')}</h1>`;
 	const defaultFavoritesList = (await defaultFavorites()).map((favorite) => favorite.name);
 	for (const favorite of favorites) {
+		if (!favorite.path) continue;
 		if (favorite.path === 'xplorer://Home') continue;
 		const fileData = new FileAPI(favorite.path);
 		const exists = await fileData.exists();

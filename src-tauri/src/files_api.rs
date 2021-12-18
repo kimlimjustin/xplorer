@@ -11,16 +11,24 @@ use glob::{glob_with, MatchOptions};
 #[cfg(not(target_os = "macos"))]
 use normpath::PathExt;
 use notify::{raw_watcher, RawEvent, RecursiveMode, Watcher};
+use parselnk::Lnk;
+use std::convert::TryFrom;
 use std::sync::mpsc::channel;
+#[cfg(target_os = "windows")]
 use tauri::api::path::local_data_dir;
-use tauri::Manager;
 
 #[cfg(windows)]
 use std::os::windows::prelude::*;
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
 
-#[derive(serde::Serialize, Clone)]
+#[derive(serde::Serialize, Clone, Debug)]
+pub struct LnkData {
+  file_path: String,
+  icon: String,
+}
+
+#[derive(serde::Serialize, Clone, Debug)]
 pub struct FileMetaData {
   file_path: String,
   basename: String,
@@ -61,6 +69,7 @@ pub struct FolderInformation {
   number_of_files: u16,
   files: Vec<FileMetaData>,
   skipped_files: Vec<String>,
+  lnk_files: Vec<LnkData>,
 }
 
 #[derive(serde::Serialize)]
@@ -242,26 +251,53 @@ pub async fn read_directory(dir: &Path) -> Result<FolderInformation, String> {
   let mut number_of_files: u16 = 0;
   let mut files = Vec::new();
   let mut skipped_files = Vec::new();
+  let mut lnk_files: Vec<LnkData> = Vec::new();
   for path in paths {
     number_of_files += 1;
-    let file_name = path.unwrap().path().display().to_string();
-    let file_info = get_file_properties(file_name.clone()).await;
+    let file_path = path.unwrap().path().display().to_string();
+    let file_info = get_file_properties(file_path.clone()).await;
     if file_info.is_err() {
-      skipped_files.push(file_name);
+      skipped_files.push(file_path);
       continue;
     } else {
       let file_info = file_info.unwrap();
       if hide_system_files && file_info.is_system {
-        skipped_files.push(file_name);
+        skipped_files.push(file_path);
         continue;
       }
-      files.push(file_info)
+      if file_info.file_type == "Windows Shortcut" {
+        let path = std::path::Path::new(&file_info.file_path);
+        let lnk = Lnk::try_from(path).unwrap();
+        let lnk_icon = lnk.string_data.icon_location;
+        let lnk_icon = match lnk_icon {
+          Some(icon) => {
+            let icon = icon.into_os_string().into_string().unwrap();
+            let icon_type = file_lib::get_type(icon.clone(), false).await;
+            if icon_type == "Image" {
+              icon
+            } else if icon_type == "Executable" {
+              extract_icon(icon).await.unwrap_or("".to_string())
+            } else {
+              "".to_string()
+            }
+          }
+          None => "".to_string(),
+        };
+        lnk_files.push(LnkData {
+          file_path: file_path,
+          icon: lnk_icon,
+        });
+        files.push(file_info)
+      } else {
+        files.push(file_info)
+      }
     };
   }
   Ok(FolderInformation {
     number_of_files,
     files,
     skipped_files,
+    lnk_files,
   })
 }
 

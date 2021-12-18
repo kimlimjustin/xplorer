@@ -20,4 +20,9 @@ interface FileMetaData {
 	last_accessed?: SystemTime;
 	created?: SystemTime;
 }
+
+export interface LnkData {
+	file_path: string;
+	icon: string;
+}
 export default FileMetaData;

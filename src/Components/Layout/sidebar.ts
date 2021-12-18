@@ -45,6 +45,7 @@ const createSidebar = async (): Promise<void> => {
 		let favoritesElement = '';
 		const defaultFavoritesList = (await defaultFavorites()).map((favorite) => favorite.name);
 		for (const favorite of favorites) {
+			if (!favorite.path) continue;
 			const exists = await new FileAPI(favorite.path).exists();
 			if (!(await isDefaultFavorite(favorite.path)) && !favorite.path.startsWith('xplorer://')) {
 				if (!exists) continue;
