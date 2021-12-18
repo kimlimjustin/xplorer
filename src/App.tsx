@@ -17,8 +17,6 @@ const App = () => {
   const dispatch = useDispatch();
   const homeDirectory = useSelector<IAppState, IAppState['favorites']['HOMEDIR_PATH']>(state => state.favorites.HOMEDIR_PATH); // TODO AVOID RACE CONDITION HERE
 
-  console.warn(homeDirectory);
-
   const [isLoaded, setIsLoaded] = useState(false);
   const [currentDirectory, setCurrentDirectory] = useState(homeDirectory);
 
@@ -28,7 +26,6 @@ const App = () => {
       setCurrentDirectory(homeDirectory);
     }
   }, [homeDirectory]);
-
 
   useEffect(() => {
     dispatch(fetchFilesRequest(homeDirectory));
