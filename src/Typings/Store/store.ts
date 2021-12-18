@@ -8,10 +8,11 @@ import { FileActions, FileActionTypes } from "./files";
 import { LocalesActions, LocalesActionTypes } from "./locales";
 import { PlatformActions, PlatformActionTypes } from "./platform";
 import { StorageActions, StorageActionTypes } from "./storage";
+import { TabActions, TabActionTypes } from "./tab";
 import { WindowActions, WindowActionTypes } from "./window";
 
 export type Actions = AppActions | CliActions | ClipboardActions | DirectoryActions | DriveActions
-  | FavoritesActions | FileActions | LocalesActions | PlatformActions | StorageActions | WindowActions;
+  | FavoritesActions | FileActions | LocalesActions | PlatformActions | StorageActions | TabActions | WindowActions;
 
 export type ActionTypes = AppActionTypes | CliActionTypes | ClipboardActionTypes | DirectoryActionTypes | DriveActionTypes
-  | FavoritesActionTypes | FileActionTypes | LocalesActionTypes | PlatformActionTypes | StorageActionTypes | WindowActionTypes;
+  | FavoritesActionTypes | FileActionTypes | LocalesActionTypes | PlatformActionTypes | StorageActionTypes | TabActionTypes | WindowActionTypes;

@@ -11,6 +11,7 @@ import { ILocalesReducerState } from '../../Typings/Store/locales';
 import { IPlatformReducerState } from '../../Typings/Store/platform';
 import { IRequestReducerState } from '../../Typings/Store/request'
 import { IStorageReducerState } from '../../Typings/Store/storage';
+import { ITabReducerState } from '../../Typings/Store/tab';
 import { IWindowReducerState } from '../../Typings/Store/window';
 
 import AppReducer from "./AppReducer";
@@ -23,6 +24,7 @@ import LocalesReducer from "./LocalesReducer";
 import PlatformReducer from "./PlatformReducer";
 import RequestReducer from "./RequestReducer";
 import StorageReducer from "./StorageReducer";
+import TabReducer from "./TabReducer";
 import WindowReducer from "./WindowReducer";
 
 export interface IAppState {
@@ -36,6 +38,7 @@ export interface IAppState {
   platform: IPlatformReducerState,
   requests: IRequestReducerState,
   storage: IStorageReducerState,
+  tabs: ITabReducerState,
   window: IWindowReducerState
 }
 
@@ -50,6 +53,7 @@ const rootReducer = combineReducers<IAppState, Actions>({
   platform: PlatformReducer,
   requests: RequestReducer,
   storage: StorageReducer,
+  tabs: TabReducer,
   window: WindowReducer
 });
 
