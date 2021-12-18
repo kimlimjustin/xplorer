@@ -7,7 +7,8 @@
 	"license": "MIT",
 	"scripts": {
 		"start": "xplorer --theme shadesofpurple",
-		"build": "xplorer build-extension themes"
+		"build": "xplorer extensions theme build",
+		"xplorer:install": "xplorer extensions theme install"
 	},
 	"xplorerExtensionConfig": {
 		"themes": [
