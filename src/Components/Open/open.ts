@@ -108,25 +108,31 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promis
 				stopLoading();
 				return;
 			}
-			directoryInfo.getFiles().then(async (files) => {
-				UpdateInfo('number-of-files', `${files.number_of_files - files.skipped_files.length} files`);
-				if (!files.files.length) {
-					MAIN_ELEMENT.classList.add('empty-dir-notification');
-					MAIN_ELEMENT.innerText = 'This folder is empty.';
-					stopLoading();
-				} else {
-					await displayFiles(files.files, dir, MAIN_ELEMENT, {
+			const files = await directoryInfo.getFiles();
+			UpdateInfo('number-of-files', `${files.number_of_files - files.skipped_files.length} files`);
+			if (!files.files.length) {
+				MAIN_ELEMENT.classList.add('empty-dir-notification');
+				MAIN_ELEMENT.innerText = 'This folder is empty.';
+				stopLoading();
+			} else {
+				await displayFiles(
+					files.files,
+					dir,
+					MAIN_ELEMENT,
+					{
 						reveal,
 						revealDir: normalizeSlash(dir),
-					});
-					stopLoading();
-					updateTheme('grid');
-					LOAD_IMAGE();
-					changeWindowTitle(getBasename(getDirname(dir)));
-					console.timeEnd(dir);
-					if (!isReload) directoryInfo.listen(() => reload());
-				}
-			});
+					},
+					null,
+					files.lnk_files
+				);
+				stopLoading();
+				updateTheme('grid');
+				LOAD_IMAGE();
+				changeWindowTitle(getBasename(getDirname(dir)));
+				console.timeEnd(dir);
+				if (!isReload) directoryInfo.listen(() => reload());
+			}
 		} else {
 			directoryInfo = new DirectoryAPI(dir);
 			if (!(await directoryInfo.exists())) {
@@ -141,7 +147,7 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promis
 				MAIN_ELEMENT.innerText = 'This folder is empty.';
 				stopLoading();
 			} else {
-				await displayFiles(files.files, dir, MAIN_ELEMENT);
+				await displayFiles(files.files, dir, MAIN_ELEMENT, null, null, files.lnk_files);
 				stopLoading();
 				updateTheme('grid');
 				LOAD_IMAGE();
@@ -190,7 +196,6 @@ const OpenHandler = async (e: MouseEvent): Promise<void> => {
  * @returns {Promise<void>}
  */
 const OpenInit = async (): Promise<void> => {
-	const preference = await Storage.get('preference');
 	document.querySelector('#sidebar-nav').addEventListener('click', OpenHandler);
 	document.querySelector('#workspace').addEventListener('click', OpenHandler);
 };

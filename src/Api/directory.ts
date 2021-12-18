@@ -4,12 +4,14 @@ import { invoke } from '@tauri-apps/api';
 import type FileMetaData from '../Typings/fileMetaData';
 import { getCurrent } from '@tauri-apps/api/window';
 import { UnlistenFn } from '@tauri-apps/api/event';
+import { LnkData } from '../Typings/fileMetaData';
 let listener: UnlistenFn;
 let searchListener: UnlistenFn;
 interface DirectoryData {
 	files: FileMetaData[];
 	number_of_files: number;
 	skipped_files: string[];
+	lnk_files: LnkData[];
 }
 /**
  * Invoke Rust command to read information of a directory
