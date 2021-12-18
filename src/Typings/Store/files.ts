@@ -11,12 +11,9 @@ export interface FileTrashMeta {
   request_confirmation: boolean
 }
 
-export interface IFile {
-  metadata: FileMetaData,
+export interface IFile extends FileMetaData {
   content: string,
-  isDirectory: boolean,
-  icon: string,
-  size: number
+  icon: string
 }
 
 export interface IFilesReducerState {

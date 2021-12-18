@@ -1,25 +1,40 @@
 import React, { useState, FormEvent } from 'react';
+import { useDispatch } from 'react-redux';
+
 import SubHeader from './SubHeader';
+import { getStandardPath } from '../../Helpers/paths';
+import { fetchFilesRequest } from '../../Store/ActionCreators/DirectoryActionCreators';
 
 export interface ITab {
   name: string,
   path: string
 }
 
-const Header = () => {
-  const [tabs, setTabs] = useState<ITab[]>([{ name: "Home", path: "xplorer://Home" }]);
+export interface IHeaderProps {
+  currentDirectory: string,
+  setCurrentDirectory: (dir: string) => void
+}
+
+const Header = ({ currentDirectory, setCurrentDirectory }: IHeaderProps) => {
+  const dispatch = useDispatch();
+
+  const [tabs, setTabs] = useState<ITab[]>([{ name: "Home", path: currentDirectory }]);
   const [activeTab, setActiveTab] = useState<ITab>(tabs[0]);
 
-  const createNewTab = () => {
-    console.log('new tab created');
-    const newTab = { name: "Home", path: "/" };
-    setTabs([...tabs, newTab]);
-    setActiveTab(newTab);
-  }
+  // ! IN PROGRESS - INCOMPLETE
+  // const createNewTab = () => {
+  //   console.log('new tab created');
+  //   const newTab = { name: "Home", path: currentDirectory };
+  //   setTabs([...tabs, newTab]);
+  //   setActiveTab(newTab);
+  // }
 
   const handlePathChange = (tab: ITab) => (e: FormEvent) => {
     e.preventDefault();
-    console.log(`changing active file path to "${tab.path}"`);
+    const path = getStandardPath(tab.path);
+    setActiveTab({ ...tab, path });
+    setCurrentDirectory(path);
+    dispatch(fetchFilesRequest(path));
   }
 
   return (
@@ -36,13 +51,13 @@ const Header = () => {
             </button>
           ))}
 
-          <button
+          {/* <button
             type="button"
             onClick={createNewTab}
             className="create-new-tab"
           >
             +
-          </button>
+          </button> */}
         </div>
 
         <div className="window-manager">
@@ -54,7 +69,6 @@ const Header = () => {
 
       <SubHeader
         tab={activeTab}
-        setPath={(path: string) => setActiveTab({ ...activeTab, path })}
         handlePathChange={handlePathChange}
       />
     </div>

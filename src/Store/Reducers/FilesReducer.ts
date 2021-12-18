@@ -19,7 +19,10 @@ const reducer = (state = initialState, action: Actions): IFilesReducerState => {
       return {
         ...state,
         files: action.meta.files.reduce(
-          (accum, curr) => ({ ...accum, [curr.basename]: curr }),
+          (accum, curr) => ({
+            ...accum,
+            [curr.file_path]: curr
+          }),
           {}
         )
       };
@@ -69,7 +72,7 @@ const reducer = (state = initialState, action: Actions): IFilesReducerState => {
           ...state.files,
           [action.fileName]: {
             ...state.files?.[action.fileName] || {},
-            metadata: action.metadata
+            ...action.metadata
           }
         }
       };
@@ -80,7 +83,7 @@ const reducer = (state = initialState, action: Actions): IFilesReducerState => {
           ...state.files,
           [action.fileName]: {
             ...state.files?.[action.fileName] || {},
-            isDirectory: action.isDirectory
+            is_dir: action.isDirectory
           }
         }
       };
