@@ -1,6 +1,6 @@
 import { listenStylesheetChange } from '../../Api/app';
 import Storage from '../../Api/storage';
-import { themeValue, themeData, Theme } from '../../Typings/theme';
+import { CustomTheme, Theme } from '../../Typings/theme';
 /**
  * Detect system theme
  * @returns {string}
@@ -24,9 +24,12 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e)
 	updateTheme('*');
 });
 
-let themeJSON: themeValue; // user preference theme json
+let themeJSON: Theme; // user preference theme json
 import * as defaultThemeData from './theme.json';
-const defaultThemeJSON: Theme = defaultThemeData;
+interface DefaultTheme {
+	[key: string]: Theme;
+}
+const defaultThemeJSON: DefaultTheme = defaultThemeData;
 
 let currentTheme: string;
 
@@ -235,34 +238,65 @@ const changeTheme = async (theme?: string, category?: '*' | 'root' | 'tabbing' |
 };
 
 /**
+ * Get all installed themes
+ * @returns {Promise<CustomTheme[]>}
+ */
+const getInstalledThemes = async (): Promise<CustomTheme[]> => {
+	const extensions = await Storage.get('extensions');
+	const themes: CustomTheme[] = [];
+	for (const extension of extensions.themes) {
+		for (const theme of extension.themes) {
+			themes.push({
+				name: theme.name,
+				identifier: extension.identifier + '@' + theme.identifier,
+				author: extension.author,
+				version: extension.version,
+				description: extension.description,
+				homepage: extension.homepage,
+				repository: extension.repository,
+				license: extension.license,
+				theme: theme.value,
+			});
+		}
+	}
+	return themes;
+};
+
+/**
  * Update the entire page theme
  * @returns {Promise<void>}
  */
 const updateTheme = async (category?: '*' | 'root' | 'tabbing' | 'favorites' | 'grid', customStyleSheet?: JSON): Promise<void> => {
-	const data: themeData = await Storage.get('theme');
+	const data = await Storage.get('theme');
 	if (customStyleSheet) {
-		themeJSON = customStyleSheet as unknown as themeValue;
+		themeJSON = customStyleSheet as unknown as Theme;
 		document.body.dataset.usingCustomTheme = 'true';
 		listenStylesheetChange((styles) => {
-			themeJSON = styles as unknown as themeValue;
+			themeJSON = styles as unknown as Theme;
 			changeTheme(data.theme, '*');
 		});
 	}
 	// If user has no preference theme
-	if (!data || !Object.keys(data).length) {
+	if (!data || !Object.keys(data).length || data.theme === 'System Default') {
 		currentTheme = defaultTheme;
 		await changeTheme(defaultTheme, category);
 	} else {
 		// If user preference is default color theme...
 		if (Object.keys(defaultThemeJSON).indexOf(data.theme) !== -1) {
+			if (document.body.dataset.usingCustomTheme !== 'true') themeJSON = null;
 			currentTheme = data.theme;
 			await changeTheme(data.theme, category);
 		} else {
-			currentTheme = defaultTheme;
-			await changeTheme(defaultTheme, category);
+			for (const theme of await getInstalledThemes()) {
+				if (theme.identifier === data.theme) {
+					if (document.body.dataset.usingCustomTheme !== 'true') themeJSON = theme.theme;
+					await changeTheme(theme.name, category);
+					break;
+				}
+			}
 		}
 	}
 	return;
 };
 
-export { changeTheme, updateTheme, detectDefaultTheme, updateNativeTheme, getElementStyle };
+export { changeTheme, updateTheme, detectDefaultTheme, updateNativeTheme, getElementStyle, getInstalledThemes };

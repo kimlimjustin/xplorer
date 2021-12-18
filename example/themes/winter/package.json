@@ -6,8 +6,9 @@
 	"version": "0.1.0",
 	"license": "MIT",
 	"scripts": {
-		"start": "xplorer --theme winter",
-		"build": "xplorer build-extension themes"
+		"start": "xplorer --theme winter-dark",
+		"build": "xplorer extensions theme build",
+		"xplorer:install": "xplorer extensions theme install"
 	},
 	"xplorerExtensionConfig": {
 		"themes": [
@@ -15,6 +16,11 @@
 				"identifier": "winter",
 				"name": "Winter",
 				"path": "./themes/winter-color-theme.json"
+			},
+			{
+				"identifier": "winter-dark",
+				"name": "Dark Winter",
+				"path": "./themes/winter-dark-color-theme.json"
 			}
 		]
 	}

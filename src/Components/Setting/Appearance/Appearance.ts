@@ -3,7 +3,7 @@ import Translate from '../../I18n/i18n';
 import Storage from '../../../Api/storage';
 import OS from '../../../Api/platform';
 import { changeTransparentEffect, getAvailableFonts } from '../../../Api/app';
-import { getElementStyle, updateTheme } from '../../Theme/theme';
+import { getElementStyle, getInstalledThemes, updateTheme } from '../../Theme/theme';
 import { setDecorations } from '../../../Api/window';
 import Infobar from '../../Layout/infobar';
 let platform: string;
@@ -35,12 +35,13 @@ const Appearance = async (): Promise<void> => {
 	const frameStyle = _appearance?.frameStyle ?? 'default';
 	const showInfoBar = _appearance?.showInfoBar ?? true;
 
+	const installedThemes = await getInstalledThemes();
 	const availableThemes = [
 		{ name: 'Light', identifier: 'light' },
 		{ name: 'Dark', identifier: 'dark' },
 		{ name: 'Light+', identifier: 'light+' },
 		{ name: 'Dark+', identifier: 'dark+' },
-	].concat(_theme?.availableThemes ?? []);
+	].concat(...installedThemes.map((theme) => [{ name: theme.name, identifier: theme.identifier }]));
 	const availableFonts = await getAvailableFonts();
 	const default_i18n = await Translate('Default');
 	const appTheme_i18n = await Translate('App Theme');

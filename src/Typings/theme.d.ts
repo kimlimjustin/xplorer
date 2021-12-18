@@ -1,16 +1,15 @@
 export interface Theme {
-	[key: string]: themeValue;
-}
-export interface themeValue {
 	[key: string]: string;
 }
 
-export interface themeData {
-	availableThemes: [
-		{
-			identifier: string;
-			source: string;
-		}
-	];
-	theme: string;
+export interface CustomTheme {
+	author: string;
+	name: string;
+	description: string;
+	version: string;
+	identifier: string;
+	homepage: string;
+	license: string;
+	repository: string;
+	theme: Theme;
 }

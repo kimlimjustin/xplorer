@@ -9,6 +9,7 @@ mod file_lib;
 mod files_api;
 mod storage;
 use clap::{App, Arg, ArgMatches};
+use std::path::Path;
 mod tests;
 use font_loader::system_fonts;
 use lazy_static::lazy_static;
@@ -33,9 +34,31 @@ lazy_static! {
           .takes_value(true),
       )
       .subcommand(
-        App::new("build-extension")
-          .about("Package and build extensions")
-          .subcommand(App::new("themes").about("Build themes")),
+        App::new("extensions")
+          .alias("ext")
+          .about("Manage Xplorer extensions")
+          .subcommand(
+            App::new("theme")
+              .about("Manage themes")
+              .subcommand(
+                App::new("build").about("Package app into json file").arg(
+                  Arg::new("configuration")
+                    .about("Path to package.json")
+                    .takes_value(true)
+                    .multiple_values(false),
+                ),
+              )
+              .subcommand(
+                App::new("install")
+                  .about("Install theme from json file")
+                  .arg(
+                    Arg::new("theme")
+                      .about("Packaged theme file")
+                      .takes_value(true)
+                      .multiple_values(false),
+                  ),
+              ),
+          ),
       )
       .arg(
         Arg::new("dir")
@@ -99,11 +122,66 @@ fn change_transparent_effect(effect: String, window: tauri::Window) {
 }
 
 fn main() {
-  if ARGS_STRUCT.subcommand_matches("build-extension").is_some() {
-    let extension_type = ARGS_STRUCT.subcommand_matches("build-extension").unwrap();
-    if extension_type.subcommand_matches("themes").is_some() {
-      extensions::build_themes();
-      std::process::exit(0);
+  // Extensions stuff
+  if ARGS_STRUCT.subcommand_matches("extensions").is_some() {
+    let extension_type = ARGS_STRUCT.subcommand_matches("extensions").unwrap();
+    match extension_type.subcommand_matches("theme") {
+      Some(theme_command) => {
+        match theme_command.subcommand_matches("build") {
+          Some(theme_build_info) => {
+            let configuration = theme_build_info.value_of("configuration");
+            if configuration.is_some() {
+              let configuration = configuration.unwrap();
+              if configuration == "." {
+                extensions::build_themes(
+                  Path::new(&env::current_dir().unwrap().join("package.json")).to_path_buf(),
+                )
+              } else {
+                let configuration = Path::new(configuration);
+                if configuration.exists() && configuration.is_file() {
+                  extensions::build_themes(configuration.to_path_buf())
+                } else {
+                  extensions::build_themes(configuration.join("package.json").to_path_buf())
+                }
+              }
+            } else {
+              extensions::build_themes(
+                Path::new(&env::current_dir().unwrap().join("package.json")).to_path_buf(),
+              );
+            }
+            std::process::exit(0);
+          }
+          None => {}
+        };
+        match theme_command.subcommand_matches("install") {
+          Some(theme_install_info) => {
+            let theme = theme_install_info.value_of("theme");
+            if theme.is_some() {
+              let theme = theme.unwrap();
+              if theme == "." {
+                extensions::install_themes(
+                  Path::new(&env::current_dir().unwrap().join("dist/themes.ext.json"))
+                    .to_path_buf(),
+                )
+              } else {
+                let theme = Path::new(theme);
+                if theme.exists() && theme.is_file() {
+                  extensions::install_themes(theme.to_path_buf())
+                } else {
+                  extensions::install_themes(theme.join("dist/themes.ext.json").to_path_buf())
+                }
+              }
+            } else {
+              extensions::install_themes(
+                Path::new(&env::current_dir().unwrap().join("dist/themes.ext.json")).to_path_buf(),
+              );
+            }
+            std::process::exit(0);
+          }
+          None => {}
+        }
+      }
+      None => {}
     }
   }
   tauri::Builder::default()
