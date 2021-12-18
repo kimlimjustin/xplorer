@@ -21,6 +21,10 @@ import { Provider } from 'react-redux';
 import App from './App';
 import store from './Store';
 
+import { fetchFavoritesRequest } from './Store/ActionCreators/FavoritesActionCreators';
+
+store.dispatch(fetchFavoritesRequest());
+
 // Wait DOM Loaded to be loaded
 document.addEventListener('DOMContentLoaded', async () => {
 	ReactDOM.render(
