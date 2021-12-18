@@ -1,16 +1,19 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
+import { setActiveTab } from "../../Store/ActionCreators/TabActionCreators";
 import { IAppState } from '../../Store/Reducers';
 import { IFavoritesReducerState } from '../../Typings/Store/favorites';
 
 const Sidebar = () => {
+  const dispatch = useDispatch();
   const favorites = useSelector<IAppState, IFavoritesReducerState>(state => state.favorites);
+  const activeTab = useSelector<IAppState, IAppState['tabs']['activeTab']>(state => state.tabs.activeTab);
 
   const favoritesSort = (a: [string, string], b: [string, string]): number => (a[0] > b[0] ? 1 : -1);
 
   const navigateToPath = (path: string) => {
-    console.info("Navigating to path:", path);
+    dispatch(setActiveTab({ ...activeTab, path }));
   }
 
   return (

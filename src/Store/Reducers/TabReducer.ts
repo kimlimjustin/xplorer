@@ -1,11 +1,16 @@
 import omit from 'lodash.omit';
 
-import { ITabReducerState } from "../../Typings/Store/tab";
+import { ITab, ITabReducerState } from "../../Typings/Store/tab";
 import { Actions } from "../../Typings/Store/store";
 
+const defaultTab: ITab = {
+  name: "Default Tab",
+  path: ""
+}
+
 const initialState: ITabReducerState = {
-  tabs: {},
-  activeTab: null
+  tabs: { [defaultTab.name]: defaultTab },
+  activeTab: defaultTab
 };
 
 const reducer = (state = initialState, action: Actions): ITabReducerState => {
@@ -26,7 +31,7 @@ const reducer = (state = initialState, action: Actions): ITabReducerState => {
         tabs: {
           ...state.tabs,
           [action.name]: {
-            ...state.tabs?.[action.name] || {},
+            ...state.tabs?.[action.name],
             ...action.tab
           }
         }
@@ -39,7 +44,11 @@ const reducer = (state = initialState, action: Actions): ITabReducerState => {
     case 'SET_ACTIVE_TAB':
       return {
         ...state,
-        activeTab: action.tab
+        activeTab: action.tab,
+        tabs: {
+          ...state.tabs,
+          [action.tab.name]: action.tab
+        }
       }
     default:
       return state;

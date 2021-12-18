@@ -6,7 +6,7 @@ export interface ITab {
 }
 
 export interface ITabReducerState {
-  tabs: Record<ITab['name'], Partial<ITab>>,
+  tabs: Record<ITab['name'], ITab>,
   activeTab: ITab
 }
 

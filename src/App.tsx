@@ -11,15 +11,20 @@ import Properties from './Components/Properties';
 import Sidebar from './Components/Sidebar';
 
 import { fetchFilesRequest } from './Store/ActionCreators/DirectoryActionCreators';
+import { setActiveTab } from './Store/ActionCreators/TabActionCreators';
 import { IAppState } from './Store/Reducers';
 
 const App = () => {
   const dispatch = useDispatch();
-  const homeDirectory = useSelector<IAppState, IAppState['favorites']['HOMEDIR_PATH']>(state => state.favorites.HOMEDIR_PATH); // TODO AVOID RACE CONDITION HERE
+  const homeDirectory = useSelector<IAppState, IAppState['favorites']['HOMEDIR_PATH']>(state => state.favorites.HOMEDIR_PATH);
+  const activeTab = useSelector<IAppState, IAppState['tabs']['activeTab']>(state => state.tabs.activeTab);
 
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [currentDirectory, setCurrentDirectory] = useState(homeDirectory);
+  const [isLoaded, setIsLoaded] = useState(false); // TODO REPLACE WITH SKELETON LOADING
 
+  const setCurrentDirectory = (path: string) => dispatch(setActiveTab({ ...activeTab, path }));
+  const fetchFiles = (path: string) => dispatch(fetchFilesRequest(path));
+
+  // Waits for homeDirectory to load on initial favorites request 
   useEffect(() => {
     if (homeDirectory) {
       setIsLoaded(true);
@@ -27,9 +32,10 @@ const App = () => {
     }
   }, [homeDirectory]);
 
+  // TODO REDUCE NUMBER OF FILE CALLS FROM HERE (currently on every tab switch)
   useEffect(() => {
-    dispatch(fetchFilesRequest(homeDirectory));
-  }, []);
+    fetchFiles(activeTab.path);
+  }, [activeTab]);
 
   if (!isLoaded) return (<div>Loading...</div>);
 
@@ -38,9 +44,9 @@ const App = () => {
       <div className="container">
         <Sidebar />
         <main className="main">
-          <Header currentDirectory={currentDirectory} setCurrentDirectory={setCurrentDirectory} />
+          <Header />
           <LoadingBar isLoading={false} />
-          <MainView currentDirectory={currentDirectory} />
+          <MainView currentDirectory={activeTab.path} />
         </main>
       </div>
       <SettingsView />

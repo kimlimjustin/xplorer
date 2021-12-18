@@ -1,63 +1,61 @@
-import React, { useState, FormEvent } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { FormEvent } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import SubHeader from './SubHeader';
 import { getStandardPath } from '../../Helpers/paths';
 import { fetchFilesRequest } from '../../Store/ActionCreators/DirectoryActionCreators';
+import { setActiveTab } from '../../Store/ActionCreators/TabActionCreators';
+import { IAppState } from '../..//Store/Reducers';
 
 export interface ITab {
   name: string,
   path: string
 }
 
-export interface IHeaderProps {
-  currentDirectory: string,
-  setCurrentDirectory: (dir: string) => void
-}
-
-const Header = ({ currentDirectory, setCurrentDirectory }: IHeaderProps) => {
+const Header = () => {
   const dispatch = useDispatch();
+  const tabs = useSelector<IAppState, IAppState['tabs']['tabs']>(state => state.tabs.tabs);
+  const activeTab = useSelector<IAppState, IAppState['tabs']['activeTab']>(state => state.tabs.activeTab);
 
-  const [tabs, setTabs] = useState<ITab[]>([{ name: "Home", path: currentDirectory }]);
-  const [activeTab, setActiveTab] = useState<ITab>(tabs[0]);
+  const createNewTab = () => {
+    dispatch(setActiveTab({ name: "Home", path: activeTab.path }));
+  }
 
-  // ! IN PROGRESS - INCOMPLETE
-  // const createNewTab = () => {
-  //   console.log('new tab created');
-  //   const newTab = { name: "Home", path: currentDirectory };
-  //   setTabs([...tabs, newTab]);
-  //   setActiveTab(newTab);
-  // }
+  const updateActiveTab = (tab: ITab) => dispatch(setActiveTab(tab));
 
   const handlePathChange = (tab: ITab) => (e: FormEvent) => {
     e.preventDefault();
     const path = getStandardPath(tab.path);
-    setActiveTab({ ...tab, path });
-    setCurrentDirectory(path);
+    updateActiveTab({ ...tab, path });
     dispatch(fetchFilesRequest(path));
   }
 
   return (
     <div id="header-container" className="topbar" data-tauri-drag-region>
-      <div className="row">
-        <div className="tabs-manager">
-          {tabs.map((tab) => (
-            <button
-              type="button"
-              onClick={() => setActiveTab(tab)}
-              className="tab tab-hover-effect"
-            >
-              <span id="tab-position">{tab.name}</span>
-            </button>
-          ))}
+      <div>
+        <div>
+          {Object.values(tabs)
+            .reduce<JSX.Element[]>(
+              (accum, tab) => [
+                ...accum, (
+                  <button
+                    type="button"
+                    onClick={() => updateActiveTab(tab)}
+                    className="tab tab-hover-effect"
+                  >
+                    <span id="tab-position">{`${activeTab?.name === tab.name ? '[active] ' : ''}${tab.name}`}</span>
+                  </button>
+                )
+              ], []
+            )
+          }
 
-          {/* <button
+          <button
             type="button"
             onClick={createNewTab}
-            className="create-new-tab"
           >
             +
-          </button> */}
+          </button>
         </div>
 
         <div className="window-manager">
