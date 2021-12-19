@@ -34,7 +34,7 @@ const reducer = (state = initialState, action: Actions): IFilesReducerState => {
         files: {
           ...state.files,
           [action.fileName]: {
-            ...state.files?.[action.fileName] || {},
+            ...state.files?.[action.fileName],
             content: action.content
           }
         }
@@ -82,7 +82,7 @@ const reducer = (state = initialState, action: Actions): IFilesReducerState => {
         files: {
           ...state.files,
           [action.fileName]: {
-            ...state.files?.[action.fileName] || {},
+            ...state.files?.[action.fileName],
             is_dir: action.isDirectory
           }
         }
@@ -93,7 +93,7 @@ const reducer = (state = initialState, action: Actions): IFilesReducerState => {
         files: {
           ...state.files,
           [action.fileName]: {
-            ...state.files?.[action.fileName] || {},
+            ...state.files?.[action.fileName],
             icon: action.iconPath
           }
         }
@@ -104,7 +104,7 @@ const reducer = (state = initialState, action: Actions): IFilesReducerState => {
         files: {
           ...state.files,
           [action.fileName]: {
-            ...state.files?.[action.fileName] || {},
+            ...state.files?.[action.fileName],
             size: action.size
           }
         }

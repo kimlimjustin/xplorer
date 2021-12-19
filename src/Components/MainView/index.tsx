@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
+import File from '../File';
 import { IAppState } from '../../Store/Reducers';
 import { IFile } from '../../Typings/Store/files';
 
@@ -11,6 +12,7 @@ export interface IMainViewProps {
 const MainView = ({ currentDirectory }: IMainViewProps) => {
   const files = useSelector<IAppState, IAppState["files"]["files"]>((state) => state.files.files);
 
+  // Places directories first, sorts files and directories by name
   const sortFiles = (a: IFile, b: IFile): number => {
     if ((!a.is_dir && b.is_dir) || (a.is_dir && !b.is_dir)) return (b.is_dir ? 1 : -1); // Simulates xor for is_dir property
     return (a.basename || '' > b.basename || '' ? 1 : -1)
@@ -22,11 +24,11 @@ const MainView = ({ currentDirectory }: IMainViewProps) => {
         {Object.values(files)
           .sort(sortFiles)
           .reduce<Partial<JSX.Element>[]>(
-            (accum, { file_path = '', basename = '', is_dir = false }) => {
-              const parentDirectory = file_path.substring(0, file_path.length - basename.length);
+            (accum, metadata) => {
+              const parentDirectory = metadata.file_path.substring(0, metadata.file_path.length - metadata.basename.length);
               if (parentDirectory !== currentDirectory) return accum;
               return ([...accum, (
-                <p key={basename}>{`${is_dir ? '/' : ''}${basename}`}</p>
+                <File mode='Detail' metadata={metadata} />
               )]);
             }, []
           )}

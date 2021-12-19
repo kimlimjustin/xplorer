@@ -238,8 +238,10 @@
 
 		#workspace {
 			padding: 1rem;
-			height: calc(100% - 2rem);
-			width: -webkit-fill-available;
+			// height: calc(100% - 2rem);
+			// width: -webkit-fill-available;
+			display: flex;
+			flex-wrap: wrap;
 		}
 	}
 	.infobar {

@@ -12,13 +12,13 @@ export interface FileTrashMeta {
 }
 
 export interface IFile extends FileMetaData {
-  content: string,
-  icon: string
+  content?: string,
+  icon?: string
 }
 
 export interface IFilesReducerState {
   buffers: Record<string, Buffer>,
-  files: Record<string, Partial<IFile>>,
+  files: Record<string, IFile>,
   jsonFiles: Record<string, JSON>,
   trashedFiles: Record<string, FileMetaData>
 }
