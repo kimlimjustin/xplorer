@@ -13,6 +13,7 @@ export interface IMainViewProps {
 
 const MainView = ({ currentDirectory }: IMainViewProps) => {
   const files = useSelector<IAppState, IAppState["files"]["files"]>((state) => state.files.files);
+  const filePreview = useSelector<IAppState, IAppState['files']['filePreview']>(state => state.files.filePreview);
 
   // Places directories first, sorts files and directories by name
   const sortFiles = (a: IFile, b: IFile): number => {
@@ -35,7 +36,7 @@ const MainView = ({ currentDirectory }: IMainViewProps) => {
             }, []
           )}
       </div>
-      {/* <Preview filePath="PUT_TEST_FILE_HERE" /> */}
+      {filePreview && <Preview filePath={filePreview} />}
     </div>
   );
 }

@@ -9,7 +9,8 @@ const initialState: IFilesReducerState = {
   files: {},
   skippedFiles: [],
   jsonFiles: {},
-  trashedFiles: {}
+  trashedFiles: {},
+  filePreview: null
 };
 
 const reducer = (state = initialState, action: Actions): IFilesReducerState => {
@@ -169,6 +170,16 @@ const reducer = (state = initialState, action: Actions): IFilesReducerState => {
           state.files,
           (_, fileName) => action.paths.includes(fileName)
         )
+      };
+    case 'OPEN_FILE_PREVIEW':
+      return {
+        ...state,
+        filePreview: action.path
+      };
+    case 'CLOSE_FILE_PREVIEW':
+      return {
+        ...state,
+        filePreview: null
       };
     default:
       return state;

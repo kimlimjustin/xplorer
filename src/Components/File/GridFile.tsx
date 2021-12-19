@@ -1,16 +1,18 @@
-import React from 'react';
+import React, { MouseEvent } from 'react';
 import FileMetaData from "../../Typings/fileMetaData";
 
 export interface IGridFileProps {
   size: number,
   metadata: FileMetaData,
+  handleFileRightClick: (e: MouseEvent<HTMLButtonElement, globalThis.MouseEvent>, path: string) => void,
   handleFileDoubleClick: (isDir: boolean, dirName: string) => void
 }
 
-const GridFile = ({ size, metadata, handleFileDoubleClick }: IGridFileProps): JSX.Element => {
+const GridFile = ({ size, metadata, handleFileRightClick, handleFileDoubleClick }: IGridFileProps): JSX.Element => {
   return (
     <button
       type="button"
+      onContextMenu={(e) => handleFileRightClick(e, metadata.file_path)}
       onDoubleClick={() => handleFileDoubleClick(!!metadata.is_dir, metadata.basename)}
       style={{ width: size, minHeight: size }}
       className="gridfile-container"

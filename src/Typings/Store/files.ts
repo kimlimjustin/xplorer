@@ -21,7 +21,8 @@ export interface IFilesReducerState {
   files: Record<string, IFile>,
   skippedFiles: string[],
   jsonFiles: Record<string, JSON>,
-  trashedFiles: Record<string, FileMetaData>
+  trashedFiles: Record<string, FileMetaData>,
+  filePreview: string
 }
 
 export const READ_FILE = 'READ_FILE';
@@ -44,6 +45,9 @@ export const DELETE_FILES = 'DELETE_FILES';
 export const RESTORE_FILE = 'RESTORE_FILE';
 export const RESTORE_FILES = 'RESTORE_FILES';
 export const PURGE_FILES = 'PURGE_FILES';
+
+export const OPEN_FILE_PREVIEW = 'OPEN_FILE_PREVIEW'; // * Internal
+export const CLOSE_FILE_PREVIEW = 'CLOSE_FILE_PREVIEW'; // * Internal
 
 export type ReadFileRequest = AppActionBase<typeof READ_FILE, 'REQUEST'> & { fileName: string };
 export type ReadFileSuccess = AppActionBase<typeof READ_FILE, 'SUCCESS'> & { fileName: string, content: string };
@@ -125,6 +129,9 @@ export type PurgeFilesRequest = AppActionBase<typeof PURGE_FILES, 'REQUEST'> & {
 export type PurgeFilesSuccess = AppActionBase<typeof PURGE_FILES, 'SUCCESS'> & { paths: string[] };
 export type PurgeFilesFailure = AppActionBase<typeof PURGE_FILES, 'FAILURE'> & { message: string };
 
+export type OpenFilePreviewSuccess = AppActionBase<typeof OPEN_FILE_PREVIEW, 'SUCCESS'> & { path: string };
+export type CloseFilePreviewSuccess = AppActionBase<typeof CLOSE_FILE_PREVIEW, 'SUCCESS'>;
+
 export type FileActions = ReadFileRequest | ReadFileSuccess | ReadFileFailure
   | ReadBufferRequest | ReadBufferSuccess | ReadBufferFailure
   | OpenFileRequest | OpenFileSuccess | OpenFileFailure
@@ -144,10 +151,11 @@ export type FileActions = ReadFileRequest | ReadFileSuccess | ReadFileFailure
   | DeleteFilesRequest | DeleteFilesSuccess | DeleteFilesFailure
   | RestoreFileRequest | RestoreFileSuccess | RestoreFileFailure
   | RestoreFilesRequest | RestoreFilesSuccess | RestoreFilesFailure
-  | PurgeFilesRequest | PurgeFilesSuccess | PurgeFilesFailure;
+  | PurgeFilesRequest | PurgeFilesSuccess | PurgeFilesFailure
+  | OpenFilePreviewSuccess | CloseFilePreviewSuccess;
 
 export type FileActionTypes = typeof READ_FILE | typeof READ_BUFFER | typeof OPEN_FILE | typeof READ_ASSET
   | typeof READ_JSON_FILE | typeof CREATE_FILE | typeof FETCH_FILE_PROPERTIES | typeof IS_DIRECTORY | typeof EXTRACT_ICON
   | typeof CALCULATE_FILE_SIZE | typeof RENAME_FILE | typeof COPY_FILE | typeof CUT_FILE
   | typeof REMOVE_FILE | typeof REVEAL_FILE | typeof GET_TRASHED_FILES | typeof DELETE_FILES
-  | typeof RESTORE_FILE | typeof RESTORE_FILES | typeof PURGE_FILES;
+  | typeof RESTORE_FILE | typeof RESTORE_FILES | typeof PURGE_FILES | typeof OPEN_FILE_PREVIEW | typeof CLOSE_FILE_PREVIEW;

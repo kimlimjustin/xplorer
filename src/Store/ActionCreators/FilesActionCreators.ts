@@ -22,6 +22,7 @@ import {
   RestoreFileFailure, RestoreFileRequest, RestoreFilesFailure,
   RestoreFilesRequest, RestoreFilesSuccess, RestoreFileSuccess,
   RevealFileFailure, RevealFileRequest, RevealFileSuccess,
+  OpenFilePreviewSuccess, CloseFilePreviewSuccess
 } from "../../Typings/Store/files";
 
 export const readFileRequest = (fileName: string): ReadFileRequest => ({
@@ -390,4 +391,15 @@ export const purgeFilesFailure = (message: string): PurgeFilesFailure => ({
   type: 'PURGE_FILES',
   status: 'FAILURE',
   message
+});
+
+export const openFilePreview = (path: string): OpenFilePreviewSuccess => ({
+  type: 'OPEN_FILE_PREVIEW',
+  status: 'SUCCESS',
+  path
+});
+
+export const closeFilePreview = (): CloseFilePreviewSuccess => ({
+  type: 'CLOSE_FILE_PREVIEW',
+  status: 'SUCCESS'
 });
