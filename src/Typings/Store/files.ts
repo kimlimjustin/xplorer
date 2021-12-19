@@ -19,6 +19,7 @@ export interface IFile extends FileMetaData {
 export interface IFilesReducerState {
   buffers: Record<string, Buffer>,
   files: Record<string, IFile>,
+  skippedFiles: string[],
   jsonFiles: Record<string, JSON>,
   trashedFiles: Record<string, FileMetaData>
 }

@@ -10,7 +10,6 @@ import LoadingBar from './Components/LoadingBar';
 import Properties from './Components/Properties';
 import Sidebar from './Components/Sidebar';
 
-import { fetchFilesRequest } from './Store/ActionCreators/DirectoryActionCreators';
 import { setActiveTab } from './Store/ActionCreators/TabActionCreators';
 import { IAppState } from './Store/Reducers';
 
@@ -22,7 +21,6 @@ const App = () => {
   const [isLoaded, setIsLoaded] = useState(false); // TODO REPLACE WITH SKELETON LOADING
 
   const setCurrentDirectory = (path: string) => dispatch(setActiveTab({ ...activeTab, path }));
-  const fetchFiles = (path: string) => dispatch(fetchFilesRequest(path));
 
   // Waits for homeDirectory to load on initial favorites request 
   useEffect(() => {
@@ -31,11 +29,6 @@ const App = () => {
       setCurrentDirectory(homeDirectory);
     }
   }, [homeDirectory]);
-
-  // TODO REDUCE NUMBER OF FILE CALLS FROM HERE (currently on every tab switch)
-  useEffect(() => {
-    fetchFiles(activeTab.path);
-  }, [activeTab]);
 
   if (!isLoaded) return (<div>Loading...</div>);
 

@@ -1,11 +1,11 @@
-import React, { FormEvent } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import SubHeader from './SubHeader';
 import { getStandardPath } from '../../Helpers/paths';
-import { fetchFilesRequest } from '../../Store/ActionCreators/DirectoryActionCreators';
+import { fetchFilesRequest, updateHistoryIdxRequest } from '../../Store/ActionCreators/DirectoryActionCreators';
 import { setActiveTab } from '../../Store/ActionCreators/TabActionCreators';
-import { IAppState } from '../..//Store/Reducers';
+import { IAppState } from '../../Store/Reducers';
 
 export interface ITab {
   name: string,
@@ -16,19 +16,14 @@ const Header = () => {
   const dispatch = useDispatch();
   const tabs = useSelector<IAppState, IAppState['tabs']['tabs']>(state => state.tabs.tabs);
   const activeTab = useSelector<IAppState, IAppState['tabs']['activeTab']>(state => state.tabs.activeTab);
+  const directoryHistoryIdx = useSelector<IAppState, IAppState['directory']['historyIdx']>(state => state.directory.historyIdx);
 
-  const createNewTab = () => {
-    dispatch(setActiveTab({ name: "Home", path: activeTab.path }));
-  }
+  const createNewTab = () => dispatch(setActiveTab({ name: "Home", path: activeTab.path }));
 
-  const updateActiveTab = (tab: ITab) => dispatch(setActiveTab(tab));
-
-  const handlePathChange = (tab: ITab) => (e: FormEvent) => {
-    e.preventDefault();
-    const path = getStandardPath(tab.path);
-    updateActiveTab({ ...tab, path });
-    dispatch(fetchFilesRequest(path));
-  }
+  const handleBack = () => dispatch(updateHistoryIdxRequest(directoryHistoryIdx - 1));
+  const handleForward = () => dispatch(updateHistoryIdxRequest(directoryHistoryIdx + 1));
+  const handlePathChange = (tab: ITab) => dispatch(setActiveTab({ ...tab, path: getStandardPath(tab.path) }));
+  const refreshDirectory = (dirName: string) => dispatch(fetchFilesRequest(dirName));
 
   return (
     <div id="header-container" className="topbar" data-tauri-drag-region>
@@ -40,7 +35,7 @@ const Header = () => {
                 ...accum, (
                   <button
                     type="button"
-                    onClick={() => updateActiveTab(tab)}
+                    onClick={() => dispatch(setActiveTab(tab))}
                     className="tab tab-hover-effect"
                   >
                     <span id="tab-position">{`${activeTab?.name === tab.name ? '[active] ' : ''}${tab.name}`}</span>
@@ -66,8 +61,11 @@ const Header = () => {
       </div>
 
       <SubHeader
-        tab={activeTab}
+        activeTab={activeTab}
+        handleBack={handleBack}
+        handleForward={handleForward}
         handlePathChange={handlePathChange}
+        handleDirectoryRefresh={refreshDirectory}
       />
     </div>
   );

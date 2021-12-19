@@ -1,12 +1,17 @@
 import omit from 'lodash.omit';
+import dropWhile from 'lodash.dropwhile';
 
 import { IDirectoryReducerState } from "../../Typings/Store/directory";
 import { Actions } from "../../Typings/Store/store";
 
+const MAX_HISTORY_SIZE = 5;
+
 const initialState: IDirectoryReducerState = {
   directories: {},
   listeners: {},
-  searches: {}
+  searches: {},
+  history: [],
+  historyIdx: -1
 };
 
 const reducer = (state = initialState, action: Actions): IDirectoryReducerState => {
@@ -29,6 +34,26 @@ const reducer = (state = initialState, action: Actions): IDirectoryReducerState 
             )
           }
         }
+      };
+    case 'PUSH_HISTORY':
+      return {
+        ...state,
+        history: dropWhile(
+          [...state.history, action.path],
+          (_entry, idx, self) => idx < self.length - MAX_HISTORY_SIZE
+        ),
+        historyIdx: state.historyIdx + 1
+      };
+    case 'POP_HISTORY':
+      return {
+        ...state,
+        history: state.history.slice(0, -2),
+        historyIdx: state.historyIdx - 1
+      };
+    case 'UPDATE_HISTORY_IDX':
+      return {
+        ...state,
+        historyIdx: action.idx
       };
     case 'FETCH_IS_DIR': // ! CONSIDER NOT IMPLEMENTING IN REDUX (CACHE, DUPLICATE)
       return {

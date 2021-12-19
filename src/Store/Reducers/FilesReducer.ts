@@ -7,6 +7,7 @@ import { Actions } from "../../Typings/Store/store";
 const initialState: IFilesReducerState = {
   buffers: {},
   files: {},
+  skippedFiles: [],
   jsonFiles: {},
   trashedFiles: {}
 };
@@ -24,7 +25,8 @@ const reducer = (state = initialState, action: Actions): IFilesReducerState => {
             [curr.file_path]: curr
           }),
           {}
-        )
+        ),
+        skippedFiles: action.meta.skipped_files
       };
 
     case 'READ_FILE':

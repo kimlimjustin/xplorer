@@ -17,7 +17,10 @@ import {
   directorySearchSuccess,
   listenDirectoryFailure, listenDirectorySuccess,
   makeDirectoryFailure, makeDirectorySuccess,
-  unlistenDirectoryFailure, unlistenDirectorySuccess
+  unlistenDirectoryFailure, unlistenDirectorySuccess,
+  pushHistory,
+  updateHistoryIdxFailure,
+  updateHistoryIdxSuccess
 } from "../ActionCreators/DirectoryActionCreators";
 
 import {
@@ -30,18 +33,22 @@ import {
   InitDirectorySearchRequest,
   ListenDirectoryRequest,
   MakeDirectoryRequest,
-  UnlistenDirectoryRequest
+  UnlistenDirectoryRequest,
+  UpdateHistoryIdxRequest
 } from "../../Typings/Store/directory";
 
 import { selectStatus, typedPut as put, typedSelect as select } from "./helpers";
+import { setActiveTab } from "../ActionCreators/TabActionCreators";
 import * as DirectoryService from "../../Services/DirectoryService";
 import FileMetaData from "../../Typings/fileMetaData";
+import { ITab } from "../../Typings/Store/tab";
 
 function* fetchFilesWorker(action: FetchFilesRequest) {
   try {
     const { dirName } = action;
     const meta: IDirectoryMeta = yield call(DirectoryService.fetchFiles, dirName);
     yield put(fetchFilesSuccess(dirName, meta));
+    if (action.pushToHistory) yield put(pushHistory(dirName));
   } catch (error) {
     yield put(fetchFilesFailure(error.message));
   }
@@ -142,9 +149,41 @@ function* cancelDirectorySearchWorker(action: CancelDirectorySearchRequest) {
   }
 }
 
+function* updateHistoryIdxWorker(action: UpdateHistoryIdxRequest) {
+  try {
+    const maxHistoryIdx: number = yield select(state => state.directory.history.length);
+
+    // Index needs to be lower than the length of the history
+    if (action.idx > maxHistoryIdx) {
+      yield put(updateHistoryIdxSuccess(maxHistoryIdx))
+      return;
+    }
+
+    // Index needs to be geq 0
+    if (action.idx < 0) {
+      yield put(updateHistoryIdxSuccess(0));
+      return
+    }
+
+    // Get path at location in history
+    const path: string = yield select(state => state.directory.history?.[action.idx]);
+    if (!path) throw new Error(`Invalid history index of ${action.idx}`);
+
+    // Update directory reducer
+    yield put(updateHistoryIdxSuccess(action.idx));
+
+    // Update active tab
+    const activeTab: ITab = yield select(state => state.tabs.activeTab);
+    yield put(setActiveTab({ ...activeTab, path }, false));
+  } catch (error) {
+    yield put(updateHistoryIdxFailure(error.message));
+  }
+}
+
 function* directorySaga() {
   yield all([
     takeLatest(selectStatus('FETCH_FILES'), fetchFilesWorker),
+    // takeLatest(selectStatus('UPDATE_HISTORY_IDX', 'SUCCESS'), fetchFilesWorker), // Refetches when history is updated
     takeLatest(selectStatus('IS_DIRECTORY'), isDirectoryWorker),
     takeLatest(selectStatus('FETCH_FILE_EXISTS'), fileExistsWorker),
     takeLatest(selectStatus('MAKE_DIRECTORY'), makeDirectoryWorker),
@@ -152,7 +191,8 @@ function* directorySaga() {
     takeLatest(selectStatus('UNLISTEN_DIRECTORY'), unlistenDirectoryWorker),
     takeLatest(selectStatus('FETCH_DIRECTORY_SIZE'), fetchDirectorySizeWorker),
     takeLatest(selectStatus('INIT_DIRECTORY_SEARCH'), initDirectorySearchWorker),
-    takeLatest(selectStatus('CANCEL_DIRECTORY_SEARCH'), cancelDirectorySearchWorker)
+    takeLatest(selectStatus('CANCEL_DIRECTORY_SEARCH'), cancelDirectorySearchWorker),
+    takeLatest(selectStatus('UPDATE_HISTORY_IDX'), updateHistoryIdxWorker)
   ]);
 }
 

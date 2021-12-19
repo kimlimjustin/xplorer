@@ -11,15 +11,17 @@ import {
   ListenDirectoryFailure, ListenDirectoryRequest, ListenDirectorySuccess,
   MakeDirectoryFailure, MakeDirectoryRequest, MakeDirectorySuccess,
   UnlistenDirectoryFailure, UnlistenDirectoryRequest, UnlistenDirectorySuccess,
-  DirectorySearchPartialResultSuccess, DirectorySearchPartialResultFailure
+  DirectorySearchPartialResultSuccess, DirectorySearchPartialResultFailure,
+  PushHistorySuccess, PopHistorySuccess, UpdateHistoryIdxSuccess, UpdateHistoryIdxRequest, UpdateHistoryIdxFailure
 } from "../../Typings/Store/directory";
 
 import FileMetaData from "../../Typings/fileMetaData";
 
-export const fetchFilesRequest = (dirName: string): FetchFilesRequest => ({
+export const fetchFilesRequest = (dirName: string, pushToHistory = true): FetchFilesRequest => ({
   type: 'FETCH_FILES',
   status: 'REQUEST',
-  dirName
+  dirName,
+  pushToHistory
 });
 
 export const fetchFilesSuccess = (dirName: string, meta: IDirectoryMeta): FetchFilesSuccess => ({
@@ -192,6 +194,37 @@ export const cancelDirectorySearchSuccess = (dirName: string): CancelDirectorySe
 
 export const cancelDirectorySearchFailure = (message: string): CancelDirectorySearchFailure => ({
   type: 'CANCEL_DIRECTORY_SEARCH',
+  status: 'FAILURE',
+  message
+});
+
+export const pushHistory = (path: string, idx?: number): PushHistorySuccess => ({
+  type: 'PUSH_HISTORY',
+  status: 'SUCCESS',
+  path,
+  idx
+});
+
+export const popHistory = (number = 1): PopHistorySuccess => ({
+  type: 'POP_HISTORY',
+  status: 'SUCCESS',
+  number
+});
+
+export const updateHistoryIdxRequest = (idx: number): UpdateHistoryIdxRequest => ({
+  type: 'UPDATE_HISTORY_IDX',
+  status: 'REQUEST',
+  idx
+});
+
+export const updateHistoryIdxSuccess = (idx: number): UpdateHistoryIdxSuccess => ({
+  type: 'UPDATE_HISTORY_IDX',
+  status: 'SUCCESS',
+  idx
+});
+
+export const updateHistoryIdxFailure = (message: string): UpdateHistoryIdxFailure => ({
+  type: 'UPDATE_HISTORY_IDX',
   status: 'FAILURE',
   message
 });

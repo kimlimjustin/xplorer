@@ -10,6 +10,7 @@ import filesSaga from './FilesSaga';
 import localeSaga from './LocaleSaga';
 import platformSaga from './PlatformService';
 import storageSaga from './StorageSaga';
+import tabSaga from './TabSaga';
 import windowSaga from './WindowSaga';
 
 function* rootSaga() {
@@ -24,6 +25,7 @@ function* rootSaga() {
     spawn(localeSaga),
     spawn(platformSaga),
     spawn(storageSaga),
+    spawn(tabSaga),
     spawn(windowSaga)
   ]);
 }

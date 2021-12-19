@@ -832,6 +832,13 @@
   dependencies:
     "@types/node" "*"
 
+"@types/lodash.dropwhile@^4.6.6":
+  version "4.6.6"
+  resolved "https://registry.yarnpkg.com/@types/lodash.dropwhile/-/lodash.dropwhile-4.6.6.tgz#691a46b2908603a29bdea51baace34422ed72583"
+  integrity sha512-D2iNHx3LmCLCtRkZllj+ZY6FuA/S97UtiWe2CMn+l1Z/Prlnv9R9fHfVm29nyaByWJhJt3Mz7TYY0D5c7ffY0w==
+  dependencies:
+    "@types/lodash" "*"
+
 "@types/lodash.omit@^4.5.6":
   version "4.5.6"
   resolved "https://registry.yarnpkg.com/@types/lodash.omit/-/lodash.omit-4.5.6.tgz#f2a9518259e481a48ff7ec423420fa8fd58933e2"
@@ -5705,6 +5712,11 @@ locate-path@^5.0.0:
   integrity sha512-t7hw9pI+WvuwNJXwk5zVHpyhIqzg2qTlklJOf0mVxGSbe3Fp2VieZcduNYjaLDoy6p9uGpQEGWG87WpMKlNq8g==
   dependencies:
     p-locate "^4.1.0"
+
+lodash.dropwhile@^4.6.0:
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/lodash.dropwhile/-/lodash.dropwhile-4.6.0.tgz#46a83a4967ce7f3b4e2f8c562cd1f8af69273844"
+  integrity sha1-Rqg6SWfOfztOL4xWLNH4r2knOEQ=
 
 lodash.memoize@4.x:
   version "4.1.2"

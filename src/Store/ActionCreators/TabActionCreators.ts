@@ -21,8 +21,9 @@ export const deleteTab = (name: string): DeleteTabSuccess => ({
   name
 });
 
-export const setActiveTab = (tab: ITab): SetActiveTabSuccess => ({
+export const setActiveTab = (tab: ITab, pushToHistory = true): SetActiveTabSuccess => ({
   type: 'SET_ACTIVE_TAB',
   status: 'SUCCESS',
-  tab
+  tab,
+  pushToHistory
 });
