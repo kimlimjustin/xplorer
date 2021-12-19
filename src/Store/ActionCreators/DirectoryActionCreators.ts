@@ -198,11 +198,10 @@ export const cancelDirectorySearchFailure = (message: string): CancelDirectorySe
   message
 });
 
-export const pushHistory = (path: string, idx?: number): PushHistorySuccess => ({
+export const pushHistory = (path: string): PushHistorySuccess => ({
   type: 'PUSH_HISTORY',
   status: 'SUCCESS',
-  path,
-  idx
+  path
 });
 
 export const popHistory = (number = 1): PopHistorySuccess => ({

@@ -39,7 +39,10 @@ const reducer = (state = initialState, action: Actions): IDirectoryReducerState 
       return {
         ...state,
         history: dropWhile(
-          [...state.history, action.path],
+          // Overwrites future history if user has gone back and clicks a new directory
+          state.historyIdx === state.history.length - 1
+            ? [...state.history, action.path]
+            : [...state.history.slice(0, state.historyIdx + 1), action.path],
           (_entry, idx, self) => idx < self.length - MAX_HISTORY_SIZE
         ),
         historyIdx: state.historyIdx + 1

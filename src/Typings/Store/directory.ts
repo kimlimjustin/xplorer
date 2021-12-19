@@ -78,7 +78,7 @@ export type CancelDirectorySearchRequest = AppActionBase<typeof CANCEL_DIRECTORY
 export type CancelDirectorySearchSuccess = AppActionBase<typeof CANCEL_DIRECTORY_SEARCH, 'SUCCESS'> & { dirName: string };
 export type CancelDirectorySearchFailure = AppActionBase<typeof CANCEL_DIRECTORY_SEARCH, 'FAILURE'> & { message: string };
 
-export type PushHistorySuccess = AppActionBase<typeof PUSH_HISTORY, 'SUCCESS'> & { path: string, idx?: number };
+export type PushHistorySuccess = AppActionBase<typeof PUSH_HISTORY, 'SUCCESS'> & { path: string };
 export type PopHistorySuccess = AppActionBase<typeof POP_HISTORY, 'SUCCESS'> & { number: number };
 
 export type UpdateHistoryIdxRequest = AppActionBase<typeof UPDATE_HISTORY_IDX, 'REQUEST'> & { idx: number };
