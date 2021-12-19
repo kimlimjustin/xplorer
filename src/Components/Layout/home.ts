@@ -6,6 +6,7 @@ import OS from '../../Api/platform';
 import DirectoryAPI from '../../Api/directory';
 import FavoritesAPI from '../../Api/favorites';
 import displayFiles from '../Open/displayFiles';
+import { LOAD_IMAGE } from '../Functions/lazyLoadingImage';
 let platform: string;
 (async () => {
 	platform = await OS();
@@ -45,10 +46,9 @@ const Home = async (): Promise<void> => {
 		updateTheme('favorites');
 		stopLoading();
 	}
-	// Update the content in the main page ...
-	// And also the theme :)
 	updateTheme('favorites');
 	stopLoading();
+	LOAD_IMAGE();
 };
 
 export default Home;
