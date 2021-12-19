@@ -235,9 +235,13 @@
 		height: 100%;
 		box-sizing: border-box;
 		opacity: var(--workspace-transparency);
+		padding: 1rem;
+
+		display: flex;
+		flex-direction: row;
+		gap: 1rem;
 
 		#workspace {
-			padding: 1rem;
 			// height: calc(100% - 2rem);
 			// width: -webkit-fill-available;
 			display: flex;

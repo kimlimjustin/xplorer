@@ -5,6 +5,7 @@ import GridFile from "./GridFile";
 import DetailFile from "./DetailFile";
 
 import { getStandardPath } from '../../Helpers/paths';
+import { openFileRequest } from '../../Store/ActionCreators/FilesActionCreators';
 import { setActiveTab } from '../../Store/ActionCreators/TabActionCreators';
 import { IAppState } from '../../Store/Reducers';
 import FileMetaData from "../../Typings/fileMetaData";
@@ -22,7 +23,7 @@ export const File = ({ mode, metadata }: IFileProps): JSX.Element => {
 
   const handleFileDoubleClick = (isDir: boolean, fileName: string) => {
     if (!isDir) {
-      console.log('TODO: Handle open file', fileName); // TODO COMPLETE
+      dispatch(openFileRequest(fileName));
       return;
     }
 

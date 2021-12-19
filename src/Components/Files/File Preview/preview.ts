@@ -1,6 +1,6 @@
 import { updateTheme } from '../../Theme/theme';
 import PromptError from '../../Prompt/error';
-import { HTML_TYPE, IMAGE_TYPES, VIDEO_TYPES, PLAIN_TEXT, MARKDOWN_TYPES } from '../../../Config/file.config';
+import { HTML_TYPES, IMAGE_TYPES, VIDEO_TYPES, PLAINTEXT_TYPES, MARKDOWN_TYPES } from '../../../Config/file.config';
 import getBasename from '../../Functions/path/basename';
 import xlsx from 'xlsx';
 import FileAPI from '../../../Api/files';
@@ -68,7 +68,7 @@ const Preview = async (filePath: string): Promise<void> => {
 				filePath
 			).readAsset()}#toolbar=0&navpanes=1" type="application/pdf" /></object>`
 		);
-	} else if (HTML_TYPE.indexOf(ext) !== -1) {
+	} else if (HTML_TYPES.indexOf(ext) !== -1) {
 		changePreview(`<iframe src="${filePath}" title="${filePath}" class="preview-object"></iframe>`);
 	} else if (['doc', 'docb', 'docm', 'dot', 'dotm', 'docx', 'rtf'].indexOf(ext) !== -1) {
 		const { convertToHtml } = require('./mammoth.browser.min');
@@ -87,7 +87,7 @@ const Preview = async (filePath: string): Promise<void> => {
 				filePath
 			).readAsset()}"></video></div>`
 		);
-	} else if (PLAIN_TEXT.indexOf(ext) !== -1) {
+	} else if (PLAINTEXT_TYPES.indexOf(ext) !== -1) {
 		changePreview(`<div class='preview-object' data-type="txt">${new FileAPI(filePath).readFile()}</div>`);
 	} else if (MARKDOWN_TYPES.indexOf(ext) !== -1) {
 		const html = marked(await new FileAPI(filePath).readFile());

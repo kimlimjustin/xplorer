@@ -2,6 +2,8 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 
 import File from '../File';
+import Preview from '../Preview';
+
 import { IAppState } from '../../Store/Reducers';
 import { IFile } from '../../Typings/Store/files';
 
@@ -33,6 +35,7 @@ const MainView = ({ currentDirectory }: IMainViewProps) => {
             }, []
           )}
       </div>
+      {/* <Preview filePath="PUT_TEST_FILE_HERE" /> */}
     </div>
   );
 }
