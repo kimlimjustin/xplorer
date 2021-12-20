@@ -2,7 +2,9 @@ import { combineReducers } from 'redux';
 import { Actions } from '../../Typings/Store/store';
 
 import { IAppReducerState } from '../../Typings/Store/app';
+import { IClipboardReducerState } from '../../Typings/Store/clipboard';
 import { ICliReducerState } from '../../Typings/Store/cli';
+import { IConfigReducerState } from '../../Typings/Store/config';
 import { IDirectoryReducerState } from '../../Typings/Store/directory';
 import { IDriveReducerState } from '../../Typings/Store/drive';
 import { IFavoritesReducerState } from '../../Typings/Store/favorites';
@@ -15,7 +17,9 @@ import { ITabReducerState } from '../../Typings/Store/tab';
 import { IWindowReducerState } from '../../Typings/Store/window';
 
 import AppReducer from "./AppReducer";
+import ClipboardReducer from "./ClipboardReducer";
 import CliReducer from "./CliReducer";
+import ConfigReducer from "./ConfigReducer";
 import DirectoryReducer from "./DirectoryReducer";
 import DriveReducer from "./DriveReducer";
 import FavoritesReducer from "./FavoritesReducer";
@@ -29,7 +33,9 @@ import WindowReducer from "./WindowReducer";
 
 export interface IAppState {
   app: IAppReducerState,
+  clipboard: IClipboardReducerState,
   cli: ICliReducerState,
+  config: IConfigReducerState,
   directory: IDirectoryReducerState,
   drive: IDriveReducerState,
   favorites: IFavoritesReducerState,
@@ -44,7 +50,9 @@ export interface IAppState {
 
 const rootReducer = combineReducers<IAppState, Actions>({
   app: AppReducer,
+  clipboard: ClipboardReducer,
   cli: CliReducer,
+  config: ConfigReducer,
   directory: DirectoryReducer,
   drive: DriveReducer,
   favorites: FavoritesReducer,

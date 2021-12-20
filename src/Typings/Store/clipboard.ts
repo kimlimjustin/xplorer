@@ -1,6 +1,6 @@
 import { AppActionBase } from "./actions";
 
-export interface IClipboardState {
+export interface IClipboardReducerState {
   text: string
 }
 

@@ -1,11 +1,11 @@
-import { IClipboardState } from "../../Typings/Store/clipboard";
+import { IClipboardReducerState } from "../../Typings/Store/clipboard";
 import { Actions } from "../../Typings/Store/store";
 
-const initialState: IClipboardState = {
+const initialState: IClipboardReducerState = {
   text: ''
 };
 
-const reducer = (state = initialState, action: Actions): IClipboardState => {
+const reducer = (state = initialState, action: Actions): IClipboardReducerState => {
   if (action.status !== 'SUCCESS') return state;
 
   switch (action.type) {
