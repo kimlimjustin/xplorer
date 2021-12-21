@@ -79,6 +79,13 @@ lazy_static! {
           ),
       )
       .arg(
+        Arg::new("xtension")
+          .short('x')
+          .long("xtension")
+          .about("Install .xtension file")
+          .takes_value(true),
+      )
+      .arg(
         Arg::new("dir")
           .about("Directories to open in Xplorer")
           .multiple_values(true)
@@ -178,7 +185,7 @@ fn main() {
               let theme = theme.unwrap();
               if theme == "." {
                 extensions::install_themes(
-                  Path::new(&env::current_dir().unwrap().join("dist/themes.ext.json"))
+                  Path::new(&env::current_dir().unwrap().join("dist/themes.xtension"))
                     .to_path_buf(),
                 )
               } else {
@@ -186,12 +193,12 @@ fn main() {
                 if theme.exists() && theme.is_file() {
                   extensions::install_themes(theme.to_path_buf())
                 } else {
-                  extensions::install_themes(theme.join("dist/themes.ext.json").to_path_buf())
+                  extensions::install_themes(theme.join("dist/themes.xtension").to_path_buf())
                 }
               }
             } else {
               extensions::install_themes(
-                Path::new(&env::current_dir().unwrap().join("dist/themes.ext.json")).to_path_buf(),
+                Path::new(&env::current_dir().unwrap().join("dist/themes.xtension")).to_path_buf(),
               );
             }
             std::process::exit(0);
@@ -231,6 +238,16 @@ fn main() {
         std::process::exit(0);
       }
       None => {}
+    }
+  }
+  let xtension_arg = ARGS_STRUCT.value_of("xtension");
+  if xtension_arg.is_some() {
+    let xtension_arg = xtension_arg.unwrap();
+    let xtension_arg = Path::new(xtension_arg);
+    if xtension_arg.exists() && xtension_arg.is_file() {
+      extensions::install_extensions(xtension_arg.to_path_buf());
+    } else {
+      panic!("Extension file not found");
     }
   }
   tauri::Builder::default()
