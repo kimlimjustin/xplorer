@@ -170,9 +170,9 @@ const OpenHandler = async (e: MouseEvent): Promise<void> => {
 	if (document.querySelector('#sidebar-nav').contains(e.target as HTMLElement)) {
 		if (e.detail === 1 && preference?.clickToOpenSidebar && preference?.clickToOpenSidebar !== 'single') return;
 	} else if ((await focusingPath()) === 'xplorer://Home') {
-		if (e.detail === 1 && preference?.clickToOpenHome && preference?.clickToOpenHome !== 'single') return;
+		if (e.detail === 1 && preference?.clickToOpenHome !== 'single') return;
 	} else {
-		if (e.detail === 1 && preference?.clickToOpenFile && preference?.clickToOpenHome !== 'single') return;
+		if (e.detail === 1 && preference?.clickToOpenHome !== 'single') return;
 	}
 	let element = e.target as HTMLElement;
 	while (element?.dataset && !element.dataset.path) {
