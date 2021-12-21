@@ -285,7 +285,7 @@ pub fn install_themes(extension_path: PathBuf) {
   let current_extension_config = storage::read_data("extensions".to_string());
   let current_extension_config = match current_extension_config {
     Ok(config) => {
-      if config.status {
+      if config.status && config.data.is_object() {
         config.data
       } else {
         serde_json::json!({})
@@ -300,13 +300,18 @@ pub fn install_themes(extension_path: PathBuf) {
     Some(_) => current_extension_config,
     None => {
       let mut current_extension_config = current_extension_config.clone();
-      current_extension_config["themes"] = serde_json::json!([]);
+      // Create themes key on current extension config
+      current_extension_config
+        .as_object_mut()
+        .unwrap()
+        .insert("themes".to_string(), serde_json::json!({}));
       current_extension_config
     }
   };
 
   let themes = current_extension_config.get("themes").unwrap();
-  let themes = themes.as_array().unwrap();
+  let empty_vec = Vec::new();
+  let themes = themes.as_array().unwrap_or(&empty_vec);
 
   // Remove theme if already installed
   let mut themes = themes
@@ -326,4 +331,97 @@ pub fn install_themes(extension_path: PathBuf) {
     .unwrap()
     .insert("themes".to_string(), serde_json::json!(themes));
   storage::write_data("extensions".to_string(), current_extension_config);
+}
+
+pub fn install_extensions(extension_path: PathBuf) {
+  let extension_file: Result<serde_json::Value, serde_json::Error> = serde_json::from_str(
+    std::fs::read_to_string(extension_path.clone())
+      .unwrap()
+      .as_str(),
+  );
+  let extension_information = match extension_file {
+    Ok(file) => file,
+    Err(_) => {
+      panic!("Error parsing extension file");
+    }
+  };
+
+  // Check the type of packaged extension
+  if extension_information
+    .get("extensionType")
+    .unwrap_or(&serde_json::Value::Null)
+    != "theme"
+  {
+    panic!("Only theme extension is supported right now");
+  }
+  install_themes(extension_path);
+}
+
+pub fn uninstall_extensions(extension_identifier: String) {
+  let extensions = storage::read_data("extensions".to_string());
+  let mut extensions = match extensions {
+    Ok(config) => {
+      if config.status {
+        config.data
+      } else {
+        serde_json::json!({})
+      }
+    }
+    Err(_) => {
+      serde_json::json!({})
+    }
+  };
+  // Iterate on every object of extensions and iterate extensions key of the object and remove the extension
+  let mut extensions = extensions.as_object_mut().unwrap().clone();
+  let mut new_extensions = serde_json::json!({}).as_object_mut().unwrap().clone();
+  for (key, value) in extensions {
+    let value = value.as_array().unwrap().clone();
+    let new_value = value
+      .iter()
+      .filter(|ext| {
+        let _empty_string = serde_json::Value::String("".to_string());
+        let ext_identifier = ext.get("identifier").unwrap_or(&_empty_string);
+        if key == "themes" && ext_identifier == &extension_identifier {
+          let theme = storage::read_data("theme".to_string());
+          let theme = match theme {
+            Ok(config) => {
+              if config.status {
+                config.data
+              } else {
+                serde_json::json!({})
+              }
+            }
+            Err(_) => {
+              serde_json::json!({})
+            }
+          };
+          let theme = theme.as_object().unwrap().clone();
+          let current_active_theme = theme
+            .get("theme")
+            .unwrap_or(&serde_json::Value::String("".to_string()))
+            .to_string();
+
+          let current_active_theme =
+            current_active_theme.split("@").collect::<Vec<_>>()[0].to_string();
+          // If the current_active_theme starts with unused " character, remove it
+          let current_active_theme = if current_active_theme.starts_with("\"") {
+            current_active_theme.split_at(1).1.to_string()
+          } else {
+            current_active_theme
+          };
+          let current_active_theme = serde_json::Value::String(current_active_theme);
+          if &current_active_theme == ext_identifier {
+            storage::write_data(
+              "theme".to_string(),
+              serde_json::json!({"theme": "System Default"}),
+            );
+          }
+        }
+        ext_identifier != &extension_identifier
+      })
+      .cloned()
+      .collect::<Vec<_>>();
+    new_extensions.insert(key.to_string(), serde_json::json!(new_value));
+  }
+  storage::write_data("extensions".to_string(), serde_json::json!(new_extensions));
 }

@@ -58,6 +58,24 @@ lazy_static! {
                       .multiple_values(false),
                   ),
               ),
+          )
+          .subcommand(
+            App::new("install")
+              .about("Install extension from packaged json file")
+              .arg(
+                Arg::new("extension")
+                  .about("Packaged extension file")
+                  .takes_value(true)
+                  .multiple_values(false),
+              ),
+          )
+          .subcommand(
+            App::new("uninstall").about("Uninstall extension").arg(
+              Arg::new("extension")
+                .about("Extension identifier")
+                .takes_value(true)
+                .multiple_values(true),
+            ),
           ),
       )
       .arg(
@@ -124,8 +142,8 @@ fn change_transparent_effect(effect: String, window: tauri::Window) {
 fn main() {
   // Extensions stuff
   if ARGS_STRUCT.subcommand_matches("extensions").is_some() {
-    let extension_type = ARGS_STRUCT.subcommand_matches("extensions").unwrap();
-    match extension_type.subcommand_matches("theme") {
+    let extension_cmd = ARGS_STRUCT.subcommand_matches("extensions").unwrap();
+    match extension_cmd.subcommand_matches("theme") {
       Some(theme_command) => {
         match theme_command.subcommand_matches("build") {
           Some(theme_build_info) => {
@@ -180,6 +198,37 @@ fn main() {
           }
           None => {}
         }
+      }
+      None => {}
+    }
+    match extension_cmd.subcommand_matches("install") {
+      Some(extension_install_info) => {
+        let extension = extension_install_info.value_of("extension");
+        if extension.is_some() {
+          let extension = extension.unwrap();
+          let extension = Path::new(extension);
+          if extension.exists() && extension.is_file() {
+            extensions::install_extensions(extension.to_path_buf())
+          } else {
+            panic!("Extension file not found");
+          }
+        } else {
+          panic!("No extension specified");
+        }
+        std::process::exit(0);
+      }
+      None => {}
+    }
+    match extension_cmd.subcommand_matches("uninstall") {
+      Some(extension_uninstall_info) => {
+        let extension = extension_uninstall_info.value_of("extension");
+        if extension.is_some() {
+          let extension = extension.unwrap();
+          extensions::uninstall_extensions(extension.to_string());
+        } else {
+          panic!("No extension specified");
+        }
+        std::process::exit(0);
       }
       None => {}
     }
