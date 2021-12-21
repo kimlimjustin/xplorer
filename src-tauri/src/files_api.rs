@@ -324,7 +324,15 @@ pub fn open_file(file_path: String, window: tauri::Window) -> bool {
       "This is Xplorer's extension file, do you want to install it?",
       move |answer| {
         if answer {
-          extensions::install_extensions(Path::new(&file_path.clone()).to_path_buf());
+          let file: Result<serde_json::Value, serde_json::Error> =
+            serde_json::from_str(std::fs::read_to_string(file_path).unwrap().as_str());
+          let file = match file {
+            Ok(file) => file,
+            Err(_) => {
+              panic!("Error parsing file");
+            }
+          };
+          extensions::install_extensions(file);
         }
       },
     );

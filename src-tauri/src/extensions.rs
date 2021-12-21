@@ -253,24 +253,13 @@ pub fn build_themes(package_json_path: PathBuf) {
   std::fs::write(dist_folder.join("themes.xtension"), extension_information).unwrap();
 }
 
-pub fn install_themes(extension_path: PathBuf) {
-  let extension_file: Result<serde_json::Value, serde_json::Error> = serde_json::from_str(
-    std::fs::read_to_string(extension_path.clone())
-      .unwrap()
-      .as_str(),
-  );
-  let extension_information = match extension_file {
-    Ok(file) => file,
-    Err(_) => {
-      panic!("Error parsing extension file");
-    }
-  };
-  let extension_identifier = extension_information
+pub fn install_themes(extension: serde_json::Value) {
+  let extension_identifier = extension
     .get("identifier")
     .unwrap_or(&serde_json::Value::Null);
 
   // Check the type of packaged extension
-  if extension_information
+  if extension
     .get("extensionType")
     .unwrap_or(&serde_json::Value::Null)
     != "theme"
@@ -279,7 +268,7 @@ pub fn install_themes(extension_path: PathBuf) {
   }
 
   // Remove extensionType field from extension information
-  let mut extension_information = extension_information.as_object().unwrap().clone();
+  let mut extension_information = extension.as_object().unwrap().clone();
   extension_information.remove("extensionType").unwrap();
 
   let current_extension_config = storage::read_data("extensions".to_string());
@@ -333,28 +322,16 @@ pub fn install_themes(extension_path: PathBuf) {
   storage::write_data("extensions".to_string(), current_extension_config);
 }
 
-pub fn install_extensions(extension_path: PathBuf) {
-  let extension_file: Result<serde_json::Value, serde_json::Error> = serde_json::from_str(
-    std::fs::read_to_string(extension_path.clone())
-      .unwrap()
-      .as_str(),
-  );
-  let extension_information = match extension_file {
-    Ok(file) => file,
-    Err(_) => {
-      panic!("Error parsing extension file");
-    }
-  };
-
+pub fn install_extensions(extension: serde_json::Value) {
   // Check the type of packaged extension
-  if extension_information
+  if extension
     .get("extensionType")
     .unwrap_or(&serde_json::Value::Null)
     != "theme"
   {
     panic!("Only theme extension is supported right now");
   }
-  install_themes(extension_path);
+  install_themes(extension);
 }
 
 pub fn uninstall_extensions(extension_identifier: String) {
