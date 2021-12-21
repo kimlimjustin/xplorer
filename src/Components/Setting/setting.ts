@@ -1,5 +1,4 @@
 import Translate from '../I18n/i18n';
-import { updateTheme } from '../Theme/theme';
 import fileThumbnail from '../Thumbnail/thumbnail';
 
 import About from './About/about';

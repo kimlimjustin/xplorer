@@ -5,7 +5,6 @@ import MultipleSelectedMenu from './configs/multipleSelectedMenu.config';
 import contextMenuItem from '../../Typings/contextMenuItem';
 import fileThumbnail from '../Thumbnail/thumbnail';
 import { getSelected } from '../Files/File Operation/select';
-import { updateTheme } from '../Theme/theme';
 import FileMenu from './configs/fileMenu.config';
 
 let contextMenu = document.querySelector('.contextmenu') as HTMLElement;
