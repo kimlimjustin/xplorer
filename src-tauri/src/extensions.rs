@@ -250,7 +250,7 @@ pub fn build_themes(package_json_path: PathBuf) {
   .to_string();
   let dist_folder = Path::new(package_json_path.parent().unwrap()).join("dist");
   std::fs::create_dir_all(dist_folder.clone()).unwrap();
-  std::fs::write(dist_folder.join("themes.ext.json"), extension_information).unwrap();
+  std::fs::write(dist_folder.join("themes.xtension"), extension_information).unwrap();
 }
 
 pub fn install_themes(extension_path: PathBuf) {
@@ -317,7 +317,7 @@ pub fn install_themes(extension_path: PathBuf) {
   let mut themes = themes
     .iter()
     .filter(|theme| {
-      let installed_theme_identifier = theme.get("identifier").unwrap();
+      let installed_theme_identifier = theme.get("identifier").unwrap_or(&serde_json::Value::Null);
       installed_theme_identifier != extension_identifier
     })
     .cloned()
@@ -372,7 +372,7 @@ pub fn uninstall_extensions(extension_identifier: String) {
     }
   };
   // Iterate on every object of extensions and iterate extensions key of the object and remove the extension
-  let mut extensions = extensions.as_object_mut().unwrap().clone();
+  let extensions = extensions.as_object_mut().unwrap().clone();
   let mut new_extensions = serde_json::json!({}).as_object_mut().unwrap().clone();
   for (key, value) in extensions {
     let value = value.as_array().unwrap().clone();

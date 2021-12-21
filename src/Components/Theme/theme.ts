@@ -244,6 +244,7 @@ const changeTheme = async (theme?: string, category?: '*' | 'root' | 'tabbing' |
 const getInstalledThemes = async (): Promise<CustomTheme[]> => {
 	const extensions = await Storage.get('extensions');
 	const themes: CustomTheme[] = [];
+	if (!extensions?.themes) return themes;
 	for (const extension of extensions.themes) {
 		for (const theme of extension.themes) {
 			themes.push({
