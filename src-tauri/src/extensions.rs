@@ -301,7 +301,6 @@ pub fn install_themes(extension: serde_json::Value) {
   let themes = current_extension_config.get("themes").unwrap();
   let empty_vec = Vec::new();
   let themes = themes.as_array().unwrap_or(&empty_vec);
-
   // Remove theme if already installed
   let mut themes = themes
     .iter()
@@ -311,9 +310,27 @@ pub fn install_themes(extension: serde_json::Value) {
     })
     .cloned()
     .collect::<Vec<_>>();
-
   // Add new theme to current theme config
-  themes.push(serde_json::Value::Object(extension_information));
+  themes.push(serde_json::Value::Object(extension_information.clone()));
+
+  // Set the new theme as active theme
+  let first_theme_id = [
+    extension_identifier.as_str().unwrap(),
+    extension_information
+      .get("themes")
+      .unwrap()
+      .as_array()
+      .unwrap()[0]
+      .get("identifier")
+      .unwrap()
+      .as_str()
+      .unwrap(),
+  ]
+  .join("@");
+  storage::write_data(
+    "theme".to_string(),
+    serde_json::json!({ "theme": first_theme_id }),
+  );
   // Push information from packaged extension to the themes key of current extension config array
   current_extension_config
     .as_object_mut()
