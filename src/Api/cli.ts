@@ -1,13 +1,10 @@
 import { invoke } from '@tauri-apps/api';
 interface CliArgsReturnType {
-	args: string[];
-	flags: string[];
+	dirs: string[];
+	is_reveal: boolean;
+	custom_style_sheet: JSON;
 }
-const CLIInformations = async (): Promise<{
-	args: string[];
-	flags: string[];
-}> => {
-	const { args, flags } = (await invoke('get_cli_args')) as CliArgsReturnType;
-	return { args, flags };
+const CLIInformations = async (): Promise<CliArgsReturnType> => {
+	return (await invoke('get_cli_args')) as CliArgsReturnType;
 };
 export default CLIInformations;

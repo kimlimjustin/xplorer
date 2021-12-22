@@ -5,6 +5,7 @@ use std::time::SystemTime;
 extern crate notify;
 extern crate open;
 extern crate trash;
+use crate::extensions;
 use crate::file_lib;
 use crate::storage;
 use glob::{glob_with, MatchOptions};
@@ -13,14 +14,14 @@ use normpath::PathExt;
 use notify::{raw_watcher, RawEvent, RecursiveMode, Watcher};
 use parselnk::Lnk;
 use std::convert::TryFrom;
-use std::sync::mpsc::channel;
-#[cfg(target_os = "windows")]
-use tauri::api::path::local_data_dir;
-
 #[cfg(windows)]
 use std::os::windows::prelude::*;
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
+use std::sync::mpsc::channel;
+use tauri::api::dialog::ask;
+#[cfg(target_os = "windows")]
+use tauri::api::path::local_data_dir;
 
 #[derive(serde::Serialize, Clone, Debug)]
 pub struct LnkData {
@@ -314,8 +315,31 @@ pub async fn get_files_in_directory(dir: &Path) -> Result<Vec<String>, String> {
 
 /// Open a file path in default application
 #[tauri::command]
-pub fn open_file(file_path: String) -> bool {
-  open::that(file_path).is_ok()
+pub fn open_file(file_path: String, window: tauri::Window) -> bool {
+  let extension = file_path.split(".").last().unwrap();
+  if extension == "xtension" {
+    ask(
+      Some(&window),
+      "Special file type",
+      "This is Xplorer's extension file, do you want to install it?",
+      move |answer| {
+        if answer {
+          let file: Result<serde_json::Value, serde_json::Error> =
+            serde_json::from_str(std::fs::read_to_string(file_path).unwrap().as_str());
+          let file = match file {
+            Ok(file) => file,
+            Err(_) => {
+              panic!("Error parsing file");
+            }
+          };
+          extensions::install_extensions(file);
+        }
+      },
+    );
+    true
+  } else {
+    open::that(file_path).is_ok()
+  }
 }
 /// Check if path given exists
 #[tauri::command]

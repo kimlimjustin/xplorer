@@ -273,5 +273,10 @@
 		"extensions": ["lnk"],
 		"type": "Windows Shortcut",
 		"thumbnail": "extension/lnk.svg"
+	},
+	{
+		"extensions": ["xtension"],
+		"type": "Xplorer's extension",
+		"thumbnail": "extension/xplorer.svg"
 	}
 ]

@@ -1,5 +1,4 @@
 import Translate from '../I18n/i18n';
-import { updateTheme } from '../Theme/theme';
 import fileThumbnail from '../Thumbnail/thumbnail';
 
 import About from './About/about';
@@ -20,7 +19,6 @@ const Setting = async (): Promise<void> => {
 				document.getElementById(tab.toLowerCase()).parentElement.classList.add('active');
 			} else document.getElementById(tabs.toLowerCase()).parentElement.classList.remove('active');
 		});
-		updateTheme('settings');
 		Array.from(document.getElementsByClassName('settings-sidebar-item') as HTMLCollectionOf<HTMLElement>).forEach((element) => {
 			if (!element.classList.contains('active')) element.style.background = '';
 		});
@@ -55,7 +53,6 @@ const Setting = async (): Promise<void> => {
 				}
 			});
 		}
-		updateTheme('settings');
 		Appearance();
 
 		setActiveTab(defaultTab);

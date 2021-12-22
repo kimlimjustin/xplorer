@@ -23,14 +23,15 @@ const set = async (key: string, value: any): Promise<void> => {
 /**
  * Get information from local storage
  * @param {string} key - Information key
+ * @param {boolean} force - Force fetcing the latest data
  * @returns {Promise<any>} - Your data
  */
-const get = async (key: string): Promise<any> => {
+const get = async (key: string, force?: boolean): Promise<any> => {
 	interface returnedType {
 		status: boolean;
 		data: JSON;
 	}
-	if (Object.keys(data).includes(key)) {
+	if (Object.keys(data).includes(key) && !force) {
 		return data[key];
 	} else {
 		const returnedData = (await invoke('read_data', { key })) as returnedType;

@@ -1,4 +1,3 @@
-import { updateTheme } from '../../Theme/theme';
 import PromptError from '../../Prompt/error';
 import { HTML_TYPE, IMAGE_TYPES, VIDEO_TYPES, PLAIN_TEXT, MARKDOWN_TYPES } from '../../../Config/file.config';
 import getBasename from '../../Functions/path/basename';
@@ -138,7 +137,6 @@ const Preview = async (filePath: string): Promise<void> => {
 	}
 
 	if (!previewed) PromptError('No preview handler', 'There is no preview handler for this file type yet.');
-	updateTheme('preview');
 };
 export default Preview;
 export { closePreviewFile };
