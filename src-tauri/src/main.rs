@@ -34,7 +34,7 @@ lazy_static! {
           .short('r')
           .long("reveal")
           .about("Reveal file in Xplorer")
-          .takes_value(true),
+          .takes_value(false),
       )
       .subcommand(
         App::new("extensions")
