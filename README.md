@@ -3,7 +3,7 @@
 </div>
 
 <p align="center"><span><b>Xplorer</b>, a customizable, modern and cross-platform File Explorer.</span></p>
-<h4 align="center"><span><a href="https://xplorer.vercel.app/community/support/">Supports</a></span> • <span><a href="https://github.com/kimlimjustin/xplorer/discussions">Discussions</a></span> • <span><a href="https://xplorer.vercel.app">Documentation</a></span> • <span><a href="https://discord.gg/MHGtSWvfUS">Discord</a></span></h4>
+<h4 align="center"><span><a href="https://xplorer.space/docs/Community/support/">Supports</a></span> • <span><a href="https://github.com/kimlimjustin/xplorer/discussions">Discussions</a></span> • <span><a href="https://xplorer.space">Documentation</a></span> • <span><a href="https://discord.gg/MHGtSWvfUS">Discord</a></span></h4>
 
 <div align="center">
 
@@ -42,12 +42,12 @@ To summarize, Xplorer's features contain:
 -   It looks modern
 -   Easy to use
 -   Cross-platform
--   [File Preview](https://xplorer.vercel.app/docs/guides/operation/#preview-file), even for videos!
+-   [File Preview](https://xplorer.space/docs/guides/operation/#preview-file), even for videos!
 -   Customizable
 -   Supports multiple tabs
 -   Most importantly, Free and Open Source Software(FOSS), which means you can change components inside if you see fit
 
-Xplorer is currently under heavy development. You can give your suggestions and feedback on our [Discussions](https://github.com/kimlimjustin/xplorer/discussions/) page. If you feel comfortable in writing code using Typescript and Rust, we highly encourage you to [contribute to this project](https://xplorer.vercel.app/community/Contributing/).
+Xplorer is currently under heavy development. You can give your suggestions and feedback on our [Discussions](https://github.com/kimlimjustin/xplorer/discussions/) page. If you feel comfortable in writing code using Typescript and Rust, we highly encourage you to [contribute to this project](https://xplorer.space/community/Contributing/).
 
 ---
 
@@ -63,20 +63,20 @@ If you find any bugs, please report it by submitting an issue on our [issue page
 
 ## Feature Request
 
-You can also submit a feature request on our [issue page](https://github.com/kimlimjustin/xplorer) or [discussions](https://github.com/kimlimjustin/xplorer/discussions) and we will try to implement it as soon as possible. If you want to contribute to this project, please [contribute to this project](https://xplorer.vercel.app/community/Contributing/).
+You can also submit a feature request on our [issue page](https://github.com/kimlimjustin/xplorer) or [discussions](https://github.com/kimlimjustin/xplorer/discussions) and we will try to implement it as soon as possible. If you want to contribute to this project, please [contribute to this project](https://xplorer.space/community/Contributing/).
 
 ---
 
 ## Common Problems
 
-**NB: For common installation problems, please visit this page [here](https://xplorer.vercel.app/docs/install/#common-problems)**
+**NB: For common installation problems, please visit this page [here](https://xplorer.space/docs/install/#common-problems)**
 
 <details>
 <summary>
 Opening folders like <code>Documents</code>, <code>Desktop</code>, <code>Downloads</code> makes Xplorer crash
 </summary>
 
-Try disabling the [`Extract exe file icon and make it as preview`](https://xplorer.vercel.app/docs/guides/setting/#extract-exe-file-icon-and-make-it-a-preview) option on `Preference` page on Settings.
+Try disabling the [`Extract exe file icon and make it as preview`](https://xplorer.space/docs/guides/setting/#extract-exe-file-icon-and-make-it-a-preview) option on `Preference` page on Settings.
 
 Also, please make sure that Windows Defender isn't blocking Xplorer from accessing your documents.
 
@@ -139,7 +139,7 @@ The easiest way to run Xplorer in Gitpod is to use the [Gitpod](https://gitpod.i
 
 ## Contribution Guide
 
-We highly encourage you to contribute to this project (even if you are a beginner). And if you finally want to contribute to this project, please read [our contribution guide](https://xplorer.vercel.app/community/Contributing).
+We highly encourage you to contribute to this project (even if you are a beginner). And if you finally want to contribute to this project, please read [our contribution guide](https://xplorer.space/community/Contributing).
 
 ---
 
