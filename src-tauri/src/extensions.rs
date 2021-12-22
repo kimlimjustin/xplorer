@@ -104,10 +104,7 @@ pub async fn listen_stylesheet_change(window: tauri::Window) {
 
 #[tauri::command]
 pub fn get_cli_args() -> Result<ArgsStruct, String> {
-  let is_reveal = ARGS_STRUCT
-    .value_of("reveal")
-    .unwrap_or("false")
-    .to_string();
+  let is_reveal = ARGS_STRUCT.occurrences_of("reveal") > 0;
   let custom_style_sheet = get_custom_stylesheet_filepath();
   let custom_style_sheet = match custom_style_sheet.as_str() {
     "" => serde_json::Value::Null,
@@ -130,13 +127,13 @@ pub fn get_cli_args() -> Result<ArgsStruct, String> {
       .collect();
     Ok(ArgsStruct {
       dirs,
-      is_reveal: is_reveal == "true",
+      is_reveal: is_reveal,
       custom_style_sheet,
     })
   } else {
     Ok(ArgsStruct {
       dirs: vec![],
-      is_reveal: is_reveal == "true",
+      is_reveal: is_reveal,
       custom_style_sheet,
     })
   }
