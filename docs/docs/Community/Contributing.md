@@ -58,9 +58,7 @@ Great Feature Requests tend to have:
 
 ### Gitpod for Xplorer's development {#gitpod-env}
 
-The easiest way to run Xplorer in Gitpod is to use the [Gitpod](https://gitpod.io/) service, all what you need to do is to click the button below and log in with your GitHub account. Afterwards, you will see a VS Code-like environment where you can start developing and pushing your changes.
-
-Please note that after starting GitPod, there're be two terminals opened. The first one is for developing Xplorer itself and the second one is for Xplorer documentation, for some reasons, the initialed command might fail, if it does, please simply run the command again (Arrow Down + Enter). To open the remote application, you can navigate to the GitPod Remote Explorer on the left side and click the globe icon on 6080 port.
+The easiest way to run Xplorer in Gitpod is to use the [Gitpod](https://gitpod.io/) service, all what you need to do is to click the button below and log in with your GitHub account. Afterwards, you will see a VS Code-like environment where you can start developing and pushing your changes. Please note that you may have to wait up to minutes to get Xplorer running on the poped up VNC tab.
 
 ## [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#/https://github.com/kimlimjustin/xplorer)
 

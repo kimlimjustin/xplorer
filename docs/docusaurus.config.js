@@ -5,7 +5,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 module.exports = {
 	title: 'Xplorer',
 	tagline: 'An easy-to-use, customizable, modern file manager',
-	url: 'https://xplorer.vercel.app',
+	url: 'https://xplorer.space',
 	baseUrl: '/',
 	onBrokenLinks: 'throw',
 	onBrokenMarkdownLinks: 'warn',

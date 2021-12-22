@@ -17,9 +17,9 @@ To summarize, Xplorer's features contain:
 -   It looks modern
 -   Fácil de usar
 -   Multi-plataforma
--   [File Preview](https://xplorer.vercel.app/docs/guides/operation/#preview-file), even for videos!
+-   [File Preview](https://xplorer.space/docs/guides/operation/#preview-file), even for videos!
 -   Customizable
 -   Supports multiple tab
 -   Most importantly, Free and Open Source Software(FOSS), which means you can change components inside if you see fit
 
-Xplorer is currently under heavy development. You can give your suggestions and feedbacks in our [Discussions](https://github.com/kimlimjustin/xplorer/discussions/) page. If you feel comfortable in writing code using Typescript and Rust, we highly encourage you to [contribute to this project](https://xplorer.vercel.app/community/Contributing/).
+Xplorer is currently under heavy development. You can give your suggestions and feedbacks in our [Discussions](https://github.com/kimlimjustin/xplorer/discussions/) page. If you feel comfortable in writing code using Typescript and Rust, we highly encourage you to [contribute to this project](https://xplorer.space/community/Contributing/).
