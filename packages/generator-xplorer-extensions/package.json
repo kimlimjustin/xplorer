@@ -1,0 +1,16 @@
+{
+	"name": "generator-xplorer-extensions",
+	"version": "0.2.0",
+	"description": "Theme generator for Xplorer",
+	"private": "true",
+	"author": "Justin Maximillian Kimlim",
+	"files": [
+		"generators"
+	],
+	"main": "generators/index.js",
+	"devDependencies": {},
+	"dependencies": {
+		"yeoman-generator": "^5.4.2",
+		"yosay": "^2.0.2"
+	}
+}

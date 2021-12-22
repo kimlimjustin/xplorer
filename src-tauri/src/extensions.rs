@@ -1,0 +1,421 @@
+use crate::files_api;
+use crate::storage;
+use crate::ARGS_STRUCT;
+use notify::{raw_watcher, RawEvent, RecursiveMode, Watcher};
+use std::env;
+use std::path::{Path, PathBuf};
+use std::sync::mpsc::channel;
+extern crate path_absolutize;
+use path_absolutize::*;
+
+#[derive(serde::Serialize)]
+pub struct ArgsStruct {
+  dirs: Vec<String>,
+  is_reveal: bool,
+  custom_style_sheet: serde_json::Value,
+}
+
+pub fn get_custom_stylesheet_filepath() -> String {
+  let custom_style_sheet = ARGS_STRUCT.value_of("theme").unwrap_or("").to_string();
+  let custom_style_sheet = match custom_style_sheet.as_str() {
+    "" => "".to_string(),
+    _ => match files_api::file_exist(custom_style_sheet.clone()) {
+      true => custom_style_sheet.clone(),
+      false => {
+        let package_json_path = Path::new(&env::current_dir().unwrap()).join("package.json");
+        let package_json_file: Result<serde_json::Value, serde_json::Error> =
+          serde_json::from_str(std::fs::read_to_string(package_json_path).unwrap().as_str());
+        let package_json_file = match package_json_file {
+          Ok(file) => file,
+          Err(_) => {
+            return "".to_string();
+          }
+        };
+        let package_json_file = package_json_file.as_object().unwrap();
+        let extension_field = package_json_file.get("xplorerExtensionConfig");
+        let extension_field = match extension_field {
+          Some(field) => field,
+          None => {
+            return "".to_string();
+          }
+        };
+        let extension_field = extension_field.as_object().unwrap();
+        let themes_field = extension_field.get("themes");
+        let themes_field = match themes_field {
+          Some(field) => field,
+          None => {
+            return "".to_string();
+          }
+        };
+        let themes_field = themes_field.as_array().unwrap();
+        let theme_field = themes_field
+          .iter()
+          .find(|theme| {
+            theme
+              .as_object()
+              .unwrap()
+              .get("identifier")
+              .unwrap()
+              .as_str()
+              .unwrap()
+              == custom_style_sheet.as_str()
+          })
+          .unwrap();
+        theme_field
+          .get("path")
+          .unwrap()
+          .as_str()
+          .unwrap()
+          .to_string()
+      }
+    },
+  };
+  custom_style_sheet
+}
+
+#[tauri::command]
+pub async fn listen_stylesheet_change(window: tauri::Window) {
+  if ARGS_STRUCT.value_of("theme").is_some() {
+    // listen to file_path file changes
+    let (tx, rx) = channel();
+    let mut watcher = raw_watcher(tx).unwrap();
+    watcher
+      .watch(
+        Path::new(&get_custom_stylesheet_filepath()),
+        RecursiveMode::NonRecursive,
+      )
+      .unwrap();
+    loop {
+      match rx.recv() {
+        Ok(RawEvent { .. }) => {
+          let value = get_custom_stylesheet_filepath();
+          let value = match value.as_str() {
+            "" => serde_json::Value::Null,
+            _ => serde_json::from_str(std::fs::read_to_string(value).unwrap().as_str())
+              .unwrap_or(serde_json::Value::Null),
+          };
+          window.emit("stylesheet_changes", value).unwrap();
+        }
+        Err(e) => println!("watch error: {:?}", e),
+      }
+    }
+  }
+}
+
+#[tauri::command]
+pub fn get_cli_args() -> Result<ArgsStruct, String> {
+  let is_reveal = ARGS_STRUCT
+    .value_of("reveal")
+    .unwrap_or("false")
+    .to_string();
+  let custom_style_sheet = get_custom_stylesheet_filepath();
+  let custom_style_sheet = match custom_style_sheet.as_str() {
+    "" => serde_json::Value::Null,
+    _ => serde_json::from_str(
+      std::fs::read_to_string(custom_style_sheet)
+        .unwrap()
+        .as_str(),
+    )
+    .unwrap_or(serde_json::Value::Null),
+  };
+  if let Some(dirs_arg) = ARGS_STRUCT.values_of("dir") {
+    let dirs = dirs_arg
+      .map(|s| {
+        let dir = Path::new(s).absolutize();
+        if dir.is_err() {
+          return dir.unwrap_err().to_string();
+        }
+        return dir.unwrap().to_str().unwrap().to_string();
+      })
+      .collect();
+    Ok(ArgsStruct {
+      dirs,
+      is_reveal: is_reveal == "true",
+      custom_style_sheet,
+    })
+  } else {
+    Ok(ArgsStruct {
+      dirs: vec![],
+      is_reveal: is_reveal == "true",
+      custom_style_sheet,
+    })
+  }
+}
+
+#[derive(Debug, serde::Serialize)]
+pub struct ThemeExtensionInformation {
+  pub identifier: String,
+  pub name: String,
+  pub value: serde_json::Value,
+}
+
+pub fn build_themes(package_json_path: PathBuf) {
+  let package_json_file: Result<serde_json::Value, serde_json::Error> = serde_json::from_str(
+    std::fs::read_to_string(package_json_path.clone())
+      .unwrap()
+      .as_str(),
+  );
+  let package_json_file = match package_json_file {
+    Ok(file) => file,
+    Err(_) => {
+      panic!("Error parsing package.json");
+    }
+  };
+  let package_json_file = package_json_file.as_object().unwrap();
+  let extension_field = package_json_file.get("xplorerExtensionConfig");
+  let extension_field = match extension_field {
+    Some(field) => field,
+    None => panic!("There is no xplorerExtensionConfig field in package.json file"),
+  };
+  let extension_field = extension_field.as_object().unwrap();
+  let themes_field = extension_field.get("themes");
+  let themes_field = match themes_field {
+    Some(field) => field,
+    None => panic!("There is no themes field in package.json file"),
+  };
+  let themes_field = themes_field.as_array().unwrap();
+  let mut theme_extension_informations: Vec<ThemeExtensionInformation> = Vec::new();
+  for theme in themes_field {
+    let theme = theme.as_object().unwrap();
+    let identifier = theme.get("identifier");
+    let identifier = match identifier {
+      Some(field) => field.as_str().unwrap(),
+      None => panic!("There is no identifier field in your theme"),
+    };
+    let name = theme.get("name");
+    let name = match name {
+      Some(field) => field.as_str().unwrap(),
+      None => panic!("There is no name field in your theme"),
+    };
+    let relative_path = theme.get("path");
+    let relative_path = match relative_path {
+      Some(field) => field.as_str().unwrap(),
+      None => panic!("There is no path field in your theme"),
+    };
+    let path = Path::new(relative_path.clone()).absolutize().unwrap();
+    let path = match path.exists() {
+      true => path.to_str().unwrap().to_string(),
+      false => package_json_path
+        .clone()
+        .parent()
+        .unwrap()
+        .join(relative_path)
+        .to_str()
+        .unwrap()
+        .to_string(),
+    };
+    let theme_value = serde_json::from_str(std::fs::read_to_string(path).unwrap().as_str())
+      .unwrap_or(serde_json::Value::Null);
+    theme_extension_informations.push(ThemeExtensionInformation {
+      identifier: identifier.to_string(),
+      name: name.to_string(),
+      value: theme_value,
+    });
+  }
+  let extension_name = package_json_file
+    .get("extensionName")
+    .unwrap_or(&serde_json::Value::Null);
+  let description = package_json_file
+    .get("description")
+    .unwrap_or(&serde_json::Value::Null);
+  let author = package_json_file
+    .get("author")
+    .unwrap_or(&serde_json::Value::Null);
+  let homepage = package_json_file
+    .get("homepage")
+    .unwrap_or(&serde_json::Value::Null);
+  let license = package_json_file
+    .get("license")
+    .unwrap_or(&serde_json::Value::Null);
+  let repository = package_json_file
+    .get("repository")
+    .unwrap_or(&serde_json::Value::Null);
+  let identifier = package_json_file.get("name").unwrap().as_str().unwrap();
+  let version = package_json_file
+    .get("version")
+    .unwrap_or(&serde_json::Value::Null);
+  let extension_information = serde_json::json!({
+    "extensionType": "theme",
+    "decoder": "json",
+    "name": extension_name,
+    "identifier": identifier,
+    "version": version,
+    "description": description,
+    "author": author,
+    "homepage": homepage,
+    "license": license,
+    "repository": repository,
+    "themes": theme_extension_informations,
+  })
+  .to_string();
+  let dist_folder = Path::new(package_json_path.parent().unwrap()).join("dist");
+  std::fs::create_dir_all(dist_folder.clone()).unwrap();
+  std::fs::write(dist_folder.join("themes.xtension"), extension_information).unwrap();
+}
+
+pub fn install_themes(extension: serde_json::Value) {
+  let extension_identifier = extension
+    .get("identifier")
+    .unwrap_or(&serde_json::Value::Null);
+
+  // Check the type of packaged extension
+  if extension
+    .get("extensionType")
+    .unwrap_or(&serde_json::Value::Null)
+    != "theme"
+  {
+    panic!("Packaged extension is not a theme");
+  }
+
+  // Remove extensionType field from extension information
+  let mut extension_information = extension.as_object().unwrap().clone();
+  extension_information.remove("extensionType").unwrap();
+
+  let current_extension_config = storage::read_data("extensions".to_string());
+  let current_extension_config = match current_extension_config {
+    Ok(config) => {
+      if config.status && config.data.is_object() {
+        config.data
+      } else {
+        serde_json::json!({})
+      }
+    }
+    Err(_) => {
+      serde_json::json!({})
+    }
+  };
+  // Create themes key on current extension config if not existed
+  let mut current_extension_config = match current_extension_config.get("themes") {
+    Some(_) => current_extension_config,
+    None => {
+      let mut current_extension_config = current_extension_config.clone();
+      // Create themes key on current extension config
+      current_extension_config
+        .as_object_mut()
+        .unwrap()
+        .insert("themes".to_string(), serde_json::json!({}));
+      current_extension_config
+    }
+  };
+
+  let themes = current_extension_config.get("themes").unwrap();
+  let empty_vec = Vec::new();
+  let themes = themes.as_array().unwrap_or(&empty_vec);
+  // Remove theme if already installed
+  let mut themes = themes
+    .iter()
+    .filter(|theme| {
+      let installed_theme_identifier = theme.get("identifier").unwrap_or(&serde_json::Value::Null);
+      installed_theme_identifier != extension_identifier
+    })
+    .cloned()
+    .collect::<Vec<_>>();
+  // Add new theme to current theme config
+  themes.push(serde_json::Value::Object(extension_information.clone()));
+
+  // Set the new theme as active theme
+  let first_theme_id = [
+    extension_identifier.as_str().unwrap(),
+    extension_information
+      .get("themes")
+      .unwrap()
+      .as_array()
+      .unwrap()[0]
+      .get("identifier")
+      .unwrap()
+      .as_str()
+      .unwrap(),
+  ]
+  .join("@");
+  storage::write_data(
+    "theme".to_string(),
+    serde_json::json!({ "theme": first_theme_id }),
+  );
+  // Push information from packaged extension to the themes key of current extension config array
+  current_extension_config
+    .as_object_mut()
+    .unwrap()
+    .insert("themes".to_string(), serde_json::json!(themes));
+  storage::write_data("extensions".to_string(), current_extension_config);
+}
+
+pub fn install_extensions(extension: serde_json::Value) {
+  // Check the type of packaged extension
+  if extension
+    .get("extensionType")
+    .unwrap_or(&serde_json::Value::Null)
+    != "theme"
+  {
+    panic!("Only theme extension is supported right now");
+  }
+  install_themes(extension);
+}
+
+pub fn uninstall_extensions(extension_identifier: String) {
+  let extensions = storage::read_data("extensions".to_string());
+  let mut extensions = match extensions {
+    Ok(config) => {
+      if config.status {
+        config.data
+      } else {
+        serde_json::json!({})
+      }
+    }
+    Err(_) => {
+      serde_json::json!({})
+    }
+  };
+  // Iterate on every object of extensions and iterate extensions key of the object and remove the extension
+  let extensions = extensions.as_object_mut().unwrap().clone();
+  let mut new_extensions = serde_json::json!({}).as_object_mut().unwrap().clone();
+  for (key, value) in extensions {
+    let value = value.as_array().unwrap().clone();
+    let new_value = value
+      .iter()
+      .filter(|ext| {
+        let _empty_string = serde_json::Value::String("".to_string());
+        let ext_identifier = ext.get("identifier").unwrap_or(&_empty_string);
+        if key == "themes" && ext_identifier == &extension_identifier {
+          let theme = storage::read_data("theme".to_string());
+          let theme = match theme {
+            Ok(config) => {
+              if config.status {
+                config.data
+              } else {
+                serde_json::json!({})
+              }
+            }
+            Err(_) => {
+              serde_json::json!({})
+            }
+          };
+          let theme = theme.as_object().unwrap().clone();
+          let current_active_theme = theme
+            .get("theme")
+            .unwrap_or(&serde_json::Value::String("".to_string()))
+            .to_string();
+
+          let current_active_theme =
+            current_active_theme.split("@").collect::<Vec<_>>()[0].to_string();
+          // If the current_active_theme starts with unused " character, remove it
+          let current_active_theme = if current_active_theme.starts_with("\"") {
+            current_active_theme.split_at(1).1.to_string()
+          } else {
+            current_active_theme
+          };
+          let current_active_theme = serde_json::Value::String(current_active_theme);
+          if &current_active_theme == ext_identifier {
+            storage::write_data(
+              "theme".to_string(),
+              serde_json::json!({"theme": "System Default"}),
+            );
+          }
+        }
+        ext_identifier != &extension_identifier
+      })
+      .cloned()
+      .collect::<Vec<_>>();
+    new_extensions.insert(key.to_string(), serde_json::json!(new_value));
+  }
+  storage::write_data("extensions".to_string(), serde_json::json!(new_extensions));
+}

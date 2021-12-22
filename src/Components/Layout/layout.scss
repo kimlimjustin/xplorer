@@ -22,7 +22,6 @@
 	height: 100vh;
 	border-radius: var(--edge-radius) 0 0 var(--edge-radius);
 	overflow: auto;
-	opacity: var(--sidebar-transparency);
 	#sidebar-nav {
 		flex-grow: 1;
 		margin: 1rem 0;
@@ -117,7 +116,6 @@
 	.topbar {
 		border-radius: 0 var(--edge-radius) 0 0;
 		padding: 15px;
-		opacity: var(--topbar-transparency);
 		&:focus {
 			cursor: grabbing;
 		}
@@ -235,7 +233,6 @@
 		height: 100%;
 		box-sizing: border-box;
 		display: flex;
-		opacity: var(--workspace-transparency);
 
 		#workspace {
 			padding: 1rem;

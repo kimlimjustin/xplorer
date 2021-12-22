@@ -1,0 +1,22 @@
+{
+	"name": "<%= extensionIdentifier %>",
+	"extensionName": "<%= extensionName %>",
+	"description": "My Extension Description",
+	"category": "<%= extensionType %>",
+	"version": "0.1.0",
+	"license": "MIT",
+	"scripts": {
+		"start": "xplorer --theme <%= extensionIdentifier %>",
+		"build": "xplorer extensions theme build",
+		"xplorer:install": "xplorer extensions theme install"
+	},
+	"xplorerExtensionConfig": {
+		"themes": [
+			{
+				"identifier": "<%= extensionIdentifier %>",
+				"name": "<%= extensionName %>",
+				"path": "./themes/<%= extensionIdentifier%>-color-theme.json"
+			}
+		]
+	}
+}

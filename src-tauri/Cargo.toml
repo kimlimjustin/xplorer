@@ -26,12 +26,14 @@ notify = "4.0.17"
 normpath = "0.3.1"
 lazy_static = "1.4.0"
 font-loader = "0.11.0"
+clap = "3.0.0-beta.5"
 glob = "0.3.0"
 tauri-plugin-vibrancy = { git = "https://github.com/amrbashir/tauri-plugin-vibrancy" }
 parselnk = "0.1.0"
-
-[dev-dependencies]
+url = "2.2.2"
+reqwest = "0.11.8"
 tokio = {version="1.14", features = ["full"] }
+
 
 [features]
 default = [ "custom-protocol" ]
