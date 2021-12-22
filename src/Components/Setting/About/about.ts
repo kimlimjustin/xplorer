@@ -60,7 +60,7 @@ const About = async (): Promise<void> => {
 		>
 		<a
 			class="settings-about-link-btn"
-			href="https://xplorer.vercel.app"
+			href="https://xplorer.space"
 			target="_blank"
 			>Documentation</a
 		>

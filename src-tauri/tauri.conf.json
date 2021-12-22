@@ -46,7 +46,9 @@
 			}
 		},
 		"updater": {
-			"active": false
+			"active": true,
+			"endpoints": ["https://updater.xplorer.space/api/{{target}}/{{current_version}}"],
+			"dialog": true
 		},
 		"allowlist": {
 			"all": true,

@@ -168,11 +168,11 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promis
 const OpenHandler = async (e: MouseEvent): Promise<void> => {
 	const preference = await Storage.get('preference');
 	if (document.querySelector('#sidebar-nav').contains(e.target as HTMLElement)) {
-		if (e.detail === 1 && preference.clickToOpenSidebar === 'double') return;
+		if (e.detail === 1 && preference?.clickToOpenSidebar && preference?.clickToOpenSidebar !== 'single') return;
 	} else if ((await focusingPath()) === 'xplorer://Home') {
-		if (e.detail === 1 && preference.clickToOpenHome !== 'single') return;
+		if (e.detail === 1 && preference?.clickToOpenHome !== 'single') return;
 	} else {
-		if (e.detail === 1 && preference.clickToOpenFile !== 'single') return;
+		if (e.detail === 1 && preference?.clickToOpenHome !== 'single') return;
 	}
 	let element = e.target as HTMLElement;
 	while (element?.dataset && !element.dataset.path) {
