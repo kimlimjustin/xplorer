@@ -22,7 +22,6 @@
 	height: 100vh;
 	border-radius: var(--edge-radius) 0 0 var(--edge-radius);
 	overflow: auto;
-	opacity: var(--sidebar-transparency);
 	#sidebar-nav {
 		flex-grow: 1;
 		margin: 1rem 0;
@@ -56,7 +55,7 @@
 				span {
 					display: flex;
 					cursor: pointer;
-					padding: 0.7rem 1.25rem;
+					padding: 0.6rem 1.25rem;
 					img {
 						width: 1.5rem;
 						height: 1.5rem;
@@ -82,7 +81,7 @@
 			}
 		}
 		.sidebar-nav-drives {
-			margin-top: 1.5rem;
+			margin-top: 0.5rem;
 		}
 	}
 	.sidebar-setting-btn {
@@ -117,7 +116,6 @@
 	.topbar {
 		border-radius: 0 var(--edge-radius) 0 0;
 		padding: 15px;
-		opacity: var(--topbar-transparency);
 		&:focus {
 			cursor: grabbing;
 		}
@@ -234,12 +232,7 @@
 		overflow-y: auto;
 		height: 100%;
 		box-sizing: border-box;
-		opacity: var(--workspace-transparency);
-		padding: 1rem;
-
 		display: flex;
-		flex-direction: row;
-		gap: 1rem;
 
 		#workspace {
 			// height: calc(100% - 2rem);

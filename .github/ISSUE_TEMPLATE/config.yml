@@ -1,6 +1,6 @@
 contact_links:
     - name: Common Issues
-      url: https://xplorer.vercel.app/docs/common_problems
+      url: https://xplorer.space/docs/common_problems
       about: Please see if your issue is a common issue
     - name: Feature Request
       url: https://github.com/kimlimjustin/xplorer/discussions

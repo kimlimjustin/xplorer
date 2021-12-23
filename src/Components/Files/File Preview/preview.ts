@@ -1,4 +1,3 @@
-import { updateTheme } from '../../Theme/theme';
 import PromptError from '../../Prompt/error';
 import { HTML_TYPES, IMAGE_TYPES, VIDEO_TYPES, PLAINTEXT_TYPES, MARKDOWN_TYPES } from '../../../Config/file.config';
 import getBasename from '../../Functions/path/basename';
@@ -88,7 +87,7 @@ const Preview = async (filePath: string): Promise<void> => {
 			).readAsset()}"></video></div>`
 		);
 	} else if (PLAINTEXT_TYPES.indexOf(ext) !== -1) {
-		changePreview(`<div class='preview-object' data-type="txt">${new FileAPI(filePath).readFile()}</div>`);
+		changePreview(`<div class='preview-object' data-type="txt">${await new FileAPI(filePath).readFile()}</div>`);
 	} else if (MARKDOWN_TYPES.indexOf(ext) !== -1) {
 		const html = marked(await new FileAPI(filePath).readFile());
 		changePreview(`<div class='preview-object' data-type="md">${eURLify(html)}</div>`);
@@ -138,7 +137,6 @@ const Preview = async (filePath: string): Promise<void> => {
 	}
 
 	if (!previewed) PromptError('No preview handler', 'There is no preview handler for this file type yet.');
-	updateTheme('preview');
 };
 export default Preview;
 export { closePreviewFile };

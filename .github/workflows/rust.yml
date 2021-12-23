@@ -1,0 +1,28 @@
+name: Test Rust Functions
+on: [push, pull_request]
+
+jobs:
+    tests:
+        strategy:
+            fail-fast: false
+            matrix:
+                platform: [macos-latest, ubuntu-latest, windows-latest]
+
+        runs-on: ${{ matrix.platform }}
+        steps:
+            - uses: actions/checkout@v2
+            - name: setup node
+              uses: actions/setup-node@v1
+              with:
+                  node-version: 12
+            - name: install Rust stable
+              uses: actions-rs/toolchain@v1
+              with:
+                  toolchain: stable
+            - name: install webkit2gtk (ubuntu only)
+              if: matrix.platform == 'ubuntu-latest'
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install -y webkit2gtk-4.0
+            - name: Run tests
+              run: yarn && yarn compile && cd src-tauri && cargo test

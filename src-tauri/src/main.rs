@@ -2,50 +2,105 @@
   all(not(debug_assertions), target_os = "windows"),
   windows_subsystem = "windows"
 )]
+
 mod drives;
+mod extensions;
 mod file_lib;
 mod files_api;
 mod storage;
+mod util;
+use clap::{App, Arg, ArgMatches};
+mod tests;
 use font_loader::system_fonts;
+use lazy_static::lazy_static;
 use std::env;
+extern crate reqwest;
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
-use std::path::Path;
 use std::process::Command;
+use tauri::Manager;
+use tauri_plugin_vibrancy::Vibrancy;
 
-extern crate path_absolutize;
-use path_absolutize::*;
-
-#[derive(serde::Serialize)]
-struct ArgsStruct {
-  args: Vec<String>,
-  flags: Vec<String>,
-}
-#[tauri::command]
-fn get_cli_args() -> Result<ArgsStruct, String> {
-  let mut args = Vec::new();
-  let mut flags = Vec::new();
-  for arg in env::args().skip(1) {
-    if arg.starts_with("-") {
-      flags.push(arg)
-    } else {
-      let dir = Path::new(&arg);
-      let absolute_path = dir.absolutize();
-      if absolute_path.is_err() {
-        println!("{:?}", absolute_path.err());
-      } else {
-        args.push(
-          absolute_path
-            .unwrap()
-            .into_owned()
-            .into_os_string()
-            .into_string()
-            .unwrap(),
-        )
-      }
-    }
-  }
-  Ok(ArgsStruct { args, flags })
+lazy_static! {
+  pub static ref ARGS_STRUCT: ArgMatches = {
+    const VERSION: &'static str = env!("CARGO_PKG_VERSION");
+    App::new("Xplorer")
+      .version(VERSION)
+      .about("Xplorer, customizable, modern file manager")
+      .arg(
+        Arg::new("reveal")
+          .short('r')
+          .long("reveal")
+          .about("Reveal file in Xplorer")
+          .takes_value(false),
+      )
+      .subcommand(
+        App::new("extensions")
+          .alias("ext")
+          .about("Manage Xplorer extensions")
+          .subcommand(
+            App::new("theme")
+              .about("Manage themes")
+              .subcommand(
+                App::new("build").about("Package app into json file").arg(
+                  Arg::new("configuration")
+                    .about("Path to package.json")
+                    .takes_value(true)
+                    .multiple_values(false),
+                ),
+              )
+              .subcommand(
+                App::new("install")
+                  .about("Install theme from json file")
+                  .arg(
+                    Arg::new("theme")
+                      .about("Packaged theme file")
+                      .takes_value(true)
+                      .multiple_values(false),
+                  ),
+              ),
+          )
+          .subcommand(
+            App::new("install")
+              .about("Install extension from packaged json file")
+              .arg(
+                Arg::new("extension")
+                  .about("Packaged extension file")
+                  .takes_value(true)
+                  .multiple_values(false),
+              ),
+          )
+          .subcommand(
+            App::new("uninstall").about("Uninstall extension").arg(
+              Arg::new("extension")
+                .about("Extension identifier")
+                .takes_value(true)
+                .multiple_values(true),
+            ),
+          ),
+      )
+      .arg(
+        Arg::new("xtension")
+          .short('x')
+          .long("xtension")
+          .about("Install .xtension file")
+          .takes_value(true),
+      )
+      .arg(
+        Arg::new("dir")
+          .about("Directories to open in Xplorer")
+          .multiple_values(true)
+          .takes_value(true),
+      )
+      .arg(
+        Arg::new("theme")
+          .short('t')
+          .long("theme")
+          .about("Custom color theme")
+          .takes_value(true),
+      )
+      .get_matches()
+  };
 }
 
 #[cfg(target_os = "windows")]
@@ -83,8 +138,17 @@ fn get_available_fonts() -> Result<Vec<String>, String> {
   let fonts = system_fonts::query_all();
   Ok(fonts)
 }
+#[tauri::command]
+fn change_transparent_effect(effect: String, window: tauri::Window) {
+  if effect == "blur".to_string() {
+    window.set_blur();
+  } else if effect == "acrylic".to_string() {
+    window.set_acrylic();
+  }
+}
 
 fn main() {
+  extensions::init_extension();
   tauri::Builder::default()
     .invoke_handler(tauri::generate_handler![
       files_api::read_directory,
@@ -112,10 +176,26 @@ fn main() {
       storage::write_data,
       storage::read_data,
       storage::delete_storage_data,
-      get_cli_args,
+      extensions::listen_stylesheet_change,
+      extensions::get_cli_args,
       check_vscode_installed,
-      get_available_fonts
+      get_available_fonts,
+      change_transparent_effect
     ])
+    .setup(|app| {
+      let window = app.get_window("main").unwrap();
+      let preference = storage::read_data("preference".to_string()).unwrap();
+      let transparent_effect = match preference.status {
+        true => preference.data["transparentEffect"].to_string(),
+        false => "blur".to_string(),
+      };
+      if transparent_effect == "blur".to_string() || transparent_effect == "null".to_string() {
+        window.set_blur();
+      } else if transparent_effect == "acrylic".to_string() {
+        window.set_acrylic();
+      }
+      Ok(())
+    })
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }

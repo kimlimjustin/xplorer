@@ -2,8 +2,8 @@ import { reload, minimize, maximize, close } from '../../Layout/windowManager';
 import Translate from '../../I18n/i18n';
 import Storage from '../../../Api/storage';
 import OS from '../../../Api/platform';
-import { getAvailableFonts } from '../../../Api/app';
-import { getElementStyle, updateTheme } from '../../Theme/theme';
+import { changeTransparentEffect, getAvailableFonts } from '../../../Api/app';
+import { getElementStyle, getInstalledThemes, updateTheme } from '../../Theme/theme';
 import { setDecorations } from '../../../Api/window';
 import Infobar from '../../Layout/infobar';
 let platform: string;
@@ -15,6 +15,7 @@ const Appearance = async (): Promise<void> => {
 	if (!platform) {
 		platform = await OS();
 	}
+	const developingTheme = document.body.dataset.usingCustomTheme === 'true';
 	const _theme = await Storage.get('theme');
 	const _appearance = await Storage.get('appearance');
 	const theme = _theme?.theme;
@@ -26,19 +27,21 @@ const Appearance = async (): Promise<void> => {
 	const settingsMain = document.querySelector('.settings-main');
 	const fontFamily = _appearance?.fontFamily ?? getElementStyle('fontFamily');
 	const fontSize = parseInt(_appearance?.fontSize ?? getElementStyle('fontSize'));
-	const windowTransparency = parseInt(_appearance?.windowTransparency ?? 90);
+	const windowTransparency = parseInt(_appearance?.windowTransparency ?? 80);
+	const transparentEffect = _appearance?.transparentEffect ?? 'blur';
 	const transparentSidebar = _appearance?.transparentSidebar ?? true;
 	const transparentTopbar = _appearance?.transparentTopbar ?? false;
 	const transparentWorkspace = _appearance?.transparentWorkspace ?? false;
 	const frameStyle = _appearance?.frameStyle ?? 'default';
 	const showInfoBar = _appearance?.showInfoBar ?? true;
 
+	const installedThemes = await getInstalledThemes();
 	const availableThemes = [
-		{ name: 'Light', identifier: 'light', category: 'light' },
-		{ name: 'Dark', identifier: 'dark', category: 'dark' },
-		{ name: 'Light+', identifier: 'light+', category: 'light+' },
-		{ name: 'Dark+', identifier: 'dark+', category: 'dark' },
-	].concat(_theme?.availableThemes ?? []);
+		{ name: 'Light', identifier: 'light' },
+		{ name: 'Dark', identifier: 'dark' },
+		{ name: 'Light+', identifier: 'light+' },
+		{ name: 'Dark+', identifier: 'dark+' },
+	].concat(...installedThemes.map((theme) => [{ name: theme.name, identifier: theme.identifier }]));
 	const availableFonts = await getAvailableFonts();
 	const default_i18n = await Translate('Default');
 	const appTheme_i18n = await Translate('App Theme');
@@ -52,6 +55,7 @@ const Appearance = async (): Promise<void> => {
 	const fontFamily_i18n = await Translate('Font Family');
 	const fontSize_i18n = await Translate('Font Size');
 	const windowTransparency_i18n = await Translate('Window Transparency');
+	const transparentEffect_i18n = await Translate('Transparent Effect');
 	const transparentSidebar_i18n = await Translate('Transparent Sidebar');
 	const transparentTopbar_i18n = await Translate('Transparent Topbar');
 	const transparentWorkspace_i18n = await Translate('Transparent Workspace');
@@ -60,11 +64,12 @@ const Appearance = async (): Promise<void> => {
 	const showInfoBar_i18n = await Translate('Show Info Bar');
 	const appearancePage = `<h3 class="settings-title">${appTheme_i18n}</h3>
 	<select name="theme">
-		<option>${systemDefault_i18n}</option>
+		<option  ${developingTheme ? 'disabled' : ''}>${systemDefault_i18n}</option>
+		${developingTheme ? '<option selected>Dev mode</option>' : ''}
 		${availableThemes.map((availableTheme) => {
-			return `<option value="${availableTheme.identifier}" ${availableTheme.identifier === theme ? 'selected' : ''}>${
-				availableTheme.name
-			}</option>`;
+			return `<option value="${availableTheme.identifier}" ${availableTheme.identifier === theme && !developingTheme ? 'selected' : ''} ${
+				developingTheme ? 'disabled' : ''
+			}>${availableTheme.name}</option>`;
 		})}
 	</select>
 	<h3 class="settings-title">${fontFamily_i18n}</h3>
@@ -105,6 +110,12 @@ const Appearance = async (): Promise<void> => {
 			<span class="toggle-label">${transparentWorkspace_i18n}</span>
 		</label>
 	</div>
+	<h3 class="settings-title">${transparentEffect_i18n}</h3>
+	<select name="transparent-effect">
+		<option value="blur" ${transparentEffect === 'blur' ? 'selected' : ''}>Blur</option>
+		<option value="acrylic" ${transparentEffect === 'acrylic' ? 'selected' : ''}>Acrylic</option>
+		<option value="none" ${transparentEffect === 'none' ? 'selected' : ''}>None</option>
+	</select>
 	<h3 class="settings-title">${frameStyle_i18n}</h3>
 	<select name="frame-style">
 		<option value="default" ${frameStyle === 'default' ? 'selected' : ''}>${default_i18n}</option>
@@ -161,7 +172,6 @@ const Appearance = async (): Promise<void> => {
 	</div>
 	`;
 	settingsMain.innerHTML = appearancePage;
-	updateTheme('settings');
 	settingsMain.querySelectorAll('.number-ctrl').forEach((ctrl) => {
 		const number = ctrl.querySelector<HTMLInputElement>('.number-ctrl-input');
 		ctrl.querySelector('.number-ctrl-minus').addEventListener('click', () => {
@@ -187,10 +197,10 @@ const Appearance = async (): Promise<void> => {
 		appearance.windowTransparency = `${value}%`;
 		document.getElementById('transparency-label').innerHTML = String(value);
 		if (appearance?.transparentSidebar ?? true)
-			document.body.style.setProperty('--sidebar-transparency', appearance?.windowTransparency ?? '0.9');
+			document.body.style.setProperty('--sidebar-transparency', appearance?.windowTransparency ?? '0.8');
 		if (appearance?.transparentWorkspace ?? false)
-			document.body.style.setProperty('--workspace-transparency', appearance?.windowTransparency ?? '0.9');
-		if (appearance?.transparentTopbar ?? false) document.body.style.setProperty('--topbar-transparency', appearance?.windowTransparency ?? '0.9');
+			document.body.style.setProperty('--workspace-transparency', appearance?.windowTransparency ?? '0.8');
+		if (appearance?.transparentTopbar ?? false) document.body.style.setProperty('--topbar-transparency', appearance?.windowTransparency ?? '0.8');
 		Storage.set('appearance', appearance);
 	});
 	settingsMain.querySelector('[name="transparent-sidebar"]').addEventListener('change', (event: Event & { target: HTMLInputElement }) => {
@@ -198,9 +208,9 @@ const Appearance = async (): Promise<void> => {
 		const appearance = _appearance ?? {};
 		appearance.transparentSidebar = value;
 		if (value) {
-			document.body.style.setProperty('--sidebar-transparency', appearance?.windowTransparency ?? '0.9');
+			document.body.style.setProperty('--sidebar-transparency', appearance?.windowTransparency ?? '0.8');
 		} else {
-			document.body.style.removeProperty('--sidebar-transparency');
+			document.body.style.setProperty('--sidebar-transparency', '1');
 		}
 		Storage.set('appearance', appearance);
 	});
@@ -209,9 +219,9 @@ const Appearance = async (): Promise<void> => {
 		const appearance = _appearance ?? {};
 		appearance.transparentWorkspace = value;
 		if (value) {
-			document.body.style.setProperty('--workspace-transparency', appearance?.windowTransparency ?? '0.9');
+			document.body.style.setProperty('--workspace-transparency', appearance?.windowTransparency ?? '0.8');
 		} else {
-			document.body.style.removeProperty('--workspace-transparency');
+			document.body.style.setProperty('--workspace-transparency', '1');
 		}
 		Storage.set('appearance', appearance);
 	});
@@ -220,10 +230,16 @@ const Appearance = async (): Promise<void> => {
 		const appearance = _appearance ?? {};
 		appearance.transparentTopbar = value;
 		if (value) {
-			document.body.style.setProperty('--topbar-transparency', appearance?.windowTransparency ?? '0.9');
+			document.body.style.setProperty('--topbar-transparency', appearance?.windowTransparency ?? '0.8');
 		} else {
-			document.body.style.removeProperty('--topbar-transparency');
+			document.body.style.setProperty('--topbar-transparency', '1');
 		}
+		Storage.set('appearance', appearance);
+	});
+	settingsMain.querySelector('[name="transparent-effect"]').addEventListener('change', (event: Event & { target: HTMLInputElement }) => {
+		const appearance = _appearance ?? {};
+		appearance.transparentEffect = event.target.value;
+		changeTransparentEffect(appearance.transparentEffect);
 		Storage.set('appearance', appearance);
 	});
 	settingsMain.querySelector('[name="frame-style"]').addEventListener('change', (event: Event & { target: HTMLInputElement }) => {
@@ -240,7 +256,6 @@ const Appearance = async (): Promise<void> => {
 			<span id="maximize" title="Maximize"></span>
 			<span id="exit" title="Exit (Ctrl + w)"></span>`;
 			document.querySelector('.tabs-manager').appendChild(windowManager);
-			updateTheme('windowmanager');
 			// Minimize the screen
 			windowManager.querySelector('#minimize').addEventListener('click', minimize);
 			// Maximize the screen
@@ -258,11 +273,8 @@ const Appearance = async (): Promise<void> => {
 		Storage.set('appearance', appearance);
 	});
 	settingsMain.querySelector('[name="theme"]')?.addEventListener('change', async (event: Event & { target: HTMLInputElement }) => {
-		const category = (event.target as unknown as HTMLSelectElement).options[(event.target as unknown as HTMLSelectElement).selectedIndex].dataset
-			.category;
-		const themes = await Storage.get('theme');
+		const themes = (await Storage.get('theme')) ?? {};
 		themes['theme'] = event.target.value;
-		themes['category'] = category;
 		Storage.set('theme', themes);
 		updateTheme('*');
 	});

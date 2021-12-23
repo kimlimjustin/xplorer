@@ -1,6 +1,5 @@
 import formatBytes from '../Functions/filesize';
 import DirectoryAPI from '../../Api/directory';
-import { updateTheme } from '../Theme/theme';
 /**
  * Render file/folder properties into HTML
  * @param {Record<string, unknown>} options - File/folder's properties
@@ -62,7 +61,6 @@ const Properties = (filePath: string): void => {
 		'Accessed At': accessedAt,
 		'File Attribute': file_attr,
 	});
-	updateTheme('properties');
 };
 
 export default Properties;

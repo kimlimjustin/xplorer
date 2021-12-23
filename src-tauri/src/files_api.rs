@@ -5,23 +5,31 @@ use std::time::SystemTime;
 extern crate notify;
 extern crate open;
 extern crate trash;
+use crate::extensions;
 use crate::file_lib;
 use crate::storage;
 use glob::{glob_with, MatchOptions};
 #[cfg(not(target_os = "macos"))]
 use normpath::PathExt;
 use notify::{raw_watcher, RawEvent, RecursiveMode, Watcher};
-use serde_json::Value;
-use std::sync::mpsc::channel;
-use tauri::api::path::local_data_dir;
-use tauri::Manager;
-
+use parselnk::Lnk;
+use std::convert::TryFrom;
 #[cfg(windows)]
 use std::os::windows::prelude::*;
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
+use std::sync::mpsc::channel;
+use tauri::api::dialog::ask;
+#[cfg(target_os = "windows")]
+use tauri::api::path::local_data_dir;
 
-#[derive(serde::Serialize, Clone)]
+#[derive(serde::Serialize, Clone, Debug)]
+pub struct LnkData {
+  file_path: String,
+  icon: String,
+}
+
+#[derive(serde::Serialize, Clone, Debug)]
 pub struct FileMetaData {
   file_path: String,
   basename: String,
@@ -62,6 +70,7 @@ pub struct FolderInformation {
   number_of_files: u16,
   files: Vec<FileMetaData>,
   skipped_files: Vec<String>,
+  lnk_files: Vec<LnkData>,
 }
 
 #[derive(serde::Serialize)]
@@ -82,7 +91,8 @@ pub struct ReturnInformation {
   pub request_confirmation: bool,
 }
 
-fn get_basename(file_path: String) -> String {
+/// Get basename of the path given
+pub fn get_basename(file_path: String) -> String {
   let basename = Path::new(&file_path).file_name();
   match basename {
     Some(basename) => basename.to_str().unwrap().to_string(),
@@ -90,19 +100,28 @@ fn get_basename(file_path: String) -> String {
   }
 }
 
+/// Check if a file is hidden
+///
+/// Checking file_attributes metadata of a file and check if it is hidden
 #[cfg(windows)]
-fn check_is_hidden(file_path: String) -> bool {
+pub fn check_is_hidden(file_path: String) -> bool {
   let metadata = fs::metadata(file_path).unwrap();
   let attributes = metadata.file_attributes();
   (attributes & 0x2) > 0
 }
 
+/// Check if a file is hidden
+///
+/// Checking a file is hidden by checking if the file name starts with a dot
 #[cfg(unix)]
-fn check_is_hidden(file_path: String) -> bool {
+pub fn check_is_hidden(file_path: String) -> bool {
   let basename = get_basename(file_path);
   basename.clone().starts_with(".")
 }
 
+/// Check if a file is system file
+///
+/// Checking file_attributes metadata of a file and check if it is system file
 #[cfg(windows)]
 fn check_is_system_file(file_path: String) -> bool {
   let metadata = fs::metadata(file_path).unwrap();
@@ -115,6 +134,7 @@ fn check_is_system_file(_: String) -> bool {
   false
 }
 
+/// Get properties of a file
 #[tauri::command]
 pub async fn get_file_properties(file_path: String) -> Result<FileMetaData, String> {
   let metadata = fs::metadata(file_path.clone());
@@ -162,6 +182,9 @@ pub async fn get_file_properties(file_path: String) -> Result<FileMetaData, Stri
   })
 }
 
+/// Get size of a directory
+///
+/// Get size of a directory by iterating and summing up the size of all files
 #[tauri::command]
 pub async fn get_dir_size(dir: String) -> u64 {
   let mut total_size: u64 = 0;
@@ -194,6 +217,10 @@ pub async fn get_file_meta_data(file_path: String) -> Result<FileMetaData, Strin
     Ok(properties.unwrap())
   }
 }
+
+/// Check if a given path is a directory
+///
+/// Return false if file does not exist or it isn't a directory
 #[tauri::command]
 pub fn is_dir(path: &Path) -> Result<bool, String> {
   if !Path::new(path).exists() {
@@ -203,6 +230,8 @@ pub fn is_dir(path: &Path) -> Result<bool, String> {
     Ok(md.is_dir())
   }
 }
+
+/// Read files and its information of a directory
 #[tauri::command]
 pub async fn read_directory(dir: &Path) -> Result<FolderInformation, String> {
   let preference = storage::read_data("preference".to_string());
@@ -210,38 +239,70 @@ pub async fn read_directory(dir: &Path) -> Result<FolderInformation, String> {
     Ok(result) => result,
     Err(_) => return Err("Error reading preference".into()),
   };
-  let preference: Result<Value, serde_json::Error> = serde_json::from_str(&preference.data);
+  let preference = if preference.status || preference.data == serde_json::Value::Null {
+    preference.data
+  } else {
+    return Err("Error reading preference".into());
+  };
   let hide_system_files = match preference {
-    Ok(result) => result["hideSystemFiles"].as_bool().unwrap_or(false),
-    Err(_) => true,
+    serde_json::Value::Null => true,
+    _ => preference["hideSystemFiles"].as_bool().unwrap_or(true),
   };
   let paths = fs::read_dir(dir).map_err(|err| err.to_string())?;
   let mut number_of_files: u16 = 0;
   let mut files = Vec::new();
   let mut skipped_files = Vec::new();
+  let mut lnk_files: Vec<LnkData> = Vec::new();
   for path in paths {
     number_of_files += 1;
-    let file_name = path.unwrap().path().display().to_string();
-    let file_info = get_file_properties(file_name.clone()).await;
+    let file_path = path.unwrap().path().display().to_string();
+    let file_info = get_file_properties(file_path.clone()).await;
     if file_info.is_err() {
-      skipped_files.push(file_name);
+      skipped_files.push(file_path);
       continue;
     } else {
       let file_info = file_info.unwrap();
       if hide_system_files && file_info.is_system {
-        skipped_files.push(file_name);
+        skipped_files.push(file_path);
         continue;
       }
-      files.push(file_info)
+      if file_info.file_type == "Windows Shortcut" {
+        let path = std::path::Path::new(&file_info.file_path);
+        let lnk = Lnk::try_from(path).unwrap();
+        let lnk_icon = lnk.string_data.icon_location;
+        let lnk_icon = match lnk_icon {
+          Some(icon) => {
+            let icon = icon.into_os_string().into_string().unwrap();
+            let icon_type = file_lib::get_type(icon.clone(), false).await;
+            if icon_type == "Image" {
+              icon
+            } else if icon_type == "Executable" {
+              extract_icon(icon).await.unwrap_or("".to_string())
+            } else {
+              "".to_string()
+            }
+          }
+          None => "".to_string(),
+        };
+        lnk_files.push(LnkData {
+          file_path: file_path,
+          icon: lnk_icon,
+        });
+        files.push(file_info)
+      } else {
+        files.push(file_info)
+      }
     };
   }
   Ok(FolderInformation {
     number_of_files,
     files,
     skipped_files,
+    lnk_files,
   })
 }
 
+/// Get array of files of a directory
 #[tauri::command]
 pub async fn get_files_in_directory(dir: &Path) -> Result<Vec<String>, String> {
   let paths = fs::read_dir(dir).map_err(|err| err.to_string())?;
@@ -252,24 +313,60 @@ pub async fn get_files_in_directory(dir: &Path) -> Result<Vec<String>, String> {
   Ok(files)
 }
 
+/// Open a file path in default application
 #[tauri::command]
-pub fn open_file(file_path: String) -> bool {
-  open::that(file_path).is_ok()
+pub fn open_file(file_path: String, window: tauri::Window) -> bool {
+  let extension = file_path.split(".").last().unwrap();
+  if extension == "xtension" {
+    ask(
+      Some(&window),
+      "Special file type",
+      "This is Xplorer's extension file, do you want to install it?",
+      move |answer| {
+        if answer {
+          let file: Result<serde_json::Value, serde_json::Error> =
+            serde_json::from_str(std::fs::read_to_string(file_path).unwrap().as_str());
+          let file = match file {
+            Ok(file) => file,
+            Err(_) => {
+              panic!("Error parsing file");
+            }
+          };
+          extensions::install_extensions(file);
+        }
+      },
+    );
+    true
+  } else {
+    open::that(file_path).is_ok()
+  }
 }
+/// Check if path given exists
 #[tauri::command]
 pub fn file_exist(file_path: String) -> bool {
   fs::metadata(file_path).is_ok()
 }
 
+/// Create directory recursively
 #[tauri::command]
-pub fn create_dir_recursive(dir_path: String) -> bool {
+pub async fn create_dir_recursive(dir_path: String) -> bool {
   fs::create_dir_all(dir_path).is_ok()
 }
 
+/// Create a file
 #[tauri::command]
-pub fn create_file(file_path: String) -> bool {
+pub async fn create_file(file_path: String) -> bool {
+  let parent_dir = Path::new(&file_path)
+    .parent()
+    .unwrap()
+    .to_str()
+    .unwrap()
+    .to_string();
+  create_dir_recursive(parent_dir).await;
   fs::write(file_path, "").is_ok()
 }
+
+/// Open terminal in a given directory
 #[tauri::command]
 pub fn open_in_terminal(folder_path: String) {
   if cfg!(target_os = "windows") {
@@ -306,6 +403,7 @@ pub fn open_in_terminal(folder_path: String) {
   }
 }
 
+/// Open Visual Studio Code in a given directory
 #[tauri::command]
 pub fn open_in_vscode(path: String) {
   if cfg!(target_os = "windows") {
@@ -322,6 +420,7 @@ pub fn open_in_vscode(path: String) {
   };
 }
 
+/// Get trashed items
 #[cfg(not(target_os = "macos"))]
 #[tauri::command]
 pub async fn get_trashed_items() -> Result<TrashInformation, String> {
@@ -354,17 +453,22 @@ pub async fn get_trashed_items() -> Result<TrashInformation, String> {
   }
   Ok(TrashInformation { files: trash_files })
 }
+/// Get trashed items
+///
+/// Not supported on macOS yet.
 #[cfg(target_os = "macos")]
 #[tauri::command]
 pub async fn get_trashed_items() -> Result<TrashInformation, String> {
   Err("macOS is not supported currently".into())
 }
 
+/// Delete a file or directory
 #[tauri::command]
-pub fn delete_file(paths: Vec<String>) -> bool {
+pub async fn delete_file(paths: Vec<String>) -> bool {
   trash::delete_all(paths).is_ok()
 }
 
+/// Remove all trashes from trash folder
 #[cfg(not(target_os = "macos"))]
 #[tauri::command]
 pub fn purge_trashes(paths: Vec<String>) -> Result<bool, String> {
@@ -383,13 +487,16 @@ pub fn purge_trashes(paths: Vec<String>) -> Result<bool, String> {
   }
   Ok(status)
 }
-
+/// Remove all trashes from trash folder
+///
+/// Not supported on macOS yet.
 #[cfg(target_os = "macos")]
 #[tauri::command]
 pub fn purge_trashes(_paths: Vec<String>) -> Result<bool, String> {
   Err("macOS is not supported currently".into())
 }
 
+/// Restore a file or directory from trash folder
 #[cfg(not(target_os = "macos"))]
 #[tauri::command]
 pub fn restore_trash(
@@ -415,6 +522,9 @@ pub fn restore_trash(
     request_confirmation: request_confirmation,
   })
 }
+/// Restore a file or directory from trash folder
+///
+/// Not supported on macOS yet.
 #[cfg(target_os = "macos")]
 #[tauri::command]
 pub fn restore_trash(
@@ -427,6 +537,8 @@ pub fn restore_trash(
     request_confirmation: false,
   })
 }
+
+/// Restore array of files or directories from trash folder
 #[cfg(not(target_os = "macos"))]
 #[tauri::command]
 pub fn restore_files(paths: Vec<String>, force: bool) -> Result<ReturnInformation, String> {
@@ -474,6 +586,9 @@ pub fn restore_files(paths: Vec<String>, force: bool) -> Result<ReturnInformatio
     request_confirmation: request_confirmation,
   })
 }
+/// Restore array of files or directories from trash folder
+///
+/// Not supported on macOS yet.
 #[cfg(target_os = "macos")]
 #[tauri::command]
 pub fn restore_files(_paths: Vec<String>, _force: bool) -> Result<ReturnInformation, String> {
@@ -484,6 +599,7 @@ pub fn restore_files(_paths: Vec<String>, _force: bool) -> Result<ReturnInformat
   })
 }
 
+/// Listen to change events of a directory
 #[tauri::command]
 pub async fn listen_dir(dir: String, window: tauri::Window) -> Result<String, String> {
   let (tx, rx) = channel();
@@ -536,6 +652,9 @@ pub async fn listen_dir(dir: String, window: tauri::Window) -> Result<String, St
   }
 }
 
+/// Extract icon from executable file
+///
+/// Only supported on Windows
 #[cfg(target_os = "windows")]
 #[tauri::command]
 pub async fn extract_icon(file_path: String) -> Result<String, String> {
@@ -560,12 +679,14 @@ pub async fn extract_icon(file_path: String) -> Result<String, String> {
   }
 }
 
+/// Extract icon from executable file
 #[cfg(not(target_os = "windows"))]
 #[tauri::command]
 pub async fn extract_icon(_file_path: String) -> Result<String, String> {
   Err("Not supported".to_string())
 }
 
+/// Calculate total size of given array of files
 #[tauri::command]
 pub async fn calculate_files_total_size(files: Vec<String>) -> u64 {
   let mut total_size: u64 = 0;
@@ -579,6 +700,7 @@ pub async fn calculate_files_total_size(files: Vec<String>) -> u64 {
   total_size
 }
 
+/// Search for glob matches inside a given directory path
 #[tauri::command]
 pub async fn search_in_dir(
   dir_path: String,

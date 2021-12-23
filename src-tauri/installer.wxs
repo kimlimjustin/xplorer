@@ -85,6 +85,11 @@
         <DirectoryRef Id="INSTALLDIR">
             <Component Id="Path" Guid="{{{path_component_guid}}}" Win64="$(var.Win64)">
                 <File Id="Path" Source="{{{app_exe_source}}}" KeyPath="yes" Checksum="yes"/>
+                <ProgId Id="xplorer.xtension.Document" Description="Xplorer's extension">
+					<Extension Id="xtension" ContentType="application/xtension">
+						<Verb Id="open" Command="Open" TargetFile="Path" Argument="-x &quot;%1&quot;" />
+					</Extension>
+				</ProgId>
             </Component>
             {{#each binaries as |bin| ~}}
             <Component Id="{{ bin.id }}" Guid="{{bin.guid}}" Win64="$(var.Win64)">
@@ -123,6 +128,41 @@
             </Component>
             <Component Id="cmpEnvironmentVariable" Guid="{46e1e602-3642-4f99-b3d7-f02c38e57ec5}" KeyPath="yes">
                 <Environment Id="MyPathVariable" Name="Path" Value="[INSTALLDIR]" Action="set"  Part="last" Separator=";" />
+            </Component>
+            <Component Id="FileTypeAssociationsReg" Guid="968b7fdb-58b9-46d7-86da-76d031acefce">
+				<RegistryValue Root="HKLM" Key="SOFTWARE\xplorer\Capabilities" Name="ApplicationDescription" Value="xplorer" Type="string" />
+				<RegistryValue Root="HKLM" Key="SOFTWARE\xplorer\Capabilities" Name="ApplicationIcon" Value="[INSTALLDIR]xplorer,0" Type="string" />
+				<RegistryValue Root="HKLM" Key="SOFTWARE\xplorer\Capabilities" Name="ApplicationName" Value="xplorer" Type="string" />
+				<RegistryValue Root="HKLM" Key="SOFTWARE\xplorer\Capabilities\DefaultIcon" Value="[INSTALLDIR]xplorer,1" Type="string" />
+				<RegistryValue Root="HKLM" Key="SOFTWARE\xplorer\Capabilities\FileAssociations" Name=".xtension" Value="xplorer.xtension.Document" Type="string" />
+				<RegistryValue Root="HKLM" Key="SOFTWARE\xplorer\Capabilities\MIMEAssociations" Name="application/xtension" Value="xplorer.xtension.Document" Type="string" />
+				<RegistryValue Root="HKLM" Key="SOFTWARE\xplorer\Capabilities\shell\Open\command" Value="&quot;[INSTALLDIR]xplorer&quot; -x &quot;%1&quot;" Type="string" />
+
+				<RegistryValue Root="HKLM" Key="SOFTWARE\RegisteredApplications" Name="xplorer" Value="SOFTWARE\xplorer\Capabilities" Type="string" />
+
+				<RegistryValue Root="HKLM" Key="SOFTWARE\Classes\xplorer.xtension.Document" Name="xtension File" Value="Xplorer's extension" Type="string" />
+				<RegistryValue Root="HKLM" Key="SOFTWARE\Classes\.xtension" Name="Content Type" Value="application/xtension" Type="string" />
+				<RegistryValue Root="HKLM" Key="SOFTWARE\Classes\.xtension\OpenWithList\xplorer" Value="" Type="string" />
+				<RegistryValue Root="HKLM" Key="SOFTWARE\Classes\.xtension\OpenWithProgids" Name="xplorer.xtension.Document" Value="" Type="string" />
+				<RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\xplorer\SupportedTypes" Name=".xtension" Value="" Type="string" />
+				<RegistryValue Root="HKLM" Key="SOFTWARE\Classes\Applications\xplorer\shell\open" Name="FriendlyAppName" Value="xplorer" Type="string" />
+
+				<RegistryValue Root="HKLM" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\xplorer" Value="[!xplorer]" Type="string" />
+				<RegistryValue Root="HKLM" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\xplorer" Name="Path" Value="[INSTALLDIR]" Type="string" />
+			</Component>
+            <!--Register open in Xplorer on right clicking folders-->
+            <Component Id="RightClickFolderAssociation" Guid="b3a67b30-0be3-4a04-8d9c-2b19d223c7ee">
+                <RegistryValue Root="HKCU" Key="SOFTWARE\Classes\*\shell\Xplorer" Value="Open in Xplorer" Type="string" />
+                <RegistryValue Root="HKCU" Key="SOFTWARE\Classes\*\shell\Xplorer" Name="Icon" Value="[INSTALLDIR]xplorer.exe" Type="string" />
+                <RegistryValue Root="HKCU" Key="SOFTWARE\Classes\*\shell\Xplorer\command" Value="&quot;[INSTALLDIR]Xplorer&quot; -r &quot;%V&quot;" Type="string" />
+
+                <RegistryValue Root="HKCU" Key="SOFTWARE\Classes\Directory\shell\Xplorer" Value="Open in Xplorer" Type="string" />
+                <RegistryValue Root="HKCU" Key="SOFTWARE\Classes\Directory\shell\Xplorer" Name="Icon" Value="[INSTALLDIR]xplorer.exe" Type="string" />
+                <RegistryValue Root="HKCU" Key="SOFTWARE\Classes\Directory\shell\Xplorer\command" Value="&quot;[INSTALLDIR]Xplorer&quot; &quot;%V&quot;" Type="string" />
+
+                <RegistryValue Root="HKCU" Key="SOFTWARE\Classes\Directory\background\shell\Xplorer" Value="Open in Xplorer" Type="string" />
+                <RegistryValue Root="HKCU" Key="SOFTWARE\Classes\Directory\background\shell\Xplorer" Name="Icon" Value="[INSTALLDIR]xplorer.exe" Type="string" />
+                <RegistryValue Root="HKCU" Key="SOFTWARE\Classes\Directory\background\shell\Xplorer\command" Value="&quot;[INSTALLDIR]Xplorer&quot; &quot;%V&quot;" Type="string" />
             </Component>
         </DirectoryRef>
 
@@ -185,6 +225,12 @@
             {{#each binaries as |bin| ~}}
             <ComponentRef Id="{{ bin.id }}"/>
             {{/each~}}
+            </Feature>
+            <Feature Id="FileTypeAssociations" Title="File Type Associations" Description="Associates .xtension file types" Level="1" Absent="allow" AllowAdvertise="no">
+				<ComponentRef Id="FileTypeAssociationsReg"/>
+			</Feature>
+            <Feature Id="RightClickFolderAssociation" Title="Right Click Folder Association" Description="Associates right clicking on folders with the open in Xplorer command" Level="1" Absent="allow" AllowAdvertise="no">
+                <ComponentRef Id="RightClickFolderAssociation"/>
             </Feature>
         </Feature>
 

@@ -22,8 +22,8 @@ const Hover = (): void => {
 	const hoverPreviewElement = document.createElement('div');
 
 	document.querySelector('#workspace').addEventListener('mousemove', (e) => {
-		const x = (e as MouseEvent).clientX;
-		const y = (e as MouseEvent).clientY;
+		let x = (e as MouseEvent).clientX;
+		let y = (e as MouseEvent).clientY;
 		window.clearTimeout(timeOut);
 		hoverPreviewElement?.parentNode?.removeChild(hoverPreviewElement);
 
@@ -57,10 +57,14 @@ const Hover = (): void => {
 			if (IMAGE_TYPES.indexOf(getExtension(filenameGrid.innerHTML)) !== -1 && previewImageOnHover) {
 				hoverPreviewElement.innerHTML = `<img src="${new FileAPI(path).readAsset()}">`;
 				hoverPreviewElement.classList.add('hover-preview');
+				document.body.appendChild(hoverPreviewElement);
+
+				if (hoverPreviewElement.clientWidth > window.innerWidth) hoverPreviewElement.style.width = `${0.5 * window.innerWidth}px`;
+				if (x + 300 > document.body.offsetWidth) x -= hoverPreviewElement.offsetWidth;
+				if (y + hoverPreviewElement.clientHeight > document.body.offsetHeight) y -= hoverPreviewElement.offsetHeight;
 				hoverPreviewElement.style.top = y + 'px';
 				hoverPreviewElement.style.left = x + 'px';
 				hoverPreviewElement.dataset.path = target.dataset.path;
-				document.body.appendChild(hoverPreviewElement);
 			}
 		}, 500);
 	});

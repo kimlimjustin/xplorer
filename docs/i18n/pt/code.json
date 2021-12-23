@@ -1,4 +1,58 @@
 {
+  "welcome.title": {
+    "message": "Explorador de Arquivos."
+  },
+  "welcome.keyword": {
+    "message": "Redefinido."
+  },
+  "welcome.description": {
+    "message": "Free and Open Source Software. Runs everywhere."
+  },
+  "welcome.download": {
+    "message": "Baixe agora"
+  },
+  "welcome.xploreTheDocs": {
+    "message": "Leia a documentação"
+  },
+  "about.title": {
+    "message": "Explorador de Arquivos Multiplataforma."
+  },
+  "about.poweredByTheWebTitle": {
+    "message": "Powered by the web."
+  },
+  "about.builtUsing": {
+    "message": "Built using the"
+  },
+  "about.written": {
+    "message": ", and written using"
+  },
+  "about.typescriptUsage": {
+    "message": "for the frontend and"
+  },
+  "about.rustUsage": {
+    "message": "for the backend"
+  },
+  "about.promise": {
+    "message": "Xplorer promises you an unprecedented experience."
+  },
+  "feature.design": {
+    "message": "Designed out of the box"
+  },
+  "feature.designDescription": {
+    "message": "Say goodbye to the old design by traditional app and say hello to this simple yet powerful design."
+  },
+  "feature.multipleTabs": {
+    "message": "Supports Multiple Tabs"
+  },
+  "feature.multipleTabsDescription": {
+    "message": "O Xplorer ajuda a organizar seus arquivos mais facilmente, suportando várias abas."
+  },
+  "feature.filePreview": {
+    "message": "File Preview"
+  },
+  "feature.filePreviewDescription": {
+    "message": "Xplorer supports files preview, from images, code preview, pdfs, to videos. Learn more"
+  },
   "theme.NotFound.title": {
     "message": "Página não encontrada",
     "description": "The title of the 404 page"
@@ -11,10 +65,6 @@
     "message": "Por favor, entre em contato com o proprietário do site que conectou você com esta URL e avise eles que o link está quebrado.",
     "description": "The 2nd paragraph of the 404 page"
   },
-  "theme.BackToTopButton.buttonAriaLabel": {
-    "message": "Scroll back to top",
-    "description": "The ARIA label for the back to top button"
-  },
   "theme.AnnouncementBar.closeButtonAriaLabel": {
     "message": "Fechar",
     "description": "The ARIA label for close button of announcement bar"
@@ -26,6 +76,10 @@
   "theme.blog.archive.description": {
     "message": "Archive",
     "description": "The page & hero description of the blog archive page"
+  },
+  "theme.BackToTopButton.buttonAriaLabel": {
+    "message": "Scroll back to top",
+    "description": "The ARIA label for the back to top button"
   },
   "theme.blog.paginator.navAriaLabel": {
     "message": "Navegação da página da lista de blogs",
@@ -63,18 +117,6 @@
     "message": "Navegação nas postagens recentes do blog",
     "description": "The ARIA label for recent posts in the blog sidebar"
   },
-  "theme.CodeBlock.copyButtonAriaLabel": {
-    "message": "Copiar código para a área de transferência",
-    "description": "The ARIA label for copy code blocks button"
-  },
-  "theme.CodeBlock.copied": {
-    "message": "Copiado",
-    "description": "The copied button label on code blocks"
-  },
-  "theme.CodeBlock.copy": {
-    "message": "Copiar",
-    "description": "The copy button label on code blocks"
-  },
   "theme.blog.post.plurals": {
     "message": "Uma postagem|{count} postagens",
     "description": "Pluralized label for \"{count} posts\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
@@ -86,6 +128,18 @@
   "theme.tags.tagsPageLink": {
     "message": "Ver todas as tags",
     "description": "The label of the link targeting the tag list page"
+  },
+  "theme.CodeBlock.copyButtonAriaLabel": {
+    "message": "Copiar código para a área de transferência",
+    "description": "The ARIA label for copy code blocks button"
+  },
+  "theme.CodeBlock.copied": {
+    "message": "Copiado",
+    "description": "The copied button label on code blocks"
+  },
+  "theme.CodeBlock.copy": {
+    "message": "Copiar",
+    "description": "The copy button label on code blocks"
   },
   "theme.docs.sidebar.expandButtonTitle": {
     "message": "Expandir barra lateral",
@@ -164,7 +218,7 @@
     "description": "The label of the back button to return to main menu, inside the mobile navbar sidebar secondary menu (notably used to display the docs sidebar)"
   },
   "theme.navbar.mobileVersionsDropdown.label": {
-    "message": "Versions",
+    "message": "Versões",
     "description": "The label for the navbar versions dropdown on mobile view"
   },
   "theme.common.skipToMainContent": {
@@ -204,7 +258,7 @@
     "description": "The ARIA label for Algolia mention"
   },
   "theme.SearchPage.noResultsText": {
-    "message": "No results were found",
+    "message": "Nenhum resultado encontrado",
     "description": "The paragraph for empty search result"
   },
   "theme.SearchPage.fetchingNewResults": {
@@ -230,59 +284,5 @@
   "theme.tags.tagsPageTitle": {
     "message": "Marcadores",
     "description": "The title of the tag list page"
-  },
-  "welcome.title": {
-    "message": "File Explorer."
-  },
-  "welcome.keyword": {
-    "message": "Redefined."
-  },
-  "welcome.description": {
-    "message": "Free and Open Source Software. Runs everywhere."
-  },
-  "welcome.download": {
-    "message": "Download now"
-  },
-  "welcome.xploreTheDocs": {
-    "message": "Read documentation"
-  },
-  "about.title": {
-    "message": "Cross-platform File Explorer."
-  },
-  "about.poweredByTheWebTitle": {
-    "message": "Powered by the web."
-  },
-  "about.builtUsing": {
-    "message": "Built using the"
-  },
-  "about.written": {
-    "message": ", and written using"
-  },
-  "about.typescriptUsage": {
-    "message": "for the frontend and"
-  },
-  "about.rustUsage": {
-    "message": "for the backend"
-  },
-  "about.promise": {
-    "message": "Xplorer promises you an unprecedented experience."
-  },
-  "feature.design": {
-    "message": "Designed out of the box"
-  },
-  "feature.designDescription": {
-    "message": "Say goodbye to the old design by traditional app and say hello to this simple yet powerful design."
-  },
-  "feature.multipleTabs": {
-    "message": "Supports Multiple Tabs"
-  },
-  "feature.multipleTabsDescription": {
-    "message": "Xplorer helps you organize you files easier by supporting multiple tabs ."
-  },
-  "feature.filePreview": {
-    "message": "File Preview"
-  },
-  "feature.filePreviewDescription": {
-    "message": "Xplorer supports files preview, from images, code preview, pdfs, to videos. Learn more"
   }
 }

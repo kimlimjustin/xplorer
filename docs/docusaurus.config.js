@@ -5,7 +5,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 module.exports = {
 	title: 'Xplorer',
 	tagline: 'An easy-to-use, customizable, modern file manager',
-	url: 'https://xplorer.vercel.app',
+	url: 'https://xplorer.space',
 	baseUrl: '/',
 	onBrokenLinks: 'throw',
 	onBrokenMarkdownLinks: 'warn',
@@ -15,7 +15,7 @@ module.exports = {
 	trailingSlash: true,
 	i18n: {
 		defaultLocale: 'en',
-		locales: ['en', 'fr', 'pt', 'ru', 'uk', 'zh-CN'],
+		locales: ['en', 'fr', 'pt', 'uk', 'zh-CN'],
 	},
 	themeConfig: {
 		hideableSidebar: true,

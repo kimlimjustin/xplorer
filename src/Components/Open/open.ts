@@ -19,6 +19,7 @@ import { LOAD_IMAGE } from '../Functions/lazyLoadingImage';
 import PromptError from '../Prompt/error';
 import { UpdateInfo } from '../Layout/infobar';
 import { processSearch, stopSearchingProcess } from '../Files/File Operation/search';
+import Storage from '../../Api/storage';
 let platform: string;
 let directoryInfo: DirectoryAPI;
 /**
@@ -107,25 +108,31 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promis
 				stopLoading();
 				return;
 			}
-			directoryInfo.getFiles().then(async (files) => {
-				UpdateInfo('number-of-files', `${files.number_of_files - files.skipped_files.length} files`);
-				if (!files.files.length) {
-					MAIN_ELEMENT.classList.add('empty-dir-notification');
-					MAIN_ELEMENT.innerText = 'This folder is empty.';
-					stopLoading();
-				} else {
-					await displayFiles(files.files, dir, MAIN_ELEMENT, {
+			const files = await directoryInfo.getFiles();
+			UpdateInfo('number-of-files', `${files.number_of_files - files.skipped_files.length} files`);
+			if (!files.files.length) {
+				MAIN_ELEMENT.classList.add('empty-dir-notification');
+				MAIN_ELEMENT.innerText = 'This folder is empty.';
+				stopLoading();
+			} else {
+				await displayFiles(
+					files.files,
+					dir,
+					MAIN_ELEMENT,
+					{
 						reveal,
 						revealDir: normalizeSlash(dir),
-					});
-					stopLoading();
-					updateTheme('grid');
-					LOAD_IMAGE();
-					changeWindowTitle(getBasename(getDirname(dir)));
-					console.timeEnd(dir);
-					if (!isReload) directoryInfo.listen(() => reload());
-				}
-			});
+					},
+					null,
+					files.lnk_files
+				);
+				stopLoading();
+				updateTheme('grid');
+				LOAD_IMAGE();
+				changeWindowTitle(getBasename(getDirname(dir)));
+				console.timeEnd(dir);
+				if (!isReload) directoryInfo.listen(() => reload());
+			}
 		} else {
 			directoryInfo = new DirectoryAPI(dir);
 			if (!(await directoryInfo.exists())) {
@@ -140,7 +147,7 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promis
 				MAIN_ELEMENT.innerText = 'This folder is empty.';
 				stopLoading();
 			} else {
-				await displayFiles(files.files, dir, MAIN_ELEMENT);
+				await displayFiles(files.files, dir, MAIN_ELEMENT, null, null, files.lnk_files);
 				stopLoading();
 				updateTheme('grid');
 				LOAD_IMAGE();
@@ -156,13 +163,22 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promis
 /**
  * Open file/folder handler
  * @param {any} e - event
- * @returns {void}
+ * @returns {Promise<void>}
  */
-const OpenHandler = (e: Event): void => {
+const OpenHandler = async (e: MouseEvent): Promise<void> => {
+	const preference = await Storage.get('preference');
+	if (document.querySelector('#sidebar-nav').contains(e.target as HTMLElement)) {
+		if (e.detail === 1 && preference?.clickToOpenSidebar && preference?.clickToOpenSidebar !== 'single') return;
+	} else if ((await focusingPath()) === 'xplorer://Home') {
+		if (e.detail === 1 && preference?.clickToOpenHome !== 'single') return;
+	} else {
+		if (e.detail === 1 && preference?.clickToOpenHome !== 'single') return;
+	}
 	let element = e.target as HTMLElement;
-	while (!element.dataset.path) {
+	while (element?.dataset && !element.dataset.path) {
 		element = element.parentNode as HTMLElement;
 	}
+	if (!element?.dataset?.path) return;
 	if (element.id === 'workspace') return;
 
 	const filePath = unescape(element.dataset.path);
@@ -170,17 +186,20 @@ const OpenHandler = (e: Event): void => {
 	// Open the file if it's not directory
 	if (element.dataset.isdir !== 'true') {
 		OpenLog(filePath);
-		new FileAPI(filePath).openFile();
+		await new FileAPI(filePath).openFile();
+		if (filePath.endsWith('.xtension')) {
+			await Storage.get('theme', true);
+		}
 	} else {
 		OpenDir(filePath);
 	}
 };
 /**
  * Open directory/file listener initializer
- * @returns {void}
+ * @returns {Promise<void>}
  */
-const OpenInit = (): void => {
+const OpenInit = async (): Promise<void> => {
 	document.querySelector('#sidebar-nav').addEventListener('click', OpenHandler);
-	document.querySelector('#workspace').addEventListener('dblclick', OpenHandler);
+	document.querySelector('#workspace').addEventListener('click', OpenHandler);
 };
 export { OpenInit, OpenDir };

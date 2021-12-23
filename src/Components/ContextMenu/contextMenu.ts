@@ -5,7 +5,6 @@ import MultipleSelectedMenu from './configs/multipleSelectedMenu.config';
 import contextMenuItem from '../../Typings/contextMenuItem';
 import fileThumbnail from '../Thumbnail/thumbnail';
 import { getSelected } from '../Files/File Operation/select';
-import { updateTheme } from '../Theme/theme';
 import FileMenu from './configs/fileMenu.config';
 
 let contextMenu = document.querySelector('.contextmenu') as HTMLElement;
@@ -112,14 +111,17 @@ const ContextMenu = (): void => {
 			element.parentNode.removeChild(element);
 		});
 		contextMenu.innerHTML = '';
+		contextMenu.style.height = 'initial';
+		contextMenu.style.overflowY = 'initial';
 		contextMenuSubmenus.innerHTML = '';
 		let coorX = e.pageX;
 		let coorY = e.pageY;
 
 		let target = e.target as HTMLElement;
-		while (!target.dataset.path) {
+		while (target.dataset && !target.dataset.path) {
 			target = target.parentNode as HTMLElement;
 		}
+		if (!target?.dataset?.path) return;
 
 		const filePath = unescape(target.dataset.path);
 
@@ -140,11 +142,17 @@ const ContextMenu = (): void => {
 			coorY -= contextMenu.offsetHeight;
 		}
 		if (coorX + contextMenu.offsetWidth > window.innerWidth) coorX = window.innerWidth - contextMenu.offsetWidth;
+		if (contextMenu.offsetHeight + coorY > window.innerHeight) {
+			contextMenu.style.height = `${
+				window.innerHeight - coorY - parseInt(window.getComputedStyle(contextMenu).getPropertyValue('padding-top')) * 2
+			}px`;
+			contextMenu.style.overflowY = 'auto';
+		}
 
 		contextMenu.style.left = coorX + 'px';
 		contextMenu.style.top = coorY + 'px';
+		contextMenu.scrollTop = 0;
 
-		updateTheme('contextmenu');
 		document.addEventListener('click', exitContextMenu);
 	});
 	const exitContextMenu = () => {
@@ -177,13 +185,24 @@ const ContextMenu = (): void => {
 			const menuCoordinate = (e.target as HTMLElement).getBoundingClientRect();
 
 			submenuElement.style.display = 'block';
+			submenuElement.style.height = 'initial';
+			submenuElement.style.overflowY = 'initial';
 
 			let submenuCoorX = contextMenu.offsetLeft + contextMenu.offsetWidth;
 			if (submenuCoorX + submenuElement.offsetWidth * 0.5 >= window.innerWidth) {
 				submenuCoorX = contextMenu.offsetLeft - submenuElement.offsetWidth;
 			}
+			if (submenuElement.offsetHeight + menuCoordinate.top > window.innerHeight) {
+				submenuElement.style.height = `${
+					window.innerHeight -
+					submenuElement.offsetHeight -
+					parseInt(window.getComputedStyle(submenuElement).getPropertyValue('padding-top')) * 2
+				}px`;
+				submenuElement.style.overflowY = 'auto';
+			}
 			submenuElement.style.left = submenuCoorX + 'px';
 			submenuElement.style.top = menuCoordinate.top + 'px';
+			submenuElement.scrollTop = 0;
 		}
 	});
 

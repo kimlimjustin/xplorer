@@ -4,8 +4,8 @@
 	"version": "0.2.0",
 	"author": "Justin Maximillian Kimlim <kimlimjustin@gmail.com>",
 	"icon": "build/icon.icns",
-	"private": false,
-	"homepage": "https://xplorer.vercel.app",
+	"private": true,
+	"homepage": "https://xplorer.space",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/kimlimjustin/xplorer.git"
@@ -42,6 +42,9 @@
 		"postinstall": "husky install",
 		"fakefiles": "python scripts/generate-fake-files.py 1000"
 	},
+	"workspaces": [
+		"packages/*"
+	],
 	"keywords": [
 		"Xplorer",
 		"File explorer",
@@ -77,6 +80,7 @@
 		"grunt-contrib-watch": "^1.1.0",
 		"husky": "^7.0.2",
 		"jest": "^27.1.0",
+		"lerna": "^4.0.0",
 		"live-server": "^1.2.1",
 		"node-sass": "^6.0.1",
 		"node-watch": "^0.7.1",

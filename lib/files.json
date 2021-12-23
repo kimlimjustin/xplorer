@@ -268,5 +268,15 @@
 		"type": "Yarn Package Manager",
 		"fileNames": [".yarnrc", "yarn.lock", ".yarnclean", ".yarn-integrity", "yarn-error.log", ".yarnrc.yml", ".yarnrc.yaml"],
 		"thumbnail": "extension/yarn.svg"
+	},
+	{
+		"extensions": ["lnk"],
+		"type": "Windows Shortcut",
+		"thumbnail": "extension/lnk.svg"
+	},
+	{
+		"extensions": ["xtension"],
+		"type": "Xplorer's extension",
+		"thumbnail": "extension/xplorer.svg"
 	}
 ]

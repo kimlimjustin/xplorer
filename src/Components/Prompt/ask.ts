@@ -1,4 +1,3 @@
-import { updateTheme } from '../Theme/theme';
 import dragElement from '../Functions/dragElement';
 
 interface AskOptions {
@@ -30,7 +29,6 @@ const Ask = async (title: string, message: string, options?: AskOptions): Promis
 
 	dragElement(promptElement.querySelector('.prompt-frame'), promptElement);
 	document.body.appendChild(promptElement);
-	updateTheme('prompt');
 
 	const promptInput = promptElement.querySelector<HTMLInputElement>('.prompt-input');
 	promptInput.setSelectionRange(0, promptInput.value.lastIndexOf('.'));
