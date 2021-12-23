@@ -147,8 +147,10 @@ fn change_transparent_effect(effect: String, window: tauri::Window) {
   }
 }
 
-fn main() {
-  extensions::init_extension();
+#[tokio::main]
+async fn main() {
+  extensions::init_extension().await;
+  tauri::async_runtime::set(tokio::runtime::Handle::current());
   tauri::Builder::default()
     .invoke_handler(tauri::generate_handler![
       files_api::read_directory,
