@@ -15,7 +15,7 @@ module.exports = {
 	trailingSlash: true,
 	i18n: {
 		defaultLocale: 'en',
-		locales: ['en', 'fr', 'pt', 'ru', 'uk', 'zh-CN'],
+		locales: ['en', 'fr', 'pt', 'uk', 'zh-CN'],
 	},
 	themeConfig: {
 		hideableSidebar: true,

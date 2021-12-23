@@ -1,12 +1,12 @@
-# Настройки
+# Settings
 
 <details>
 <summary>
-Как открыть настройки?
+How to open the settings?
 </summary>
-Вы можете открыть настройки на Xplorer, нажав кнопку `Настройки` слева внизу.
+You can open settings on Xplorer by clicking the `Settings` button on the left down of Xplorer.
 
-![Настройки](/img/docs/settings.png)
+![Settings](/img/docs/settings.png)
 
 </details> <details>
 <summary>
@@ -14,7 +14,7 @@ How to exit from Settings?
 </summary>
 You can exit from Settings on Xplorer by clicking on the upside left of Xplorer.
 
-![Настройки](/img/docs/exit-settings.png)
+![Settings](/img/docs/exit-settings.png)
 
 </details>
 
@@ -22,7 +22,7 @@ You can exit from Settings on Xplorer by clicking on the upside left of Xplorer.
 
 ### App Theme
 
-Вы можете изменить тему приложения Xplorer во вкладке `Внешний вид` в настройках. Доступные по умолчанию темы: `light`, `light+`, `dark`, и `dark+`. Besides, there is a `System Default` theme that will automatically read your system preference. :::info Xplorer will support a custom app theme soon, stay tuned! :::
+You can change Xplorer's app theme on the `Appearance` tab of the Settings. Available default themes are `light`, `light+`, `dark`, and `dark+`. Besides, there is a `System Default` theme that will automatically read your system preference. :::info Xplorer will support a custom app theme soon, stay tuned! :::
 
 ### Font Family
 

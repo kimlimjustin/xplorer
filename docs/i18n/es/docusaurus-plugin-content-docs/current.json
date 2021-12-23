@@ -1,14 +1,14 @@
 {
   "version.label": {
-    "message": "Далее",
+    "message": "Siguiente",
     "description": "The label for version current"
   },
   "sidebar.tutorialSidebar.category.Guides": {
-    "message": "Руководства",
+    "message": "Guías",
     "description": "The label for category Guides in sidebar tutorialSidebar"
   },
   "sidebar.tutorialSidebar.category.Community": {
-    "message": "Community",
+    "message": "Comunidad",
     "description": "The label for category Community in sidebar tutorialSidebar"
   }
 }

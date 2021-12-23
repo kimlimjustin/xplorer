@@ -4,11 +4,11 @@
     "description": "The title in the navbar"
   },
   "item.label.Tutorial": {
-    "message": "Руководство",
+    "message": "Tutorial",
     "description": "Navbar item with label Tutorial"
   },
   "item.label.Blog": {
-    "message": "Блог",
+    "message": "Blog",
     "description": "Navbar item with label Blog"
   },
   "item.label.Discord": {

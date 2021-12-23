@@ -6,18 +6,22 @@
 
 :::
 
+## Automatic way
+
+### To install
+
+Download [`/packages/registry-scripts/setXplorerAsDefault.reg`](https://github.com/kimlimjustin/xplorer/blob/master/packages/registry-scripts/setXplorerAsDefault.reg) script from GitHub and double click to run it.
+
+### To uninstall
+
+Download [`/packages/registry-scripts/unsetXplorerAsDefault.reg`](https://github.com/kimlimjustin/xplorer/blob/master/packages/registry-scripts/unsetXplorerAsDefault.reg) script from GitHub and double click to run it.
+
+## Manual way
+
 1. Pressione `Win` + `R` e digite `regedit.exe`
 2. Click `Yes` on the question `Do you want to allow this app to make changes to your devices`
 3. Crie um backup do registro (veja a atenção acima).
-4. Navegue para `Computer\HKEY_CURRENT_USER\Software\Classes\Directory`
-5. Create a key named `shell` if not existed by right and set the default key-value to `openinxplorer`
-6. Crie uma chave chamada `openinxplorer` em `shell`
-7. Create a key named `command` under `openinxplorer` and set the default key-value to `"C:\Program Files\Xplorer\Xplorer.exe" "%V"`. (You may have to change `C:\Program Files\Xplorer\` to the location you installed Xplorer)
+4. Navigate to `Computer\HKEY_CURRENT_USER\Software\Classes\Directory\shell'`
+5. Update the Default value to `Xplorer`. This will make Xplorer the default file explorer. (To change it back, just update the value to `open`)
 
-![Estrutura do Registro](/img/docs/registry.png)
-
-:::info
-
-To create a new subkey, right-click on the parent key and select `New > Key`. ![Regedit cria uma nova subchave](/img/docs/regedit-create-new-key.png)
-
-Para definir a chave padrão, Dê um clique duplo ou clicando com o botão direito e clique em `Modificar` no `Nome` e insira o valor lá. :::
+![Manual way to make Xplorer as default File Explorer (Windows)](/img/docs/edit_registry.gif)

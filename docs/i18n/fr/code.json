@@ -1,4 +1,58 @@
 {
+  "welcome.title": {
+    "message": "Explorateur de Fichiers."
+  },
+  "welcome.keyword": {
+    "message": "Redéfini."
+  },
+  "welcome.description": {
+    "message": "Logiciel libre et Open Source. Fonctionne partout."
+  },
+  "welcome.download": {
+    "message": "Télécharger maintenant"
+  },
+  "welcome.xploreTheDocs": {
+    "message": "Lire la documentation"
+  },
+  "about.title": {
+    "message": "Explorateur de fichiers multiplateforme."
+  },
+  "about.poweredByTheWebTitle": {
+    "message": "Propulsé par le web."
+  },
+  "about.builtUsing": {
+    "message": "Conçue avec"
+  },
+  "about.written": {
+    "message": ", et écrit en"
+  },
+  "about.typescriptUsage": {
+    "message": "pour le frontend et"
+  },
+  "about.rustUsage": {
+    "message": "pour le backend"
+  },
+  "about.promise": {
+    "message": "Pour le backend, Xplorer vous promet une expérience sans précédent."
+  },
+  "feature.design": {
+    "message": "Conçu hors de la boîte"
+  },
+  "feature.designDescription": {
+    "message": "Dites adieu à l'ancien design par application traditionnelle et dites bonjour à ce design simple mais puissant."
+  },
+  "feature.multipleTabs": {
+    "message": "Prise en charge de plusieurs onglets"
+  },
+  "feature.multipleTabsDescription": {
+    "message": "Xplorer vous aide à organiser vos fichiers plus facilement en prenant en charge plusieurs onglets."
+  },
+  "feature.filePreview": {
+    "message": "Aperçu du fichier"
+  },
+  "feature.filePreviewDescription": {
+    "message": "Xplorer supporte l'aperçu des fichiers, depuis les images, l'aperçu du code, les pdfs, jusqu'aux vidéos"
+  },
   "theme.NotFound.title": {
     "message": "Page non trouvée",
     "description": "The title of the 404 page"
@@ -11,10 +65,6 @@
     "message": "Veuillez contacter le propriétaire du site qui vous a lié à l'URL d'origine et leur faire savoir que leur lien est cassé.",
     "description": "The 2nd paragraph of the 404 page"
   },
-  "theme.BackToTopButton.buttonAriaLabel": {
-    "message": "Retour au début de la page",
-    "description": "The ARIA label for the back to top button"
-  },
   "theme.AnnouncementBar.closeButtonAriaLabel": {
     "message": "Fermer",
     "description": "The ARIA label for close button of announcement bar"
@@ -26,6 +76,10 @@
   "theme.blog.archive.description": {
     "message": "Archive",
     "description": "The page & hero description of the blog archive page"
+  },
+  "theme.BackToTopButton.buttonAriaLabel": {
+    "message": "Retour au début de la page",
+    "description": "The ARIA label for the back to top button"
   },
   "theme.blog.paginator.navAriaLabel": {
     "message": "Navigation dans la page de la liste du blog",
@@ -63,18 +117,6 @@
     "message": "Navigation dans les articles récents du blog",
     "description": "The ARIA label for recent posts in the blog sidebar"
   },
-  "theme.CodeBlock.copyButtonAriaLabel": {
-    "message": "Copier le code dans le presse-papiers",
-    "description": "The ARIA label for copy code blocks button"
-  },
-  "theme.CodeBlock.copied": {
-    "message": "Copié",
-    "description": "The copied button label on code blocks"
-  },
-  "theme.CodeBlock.copy": {
-    "message": "Copier",
-    "description": "The copy button label on code blocks"
-  },
   "theme.blog.post.plurals": {
     "message": "Un article|{count} articles",
     "description": "Pluralized label for \"{count} posts\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
@@ -86,6 +128,18 @@
   "theme.tags.tagsPageLink": {
     "message": "Voir toutes les étiquettes",
     "description": "The label of the link targeting the tag list page"
+  },
+  "theme.CodeBlock.copyButtonAriaLabel": {
+    "message": "Copier le code dans le presse-papiers",
+    "description": "The ARIA label for copy code blocks button"
+  },
+  "theme.CodeBlock.copied": {
+    "message": "Copié",
+    "description": "The copied button label on code blocks"
+  },
+  "theme.CodeBlock.copy": {
+    "message": "Copier",
+    "description": "The copy button label on code blocks"
   },
   "theme.docs.sidebar.expandButtonTitle": {
     "message": "Développer la barre latérale",
@@ -230,59 +284,5 @@
   "theme.tags.tagsPageTitle": {
     "message": "Mots clés",
     "description": "The title of the tag list page"
-  },
-  "welcome.title": {
-    "message": "Explorateur de Fichiers."
-  },
-  "welcome.keyword": {
-    "message": "Redéfini."
-  },
-  "welcome.description": {
-    "message": "Logiciel libre et Open Source. Fonctionne partout."
-  },
-  "welcome.download": {
-    "message": "Télécharger maintenant"
-  },
-  "welcome.xploreTheDocs": {
-    "message": "Lire la documentation"
-  },
-  "about.title": {
-    "message": "Explorateur de fichiers multiplateforme."
-  },
-  "about.poweredByTheWebTitle": {
-    "message": "Propulsé par le web."
-  },
-  "about.builtUsing": {
-    "message": "Conçue avec"
-  },
-  "about.written": {
-    "message": ", et écrit en"
-  },
-  "about.typescriptUsage": {
-    "message": "pour le frontend et"
-  },
-  "about.rustUsage": {
-    "message": "pour le backend"
-  },
-  "about.promise": {
-    "message": "Pour le backend, Xplorer vous promet une expérience sans précédent."
-  },
-  "feature.design": {
-    "message": "Conçu hors de la boîte"
-  },
-  "feature.designDescription": {
-    "message": "Dites adieu à l'ancien design par application traditionnelle et dites bonjour à ce design simple mais puissant."
-  },
-  "feature.multipleTabs": {
-    "message": "Prise en charge de plusieurs onglets"
-  },
-  "feature.multipleTabsDescription": {
-    "message": "Xplorer vous aide à organiser vos fichiers plus facilement en prenant en charge plusieurs onglets."
-  },
-  "feature.filePreview": {
-    "message": "Aperçu du fichier"
-  },
-  "feature.filePreviewDescription": {
-    "message": "Xplorer supporte l'aperçu des fichiers, depuis les images, l'aperçu du code, les pdfs, jusqu'aux vidéos"
   }
 }
