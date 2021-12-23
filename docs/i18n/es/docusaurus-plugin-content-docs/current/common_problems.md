@@ -1,15 +1,15 @@
 - - -
-sidebar_position: 3
+posición lateral: 3
 - - -
 
-# Common Problems
+# Problemas comunes
 
-**NB: For common problems during installation, please open [here](/docs/install/#common-problems)**
+**Nota: Para problemas comunes durante la instalación, por favor abra [Aquí](/docs/install/#common-problems)**
 
 <details>
 <summary>
 
-### Opening folder like `Documents`, `Desktop`, `Downloads` make Xplorer crashes
+### Abrir la carpeta como `Documentos`, `Escritorio`, `Descargas` hace que Xplorer falle
 
 </summary>
 
@@ -22,7 +22,7 @@ Also, please make sure that windows defender isn't blocking Xplorer from accessi
 <details>
 <summary>
 
-### Xplorer is unstable after installing it.
+### Xplorer es inestable después de instalarlo.
 
 </summary>
 

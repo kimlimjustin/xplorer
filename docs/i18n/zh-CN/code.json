@@ -1,4 +1,58 @@
 {
+  "welcome.title": {
+    "message": "File Explorer."
+  },
+  "welcome.keyword": {
+    "message": "Redefined."
+  },
+  "welcome.description": {
+    "message": "Free and Open Source Software. Runs everywhere."
+  },
+  "welcome.download": {
+    "message": "Download now"
+  },
+  "welcome.xploreTheDocs": {
+    "message": "Read documentation"
+  },
+  "about.title": {
+    "message": "Cross-platform File Explorer."
+  },
+  "about.poweredByTheWebTitle": {
+    "message": "Powered by the web."
+  },
+  "about.builtUsing": {
+    "message": "Built using the"
+  },
+  "about.written": {
+    "message": ", and written using"
+  },
+  "about.typescriptUsage": {
+    "message": "for the frontend and"
+  },
+  "about.rustUsage": {
+    "message": "for the backend"
+  },
+  "about.promise": {
+    "message": "Xplorer promises you an unprecedented experience."
+  },
+  "feature.design": {
+    "message": "Designed out of the box"
+  },
+  "feature.designDescription": {
+    "message": "Say goodbye to the old design by traditional app and say hello to this simple yet powerful design."
+  },
+  "feature.multipleTabs": {
+    "message": "Supports Multiple Tabs"
+  },
+  "feature.multipleTabsDescription": {
+    "message": "Xplorer helps you organize you files easier by supporting multiple tabs ."
+  },
+  "feature.filePreview": {
+    "message": "File Preview"
+  },
+  "feature.filePreviewDescription": {
+    "message": "Xplorer supports files preview, from images, code preview, pdfs, to videos. Learn more"
+  },
   "theme.NotFound.title": {
     "message": "页面未能找到",
     "description": "The title of the 404 page"
@@ -11,10 +65,6 @@
     "message": "请联系原始链接来源网站的所有者，并告知他们链接已损坏。",
     "description": "The 2nd paragraph of the 404 page"
   },
-  "theme.BackToTopButton.buttonAriaLabel": {
-    "message": "Scroll back to top",
-    "description": "The ARIA label for the back to top button"
-  },
   "theme.AnnouncementBar.closeButtonAriaLabel": {
     "message": "关闭",
     "description": "The ARIA label for close button of announcement bar"
@@ -26,6 +76,10 @@
   "theme.blog.archive.description": {
     "message": "Archive",
     "description": "The page & hero description of the blog archive page"
+  },
+  "theme.BackToTopButton.buttonAriaLabel": {
+    "message": "Scroll back to top",
+    "description": "The ARIA label for the back to top button"
   },
   "theme.blog.paginator.navAriaLabel": {
     "message": "博客列表页面导航",
@@ -63,18 +117,6 @@
     "message": "博客最近发布的导航",
     "description": "The ARIA label for recent posts in the blog sidebar"
   },
-  "theme.CodeBlock.copyButtonAriaLabel": {
-    "message": "复制代码",
-    "description": "The ARIA label for copy code blocks button"
-  },
-  "theme.CodeBlock.copied": {
-    "message": "已复制",
-    "description": "The copied button label on code blocks"
-  },
-  "theme.CodeBlock.copy": {
-    "message": "复制",
-    "description": "The copy button label on code blocks"
-  },
   "theme.blog.post.plurals": {
     "message": "{count} 篇博文",
     "description": "Pluralized label for \"{count} posts\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
@@ -86,6 +128,18 @@
   "theme.tags.tagsPageLink": {
     "message": "查看所有标签",
     "description": "The label of the link targeting the tag list page"
+  },
+  "theme.CodeBlock.copyButtonAriaLabel": {
+    "message": "复制代码",
+    "description": "The ARIA label for copy code blocks button"
+  },
+  "theme.CodeBlock.copied": {
+    "message": "已复制",
+    "description": "The copied button label on code blocks"
+  },
+  "theme.CodeBlock.copy": {
+    "message": "复制",
+    "description": "The copy button label on code blocks"
   },
   "theme.docs.sidebar.expandButtonTitle": {
     "message": "展开侧边栏",
@@ -230,59 +284,5 @@
   "theme.tags.tagsPageTitle": {
     "message": "标签",
     "description": "The title of the tag list page"
-  },
-  "welcome.title": {
-    "message": "File Explorer."
-  },
-  "welcome.keyword": {
-    "message": "Redefined."
-  },
-  "welcome.description": {
-    "message": "Free and Open Source Software. Runs everywhere."
-  },
-  "welcome.download": {
-    "message": "Download now"
-  },
-  "welcome.xploreTheDocs": {
-    "message": "Read documentation"
-  },
-  "about.title": {
-    "message": "Cross-platform File Explorer."
-  },
-  "about.poweredByTheWebTitle": {
-    "message": "Powered by the web."
-  },
-  "about.builtUsing": {
-    "message": "Built using the"
-  },
-  "about.written": {
-    "message": ", and written using"
-  },
-  "about.typescriptUsage": {
-    "message": "for the frontend and"
-  },
-  "about.rustUsage": {
-    "message": "for the backend"
-  },
-  "about.promise": {
-    "message": "Xplorer promises you an unprecedented experience."
-  },
-  "feature.design": {
-    "message": "Designed out of the box"
-  },
-  "feature.designDescription": {
-    "message": "Say goodbye to the old design by traditional app and say hello to this simple yet powerful design."
-  },
-  "feature.multipleTabs": {
-    "message": "Supports Multiple Tabs"
-  },
-  "feature.multipleTabsDescription": {
-    "message": "Xplorer helps you organize you files easier by supporting multiple tabs ."
-  },
-  "feature.filePreview": {
-    "message": "File Preview"
-  },
-  "feature.filePreviewDescription": {
-    "message": "Xplorer supports files preview, from images, code preview, pdfs, to videos. Learn more"
   }
 }
