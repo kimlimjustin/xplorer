@@ -150,6 +150,20 @@
 				<RegistryValue Root="HKLM" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\xplorer" Value="[!xplorer]" Type="string" />
 				<RegistryValue Root="HKLM" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\xplorer" Name="Path" Value="[INSTALLDIR]" Type="string" />
 			</Component>
+            <!--Register open in Xplorer on right clicking folders-->
+            <Component Id="RightClickFolderAssociation" Guid="b3a67b30-0be3-4a04-8d9c-2b19d223c7ee">
+                <RegistryValue Root="HKCU" Key="SOFTWARE\Classes\*\shell\Xplorer" Value="Open in Xplorer" Type="string" />
+                <RegistryValue Root="HKCU" Key="SOFTWARE\Classes\*\shell\Xplorer" Name="Icon" Value="[INSTALLDIR]xplorer.exe" Type="string" />
+                <RegistryValue Root="HKCU" Key="SOFTWARE\Classes\*\shell\Xplorer\command" Value="&quot;[INSTALLDIR]Xplorer&quot; -r &quot;%V&quot;" Type="string" />
+
+                <RegistryValue Root="HKCU" Key="SOFTWARE\Classes\Directory\shell\Xplorer" Value="Open in Xplorer" Type="string" />
+                <RegistryValue Root="HKCU" Key="SOFTWARE\Classes\Directory\shell\Xplorer" Name="Icon" Value="[INSTALLDIR]xplorer.exe" Type="string" />
+                <RegistryValue Root="HKCU" Key="SOFTWARE\Classes\Directory\shell\Xplorer\command" Value="&quot;[INSTALLDIR]Xplorer&quot; &quot;%V&quot;" Type="string" />
+
+                <RegistryValue Root="HKCU" Key="SOFTWARE\Classes\Directory\background\shell\Xplorer" Value="Open in Xplorer" Type="string" />
+                <RegistryValue Root="HKCU" Key="SOFTWARE\Classes\Directory\background\shell\Xplorer" Name="Icon" Value="[INSTALLDIR]xplorer.exe" Type="string" />
+                <RegistryValue Root="HKCU" Key="SOFTWARE\Classes\Directory\background\shell\Xplorer\command" Value="&quot;[INSTALLDIR]Xplorer&quot; &quot;%V&quot;" Type="string" />
+            </Component>
         </DirectoryRef>
 
         <DirectoryRef Id="ApplicationProgramsFolder">
@@ -215,6 +229,9 @@
             <Feature Id="FileTypeAssociations" Title="File Type Associations" Description="Associates .xtension file types" Level="1" Absent="allow" AllowAdvertise="no">
 				<ComponentRef Id="FileTypeAssociationsReg"/>
 			</Feature>
+            <Feature Id="RightClickFolderAssociation" Title="Right Click Folder Association" Description="Associates right clicking on folders with the open in Xplorer command" Level="1" Absent="allow" AllowAdvertise="no">
+                <ComponentRef Id="RightClickFolderAssociation"/>
+            </Feature>
         </Feature>
 
         <Feature Id="External" AllowAdvertise="no" Absent="disallow">
