@@ -1,10 +1,12 @@
 use crate::files_api;
 use crate::storage;
+use crate::util::read_to_serde_json;
 use crate::ARGS_STRUCT;
 use notify::{raw_watcher, RawEvent, RecursiveMode, Watcher};
 use std::env;
 use std::path::{Path, PathBuf};
 use std::sync::mpsc::channel;
+use url::Url;
 extern crate path_absolutize;
 use path_absolutize::*;
 
@@ -415,4 +417,123 @@ pub fn uninstall_extensions(extension_identifier: String) {
     new_extensions.insert(key.to_string(), serde_json::json!(new_value));
   }
   storage::write_data("extensions".to_string(), serde_json::json!(new_extensions));
+}
+
+#[tokio::main]
+pub async fn init_extension() {
+  // Extensions stuff
+  if ARGS_STRUCT.subcommand_matches("extensions").is_some() {
+    let extension_cmd = ARGS_STRUCT.subcommand_matches("extensions").unwrap();
+    match extension_cmd.subcommand_matches("theme") {
+      Some(theme_command) => {
+        match theme_command.subcommand_matches("build") {
+          Some(theme_build_info) => {
+            let configuration = theme_build_info.value_of("configuration");
+            if configuration.is_some() {
+              let configuration = configuration.unwrap();
+              if configuration == "." {
+                build_themes(
+                  Path::new(&env::current_dir().unwrap().join("package.json")).to_path_buf(),
+                )
+              } else {
+                let configuration = Path::new(configuration);
+                if configuration.exists() && configuration.is_file() {
+                  build_themes(configuration.to_path_buf())
+                } else {
+                  build_themes(configuration.join("package.json").to_path_buf())
+                }
+              }
+            } else {
+              build_themes(
+                Path::new(&env::current_dir().unwrap().join("package.json")).to_path_buf(),
+              );
+            }
+            std::process::exit(0);
+          }
+          None => {}
+        };
+        match theme_command.subcommand_matches("install") {
+          Some(theme_install_info) => {
+            let theme = theme_install_info.value_of("theme");
+            if theme.is_some() {
+              let theme = theme.unwrap();
+              if theme == "." {
+                install_themes(read_to_serde_json(
+                  Path::new(&env::current_dir().unwrap().join("dist/themes.xtension"))
+                    .to_path_buf(),
+                ))
+              } else {
+                let theme_path = Path::new(theme.clone());
+                if theme_path.exists() && theme_path.is_file() {
+                  install_themes(read_to_serde_json(theme_path.to_path_buf()))
+                } else if Url::parse(theme).is_ok() {
+                  let res = reqwest::get(theme).await.unwrap();
+                  let body = res.text().await.unwrap();
+                  let body = serde_json::from_str::<serde_json::Value>(body.as_str()).unwrap();
+                  install_themes(body)
+                } else {
+                  install_themes(read_to_serde_json(
+                    theme_path.join("dist/themes.xtension").to_path_buf(),
+                  ))
+                }
+              }
+            } else {
+              install_themes(read_to_serde_json(
+                Path::new(&env::current_dir().unwrap().join("dist/themes.xtension")).to_path_buf(),
+              ));
+            }
+            std::process::exit(0);
+          }
+          None => {}
+        }
+      }
+      None => {}
+    }
+    match extension_cmd.subcommand_matches("install") {
+      Some(extension_install_info) => {
+        let extension = extension_install_info.value_of("extension");
+        if extension.is_some() {
+          let extension = extension.unwrap();
+          let extension_path = Path::new(extension);
+          if extension_path.exists() && extension_path.is_file() {
+            install_extensions(read_to_serde_json(extension_path.to_path_buf()))
+          } else if Url::parse(extension).is_ok() {
+            let res = reqwest::get(extension).await.unwrap();
+            let body = res.text().await.unwrap();
+            let body = serde_json::from_str::<serde_json::Value>(body.as_str()).unwrap();
+            install_themes(body)
+          } else {
+            panic!("Extension file not found");
+          }
+        } else {
+          panic!("No extension specified");
+        }
+        std::process::exit(0);
+      }
+      None => {}
+    }
+    match extension_cmd.subcommand_matches("uninstall") {
+      Some(extension_uninstall_info) => {
+        let extension = extension_uninstall_info.value_of("extension");
+        if extension.is_some() {
+          let extension = extension.unwrap();
+          uninstall_extensions(extension.to_string());
+        } else {
+          panic!("No extension specified");
+        }
+        std::process::exit(0);
+      }
+      None => {}
+    }
+  }
+  let xtension_arg = ARGS_STRUCT.value_of("xtension");
+  if xtension_arg.is_some() {
+    let xtension_arg = xtension_arg.unwrap();
+    let xtension_arg = Path::new(xtension_arg);
+    if xtension_arg.exists() && xtension_arg.is_file() {
+      install_extensions(read_to_serde_json(xtension_arg.to_path_buf()));
+    } else {
+      panic!("Extension file not found");
+    }
+  };
 }
