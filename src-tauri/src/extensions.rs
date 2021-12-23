@@ -419,7 +419,6 @@ pub fn uninstall_extensions(extension_identifier: String) {
   storage::write_data("extensions".to_string(), serde_json::json!(new_extensions));
 }
 
-#[tokio::main]
 pub async fn init_extension() {
   // Extensions stuff
   if ARGS_STRUCT.subcommand_matches("extensions").is_some() {
