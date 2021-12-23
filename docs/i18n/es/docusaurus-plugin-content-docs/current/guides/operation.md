@@ -1,46 +1,46 @@
-# Операции
+# Operaciones
 
-## Копировать файлы
+## Copiar archivos
 
-You can copy files by right-clicking it and click the `Copy` option or select the file then press `Ctrl + C` as a shortcut and paste it by clicking the `Paste` option or press `Ctrl + V` on the destination folder.
-
-:::info
-
-For current implementation, Xplorer write down what to copy locally (not copying to clipboard).
-
-TODO: implement copy to clipboard
-
-:::
-
-## Скопировать путь
-
-You can copy a file/folder location path into your clipboard by right-clicking it and click `Copy Location Path` or select the file then press `Alt + Shift + C` as a shortcut.
-
-## Вырезать файлы
-
-You can cut files by right-clicking it and click the `Cut` option or select the file then press `Ctrl + X` as a shortcut and paste it by clicking the `Paste` option or press `Ctrl + V` on the destination folder.
+Puede copiar archivos haciendo clic con el botón derecho del ratón y después hacer clic en la opción `Copiar` o seleccionar el archivo y luego presione `Ctrl + C` como un acceso directo y pegarlo haciendo clic en la opción `Pegar` o presione `Ctrl + V` en la carpeta de destino.
 
 :::info
 
-For current implementation, Xplorer write down what to cut locally (not copying to clipboard).
+Para la implementación actual, Xplorer escribe lo qué se debe copiar localmente (no copiar al portapapeles).
+
+TODO: implementar copia al portapapeles
 
 :::
 
-## Удаление файлов
+## Copiar ruta
 
-You can cut files by right-clicking it and click the `Delete` option or select the file then press `Del` as a shortcut.
+Puede copiar la ruta de un archivo/carpeta en el portapapeles haciendo clic derecho en él y haciendo clic en `Copiar ruta de ubicación` o seleccionar el archivo y luego presione `Alt + Mayús + C` como acceso directo.
 
-### Trashed files
+## Cortar archivos
 
-The trashed file can be accessed at `xplorer://Trash` or your system trash folder. :::danger Open Issue
+Puede cortar archivos haciendo clic con el botón derecho del ratón y después hacer clic en la opción `Cortar` o seleccionar el archivo y luego presione `Ctrl + X` como un acceso directo y pegarlo haciendo clic en la opción `Pegar` o presione `Ctrl + V` en la carpeta de destino.
 
-Please note that Trash folder cannot be accessed on macos via Xplorer since the [trash crate](https://github.com/Byron/trash-rs) Xplorer relies to does not support it (see [this issue](https://github.com/Byron/trash-rs/issues/8) for more details).
+:::info
 
-Any contributions to either the trash crate or Xplorer itself for this topic are welcome. :::
+Para la implementación actual, Xplorer escribe lo qué se debe cortar localmente (no copiar al portapapeles).
 
-### Restore files
+:::
 
-You can restore files by opening the `xplorer://Trash` and right-clicking it and click the `Restore` option
+## Borrar archivos
+
+Puede eliminar archivos haciendo clic derecho en él y hacer clic en la opción `Eliminar` o seleccionar el archivo y luego presione `Del` como acceso directo.
+
+### Archivos eliminados
+
+Los archivos eliminados se pueden ver en `xplorer://Trash` o en tu carpeta de papelera. :::danger Tarea abierta
+
+Tenga en cuenta que la no se puede acceder a la papelera desde Xplorer desde la [papelera](https://github.com/Byron/trash-rs) Xplorer confía en que no lo soporta (Revisa [esta incidencia](https://github.com/Byron/trash-rs/issues/8) para más detalles).
+
+Cualquier contribución a la papelera o al propio Xplorer para este tema es bienvenida. :::
+
+### Restaurar archivos
+
+Puede restaurar archivos abriendo `xplorer://trash` y haciendo clic derecho en el archivo, después haga clic en la opción `Restaurar`
 
 ### Permanently delete
 
@@ -53,7 +53,7 @@ You can permanently delete a file by:
 1. Delete it into `Trash` and right-clicking it and click the `Permanent Delete` option
 2. Select the file and press `Shift + Del` as a shortcut
 
-## Создать
+## New
 
 :::caution Be careful with new file/folder name Xplorer treats `/` on file name/folder as subdir/subfile :::
 
@@ -65,7 +65,7 @@ You can create a new file by right-clicking the workspace, expand the `New` opti
 
 You can create a new folder by right-clicking the workspace, expand the `New` option and select the `folder` option, or press `Shift + N` as a shortcut.
 
-## Открыть файл
+## Open file
 
 You can open a file on the default application by double-clicking it or select the file then press `Enter` as a shortcut.
 
@@ -77,11 +77,11 @@ This is a built-in function by Xplorer. You can open a folder on Terminal by rig
 
 This is a built-in function by Xplorer. You can open a file/folder on VSCode by right-clicking it and click the `Open in vscode` option or select the file then press `Ctrl + Enter` as a shortcut. You won't able to do this if you don't have VSCode installed.
 
-## Закрепить в боковой панели
+## Pin to Sidebar
 
 You can pin a file/folder into the sidebar by right-clicking it and click `Pin to Sidebar` or select the file then press `Alt + P` as a shortcut.
 
-## Предпросмотр файла
+## Preview file
 
 You can preview a file directly from Xplorer by right-clicking it and click the `Preview` option or select the file then press `Ctrl+O`.
 
@@ -105,17 +105,17 @@ Files available to preview for now:
 
 :::
 
-## Свойства
+## Properties
 
 You can view properties of a file/folder by right-clicking it and click `Properties` or select the file then press `Ctrl + P` as a shortcut. Available properties for now (will be improved at the next version):
 
--   Размер
--   Путь к файлу
--   Дата создания
+-   Size
+-   File Path
+-   Created At
 -   Accessed At
--   Дата изменения
--   Скрыто или нет
+-   Modified At
+-   Is Hidden
 
-## Переименовать файл/папку
+## Rename file/folder
 
 You can rename a file/folder by right-clicking it and click the `Rename` option or select the file then press `F2` as a shortcut. It will prompt a dialog, enter the new name and the file/folder will be renamed.
