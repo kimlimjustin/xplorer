@@ -19,6 +19,7 @@ extern crate reqwest;
 use std::os::windows::process::CommandExt;
 use std::process::Command;
 use tauri::Manager;
+#[cfg(not(target_os = "linux"))]
 use tauri_plugin_vibrancy::Vibrancy;
 
 lazy_static! {
@@ -155,6 +156,11 @@ fn change_transparent_effect(effect: String, window: tauri::Window) {
     use tauri_plugin_vibrancy::MacOSVibrancy;
     window.apply_vibrancy(MacOSVibrancy::AppearanceBased);
   }
+}
+#[cfg(target_os = "linux")]
+#[tauri::command]
+fn change_transparent_effect(_effect: String, _window: tauri::Window) {
+  return;
 }
 
 #[tokio::main]

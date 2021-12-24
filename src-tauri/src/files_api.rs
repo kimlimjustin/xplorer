@@ -114,7 +114,7 @@ pub fn check_is_symlink(file_path: String) -> bool {
 
 /// Check if a file/dir is a symlink
 #[cfg(unix)]
-pub fn check_is_symlink(file_path: String) -> bool {
+pub fn check_is_symlink(_file_path: String) -> bool {
   false
 }
 
