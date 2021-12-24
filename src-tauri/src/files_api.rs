@@ -100,6 +100,24 @@ pub fn get_basename(file_path: String) -> String {
   }
 }
 
+/// Check if a file/dir is a symlink
+#[cfg(windows)]
+pub fn check_is_symlink(file_path: String) -> bool {
+  let symlink_metadata = fs::symlink_metadata(file_path);
+  let symlink_metadata = match symlink_metadata {
+    Ok(result) => result,
+    Err(_) => return true,
+  };
+  let symlink_attributes = symlink_metadata.file_attributes();
+  symlink_attributes == 1040
+}
+
+/// Check if a file/dir is a symlink
+#[cfg(unix)]
+pub fn check_is_symlink(file_path: String) -> bool {
+  false
+}
+
 /// Check if a file is hidden
 ///
 /// Checking file_attributes metadata of a file and check if it is hidden
@@ -143,6 +161,7 @@ pub async fn get_file_properties(file_path: String) -> Result<FileMetaData, Stri
     Err(e) => return Err(e.to_string()),
   };
   let is_dir = metadata.is_dir();
+  let is_symlink = check_is_symlink(file_path.clone());
   let is_file = metadata.is_file();
   let size = metadata.len();
   let readonly = metadata.permissions().readonly();
@@ -162,9 +181,18 @@ pub async fn get_file_properties(file_path: String) -> Result<FileMetaData, Stri
     Err(e) => return Err(e.to_string()),
   };
   let basename = get_basename(file_path.clone());
-  let is_hidden = check_is_hidden(file_path.clone());
-  let is_system = check_is_system_file(file_path.clone());
-  let file_type = file_lib::get_type(basename.clone(), is_dir).await;
+  let is_hidden = match is_symlink {
+    true => false,
+    false => check_is_hidden(file_path.clone()),
+  };
+  let is_system = match is_symlink {
+    true => false,
+    false => check_is_system_file(file_path.clone()),
+  };
+  let file_type = match is_symlink {
+    true => "System link".to_string(),
+    false => file_lib::get_type(basename.clone(), is_dir).await,
+  };
   Ok(FileMetaData {
     is_system,
     is_hidden,
