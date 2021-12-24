@@ -28,7 +28,7 @@ const Appearance = async (): Promise<void> => {
 	const fontFamily = _appearance?.fontFamily ?? getElementStyle('fontFamily');
 	const fontSize = parseInt(_appearance?.fontSize ?? getElementStyle('fontSize'));
 	const windowTransparency = parseInt(_appearance?.windowTransparency ?? 80);
-	const transparentEffect = _appearance?.transparentEffect ?? 'blur';
+	const transparentEffect = _appearance?.transparentEffect ?? 'none';
 	const transparentSidebar = _appearance?.transparentSidebar ?? true;
 	const transparentTopbar = _appearance?.transparentTopbar ?? false;
 	const transparentWorkspace = _appearance?.transparentWorkspace ?? false;
@@ -112,8 +112,9 @@ const Appearance = async (): Promise<void> => {
 	</div>
 	<h3 class="settings-title">${transparentEffect_i18n}</h3>
 	<select name="transparent-effect">
-		<option value="blur" ${transparentEffect === 'blur' ? 'selected' : ''}>Blur</option>
-		<option value="acrylic" ${transparentEffect === 'acrylic' ? 'selected' : ''}>Acrylic</option>
+		<option value="blur" ${transparentEffect === 'blur' ? 'selected' : ''} ${platform !== 'win32' ? 'disabled' : ''}>Blur</option>
+		<option value="acrylic" ${transparentEffect === 'acrylic' ? 'selected' : ''} ${platform !== 'win32' ? 'disabled' : ''}>Acrylic</option>
+		<option value="vibrancy" ${transparentEffect === 'vibrancy' ? 'selected' : ''} ${platform !== 'darwin' ? 'disabled' : ''}>Vibrancy</option>
 		<option value="none" ${transparentEffect === 'none' ? 'selected' : ''}>None</option>
 	</select>
 	<h3 class="settings-title">${frameStyle_i18n}</h3>

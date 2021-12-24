@@ -138,12 +138,22 @@ fn get_available_fonts() -> Result<Vec<String>, String> {
   let fonts = system_fonts::query_all();
   Ok(fonts)
 }
+#[cfg(target_os = "windows")]
 #[tauri::command]
 fn change_transparent_effect(effect: String, window: tauri::Window) {
   if effect == "blur".to_string() {
-    window.set_blur();
+    window.apply_blur();
   } else if effect == "acrylic".to_string() {
-    window.set_acrylic();
+    window.apply_acrylic();
+  }
+}
+
+#[cfg(target_os = "macos")]
+#[tauri::command]
+fn change_transparent_effect(effect: String, window: tauri::Window) {
+  if effect == "vibrancy".to_string() {
+    use tauri_plugin_vibrancy::MacOSVibrancy;
+    window.apply_vibrancy(MacOSVibrancy::AppearanceBased);
   }
 }
 
@@ -186,16 +196,12 @@ async fn main() {
     ])
     .setup(|app| {
       let window = app.get_window("main").unwrap();
-      let preference = storage::read_data("preference".to_string()).unwrap();
-      let transparent_effect = match preference.status {
-        true => preference.data["transparentEffect"].to_string(),
-        false => "blur".to_string(),
+      let appearance = storage::read_data("appearance".to_string()).unwrap();
+      let transparent_effect = match appearance.status {
+        true => appearance.data["transparentEffect"].to_string(),
+        false => "none".to_string(),
       };
-      if transparent_effect == "blur".to_string() || transparent_effect == "null".to_string() {
-        window.set_blur();
-      } else if transparent_effect == "acrylic".to_string() {
-        window.set_acrylic();
-      }
+      change_transparent_effect(transparent_effect, window);
       Ok(())
     })
     .run(tauri::generate_context!())
