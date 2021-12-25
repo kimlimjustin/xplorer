@@ -34,7 +34,7 @@ module.exports = {
 			title: 'Xplorer',
 			logo: {
 				alt: 'Xplorer Logo',
-				src: 'img/icon.png',
+				src: 'img/icon.webp',
 			},
 			items: [
 				{
@@ -142,7 +142,7 @@ module.exports = {
 					{
 						tagName: 'link',
 						rel: 'icon',
-						href: '/img/icon.png',
+						href: '/img/icon.webp',
 					},
 					{
 						tagName: 'link',

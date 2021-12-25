@@ -3,32 +3,32 @@ import React, { useEffect, useState } from 'react';
 const slides = [
 	{
 		name: 'Windows (dark)',
-		src: '/img/Xplorer_dark.png',
+		src: '/img/Xplorer_dark.webp',
 		alt: 'Xplorer dark on Windows',
 	},
 	{
 		name: 'Garuda Linux (light+)',
-		src: '/img/Xplorer_linux.png',
+		src: '/img/Xplorer_linux.webp',
 		alt: 'Xplorer light+ on Linux',
 	},
 	{
 		name: 'macOS (dark)',
-		src: '/img/Xplorer_mac_dark.png',
+		src: '/img/Xplorer_mac_dark.webp',
 		alt: 'Xplorer dark on macOS',
 	},
 	{
 		name: 'Windows (light)',
-		src: '/img/Xplorer_light.png',
+		src: '/img/Xplorer_light.webp',
 		alt: 'Xplorer light on Windows',
 	},
 	{
 		name: 'Windows (dark+)',
-		src: '/img/Xplorer_dark+.png',
+		src: '/img/Xplorer_dark+.webp',
 		alt: 'Xplorer dark+ on Windows',
 	},
 	{
 		name: 'macOS (light+)',
-		src: '/img/Xplorer_mac_light.png',
+		src: '/img/Xplorer_mac_light.webp',
 		alt: 'Xplorer light+ on macOS',
 	},
 ];

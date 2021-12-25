@@ -53,69 +53,81 @@ Vous pouvez supprimer définitivement un fichier par :
 1. Supprimez-le dans la `Corbeille` et faites un clic droit dessus et cliquez sur l'option `Supprimer définitivement`
 2. Sélectionnez le fichier et appuyez sur `Shift + Del` comme raccourci
 
-## Nouveau
+## Search files
 
-:::caution Soyez prudent avec le nouveau nom de fichier/dossier Xplorer traite `/` sur le nom du fichier/dossier comme sous-fichier/sous-fichier :::
+Xplorer uses [`glob patterns`](https://en.wikipedia.org/wiki/Glob_(programming)) to search matched files. [Learn about Glob pattern syntax](https://en.wikipedia.org/wiki/Glob_(programming)). To get started, press `Ctrl + F` and type inside the search box.
 
-### Nouveau fichier
+### Instant search
 
-Vous pouvez créer un nouveau fichier en faisant un clic droit sur l'espace de travail développez l'option `Nouveau` et sélectionnez l'option `Fichier` ou appuyez sur `Alt + N` comme raccourci.
+You can instant search a file/dir by typing the starting characters of the file/dir name and Xplorer will select the file for you. Some rules of instant search:
 
-### Nouveau dossier
+-   Any english diacritic is removed
+-   The interval for instant search is 750ms. After 750ms, the search query will be reseted.
+-   Typing the same character will make Xplorer to find the next matches.
 
-Vous pouvez créer un nouveau fichier en faisant un clic droit sur l'espace de travail développez l'option `Nouveau` et sélectionnez l'option `Dossier` ou appuyez sur `Shift + N` comme raccourci.
+## New
 
-## Ouvrir un fichier
+:::caution Be careful with new file/folder name Xplorer treats `/` on file name/folder as subdir/subfile :::
 
-Vous pouvez ouvrir un fichier sur l'application par défaut en double-cliquant dessus ou sélectionner le fichier, puis appuyer sur `Entrer` comme raccourci clavier.
+### New file
 
-### Ouvrir dans le Terminal
+You can create a new file by right-clicking the workspace, expand the `New` option and select the `file` option, or press `Alt + N` as a shortcut.
 
-C'est une fonction intégrée par Xplorer. Vous pouvez ouvrir un dossier sur Terminal en cliquant avec le bouton droit de la souris et cliquez sur l'option `Ouvrir dans le terminal` ou sélectionnez le dossier puis appuyez sur `Alt + T` comme raccourci.
+### New folder
 
-### Ouvrir dans VSCode
+You can create a new folder by right-clicking the workspace, expand the `New` option and select the `folder` option, or press `Shift + N` as a shortcut.
 
-Ceci est une fonction intégrée par Xplorer. Vous pouvez ouvrir un fichier/dossier sur VSCode en faisant un clic droit dessus et cliquez sur l'option `Ouvrir dans vscode` ou sélectionnez le fichier puis appuyez sur `Ctrl + Entrée` comme raccourci. Vous ne serez pas en mesure de le faire si VSCode n'est pas installé.
+## Open file
 
-## Épingler à la barre latérale
+You can open a file on the default application by double-clicking it or select the file then press `Enter` as a shortcut.
 
-Vous pouvez épingler un fichier/dossier dans la barre latérale en faisant un clic droit dessus et cliquez sur `Épingler dans la barre latérale` ou sélectionnez le fichier puis appuyez sur `Alt + P` comme raccourci.
+### Open in Terminal
 
-## Prévisualiser le fichier
+This is a built-in function by Xplorer. You can open a folder on Terminal by right-clicking it and click the `Open in terminal` option or select the folder then press `Alt + T` as a shortcut.
 
-Vous pouvez prévisualiser un fichier directement depuis Xplorer en faisant un clic droit dessus et en cliquant sur l'option `Aperçu` ou sélectionnez le fichier puis appuyez sur `Ctrl+O`.
+### Open in VSCode
 
-![Aperçu de la démo](/img/docs/preview.png)
+This is a built-in function by Xplorer. You can open a file/folder on VSCode by right-clicking it and click the `Open in vscode` option or select the file then press `Ctrl + Enter` as a shortcut. You won't able to do this if you don't have VSCode installed.
+
+## Pin to Sidebar
+
+You can pin a file/folder into the sidebar by right-clicking it and click `Pin to Sidebar` or select the file then press `Alt + P` as a shortcut.
+
+## Preview file
+
+You can preview a file directly from Xplorer by right-clicking it and click the `Preview` option or select the file then press `Ctrl+O`.
+
+![Preview Demo](/img/docs/preview.webp)
 
 :::info
 
 <details>
 <summary>
-Fichiers disponibles à prévisualiser:
+Files available to preview for now:
 </summary>
 
-* Fichiers Markdown
-* Fichier image
-* Fichiers texte
-* Fichiers vidéo
-* PDF
-* Presque tous les langages de programmation avec coloration syntaxique
+* Markdown files
+* Image files
+* Text files
+* Video files
+* Pdfs
+* Almost all programming language with syntax highlighting
 
 </details>
 
 :::
 
-## Proprietés
+## Properties
 
-Vous pouvez afficher les propriétés d'un fichier/dossier en faisant un clic droit dessus et cliquez sur `Propriétés` ou sélectionnez le fichier puis appuyez sur `Ctrl + P` comme raccourci. Propriétés disponibles pour l'instant (sera amélioré à la version suivante):
+You can view properties of a file/folder by right-clicking it and click `Properties` or select the file then press `Ctrl + P` as a shortcut. Available properties for now (will be improved at the next version):
 
--   Taille
--   Emplacement du fichier
--   Créé à
--   Accès à
--   Modifiée à
--   Est masqué
+-   Size
+-   File Path
+-   Created At
+-   Accessed At
+-   Modified At
+-   Is Hidden
 
-## renommer le fichier/dossier
+## Rename file/folder
 
-Vous pouvez renommer un fichier/dossier en cliquant avec le bouton droit de la souris et cliquez sur l'option `Renommer` ou sélectionnez le fichier puis appuyez sur `F2` comme raccourci. Il vous demandera une boîte de dialogue, entrez le nouveau nom et le fichier/dossier sera renommé.
+You can rename a file/folder by right-clicking it and click the `Rename` option or select the file then press `F2` as a shortcut. It will prompt a dialog, enter the new name and the file/folder will be renamed.

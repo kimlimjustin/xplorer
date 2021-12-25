@@ -1,37 +1,38 @@
 # Raccourcis
 
-| Clé                 | Raccourci                              |
-| ------------------- | -------------------------------------- |
-| `Ctrl + A`          | Tout Sélectionner                      |
-| `Ctrl + C`          | Copier                                 |
-| `Ctrl + H`          | Activer/désactiver les fichiers cachés |
-| `Ctrl + N`          | Nouveau raccourci de fenêtre           |
-| `Ctrl + O`          | Ouvrir le fichier en aperçu            |
-| `Ctrl + P`          | Propriétés des fichiers/dossiers       |
-| `Ctrl + R`          | Redémarrer                             |
-| `Ctrl + T`          | Nouvel onglet                          |
-| `Ctrl + V`          | Coller                                 |
-| `Ctrl + X`          | Couper                                 |
-| `Ctrl + W`          | Quitter l'onglet                       |
-| `Ctrl + Y`          | Refaire                                |
-| `Ctrl + Z`          | Défaire                                |
-| `Ctrl + Shift + Z`  | Refaire                                |
-| `Alt + Left Arrow`  | Précédent                              |
-| `Alt + Right Arrow` | Suivante                               |
-| `Alt + Up Arrow`    | Va au dossier parent                   |
-| `Alt + N`           | Nouveau Fichier                        |
-| `Alt + T`           | Ouvrir dans le Terminal                |
-| `Alt + P`           | Épingler à la barre latérale           |
-| `Alt + Shift + C`   | Copier le chemin de l'emplacement      |
-| `F2`                | Renommer                               |
-| `F5`                | Actualiser                             |
-| `F10`               | Minimiser                              |
-| `F11`               | Maximiser                              |
-| `Shift + N`         | Nouveaux dossiers                      |
-| `Shift + Del`       | Supprimer définitivement               |
-| `Shift + Enter`     | Ouvrir dans Vscode                     |
-| `Enter`             | Ouvrir                                 |
-| `Del`               | Supprimer le fichier                   |
+| Clé                 | Raccourci                |
+| ------------------- | ------------------------ |
+| `Ctrl + A`          | Tout Sélectionner        |
+| `Ctrl + C`          | Copier                   |
+| `Ctrl + F`          | Search                   |
+| `Ctrl + H`          | Toggle Hidden Files      |
+| `Ctrl + N`          | New window shortcut      |
+| `Ctrl + O`          | Open file in preview     |
+| `Ctrl + P`          | Files/Folders Properties |
+| `Ctrl + R`          | Reload                   |
+| `Ctrl + T`          | New Tab                  |
+| `Ctrl + V`          | Paste                    |
+| `Ctrl + X`          | Cut                      |
+| `Ctrl + W`          | Exit Tab                 |
+| `Ctrl + Y`          | Redo                     |
+| `Ctrl + Z`          | Undo                     |
+| `Ctrl + Shift + Z`  | Redo                     |
+| `Alt + Left Arrow`  | Go Back                  |
+| `Alt + Right Arrow` | Go Forward               |
+| `Alt + Up Arrow`    | Go to parent directory   |
+| `Alt + N`           | New File                 |
+| `Alt + T`           | Open in terminal         |
+| `Alt + P`           | Pin to sidebar           |
+| `Alt + Shift + C`   | Copy location path       |
+| `F2`                | Rename                   |
+| `F5`                | Refresh                  |
+| `F10`               | Minimize                 |
+| `F11`               | Maximize                 |
+| `Shift + N`         | New Folders              |
+| `Shift + Del`       | Permanent Delete         |
+| `Shift + Enter`     | Open in vscode           |
+| `Enter`             | Open                     |
+| `Del`               | Delete file              |
 
 :::note Différence entre `Redémarrer` et `Actualiser` `Redémarrer` rafraîchit le processus interne tandis que `Actualiser` rafraîchit l'ensemble du processus.
 
