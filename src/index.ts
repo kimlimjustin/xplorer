@@ -72,6 +72,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 	// Listen to update theme event
 	listenUpdateTheme(async () => {
 		await Storage.get('theme', true);
+		await Storage.get('extensions', true);
 		updateTheme('*');
 	});
 });
