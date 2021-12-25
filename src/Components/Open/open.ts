@@ -187,9 +187,6 @@ const OpenHandler = async (e: MouseEvent): Promise<void> => {
 	if (element.dataset.isdir !== 'true') {
 		OpenLog(filePath);
 		await new FileAPI(filePath).openFile();
-		if (filePath.endsWith('.xtension')) {
-			await Storage.get('theme', true);
-		}
 	} else {
 		OpenDir(filePath);
 	}

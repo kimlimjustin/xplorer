@@ -345,9 +345,10 @@ pub async fn get_files_in_directory(dir: &Path) -> Result<Vec<String>, String> {
 #[tauri::command]
 pub fn open_file(file_path: String, window: tauri::Window) -> bool {
   let extension = file_path.split(".").last().unwrap();
+  let window_clone = window.clone();
   if extension == "xtension" {
     ask(
-      Some(&window),
+      Some(&window_clone),
       "Special file type",
       "This is Xplorer's extension file, do you want to install it?",
       move |answer| {
@@ -361,6 +362,10 @@ pub fn open_file(file_path: String, window: tauri::Window) -> bool {
             }
           };
           extensions::install_extensions(file);
+          println!("Extension installed");
+          window
+            .emit("update_theme", serde_json::Value::Null)
+            .unwrap();
         }
       },
     );
