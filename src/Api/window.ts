@@ -23,6 +23,9 @@ const changeWindowTitle = (title: string): void => {
 const setDecorations = (decorations: boolean): void => {
 	window.getCurrent().setDecorations(decorations);
 };
+const listenUpdateTheme = (cb: () => void): void => {
+	event.listen('update_theme', () => cb());
+};
 
 export default windowName;
-export { listenWindowClose, createNewWindow, changeWindowTitle, setDecorations };
+export { listenWindowClose, createNewWindow, changeWindowTitle, setDecorations, listenUpdateTheme };
