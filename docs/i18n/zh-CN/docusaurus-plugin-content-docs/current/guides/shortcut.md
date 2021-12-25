@@ -4,6 +4,7 @@
 | ------------------- | ------------------------ |
 | `Ctrl + A`          | Select All               |
 | `Ctrl + C`          | Copy                     |
+| `Ctrl + F`          | Search                   |
 | `Ctrl + H`          | Toggle Hidden Files      |
 | `Ctrl + N`          | New window shortcut      |
 | `Ctrl + O`          | Open file in preview     |

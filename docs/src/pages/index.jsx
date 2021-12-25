@@ -57,13 +57,13 @@ export default function Home() {
 						<a href="https://www.rust-lang.org/" target="_blank">
 							Rust
 						</a>{' '}
-						<Translate id="about.rustUsage">for the backend</Translate>,
+						<Translate id="about.rustUsage">for the backend</Translate>,{' '}
 						<Translate id="about.promise">Xplorer promises you an unprecedented experience.</Translate>
 					</span>
 
 					<div className="row padding-top--xl features--list">
 						<div className="col col--4 padding-left--m padding-right--m">
-							<img src="/img/home/designed-out-of-the-box.png" alt="Xplorer designed out of the box" />
+							<img src="/img/home/designed-out-of-the-box.webp" alt="Xplorer designed out of the box" />
 							<h2>
 								<Translate id="feature.design"> Designed out of the box</Translate>
 							</h2>
@@ -75,7 +75,7 @@ export default function Home() {
 						</div>
 
 						<div className="col col--4 padding-left--m padding-right--m">
-							<img src="/img/home/support-tabs.png" alt="Support tabs" />
+							<img src="/img/home/support-tabs.webp" alt="Support tabs" />
 							<h2>
 								<Translate id="feature.multipleTabs">Supports Multiple Tabs</Translate>
 							</h2>
@@ -87,7 +87,7 @@ export default function Home() {
 						</div>
 
 						<div className="col col--4 padding-left--m padding-right--m">
-							<img src="/img/home/preview-files.png" alt="" />
+							<img src="/img/home/preview-files.webp" alt="" />
 							<h2>
 								<Translate id="feature.filePreview"> File Preview</Translate>
 							</h2>
