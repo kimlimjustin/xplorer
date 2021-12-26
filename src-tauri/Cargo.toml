@@ -28,12 +28,13 @@ lazy_static = "1.4.0"
 font-loader = "0.11.0"
 clap = "3.0.0-beta.5"
 glob = "0.3.0"
-tauri-plugin-vibrancy = { git = "https://github.com/amrbashir/tauri-plugin-vibrancy" }
 parselnk = "0.1.0"
 url = "2.2.2"
 reqwest = "0.11.8"
 tokio = {version="1.14", features = ["full"] }
 
+[target."cfg(any(target_os = \"windows\", target_os = \"macos\"))".dependencies]
+tauri-plugin-vibrancy = { git = "https://github.com/amrbashir/tauri-plugin-vibrancy", features = ["tauri-impl"] }
 
 [features]
 default = [ "custom-protocol" ]
