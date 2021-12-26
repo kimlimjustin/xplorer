@@ -7,9 +7,9 @@ const slides = [
 		alt: 'Xplorer dark on Windows',
 	},
 	{
-		name: 'Garuda Linux (light+)',
+		name: 'Garuda Linux (Shades of Purple)',
 		src: '/img/Xplorer_linux.webp',
-		alt: 'Xplorer light+ on Linux',
+		alt: 'Xplorer shades of purple on Linux',
 	},
 	{
 		name: 'macOS (dark)',
@@ -60,7 +60,7 @@ export default function Slideshow() {
 	}, []);
 
 	return (
-		<div>
+		<>
 			<div className="slideshow-container">
 				{slides.map((e, i) => (
 					<div key={i} className={`slide${index === i ? ' active' : ''}`}>
@@ -76,9 +76,9 @@ export default function Slideshow() {
 
 			<div className="slide-dots">
 				{slides.map((e, i) => (
-					<button type="button" onClick={() => handleSlideSelect(i)} key={e.name} className={`slide-dot${i === index ? ' active' : ''}`} />
+					<span onClick={() => handleSlideSelect(i)} key={e.name} className={`slide-dot${i === index ? ' active' : ''}`} />
 				))}
 			</div>
-		</div>
+		</>
 	);
 }
