@@ -118,8 +118,8 @@ version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "badcf670157c84bb8b1cf6b5f70b650fed78da2033c9eed84c4e49b11cbe83ea"
 dependencies = [
- "glib-sys 0.14.0",
- "gobject-sys 0.14.0",
+ "glib-sys",
+ "gobject-sys",
  "libc",
  "system-deps 3.2.0",
 ]
@@ -285,7 +285,7 @@ version = "0.14.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b448b876970834fda82ba3aeaccadbd760206b75388fc5c1b02f1e343b697570"
 dependencies = [
- "glib-sys 0.14.0",
+ "glib-sys",
  "libc",
  "system-deps 3.2.0",
 ]
@@ -1119,9 +1119,9 @@ version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f097c0704201fbc8f69c1762dc58c6947c8bb188b8ed0bc7e65259f1894fe590"
 dependencies = [
- "gio-sys 0.14.0",
- "glib-sys 0.14.0",
- "gobject-sys 0.14.0",
+ "gio-sys",
+ "glib-sys",
+ "gobject-sys",
  "libc",
  "system-deps 3.2.0",
 ]
@@ -1134,9 +1134,9 @@ checksum = "0e091b3d3d6696949ac3b3fb3c62090e5bfd7bd6850bef5c3c5ea701de1b1f1e"
 dependencies = [
  "cairo-sys-rs",
  "gdk-pixbuf-sys",
- "gio-sys 0.14.0",
- "glib-sys 0.14.0",
- "gobject-sys 0.14.0",
+ "gio-sys",
+ "glib-sys",
+ "gobject-sys",
  "libc",
  "pango-sys",
  "pkg-config",
@@ -1198,7 +1198,7 @@ dependencies = [
  "futures-channel",
  "futures-core",
  "futures-io",
- "gio-sys 0.14.0",
+ "gio-sys",
  "glib",
  "libc",
  "once_cell",
@@ -1207,25 +1207,12 @@ dependencies = [
 
 [[package]]
 name = "gio-sys"
-version = "0.10.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5e24fb752f8f5d2cf6bbc2c606fd2bc989c81c5e2fe321ab974d54f8b6344eac"
-dependencies = [
- "glib-sys 0.10.1",
- "gobject-sys 0.10.0",
- "libc",
- "system-deps 1.3.2",
- "winapi 0.3.9",
-]
-
-[[package]]
-name = "gio-sys"
 version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c0a41df66e57fcc287c4bcf74fc26b884f31901ea9792ec75607289b456f48fa"
 dependencies = [
- "glib-sys 0.14.0",
- "gobject-sys 0.14.0",
+ "glib-sys",
+ "gobject-sys",
  "libc",
  "system-deps 3.2.0",
  "winapi 0.3.9",
@@ -1243,8 +1230,8 @@ dependencies = [
  "futures-executor",
  "futures-task",
  "glib-macros",
- "glib-sys 0.14.0",
- "gobject-sys 0.14.0",
+ "glib-sys",
+ "gobject-sys",
  "libc",
  "once_cell",
  "smallvec",
@@ -1263,16 +1250,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
-]
-
-[[package]]
-name = "glib-sys"
-version = "0.10.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c7e9b997a66e9a23d073f2b1abb4dbfc3925e0b8952f67efd8d9b6e168e4cdc1"
-dependencies = [
- "libc",
- "system-deps 1.3.2",
 ]
 
 [[package]]
@@ -1306,22 +1283,11 @@ dependencies = [
 
 [[package]]
 name = "gobject-sys"
-version = "0.10.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "952133b60c318a62bf82ee75b93acc7e84028a093e06b9e27981c2b6fe68218c"
-dependencies = [
- "glib-sys 0.10.1",
- "libc",
- "system-deps 1.3.2",
-]
-
-[[package]]
-name = "gobject-sys"
 version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "aa92cae29759dae34ab5921d73fff5ad54b3d794ab842c117e36cafc7994c3f5"
 dependencies = [
- "glib-sys 0.14.0",
+ "glib-sys",
  "libc",
  "system-deps 3.2.0",
 ]
@@ -1359,9 +1325,9 @@ dependencies = [
  "cairo-sys-rs",
  "gdk-pixbuf-sys",
  "gdk-sys",
- "gio-sys 0.14.0",
- "glib-sys 0.14.0",
- "gobject-sys 0.14.0",
+ "gio-sys",
+ "glib-sys",
+ "gobject-sys",
  "libc",
  "pango-sys",
  "system-deps 3.2.0",
@@ -1671,8 +1637,8 @@ version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2adf2de824b178d76c6017da59f4e7e95de49a766b584c59d47821a6c3dce9e2"
 dependencies = [
- "glib-sys 0.14.0",
- "gobject-sys 0.14.0",
+ "glib-sys",
+ "gobject-sys",
  "libc",
  "system-deps 5.0.0",
 ]
@@ -1734,29 +1700,6 @@ name = "lazycell"
 version = "1.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "830d08ce1d1d941e6b30645f1a0eb5643013d835ce3779a5fc208261dbe10f55"
-
-[[package]]
-name = "libappindicator"
-version = "0.6.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "84928b9cf11786337deb7befb0605295149c2bd5dcdcf31697d7d2444a48b7ee"
-dependencies = [
- "glib",
- "gtk",
- "gtk-sys",
- "libappindicator-sys",
- "log",
-]
-
-[[package]]
-name = "libappindicator-sys"
-version = "0.6.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "237b254c74da51cf41ad9cc2aadd9dc9c08e41779937162257f05a214a98d09b"
-dependencies = [
- "gtk-sys",
- "pkg-config",
-]
 
 [[package]]
 name = "libc"
@@ -2313,8 +2256,8 @@ version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2367099ca5e761546ba1d501955079f097caa186bb53ce0f718dca99ac1942fe"
 dependencies = [
- "glib-sys 0.14.0",
- "gobject-sys 0.14.0",
+ "glib-sys",
+ "gobject-sys",
  "libc",
  "system-deps 3.2.0",
 ]
@@ -2883,8 +2826,8 @@ checksum = "221a2c65ecf9d109a4b5f2524edff61500b84fa6ac5a66f51d1ce1add5a3fdfe"
 dependencies = [
  "block",
  "dispatch",
- "glib-sys 0.14.0",
- "gobject-sys 0.14.0",
+ "glib-sys",
+ "gobject-sys",
  "gtk-sys",
  "js-sys",
  "lazy_static",
@@ -3180,18 +3123,17 @@ dependencies = [
 ]
 
 [[package]]
-name = "soup-sys"
-version = "0.10.0"
+name = "soup2-sys"
+version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c3c7adf08565630bbb71f955f11f8a68464817ded2703a3549747c235b58a13e"
+checksum = "9f056675eda9a7417163e5f742bb119e8e1d385edd2ada8f7031a7230a3ec10a"
 dependencies = [
  "bitflags",
- "gio-sys 0.10.1",
- "glib-sys 0.10.1",
- "gobject-sys 0.10.0",
+ "gio-sys",
+ "glib-sys",
+ "gobject-sys",
  "libc",
- "pkg-config",
- "system-deps 1.3.2",
+ "system-deps 5.0.0",
 ]
 
 [[package]]
@@ -3255,12 +3197,6 @@ checksum = "73473c0e59e6d5812c5dfe2a064a6444949f089e20eec9a2e5506596494e4623"
 
 [[package]]
 name = "strum"
-version = "0.18.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "57bd81eb48f4c437cadc685403cad539345bf703d78e63707418431cecd4522b"
-
-[[package]]
-name = "strum"
 version = "0.21.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "aaf86bbcfd1fa9670b7a129f64fc0c9fcbbfe4f1bc4210e9e98fe71ffc12cde2"
@@ -3272,18 +3208,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f7ac893c7d471c8a21f31cfe213ec4f6d9afeed25537c772e08ef3f005f8729e"
 dependencies = [
  "strum_macros 0.22.0",
-]
-
-[[package]]
-name = "strum_macros"
-version = "0.18.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "87c85aa3f8ea653bfd3ddf25f7ee357ee4d204731f6aa9ad04002306f6e2774c"
-dependencies = [
- "heck 0.3.3",
- "proc-macro2",
- "quote",
- "syn",
 ]
 
 [[package]]
@@ -3338,21 +3262,6 @@ dependencies = [
 
 [[package]]
 name = "system-deps"
-version = "1.3.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0f3ecc17269a19353b3558b313bba738b25d82993e30d62a18406a24aba4649b"
-dependencies = [
- "heck 0.3.3",
- "pkg-config",
- "strum 0.18.0",
- "strum_macros 0.18.0",
- "thiserror",
- "toml",
- "version-compare 0.0.10",
-]
-
-[[package]]
-name = "system-deps"
 version = "3.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "480c269f870722b3b08d2f13053ce0c2ab722839f472863c3e2d61ff3a1c2fa6"
@@ -3366,7 +3275,7 @@ dependencies = [
  "strum_macros 0.21.1",
  "thiserror",
  "toml",
- "version-compare 0.0.11",
+ "version-compare",
 ]
 
 [[package]]
@@ -3379,7 +3288,7 @@ dependencies = [
  "heck 0.3.3",
  "pkg-config",
  "toml",
- "version-compare 0.0.11",
+ "version-compare",
 ]
 
 [[package]]
@@ -3401,11 +3310,10 @@ dependencies = [
  "gdk-sys",
  "gio",
  "glib",
- "glib-sys 0.14.0",
+ "glib-sys",
  "gtk",
  "instant",
  "lazy_static",
- "libappindicator",
  "libc",
  "log",
  "ndk",
@@ -3435,7 +3343,7 @@ dependencies = [
 [[package]]
 name = "tauri"
 version = "1.0.0-beta.8"
-source = "git+https://github.com/tauri-apps/tauri?branch=next#44aec4b0a57f4ae091f38278f2d159e6e3951de2"
+source = "git+https://github.com/tauri-apps/tauri?branch=next#3a04c036ff6e4fbf7d497d7ad6e94e643eaa831a"
 dependencies = [
  "attohttpc",
  "base64",
@@ -3497,7 +3405,7 @@ dependencies = [
 [[package]]
 name = "tauri-codegen"
 version = "1.0.0-beta.4"
-source = "git+https://github.com/tauri-apps/tauri?branch=next#44aec4b0a57f4ae091f38278f2d159e6e3951de2"
+source = "git+https://github.com/tauri-apps/tauri?branch=next#3a04c036ff6e4fbf7d497d7ad6e94e643eaa831a"
 dependencies = [
  "blake3",
  "kuchiki",
@@ -3515,7 +3423,7 @@ dependencies = [
 [[package]]
 name = "tauri-macros"
 version = "1.0.0-beta.5"
-source = "git+https://github.com/tauri-apps/tauri?branch=next#44aec4b0a57f4ae091f38278f2d159e6e3951de2"
+source = "git+https://github.com/tauri-apps/tauri?branch=next#3a04c036ff6e4fbf7d497d7ad6e94e643eaa831a"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3526,12 +3434,10 @@ dependencies = [
 [[package]]
 name = "tauri-plugin-vibrancy"
 version = "0.1.0"
-source = "git+https://github.com/amrbashir/tauri-plugin-vibrancy#4138ae2a98a961e24bf46f3f141399e7a590e046"
+source = "git+https://github.com/amrbashir/tauri-plugin-vibrancy#1f8512af7baf1b64ff1fd3d574d25c1eb699158c"
 dependencies = [
  "cocoa",
- "log",
  "objc",
- "tao",
  "tauri",
  "windows 0.28.0",
 ]
@@ -3539,7 +3445,7 @@ dependencies = [
 [[package]]
 name = "tauri-runtime"
 version = "0.2.1"
-source = "git+https://github.com/tauri-apps/tauri?branch=next#44aec4b0a57f4ae091f38278f2d159e6e3951de2"
+source = "git+https://github.com/tauri-apps/tauri?branch=next#3a04c036ff6e4fbf7d497d7ad6e94e643eaa831a"
 dependencies = [
  "gtk",
  "http",
@@ -3557,7 +3463,7 @@ dependencies = [
 [[package]]
 name = "tauri-runtime-wry"
 version = "0.2.1"
-source = "git+https://github.com/tauri-apps/tauri?branch=next#44aec4b0a57f4ae091f38278f2d159e6e3951de2"
+source = "git+https://github.com/tauri-apps/tauri?branch=next#3a04c036ff6e4fbf7d497d7ad6e94e643eaa831a"
 dependencies = [
  "gtk",
  "ico",
@@ -3592,7 +3498,7 @@ dependencies = [
 [[package]]
 name = "tauri-utils"
 version = "1.0.0-beta.3"
-source = "git+https://github.com/tauri-apps/tauri?branch=next#44aec4b0a57f4ae091f38278f2d159e6e3951de2"
+source = "git+https://github.com/tauri-apps/tauri?branch=next#3a04c036ff6e4fbf7d497d7ad6e94e643eaa831a"
 dependencies = [
  "heck 0.4.0",
  "html5ever",
@@ -3951,12 +3857,6 @@ checksum = "accd4ea62f7bb7a82fe23066fb0957d48ef677f6eeb8215f372f52e48bb32426"
 
 [[package]]
 name = "version-compare"
-version = "0.0.10"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d63556a25bae6ea31b52e640d7c41d1ab27faba4ccb600013837a3d0b3994ca1"
-
-[[package]]
-name = "version-compare"
 version = "0.0.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1c18c859eead79d8b95d09e4678566e8d70105c4e7b251f707a03df32442661b"
@@ -4090,19 +3990,19 @@ dependencies = [
 
 [[package]]
 name = "webkit2gtk"
-version = "0.15.3"
+version = "0.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d5725e8ede878b7c00419066868085b83fb7d01eea904c1a0bd0159ad3ce0ba3"
+checksum = "07654baccd8874fc7c99cc33c27052fb02804276102dff0f78f981669316e0e9"
 dependencies = [
  "bitflags",
  "cairo-rs",
  "gdk",
  "gdk-sys",
  "gio",
- "gio-sys 0.14.0",
+ "gio-sys",
  "glib",
- "glib-sys 0.14.0",
- "gobject-sys 0.14.0",
+ "glib-sys",
+ "gobject-sys",
  "gtk",
  "gtk-sys",
  "javascriptcore-rs",
@@ -4113,24 +4013,24 @@ dependencies = [
 
 [[package]]
 name = "webkit2gtk-sys"
-version = "0.15.2"
+version = "0.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b34314407e381b88a72610d0f4eeff1552cbf8ee5420dbe84749fa26aa11b4e3"
+checksum = "854a0cbf3570541bf13df70aac23826da7cd88f27a722b7b2043f32637373113"
 dependencies = [
  "atk-sys",
  "bitflags",
  "cairo-sys-rs",
  "gdk-pixbuf-sys",
  "gdk-sys",
- "gio-sys 0.14.0",
- "glib-sys 0.14.0",
- "gobject-sys 0.14.0",
+ "gio-sys",
+ "glib-sys",
+ "gobject-sys",
  "gtk-sys",
  "javascriptcore-rs-sys",
  "libc",
  "pango-sys",
  "pkg-config",
- "soup-sys",
+ "soup2-sys",
  "system-deps 5.0.0",
 ]
 
@@ -4463,7 +4363,7 @@ dependencies = [
 [[package]]
 name = "wry"
 version = "0.12.2"
-source = "git+https://github.com/tauri-apps/wry?rev=11557f15cf759fcf3008598b684c009f03a8c645#11557f15cf759fcf3008598b684c009f03a8c645"
+source = "git+https://github.com/tauri-apps/wry?rev=81e92bd2539a27cd2aa169adc6a52f4f78e00292#81e92bd2539a27cd2aa169adc6a52f4f78e00292"
 dependencies = [
  "cocoa",
  "core-graphics 0.22.3",
