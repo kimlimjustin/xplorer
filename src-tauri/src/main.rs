@@ -204,7 +204,10 @@ async fn main() {
       let window = app.get_window("main").unwrap();
       let appearance = storage::read_data("appearance".to_string()).unwrap();
       let transparent_effect = match appearance.status {
-        true => appearance.data["transparentEffect"].to_string(),
+        true => appearance.data["transparentEffect"]
+          .as_str()
+          .unwrap()
+          .to_string(),
         false => "none".to_string(),
       };
       change_transparent_effect(transparent_effect, window);
