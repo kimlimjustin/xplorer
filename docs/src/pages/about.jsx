@@ -65,7 +65,7 @@ const PoweredByTheWeb = () => {
 			<div className="row padding-horiz--lg">
 				<div className="col feature padding--md">
 					<h2>
-						<Translate id="feature.filePreview">Designed out of the box</Translate>
+						<Translate id="feature.designTitle">Designed out of the box</Translate>
 					</h2>
 					<p>
 						<Translate id="feature.designDescription">
