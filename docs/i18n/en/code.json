@@ -27,7 +27,7 @@
     "message": "Tired of opening multiple windows to explore your files? Xplorer comes with multiple tabs support to help you manage your files easier."
   },
   "feature.filePreview": {
-    "message": "Designed out of the box"
+    "message": "File Preview"
   },
   "feature.filePreviewDescriptionPart1": {
     "message": "Xplorer comes with a"
@@ -305,5 +305,41 @@
   "theme.tags.tagsPageTitle": {
     "message": "Tags",
     "description": "The title of the tag list page"
+  },
+  "feature.designTitle": {
+    "message": "Designed out of the box"
+  },
+  "newsletter.alreadySubscribed": {
+    "message": "You've already subcribed to this newsletter!"
+  },
+  "newsletter.error": {
+    "message": "Something went wrong, please try again later."
+  },
+  "subscribe.title": {
+    "message": "Subscribe to our newsletter"
+  },
+  "subscribe.description": {
+    "message": "Join the Xplorer newsletter and stay updated on new releases, new features, etc."
+  },
+  "newsletter.subscribeBtn": {
+    "message": "Subscribe"
+  },
+  "newsletter.thanks": {
+    "message": "Thanks for Subscribing!"
+  },
+  "supports.title": {
+    "message": "Designed and developed by many amazing people."
+  },
+  "supports.descriptionPart1": {
+    "message": "Xplorer is an Open Source project that"
+  },
+  "supports.descriptionPart2": {
+    "message": "everyone can contribute to."
+  },
+  "supports.titlePart1": {
+    "message": "Designed and developed by"
+  },
+  "supports.titlePart2": {
+    "message": "many amazing people."
   }
 }
