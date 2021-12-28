@@ -17,7 +17,7 @@
 
 # What is Xplorer?
 
-![Demo](docs\static\img\docs\themed-xplorer.webp)
+![Demo](docs/static/img/docs/themed-xplorer.webp)
 
 <details>
 <summary>
@@ -167,4 +167,4 @@ We highly encourage you to contribute to this project (even if you are a beginne
 
 ## Love my work?
 
-<a href='https://ko-fi.com/kimlimjustin' target='_blank'><img height='35' style='border:0px;height:34px;' src='https://az743702.vo.msecnd.net/cdn/kofi3.webp?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' />
+<a href='https://ko-fi.com/kimlimjustin' target='_blank'><img height='35' style='border:0px;height:34px;' src='https://az743702.vo.msecnd.net/cdn/kofi3.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' />
