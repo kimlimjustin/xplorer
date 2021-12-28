@@ -1,27 +1,12 @@
 {
-  "welcome.title": {
-    "message": "File Explorer."
-  },
-  "welcome.keyword": {
-    "message": "Redefined."
-  },
-  "welcome.description": {
-    "message": "Free and Open Source Software. Runs everywhere."
-  },
-  "welcome.download": {
-    "message": "Download now"
-  },
-  "welcome.xploreTheDocs": {
-    "message": "Read documentation"
-  },
   "about.title": {
     "message": "Cross-platform File Explorer."
   },
   "about.poweredByTheWebTitle": {
-    "message": "Powered by the web."
+    "message": "Powered by the web"
   },
   "about.builtUsing": {
-    "message": "Built using the"
+    "message": "Being built using the"
   },
   "about.written": {
     "message": ", and written using"
@@ -35,23 +20,55 @@
   "about.promise": {
     "message": "Xplorer promises you an unprecedented experience."
   },
-  "feature.design": {
-    "message": "Designed out of the box"
-  },
-  "feature.designDescription": {
-    "message": "Say goodbye to the old design by traditional app and say hello to this simple yet powerful design."
-  },
   "feature.multipleTabs": {
     "message": "Supports Multiple Tabs"
   },
   "feature.multipleTabsDescription": {
-    "message": "Xplorer helps you organize you files easier by supporting multiple tabs ."
+    "message": "Tired of opening multiple windows to explore your files? Xplorer comes with multiple tabs support to help you manage your files easier."
   },
   "feature.filePreview": {
     "message": "File Preview"
   },
-  "feature.filePreviewDescription": {
-    "message": "Xplorer supports files preview, from images, code preview, pdfs, to videos. Learn more"
+  "feature.filePreviewDescriptionPart1": {
+    "message": "Xplorer comes with a"
+  },
+  "feature.filePreviewDescriptionPart2": {
+    "message": "built-in file previewer"
+  },
+  "feature.filePreviewDescriptionPart3": {
+    "message": "to help you view files in a more intuitive way. It supports images, videos, PDFs to almost all programming language with Syntax Highlighting."
+  },
+  "feature.designDescription": {
+    "message": "Say goodbye to the old design by traditional app and say hello to this simple yet powerful design."
+  },
+  "feature.customizableTitle": {
+    "message": "Customizable"
+  },
+  "feature.customizableDescriptionPart1": {
+    "message": "You can customize the look and feel of Xplorer by using different themes or"
+  },
+  "feature.customizableDescriptionPart2": {
+    "message": "build your own theme"
+  },
+  "welcome.keyword": {
+    "message": "Redefined."
+  },
+  "welcome.download": {
+    "message": "Download now"
+  },
+  "welcome.xploreTheDocs": {
+    "message": "Read documentation"
+  },
+  "welcome.description": {
+    "message": "Free and Open Source Software. Runs everywhere."
+  },
+  "theme.ErrorPageContent.title": {
+    "message": "This page crashed.",
+    "description": "The title of the fallback page when the page crashed"
+  },
+  "theme.ErrorPageContent.tryAgain": {
+    "message": "Try again",
+    "description": "The label of the button to try again when the page crashed"
   },
   "theme.NotFound.title": {
     "message": "Page Not Found",
@@ -69,6 +86,10 @@
     "message": "Close",
     "description": "The ARIA label for close button of announcement bar"
   },
+  "theme.BackToTopButton.buttonAriaLabel": {
+    "message": "Scroll back to top",
+    "description": "The ARIA label for the back to top button"
+  },
   "theme.blog.archive.title": {
     "message": "Archive",
     "description": "The page & hero title of the blog archive page"
@@ -76,10 +97,6 @@
   "theme.blog.archive.description": {
     "message": "Archive",
     "description": "The page & hero description of the blog archive page"
-  },
-  "theme.BackToTopButton.buttonAriaLabel": {
-    "message": "Scroll back to top",
-    "description": "The ARIA label for the back to top button"
   },
   "theme.blog.paginator.navAriaLabel": {
     "message": "Blog list page navigation",
@@ -153,13 +170,13 @@
     "message": "Docs pages navigation",
     "description": "The ARIA label for the docs pagination"
   },
-  "theme.docs.paginator.previous": {
-    "message": "Previous",
-    "description": "The label used to navigate to the previous doc"
-  },
   "theme.docs.paginator.next": {
     "message": "Next",
     "description": "The label used to navigate to the next doc"
+  },
+  "theme.docs.paginator.previous": {
+    "message": "Previous",
+    "description": "The label used to navigate to the previous doc"
   },
   "theme.docs.sidebar.collapseButtonTitle": {
     "message": "Collapse sidebar",
@@ -168,6 +185,10 @@
   "theme.docs.sidebar.collapseButtonAriaLabel": {
     "message": "Collapse sidebar",
     "description": "The title attribute for collapse button of doc sidebar"
+  },
+  "theme.DocSidebarItem.toggleCollapsedCategoryAriaLabel": {
+    "message": "Toggle the collapsible sidebar category '{label}'",
+    "description": "The ARIA label to toggle the collapsible sidebar category"
   },
   "theme.docs.tagDocListPageTitle.nDocsTagged": {
     "message": "One doc tagged|{count} docs tagged",
@@ -284,5 +305,41 @@
   "theme.tags.tagsPageTitle": {
     "message": "Tags",
     "description": "The title of the tag list page"
+  },
+  "feature.designTitle": {
+    "message": "Designed out of the box"
+  },
+  "newsletter.alreadySubscribed": {
+    "message": "You've already subcribed to this newsletter!"
+  },
+  "newsletter.error": {
+    "message": "Something went wrong, please try again later."
+  },
+  "subscribe.title": {
+    "message": "Subscribe to our newsletter"
+  },
+  "subscribe.description": {
+    "message": "Join the Xplorer newsletter and stay updated on new releases, new features, etc."
+  },
+  "newsletter.subscribeBtn": {
+    "message": "Subscribe"
+  },
+  "newsletter.thanks": {
+    "message": "Thanks for Subscribing!"
+  },
+  "supports.title": {
+    "message": "Designed and developed by many amazing people."
+  },
+  "supports.descriptionPart1": {
+    "message": "Xplorer is an Open Source project that"
+  },
+  "supports.descriptionPart2": {
+    "message": "everyone can contribute to."
+  },
+  "supports.titlePart1": {
+    "message": "Designed and developed by"
+  },
+  "supports.titlePart2": {
+    "message": "many amazing people."
   }
 }
