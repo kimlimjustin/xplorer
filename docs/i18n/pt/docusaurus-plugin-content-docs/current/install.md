@@ -19,6 +19,7 @@ Grab the **.AppImage** file in the [releases](https://github.com/kimlimjustin/xp
 Grab the **.deb** file in the [releases](https://github.com/kimlimjustin/xplorer/releases) page.
 
 Você pode instalá-lo com os seguintes comandos:
+
 ```bash
 sudo dpkg -i /path/to/deb/file.deb
 ```
@@ -28,6 +29,7 @@ sudo dpkg -i /path/to/deb/file.deb
 ```bash
 sudo apt install /path/to/deb/file.deb
 ```
+
 ### Para sistemas baseados em Arch Linux
 
 > Use seu [AUR](https://wiki.archlinux.org/title/AUR_helpers) favorito.
@@ -39,11 +41,13 @@ yay -S xplorer-bin
 
 pacman build xplorer-bin
 ```
+
 **ou**
 
 Grab the **.pacman** file in the [releases](https://github.com/kimlimjustin/xplorer/releases) page.
 
 Você pode instalá-lo das seguintes formas:
+
 ```bash
 sudo pacman -U /path/to/deb/file.pacman
 ```
@@ -51,6 +55,7 @@ sudo pacman -U /path/to/deb/file.pacman
 **ou**
 
 build from [source](https://aur.archlinux.org/xplorer-bin.git)
+
 ```bash
 git clone https://aur.archlinux.org/xplorer-bin.git
 
@@ -58,6 +63,7 @@ cd xplorer-bin
 
 makepkg -si
 ```
+
 ## Problemas comuns
 
 <details>
@@ -69,8 +75,8 @@ Na verdade, isto não é um erro, é uma escolha de design da Microsoft para pro
 
 To handle this, you can just click the `More Info` button, then, just click Run Anyway.
 
-1. ![Passo 1](/img/docs/windows-defender-1.png)
-2. ![Passo 2](/img/docs/windows-defender-2.png)
+1. ![Passo 1](/img/docs/windows-defender-1.webp)
+2. ![Passo 2](/img/docs/windows-defender-2.webp)
 
 :::note Referências
 

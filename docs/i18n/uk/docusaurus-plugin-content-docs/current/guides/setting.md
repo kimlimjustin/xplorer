@@ -6,7 +6,7 @@ How to open the settings?
 </summary>
 You can open settings on Xplorer by clicking the `Settings` button on the left down of Xplorer.
 
-![Settings](/img/docs/settings.png)
+![Settings](/img/docs/settings.webp)
 
 </details> <details>
 <summary>
@@ -14,7 +14,7 @@ How to exit from Settings?
 </summary>
 You can exit from Settings on Xplorer by clicking on the upside left of Xplorer.
 
-![Settings](/img/docs/exit-settings.png)
+![Settings](/img/docs/exit-settings.webp)
 
 </details>
 
@@ -38,15 +38,24 @@ Make Xplorer window transparent on the `Appearance` tab of the Settings by combi
 
 #### Transparent Sidebar
 
-Make the sidebar transparent ![Transparent Sidebar](/img/docs/transparent-sidebar.png)
+Make the sidebar transparent ![Transparent Sidebar](/img/docs/transparent-sidebar.webp)
 
 #### Transparent Topbar
 
-Make the topbar transparent ![Transparent Topbar](/img/docs/transparent-topbar.png)
+Make the topbar transparent ![Transparent Topbar](/img/docs/transparent-topbar.webp)
 
 #### Transparent Workspace
 
-make the workspace transparent ![Transparent Workspace](/img/docs/transparent-workspace.png)
+Make the workspace transparent ![Transparent Workspace](/img/docs/transparent-workspace.webp)
+
+#### Transparent Effect
+
+You can update the transparency effect on the workspace by changing the transparency value on the `Transparency Effect` option (expected to work on Windows 10 only). Available effects:
+
+-   `Blur` (somewhat laggy when dragging)
+-   `Acylic`(works only on Windows 10 and above, it also has bad performance when resizing/dragging the window)
+-   `Vibrancy` (works only on macOS)
+-   `None`(recommended) (need to restart app to change back to none)
 
 ### Frame Style
 
@@ -64,7 +73,7 @@ This will automatically play the video file as a preview. :::caution THIS MIGHT 
 
 This fill automatically show the image when you hovering it for 500ms.
 
-![Preview on hover](/img/docs/preview-on-hover.png)
+![Preview on hover](/img/docs/preview-on-hover.webp)
 
 Some people might found it annoying and you can disable it by disabling this setting.
 
@@ -72,7 +81,7 @@ Some people might found it annoying and you can disable it by disabling this set
 
 This will parse and cache the icon from a `exe` file and make it a preview. Only on Windows.
 
-![Extract Exe file icon](/img/docs/extract-exe-icon.png)
+![Extract Exe file icon](/img/docs/extract-exe-icon.webp)
 
 :::warning This might causes Xplorer to crash.
 
@@ -86,19 +95,25 @@ The way to fix it is to disable the setting.
 
 Any contribution to call it directly from Xplorer is welcome. :::
 
-#### Show Image as Thumbnail
+### Show Image as Thumbnail
 
 This will show the image as a thumbnail of a file. Please note that this is not recommended for large directory as it reads the image to memory.
 
-#### Default file layout
+### Default file layout
 
 Default file layout of a directory. Just give it a try :)
+
+### Workspace
+
+#### Show info bar
+
+An option to show the info bar on the workspace. ![Xplorer's infobar](/img/docs/infobar.webp)
 
 ## Preference
 
 ### App Language
 
-Localize Xplorer. Help us translate Xplorer [here](https://github.com/kimlimjustin/xplorer/discussions/30).
+Localize Xplorer. Help us translate Xplorer, [see this discussion](https://github.com/kimlimjustin/xplorer/discussions/30).
 
 ### Hide Hidden Files
 
@@ -106,7 +121,7 @@ Hide hidden files on Xplorer, you can find this setting on the `Preference` tab 
 
 ### Hide System Files
 
-Hide Windows' system files on Xplorer. :::tip Learn what is system file [here](https://en.wikipedia.org/wiki/System_file). Just turn it off if you don't understand what it is. :::
+Hide Windows' system files on Xplorer. :::tip Learn what is system file [in this wikipedia](https://en.wikipedia.org/wiki/System_file). Just turn it off if you don't understand what it is. :::
 
 ### List and sort directories alongside files
 
@@ -115,6 +130,14 @@ If disabled, Xplorer will prioritize directories above files.
 ### Detect Drive Change
 
 Turning this on will detect drive change and update the sidebar and drives section. Please note that this will take high ammount of RAM as this is not stabilized yet.
+
+### Automatically change preview file with selected file
+
+Enabling this will automatically change the preview file with the current selected file.
+
+### Single/Double Click to open a file
+
+Enabling this will make Xplorer to open a file with double click. Otherwise, it will open a file with single click.
 
 ### On startup
 

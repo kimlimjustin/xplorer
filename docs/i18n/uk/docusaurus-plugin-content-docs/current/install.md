@@ -19,6 +19,7 @@ You can download Xplorer from the installer [here](https://github.com/kimlimjust
 Скачайте **.deb** пакет з сторінки [релізів](https://github.com/kimlimjustin/xplorer/releases).
 
 Для продовження, натисніть `Деталі`, а потім запустити.
+
 ```bash
 sudo pacman -u [ім'я файлу інсталлятора]
 ```
@@ -28,6 +29,7 @@ sudo pacman -u [ім'я файлу інсталлятора]
 ```bash
 sudo pacman -u [ім'я файлу інсталлятора] --overwrite "*"
 ```
+
 ### Arch дистрибутив
 
 > Використовуйте ваш улюблений [aur helper](https://wiki.archlinux.org/title/AUR_helpers).
@@ -39,11 +41,13 @@ yay -S xplorer-bin
 
 pacman build xplorer-bin
 ```
+
 **або**
 
 Скачайте **.pacman** інсталятор на сторінці [релізів](https://github.com/kimlimjustin/xplorer/releases).
 
 Ви також можете встановити пакет використовуючи:
+
 ```bash
 sudo pacman -U /path/to/deb/file.pacman
 ```
@@ -51,6 +55,7 @@ sudo pacman -U /path/to/deb/file.pacman
 **або**
 
 зібрати пакет з [коду](https://aur.archlinux.org/xplorer-bin.git)
+
 ```bash
 git clone https://aur.archlinux.org/xplorer-bin.git
 
@@ -58,6 +63,7 @@ cd xplorer-bin
 
 makepkg -si
 ```
+
 ## Поширені проблеми
 
 <details>
@@ -69,8 +75,8 @@ This is actually not an error, it's a design choice by Microsoft to protect thos
 
 Щоб вирішити цю проблему, просто натисніть кнопку `Додаткова інформація`, а потім просто натисніть "Виконати все одно".
 
-1. ![Шаг 1](/img/docs/windows-defender-1.png)
-2. ![Шаг 2](/img/docs/windows-defender-2.png)
+1. ![Шаг 1](/img/docs/windows-defender-1.webp)
+2. ![Шаг 2](/img/docs/windows-defender-2.webp)
 
 :::note Посилання
 
