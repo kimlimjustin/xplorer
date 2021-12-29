@@ -26,7 +26,7 @@ const Appearance = async (): Promise<void> => {
 	const previewImageOnHover = _appearance?.previewImageOnHover ?? true;
 	const settingsMain = document.querySelector('.settings-main');
 	const fontFamily = _appearance?.fontFamily ?? getElementStyle('fontFamily');
-	const fontSize = parseInt(_appearance?.fontSize ?? getElementStyle('fontSize'));
+	const fontSize = parseInt(_appearance?.fontSize ?? 16);
 	const windowTransparency = parseInt(_appearance?.windowTransparency ?? 80);
 	const transparentEffect = _appearance?.transparentEffect ?? 'none';
 	const transparentSidebar = _appearance?.transparentSidebar ?? true;
