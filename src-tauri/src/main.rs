@@ -20,6 +20,8 @@ use std::os::windows::process::CommandExt;
 use std::process::Command;
 use tauri::Manager;
 #[cfg(not(target_os = "linux"))]
+use tauri_plugin_shadows::Shadows;
+#[cfg(not(target_os = "linux"))]
 use tauri_plugin_vibrancy::Vibrancy;
 
 lazy_static! {
@@ -163,6 +165,17 @@ fn change_transparent_effect(_effect: String, _window: tauri::Window) {
   return;
 }
 
+#[cfg(not(target_os = "linux"))]
+#[tauri::command]
+fn enable_shadow_effect(effect: bool, window: tauri::Window) {
+  window.set_shadow(effect);
+}
+#[cfg(target_os = "linux")]
+#[tauri::command]
+fn enable_shadow_effect(_effect: bool, _window: tauri::Window) {
+  return;
+}
+
 #[tokio::main]
 async fn main() {
   extensions::init_extension().await;
@@ -198,6 +211,7 @@ async fn main() {
       extensions::get_cli_args,
       check_vscode_installed,
       get_available_fonts,
+      enable_shadow_effect,
       change_transparent_effect
     ])
     .setup(|app| {
@@ -210,6 +224,11 @@ async fn main() {
           .to_string(),
         false => "none".to_string(),
       };
+      let shadow_effect_enabled = match appearance.status {
+        true => appearance.data["shadowEffect"].as_bool().unwrap_or(true),
+        false => true,
+      };
+      enable_shadow_effect(shadow_effect_enabled, window.clone());
       change_transparent_effect(transparent_effect, window);
       Ok(())
     })
