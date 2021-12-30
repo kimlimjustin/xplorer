@@ -63,7 +63,7 @@ Xplorer is currently under heavy development. You can give your suggestions and 
 -   [ ] File protection.
 -   [ ] Custom file sorting and filtering.
 
-Recommend us feature by [opening an Discussion](https://github.com/kimlimjustin/xplorer/discussions) if you'd like to.
+Recommend us a feature by [opening an Discussion](https://github.com/kimlimjustin/xplorer/discussions) if you'd like to.
 
 ---
 
