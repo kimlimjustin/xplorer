@@ -98,6 +98,6 @@ Please try [the official docs](https://support.apple.com/guide/mac-help/open-a-m
 My favorite Installer is not here.
 </summary>
 
-Please address an issue [here](https://github.com/kimlimjustin/xplorer/new).
+Please address an issue [here](https://github.com/kimlimjustin/xplorer/issues/new/choose).
 
 </details>
