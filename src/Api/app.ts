@@ -26,4 +26,8 @@ const changeTransparentEffect = async (transparentEffect: 'blur' | 'acrylic' | '
 	return await invoke('change_transparent_effect', { effect: transparentEffect });
 };
 
-export { isVSCodeInstalled, getAvailableFonts, changeTransparentEffect, listenStylesheetChange };
+const enableShadowEffect = async (shadowEffect: boolean): Promise<void> => {
+	return await invoke('enable_shadow_effect', { effect: shadowEffect });
+};
+
+export { isVSCodeInstalled, getAvailableFonts, changeTransparentEffect, listenStylesheetChange, enableShadowEffect };

@@ -2,7 +2,7 @@ import { reload, minimize, maximize, close } from '../../Layout/windowManager';
 import Translate from '../../I18n/i18n';
 import Storage from '../../../Api/storage';
 import OS from '../../../Api/platform';
-import { changeTransparentEffect, getAvailableFonts } from '../../../Api/app';
+import { changeTransparentEffect, getAvailableFonts, enableShadowEffect } from '../../../Api/app';
 import { getElementStyle, getInstalledThemes, updateTheme } from '../../Theme/theme';
 import { setDecorations } from '../../../Api/window';
 import Infobar from '../../Layout/infobar';
@@ -19,6 +19,7 @@ const Appearance = async (): Promise<void> => {
 	const _theme = await Storage.get('theme');
 	const _appearance = await Storage.get('appearance');
 	const theme = _theme?.theme;
+	const shadowEffect = _appearance?.shadowEffect ?? true;
 	const layout = _appearance?.layout ?? 's';
 	const videoAsThumbnail = _appearance?.videoAsThumbnail ?? false;
 	const imageAsThumbnail = _appearance?.imageAsThumbnail ?? 'smalldir';
@@ -45,6 +46,7 @@ const Appearance = async (): Promise<void> => {
 	const availableFonts = await getAvailableFonts();
 	const default_i18n = await Translate('Default');
 	const appTheme_i18n = await Translate('App Theme');
+	const shadowEffect_i18n = await Translate('Apply Shadow Effect');
 	const filePreview_i18n = await Translate('File Preview');
 	const defaultFileLayout_i18n = await Translate('Default File Layout');
 	const systemDefault_i18n = await Translate('System Default');
@@ -72,6 +74,17 @@ const Appearance = async (): Promise<void> => {
 			}>${availableTheme.name}</option>`;
 		})}
 	</select>
+	${
+		platform !== 'linux'
+			? `<div class="toggle-box">
+		<label class="toggle">
+			<input type="checkbox" name="shadow-effect" ${shadowEffect ? 'checked' : ''}>
+			<span class="toggle-slider"></span>
+			<span class="toggle-label">${shadowEffect_i18n}</span>
+		</label>
+	</div>`
+			: ''
+	}
 	<h3 class="settings-title">${fontFamily_i18n}</h3>
 	<select name="font">
 		<option value="${fontFamily}" selected>${fontFamily ?? systemDefault_i18n}</option>
@@ -173,6 +186,13 @@ const Appearance = async (): Promise<void> => {
 	</div>
 	`;
 	settingsMain.innerHTML = appearancePage;
+	settingsMain.querySelector('[name="shadow-effect"]')?.addEventListener('change', (event: Event & { target: HTMLInputElement }) => {
+		const shadowEffect = event.target.checked;
+		const appearance = _appearance ?? {};
+		appearance.shadowEffect = shadowEffect;
+		enableShadowEffect(shadowEffect);
+		Storage.set('appearance', appearance);
+	});
 	settingsMain.querySelectorAll('.number-ctrl').forEach((ctrl) => {
 		const number = ctrl.querySelector<HTMLInputElement>('.number-ctrl-input');
 		ctrl.querySelector('.number-ctrl-minus').addEventListener('click', () => {
