@@ -34,7 +34,8 @@ reqwest = "0.11.8"
 tokio = {version="1.14", features = ["full"] }
 
 [target."cfg(any(target_os = \"windows\", target_os = \"macos\"))".dependencies]
-tauri-plugin-vibrancy = { git = "https://github.com/amrbashir/tauri-plugin-vibrancy", features = ["tauri-impl"] }
+tauri-plugin-vibrancy = { git = "https://github.com/tauri-apps/tauri-plugin-vibrancy", features = ["tauri-impl"] }
+tauri-plugin-shadows = { git = "https://github.com/tauri-apps/tauri-plugin-shadows", features = ["tauri-impl"] }
 
 [features]
 default = [ "custom-protocol" ]
