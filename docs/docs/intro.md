@@ -36,6 +36,6 @@ Xplorer is currently under heavy development. You can give your suggestions and 
 -   [ ] Web application.
 -   [ ] Remote file (OneDrive, Google Drive, etc.)
 -   [ ] File protection.
--   [ ] Cusotm file sorting and filtering.
+-   [ ] Custom file sorting and filtering.
 
-Recommend us feature by [opening an Discussion](https://github.com/kimlimjustin/xplorer/discussions) if you'd like to.
+Recommend us a feature by [opening an Discussion](https://github.com/kimlimjustin/xplorer/discussions) if you'd like to.
