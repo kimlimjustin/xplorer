@@ -3434,8 +3434,8 @@ dependencies = [
 
 [[package]]
 name = "tauri-plugin-shadows"
-version = "0.1.0"
-source = "git+https://github.com/tauri-apps/tauri-plugin-shadows#15960ce05c91c8331f99364eab50f7068d547065"
+version = "0.0.0"
+source = "git+https://github.com/tauri-apps/tauri-plugin-shadows?rev=bf34e300d238ea4519dab3220ff8c76f07701a93#bf34e300d238ea4519dab3220ff8c76f07701a93"
 dependencies = [
  "cocoa",
  "objc",

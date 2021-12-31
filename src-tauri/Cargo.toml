@@ -35,7 +35,7 @@ tokio = {version="1.14", features = ["full"] }
 
 [target."cfg(any(target_os = \"windows\", target_os = \"macos\"))".dependencies]
 tauri-plugin-vibrancy = { git = "https://github.com/tauri-apps/tauri-plugin-vibrancy", features = ["tauri-impl"] }
-tauri-plugin-shadows = { git = "https://github.com/tauri-apps/tauri-plugin-shadows", features = ["tauri-impl"] }
+tauri-plugin-shadows = { git = "https://github.com/tauri-apps/tauri-plugin-shadows", features = ["tauri-impl"], rev="bf34e300d238ea4519dab3220ff8c76f07701a93" }
 
 [features]
 default = [ "custom-protocol" ]
