@@ -23,10 +23,15 @@ You can exit from Settings on Xplorer by clicking on the upside left of Xplorer.
 
 ### App Theme
 
-You can change Xplorer's app theme on the `Appearance` tab of the Settings. Available default themes are `light`, `light+`, `dark`, and `dark+`. Besides, there is a `System Default` theme that will automatically read your system preference.
-:::info
-Xplorer will support a custom app theme soon, stay tuned!
-:::
+You can change Xplorer's app theme on the `Appearance` tab of the Settings. Available default themes are `light`, `light+`, `dark`, and `dark+`. Besides, there is a `System Default` theme that will automatically read your system preference, also you can [try custom themes](/docs/Extensions/theme/).
+
+#### Apply Shadow Effect
+
+| With Shadow Effect                             | Without Shadow Effect                                |
+| ---------------------------------------------- | ---------------------------------------------------- |
+| ![Shadow Effect](/img/docs/shadow-effect.webp) | ![No Shadow Effect](/img/docs/no-shadow-effect.webp) |
+
+Apply platform-dependent shadow effect to the window. On Windows, you can't disable this effect when using [`System Default` frame style](#frame-style).
 
 ### Font Family
 
