@@ -214,6 +214,7 @@ async fn main() {
       enable_shadow_effect,
       change_transparent_effect
     ])
+    .plugin(tauri_plugin_window_state::WindowState::default())
     .setup(|app| {
       let window = app.get_window("main").unwrap();
       let appearance = storage::read_data("appearance".to_string()).unwrap();
