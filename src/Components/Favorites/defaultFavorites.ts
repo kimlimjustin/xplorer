@@ -1,5 +1,5 @@
 import fileThumbnail from '../Thumbnail/thumbnail';
-import FavoritesAPI from '../../Api/favorites';
+import FavoritesAPI from '../../Service/favorites';
 import IsValid from '../Functions/validChecker';
 let FavoritesData: FavoritesAPI;
 interface Favorites {

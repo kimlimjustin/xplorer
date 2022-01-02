@@ -1,4 +1,4 @@
-import Storage from '../../Api/storage';
+import Storage from '../../Service/storage';
 let infoBarElement: HTMLElement;
 
 const UpdateInfo = (key: string, value: string): void => {

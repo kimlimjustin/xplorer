@@ -1,8 +1,8 @@
 import { customThumbnail, defaultThumbnail } from '../../Config/folder.config';
 import { IMAGE_TYPES, VIDEO_TYPES } from '../../Config/file.config';
 import getBasename from '../Functions/path/basename';
-import Storage from '../../Api/storage';
-import FileAPI from '../../Api/files';
+import Storage from '../../Service/storage';
+import FileAPI from '../../Service/files';
 import FileLib from '../../../lib/files.json';
 import FolderLib from '../../../lib/folder.json';
 import ThumbnailExtensionTrie from './thumbnailExtensionTrie';

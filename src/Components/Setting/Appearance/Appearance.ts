@@ -1,10 +1,10 @@
 import { reload, minimize, maximize, close } from '../../Layout/windowManager';
 import Translate from '../../I18n/i18n';
-import Storage from '../../../Api/storage';
-import OS from '../../../Api/platform';
-import { changeTransparentEffect, getAvailableFonts, enableShadowEffect } from '../../../Api/app';
+import Storage from '../../../Service/storage';
+import OS from '../../../Service/platform';
+import { changeTransparentEffect, getAvailableFonts, enableShadowEffect } from '../../../Service/app';
 import { getElementStyle, getInstalledThemes, updateTheme } from '../../Theme/theme';
-import { setDecorations } from '../../../Api/window';
+import { setDecorations } from '../../../Service/window';
 import Infobar from '../../Layout/infobar';
 let platform: string;
 /**

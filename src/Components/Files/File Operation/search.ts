@@ -1,5 +1,5 @@
 import focusingPath from '../../Functions/focusingPath';
-import DirectoryAPI from '../../../Api/directory';
+import DirectoryAPI from '../../../Service/directory';
 import { startLoading, stopLoading } from '../../Functions/Loading/loading';
 import displayFiles from '../../Open/displayFiles';
 import changePosition from '../../Functions/changePosition';

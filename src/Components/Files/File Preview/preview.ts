@@ -2,7 +2,7 @@ import PromptError from '../../Prompt/error';
 import { HTML_TYPE, IMAGE_TYPES, VIDEO_TYPES, PLAIN_TEXT, MARKDOWN_TYPES } from '../../../Config/file.config';
 import getBasename from '../../Functions/path/basename';
 import xlsx from 'xlsx';
-import FileAPI from '../../../Api/files';
+import FileAPI from '../../../Service/files';
 import { eURLify, URLify } from '../../Functions/urlify';
 import hljs from 'highlight.js';
 import ConfirmDialog from '../../Prompt/confirm';

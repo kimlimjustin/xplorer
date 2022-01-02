@@ -1,5 +1,5 @@
-import { listenStylesheetChange } from '../../Api/app';
-import Storage from '../../Api/storage';
+import { listenStylesheetChange } from '../../Service/app';
+import Storage from '../../Service/storage';
 import { CustomTheme, Theme } from '../../Typings/theme';
 /**
  * Detect system theme
@@ -134,8 +134,8 @@ const changeTheme = async (theme?: string, category?: '*' | 'root' | 'tabbing' |
 		for (const key of Object.keys(themeJSON ?? defaultThemeJSON[theme])) {
 			const value = themeJSON ? themeJSON[key] : defaultThemeJSON[theme]?.[key];
 			const formalKey = key.replace(/[A-Z]/g, (m) => '-' + m.toLowerCase());
-			const splittedKey = formalKey.split('.')
-			const styleKey =splittedKey[splittedKey.length - 1];
+			const splittedKey = formalKey.split('.');
+			const styleKey = splittedKey[splittedKey.length - 1];
 			if (key.startsWith('hljs')) {
 				const className = formalKey.split('.').slice(0, -1).join('.').replace('hljs.', 'hljs-');
 				styles += `.${className} { ${styleKey}: ${value}; }\n`;

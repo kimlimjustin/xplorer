@@ -1,6 +1,6 @@
 import { appWindow } from '@tauri-apps/api/window';
-import Storage from '../../Api/storage';
-import windowName, { listenWindowClose, setDecorations } from '../../Api/window';
+import Storage from '../../Service/storage';
+import windowName, { listenWindowClose, setDecorations } from '../../Service/window';
 import { OpenDir } from '../Open/open';
 import focusingPath from '../Functions/focusingPath';
 import getDirname from '../Functions/path/dirname';
