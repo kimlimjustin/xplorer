@@ -1,7 +1,7 @@
 import { elementClassNameContains } from '../../Functions/elementClassNameContains';
-import Storage from '../../../Api/storage';
+import Storage from '../../../Service/storage';
 import { UpdateInfo } from '../../Layout/infobar';
-import FileAPI from '../../../Api/files';
+import FileAPI from '../../../Service/files';
 import formatBytes from '../../Functions/filesize';
 import Preview from '../File Preview/preview';
 import { ensureElementInViewPort } from '../../Functions/viewport';

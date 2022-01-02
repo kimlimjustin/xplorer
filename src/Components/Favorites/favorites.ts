@@ -1,10 +1,10 @@
 import Translate from '../I18n/i18n';
 import fileThumbnail from '../Thumbnail/thumbnail';
-import FavoritesAPI from '../../Api/favorites';
-import DirectoryAPI from '../../Api/directory';
-import Storage from '../../Api/storage';
+import FavoritesAPI from '../../Service/favorites';
+import DirectoryAPI from '../../Service/directory';
+import Storage from '../../Service/storage';
 import defaultFavorites from './defaultFavorites';
-import FileAPI from '../../Api/files';
+import FileAPI from '../../Service/files';
 let FavoritesData: FavoritesAPI;
 
 const isDefaultFavorite = async (filePath: string) => {

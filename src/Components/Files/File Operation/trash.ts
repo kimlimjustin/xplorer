@@ -1,8 +1,8 @@
 import { OperationLog } from '../../Functions/log';
 import PromptError from '../../Prompt/error';
-import OS from '../../../Api/platform';
-import { DeleteFiles, PurgeFiles, RestoreFiles, RestoreFile as RestoreFileAPI } from '../../../Api/trash';
-import OperationAPI from '../../../Api/operation';
+import OS from '../../../Service/platform';
+import { DeleteFiles, PurgeFiles, RestoreFiles, RestoreFile as RestoreFileAPI } from '../../../Service/trash';
+import OperationAPI from '../../../Service/operation';
 import ConfirmDialog from '../../Prompt/confirm';
 import { reload } from '../../Layout/windowManager';
 let platform: string;

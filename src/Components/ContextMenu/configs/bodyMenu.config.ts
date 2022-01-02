@@ -1,5 +1,5 @@
 import contextMenuItem from '../../../Typings/contextMenuItem';
-import Storage from '../../../Api/storage';
+import Storage from '../../../Service/storage';
 import { reload } from '../../Layout/windowManager';
 import Paste from '../../Files/File Operation/paste';
 import Undo from '../../Files/File Operation/undo';
@@ -8,10 +8,10 @@ import copyLocation from '../../Files/File Operation/location';
 import Pin from '../../Files/File Operation/pin';
 import Properties from '../../Properties/properties';
 import focusingPath from '../../Functions/focusingPath';
-import reveal from '../../../Api/reveal';
+import reveal from '../../../Service/reveal';
 import Translate from '../../I18n/i18n';
 import New from '../../Functions/new';
-import { isVSCodeInstalled } from '../../../Api/app';
+import { isVSCodeInstalled } from '../../../Service/app';
 import { Purge, Restore } from '../../Files/File Operation/trash';
 
 interface Favorites {

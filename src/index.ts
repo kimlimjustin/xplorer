@@ -7,15 +7,15 @@ import { OpenDir, OpenInit } from './Components/Open/open';
 import { createNewTab, Tab } from './Components/Layout/tab';
 import { Shortcut } from './Components/Shortcut/shortcut';
 import { SelectInit } from './Components/Files/File Operation/select';
-import CLIInformations from './Api/cli';
-import Storage from './Api/storage';
+import CLIInformations from './Service/cli';
+import Storage from './Service/storage';
 import Setting from './Components/Setting/setting';
 import ContextMenu from './Components/ContextMenu/contextMenu';
 import Hover from './Components/Layout/hover';
 import LAZY_LOAD_INIT from './Components/Functions/lazyLoadingImage';
 import Infobar from './Components/Layout/infobar';
 import Search from './Components/Files/File Operation/search';
-import { listenUpdateTheme } from './Api/window';
+import { listenUpdateTheme } from './Service/window';
 // Wait DOM Loaded to be loaded
 document.addEventListener('DOMContentLoaded', async () => {
 	// Read user preferences

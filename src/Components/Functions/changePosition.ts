@@ -1,7 +1,7 @@
 import Translate from '../I18n/i18n';
 import { changeSelectedAllStatus } from '../Shortcut/shortcut';
-import windowName from '../../Api/window';
-import Storage from '../../Api/storage';
+import windowName from '../../Service/window';
+import Storage from '../../Service/storage';
 import basename from './path/basename';
 /**
  * Change current tab position

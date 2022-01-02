@@ -1,5 +1,5 @@
-import Storage from '../../Api/storage';
-import LocalesAPI from '../../Api/locales';
+import Storage from '../../Service/storage';
+import LocalesAPI from '../../Service/locales';
 
 let localesInformation: LocalesAPI;
 

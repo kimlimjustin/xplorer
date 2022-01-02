@@ -1,4 +1,4 @@
-import FileAPI from '../../Api/files';
+import FileAPI from '../../Service/files';
 
 const FETCHED_ICONS: string[] = []; // Array of fetch icons
 

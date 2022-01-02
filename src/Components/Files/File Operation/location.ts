@@ -1,4 +1,4 @@
-import { writeTextToClipboard } from '../../../Api/clipboard';
+import { writeTextToClipboard } from '../../../Service/clipboard';
 
 /**
  * Copy file location from file element into clipborad
