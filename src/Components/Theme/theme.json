@@ -12,6 +12,7 @@
 		"root.loader.background": "#4fe0be",
 		"root.sidebarSettingButton.background": "inherit",
 		"root.sidebarSettingButton.color": "#98aec1",
+		"root#sidebarResizer.background": "#141e3e",
 
 		"windowmanager#minimize.background": "#fbd914",
 		"windowmanager#minimize.color": "#14141b",
@@ -165,6 +166,7 @@
 		"root.loader.background": "#87c1ce",
 		"root.sidebarSettingButton.background": "inherit",
 		"root.sidebarSettingButton.color": "#98aec1",
+		"root#sidebarResizer.background": "#292d42",
 
 		"windowmanager#minimize.background": "#fbd914",
 		"windowmanager#minimize.color": "#14141b",
@@ -315,6 +317,7 @@
 		"root.loader.background": "#6d94a2",
 		"root.sidebarSettingButton.background": "inherit",
 		"root.sidebarSettingButton.color": "inherit",
+		"root#sidebarResizer.background": "#bcc2e3",
 
 		"windowmanager#minimize.background": "#e9cc21",
 		"windowmanager#minimize.color": "#14141b",
@@ -465,6 +468,7 @@
 		"root.loader.background": "#8c9a97",
 		"root.sidebarSettingButton.background": "inherit",
 		"root.sidebarSettingButton.color": "inherit",
+		"root#sidebarResizer.background": "#cdd1e7",
 
 		"windowmanager#minimize.background": "#fbd914",
 		"windowmanager#minimize.color": "#14141b",
