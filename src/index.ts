@@ -15,6 +15,7 @@ import Hover from './Components/Layout/hover';
 import LAZY_LOAD_INIT from './Components/Functions/lazyLoadingImage';
 import Infobar from './Components/Layout/infobar';
 import Search from './Components/Files/File Operation/search';
+import Resizer from './Components/Layout/resizer';
 import { listenUpdateTheme } from './Api/window';
 // Wait DOM Loaded to be loaded
 document.addEventListener('DOMContentLoaded', async () => {
@@ -69,6 +70,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 	Search();
 	// Initialize lazy loading image handler (for performance)
 	LAZY_LOAD_INIT();
+	// Initialize sidebar resizer
+	Resizer();
 	// Listen to update theme event
 	listenUpdateTheme(async () => {
 		await Storage.get('theme', true);
