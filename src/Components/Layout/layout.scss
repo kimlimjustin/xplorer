@@ -272,6 +272,7 @@
 			}
 			.path-navigator {
 				flex: 3;
+				width: 50px;
 				margin: 0 1rem;
 				border: none;
 				border-radius: 5px;
@@ -285,6 +286,7 @@
 				border-radius: 5px;
 				padding: 0.5rem;
 				vertical-align: middle;
+				width: 30px;
 				&::-webkit-input-placeholder {
 					color: inherit;
 				}
