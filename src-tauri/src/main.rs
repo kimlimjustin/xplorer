@@ -221,7 +221,7 @@ async fn main() {
       let transparent_effect = match appearance.status {
         true => appearance.data["transparentEffect"]
           .as_str()
-          .unwrap()
+          .unwrap_or("none")
           .to_string(),
         false => "none".to_string(),
       };
