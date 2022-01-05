@@ -78,7 +78,26 @@ const Shortcut = (): void => {
 				} else pauseEnterListener = false;
 			}
 		}
-		// New tab shortcut
+		// Collapse sidebar (Ctrl + B)
+		if (e.ctrlKey && e.key === 'b') {
+			const sidebar = document.querySelector<HTMLElement>('.sidebar');
+			const xplorerBrand = document.querySelector<HTMLElement>('.xplorer-brand');
+			const appearance = await Storage.get('appearance');
+			let size: string;
+			if (getComputedStyle(sidebar).width === '70px') {
+				sidebar.classList.remove('sidebar-minimized');
+				xplorerBrand.innerHTML = 'Xplorer';
+				size = appearance.expandedSidebarWidth;
+			} else {
+				xplorerBrand.innerHTML = `<img src=${require('../../Icon/extension/xplorer.svg')} alt="xplorer" />`;
+				sidebar.classList.add('sidebar-minimized');
+				size = '70px';
+			}
+			appearance.sidebarWidth = size;
+			sidebar.style.flexBasis = size;
+			Storage.set('appearance', appearance);
+		}
+		// New tab shortcut (Ctrl + T)
 		else if (e.key === 't' && e.ctrlKey) {
 			createNewTab();
 		}
