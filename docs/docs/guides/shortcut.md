@@ -5,6 +5,7 @@
 | `Ctrl + A`          | Select All                |
 | `Ctrl + B`          | Toggle sidebar visibility |
 | `Ctrl + C`          | Copy                      |
+| `Ctrl + D`          | Duplicate file            |
 | `Ctrl + F`          | Search                    |
 | `Ctrl + H`          | Toggle Hidden Files       |
 | `Ctrl + N`          | New window shortcut       |
