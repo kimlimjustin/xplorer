@@ -16,7 +16,7 @@ Xplorer is a modern file explorer built from ground-up to be fully customizable 
 -   Easy to use
 -   [Cross-platform](https://xplorer.space/)
 -   [File Preview](https://xplorer.space/docs/guides/operation/#preview-file), even for videos!
--   [Customizable](http://localhost:3000/docs/Extensions/theme/)
+-   [Customizable](https://xplorer.space/docs/Extensions/theme/)
 -   Supports multiple tabs
 -   Most importantly, It's an Open Source Software (OSS)!
 
