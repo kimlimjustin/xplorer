@@ -1,7 +1,8 @@
-import { fs, invoke, tauri } from '@tauri-apps/api';
+// import { fs, invoke, tauri } from '@tauri-apps/api';
 import joinPath from '../Components/Functions/path/joinPath';
 import dirname from '../Components/Functions/path/dirname';
 import FileMetaData from '../Typings/fileMetaData';
+import isTauri from '../Util/is-tauri';
 
 /** Invoke Rust command to handle files */
 class FileAPI {
@@ -25,7 +26,7 @@ class FileAPI {
 	readFile(): Promise<string> {
 		return new Promise((resolve, reject) => {
 			if (typeof this.fileName === 'string') {
-				fs.readTextFile(this.fileName).then((fileContent) => resolve(fileContent));
+				// fs.readTextFile(this.fileName).then((fileContent) => resolve(fileContent));
 			} else {
 				reject('File name is not a string');
 			}
@@ -35,7 +36,8 @@ class FileAPI {
 	async readBuffer(): Promise<Buffer> {
 		const Buffer = require('buffer/').Buffer;
 		if (typeof this.fileName === 'string') {
-			return Buffer.from(await fs.readBinaryFile(this.fileName));
+			// return Buffer.from(await fs.readBinaryFile(this.fileName));
+			return Buffer;
 		}
 	}
 	/**
@@ -43,14 +45,20 @@ class FileAPI {
 	 * @returns {Promise<void>}
 	 */
 	async openFile(): Promise<void> {
-		return await invoke('open_file', { filePath: this.fileName });
+		if (isTauri) {
+			const { invoke } = require('@tauri-apps/api');
+			return await invoke('open_file', { filePath: this.fileName });
+		}
 	}
 	/**
 	 * Get tauri url of local assets
 	 * @returns {string}
 	 */
 	readAsset(): string {
-		return typeof this.fileName === 'string' ? tauri.convertFileSrc(this.fileName) : '';
+		if (isTauri) {
+			const { tauri } = require('@tauri-apps/api');
+			return typeof this.fileName === 'string' ? tauri.convertFileSrc(this.fileName) : '';
+		}
 	}
 	/**
 	 * Read file and return as JSON
@@ -66,7 +74,10 @@ class FileAPI {
 	 * @returns {boolean}
 	 */
 	async exists(): Promise<boolean> {
-		return await invoke('file_exist', { filePath: this.fileName });
+		if (isTauri) {
+			const { invoke } = require('@tauri-apps/api');
+			return await invoke('file_exist', { filePath: this.fileName });
+		}
 	}
 	/**
 	 * Create file if it doesn't exist
@@ -74,10 +85,10 @@ class FileAPI {
 	 */
 	async createFile(): Promise<void> {
 		if (typeof this.fileName === 'string') {
-			await invoke('create_dir_recursive', {
-				dirPath: dirname(this.fileName),
-			});
-			return await invoke('create_file', { filePath: this.fileName });
+			// await invoke('create_dir_recursive', {
+			// 	dirPath: dirname(this.fileName),
+			// });
+			// return await invoke('create_file', { filePath: this.fileName });
 		}
 	}
 	/**
@@ -85,7 +96,10 @@ class FileAPI {
 	 * @returns {Promise<FileMetaData>}
 	 */
 	async properties(): Promise<FileMetaData> {
-		return await invoke('get_file_properties', { filePath: this.fileName });
+		if (isTauri) {
+			const { invoke } = require('@tauri-apps/api');
+			return await invoke('get_file_properties', { filePath: this.fileName });
+		}
 	}
 
 	/**
@@ -94,7 +108,10 @@ class FileAPI {
 	 */
 	async isDir(): Promise<boolean> {
 		return new Promise((resolve) => {
-			invoke('is_dir', { path: this.fileName }).then((result: boolean) => resolve(result));
+			if (isTauri) {
+				const { invoke } = require('@tauri-apps/api');
+				invoke('is_dir', { path: this.fileName }).then((result: boolean) => resolve(result));
+			}
 		});
 	}
 
@@ -103,7 +120,10 @@ class FileAPI {
 	 * @returns {Promise<string>}
 	 */
 	async extractIcon(): Promise<string> {
-		return await invoke('extract_icon', { filePath: this.fileName });
+		if (isTauri) {
+			const { invoke } = require('@tauri-apps/api');
+			return await invoke('extract_icon', { filePath: this.fileName });
+		}
 	}
 
 	/**
@@ -111,7 +131,10 @@ class FileAPI {
 	 * @returns {number} - Size in bytes
 	 */
 	async calculateFilesSize(): Promise<number> {
-		return await invoke('calculate_files_total_size', { files: this.fileName });
+		if (isTauri) {
+			const { invoke } = require('@tauri-apps/api');
+			return await invoke('calculate_files_total_size', { files: this.fileName });
+		}
 	}
 }
 

@@ -1,10 +1,10 @@
 import joinPath from '../Components/Functions/path/joinPath';
 import normalizeSlash from '../Components/Functions/path/normalizeSlash';
-import { invoke } from '@tauri-apps/api';
 import type FileMetaData from '../Typings/fileMetaData';
-import { getCurrent } from '@tauri-apps/api/window';
-import { UnlistenFn } from '@tauri-apps/api/event';
+import type { UnlistenFn } from '@tauri-apps/api/event';
 import { LnkData } from '../Typings/fileMetaData';
+import isTauri from '../Util/is-tauri';
+import { READ_DIR_ENDPOINT } from '../Util/constants';
 let listener: UnlistenFn;
 let searchListener: UnlistenFn;
 interface DirectoryData {
@@ -32,10 +32,26 @@ class DirectoryAPI {
 	 */
 	getFiles(): Promise<DirectoryData> {
 		return new Promise((resolve) => {
-			invoke('read_directory', { dir: this.dirName }).then((files: DirectoryData) => {
-				this.files = files.files;
-				resolve(files);
-			});
+			if (isTauri) {
+				const { invoke } = require('@tauri-apps/api');
+				invoke('read_directory', { dir: this.dirName }).then((files: DirectoryData) => {
+					this.files = files.files;
+					resolve(files);
+				});
+			} else {
+				fetch(READ_DIR_ENDPOINT + this.dirName, { method: 'GET' }).then((res) => {
+					console.log(res);
+					res.json()
+						.then((files: DirectoryData) => {
+							console.log(files);
+							this.files = files.files;
+							resolve(files);
+						})
+						.catch((err) => {
+							console.error(err);
+						});
+				});
+			}
 		});
 	}
 	/**
@@ -44,7 +60,10 @@ class DirectoryAPI {
 	 */
 	async isDir(): Promise<boolean> {
 		return new Promise((resolve) => {
-			invoke('is_dir', { path: this.dirName }).then((result: boolean) => resolve(result));
+			if (isTauri) {
+				const { invoke } = require('@tauri-apps/api');
+				invoke('is_dir', { path: this.dirName }).then((result: boolean) => resolve(result));
+			}
 		});
 	}
 	/**
@@ -52,16 +71,22 @@ class DirectoryAPI {
 	 * @returns {boolean}
 	 */
 	async exists(): Promise<boolean> {
-		return await invoke('file_exist', { filePath: this.dirName });
+		if (isTauri) {
+			const { invoke } = require('@tauri-apps/api');
+			return await invoke('file_exist', { filePath: this.dirName });
+		}
 	}
 	/**
 	 * Create dir if not exists
 	 * @returns {any}
 	 */
 	async mkdir(): Promise<boolean> {
-		return await invoke('create_dir_recursive', {
-			dirPath: this.dirName,
-		});
+		if (isTauri) {
+			const { invoke } = require('@tauri-apps/api');
+			return await invoke('create_dir_recursive', {
+				dirPath: this.dirName,
+			});
+		}
 	}
 
 	/**
@@ -70,19 +95,27 @@ class DirectoryAPI {
 	 * @returns {any}
 	 */
 	async listen(cb: () => void): Promise<void> {
-		invoke('listen_dir', { dir: this.dirName });
-		listener = await getCurrent().listen('changes', (e) => {
-			console.log(e);
-			cb();
-		});
+		if (isTauri) {
+			const { invoke } = require('@tauri-apps/api');
+			invoke('listen_dir', { dir: this.dirName });
+			const { getCurrent } = require('@tauri-apps/api/window');
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			listener = await getCurrent().listen('changes', (e: any) => {
+				console.log(e);
+				cb();
+			});
+		}
 	}
 	/**
 	 * Unlisten to previous listener
 	 * @returns {Promise<void>}
 	 */
 	async unlisten(): Promise<void> {
-		listener?.();
-		return getCurrent().emit('unlisten_dir');
+		if (isTauri) {
+			const { getCurrent } = require('@tauri-apps/api/window');
+			listener?.();
+			return getCurrent().emit('unlisten_dir');
+		}
 	}
 
 	/**
@@ -90,7 +123,10 @@ class DirectoryAPI {
 	 * @returns {Promise<number>}
 	 */
 	async getSize(): Promise<number> {
-		return await invoke('get_dir_size', { dir: this.dirName });
+		if (isTauri) {
+			const { invoke } = require('@tauri-apps/api');
+			return await invoke('get_dir_size', { dir: this.dirName });
+		}
 	}
 
 	/**
@@ -98,10 +134,14 @@ class DirectoryAPI {
 	 * @returns {Promise<boolean>}
 	 */
 	async stopSearching(): Promise<boolean> {
-		const listenerExist = searchListener !== null && searchListener !== undefined;
-		searchListener?.();
-		await getCurrent().emit('unsearch');
-		return listenerExist;
+		if (isTauri) {
+			const { getCurrent } = require('@tauri-apps/api/window');
+
+			const listenerExist = searchListener !== null && searchListener !== undefined;
+			searchListener?.();
+			await getCurrent().emit('unsearch');
+			return listenerExist;
+		}
 	}
 
 	/**
@@ -111,13 +151,18 @@ class DirectoryAPI {
 	 * @returns {any}
 	 */
 	async search(pattern: string, callback: (partialFound: FileMetaData[]) => void): Promise<FileMetaData[]> {
-		searchListener = await getCurrent().listen('search_partial_result', (res) => {
-			if (searchListener !== null && searchListener !== undefined) callback(res.payload as FileMetaData[]);
-		});
-		const res = await invoke('search_in_dir', { dirPath: this.dirName, pattern });
-		await this.stopSearching();
-		searchListener = null;
-		return res as FileMetaData[];
+		if (isTauri) {
+			const { getCurrent } = require('@tauri-apps/api/window');
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			searchListener = await getCurrent().listen('search_partial_result', (res: any) => {
+				if (searchListener !== null && searchListener !== undefined) callback(res.payload as FileMetaData[]);
+			});
+			const { invoke } = require('@tauri-apps/api');
+			const res = await invoke('search_in_dir', { dirPath: this.dirName, pattern });
+			await this.stopSearching();
+			searchListener = null;
+			return res as FileMetaData[];
+		}
 	}
 }
 

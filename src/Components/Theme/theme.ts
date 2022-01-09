@@ -1,6 +1,8 @@
-import { listenStylesheetChange } from '../../Service/app';
+import isTauri from '../../Util/is-tauri';
+import { isVSCodeInstalled, listenStylesheetChange } from '../../Service/app';
 import Storage from '../../Service/storage';
 import { CustomTheme, Theme } from '../../Typings/theme';
+import IsValid from '../Functions/validChecker';
 /**
  * Detect system theme
  * @returns {string}
@@ -87,7 +89,7 @@ const changeTheme = async (theme?: string, category?: '*' | 'root' | 'tabbing' |
 	if (!category) category = '*';
 	const appearance = await Storage.get('appearance');
 	if (category === '*' || category === 'root') {
-		document.body.style.setProperty('--edge-radius', appearance?.frameStyle === 'os' ? '0px' : '10px');
+		document.body.style.setProperty('--edge-radius', appearance?.frameStyle === 'os' || !isTauri ? '0px' : '10px');
 		document.body.style.fontSize = appearance?.fontSize ?? '16px';
 		document.documentElement.style.fontSize = appearance?.fontSize ?? '16px';
 		document.body.style.fontFamily = appearance?.fontFamily ?? 'system-ui';
@@ -131,8 +133,8 @@ const changeTheme = async (theme?: string, category?: '*' | 'root' | 'tabbing' |
 		style.id = 'root';
 		let styles = '';
 		// Generate CSS styles from user theme
-		for (const key of Object.keys(themeJSON ?? defaultThemeJSON[theme])) {
-			const value = themeJSON ? themeJSON[key] : defaultThemeJSON[theme]?.[key];
+		for (const key of Object.keys(IsValid(themeJSON) ? themeJSON : defaultThemeJSON[theme])) {
+			const value = IsValid(themeJSON) ? themeJSON[key] : defaultThemeJSON[theme]?.[key];
 			const formalKey = key.replace(/[A-Z]/g, (m) => '-' + m.toLowerCase());
 			const splittedKey = formalKey.split('.');
 			const styleKey = splittedKey[splittedKey.length - 1];

@@ -1,4 +1,4 @@
-import { invoke } from '@tauri-apps/api/tauri';
+import isTauri from '../Util/is-tauri';
 import OS from './platform';
 interface Drive {
 	name: string;
@@ -33,19 +33,17 @@ class DrivesAPI {
 	 */
 	get(): Promise<Drive[]> {
 		return new Promise((resolve) => {
-			invoke('get_drives').then(
-				(drives: { array_of_drives: Drive[] }) => {
-					let filteredDrives = drives.array_of_drives.filter(
-						(drive) => drive.available_space > 0
-					);
+			if (isTauri) {
+				const { invoke } = require('@tauri-apps/api');
+
+				invoke('get_drives').then((drives: { array_of_drives: Drive[] }) => {
+					let filteredDrives = drives.array_of_drives.filter((drive) => drive.available_space > 0);
 					if (platform !== 'win32') {
-						filteredDrives = filteredDrives.filter(
-							(drive) => drive.is_removable
-						);
+						filteredDrives = filteredDrives.filter((drive) => drive.is_removable);
 					}
 					resolve(filteredDrives);
-				}
-			);
+				});
+			} else resolve([]);
 		});
 	}
 	async build(): Promise<void> {
@@ -61,10 +59,7 @@ class DrivesAPI {
 		drives.forEach((drive) =>
 			result.push({
 				mount_point: drive.mount_point,
-				name:
-					drive.name && /[^?]/.test(drive.name)
-						? drive.name
-						: drive.disk_type,
+				name: drive.name && /[^?]/.test(drive.name) ? drive.name : drive.disk_type,
 			})
 		);
 		return result;
@@ -79,9 +74,7 @@ class DrivesAPI {
 		let _drives = JSON.stringify(this.getUniqueDrives(this.DRIVES));
 		setInterval(async () => {
 			await this.build();
-			const _refreshedDrive = JSON.stringify(
-				this.getUniqueDrives(this.DRIVES)
-			);
+			const _refreshedDrive = JSON.stringify(this.getUniqueDrives(this.DRIVES));
 			if (_refreshedDrive !== _drives) {
 				cb();
 			}

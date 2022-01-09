@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { invoke } from '@tauri-apps/api';
+
+import isTauri from '../Util/is-tauri';
 
 interface StorageData {
 	[key: string]: JSON;
@@ -16,8 +17,11 @@ const data: StorageData = {};
  * @returns {Promise<void>}
  */
 const set = async (key: string, value: any): Promise<void> => {
-	data[key] = value;
-	return await invoke('write_data', { key, value });
+	if (isTauri) {
+		data[key] = value;
+		const { invoke } = require('@tauri-apps/api');
+		return await invoke('write_data', { key, value });
+	}
 };
 
 /**
@@ -34,9 +38,12 @@ const get = async (key: string, force?: boolean): Promise<any> => {
 	if (Object.keys(data).includes(key) && !force) {
 		return data[key];
 	} else {
-		const returnedData = (await invoke('read_data', { key })) as returnedType;
-		data[key] = returnedData.data;
-		return returnedData.status ? returnedData.data : {};
+		if (isTauri) {
+			const { invoke } = require('@tauri-apps/api');
+			const returnedData = (await invoke('read_data', { key })) as returnedType;
+			data[key] = returnedData.data;
+			return returnedData.status ? returnedData.data : {};
+		}
 	}
 };
 
@@ -46,7 +53,10 @@ const get = async (key: string, force?: boolean): Promise<any> => {
  * @returns {any}
  */
 const remove = async (key: string): Promise<void> => {
-	await invoke('delete_storage_data', { key });
+	if (isTauri) {
+		const { invoke } = require('@tauri-apps/api');
+		await invoke('delete_storage_data', { key });
+	}
 };
 
 export default { get, set, remove };
