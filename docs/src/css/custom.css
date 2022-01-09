@@ -18,6 +18,7 @@
 	--ifm-table-background: #cbccd1;
 	--ifm-table-head-background: #d5d6db;
 	--ifm-pre-background: #fff;
+	--text-primary-lightness: 0%;
 	--white: rgb(248, 239, 239);
 	--dark: #05010d;
 	--gray-color: rgb(208, 211, 211);
@@ -41,6 +42,7 @@ html[data-theme='dark'] {
 	--ifm-footer-background-color: var(--dark);
 	--ifm-table-background: var(--dark);
 	--ifm-table-head-background: var(--dark);
+	--text-primary-lightness: 100%;
 	background: #05010d;
 }
 
@@ -167,6 +169,11 @@ html[data-theme='dark'] .docusaurus-highlight-code-line {
 	background: -webkit-linear-gradient(-70deg, #5b26bb, #1830d3);
 }
 
+.download--btn:hover,
+.explore--docs--link:hover,
+.submit-newsletter-btn:hover{
+	color: hsl(0, 0%, var(--text-primary-lightness));
+}
 .download--btn::before {
 	content: '';
 	position: absolute;
@@ -385,6 +392,7 @@ label[for='email-input-field'] {
 }
 
 #email-input-field {
+	color: hsl(0, 0%, var(--text-primary-lightness));
 	background-color: transparent;
 	border: none;
 	border-radius: 0;
@@ -554,7 +562,7 @@ label[for='email-input-field'] {
 	text-decoration: none !important;
 	text-align: left;
 	margin-left: 1rem;
-	color: initial;
+	color: hsl(0, 0%, var(--text-primary-lightness));
 }
 .supports-contributor-name {
 	font-size: 1.2rem;
