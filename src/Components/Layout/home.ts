@@ -44,6 +44,7 @@ const Home = async (): Promise<void> => {
 
 		// And also the theme :)
 		updateTheme('favorites');
+		updateTheme('grid');
 		stopLoading();
 	}
 	updateTheme('favorites');
