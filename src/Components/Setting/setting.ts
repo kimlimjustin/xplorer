@@ -1,6 +1,6 @@
 import Translate from '../I18n/i18n';
 import fileThumbnail from '../Thumbnail/thumbnail';
-import Storage from '../../Api/storage';
+import Storage from '../../Service/storage';
 
 import About from './About/about';
 import Appearance from './Appearance/Appearance';
