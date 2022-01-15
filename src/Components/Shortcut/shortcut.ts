@@ -25,6 +25,7 @@ import { Trash, PermanentDelete, Purge } from '../Files/File Operation/trash';
 import Properties from '../Properties/properties';
 import Preview, { closePreviewFile } from '../Files/File Preview/preview';
 import { ensureElementInViewPort } from '../Functions/viewport';
+import OperationAPI from '../../Api/operation';
 let selectedAll = true;
 let pauseEnterListener = false;
 /**
@@ -78,7 +79,31 @@ const Shortcut = (): void => {
 				} else pauseEnterListener = false;
 			}
 		}
-		// New tab shortcut
+		// Collapse sidebar (Ctrl + B)
+		if (e.ctrlKey && e.key === 'b') {
+			const sidebar = document.querySelector<HTMLElement>('.sidebar');
+			const xplorerBrand = document.querySelector<HTMLElement>('.xplorer-brand');
+			const appearance = await Storage.get('appearance');
+			let size: string;
+			if (getComputedStyle(sidebar).width === '70px') {
+				sidebar.classList.remove('sidebar-minimized');
+				xplorerBrand.innerHTML = 'Xplorer';
+				size = appearance.expandedSidebarWidth;
+			} else {
+				xplorerBrand.innerHTML = `<img src=${require('../../Icon/extension/xplorer.svg')} alt="xplorer" />`;
+				sidebar.classList.add('sidebar-minimized');
+				size = '70px';
+			}
+			appearance.sidebarWidth = size;
+			sidebar.style.flexBasis = size;
+			Storage.set('appearance', appearance);
+		}
+		// Duplicate file (Ctrl + D)
+		if (e.ctrlKey && e.key === 'd') {
+			console.log('a');
+			new OperationAPI(selectedFilePath).duplicate();
+		}
+		// New tab shortcut (Ctrl + T)
 		else if (e.key === 't' && e.ctrlKey) {
 			createNewTab();
 		}
@@ -214,8 +239,8 @@ const Shortcut = (): void => {
 				Trash(filePaths);
 			}
 		} else if (e.keyCode >= 65 && e.keyCode <= 90) {
-			// ignore some keys that has its own function
-			if (e.ctrlKey && (e.key === 'a' || e.key === 'p' || e.key === 'f')) return;
+			// ignore some keys
+			if (e.ctrlKey) return;
 			clearInterval(_searchListener);
 			if (e.key.toLowerCase() === searchingFileName.at(-1)) {
 				const _files = [...document.querySelectorAll('.file')].filter((file: HTMLElement) => {
@@ -241,7 +266,6 @@ const Shortcut = (): void => {
 				unselectAllSelected();
 				for (const _file of _files) {
 					const _fileName = _file.querySelector('#file-filename').innerHTML.toLowerCase();
-					console.log(_fileName.normalize('NFD').replace(/[\u0300-\u036f]/g, ''));
 					if (
 						_fileName
 							.normalize('NFD')

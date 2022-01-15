@@ -1,5 +1,6 @@
 import Translate from '../I18n/i18n';
 import fileThumbnail from '../Thumbnail/thumbnail';
+import Storage from '../../Api/storage';
 
 import About from './About/about';
 import Appearance from './Appearance/Appearance';
@@ -38,7 +39,7 @@ const Setting = async (): Promise<void> => {
 			)}</span>`;
 			settingsSidebarItems.appendChild(settingsItem);
 
-			settingsItem.addEventListener('click', () => {
+			settingsItem.addEventListener('click', async () => {
 				setActiveTab(item);
 				switch (item) {
 					case 'Appearance':
@@ -51,11 +52,26 @@ const Setting = async (): Promise<void> => {
 						About();
 						break;
 				}
+				const appearance = (await Storage.get('appearance')) ?? {};
+				appearance['activeSettingsTab'] = item;
+				Storage.set('appearance', appearance);
 			});
 		}
-		Appearance();
+		const appearance = (await Storage.get('appearance')) ?? {};
+		const activeSettingsTab = appearance['activeSettingsTab'] ?? defaultTab;
+		setActiveTab(activeSettingsTab);
+		switch (activeSettingsTab) {
+			case 'Appearance':
+				Appearance();
+				break;
+			case 'Preference':
+				Preference();
+				break;
+			case 'About':
+				About();
+				break;
+		}
 
-		setActiveTab(defaultTab);
 		document.querySelector('.exit-setting-btn').addEventListener('click', () => {
 			document.querySelector<HTMLElement>('.settings').style.animation = 'close-setting 1s forwards';
 		});

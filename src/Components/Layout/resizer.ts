@@ -57,7 +57,7 @@ const Resizer = async (): Promise<void> => {
 
 	function resize(e: MouseEvent) {
 		let size: string;
-		if (e.x < 200) {
+		if (e.x < 220) {
 			sidebar.classList.add('sidebar-minimized');
 			settingsSidebar.classList.add('sidebar-minimized');
 			xplorerBrand.innerHTML = `<img src=${require('../../Icon/extension/xplorer.svg')} alt="xplorer" />`;

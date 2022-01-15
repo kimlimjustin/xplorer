@@ -11,6 +11,7 @@
 	"root.loader.background": "#87c1ce",
 	"root.sidebarSettingButton.background": "inherit",
 	"root.sidebarSettingButton.color": "#98aec1",
+	"root#sidebarResizer.background": "#2c2c58d9",
 
 	"windowmanager#minimize.background": "#fbd914",
 	"windowmanager#minimize.color": "#14141b",
