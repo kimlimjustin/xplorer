@@ -29,21 +29,24 @@ const Support = () => {
 				</Link>
 			</p>
 			<div className="supports-contributors">
-				{contributors.slice(0, 50).map((contributor) => (
-					<Link to={contributor.html_url} key={contributor.id}>
-						<div className="supports-contributor">
-							<img
-								className="supports-contributor-image"
-								src={contributor.avatar_url}
-								alt={`${contributor.login} has contributed ${contributor.contributions} times to Xplorer`}
-							/>
-							<div className="supports-contributor-info">
-								<span className="supports-contributor-name">{contributor.login}</span>
-								<span className="supports-contributor-count">{contributor.contributions} contributions</span>
-							</div>
-						</div>
-					</Link>
-				))}
+				{contributors.slice(0, 50).map(
+					(contributor) =>
+						contributor.login !== "dependabot[bot]" && (
+							<Link to={contributor.html_url} key={contributor.id}>
+								<div className="supports-contributor">
+									<img
+										className="supports-contributor-image"
+										src={contributor.avatar_url}
+										alt={`${contributor.login} has contributed ${contributor.contributions} times to Xplorer`}
+									/>
+									<div className="supports-contributor-info">
+										<span className="supports-contributor-name">{contributor.login}</span>
+										<span className="supports-contributor-count">{contributor.contributions} contributions</span>
+									</div>
+								</div>
+							</Link>
+						)
+				)}
 			</div>
 		</div>
 	);

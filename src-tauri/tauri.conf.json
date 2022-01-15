@@ -1,7 +1,7 @@
 {
 	"package": {
 		"productName": "Xplorer",
-		"version": "0.3.0"
+		"version": "0.3.1"
 	},
 	"build": {
 		"distDir": "../out/src",
@@ -71,6 +71,8 @@
 				"title": "Xplorer",
 				"width": 1000,
 				"height": 700,
+				"minWidth": 420,
+				"minHeight": 300,
 				"resizable": true,
 				"fullscreen": false,
 				"decorations": false,

@@ -42,6 +42,7 @@ checksum = "8b26702f315f53b6071259e15dd9d64528213b44d61de1ec926eca7715d62203"
 name = "app"
 version = "0.1.0"
 dependencies = [
+ "bincode",
  "clap",
  "font-loader",
  "glob",
@@ -59,6 +60,7 @@ dependencies = [
  "tauri-build",
  "tauri-plugin-shadows",
  "tauri-plugin-vibrancy",
+ "tauri-plugin-window-state",
  "tokio",
  "trash",
  "url",
@@ -3452,6 +3454,17 @@ dependencies = [
  "objc",
  "tauri",
  "windows 0.29.0",
+]
+
+[[package]]
+name = "tauri-plugin-window-state"
+version = "0.1.0"
+source = "git+https://github.com/tauri-apps/tauri-plugin-window-state#64940a4c3798215520a4db171079cc2bccea2455"
+dependencies = [
+ "bincode",
+ "serde",
+ "serde_json",
+ "tauri",
 ]
 
 [[package]]

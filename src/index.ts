@@ -16,6 +16,7 @@ import LAZY_LOAD_INIT from './Components/Functions/lazyLoadingImage';
 import Infobar from './Components/Layout/infobar';
 import Search from './Components/Files/File Operation/search';
 import { listenUpdateTheme } from './Service/window';
+import Resizer from './Components/Layout/resizer';
 // Wait DOM Loaded to be loaded
 document.addEventListener('DOMContentLoaded', async () => {
 	// Read user preferences
@@ -69,6 +70,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 	Search();
 	// Initialize lazy loading image handler (for performance)
 	LAZY_LOAD_INIT();
+	// Initialize sidebar resizer
+	Resizer();
 	// Listen to update theme event
 	listenUpdateTheme(async () => {
 		await Storage.get('theme', true);

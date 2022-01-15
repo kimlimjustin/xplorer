@@ -4,8 +4,8 @@ import DirectoryAPI from './directory';
  * Invoke Rust command to operate files/dirs
  */
 class OperationAPI {
-	readonly src: string;
-	readonly dest: string;
+	private src: string;
+	private dest: string;
 	constructor(src: string, dest?: string) {
 		this.src = src;
 		this.dest = dest;
@@ -41,6 +41,12 @@ class OperationAPI {
 		} else {
 			return await removeFile(this.src);
 		}
+	}
+
+	async duplicate(): Promise<void> {
+		this.dest =
+			this.src.split('.').length > 1 ? this.src.split('.').slice(0, -1) + ' - COPY.' + this.src.split('.').slice(-1) : this.src + ' - COPY';
+		return await this.copyFile();
 	}
 }
 export default OperationAPI;
