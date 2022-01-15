@@ -25,7 +25,7 @@ import { Trash, PermanentDelete, Purge } from '../Files/File Operation/trash';
 import Properties from '../Properties/properties';
 import Preview, { closePreviewFile } from '../Files/File Preview/preview';
 import { ensureElementInViewPort } from '../Functions/viewport';
-import OperationAPI from '../../Api/operation';
+import OperationAPI from '../../Service/operation';
 let selectedAll = true;
 let pauseEnterListener = false;
 /**
