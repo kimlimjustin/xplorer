@@ -1,3 +1,4 @@
+import { GET_DRIVES_ENDPOINT } from '../Util/constants';
 import isTauri from '../Util/is-tauri';
 import OS from './platform';
 interface Drive {
@@ -43,7 +44,17 @@ class DrivesAPI {
 					}
 					resolve(filteredDrives);
 				});
-			} else resolve([]);
+			} else {
+				fetch(GET_DRIVES_ENDPOINT, { method: 'GET' })
+					.then((res) => res.json())
+					.then((res: { array_of_drives: Drive[] }) => {
+						let filteredDrives = res.array_of_drives.filter((drive) => drive.available_space > 0);
+						if (platform !== 'win32') {
+							filteredDrives = filteredDrives.filter((drive) => drive.is_removable);
+						}
+						resolve(filteredDrives);
+					});
+			}
 		});
 	}
 	async build(): Promise<void> {
