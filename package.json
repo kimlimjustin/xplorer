@@ -17,7 +17,7 @@
 	],
 	"scripts": {
 		"start": "yarn dev",
-		"web": "live-server ./out/src",
+		"web": "concurrently \"cd api/web && cargo run\" \"live-server ./out/src\"",
 		"dev": "yarn compile && concurrently --kill-others \"yarn compile:watch\" \"yarn sass:watch\" \"yarn web\" \"tauri dev\"",
 		"clean": "rimraf out",
 		"sass": "sass src/Public/style.scss out/src/Public/style.css",
