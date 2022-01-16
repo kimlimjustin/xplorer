@@ -3,6 +3,7 @@ import joinPath from '../Components/Functions/path/joinPath';
 import dirname from '../Components/Functions/path/dirname';
 import FileMetaData from '../Typings/fileMetaData';
 import isTauri from '../Util/is-tauri';
+import { CHECK_EXIST_ENDPOINT, CHECK_ISDIR_ENDPOINT } from '../Util/constants';
 
 /** Invoke Rust command to handle files */
 class FileAPI {
@@ -77,6 +78,9 @@ class FileAPI {
 		if (isTauri) {
 			const { invoke } = require('@tauri-apps/api');
 			return await invoke('file_exist', { filePath: this.fileName });
+		} else {
+			const exists = await (await fetch(CHECK_EXIST_ENDPOINT + this.fileName, { method: 'GET' })).json();
+			return exists;
 		}
 	}
 	/**
@@ -111,6 +115,10 @@ class FileAPI {
 			if (isTauri) {
 				const { invoke } = require('@tauri-apps/api');
 				invoke('is_dir', { path: this.fileName }).then((result: boolean) => resolve(result));
+			} else {
+				fetch(CHECK_ISDIR_ENDPOINT + this.fileName, { method: 'GET' })
+					.then((response) => response.json())
+					.then((result: boolean) => resolve(result));
 			}
 		});
 	}

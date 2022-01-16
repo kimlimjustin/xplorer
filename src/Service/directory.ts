@@ -4,7 +4,7 @@ import type FileMetaData from '../Typings/fileMetaData';
 import type { UnlistenFn } from '@tauri-apps/api/event';
 import { LnkData } from '../Typings/fileMetaData';
 import isTauri from '../Util/is-tauri';
-import { READ_DIR_ENDPOINT } from '../Util/constants';
+import { CHECK_EXIST_ENDPOINT, CHECK_ISDIR_ENDPOINT, READ_DIR_ENDPOINT } from '../Util/constants';
 let listener: UnlistenFn;
 let searchListener: UnlistenFn;
 interface DirectoryData {
@@ -63,6 +63,10 @@ class DirectoryAPI {
 			if (isTauri) {
 				const { invoke } = require('@tauri-apps/api');
 				invoke('is_dir', { path: this.dirName }).then((result: boolean) => resolve(result));
+			} else {
+				fetch(CHECK_ISDIR_ENDPOINT + this.dirName, { method: 'GET' })
+					.then((response) => response.json())
+					.then((result: boolean) => resolve(result));
 			}
 		});
 	}
@@ -74,6 +78,9 @@ class DirectoryAPI {
 		if (isTauri) {
 			const { invoke } = require('@tauri-apps/api');
 			return await invoke('file_exist', { filePath: this.dirName });
+		} else {
+			const exists = await (await fetch(CHECK_EXIST_ENDPOINT + this.dirName, { method: 'GET' })).json();
+			return exists;
 		}
 	}
 	/**
