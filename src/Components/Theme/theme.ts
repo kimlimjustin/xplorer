@@ -94,18 +94,24 @@ const changeTheme = async (theme?: string, category?: '*' | 'root' | 'tabbing' |
 		document.documentElement.style.fontSize = appearance?.fontSize ?? '16px';
 		document.body.style.fontFamily = appearance?.fontFamily ?? 'system-ui';
 		document.documentElement.style.fontFamily = appearance?.fontFamily ?? 'system-ui';
-		document.body.style.setProperty(
-			'--sidebar-transparency',
-			appearance?.transparentSidebar ?? true ? appearance?.windowTransparency ?? '0.8' : '1'
-		);
-		document.body.style.setProperty(
-			'--workspace-transparency',
-			appearance?.transparentWorkspace ?? false ? appearance?.windowTransparency ?? '0.8' : '1'
-		);
-		document.body.style.setProperty(
-			'--topbar-transparency',
-			appearance?.transparentTopbar ?? false ? appearance?.windowTransparency ?? '0.8' : '1'
-		);
+		if (isTauri) {
+			document.body.style.setProperty(
+				'--sidebar-transparency',
+				appearance?.transparentSidebar ?? true ? appearance?.windowTransparency ?? '0.8' : '1'
+			);
+			document.body.style.setProperty(
+				'--workspace-transparency',
+				appearance?.transparentWorkspace ?? false ? appearance?.windowTransparency ?? '0.8' : '1'
+			);
+			document.body.style.setProperty(
+				'--topbar-transparency',
+				appearance?.transparentTopbar ?? false ? appearance?.windowTransparency ?? '0.8' : '1'
+			);
+		} else {
+			document.body.style.setProperty('--sidebar-transparency', '1');
+			document.body.style.setProperty('--workspace-transparency', '1');
+			document.body.style.setProperty('--topbar-transparency', '1');
+		}
 
 		document.querySelectorAll<HTMLElement>('.sidebar-hover-effect').forEach((obj) => {
 			obj.style.borderRadius = '6px';
@@ -270,7 +276,8 @@ const getInstalledThemes = async (): Promise<CustomTheme[]> => {
  */
 const updateTheme = async (category?: '*' | 'root' | 'tabbing' | 'favorites' | 'grid', customStyleSheet?: JSON): Promise<void> => {
 	const data = await Storage.get('theme');
-	if (customStyleSheet) {
+	if (IsValid(customStyleSheet)) {
+		console.log(customStyleSheet);
 		themeJSON = customStyleSheet as unknown as Theme;
 		document.body.dataset.usingCustomTheme = 'true';
 		listenStylesheetChange((styles) => {
