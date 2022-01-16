@@ -1,12 +1,18 @@
+use parselnk::Lnk;
 use std::fs;
 #[cfg(windows)]
 use std::os::windows::prelude::*;
 use std::path::Path;
 use std::time::SystemTime;
 use warp::Filter;
+mod drives;
 mod file_lib;
 use dirs_next;
+use font_loader::system_fonts;
 use std::collections::HashMap;
+#[cfg(target_os = "windows")]
+use std::os::windows::process::CommandExt;
+use std::process::Command;
 
 #[derive(serde::Serialize, Clone, Debug)]
 pub struct FileMetaData {
@@ -23,6 +29,20 @@ pub struct FileMetaData {
   last_accessed: SystemTime,
   created: SystemTime,
   is_trash: bool,
+}
+
+#[derive(serde::Serialize)]
+pub struct FolderInformation {
+  number_of_files: u16,
+  files: Vec<FileMetaData>,
+  skipped_files: Vec<String>,
+  lnk_files: Vec<LnkData>,
+}
+
+#[derive(serde::Serialize, Clone, Debug)]
+pub struct LnkData {
+  file_path: String,
+  icon: String,
 }
 
 /// Get basename of the path given
@@ -126,11 +146,58 @@ pub fn get_file_properties(file_path: String) -> Result<FileMetaData, String> {
   })
 }
 
-#[derive(serde::Serialize)]
-pub struct FolderInformation {
-  number_of_files: u16,
-  files: Vec<FileMetaData>,
-  skipped_files: Vec<String>,
+/// Extract icon from executable file
+///
+/// Only supported on Windows
+#[cfg(target_os = "windows")]
+pub fn extract_icon(file_path: String) -> Result<String, String> {
+  let storage_dir = Path::new(&dirs_next::data_local_dir().unwrap()).join("Xplorer/cache");
+  fs::create_dir_all(storage_dir.clone()).unwrap();
+  let basename = get_basename(file_path.clone());
+  let icon_path = storage_dir.join(basename.clone() + ".png");
+  if icon_path.exists() {
+    Ok(icon_path.to_str().unwrap().to_string())
+  } else {
+    Command::new("powershell")
+      .args(&[
+        "./src/extractIcon.ps1",
+        file_path.as_str(),
+        icon_path.to_str().unwrap(),
+      ])
+      .creation_flags(0x08000000)
+      .output()
+      .expect("Failed to extract icon");
+
+    Ok(icon_path.to_str().unwrap().to_string())
+  }
+}
+
+/// Extract icon from executable file
+#[cfg(not(target_os = "windows"))]
+pub fn extract_icon(_file_path: String) -> Result<String, String> {
+  Err("Not supported".to_string())
+}
+
+fn calculate_dir_size(dir: String) -> u64 {
+  let mut total_size: u64 = 0;
+  let mut stack = vec![dir];
+  while let Some(path) = stack.pop() {
+    let entry = fs::read_dir(path);
+    let entry = match entry {
+      Ok(result) => result,
+      Err(_) => continue,
+    };
+    for file in entry {
+      let file = file.unwrap();
+      let metadata = file.metadata().unwrap();
+      if metadata.is_dir() {
+        stack.push(file.path().to_str().unwrap().to_string());
+      } else {
+        total_size += metadata.len();
+      }
+    }
+  }
+  total_size
 }
 
 #[tokio::main]
@@ -148,6 +215,7 @@ async fn main() {
         let mut number_of_files: u16 = 0;
         let mut files = Vec::new();
         let mut skipped_files = Vec::new();
+        let mut lnk_files: Vec<LnkData> = Vec::new();
         for path in paths {
           number_of_files += 1;
           let file_path = path.unwrap().path().display().to_string();
@@ -160,14 +228,40 @@ async fn main() {
             if hide_system_files && file_info.is_system {
               skipped_files.push(file_path);
               continue;
-            };
-            files.push(file_info);
+            }
+            if file_info.file_type == "Windows Shortcut" {
+              let path = std::path::Path::new(&file_info.file_path);
+              let lnk = Lnk::try_from(path).unwrap();
+              let lnk_icon = lnk.string_data.icon_location;
+              let lnk_icon = match lnk_icon {
+                Some(icon) => {
+                  let icon = icon.into_os_string().into_string().unwrap();
+                  let icon_type = file_lib::get_type(icon.clone(), false);
+                  if icon_type == "Image" {
+                    icon
+                  } else if icon_type == "Executable" {
+                    extract_icon(icon).unwrap_or("".to_string())
+                  } else {
+                    "".to_string()
+                  }
+                }
+                None => "".to_string(),
+              };
+              lnk_files.push(LnkData {
+                file_path: file_path,
+                icon: lnk_icon,
+              });
+              files.push(file_info)
+            } else {
+              files.push(file_info)
+            }
           };
         }
         return serde_json::to_string(&serde_json::json!(FolderInformation {
           number_of_files,
           files,
           skipped_files,
+          lnk_files
         }))
         .unwrap();
       }
@@ -196,6 +290,71 @@ async fn main() {
       }
       None => "false".to_string(),
     })
+    .with(cors.clone());
+
+  let open_file = warp::get()
+    .and(warp::path("open_file"))
+    .and(warp::query::<HashMap<String, String>>())
+    .map(|p: HashMap<String, String>| match p.get("path") {
+      Some(path) => {
+        open::that(path).unwrap();
+        return "".to_string();
+      }
+      None => "".to_string(),
+    })
+    .with(cors.clone());
+
+  let get_available_fonts = warp::path("get_available_fonts")
+    .map(|| {
+      let fonts = system_fonts::query_all();
+      serde_json::to_string(&serde_json::json!(fonts)).unwrap()
+    })
+    .with(cors.clone());
+
+  let get_dir_size = warp::get()
+    .and(warp::path("get_dir_size"))
+    .and(warp::query::<HashMap<String, String>>())
+    .map(|p: HashMap<String, String>| match p.get("path") {
+      Some(path) => {
+        let dir_size = calculate_dir_size(path.to_string());
+        return serde_json::to_string(&serde_json::json!(dir_size)).unwrap();
+      }
+      None => "".to_string(),
+    })
+    .with(cors.clone());
+
+  let calculate_dirs_size = warp::get()
+    .and(warp::path("calculate_dirs_size"))
+    .and(warp::query::<HashMap<String, String>>())
+    .map(|p: HashMap<String, String>| match p.get("paths") {
+      // Split paths by %2c%2c
+      Some(paths) => {
+        let paths: Vec<String> = paths.split(",-,").map(|s| s.to_string()).collect();
+        let mut total_size: u64 = 0;
+        for file in paths {
+          let metadata = fs::metadata(file.clone()).unwrap();
+          if metadata.is_dir() {
+            total_size += calculate_dir_size(file);
+          }
+          total_size += metadata.len();
+        }
+        return serde_json::to_string(&serde_json::json!(total_size)).unwrap();
+      }
+      None => "".to_string(),
+    })
+    .with(cors.clone());
+
+  let get_drives = warp::get()
+    .and(warp::path("drives"))
+    .map(|| {
+      let drives = drives::get_drives().unwrap();
+      serde_json::to_string(&serde_json::json!(drives)).unwrap()
+    })
+    .with(cors.clone());
+
+  let get_platform = warp::get()
+    .and(warp::path("platform"))
+    .map(|| serde_json::to_string(std::env::consts::OS).unwrap())
     .with(cors.clone());
 
   let get_favorite_paths = warp::path!("dir" / "favorites")
@@ -249,7 +408,13 @@ async fn main() {
       read_dir_route
         .or(get_favorite_paths)
         .or(check_exist)
-        .or(check_isdir),
+        .or(check_isdir)
+        .or(open_file)
+        .or(get_available_fonts)
+        .or(get_dir_size)
+        .or(get_drives)
+        .or(get_platform)
+        .or(calculate_dirs_size),
     )
     .with(cors);
 

@@ -1,3 +1,4 @@
+import { GET_AVAILABLE_FONTS_ENDPOINT } from '../Util/constants';
 import isTauri from '../Util/is-tauri';
 let _vscodeInstalled: boolean | undefined;
 const isVSCodeInstalled = async (): Promise<boolean> => {
@@ -10,26 +11,13 @@ const isVSCodeInstalled = async (): Promise<boolean> => {
 };
 
 const getAvailableFonts = async (): Promise<string[]> => {
-	const { invoke } = require('@tauri-apps/api');
-	if (!isTauri) {
-		const { fonts } = document;
-		const it = fonts.entries();
-
-		const arr = [];
-		let done = false;
-
-		while (!done) {
-			const font = it.next();
-			if (!font.done) {
-				arr.push(font.value[0].family);
-			} else {
-				done = font.done;
-			}
-		}
-
-		return [...new Set(arr)];
+	if (isTauri) {
+		const { invoke } = require('@tauri-apps/api');
+		return await invoke('get_available_fonts');
+	} else {
+		const fonts = await (await fetch(GET_AVAILABLE_FONTS_ENDPOINT, { method: 'GET' })).json();
+		return fonts;
 	}
-	return await invoke('get_available_fonts');
 };
 let listened = false;
 const listenStylesheetChange = async (cb: (stylesheet: JSON) => void): Promise<void> => {

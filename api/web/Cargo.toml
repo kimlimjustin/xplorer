@@ -12,3 +12,7 @@ warp = "0.3"
 serde = { version = "1.0", features = ["derive"] }
 lazy_static = "1.4.0"
 dirs-next = "2.0.0"
+open = {version = "2.0"}
+parselnk = "0.1.0"
+font-loader = "0.11.0"
+sysinfo = {version="0.20.5"}

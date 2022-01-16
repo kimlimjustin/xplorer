@@ -3,7 +3,7 @@ import joinPath from '../Components/Functions/path/joinPath';
 import dirname from '../Components/Functions/path/dirname';
 import FileMetaData from '../Typings/fileMetaData';
 import isTauri from '../Util/is-tauri';
-import { CHECK_EXIST_ENDPOINT, CHECK_ISDIR_ENDPOINT } from '../Util/constants';
+import { CALCULATE_DIRS_SIZE_ENDPOINT, CHECK_EXIST_ENDPOINT, CHECK_ISDIR_ENDPOINT, OPEN_FILE_ENDPOINT } from '../Util/constants';
 
 /** Invoke Rust command to handle files */
 class FileAPI {
@@ -49,6 +49,9 @@ class FileAPI {
 		if (isTauri) {
 			const { invoke } = require('@tauri-apps/api');
 			return await invoke('open_file', { filePath: this.fileName });
+		} else {
+			await fetch(OPEN_FILE_ENDPOINT + this.fileName, { method: 'GET' });
+			return;
 		}
 	}
 	/**
@@ -142,6 +145,11 @@ class FileAPI {
 		if (isTauri) {
 			const { invoke } = require('@tauri-apps/api');
 			return await invoke('calculate_files_total_size', { files: this.fileName });
+		} else {
+			const paths = Array.isArray(this.fileName) ? this.fileName.join('%2c-%2c') : this.fileName;
+			console.log(paths);
+			const size = await (await fetch(CALCULATE_DIRS_SIZE_ENDPOINT + paths, { method: 'GET' })).json();
+			return size;
 		}
 	}
 }
