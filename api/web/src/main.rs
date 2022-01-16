@@ -175,6 +175,29 @@ async fn main() {
     })
     .with(cors.clone());
 
+  let check_exist = warp::get()
+    .and(warp::path("check_exist"))
+    .and(warp::query::<HashMap<String, String>>())
+    .map(|p: HashMap<String, String>| match p.get("path") {
+      Some(path) => {
+        let exists = fs::metadata(path).is_ok();
+        return serde_json::to_string(&serde_json::json!(exists)).unwrap();
+      }
+      None => "false".to_string(),
+    })
+    .with(cors.clone());
+  let check_isdir = warp::get()
+    .and(warp::path("check_isdir"))
+    .and(warp::query::<HashMap<String, String>>())
+    .map(|p: HashMap<String, String>| match p.get("path") {
+      Some(path) => {
+        let is_dir = fs::metadata(path).unwrap().is_dir();
+        return serde_json::to_string(&serde_json::json!(is_dir)).unwrap();
+      }
+      None => "false".to_string(),
+    })
+    .with(cors.clone());
+
   let get_favorite_paths = warp::path!("dir" / "favorites")
     .map(|| {
       let audio_path = dirs_next::audio_dir()
@@ -222,7 +245,12 @@ async fn main() {
     .with(cors.clone());
 
   let routes = warp::get()
-    .and(read_dir_route.or(get_favorite_paths))
+    .and(
+      read_dir_route
+        .or(get_favorite_paths)
+        .or(check_exist)
+        .or(check_isdir),
+    )
     .with(cors);
 
   warp::serve(routes).run(([127, 0, 0, 1], 3030)).await;
