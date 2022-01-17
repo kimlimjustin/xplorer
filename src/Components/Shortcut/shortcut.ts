@@ -50,16 +50,78 @@ const pauseEnter = (): void => {
  * @returns {void}
  */
 const Shortcut = (): void => {
+	const searchElement = document.querySelector<HTMLInputElement>('.search-bar');
+	let searchingState = false;
 	let searchingFileName = '';
-	let _searchListener: ReturnType<typeof setTimeout>;
+	let searchingFiles: HTMLElement[] | null = null;
+	let _searchListener: ReturnType<typeof setTimeout> | null = null;
+
 	const KeyUpShortcutsHandler = async (e: KeyboardEvent) => {
+		// Don't react if cursor is over input field
+		if (document.activeElement.tagName === 'INPUT') return;
+
+		const isAlphanumeric = ['Key', 'Digit'].some((a) => e.code.startsWith(a));
+		// Fast search for files
+		if (!e.ctrlKey && !e.shiftKey && !e.altKey && isAlphanumeric) {
+			const resetTimer = () => {
+				clearTimeout(_searchListener);
+				_searchListener = setTimeout(() => (searchingState = false), 600);
+			};
+
+			const isMatchFile = (file: HTMLElement) => {
+				return file
+					.querySelector('#file-filename')
+					.textContent.toLowerCase()
+					.normalize('NFD')
+					.replace(/[\u0300-\u036f]/g, '')
+					.startsWith(searchingFileName);
+			};
+
+			const search = (files: HTMLElement[], isStateSwitcher = false) => {
+				if (isStateSwitcher) {
+					searchingState = true;
+					searchingFileName = '';
+				}
+				searchingFileName += e.key.toLowerCase();
+				searchElement.placeholder = '⚡ ' + searchingFileName;
+				searchingFiles = null;
+				resetTimer();
+				unselectAllSelected();
+				const file = files.find((file) => isMatchFile(file));
+				if (!file) return;
+				Select(file, false, false);
+				ensureElementInViewPort(file);
+			};
+
+			const navigate = (files: HTMLElement[]) => {
+				searchingFiles ||= files.filter((file) => isMatchFile(file));
+				const fileIndex = searchingFiles.findIndex((file) => {
+					return file.classList.contains('selected');
+				});
+				unselectAllSelected();
+				const fileNext = searchingFiles[fileIndex + 1] || searchingFiles[0];
+				if (!fileNext) return;
+				Select(fileNext, false, false);
+				ensureElementInViewPort(fileNext);
+			};
+
+			const files = [...document.querySelectorAll<HTMLElement>('.file')];
+			if (searchingState) search(files);
+			else if (e.key.toLowerCase() === searchingFileName.at(-1)) navigate(files);
+			else search(files, true);
+			return;
+		}
+
+		searchingState = false;
+		searchingFileName = '';
+		searchingFiles = null;
+		clearTimeout(_searchListener);
+		searchElement.placeholder = '🔎 Search';
+
 		const selectedFile = getSelected()?.[0];
 		const selectedFilePath = unescape(selectedFile?.dataset?.path);
 		const isDir = selectedFile?.dataset.isdir === 'true';
 		const _focusingPath = await focusingPath();
-
-		// Don't react if cursor is over input field
-		if (document.activeElement.tagName === 'INPUT') return;
 
 		// Open file shorcut (Enter)
 		if (e.key === 'Enter') {
@@ -83,14 +145,15 @@ const Shortcut = (): void => {
 		if (e.ctrlKey && e.key === 'b') {
 			const sidebar = document.querySelector<HTMLElement>('.sidebar');
 			const xplorerBrand = document.querySelector<HTMLElement>('.xplorer-brand');
-			const appearance = await Storage.get('appearance');
+			const appearance = (await Storage.get('appearance')) || {};
 			let size: string;
 			if (getComputedStyle(sidebar).width === '70px') {
 				sidebar.classList.remove('sidebar-minimized');
 				xplorerBrand.innerHTML = 'Xplorer';
-				size = appearance.expandedSidebarWidth;
+				size = appearance.expandedSidebarWidth ?? '250px';
 			} else {
-				xplorerBrand.innerHTML = `<img src=${require('../../Icon/extension/xplorer.svg')} alt="xplorer" />`;
+				const imgSrc = require('../../Icon/extension/xplorer.svg');
+				xplorerBrand.innerHTML = `<img src=${imgSrc} alt="xplorer" />`;
 				sidebar.classList.add('sidebar-minimized');
 				size = '70px';
 			}
@@ -100,7 +163,6 @@ const Shortcut = (): void => {
 		}
 		// Duplicate file (Ctrl + D)
 		if (e.ctrlKey && e.key === 'd') {
-			console.log('a');
 			new OperationAPI(selectedFilePath).duplicate();
 		}
 		// New tab shortcut (Ctrl + T)
@@ -238,52 +300,6 @@ const Shortcut = (): void => {
 				}
 				Trash(filePaths);
 			}
-		} else if (e.keyCode >= 65 && e.keyCode <= 90) {
-			// ignore some keys
-			if (e.ctrlKey) return;
-			clearInterval(_searchListener);
-			if (e.key.toLowerCase() === searchingFileName.at(-1)) {
-				const _files = [...document.querySelectorAll('.file')].filter((file: HTMLElement) => {
-					return file
-						.querySelector('#file-filename')
-						.innerHTML.toLowerCase()
-						.normalize('NFD')
-						.replace(/[\u0300-\u036f]/g, '')
-						.startsWith(searchingFileName);
-				});
-				for (let i = 0; i < _files.length; i++) {
-					const _file = _files[i];
-					if (_file.classList.contains('selected')) {
-						unselectAllSelected();
-						Select((_files[i + 1] ?? _files[0]) as HTMLElement, false, false);
-						break;
-					}
-				}
-			} else {
-				searchingFileName += e.key.toLowerCase();
-
-				const _files = document.querySelectorAll('.file');
-				unselectAllSelected();
-				for (const _file of _files) {
-					const _fileName = _file.querySelector('#file-filename').innerHTML.toLowerCase();
-					if (
-						_fileName
-							.normalize('NFD')
-							.replace(/[\u0300-\u036f]/g, '')
-							.startsWith(searchingFileName)
-					) {
-						Select(_file as HTMLElement, false, false);
-						ensureElementInViewPort(_file as HTMLElement);
-						ChangeSelectedEvent();
-						break;
-					}
-				}
-			}
-
-			_searchListener = setInterval(() => {
-				searchingFileName = '';
-				clearInterval(_searchListener);
-			}, 750);
 		}
 	};
 	const KeyDownShortcutsHandler = async (e: KeyboardEvent) => {
@@ -309,7 +325,6 @@ const Shortcut = (): void => {
 		// Find files (Ctrl+F)
 		else if (e.ctrlKey && e.key === 'f') {
 			e.preventDefault();
-			const searchElement = document.querySelector<HTMLInputElement>('.search-bar');
 			searchElement.select();
 			searchElement.focus();
 		}
