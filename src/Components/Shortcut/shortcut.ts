@@ -26,6 +26,7 @@ import Properties from '../Properties/properties';
 import Preview, { closePreviewFile } from '../Files/File Preview/preview';
 import { ensureElementInViewPort } from '../Functions/viewport';
 import OperationAPI from '../../Api/operation';
+import { resizeSidebar } from '../Layout/resizer';
 let selectedAll = true;
 let pauseEnterListener = false;
 /**
@@ -65,7 +66,7 @@ const Shortcut = (): void => {
 		if (!e.ctrlKey && !e.shiftKey && !e.altKey && isAlphanumeric) {
 			const resetTimer = () => {
 				clearTimeout(_searchListener);
-				_searchListener = setTimeout(() => (searchingState = false), 600);
+				_searchListener = setTimeout(() => (searchingState = false), 400);
 			};
 
 			const isMatchFile = (file: HTMLElement) => {
@@ -143,23 +144,7 @@ const Shortcut = (): void => {
 		}
 		// Collapse sidebar (Ctrl + B)
 		if (e.ctrlKey && e.key === 'b') {
-			const sidebar = document.querySelector<HTMLElement>('.sidebar');
-			const xplorerBrand = document.querySelector<HTMLElement>('.xplorer-brand');
-			const appearance = (await Storage.get('appearance')) || {};
-			let size: string;
-			if (getComputedStyle(sidebar).width === '70px') {
-				sidebar.classList.remove('sidebar-minimized');
-				xplorerBrand.innerHTML = 'Xplorer';
-				size = appearance.expandedSidebarWidth ?? '250px';
-			} else {
-				const imgSrc = require('../../Icon/extension/xplorer.svg');
-				xplorerBrand.innerHTML = `<img src=${imgSrc} alt="xplorer" />`;
-				sidebar.classList.add('sidebar-minimized');
-				size = '70px';
-			}
-			appearance.sidebarWidth = size;
-			sidebar.style.flexBasis = size;
-			Storage.set('appearance', appearance);
+			resizeSidebar();
 		}
 		// Duplicate file (Ctrl + D)
 		if (e.ctrlKey && e.key === 'd') {

@@ -15,7 +15,7 @@ import Hover from './Components/Layout/hover';
 import LAZY_LOAD_INIT from './Components/Functions/lazyLoadingImage';
 import Infobar from './Components/Layout/infobar';
 import Search from './Components/Files/File Operation/search';
-import Resizer from './Components/Layout/resizer';
+import { Resizer } from './Components/Layout/resizer';
 import { listenUpdateTheme } from './Api/window';
 // Wait DOM Loaded to be loaded
 document.addEventListener('DOMContentLoaded', async () => {
