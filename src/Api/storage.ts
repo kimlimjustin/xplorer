@@ -1,13 +1,10 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { invoke } from '@tauri-apps/api';
-
-interface StorageData {
-	[key: string]: JSON;
-}
+import IStorageData from '../Typings/storageData';
 
 // Store fetched data into variable
-const data: StorageData = {};
+const data: IStorageData = {};
 
 /**
  * Set information to local storage
