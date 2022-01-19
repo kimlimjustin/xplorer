@@ -1,8 +1,9 @@
 import Storage from '../../Api/storage';
 
-const SENSOR = 10;
-const MIN_SIZE = 70;
-const MIN_SNAP = 220;
+const SIDEBAR_EDGE_SENSOR = 10;
+const SIDEBAR_MIN_SIZE = 70;
+const SIDEBAR_MIN_SNAP = 220;
+const WINDOW_MIN_SIZE = 800;
 
 let sidebar: HTMLElement;
 let settingsSidebar: HTMLElement;
@@ -11,10 +12,16 @@ let appearance: any;
 
 export const resizeSidebar = function (size?: string) {
 	if (!size) {
-		if (sidebar.offsetWidth !== MIN_SIZE) size = MIN_SIZE + 'px';
-		else size = appearance.expandedSidebarWidth || '250px';
+		if (sidebar.offsetWidth !== SIDEBAR_MIN_SIZE) {
+			size = SIDEBAR_MIN_SIZE + 'px';
+			appearance.preferMinimizedSidebar = true;
+		} else {
+			size = appearance.expandedSidebarWidth || '250px';
+			appearance.preferMinimizedSidebar = false;
+		}
+		Storage.set('appearance', appearance);
 	}
-	if (size === MIN_SIZE + 'px') {
+	if (size === SIDEBAR_MIN_SIZE + 'px') {
 		sidebar.classList.add('sidebar-minimized');
 		settingsSidebar.classList.add('sidebar-minimized');
 		const imgSrc = require('../../Icon/extension/xplorer.svg');
@@ -38,7 +45,18 @@ export const Resizer = async (): Promise<void> => {
 	settingsSidebar = document.querySelector<HTMLElement>('.settings-sidebar');
 	xplorerBrand = document.querySelector<HTMLElement>('.xplorer-brand');
 	appearance = (await Storage.get('appearance')) || {};
-	resizeSidebar(appearance.sidebarWidth ?? '250px');
+	resizeSidebar(appearance.sidebarWidth || '250px');
+
+	const resizeWindow = () => {
+		console.log(appearance.preferMinimizedSidebar);
+		if (window.innerWidth < WINDOW_MIN_SIZE) {
+			resizeSidebar(SIDEBAR_MIN_SIZE + 'px');
+		} else if (!appearance.preferMinimizedSidebar) {
+			resizeSidebar(appearance.expandedSidebarWidth || '250px');
+		}
+	};
+	window.addEventListener('resize', resizeWindow);
+	resizeWindow();
 
 	let resizing = false;
 
@@ -46,7 +64,7 @@ export const Resizer = async (): Promise<void> => {
 
 	document.addEventListener('mousedown', ({ clientX: mx }) => {
 		const { offsetWidth: w } = sidebar;
-		resizing = Math.abs(w - mx) < SENSOR;
+		resizing = Math.abs(w - mx) < SIDEBAR_EDGE_SENSOR;
 	});
 
 	document.addEventListener('mousemove', (event) => {
@@ -54,8 +72,13 @@ export const Resizer = async (): Promise<void> => {
 		const { clientX: mx, clientY: my, target } = event as MouseMoveEvent;
 		if (resizing) {
 			let size = mx + 'px';
-			if (mx < MIN_SNAP) size = MIN_SIZE + 'px';
-			else appearance.expandedSidebarWidth = size;
+			if (mx < SIDEBAR_MIN_SNAP) {
+				size = SIDEBAR_MIN_SIZE + 'px';
+				appearance.preferMinimizedSidebar = true;
+			} else {
+				appearance.expandedSidebarWidth = size;
+				appearance.preferMinimizedSidebar = false;
+			}
 			resizeSidebar(size);
 			Storage.set('appearance', appearance);
 		}
@@ -69,7 +92,10 @@ export const Resizer = async (): Promise<void> => {
 			}
 		}
 		const { offsetWidth: w } = sidebar;
-		const modifier = Math.abs(w - mx) < SENSOR || resizing ? 'add' : 'remove';
-		document.body.classList[modifier]('resize-horizontal');
+		if (Math.abs(w - mx) < SIDEBAR_EDGE_SENSOR || resizing) {
+			document.body.classList.add('resize-horizontal');
+		} else {
+			document.body.classList.remove('resize-horizontal');
+		}
 	});
 };
