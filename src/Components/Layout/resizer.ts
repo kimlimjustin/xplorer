@@ -31,9 +31,12 @@ export const resizeSidebar = function (size?: string) {
 		settingsSidebar.classList.remove('sidebar-minimized');
 		xplorerBrand.innerHTML = 'Xplorer';
 	}
-	sidebar.style.flexBasis = size;
-	settingsSidebar.style.flexBasis = size;
 	appearance.sidebarWidth = size;
+	if (sidebar.animate) {
+		const animateOptions = { duration: 200, fill: 'forwards' } as const;
+		sidebar.animate({ flexBasis: size }, animateOptions);
+		settingsSidebar.animate({ flexBasis: size }, animateOptions);
+	} else sidebar.style.flexBasis = settingsSidebar.style.flexBasis = size;
 };
 
 /**
@@ -48,7 +51,6 @@ export const Resizer = async (): Promise<void> => {
 	resizeSidebar(appearance.sidebarWidth || '250px');
 
 	const resizeWindow = () => {
-		console.log(appearance.preferMinimizedSidebar);
 		if (window.innerWidth < WINDOW_MIN_SIZE) {
 			resizeSidebar(SIDEBAR_MIN_SIZE + 'px');
 		} else if (!appearance.preferMinimizedSidebar) {
