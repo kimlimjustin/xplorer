@@ -1,3 +1,4 @@
+import IStorageData from '../../Typings/storageData';
 import Storage from '../../Api/storage';
 
 const SIDEBAR_EDGE_SENSOR = 10;
@@ -8,7 +9,7 @@ const WINDOW_MIN_SIZE = 800;
 let sidebar: HTMLElement;
 let settingsSidebar: HTMLElement;
 let xplorerBrand: HTMLElement;
-let appearance: any;
+let appearance: IStorageData;
 
 export const resizeSidebar = function (size?: string) {
 	if (!size) {
