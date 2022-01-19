@@ -1,78 +1,104 @@
+import IStorageData from '../../Typings/storageData';
 import Storage from '../../Api/storage';
-/**
- * Sidebar resizer initalization
- * @returns {Promise<void>}
- */
-const Resizer = async (): Promise<void> => {
-	const sidebarResizer = document.getElementById('sidebar-resizer');
-	const sidebar = document.querySelector<HTMLElement>('.sidebar');
-	const settingsSidebar = document.querySelector<HTMLElement>('.settings-sidebar');
-	const xplorerBrand = document.querySelector<HTMLElement>('.xplorer-brand');
-	const appearance = await Storage.get('appearance');
-	const size = appearance?.sidebarWidth ?? '250px';
-	sidebar.style.flexBasis = size;
-	settingsSidebar.style.flexBasis = size;
 
-	let sidebarText: HTMLElement;
-	document.body.addEventListener('mousemove', (e: MouseEvent) => {
-		if (sidebar.classList.contains('sidebar-minimized')) {
-			if (
-				(e.target as HTMLElement).classList.contains('sidebar-item') ||
-				((e.target as HTMLElement).parentNode as HTMLElement).classList.contains('sidebar-item') ||
-				(e.target as HTMLElement).classList.contains('drive-item') ||
-				((e.target as HTMLElement).parentNode as HTMLElement).classList.contains('drive-item')
-			) {
-				let el = e.target as HTMLElement;
-				if (!el.classList.contains('drive-item') && !el.classList.contains('sidebar-item')) {
-					el = el.parentElement as HTMLElement;
-				}
-				sidebarText = el.querySelector('.sidebar-text') as HTMLElement;
-				const y = e.clientY - parseInt(getComputedStyle(el).getPropertyValue('padding-top'));
-				sidebarText.style.left = `70px`;
-				sidebarText.style.top = `${y}px`;
-			}
+const SIDEBAR_EDGE_SENSOR = 10;
+const SIDEBAR_MIN_SIZE = 70;
+const SIDEBAR_MIN_SNAP = 220;
+const WINDOW_MIN_SIZE = 800;
+
+let sidebar: HTMLElement;
+let settingsSidebar: HTMLElement;
+let xplorerBrand: HTMLElement;
+let appearance: IStorageData;
+
+export const resizeSidebar = function (size?: string) {
+	if (!size) {
+		if (sidebar.offsetWidth !== SIDEBAR_MIN_SIZE) {
+			size = SIDEBAR_MIN_SIZE + 'px';
+			appearance.preferMinimizedSidebar = true;
+		} else {
+			size = appearance.expandedSidebarWidth || '250px';
+			appearance.preferMinimizedSidebar = false;
 		}
-	});
-
-	if (parseInt(size) < 200) {
+		Storage.set('appearance', appearance);
+	}
+	if (size === SIDEBAR_MIN_SIZE + 'px') {
 		sidebar.classList.add('sidebar-minimized');
 		settingsSidebar.classList.add('sidebar-minimized');
-		xplorerBrand.innerHTML = `<img src=${require('../../Icon/extension/xplorer.svg')} alt="xplorer" />`;
+		const imgSrc = require('../../Icon/extension/xplorer.svg');
+		xplorerBrand.innerHTML = `<img src=${imgSrc} alt="xplorer" />`;
 	} else {
 		sidebar.classList.remove('sidebar-minimized');
 		settingsSidebar.classList.remove('sidebar-minimized');
 		xplorerBrand.innerHTML = 'Xplorer';
 	}
+	appearance.sidebarWidth = size;
+	if (sidebar.animate) {
+		const animateOptions = { duration: 200, fill: 'forwards' } as const;
+		sidebar.animate({ flexBasis: size }, animateOptions);
+		settingsSidebar.animate({ flexBasis: size }, animateOptions);
+	} else sidebar.style.flexBasis = settingsSidebar.style.flexBasis = size;
+};
 
-	sidebarResizer.addEventListener('mousedown', () => {
-		document.addEventListener('mousemove', resize, false);
-		document.addEventListener(
-			'mouseup',
-			() => {
-				document.removeEventListener('mousemove', resize, false);
-			},
-			false
-		);
+/**
+ * Sidebar resizer initalization
+ * @returns {Promise<void>}
+ */
+export const Resizer = async (): Promise<void> => {
+	sidebar = document.querySelector<HTMLElement>('.sidebar');
+	settingsSidebar = document.querySelector<HTMLElement>('.settings-sidebar');
+	xplorerBrand = document.querySelector<HTMLElement>('.xplorer-brand');
+	appearance = (await Storage.get('appearance')) || {};
+	resizeSidebar(appearance.sidebarWidth || '250px');
+
+	const resizeWindow = () => {
+		if (window.innerWidth < WINDOW_MIN_SIZE) {
+			resizeSidebar(SIDEBAR_MIN_SIZE + 'px');
+		} else if (!appearance.preferMinimizedSidebar) {
+			resizeSidebar(appearance.expandedSidebarWidth || '250px');
+		}
+	};
+	window.addEventListener('resize', resizeWindow);
+	resizeWindow();
+
+	let resizing = false;
+
+	document.addEventListener('mouseup', () => (resizing = false));
+
+	document.addEventListener('mousedown', ({ clientX: mx }) => {
+		const { offsetWidth: w } = sidebar;
+		resizing = Math.abs(w - mx) < SIDEBAR_EDGE_SENSOR;
 	});
 
-	function resize(e: MouseEvent) {
-		let size: string;
-		if (e.x < 220) {
-			sidebar.classList.add('sidebar-minimized');
-			settingsSidebar.classList.add('sidebar-minimized');
-			xplorerBrand.innerHTML = `<img src=${require('../../Icon/extension/xplorer.svg')} alt="xplorer" />`;
-			size = `70px`;
-		} else {
-			sidebar.classList.remove('sidebar-minimized');
-			settingsSidebar.classList.remove('sidebar-minimized');
-			xplorerBrand.innerHTML = 'Xplorer';
-			size = `${e.x}px`;
-			appearance.expandedSidebarWidth = size;
+	document.addEventListener('mousemove', (event) => {
+		type MouseMoveEvent = MouseEvent & { target: HTMLElement };
+		const { clientX: mx, clientY: my, target } = event as MouseMoveEvent;
+		if (resizing) {
+			let size = mx + 'px';
+			if (mx < SIDEBAR_MIN_SNAP) {
+				size = SIDEBAR_MIN_SIZE + 'px';
+				appearance.preferMinimizedSidebar = true;
+			} else {
+				appearance.expandedSidebarWidth = size;
+				appearance.preferMinimizedSidebar = false;
+			}
+			resizeSidebar(size);
+			Storage.set('appearance', appearance);
 		}
-		sidebar.style.flexBasis = size;
-		appearance.sidebarWidth = size;
-		settingsSidebar.style.flexBasis = size;
-		Storage.set('appearance', appearance);
-	}
+		if (sidebar.classList.contains('sidebar-minimized')) {
+			const itemClasses = ['sidebar-item', 'drive-item'];
+			if (itemClasses.some((c) => target.classList.contains(c))) {
+				const sidebarText = target.querySelector<HTMLElement>('.sidebar-text');
+				const { offsetTop: y, offsetHeight: h } = sidebarText;
+				const root = document.documentElement;
+				root.style.setProperty('--sidebar-text-y', my - y - h / 2 + 'px');
+			}
+		}
+		const { offsetWidth: w } = sidebar;
+		if (Math.abs(w - mx) < SIDEBAR_EDGE_SENSOR || resizing) {
+			document.body.classList.add('resize-horizontal');
+		} else {
+			document.body.classList.remove('resize-horizontal');
+		}
+	});
 };
-export default Resizer;
