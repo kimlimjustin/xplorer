@@ -677,7 +677,6 @@ pub async fn listen_dir(dir: String, window: tauri::Window) -> Result<String, St
             )
             .unwrap();
         }
-        println!("{:?} {:?} {:?}", op, path.clone(), window.label());
       }
       Ok(event) => println!("broken event: {:?}", event),
       Err(e) => break Err(e.to_string()),
