@@ -92,7 +92,6 @@ const Preview = async (filePath: string): Promise<void> => {
 		const html = marked(await new FileAPI(filePath).readFile());
 		changePreview(`<div class='preview-object' data-type="md">${eURLify(html)}</div>`);
 		previewElement.querySelectorAll('img').forEach(async (img) => {
-			console.log(isValidURL(img.src), img.src);
 			if (!isValidURL(img.src)) {
 				let imgData = new FileAPI(img.src);
 				if (!(await imgData.exists())) {

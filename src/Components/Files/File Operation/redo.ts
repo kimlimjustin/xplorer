@@ -63,7 +63,6 @@ const Redo = async (): Promise<void> => {
 			increaseIndex();
 			break;
 	}
-	console.log(operationLogs);
 	Storage.set(`operations-${windowName}`, operationLogs);
 };
 export default Redo;

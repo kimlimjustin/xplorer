@@ -120,7 +120,6 @@ const createSidebar = async (): Promise<void> => {
 
 			// Save preference into local storage
 			const sidebar = await Storage.get('sidebar');
-			console.log(sidebar);
 			if (!sidebar?.hideSection) sidebar.hideSection = {}; // Initialize if it's not exist
 			sidebar.hideSection[(sidebarNavItem as HTMLElement).querySelector<HTMLElement>('[data-section]').dataset.section] = (
 				sidebarNavItem as HTMLElement
