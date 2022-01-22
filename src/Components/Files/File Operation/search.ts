@@ -7,6 +7,7 @@ import { LOAD_IMAGE } from '../../Functions/lazyLoadingImage';
 import { updateTheme } from '../../Theme/theme';
 import { OpenLog } from '../../Functions/log';
 import { OpenDir } from '../../Open/open';
+import isTauri from '../../../Util/is-tauri';
 let being_watch: string;
 
 const stopSearchingProcess = async (): Promise<void> => {
@@ -79,6 +80,9 @@ const getFocusingPath = async (): Promise<string> => {
  */
 const Search = async (): Promise<void> => {
 	let listener: ReturnType<typeof setTimeout>;
+	if (!isTauri) {
+		document.querySelector('.search-bar').setAttribute('disabled', '');
+	}
 	document.querySelector('.search-bar').addEventListener('keydown', async (e: KeyboardEvent) => {
 		clearTimeout(listener);
 		if (e.ctrlKey && e.key === 'f') {
