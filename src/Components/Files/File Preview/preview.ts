@@ -8,6 +8,7 @@ import hljs from 'highlight.js';
 import ConfirmDialog from '../../Prompt/confirm';
 import { marked } from 'marked';
 import getDirname from '../../Functions/path/dirname';
+import isTauri from '../../../Util/is-tauri';
 
 const isValidURL = (text: string) => {
 	let url;
@@ -33,6 +34,10 @@ const closePreviewFile = (): void => {
  * @returns {void}
  */
 const Preview = async (filePath: string): Promise<void> => {
+	if (!isTauri) {
+		PromptError('Preview unavailable', 'Preview is currently unavailable on Web version');
+		return;
+	}
 	closePreviewFile();
 
 	const previewElement = document.createElement('div');
