@@ -1,4 +1,3 @@
-// import { fs, invoke, tauri } from '@tauri-apps/api';
 import joinPath from '../Components/Functions/path/joinPath';
 import dirname from '../Components/Functions/path/dirname';
 import FileMetaData from '../Typings/fileMetaData';
@@ -27,7 +26,12 @@ class FileAPI {
 	readFile(): Promise<string> {
 		return new Promise((resolve, reject) => {
 			if (typeof this.fileName === 'string') {
-				// fs.readTextFile(this.fileName).then((fileContent) => resolve(fileContent));
+				if (isTauri) {
+					const { fs } = require('@tauri-apps/api');
+					fs.readTextFile(this.fileName).then((fileContent: string) => resolve(fileContent));
+				} else {
+					reject('Read file is currently not supported on web version');
+				}
 			} else {
 				reject('File name is not a string');
 			}
@@ -36,10 +40,16 @@ class FileAPI {
 
 	async readBuffer(): Promise<Buffer> {
 		const Buffer = require('buffer/').Buffer;
-		if (typeof this.fileName === 'string') {
-			// return Buffer.from(await fs.readBinaryFile(this.fileName));
-			return Buffer;
-		}
+		return new Promise((resolve, reject) => {
+			if (typeof this.fileName === 'string') {
+				if (isTauri) {
+					const { fs } = require('@tauri-apps/api');
+					resolve(Buffer.from(fs.readBinaryFile(this.fileName).then((fileContent: string) => fileContent)));
+				} else {
+					reject('Read file is currently not supported on web version');
+				}
+			}
+		});
 	}
 	/**
 	 * Open file on default app
@@ -92,10 +102,15 @@ class FileAPI {
 	 */
 	async createFile(): Promise<void> {
 		if (typeof this.fileName === 'string') {
-			// await invoke('create_dir_recursive', {
-			// 	dirPath: dirname(this.fileName),
-			// });
-			// return await invoke('create_file', { filePath: this.fileName });
+			if (isTauri) {
+				const { invoke } = require('@tauri-apps/api');
+				await invoke('create_dir_recursive', {
+					dirPath: dirname(this.fileName),
+				});
+				return await invoke('create_file', { filePath: this.fileName });
+			} else {
+				return;
+			}
 		}
 	}
 	/**
