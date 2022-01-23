@@ -67,7 +67,7 @@ const goParentDir = async (): Promise<void> => {
  */
 const windowManager = async (): Promise<void> => {
 	const appearance = await Storage.get('appearance');
-	if (appearance?.frameStyle === 'os') {
+	if (appearance?.frameStyle === 'os' || !isTauri) {
 		document.querySelector('.window-manager').parentNode.removeChild(document.querySelector('.window-manager'));
 	}
 	setDecorations(appearance?.frameStyle === 'os');
