@@ -1,5 +1,5 @@
 import PromptError from '../../Prompt/error';
-import { HTML_TYPE, IMAGE_TYPES, VIDEO_TYPES, PLAIN_TEXT, MARKDOWN_TYPES } from '../../../Config/file.config';
+import { HTML_TYPE, IMAGE_TYPES, VIDEO_TYPES, PLAIN_TEXT, MARKDOWN_TYPES, AUDIO_TYPES } from '../../../Config/file.config';
 import getBasename from '../../Functions/path/basename';
 import xlsx from 'xlsx';
 import FileAPI from '../../../Api/files';
@@ -85,6 +85,15 @@ const Preview = async (filePath: string): Promise<void> => {
 			`<div class="preview-object" data-type="video"><video controls="" controlsList="nodownload"><source src="${new FileAPI(
 				filePath
 			).readAsset()}"></video></div>`
+		);
+	} else if (AUDIO_TYPES.indexOf(ext) !== -1) {
+		changePreview(
+			`	
+			<div class="preview-object" data-type="audio">
+				<audio controls="" controlsList="nodownload">
+					<source src="${new FileAPI(filePath).readAsset()}">
+				</audio>
+			</div>`
 		);
 	} else if (PLAIN_TEXT.indexOf(ext) !== -1) {
 		changePreview(`<div class='preview-object' data-type="txt">${await new FileAPI(filePath).readFile()}</div>`);
