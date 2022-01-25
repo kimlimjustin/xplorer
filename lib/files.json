@@ -95,12 +95,22 @@
 		"thumbnail": "extension/video.svg"
 	},
 	{
+		"extensions": ["mp3", "ogg", "ogm", "wav"],
+		"type": "Audio",
+		"thumbnail": "extension/audio.svg"
+	},
+	{
+		"extensions": ["sketch"],
+		"type": "Sketch",
+		"thumbnail": "extension/sketch.svg"
+	},
+	{
 		"extensions": ["deb", "msi", "snap"],
 		"type": "Installer",
 		"thumbnail": "extension/exe.svg"
 	},
 	{
-		"extensions": ["iso"],
+		"extensions": ["iso", "dbg"],
 		"type": "Disk Image File",
 		"thumbnail": "extension/disc.svg"
 	},
@@ -243,6 +253,11 @@
 		"extensions": ["go"],
 		"type": "Go Program",
 		"thumbnail": "extension/go.svg"
+	},
+	{
+		"extensions": ["dart"],
+		"type": "Dart Program",
+		"thumbnail": "extension/dart.svg"
 	},
 	{
 		"extensions": ["java", "jsp"],
