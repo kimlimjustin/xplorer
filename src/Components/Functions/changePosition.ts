@@ -3,6 +3,7 @@ import { changeSelectedAllStatus } from '../Shortcut/shortcut';
 import windowName from '../../Api/window';
 import Storage from '../../Api/storage';
 import basename from './path/basename';
+import { UpdateInfo } from '../Layout/infobar';
 /**
  * Change current tab position
  * @param {string} newPath - the new position you want to open
@@ -38,6 +39,7 @@ const changePosition = async (newPath: string, forceChange = false): Promise<voi
 			: basename(newPath)
 	);
 	Storage.set(`tabs-${windowName}`, tabs);
+	UpdateInfo('selected-files', '');
 	changeSelectedAllStatus();
 	return;
 };
