@@ -4,6 +4,7 @@ import Storage from '../../../Api/storage';
 import OS from '../../../Api/platform';
 import { changeTransparentEffect, getAvailableFonts, enableShadowEffect } from '../../../Api/app';
 import { getElementStyle, getInstalledThemes, updateTheme } from '../../Theme/theme';
+import { updateSidebarParameters } from '../../Layout/resizer';
 import { setDecorations } from '../../../Api/window';
 import Infobar from '../../Layout/infobar';
 let platform: string;
@@ -196,22 +197,25 @@ const Appearance = async (): Promise<void> => {
 	settingsMain.querySelectorAll('.number-ctrl').forEach((ctrl) => {
 		const number = ctrl.querySelector<HTMLInputElement>('.number-ctrl-input');
 		ctrl.querySelector('.number-ctrl-minus').addEventListener('click', () => {
-			number.value = (parseInt(number.value) - 1).toString();
+			number.value = +number.value - 1 + '';
 			const appearance = _appearance ?? {};
 			appearance.fontSize = `${number.value}px`;
 			document.body.style.fontSize = `${number.value}px`;
 			document.documentElement.style.fontSize = `${number.value}px`;
+			updateSidebarParameters(true);
 			Storage.set('appearance', appearance);
 		});
 		ctrl.querySelector('.number-ctrl-plus').addEventListener('click', () => {
-			number.value = (parseInt(number.value) + 1).toString();
+			number.value = +number.value + 1 + '';
 			const appearance = _appearance ?? {};
 			appearance.fontSize = `${number.value}px`;
 			document.body.style.fontSize = `${number.value}px`;
 			document.documentElement.style.fontSize = `${number.value}px`;
+			updateSidebarParameters(true);
 			Storage.set('appearance', appearance);
 		});
 	});
+
 	settingsMain.querySelector('.transparency-slider').addEventListener('input', (event: Event & { target: HTMLInputElement }) => {
 		const value = parseInt(event.target.value);
 		const appearance = _appearance ?? {};
