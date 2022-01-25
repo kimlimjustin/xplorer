@@ -110,7 +110,7 @@
 		"thumbnail": "extension/exe.svg"
 	},
 	{
-		"extensions": ["iso", "dbg"],
+		"extensions": ["iso", "dmg"],
 		"type": "Disk Image File",
 		"thumbnail": "extension/disc.svg"
 	},
