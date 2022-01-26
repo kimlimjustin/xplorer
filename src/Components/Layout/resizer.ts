@@ -10,7 +10,6 @@ let sidebarDefaultExpandedSize: number;
 
 let sidebar: HTMLElement;
 let settingsSidebar: HTMLElement;
-let xplorerBrand: HTMLElement;
 let appearance: IStorageData;
 
 export const updateSidebarParameters = (updateSidebar = false) => {
@@ -45,28 +44,27 @@ export const resizeSidebar = function (size?: string) {
 		}
 		Storage.set('appearance', appearance);
 	}
+	const root = document.documentElement;
 	if (size === sidebarMinSize + 'px') {
 		sidebar.classList.add('sidebar-minimized');
 		settingsSidebar.classList.add('sidebar-minimized');
-		const imgSrc = require('../../Icon/extension/xplorer.svg');
-		xplorerBrand.innerHTML = `<img src=${imgSrc} alt="xplorer" />`;
+		root.style.setProperty('--sidebar-minimized-width', size);
 	} else {
 		sidebar.classList.remove('sidebar-minimized');
 		settingsSidebar.classList.remove('sidebar-minimized');
-		xplorerBrand.innerHTML = 'Xplorer';
+		root.style.setProperty('--sidebar-minimized-width', '0px');
 	}
 	appearance.sidebarWidth = size;
 	if (sidebar.animate && !matchMedia('(prefers-reduced-motion)').matches) {
 		const animateOptions = { duration: 100, fill: 'forwards' } as const;
-		sidebar.animate({ flexBasis: size }, animateOptions);
-		settingsSidebar.animate({ flexBasis: size }, animateOptions);
-	} else sidebar.style.flexBasis = settingsSidebar.style.flexBasis = size;
+		sidebar.animate({ width: size }, animateOptions);
+		settingsSidebar.animate({ width: size }, animateOptions);
+	} else sidebar.style.width = settingsSidebar.style.width = size;
 };
 
 export const Resizer = async (): Promise<void> => {
 	sidebar = document.querySelector<HTMLElement>('.sidebar');
 	settingsSidebar = document.querySelector<HTMLElement>('.settings-sidebar');
-	xplorerBrand = document.querySelector<HTMLElement>('.xplorer-brand');
 	appearance = (await Storage.get('appearance')) || {};
 	updateSidebarParameters();
 	const defaultSidebarWidth = sidebarDefaultExpandedSize + 'px';

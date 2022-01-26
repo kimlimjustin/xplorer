@@ -91,25 +91,17 @@ const createSidebar = async (): Promise<void> => {
 				{ name: 'Trash', path: 'xplorer://Trash' }, // eslint-disable-next-line no-mixed-spaces-and-tabs
 		  ];
 	// get drives element
-	const sidebarNavElement = document.querySelector('#sidebar-nav') as HTMLDivElement;
+	const sidebarNavElement = document.querySelector('#sidebar-nav');
 	sidebarNavElement.innerHTML = `
 			${await getFavoritesElement(_favorites)}
 			${await sidebarDrivesElement()}
 		`;
 
-	const sidebarElement = document.querySelector('.sidebar') as HTMLDivElement;
-
-	const settingBtn = document.querySelector('.sidebar-setting-btn');
-	settingBtn.innerHTML = `
-		<div class="sidebar-setting-btn-inner">
-			<img src="${await fileThumbnail('setting', 'sidebar', false)}" alt="Setting icon" class="sidebar-setting-btn-icon" />
-
-			<span class="sidebar-setting-btn-text">
-				${await Translate('Settings')}
-			</span>
-		</div>`;
+	const settingBtnText = document.querySelector('#sidebar-setting-btn span');
+	settingBtnText.textContent = await Translate('Settings');
 
 	// Collapse section
+	const sidebarElement = document.querySelector<HTMLElement>('.sidebar');
 	sidebarElement.querySelectorAll('.sidebar-nav-item-dropdown-btn').forEach((btn) => {
 		btn.addEventListener('click', async (e) => {
 			let sidebarNavItem = (e.target as Element).parentNode;
