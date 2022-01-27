@@ -15,14 +15,35 @@
 					<span>Xplorer</span>
 					<img alt="Xplorer" src="Icon/extension/xplorer.svg" />
 				</div>
-				<div id="sidebar-nav"></div>
+
+				<div id="sidebar-nav">
+					<div id="sidebar-favorites" data-section="favorites">
+						<div class="sidebar-nav-toggle sidebar-hover-effect">
+							<img src="Icon/folder/sidebar-favorite.svg" />
+							<span class="sidebar-text"></span>
+							<span class="sidebar-nav-toggle-arrow"></span>
+						</div>
+						<div class="sidebar-nav-list"></div>
+					</div>
+
+					<div id="sidebar-drives" data-section="drives">
+						<div class="sidebar-nav-toggle sidebar-hover-effect">
+							<img src="Icon/hard-disk.svg" />
+							<span class="sidebar-text"></span>
+							<span class="sidebar-nav-toggle-arrow"></span>
+						</div>
+						<div class="sidebar-nav-list"></div>
+					</div>
+				</div>
+
 				<div id="sidebar-setting-btn" class="sidebar-hover-effect">
-					<div id="sidebar-setting-btn-icon">
+					<div class="sidebar-icon">
 						<img src="Icon/folder/sidebar-setting.svg" />
 					</div>
-					<span>Settings</span>
+					<span class="sidebar-text">Settings</span>
 				</div>
 			</div>
+
 			<div class="main">
 				<div class="topbar" data-tauri-drag-region>
 					<div class="row">

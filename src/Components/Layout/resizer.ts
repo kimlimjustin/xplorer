@@ -104,7 +104,7 @@ export const Resizer = async (): Promise<void> => {
 			Storage.set('appearance', appearance);
 		}
 		if (sidebar.classList.contains('sidebar-minimized')) {
-			const itemClasses = ['sidebar-item', 'drive-item'];
+			const itemClasses = ['favorite-item', 'drive-item'];
 			if (itemClasses.some((c) => target.classList.contains(c))) {
 				const sidebarText = target.querySelector<HTMLElement>('.sidebar-text');
 				const { offsetTop: y, offsetHeight: h } = sidebarText;

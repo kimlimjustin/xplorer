@@ -1,16 +1,17 @@
 import { listenStylesheetChange } from '../../Api/app';
 import Storage from '../../Api/storage';
 import { CustomTheme, Theme } from '../../Typings/theme';
+
+type Category = '*' | 'root' | 'tabbing' | 'favorites' | 'grid';
+type ElementType = 'sidebar' | 'tab' | 'card' | 'grid';
+
 /**
  * Detect system theme
  * @returns {string}
  */
 const detectDefaultTheme = (): string => {
-	if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-		return 'dark';
-	} else {
-		return 'light';
-	}
+	if (matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
+	return 'light';
 };
 
 let defaultTheme = detectDefaultTheme();
@@ -19,7 +20,7 @@ const updateNativeTheme = (): void => {
 	updateTheme('*');
 };
 
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
 	defaultTheme = e.matches ? 'dark' : 'light';
 	updateTheme('*');
 });
@@ -52,16 +53,29 @@ const getElementStyle = (variable: string, theme?: string): string | null => {
  * @returns {void}
  */
 const changeElementTheme = (element: HTMLElement, variable: string, key: string, theme: string): void => {
-	if (element) (<any>element.style)[key] = themeJSON?.[variable] || defaultThemeJSON?.[theme]?.[variable]; //eslint-disable-line
+	if (element) (<any>element.style)[key] = themeJSON?.[variable] || defaultThemeJSON?.[theme]?.[variable];
 };
 
-const getXYCoordinates = (e: MouseEvent): { x: number; y: number } => {
-	const rect = (e.target as Element).getBoundingClientRect();
-
-	return {
-		x: e.clientX - rect.left,
-		y: e.clientY - rect.top,
-	};
+/**
+ * Return the hover handler for an element
+ * @param {HTMLElement} obj - Element to add the hover handler
+ * @param {string} theme - The current theme
+ * @param {any} type - Type of element
+ * @returns {void}
+ */
+const hoverHandler = (obj: HTMLElement, theme: string, type: ElementType) => {
+	changeElementTheme(obj, type + 'Background', 'background', theme);
+	if (obj.getAttribute('being-listened') === 'true') return;
+	obj.setAttribute('being-listened', 'true');
+	obj.addEventListener('mousemove', (e) => {
+		const rect = (e.target as HTMLElement).getBoundingClientRect();
+		const x = e.clientX - rect.left;
+		const y = e.clientY - rect.top;
+		if (obj.classList.contains('active')) return (obj.onmouseleave = null);
+		const color = getElementStyle('animation.' + type, currentTheme);
+		obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${color})`;
+		obj.onmouseleave = () => (obj.style.background = obj.style.borderImage = null);
+	});
 };
 
 const ALLOWED_STYLES = [
@@ -78,162 +92,90 @@ const ALLOWED_STYLES = [
 	'--selected-grid',
 ];
 
+// prettier-ignore
+const CATEGORIES = [
+	'root',
+	'windowmanager',
+	'tabs',
+	'settings',
+	'favorites',
+	'grid',
+	'contextmenu',
+	'prompt',
+	'preview',
+	'properties',
+];
+
 /**
  * Change page theme
  * @param {string} theme - The current theme
  * @returns {Promise<void>}
  */
-const changeTheme = async (theme?: string, category?: '*' | 'root' | 'tabbing' | 'favorites' | 'grid'): Promise<void> => {
+const changeTheme = async (theme?: string, category?: Category): Promise<void> => {
 	if (!category) category = '*';
-	const appearance = await Storage.get('appearance');
+	const appearance = (await Storage.get('appearance')) || {};
 	if (category === '*' || category === 'root') {
-		document.body.style.setProperty('--edge-radius', appearance?.frameStyle === 'os' ? '0px' : '10px');
-		document.body.style.fontSize = appearance?.fontSize ?? '16px';
-		document.documentElement.style.fontSize = appearance?.fontSize ?? '16px';
-		document.body.style.fontFamily = appearance?.fontFamily ?? 'system-ui';
-		document.documentElement.style.fontFamily = appearance?.fontFamily ?? 'system-ui';
-		document.body.style.setProperty(
-			'--sidebar-transparency',
-			appearance?.transparentSidebar ?? true ? appearance?.windowTransparency ?? '0.8' : '1'
-		);
-		document.body.style.setProperty(
-			'--workspace-transparency',
-			appearance?.transparentWorkspace ?? false ? appearance?.windowTransparency ?? '0.8' : '1'
-		);
-		document.body.style.setProperty(
-			'--topbar-transparency',
-			appearance?.transparentTopbar ?? false ? appearance?.windowTransparency ?? '0.8' : '1'
-		);
+		const root = document.documentElement;
+		const opacity = appearance.windowTransparency || '0.8';
+		root.style.fontSize = appearance.fontSize || '16px';
+		root.style.fontFamily = appearance.fontFamily || 'system-ui';
+		root.style.setProperty('--edge-radius', appearance.frameStyle === 'os' ? '0px' : '10px');
+		root.style.setProperty('--sidebar-transparency', appearance.transparentSidebar ?? true ? opacity : 1);
+		root.style.setProperty('--workspace-transparency', appearance.transparentWorkspace ? opacity : 1);
+		root.style.setProperty('--topbar-transparency', appearance.transparentTopbar ? opacity : 1);
 
-		document.querySelectorAll<HTMLElement>('.sidebar-hover-effect').forEach((obj) => {
-			obj.style.borderRadius = '6px';
-			changeElementTheme(obj, 'sidebarBackground', 'background', theme);
-			if (obj.getAttribute('being-listened') !== 'true') {
-				obj.setAttribute('being-listened', 'true');
-				obj.addEventListener('mousemove', (e) => {
-					const rect = (e.target as Element).getBoundingClientRect();
-					const x = e.clientX - rect.left;
-					const y = e.clientY - rect.top;
-					const elementIsActive = obj.classList.contains('active');
-					if (elementIsActive) obj.onmouseleave = null;
-					else {
-						obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle('animation.sidebar', currentTheme)} )`;
-						obj.onmouseleave = () => {
-							obj.style.background = null;
-							obj.style.borderImage = null;
-						};
-					}
-				});
-			}
-		});
+		const sidebarItems = document.querySelectorAll<HTMLElement>('.sidebar-hover-effect');
+		sidebarItems.forEach((obj) => hoverHandler(obj, theme, 'sidebar'));
 
 		const style = document.querySelector('style#root') ?? document.createElement('style');
 		style.id = 'root';
-		let styles = '';
+		let content = '';
 		// Generate CSS styles from user theme
 		for (const key of Object.keys(themeJSON ?? defaultThemeJSON[theme])) {
 			const value = themeJSON ? themeJSON[key] : defaultThemeJSON[theme]?.[key];
 			const formalKey = key.replace(/[A-Z]/g, (m) => '-' + m.toLowerCase());
-			const splittedKey = formalKey.split('.')
-			const styleKey =splittedKey[splittedKey.length - 1];
+			const splittedKey = formalKey.split('.');
+			const styleKey = splittedKey[splittedKey.length - 1];
 			if (key.startsWith('hljs')) {
 				const className = formalKey.split('.').slice(0, -1).join('.').replace('hljs.', 'hljs-');
-				styles += `.${className} { ${styleKey}: ${value}; }\n`;
+				content += `.${className} { ${styleKey}: ${value} }\n`;
 			} else {
-				for (const _category of [
-					'root',
-					'windowmanager',
-					'tabs',
-					'settings',
-					'favorites',
-					'grid',
-					'contextmenu',
-					'prompt',
-					'preview',
-					'properties',
-				]) {
-					if (key.startsWith(_category)) {
-						const usingClassName = formalKey[_category.length] === '.';
-						const className = formalKey.split('.').slice(1, -1).join('.');
-						const idName = formalKey.split('#').slice(1).join('#').split('.')[0];
-						for (const allowed_style of ALLOWED_STYLES) {
-							if (styleKey.startsWith(allowed_style)) {
-								if (styleKey.startsWith('--')) {
-									styles += `:root { ${styleKey}: ${value}; }\n`;
-								} else {
-									styles += `${
-										usingClassName
-											? className === ''
-												? _category === 'root'
-													? ':root'
-													: '.' + _category
-												: '.' + className
-											: '#' + idName
-									}{ ${styleKey}: ${value}; }\n`;
-								}
-								break;
-							}
+				for (const _category of CATEGORIES) {
+					if (!key.startsWith(_category)) continue;
+					const usingClassName = formalKey[_category.length] === '.';
+					const className = formalKey.split('.').slice(1, -1).join('.');
+					const idName = formalKey.split('#').slice(1).join('#').split('.')[0];
+					for (const allowedStyle of ALLOWED_STYLES) {
+						if (!styleKey.startsWith(allowedStyle)) continue;
+						if (styleKey.startsWith('--')) {
+							content += `:root { ${styleKey}: ${value}; }\n`;
+							break;
 						}
+						if (!usingClassName) content += '#' + idName;
+						else if (className !== '') content += '.' + className;
+						else if (_category !== 'root') content += '.' + _category;
+						else content += ':root';
+						content += `{ ${styleKey}: ${value} }\n`;
+						break;
 					}
 				}
 			}
 		}
-		style.innerHTML = styles;
-		if (!document.head.contains(style)) document.head.appendChild(style);
+		style.textContent = content;
+		!document.head.contains(style) && document.head.appendChild(style);
 	}
 	if (category === '*' || category === 'tabbing') {
-		document.querySelectorAll<HTMLElement>('.tab-hover-effect').forEach((obj) => {
-			changeElementTheme(obj, 'tabBackground', 'background', theme);
-			if (obj.getAttribute('being-listened') !== 'true') {
-				obj.setAttribute('being-listened', 'true');
-				obj.addEventListener('mousemove', (e) => {
-					const rect = (e.target as Element).getBoundingClientRect();
-					const x = e.clientX - rect.left;
-					const y = e.clientY - rect.top;
-					obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle('animation.tab', currentTheme)} )`;
-					obj.onmouseleave = () => {
-						obj.style.background = null;
-						obj.style.borderImage = null;
-					};
-				});
-			}
-		});
+		const tabItems = document.querySelectorAll<HTMLElement>('.tab-hover-effect');
+		tabItems.forEach((obj) => hoverHandler(obj, theme, 'tab'));
 	}
 	if (category === '*' || category === 'favorites') {
-		document.querySelectorAll<HTMLElement>('.card-hover-effect').forEach((obj) => {
-			if (obj.getAttribute('being-listened') !== 'true') {
-				obj.setAttribute('being-listened', 'true');
-				obj.addEventListener('mousemove', (e) => {
-					const { x, y } = getXYCoordinates(e);
-
-					obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle('animation.card', currentTheme)} )`;
-					obj.onmouseleave = () => {
-						obj.style.background = null;
-						obj.style.borderImage = null;
-					};
-				});
-			}
-		});
+		const cardItems = document.querySelectorAll<HTMLElement>('.card-hover-effect');
+		cardItems.forEach((obj) => hoverHandler(obj, theme, 'card'));
 	}
 	if (category === '*' || category === 'grid') {
-		document.querySelectorAll<HTMLElement>('.grid-hover-effect').forEach((obj) => {
-			changeElementTheme(obj, 'gridBackground', 'background', null);
-			if (obj.getAttribute('being-listened') !== 'true') {
-				obj.setAttribute('being-listened', 'true');
-				obj.addEventListener('mousemove', (e) => {
-					const { x, y } = getXYCoordinates(e);
-
-					obj.style.background = `radial-gradient(circle at ${x}px ${y}px, ${getElementStyle('animation.grid', currentTheme)} )`;
-					obj.onmouseleave = () => {
-						obj.style.background = null;
-						obj.style.borderImage = null;
-					};
-				});
-			}
-		});
+		const gridItems = document.querySelectorAll<HTMLElement>('.grid-hover-effect');
+		gridItems.forEach((obj) => hoverHandler(obj, theme, 'grid'));
 	}
-
-	return;
 };
 
 /**
@@ -245,17 +187,18 @@ const getInstalledThemes = async (): Promise<CustomTheme[]> => {
 	const themes: CustomTheme[] = [];
 	if (!extensions?.themes) return themes;
 	for (const extension of extensions.themes) {
-		for (const theme of extension.themes) {
+		const { identifier, author, version, description, homepage, repository, license } = extension;
+		for (const { name, value } of extension.themes) {
 			themes.push({
-				name: theme.name,
-				identifier: extension.identifier + '@' + theme.identifier,
-				author: extension.author,
-				version: extension.version,
-				description: extension.description,
-				homepage: extension.homepage,
-				repository: extension.repository,
-				license: extension.license,
-				theme: theme.value,
+				name,
+				identifier: identifier + '@' + identifier,
+				author,
+				version,
+				description,
+				homepage,
+				repository,
+				license,
+				theme: value,
 			});
 		}
 	}
@@ -266,7 +209,7 @@ const getInstalledThemes = async (): Promise<CustomTheme[]> => {
  * Update the entire page theme
  * @returns {Promise<void>}
  */
-const updateTheme = async (category?: '*' | 'root' | 'tabbing' | 'favorites' | 'grid', customStyleSheet?: JSON): Promise<void> => {
+const updateTheme = async (category?: Category, customStyleSheet?: JSON): Promise<void> => {
 	const data = await Storage.get('theme');
 	if (customStyleSheet) {
 		themeJSON = customStyleSheet as unknown as Theme;
@@ -278,25 +221,18 @@ const updateTheme = async (category?: '*' | 'root' | 'tabbing' | 'favorites' | '
 	}
 	// If user has no preference theme
 	if (!data || !Object.keys(data).length || data.theme === 'System Default') {
-		currentTheme = defaultTheme;
-		await changeTheme(defaultTheme, category);
-	} else {
-		// If user preference is default color theme...
-		if (Object.keys(defaultThemeJSON).indexOf(data.theme) !== -1) {
-			if (document.body.dataset.usingCustomTheme !== 'true') themeJSON = null;
-			currentTheme = data.theme;
-			await changeTheme(data.theme, category);
-		} else {
-			for (const theme of await getInstalledThemes()) {
-				if (theme.identifier === data.theme) {
-					if (document.body.dataset.usingCustomTheme !== 'true') themeJSON = theme.theme;
-					await changeTheme(theme.name, category);
-					break;
-				}
-			}
-		}
+		return await changeTheme((currentTheme = defaultTheme), category);
 	}
-	return;
+	// If user preference is default color theme...
+	if (Object.keys(defaultThemeJSON).indexOf(data.theme) !== -1) {
+		if (document.body.dataset.usingCustomTheme !== 'true') themeJSON = null;
+		return await changeTheme((currentTheme = data.theme), category);
+	}
+	for (const theme of await getInstalledThemes()) {
+		if (theme.identifier !== data.theme) continue;
+		if (document.body.dataset.usingCustomTheme !== 'true') themeJSON = theme.theme;
+		return await changeTheme(theme.name, category);
+	}
 };
 
 export { changeTheme, updateTheme, detectDefaultTheme, updateNativeTheme, getElementStyle, getInstalledThemes };
