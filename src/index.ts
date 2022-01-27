@@ -16,7 +16,7 @@ import LAZY_LOAD_INIT from './Components/Functions/lazyLoadingImage';
 import Infobar from './Components/Layout/infobar';
 import Search from './Components/Files/File Operation/search';
 import { listenUpdateTheme } from './Service/window';
-import Resizer from './Components/Layout/resizer';
+import { Resizer } from './Components/Layout/resizer';
 // Wait DOM Loaded to be loaded
 document.addEventListener('DOMContentLoaded', async () => {
 	// Read user preferences
