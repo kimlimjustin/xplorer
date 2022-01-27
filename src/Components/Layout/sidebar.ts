@@ -22,7 +22,7 @@ const isDefaultFavorite = async (filePath: string) => {
 };
 
 /**
- * Get sidebar's favorites element
+ * Write favorite items to sidebar's dropdown list
  * @param {Array} favorites - Array of favorites
  * @returns {Promise<void>}
  */

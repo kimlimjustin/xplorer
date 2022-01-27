@@ -9,7 +9,7 @@ type ElementType = 'sidebar' | 'tab' | 'card' | 'grid';
 import IsValid from '../Functions/validChecker';
 /**
  * Detect system theme
- * @returns {string}
+ * @returns {string} System color scheme preference
  */
 const detectDefaultTheme = (): string => {
 	if (matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
@@ -39,8 +39,8 @@ let currentTheme: string;
 /**
  * Get style of an element
  * @param {string} variable - What style you wanna get?
- * @param {string} theme - the current theme
- * @returns {string|null} style of the [variable] of the element
+ * @param {string} theme - The current theme
+ * @returns {string|null} Style of the [variable] of the element
  */
 const getElementStyle = (variable: string, theme?: string): string | null => {
 	return themeJSON?.[variable] || defaultThemeJSON[theme ?? currentTheme]?.[variable];
@@ -51,10 +51,10 @@ const getElementStyle = (variable: string, theme?: string): string | null => {
  * @param {HTMLElement} element - Element you want to change the theme style
  * @param {string} variable - The style you wanna change
  * @param {any} key - CSS key of the style
- * @param {string} theme - current theme
+ * @param {string} theme - Current theme
  * @returns {void}
  */
-const changeElementTheme = (element: HTMLElement, variable: string, key: string, theme: string): void => {
+const changeElementTheme = (element: HTMLElement, variable: string, key: string, theme: string) => {
 	if (element) (<any>element.style)[key] = themeJSON?.[variable] || defaultThemeJSON?.[theme]?.[variable]; //eslint-disable-line
 };
 

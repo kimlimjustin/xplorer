@@ -64,7 +64,7 @@ const Drives = async (): Promise<string> => {
 };
 
 /**
- * Get sidebar's drive element
+ * Write drive items to sidebar's dropdown list
  * @returns {Promise<void>}
  */
 const writeSidebarDriveItems = async (): Promise<void> => {
