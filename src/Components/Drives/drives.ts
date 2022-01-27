@@ -2,9 +2,9 @@ import formatBytes from '../Functions/filesize';
 import Translate from '../I18n/i18n';
 import fileThumbnail from '../Thumbnail/thumbnail';
 import { updateTheme } from '../Theme/theme';
-import DrivesAPI, { Drive } from '../../Api/drives';
-import OS from '../../Api/platform';
-import Storage from '../../Api/storage';
+import DrivesAPI, { Drive } from '../../Service/drives';
+import OS from '../../Service/platform';
+import Storage from '../../Service/storage';
 // Initialize values
 let platform: string;
 let driveInfo: DrivesAPI;

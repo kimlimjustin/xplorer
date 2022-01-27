@@ -4,7 +4,7 @@ import Pin from '../../Files/File Operation/pin';
 import Translate from '../../I18n/i18n';
 import Preview from '../../Files/File Preview/preview';
 import { OpenDir } from '../../Open/open';
-import FileAPI from '../../../Api/files';
+import FileAPI from '../../../Service/files';
 
 const SidebarMenu = async (target: HTMLElement, filePath: string): Promise<contextMenuItem[][]> => {
 	return [

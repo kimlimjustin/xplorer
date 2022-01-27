@@ -1,11 +1,9 @@
 import Translate from '../I18n/i18n';
 import fileThumbnail from '../Thumbnail/thumbnail';
-import FavoritesAPI from '../../Api/favorites';
-import DirectoryAPI from '../../Api/directory';
-import Storage from '../../Api/storage';
+import DirectoryAPI from '../../Service/directory';
+import Storage from '../../Service/storage';
 import defaultFavorites from './defaultFavorites';
-import FileAPI from '../../Api/files';
-let FavoritesData: FavoritesAPI;
+import FileAPI from '../../Service/files';
 
 const isDefaultFavorite = async (filePath: string) => {
 	return (await defaultFavorites()).some((favorite) => favorite.path === filePath);
@@ -16,10 +14,6 @@ const isDefaultFavorite = async (filePath: string) => {
  * @returns {{Promise<string>} Favorites section HTML code
  */
 const Favorites = async (): Promise<string> => {
-	if (!FavoritesData) {
-		FavoritesData = new FavoritesAPI();
-		await FavoritesData.build();
-	}
 	const data = await Storage.get('favorites'); // Get user favorites data on sidebar
 	const favorites = data?.favorites ?? (await defaultFavorites());
 

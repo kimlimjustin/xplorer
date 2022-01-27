@@ -1,6 +1,6 @@
 import { OperationLog } from '../../Functions/log';
 import focusingPath from '../../Functions/focusingPath';
-import FileAPI from '../../../Api/files';
+import FileAPI from '../../../Service/files';
 import PromptError from '../../Prompt/error';
 
 /**

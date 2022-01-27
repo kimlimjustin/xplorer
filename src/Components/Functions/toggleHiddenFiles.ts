@@ -1,4 +1,4 @@
-import Storage from '../../Api/storage';
+import Storage from '../../Service/storage';
 const toggleHiddenFiles = async (): Promise<void> => {
 	const _preference = await Storage.get('preference');
 	const hideHiddenFiles = !_preference?.hideHiddenFiles;
