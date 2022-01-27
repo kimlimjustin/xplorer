@@ -1,5 +1,5 @@
 import PromptError from '../../Prompt/error';
-import { HTML_TYPE, IMAGE_TYPES, VIDEO_TYPES, PLAIN_TEXT, MARKDOWN_TYPES } from '../../../Config/file.config';
+import { HTML_TYPE, IMAGE_TYPES, VIDEO_TYPES, PLAIN_TEXT, MARKDOWN_TYPES, AUDIO_TYPES } from '../../../Config/file.config';
 import getBasename from '../../Functions/path/basename';
 import xlsx from 'xlsx';
 import FileAPI from '../../../Service/files';
@@ -91,13 +91,21 @@ const Preview = async (filePath: string): Promise<void> => {
 				filePath
 			).readAsset()}"></video></div>`
 		);
+	} else if (AUDIO_TYPES.indexOf(ext) !== -1) {
+		changePreview(
+			`	
+			<div class="preview-object" data-type="audio">
+				<audio controls="" controlsList="nodownload">
+					<source src="${new FileAPI(filePath).readAsset()}">
+				</audio>
+			</div>`
+		);
 	} else if (PLAIN_TEXT.indexOf(ext) !== -1) {
 		changePreview(`<div class='preview-object' data-type="txt">${await new FileAPI(filePath).readFile()}</div>`);
 	} else if (MARKDOWN_TYPES.indexOf(ext) !== -1) {
 		const html = marked(await new FileAPI(filePath).readFile());
 		changePreview(`<div class='preview-object' data-type="md">${eURLify(html)}</div>`);
 		previewElement.querySelectorAll('img').forEach(async (img) => {
-			console.log(isValidURL(img.src), img.src);
 			if (!isValidURL(img.src)) {
 				let imgData = new FileAPI(img.src);
 				if (!(await imgData.exists())) {

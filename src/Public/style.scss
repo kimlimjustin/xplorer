@@ -18,6 +18,10 @@ body {
 	-ms-user-select: none;
 	user-select: none;
 	scroll-behavior: smooth;
+
+	&.resize-horizontal {
+		cursor: w-resize;
+	}
 }
 
 ::-webkit-scrollbar {
