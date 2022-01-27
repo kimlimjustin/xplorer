@@ -1,5 +1,5 @@
 import isTauri from '../../Util/is-tauri';
-import { isVSCodeInstalled, listenStylesheetChange } from '../../Service/app';
+import { listenStylesheetChange } from '../../Service/app';
 import Storage from '../../Service/storage';
 import { CustomTheme, Theme } from '../../Typings/theme';
 
@@ -55,7 +55,7 @@ const getElementStyle = (variable: string, theme?: string): string | null => {
  * @returns {void}
  */
 const changeElementTheme = (element: HTMLElement, variable: string, key: string, theme: string): void => {
-	if (element) (<any>element.style)[key] = themeJSON?.[variable] || defaultThemeJSON?.[theme]?.[variable];
+	if (element) (<any>element.style)[key] = themeJSON?.[variable] || defaultThemeJSON?.[theme]?.[variable]; //eslint-disable-line
 };
 
 /**
