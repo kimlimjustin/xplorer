@@ -1,11 +1,12 @@
 import { reload, minimize, maximize, close } from '../../Layout/windowManager';
 import Translate from '../../I18n/i18n';
-import Storage from '../../../Api/storage';
-import OS from '../../../Api/platform';
-import { changeTransparentEffect, getAvailableFonts, enableShadowEffect } from '../../../Api/app';
+import Storage from '../../../Service/storage';
+import OS from '../../../Service/platform';
+import { changeTransparentEffect, getAvailableFonts, enableShadowEffect } from '../../../Service/app';
 import { getElementStyle, getInstalledThemes, updateTheme } from '../../Theme/theme';
-import { setDecorations } from '../../../Api/window';
+import { setDecorations } from '../../../Service/window';
 import Infobar from '../../Layout/infobar';
+import isTauri from '../../../Util/is-tauri';
 let platform: string;
 /**
  * Create appearence section
@@ -64,6 +65,7 @@ const Appearance = async (): Promise<void> => {
 	const frameStyle_i18n = await Translate('Frame Style');
 	const workspace_i18n = await Translate('Workspace');
 	const showInfoBar_i18n = await Translate('Show Info Bar');
+	const disabledForWeb = !isTauri ? 'disabled' : '';
 	const appearancePage = `<h3 class="settings-title">${appTheme_i18n}</h3>
 	<select name="theme">
 		<option  ${developingTheme ? 'disabled' : ''}>${systemDefault_i18n}</option>
@@ -78,7 +80,7 @@ const Appearance = async (): Promise<void> => {
 		platform !== 'linux'
 			? `<div class="toggle-box">
 		<label class="toggle">
-			<input type="checkbox" name="shadow-effect" ${shadowEffect ? 'checked' : ''}>
+			<input type="checkbox" name="shadow-effect" ${shadowEffect ? 'checked' : ''} ${disabledForWeb}>
 			<span class="toggle-slider"></span>
 			<span class="toggle-label">${shadowEffect_i18n}</span>
 		</label>
@@ -100,40 +102,44 @@ const Appearance = async (): Promise<void> => {
 		<div class="number-ctrl-plus">+</div>
 	</div>
 	<h3 class="settings-title">${windowTransparency_i18n}: <span id='transparency-label'>${windowTransparency}</span>%</h3>
-		<input type="range" value="${windowTransparency}" min="5" max="100" class="transparency-slider">
+		<input type="range" value="${windowTransparency}" min="5" max="100" class="transparency-slider" ${disabledForWeb}>
 	</div>
 	<div class="toggle-box">
 		<label class="toggle">
-			<input type="checkbox" name="transparent-sidebar" ${transparentSidebar ? 'checked' : ''}>
+			<input type="checkbox" name="transparent-sidebar" ${transparentSidebar ? 'checked' : ''} ${disabledForWeb}>
 			<span class="toggle-slider"></span>
 			<span class="toggle-label">${transparentSidebar_i18n}</span>
 		</label>
 	</div>
 	<div class="toggle-box">
 		<label class="toggle">
-			<input type="checkbox" name="transparent-topbar" ${transparentTopbar ? 'checked' : ''}>
+			<input type="checkbox" name="transparent-topbar" ${transparentTopbar ? 'checked' : ''} ${disabledForWeb}>
 			<span class="toggle-slider"></span>
 			<span class="toggle-label">${transparentTopbar_i18n}</span>
 		</label>
 	</div>
 	<div class="toggle-box">
 		<label class="toggle">
-			<input type="checkbox" name="transparent-workspace" ${transparentWorkspace ? 'checked' : ''}>
+			<input type="checkbox" name="transparent-workspace" ${transparentWorkspace ? 'checked' : ''} ${disabledForWeb}>
 			<span class="toggle-slider"></span>
 			<span class="toggle-label">${transparentWorkspace_i18n}</span>
 		</label>
 	</div>
 	<h3 class="settings-title">${transparentEffect_i18n}</h3>
 	<select name="transparent-effect">
-		<option value="blur" ${transparentEffect === 'blur' ? 'selected' : ''} ${platform !== 'win32' ? 'disabled' : ''}>Blur</option>
-		<option value="acrylic" ${transparentEffect === 'acrylic' ? 'selected' : ''} ${platform !== 'win32' ? 'disabled' : ''}>Acrylic</option>
-		<option value="vibrancy" ${transparentEffect === 'vibrancy' ? 'selected' : ''} ${platform !== 'darwin' ? 'disabled' : ''}>Vibrancy</option>
+		<option value="blur" ${transparentEffect === 'blur' ? 'selected' : ''} ${platform !== 'win32' ? 'disabled' : ''} ${disabledForWeb}>Blur</option>
+		<option value="acrylic" ${transparentEffect === 'acrylic' ? 'selected' : ''} ${
+		platform !== 'win32' ? 'disabled' : ''
+	} ${disabledForWeb}>Acrylic</option>
+		<option value="vibrancy" ${transparentEffect === 'vibrancy' ? 'selected' : ''} ${
+		platform !== 'darwin' ? 'disabled' : ''
+	} ${disabledForWeb}>Vibrancy</option>
 		<option value="none" ${transparentEffect === 'none' ? 'selected' : ''}>None</option>
 	</select>
 	<h3 class="settings-title">${frameStyle_i18n}</h3>
 	<select name="frame-style">
-		<option value="default" ${frameStyle === 'default' ? 'selected' : ''}>${default_i18n}</option>
-		<option value="os" ${frameStyle === 'os' ? 'selected' : ''}>${systemDefault_i18n}</option>
+		<option value="default" ${frameStyle === 'default' ? 'selected' : ''} ${disabledForWeb}>${default_i18n}</option>
+		<option value="os" ${frameStyle === 'os' ? 'selected' : ''} ${disabledForWeb}>${systemDefault_i18n}</option>
 	</select>
 	<h3 class="settings-title">${filePreview_i18n}</h3>
 	<div class="toggle-box">

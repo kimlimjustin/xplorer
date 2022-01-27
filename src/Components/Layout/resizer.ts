@@ -1,5 +1,5 @@
 import IStorageData from '../../Typings/storageData';
-import Storage from '../../Api/storage';
+import Storage from '../../Service/storage';
 
 const SIDEBAR_EDGE_SENSOR = 10;
 const SIDEBAR_MIN_SIZE = 70;

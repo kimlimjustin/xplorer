@@ -2,12 +2,13 @@ import PromptError from '../../Prompt/error';
 import { HTML_TYPE, IMAGE_TYPES, VIDEO_TYPES, PLAIN_TEXT, MARKDOWN_TYPES, AUDIO_TYPES } from '../../../Config/file.config';
 import getBasename from '../../Functions/path/basename';
 import xlsx from 'xlsx';
-import FileAPI from '../../../Api/files';
+import FileAPI from '../../../Service/files';
 import { eURLify, URLify } from '../../Functions/urlify';
 import hljs from 'highlight.js';
 import ConfirmDialog from '../../Prompt/confirm';
 import { marked } from 'marked';
 import getDirname from '../../Functions/path/dirname';
+import isTauri from '../../../Util/is-tauri';
 
 const isValidURL = (text: string) => {
 	let url;
@@ -33,6 +34,10 @@ const closePreviewFile = (): void => {
  * @returns {void}
  */
 const Preview = async (filePath: string): Promise<void> => {
+	if (!isTauri) {
+		PromptError('Preview unavailable', 'Preview is currently unavailable on Web version');
+		return;
+	}
 	closePreviewFile();
 
 	const previewElement = document.createElement('div');

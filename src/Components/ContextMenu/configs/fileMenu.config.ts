@@ -1,8 +1,8 @@
 import Preview from '../../Files/File Preview/preview';
-import { isVSCodeInstalled } from '../../../Api/app';
+import { isVSCodeInstalled } from '../../../Service/app';
 import contextMenuItem from '../../../Typings/contextMenuItem';
 import { createNewTab } from '../../Layout/tab';
-import reveal from '../../../Api/reveal';
+import reveal from '../../../Service/reveal';
 import Cut from '../../Files/File Operation/cut';
 import Copy from '../../Files/File Operation/copy';
 import copyLocation from '../../Files/File Operation/location';
@@ -13,8 +13,8 @@ import Properties from '../../Properties/properties';
 import focusingPath from '../../Functions/focusingPath';
 import Translate from '../../I18n/i18n';
 import { OpenDir } from '../../Open/open';
-import FileAPI from '../../../Api/files';
-import Storage from '../../../Api/storage';
+import FileAPI from '../../../Service/files';
+import Storage from '../../../Service/storage';
 interface Favorites {
 	name: string;
 	path: string;

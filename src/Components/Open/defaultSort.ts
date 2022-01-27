@@ -1,4 +1,4 @@
-import FavoritesAPI from '../../Api/favorites';
+import FavoritesAPI from '../../Service/favorites';
 let favoritesData: FavoritesAPI;
 /**
  * Check for default sort algorithm for a given directory

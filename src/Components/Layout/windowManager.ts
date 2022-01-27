@@ -1,10 +1,10 @@
-import { appWindow } from '@tauri-apps/api/window';
-import Storage from '../../Api/storage';
-import windowName, { listenWindowClose, setDecorations } from '../../Api/window';
+import Storage from '../../Service/storage';
+import windowName, { listenWindowClose, setDecorations } from '../../Service/window';
 import { OpenDir } from '../Open/open';
 import focusingPath from '../Functions/focusingPath';
 import getDirname from '../Functions/path/dirname';
 import createSidebar from './sidebar';
+import isTauri from '../../Util/is-tauri';
 /**
  * Reload the page
  * @returns {Promise<void>}
@@ -22,7 +22,10 @@ const reload = async (): Promise<void> => {
  * @returns {void}
  */
 const minimize = (): void => {
-	appWindow.minimize();
+	if (isTauri) {
+		const { appWindow } = require('@tauri-apps/api/window');
+		appWindow.minimize();
+	}
 };
 
 /**
@@ -30,8 +33,11 @@ const minimize = (): void => {
  * @returns {Promise<void>}
  */
 const maximize = async (): Promise<void> => {
-	if (await appWindow.isMaximized()) appWindow.unmaximize();
-	else appWindow.maximize();
+	if (isTauri) {
+		const { appWindow } = require('@tauri-apps/api/window');
+		if (await appWindow.isMaximized()) appWindow.unmaximize();
+		else appWindow.maximize();
+	}
 };
 
 /**
@@ -39,7 +45,10 @@ const maximize = async (): Promise<void> => {
  * @returns {any}
  */
 const close = (): void => {
-	appWindow.close();
+	if (isTauri) {
+		const { appWindow } = require('@tauri-apps/api/window');
+		appWindow.close();
+	}
 };
 
 /**
@@ -58,7 +67,7 @@ const goParentDir = async (): Promise<void> => {
  */
 const windowManager = async (): Promise<void> => {
 	const appearance = await Storage.get('appearance');
-	if (appearance?.frameStyle === 'os') {
+	if (appearance?.frameStyle === 'os' || !isTauri) {
 		document.querySelector('.window-manager').parentNode.removeChild(document.querySelector('.window-manager'));
 	}
 	setDecorations(appearance?.frameStyle === 'os');

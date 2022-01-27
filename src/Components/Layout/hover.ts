@@ -1,7 +1,7 @@
-import FileAPI from '../../Api/files';
+import FileAPI from '../../Service/files';
 import { IMAGE_TYPES } from '../../Config/file.config';
 import getBasename from '../Functions/path/basename';
-import Storage from '../../Api/storage';
+import Storage from '../../Service/storage';
 
 const getExtension = (filename: string): string => {
 	const basename = getBasename(filename);

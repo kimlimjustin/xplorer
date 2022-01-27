@@ -1,5 +1,5 @@
-import windowName from '../../Api/window';
-import Storage from '../../Api/storage';
+import windowName from '../../Service/window';
+import Storage from '../../Service/storage';
 import isValid from './validChecker';
 
 interface OpenLogType {

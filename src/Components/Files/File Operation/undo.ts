@@ -1,11 +1,11 @@
-import windowName from '../../../Api/window';
-import OperationAPI from '../../../Api/operation';
-import Storage from '../../../Api/storage';
+import windowName from '../../../Service/window';
+import OperationAPI from '../../../Service/operation';
+import Storage from '../../../Service/storage';
 import joinPath from '../../Functions/path/joinPath';
 import getBasename from '../../Functions/path/basename';
-import FileAPI from '../../../Api/files';
+import FileAPI from '../../../Service/files';
 import ConfirmDialog from '../../Prompt/confirm';
-import DirectoryAPI from '../../../Api/directory';
+import DirectoryAPI from '../../../Service/directory';
 import { RestoreFile } from './trash';
 import getDirname from '../../Functions/path/dirname';
 import NormalizeSlash from '../../Functions/path/normalizeSlash';
