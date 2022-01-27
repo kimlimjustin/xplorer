@@ -1,4 +1,4 @@
-import Storage from '../../Api/storage';
+import Storage from '../../Service/storage';
 import fileThumbnail from '../Thumbnail/thumbnail';
 import formatBytes from '../Functions/filesize';
 import type FileMetaData from '../../Typings/fileMetaData';

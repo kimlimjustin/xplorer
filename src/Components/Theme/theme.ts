@@ -1,10 +1,12 @@
-import { listenStylesheetChange } from '../../Api/app';
-import Storage from '../../Api/storage';
+import isTauri from '../../Util/is-tauri';
+import { isVSCodeInstalled, listenStylesheetChange } from '../../Service/app';
+import Storage from '../../Service/storage';
 import { CustomTheme, Theme } from '../../Typings/theme';
 
 type Category = '*' | 'root' | 'tabbing' | 'favorites' | 'grid';
 type ElementType = 'sidebar' | 'tab' | 'card' | 'grid';
 
+import IsValid from '../Functions/validChecker';
 /**
  * Detect system theme
  * @returns {string}
@@ -119,10 +121,10 @@ const changeTheme = async (theme?: string, category?: Category): Promise<void> =
 		const opacity = appearance.windowTransparency || '0.8';
 		root.style.fontSize = appearance.fontSize || '16px';
 		root.style.fontFamily = appearance.fontFamily || 'system-ui';
-		root.style.setProperty('--edge-radius', appearance.frameStyle === 'os' ? '0px' : '10px');
-		root.style.setProperty('--sidebar-transparency', appearance.transparentSidebar ?? true ? opacity : 1);
-		root.style.setProperty('--workspace-transparency', appearance.transparentWorkspace ? opacity : 1);
-		root.style.setProperty('--topbar-transparency', appearance.transparentTopbar ? opacity : 1);
+		root.style.setProperty('--edge-radius', appearance.frameStyle === 'os' || !isTauri ? '0px' : '10px');
+		root.style.setProperty('--sidebar-transparency', isTauri && (appearance.transparentSidebar ?? true) ? opacity : 1);
+		root.style.setProperty('--workspace-transparency', isTauri && appearance.transparentWorkspace ? opacity : 1);
+		root.style.setProperty('--topbar-transparency', isTauri && appearance.transparentTopbar ? opacity : 1);
 
 		const sidebarItems = document.querySelectorAll<HTMLElement>('.sidebar-hover-effect');
 		sidebarItems.forEach((obj) => hoverHandler(obj, theme, 'sidebar'));
@@ -131,8 +133,8 @@ const changeTheme = async (theme?: string, category?: Category): Promise<void> =
 		style.id = 'root';
 		let content = '';
 		// Generate CSS styles from user theme
-		for (const key of Object.keys(themeJSON ?? defaultThemeJSON[theme])) {
-			const value = themeJSON ? themeJSON[key] : defaultThemeJSON[theme]?.[key];
+		for (const key of Object.keys(IsValid(themeJSON) ? themeJSON : defaultThemeJSON[theme])) {
+			const value = IsValid(themeJSON) ? themeJSON[key] : defaultThemeJSON[theme]?.[key];
 			const formalKey = key.replace(/[A-Z]/g, (m) => '-' + m.toLowerCase());
 			const splittedKey = formalKey.split('.');
 			const styleKey = splittedKey[splittedKey.length - 1];
@@ -211,7 +213,8 @@ const getInstalledThemes = async (): Promise<CustomTheme[]> => {
  */
 const updateTheme = async (category?: Category, customStyleSheet?: JSON): Promise<void> => {
 	const data = await Storage.get('theme');
-	if (customStyleSheet) {
+	if (IsValid(customStyleSheet)) {
+		console.log(customStyleSheet);
 		themeJSON = customStyleSheet as unknown as Theme;
 		document.body.dataset.usingCustomTheme = 'true';
 		listenStylesheetChange((styles) => {

@@ -1,7 +1,7 @@
 import { reload } from '../../Layout/windowManager';
 import Translate from '../../I18n/i18n';
-import LocalesAPI from '../../../Api/locales';
-import Storage from '../../../Api/storage';
+import LocalesAPI from '../../../Service/locales';
+import Storage from '../../../Service/storage';
 let localesData: LocalesAPI;
 /**
  * Create preference section

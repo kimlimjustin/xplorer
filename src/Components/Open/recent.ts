@@ -1,9 +1,9 @@
 import { startLoading, stopLoading } from '../Functions/Loading/loading';
-import Storage from '../../Api/storage';
+import Storage from '../../Service/storage';
 import fileThumbnail from '../Thumbnail/thumbnail';
 import { updateTheme } from '../Theme/theme';
 import type { OpenLogType } from '../Functions/log';
-import FileAPI from '../../Api/files';
+import FileAPI from '../../Service/files';
 import FileMetaData from '../../Typings/fileMetaData';
 import NormalizeSlash from '../Functions/path/normalizeSlash';
 import formatBytes from '../Functions/filesize';

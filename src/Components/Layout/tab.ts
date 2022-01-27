@@ -1,7 +1,7 @@
 import { updateTheme } from '../Theme/theme';
-import Storage from '../../Api/storage';
+import Storage from '../../Service/storage';
 import Translate from '../I18n/i18n';
-import windowName from '../../Api/window';
+import windowName from '../../Service/window';
 import { OpenDir } from '../Open/open';
 import { close } from './windowManager';
 import basename from '../Functions/path/basename';

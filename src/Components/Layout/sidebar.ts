@@ -2,13 +2,12 @@ import { writeSidebarDriveItems as writeDriveItems } from '../Drives/drives';
 import { updateTheme } from '../Theme/theme';
 import fileThumbnail from '../Thumbnail/thumbnail';
 import Translate from '../I18n/i18n';
-import FavoritesAPI from '../../Api/favorites';
-import DirectoryAPI from '../../Api/directory';
-import Storage from '../../Api/storage';
+import FavoritesAPI from '../../Service/favorites';
+import DirectoryAPI from '../../Service/directory';
+import Storage from '../../Service/storage';
 import IsValid from '../Functions/validChecker';
 import defaultFavorites from '../Favorites/defaultFavorites';
-import FileAPI from '../../Api/files';
-
+import FileAPI from '../../Service/files';
 interface Favorites {
 	name: string;
 	path: string;

@@ -1,13 +1,13 @@
 import { getSelected } from '../../Files/File Operation/select';
 import contextMenuItem from '../../../Typings/contextMenuItem';
-import { isVSCodeInstalled } from '../../../Api/app';
+import { isVSCodeInstalled } from '../../../Service/app';
 import { createNewTab } from '../../Layout/tab';
 import Cut from '../../Files/File Operation/cut';
 import Copy from '../../Files/File Operation/copy';
 import { Purge, Restore, Trash } from '../../Files/File Operation/trash';
 import Pin from '../../Files/File Operation/pin';
 import Translate from '../../I18n/i18n';
-import reveal from '../../../Api/reveal';
+import reveal from '../../../Service/reveal';
 import focusingPath from '../../Functions/focusingPath';
 
 const MultipleSelectedMenu = async (_: HTMLElement, _filePath: string): Promise<contextMenuItem[][]> => {

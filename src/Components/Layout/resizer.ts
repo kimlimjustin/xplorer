@@ -1,5 +1,5 @@
 import IStorageData from '../../Typings/storageData';
-import Storage from '../../Api/storage';
+import Storage from '../../Service/storage';
 
 const sidebarEdgeSensor = 10;
 const windowMinSize = 800;

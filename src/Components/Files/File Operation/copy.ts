@@ -1,4 +1,4 @@
-import Storage from '../../../Api/storage';
+import Storage from '../../../Service/storage';
 /**
  * Copy (a) file/s
  *
