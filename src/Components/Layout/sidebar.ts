@@ -82,7 +82,7 @@ const createSidebar = async (): Promise<void> => {
 				{ name: 'Pictures', path: FavoritesData.PICTURE_PATH },
 				{ name: 'Music', path: FavoritesData.MUSIC_PATH },
 				{ name: 'Videos', path: FavoritesData.VIDEO_PATH },
-				{ name: 'Trash', path: 'xplorer://Trash' },
+				{ name: 'Trash', path: 'xplorer://Trash' }, // eslint-disable-next-line no-mixed-spaces-and-tabs
 		  ];
 	await Promise.all([writeFavoriteItems(_favorites), writeDriveItems()]);
 	updateTheme('root');
