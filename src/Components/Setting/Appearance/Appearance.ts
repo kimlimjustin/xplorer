@@ -202,7 +202,7 @@ const Appearance = async (): Promise<void> => {
 	settingsMain.querySelectorAll('.number-ctrl').forEach((ctrl) => {
 		const number = ctrl.querySelector<HTMLInputElement>('.number-ctrl-input');
 		ctrl.querySelector('.number-ctrl-minus').addEventListener('click', () => {
-			number.value = (parseInt(number.value) - 1).toString();
+			number.value = +number.value - 1 + '';
 			const appearance = _appearance ?? {};
 			appearance.fontSize = `${number.value}px`;
 			document.body.style.fontSize = `${number.value}px`;
@@ -210,7 +210,7 @@ const Appearance = async (): Promise<void> => {
 			Storage.set('appearance', appearance);
 		});
 		ctrl.querySelector('.number-ctrl-plus').addEventListener('click', () => {
-			number.value = (parseInt(number.value) + 1).toString();
+			number.value = +number.value + 1 + '';
 			const appearance = _appearance ?? {};
 			appearance.fontSize = `${number.value}px`;
 			document.body.style.fontSize = `${number.value}px`;
@@ -218,6 +218,7 @@ const Appearance = async (): Promise<void> => {
 			Storage.set('appearance', appearance);
 		});
 	});
+
 	settingsMain.querySelector('.transparency-slider').addEventListener('input', (event: Event & { target: HTMLInputElement }) => {
 		const value = parseInt(event.target.value);
 		const appearance = _appearance ?? {};

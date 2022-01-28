@@ -128,7 +128,7 @@ const ContextMenu = (): void => {
 		// Create the context menu
 		if (getSelected().length > 1) {
 			await MenuToElements(await MultipleSelectedMenu(target, filePath));
-		} else if (target.classList.contains('sidebar-item')) {
+		} else if (target.classList.contains('favorite-item')) {
 			await MenuToElements(await SidebarMenu(target, filePath));
 		} else if (target.classList.contains('drive-item')) {
 			await MenuToElements(await SidebarDriveMenu(target, filePath));

@@ -119,7 +119,7 @@ const Preference = async (): Promise<void> => {
 		Storage.set('preference', preference);
 		reload();
 
-		document.querySelector('.sidebar-setting-btn-text').innerHTML = await Translate('Settings');
+		document.querySelector('#sidebar-setting-btn-text').innerHTML = await Translate('Settings');
 		Preference();
 	});
 	settingsMain.querySelector(`[name="hide-hidden-files"]`).addEventListener('change', async (event: Event & { target: HTMLInputElement }) => {

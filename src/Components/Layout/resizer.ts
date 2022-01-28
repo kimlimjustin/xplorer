@@ -1,65 +1,83 @@
 import IStorageData from '../../Typings/storageData';
 import Storage from '../../Service/storage';
 
-const SIDEBAR_EDGE_SENSOR = 10;
-const SIDEBAR_MIN_SIZE = 70;
-const SIDEBAR_MIN_SNAP = 220;
-const WINDOW_MIN_SIZE = 800;
+const sidebarEdgeSensor = 10;
+const windowMinSize = 800;
+
+let sidebarMinSize: number;
+let sidebarMinSnap: number;
+let sidebarDefaultExpandedSize: number;
 
 let sidebar: HTMLElement;
 let settingsSidebar: HTMLElement;
-let xplorerBrand: HTMLElement;
 let appearance: IStorageData;
+
+export const updateSidebarParameters = (updateSidebar = false) => {
+	const fontSize = parseInt(document.documentElement.style.fontSize || '18');
+	const sidebarDefaultExpandedSizeOld = sidebarDefaultExpandedSize;
+	const sidebarMinSizeOld = sidebarMinSize;
+	sidebarMinSize = fontSize * 4;
+	sidebarMinSnap = 180 + fontSize * 4;
+	sidebarDefaultExpandedSize = 200 + fontSize * 4;
+	if (!updateSidebar) return;
+
+	let size = parseInt(appearance.expandedSidebarWidth);
+	if (sidebar.offsetWidth !== sidebarMinSizeOld) size = sidebar.offsetWidth;
+	else size ||= sidebarDefaultExpandedSizeOld;
+	size = (size / sidebarDefaultExpandedSizeOld) * sidebarDefaultExpandedSize;
+
+	const minimized = size < sidebarMinSnap || appearance.preferMinimizedSidebar;
+	resizeSidebar((minimized ? sidebarMinSize : size) + 'px');
+	appearance.expandedSidebarWidth = Math.max(size, sidebarMinSnap) + 'px';
+	Storage.set('appearance', appearance);
+};
 
 export const resizeSidebar = function (size?: string) {
 	if (!size) {
-		if (sidebar.offsetWidth !== SIDEBAR_MIN_SIZE) {
-			size = SIDEBAR_MIN_SIZE + 'px';
-			appearance.preferMinimizedSidebar = true;
-		} else {
-			size = appearance.expandedSidebarWidth || '250px';
+		if (sidebar.offsetWidth === sidebarMinSize) {
+			const defaultSidebarWidth = sidebarDefaultExpandedSize + 'px';
+			size = appearance.expandedSidebarWidth || defaultSidebarWidth;
 			appearance.preferMinimizedSidebar = false;
+		} else {
+			size = sidebarMinSize + 'px';
+			appearance.preferMinimizedSidebar = true;
 		}
 		Storage.set('appearance', appearance);
 	}
-	if (size === SIDEBAR_MIN_SIZE + 'px') {
+	const root = document.documentElement;
+	if (size === sidebarMinSize + 'px') {
 		sidebar.classList.add('sidebar-minimized');
 		settingsSidebar.classList.add('sidebar-minimized');
-		const imgSrc = require('../../Icon/extension/xplorer.svg');
-		xplorerBrand.innerHTML = `<img src=${imgSrc} alt="xplorer" />`;
+		root.style.setProperty('--sidebar-minimized-width', size);
 	} else {
 		sidebar.classList.remove('sidebar-minimized');
 		settingsSidebar.classList.remove('sidebar-minimized');
-		xplorerBrand.innerHTML = 'Xplorer';
+		root.style.setProperty('--sidebar-minimized-width', '0px');
 	}
 	appearance.sidebarWidth = size;
-	if (sidebar.animate) {
-		const animateOptions = { duration: 200, fill: 'forwards' } as const;
-		sidebar.animate({ flexBasis: size }, animateOptions);
-		settingsSidebar.animate({ flexBasis: size }, animateOptions);
-	} else sidebar.style.flexBasis = settingsSidebar.style.flexBasis = size;
+	if (sidebar.animate && !matchMedia('(prefers-reduced-motion)').matches) {
+		const animateOptions = { duration: 100, fill: 'forwards' } as const;
+		sidebar.animate({ width: size }, animateOptions);
+		settingsSidebar.animate({ width: size }, animateOptions);
+	} else sidebar.style.width = settingsSidebar.style.width = size;
 };
 
-/**
- * Sidebar resizer initalization
- * @returns {Promise<void>}
- */
 export const Resizer = async (): Promise<void> => {
 	sidebar = document.querySelector<HTMLElement>('.sidebar');
 	settingsSidebar = document.querySelector<HTMLElement>('.settings-sidebar');
-	xplorerBrand = document.querySelector<HTMLElement>('.xplorer-brand');
 	appearance = (await Storage.get('appearance')) || {};
-	resizeSidebar(appearance.sidebarWidth || '250px');
+	updateSidebarParameters();
+	const defaultSidebarWidth = sidebarDefaultExpandedSize + 'px';
+	resizeSidebar(appearance.sidebarWidth || defaultSidebarWidth);
 
 	const resizeWindow = () => {
-		if (window.innerWidth < WINDOW_MIN_SIZE) {
-			resizeSidebar(SIDEBAR_MIN_SIZE + 'px');
-		} else if (!appearance.preferMinimizedSidebar) {
-			resizeSidebar(appearance.expandedSidebarWidth || '250px');
+		if (window.innerWidth < windowMinSize) resizeSidebar(sidebarMinSize + 'px');
+		else if (!appearance.preferMinimizedSidebar) {
+			resizeSidebar(appearance.expandedSidebarWidth || defaultSidebarWidth);
 		}
 	};
-	window.addEventListener('resize', resizeWindow);
 	resizeWindow();
+	window.addEventListener('resize', resizeWindow);
 
 	let resizing = false;
 
@@ -67,26 +85,26 @@ export const Resizer = async (): Promise<void> => {
 
 	document.addEventListener('mousedown', ({ clientX: mx }) => {
 		const { offsetWidth: w } = sidebar;
-		resizing = Math.abs(w - mx) < SIDEBAR_EDGE_SENSOR;
+		resizing = Math.abs(w - mx) < sidebarEdgeSensor;
 	});
 
 	document.addEventListener('mousemove', (event) => {
 		type MouseMoveEvent = MouseEvent & { target: HTMLElement };
 		const { clientX: mx, clientY: my, target } = event as MouseMoveEvent;
 		if (resizing) {
-			let size = mx + 'px';
-			if (mx < SIDEBAR_MIN_SNAP) {
-				size = SIDEBAR_MIN_SIZE + 'px';
+			let width = mx + 'px';
+			if (mx < sidebarMinSnap) {
+				width = sidebarMinSize + 'px';
 				appearance.preferMinimizedSidebar = true;
 			} else {
-				appearance.expandedSidebarWidth = size;
+				appearance.expandedSidebarWidth = width;
 				appearance.preferMinimizedSidebar = false;
 			}
-			resizeSidebar(size);
+			resizeSidebar(width);
 			Storage.set('appearance', appearance);
 		}
 		if (sidebar.classList.contains('sidebar-minimized')) {
-			const itemClasses = ['sidebar-item', 'drive-item'];
+			const itemClasses = ['favorite-item', 'drive-item'];
 			if (itemClasses.some((c) => target.classList.contains(c))) {
 				const sidebarText = target.querySelector<HTMLElement>('.sidebar-text');
 				const { offsetTop: y, offsetHeight: h } = sidebarText;
@@ -95,7 +113,7 @@ export const Resizer = async (): Promise<void> => {
 			}
 		}
 		const { offsetWidth: w } = sidebar;
-		if (Math.abs(w - mx) < SIDEBAR_EDGE_SENSOR || resizing) {
+		if (Math.abs(w - mx) < sidebarEdgeSensor || resizing) {
 			document.body.classList.add('resize-horizontal');
 		} else {
 			document.body.classList.remove('resize-horizontal');
