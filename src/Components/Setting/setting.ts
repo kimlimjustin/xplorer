@@ -25,7 +25,7 @@ const Setting = async (): Promise<void> => {
 		});
 	};
 
-	document.querySelector('.sidebar-setting-btn').addEventListener('click', async () => {
+	document.querySelector('#sidebar-setting-btn').addEventListener('click', async () => {
 		document.querySelector<HTMLElement>('.settings').style.animation = 'open-setting 1s forwards';
 		document.querySelector('.settings-sidebar-heading').innerHTML = await Translate('Settings');
 		const settingsSidebarItems = document.querySelector('.settings-sidebar-items');
