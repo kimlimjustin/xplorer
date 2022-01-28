@@ -110,6 +110,7 @@
 	margin-left: 1rem;
 	flex: 1;
 	overflow: hidden;
+	white-space: nowrap;
 	text-overflow: ellipsis;
 	transition: opacity 0.2s;
 	pointer-events: none;
