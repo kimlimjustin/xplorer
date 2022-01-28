@@ -41,7 +41,6 @@
 		display: block;
 		max-width: 4rem;
 		height: 3rem;
-		width: 2rem;
 	}
 	.file-grid-filename {
 		overflow-wrap: break-word;
@@ -67,6 +66,7 @@
 		display: inline-block;
 		height: 1.5rem;
 		max-width: 2rem;
+		width: 2rem;
 	}
 	.file-grid-filename {
 		flex: 3;
