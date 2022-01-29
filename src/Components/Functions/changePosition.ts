@@ -12,7 +12,7 @@ import { UpdateInfo } from '../Layout/infobar';
  */
 const changePosition = async (newPath: string, forceChange = false): Promise<void> => {
 	document.querySelector<HTMLInputElement>('.path-navigator').value = newPath;
-	document.getElementById('workspace').dataset.path = escape(newPath);
+	document.getElementById('workspace').dataset.path = encodeURI(newPath);
 
 	const tabs = await Storage.get(`tabs-${windowName}`);
 	const _focusingTab = tabs?.tabs[String(tabs?.focus)];

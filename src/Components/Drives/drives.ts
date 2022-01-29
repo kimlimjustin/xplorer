@@ -28,7 +28,7 @@ const drivesToElements = async (drives: Drive[]): Promise<string> => {
 	for (const drive of drives) {
 		const driveName = drive.mount_point.split('/')[drive.mount_point.split('/').length - 1]; // Get name of drive
 		result += `
-        <div class="pendrive file card-hover-effect" data-isdir="true" data-path = "${escape(drive.mount_point)}">
+        <div class="pendrive file card-hover-effect" data-isdir="true" data-path = "${encodeURI(drive.mount_point)}">
             <img src="${await fileThumbnail(drive.is_removable ? 'usb' : 'hard-disk', 'favorites', false)}" alt="USB icon" class="pendrive-icon">
             <div class="pendrive-info">
                 ${
@@ -88,7 +88,7 @@ const writeSidebarDriveItems = async (): Promise<void> => {
 		const driveType = drive.is_removable ? 'usb' : 'hard-disk';
 		const iconPath = await fileThumbnail(driveType, 'favorites', false);
 		content +=
-			`<span data-path="${escape(drive.mount_point)}" data-isdir="true" class="sidebar-hover-effect sidebar-nav-item drive-item">\n` +
+			`<span data-path="${encodeURI(drive.mount_point)}" data-isdir="true" class="sidebar-hover-effect sidebar-nav-item drive-item">\n` +
 			`  <div class="sidebar-icon">\n` +
 			`    <img src="${iconPath}">\n` +
 			`  </div>\n` +

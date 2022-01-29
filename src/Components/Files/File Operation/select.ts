@@ -17,7 +17,7 @@ const ChangeSelectedEvent = async (): Promise<void> => {
 	const selectedFileGrid = document.querySelectorAll('.file-grid.selected');
 	if (!selectedFileGrid.length) UpdateInfo('selected-files', '');
 	else {
-		const selectedFilePaths = Array.from(selectedFileGrid).map((element) => unescape((element as HTMLElement).dataset.path));
+		const selectedFilePaths = Array.from(selectedFileGrid).map((element) => decodeURI((element as HTMLElement).dataset.path));
 		const total_sizes = await new FileAPI(selectedFilePaths).calculateFilesSize();
 		UpdateInfo('selected-files', `${selectedFileGrid.length} file${selectedFileGrid.length > 1 ? 's' : ''} selected ${formatBytes(total_sizes)}`);
 		if (

@@ -49,7 +49,7 @@ const Hover = (): void => {
 
 		timeOut = window.setTimeout(async () => {
 			displayName = filenameGrid.innerHTML;
-			const path = unescape(target.dataset.path);
+			const path = decodeURI(target.dataset.path);
 			filenameGrid.innerHTML = isOnSearch ? path : getBasename(path);
 			target?.classList?.add('hovering');
 
