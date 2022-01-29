@@ -170,7 +170,7 @@ const BodyMenu = async (target: HTMLElement, filePath: string): Promise<contextM
 				visible: _focusingPath === 'xplorer://Trash',
 				icon: 'delete',
 				role: () => {
-					const filePaths = [...document.querySelectorAll<HTMLElement>('.file')].map((file) => unescape(file.dataset.path));
+					const filePaths = [...document.querySelectorAll<HTMLElement>('.file')].map((file) => decodeURI(file.dataset.path));
 					Restore(filePaths);
 				},
 			},
@@ -179,7 +179,7 @@ const BodyMenu = async (target: HTMLElement, filePath: string): Promise<contextM
 				visible: _focusingPath === 'xplorer://Trash',
 				icon: 'delete',
 				role: () => {
-					const filePaths = [...document.querySelectorAll<HTMLElement>('.file')].map((file) => unescape(file.dataset.path));
+					const filePaths = [...document.querySelectorAll<HTMLElement>('.file')].map((file) => decodeURI(file.dataset.path));
 					Purge(filePaths);
 				},
 			},

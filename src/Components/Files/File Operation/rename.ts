@@ -25,7 +25,7 @@ const Rename = (filePath: string): void => {
 		} catch (err) {
 			PromptError('Error renaming file', `Failed to rename ${filePath} [${err}]`);
 		}
-		OperationLog('rename', unescape(filePath), target);
+		OperationLog('rename', decodeURI(filePath), target);
 	});
 };
 

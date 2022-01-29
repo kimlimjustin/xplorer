@@ -181,7 +181,7 @@ const OpenHandler = async (e: MouseEvent): Promise<void> => {
 	if (!element?.dataset?.path) return;
 	if (element.id === 'workspace') return;
 
-	const filePath = unescape(element.dataset.path);
+	const filePath = decodeURI(element.dataset.path);
 
 	// Open the file if it's not directory
 	if (element.dataset.isdir !== 'true') {

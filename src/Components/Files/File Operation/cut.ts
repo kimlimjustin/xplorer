@@ -8,7 +8,7 @@ import Storage from '../../../Service/storage';
 const Cut = (files: Array<string>): void => {
 	Storage.set('clipboard', { command: 'cut', files: files });
 	for (const file of files) {
-		document.querySelector(`.file[data-path="${escape(file)}"]`).classList.add('cut');
+		document.querySelector(`.file[data-path="${encodeURI(file)}"]`).classList.add('cut');
 	}
 
 	(async function detectClipboardChange() {
@@ -16,7 +16,7 @@ const Cut = (files: Array<string>): void => {
 		if ((await Storage.get('clipboard')).files !== files) {
 			global.clearTimeout(n);
 			document.querySelectorAll<HTMLElement>('.file.cut').forEach((file) => {
-				if (files.indexOf(unescape(file.dataset.path)) !== -1) {
+				if (files.indexOf(decodeURI(file.dataset.path)) !== -1) {
 					file.classList.remove('cut');
 				}
 			});

@@ -19,7 +19,7 @@ const MultipleSelectedMenu = async (_: HTMLElement, _filePath: string): Promise<
 				role: () => {
 					for (const element of getSelected()) {
 						if (element.dataset.isdir === 'true') {
-							createNewTab(unescape(element.dataset.path));
+							createNewTab(decodeURI(element.dataset.path));
 						}
 					}
 				},
@@ -29,7 +29,7 @@ const MultipleSelectedMenu = async (_: HTMLElement, _filePath: string): Promise<
 				menu: await Translate('Open in VSCode'),
 				role: () => {
 					for (const selected of getSelected()) {
-						const targetPath = unescape(selected.dataset.path) === 'undefined' ? _focusingPath : unescape(selected.dataset.path);
+						const targetPath = decodeURI(selected.dataset.path) === 'undefined' ? _focusingPath : decodeURI(selected.dataset.path);
 						reveal(targetPath, 'vscode');
 					}
 				},
@@ -46,7 +46,7 @@ const MultipleSelectedMenu = async (_: HTMLElement, _filePath: string): Promise<
 				role: () => {
 					const paths = [];
 					for (const element of getSelected()) {
-						paths.push(unescape(element.dataset.path));
+						paths.push(decodeURI(element.dataset.path));
 					}
 					Cut(paths);
 				},
@@ -58,7 +58,7 @@ const MultipleSelectedMenu = async (_: HTMLElement, _filePath: string): Promise<
 				role: () => {
 					const paths = [];
 					for (const element of getSelected()) {
-						paths.push(unescape(element.dataset.path));
+						paths.push(decodeURI(element.dataset.path));
 					}
 					Copy(paths);
 				},
@@ -70,7 +70,7 @@ const MultipleSelectedMenu = async (_: HTMLElement, _filePath: string): Promise<
 				role: () => {
 					const paths = [];
 					for (const element of getSelected()) {
-						paths.push(unescape(element.dataset.path));
+						paths.push(decodeURI(element.dataset.path));
 					}
 					Trash(paths);
 				},
@@ -84,7 +84,7 @@ const MultipleSelectedMenu = async (_: HTMLElement, _filePath: string): Promise<
 				role: () => {
 					const filePaths = [];
 					for (const element of getSelected()) {
-						filePaths.push(unescape(element.dataset.path));
+						filePaths.push(decodeURI(element.dataset.path));
 					}
 					Restore(filePaths);
 				},
@@ -96,7 +96,7 @@ const MultipleSelectedMenu = async (_: HTMLElement, _filePath: string): Promise<
 				role: () => {
 					const filePaths = [];
 					for (const element of getSelected()) {
-						filePaths.push(unescape(element.dataset.path));
+						filePaths.push(decodeURI(element.dataset.path));
 					}
 					Purge(filePaths);
 				},
@@ -110,7 +110,7 @@ const MultipleSelectedMenu = async (_: HTMLElement, _filePath: string): Promise<
 				role: () => {
 					const paths = [];
 					for (const element of getSelected()) {
-						paths.push(unescape(element.dataset.path));
+						paths.push(decodeURI(element.dataset.path));
 					}
 					Pin(paths);
 				},

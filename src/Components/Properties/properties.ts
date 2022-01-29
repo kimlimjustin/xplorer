@@ -32,7 +32,7 @@ const RenderProperties = (options: Record<string, unknown>) => {
  * @returns {void}
  */
 const Properties = (filePath: string): void => {
-	const fileElement = document.querySelector<HTMLElement>(`[data-path="${escape(filePath)}"]`);
+	const fileElement = document.querySelector<HTMLElement>(`[data-path="${encodeURI(filePath)}"]`);
 
 	const size = fileElement.querySelector('.file-size').innerHTML;
 	if (fileElement.dataset.realPath) filePath = fileElement.dataset.realPath;
