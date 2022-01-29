@@ -123,7 +123,7 @@ const ContextMenu = (): void => {
 		}
 		if (!target?.dataset?.path) return;
 
-		const filePath = unescape(target.dataset.path);
+		const filePath = decodeURI(target.dataset.path);
 
 		// Create the context menu
 		if (getSelected().length > 1) {

@@ -6,7 +6,7 @@ import { writeTextToClipboard } from '../../../Service/clipboard';
  * @returns {void}
  */
 const copyLocation = (element: HTMLElement): void => {
-	const path = unescape(element.dataset.path);
+	const path = decodeURI(element.dataset.path);
 	writeTextToClipboard(path);
 };
 

@@ -105,7 +105,7 @@ const Recent = async (): Promise<void> => {
 			}
 			fileGrid.setAttribute('draggable', 'true');
 			fileGrid.dataset.isdir = String(recent.properties.is_dir);
-			fileGrid.dataset.path = escape(NormalizeSlash(recent.path));
+			fileGrid.dataset.path = encodeURI(NormalizeSlash(recent.path));
 			fileGrid.dataset.isSystem = String(recent.properties.is_system);
 			fileGrid.dataset.isReadOnly = String(recent.properties.readonly);
 			fileGrid.dataset.isHidden = String(recent.properties.is_hidden);

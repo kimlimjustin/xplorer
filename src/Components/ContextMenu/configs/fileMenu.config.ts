@@ -109,7 +109,7 @@ const FileMenu = async (target: HTMLElement, filePath: string): Promise<contextM
 				icon: 'delete',
 				visible: _focusingPath === 'xplorer://Trash',
 				role: () => {
-					Restore([unescape(filePath)]);
+					Restore([decodeURI(filePath)]);
 				},
 			},
 			{
@@ -118,7 +118,7 @@ const FileMenu = async (target: HTMLElement, filePath: string): Promise<contextM
 				visible: _focusingPath === 'xplorer://Trash',
 				shortcut: 'Shift+Del',
 				role: () => {
-					Purge([unescape(filePath)]);
+					Purge([decodeURI(filePath)]);
 				},
 			},
 			{

@@ -120,14 +120,14 @@ const Shortcut = (): void => {
 		searchElement.placeholder = '🔎 Search';
 
 		const selectedFile = getSelected()?.[0];
-		const selectedFilePath = unescape(selectedFile?.dataset?.path);
+		const selectedFilePath = decodeURI(selectedFile?.dataset?.path);
 		const isDir = selectedFile?.dataset.isdir === 'true';
 		const _focusingPath = await focusingPath();
 
 		// Open file shorcut (Enter)
 		if (e.key === 'Enter') {
 			for (const selected of getSelected()) {
-				const targetPath = unescape(selected.dataset.path) === 'undefined' ? _focusingPath : unescape(selected.dataset.path);
+				const targetPath = decodeURI(selected.dataset.path) === 'undefined' ? _focusingPath : decodeURI(selected.dataset.path);
 				if ((await new DirectoryAPI(targetPath).exists()) && !pauseEnterListener) {
 					// Open file in vscode (Shift + Enter)
 					if (e.shiftKey) {
@@ -177,7 +177,7 @@ const Shortcut = (): void => {
 		else if (e.altKey && e.key === 'p') {
 			let filePaths = [];
 			for (const element of getSelected()) {
-				filePaths.push(unescape(element.dataset.path));
+				filePaths.push(decodeURI(element.dataset.path));
 			}
 			if (!filePaths.length) filePaths = [_focusingPath];
 			Pin(filePaths);
@@ -187,7 +187,7 @@ const Shortcut = (): void => {
 		else if (e.ctrlKey && e.key === 'c') {
 			const filePaths = [];
 			for (const element of getSelected()) {
-				filePaths.push(unescape(element.dataset.path));
+				filePaths.push(decodeURI(element.dataset.path));
 			}
 			Copy(filePaths);
 		}
@@ -231,7 +231,7 @@ const Shortcut = (): void => {
 		else if (e.ctrlKey && e.key === 'x') {
 			const filePaths = [];
 			for (const element of getSelected()) {
-				filePaths.push(unescape(element.dataset.path));
+				filePaths.push(decodeURI(element.dataset.path));
 			}
 			Cut(filePaths);
 		}
@@ -273,7 +273,7 @@ const Shortcut = (): void => {
 			if (e.shiftKey) {
 				const filePaths = [];
 				for (const element of getSelected()) {
-					filePaths.push(unescape(element.dataset.path));
+					filePaths.push(decodeURI(element.dataset.path));
 				}
 				if (_focusingPath === 'xplorer://Trash') Purge(filePaths);
 				else PermanentDelete(filePaths);
@@ -281,7 +281,7 @@ const Shortcut = (): void => {
 				if (_focusingPath === 'xplorer://Trash') return;
 				const filePaths = [];
 				for (const element of getSelected()) {
-					filePaths.push(unescape(element.dataset.path));
+					filePaths.push(decodeURI(element.dataset.path));
 				}
 				Trash(filePaths);
 			}
@@ -304,7 +304,7 @@ const Shortcut = (): void => {
 		else if (e.ctrlKey && e.key === 'p') {
 			e.preventDefault();
 			const selectedFile = getSelected()?.[0];
-			const selectedFilePath = unescape(selectedFile?.dataset?.path);
+			const selectedFilePath = decodeURI(selectedFile?.dataset?.path);
 			Properties(selectedFilePath === 'undefined' ? await focusingPath() : selectedFilePath);
 		}
 		// Find files (Ctrl+F)
