@@ -307,10 +307,16 @@
 		box-sizing: border-box;
 		display: flex;
 
-		#workspace {
+		.workspace {
 			padding: 1rem;
 			height: calc(100% - 2rem);
 			width: -webkit-fill-available;
+			.workspace-tab {
+				display: none;
+			}
+			.workspace-tab-active {
+				display: block;
+			}
 		}
 	}
 	.infobar {

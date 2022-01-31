@@ -5,6 +5,7 @@ import FileAPI from '../../../Service/files';
 import formatBytes from '../../Functions/filesize';
 import Preview from '../File Preview/preview';
 import { ensureElementInViewPort } from '../../Functions/viewport';
+import { MAIN_BOX_ELEMENT } from '../../../Util/constants';
 
 let latestSelected: HTMLElement;
 let latestShiftSelected: HTMLElement;
@@ -77,7 +78,7 @@ const Select = (element: HTMLElement, ctrl: boolean, shift: boolean): void => {
  */
 const selectFirstFile = async (): Promise<void> => {
 	const hideHiddenFiles = (await Storage.get('preference'))?.hideHiddenFiles ?? true;
-	const firstFileElement = document.getElementById('workspace').querySelector(`.file${hideHiddenFiles ? ':not([data-hidden-file])' : ''}`);
+	const firstFileElement = MAIN_BOX_ELEMENT().querySelector(`.file${hideHiddenFiles ? ':not([data-hidden-file])' : ''}`);
 	firstFileElement.classList.add('selected');
 	ChangeSelectedEvent();
 	latestSelected = firstFileElement as HTMLElement;
@@ -92,7 +93,7 @@ const elementIndex = (element: HTMLElement): number => {
  * @returns {void}
  */
 const SelectInit = (): void => {
-	document.getElementById('workspace').addEventListener('click', (e) => {
+	MAIN_BOX_ELEMENT().addEventListener('click', (e) => {
 		if (
 			!(e.target as HTMLElement).className.split(' ').some(function (c) {
 				return /file/.test(c);

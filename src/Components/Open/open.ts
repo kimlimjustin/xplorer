@@ -20,6 +20,7 @@ import PromptError from '../Prompt/error';
 import { UpdateInfo } from '../Layout/infobar';
 import { processSearch, stopSearchingProcess } from '../Files/File Operation/search';
 import Storage from '../../Service/storage';
+import { GET_TAB_ELEMENT, MAIN_BOX_ELEMENT } from '../../Util/constants';
 let platform: string;
 let directoryInfo: DirectoryAPI;
 /**
@@ -27,6 +28,7 @@ let directoryInfo: DirectoryAPI;
  * @param {string} dir - Dir path to open
  * @param {boolean} reveal - Open the parent directory and select the file/dir
  * @param {forceOpen} boolean - Force open the directory without checking if it's focusing path
+ * @param {number} tab - Tab index to open the directory
  * @returns {Promise<void>}
  */
 const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promise<void> => {
@@ -35,13 +37,12 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false): Promis
 		InfoLog(`Something is still loading, refusing to open dir ${dir}`);
 		return;
 	}
-	console.time(dir);
 	// Check if the user is just want to reload the current directory
 	const isReload = (await focusingPath()) === dir && !forceOpen;
 	if (!isReload) directoryInfo?.unlisten?.();
 	startLoading();
 	changePosition(dir, forceOpen);
-	const MAIN_ELEMENT = document.getElementById('workspace');
+	const MAIN_ELEMENT = GET_TAB_ELEMENT();
 	MAIN_ELEMENT.innerHTML = '';
 	if (MAIN_ELEMENT.classList.contains('empty-dir-notification')) MAIN_ELEMENT.classList.remove('empty-dir-notification'); // Remove class if exist
 	if (dir === 'xplorer://Home') {
@@ -197,6 +198,6 @@ const OpenHandler = async (e: MouseEvent): Promise<void> => {
  */
 const OpenInit = async (): Promise<void> => {
 	document.querySelector('#sidebar-nav').addEventListener('click', OpenHandler);
-	document.querySelector('#workspace').addEventListener('click', OpenHandler);
+	MAIN_BOX_ELEMENT().addEventListener('click', OpenHandler);
 };
 export { OpenInit, OpenDir };
