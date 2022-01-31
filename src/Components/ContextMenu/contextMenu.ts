@@ -125,8 +125,6 @@ const ContextMenu = (): void => {
 
 		const filePath = decodeURI(target.dataset.path);
 
-		console.log(target);
-
 		// Create the context menu
 		if (getSelected().length > 1) {
 			await MenuToElements(await MultipleSelectedMenu(target, filePath));

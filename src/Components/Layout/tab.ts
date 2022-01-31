@@ -6,7 +6,7 @@ import { OpenDir } from '../Open/open';
 import { close } from './windowManager';
 import basename from '../Functions/path/basename';
 import Home from './home';
-import { GET_TAB_ELEMENT, GET_WORKSPACE_ELEMENT } from '../../Util/constants';
+import { GET_WORKSPACE_ELEMENT } from '../../Util/constants';
 import changePosition from '../Functions/changePosition';
 
 let tabsManager: HTMLElement;
