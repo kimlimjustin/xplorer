@@ -125,6 +125,8 @@ const ContextMenu = (): void => {
 
 		const filePath = decodeURI(target.dataset.path);
 
+		console.log(target);
+
 		// Create the context menu
 		if (getSelected().length > 1) {
 			await MenuToElements(await MultipleSelectedMenu(target, filePath));
@@ -132,7 +134,7 @@ const ContextMenu = (): void => {
 			await MenuToElements(await SidebarMenu(target, filePath));
 		} else if (target.classList.contains('drive-item')) {
 			await MenuToElements(await SidebarDriveMenu(target, filePath));
-		} else if (target === document.getElementById('workspace')) {
+		} else if (target.classList.contains('workspace-tab')) {
 			await MenuToElements(await BodyMenu(target, filePath));
 		} else {
 			await MenuToElements(await FileMenu(target, filePath));

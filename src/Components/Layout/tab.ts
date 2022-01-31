@@ -6,6 +6,8 @@ import { OpenDir } from '../Open/open';
 import { close } from './windowManager';
 import basename from '../Functions/path/basename';
 import Home from './home';
+import { GET_TAB_ELEMENT, GET_WORKSPACE_ELEMENT } from '../../Util/constants';
+import changePosition from '../Functions/changePosition';
 
 let tabsManager: HTMLElement;
 document.addEventListener('DOMContentLoaded', () => {
@@ -46,6 +48,17 @@ const createNewTab = async (path?: string): Promise<void> => {
 	tabsInfo.focusHistory.push(tabsInfo.latestIndex);
 	Storage.set(`tabs-${windowName}`, tabsInfo);
 
+	const newWorkspaceTabElement = document.createElement('div');
+	newWorkspaceTabElement.classList.add('workspace-tab');
+	newWorkspaceTabElement.id = `tab-1-${tabsInfo.latestIndex}`;
+	newWorkspaceTabElement.dataset.path = path || 'xplorer://Home';
+	GET_WORKSPACE_ELEMENT(1).appendChild(newWorkspaceTabElement);
+
+	document.querySelectorAll('.workspace-tab').forEach((tab: HTMLElement) => {
+		tab.classList.remove('workspace-tab-active');
+	});
+	newWorkspaceTabElement.classList.add('workspace-tab-active');
+
 	OpenDir(path || 'xplorer://Home');
 
 	newTab.addEventListener('click', (e) => {
@@ -68,7 +81,11 @@ const SwitchTab = async (tabIndex: number | string): Promise<void> => {
 	tabs.focusHistory.push(parseInt(String(tabIndex)));
 	tabs.tabs[tabs.focus].currentIndex -= 1;
 	Storage.set(`tabs-${windowName}`, tabs);
-	OpenDir(tabs.tabs[tabIndex].position);
+	document.querySelectorAll('.workspace-tab').forEach((tab: HTMLElement) => {
+		tab.classList.remove('workspace-tab-active');
+	});
+	document.getElementById(`tab-1-${tabIndex}`).classList.add('workspace-tab-active');
+	changePosition(tabs.tabs[tabs.focus].position);
 };
 
 /**

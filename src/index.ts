@@ -17,6 +17,7 @@ import Infobar from './Components/Layout/infobar';
 import Search from './Components/Files/File Operation/search';
 import { listenUpdateTheme } from './Service/window';
 import { Resizer } from './Components/Layout/resizer';
+import { MAIN_BOX_ELEMENT } from './Util/constants';
 // Wait DOM Loaded to be loaded
 document.addEventListener('DOMContentLoaded', async () => {
 	// Read user preferences
@@ -57,7 +58,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 	// Initialize select files listener
 	SelectInit();
 	// Initialize user preference
-	document.getElementById('workspace').dataset.hideHiddenFiles = String(_preference?.hideHiddenFiles ?? true);
+	MAIN_BOX_ELEMENT().dataset.hideHiddenFiles = String(_preference?.hideHiddenFiles ?? true);
 	// Initialize settings
 	Setting();
 	// Initialize info bar
