@@ -328,8 +328,15 @@
 }
 
 .workspace-split {
-	overflow: auto;
 	flex: 1;
+	display: flex;
+	padding: 0 !important;
+	height: 100% !important;
+	.workspace-tab {
+		overflow: auto;
+		max-width: 50%;
+		padding: 1rem;
+	}
 }
 
 #maximize {

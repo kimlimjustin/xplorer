@@ -9,7 +9,7 @@ import ConfirmDialog from '../../Prompt/confirm';
 import { marked } from 'marked';
 import getDirname from '../../Functions/path/dirname';
 import isTauri from '../../../Util/is-tauri';
-import { GET_TAB_ELEMENT } from '../../../Util/constants';
+import { GET_TAB_ELEMENT, GET_WORKSPACE_ELEMENT } from '../../../Util/constants';
 
 const isValidURL = (text: string) => {
 	let url;
@@ -25,7 +25,7 @@ const isValidURL = (text: string) => {
  * @returns {void}
  */
 const closePreviewFile = (): void => {
-	GET_TAB_ELEMENT().classList.remove('workspace-split');
+	GET_WORKSPACE_ELEMENT(1).classList.remove('workspace-split');
 	document.querySelectorAll('.preview').forEach((element) => element.parentNode.removeChild(element));
 	document.querySelector<HTMLElement>('.main-box').style.overflowY = 'auto';
 };
@@ -56,8 +56,8 @@ const Preview = async (filePath: string): Promise<void> => {
 
 		document.querySelector<HTMLElement>('.main-box').scrollTop = 0;
 		document.querySelector<HTMLElement>('.main-box').style.overflowY = 'hidden';
-		GET_TAB_ELEMENT().classList.toggle('workspace-split');
-		document.querySelector('.main-box').appendChild(previewElement);
+		GET_WORKSPACE_ELEMENT(1).classList.toggle('workspace-split');
+		GET_WORKSPACE_ELEMENT(1).appendChild(previewElement);
 		previewElement.querySelector('.preview-exit-btn').addEventListener('click', () => closePreviewFile());
 		return;
 	};
