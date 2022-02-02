@@ -16,7 +16,7 @@ module.exports = {
 	trailingSlash: true,
 	i18n: {
 		defaultLocale: 'en',
-		locales: ['en', 'fr', 'pt', 'uk', 'zh-CN'],
+		locales: ['en', 'es', 'fr'],
 	},
 	customFields: {
 		supabaseKey: process.env.SUPABASE_KEY,

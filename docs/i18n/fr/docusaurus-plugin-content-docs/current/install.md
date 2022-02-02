@@ -96,6 +96,6 @@ Veuillez essayer [la documentation officielle](https://support.apple.com/guide/m
 Mon installateur préféré n'est pas là.
 </summary>
 
-Signalez un bug en ouvrant un nouveau problème [ici](https://github.com/kimlimjustin/xplorer/new).
+Please address an issue [here](https://github.com/kimlimjustin/xplorer/issues/new/choose).
 
 </details>
