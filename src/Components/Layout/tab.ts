@@ -145,18 +145,18 @@ const Tab = async (reveal = false): Promise<void> => {
 			const createNewTabElement = document.querySelector('.create-new-tab');
 			for (const index in Object.keys(tabsInfo.tabs)) {
 				if (_first) {
+					const tabIndex = Object.keys(tabsInfo.tabs)[index];
+					const tabPosition = tabsInfo.tabs[tabIndex].position;
 					if (Object.keys(tabsInfo.tabs).length > 1) {
-						const tabIndex = Object.keys(tabsInfo.tabs)[index];
-						const tabPosition = tabsInfo.tabs[Object.keys(tabsInfo.tabs)[index]].position;
 						document.querySelector('#tab1').id = `tab${tabIndex}`;
 						document.querySelector('#tab-1-1').id = `tab-1-${Object.keys(tabsInfo.tabs)[index]}`;
-						document.getElementById(`tab${tabIndex}`).querySelector<HTMLInputElement>('#tab-position').innerText = await Translate(
-							basename(tabPosition) === '' ? tabPosition : basename(tabPosition)
-						);
 					} else {
 						document.querySelector('#tab1').id = `tab${Object.keys(tabsInfo.tabs)[index]}`;
 						document.querySelector('#tab-1-1').id = `tab-1-${Object.keys(tabsInfo.tabs)[index]}`;
 					}
+					document.getElementById(`tab${tabIndex}`).querySelector<HTMLInputElement>('#tab-position').innerText = await Translate(
+						basename(tabPosition) === '' ? tabPosition : basename(tabPosition)
+					);
 					await OpenDir(tabsInfo.tabs[Object.keys(tabsInfo.tabs)[index]].position, false, true, false);
 					_first = false;
 				} else {
