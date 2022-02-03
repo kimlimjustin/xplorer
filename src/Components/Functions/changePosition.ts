@@ -9,11 +9,13 @@ import { GET_TAB_ELEMENT } from '../../Util/constants';
  * Change current tab position
  * @param {string} newPath - the new position you want to open
  * @param {boolean} forceChange - force changing position
+ * @param {boolean} writeHistory - write open directory history to storage
  * @returns {Promise<void>}
  */
-const changePosition = async (newPath: string, forceChange = false): Promise<void> => {
+const changePosition = async (newPath: string, forceChange = false, writeHistory?: boolean): Promise<void> => {
 	document.querySelector<HTMLInputElement>('.path-navigator').value = newPath;
 	GET_TAB_ELEMENT().dataset.path = encodeURI(newPath);
+	if (!writeHistory) return;
 
 	const tabs = await Storage.get(`tabs-${windowName}`);
 	const _focusingTab = tabs?.tabs[String(tabs?.focus)];
