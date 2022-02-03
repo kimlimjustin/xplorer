@@ -22,12 +22,6 @@ import { MAIN_BOX_ELEMENT } from './Util/constants';
 document.addEventListener('DOMContentLoaded', async () => {
 	// Read user preferences
 	const _preference = await Storage.get('preference');
-	// Listen to minimize, maximize, exit and reload button
-	windowManager();
-	// Initialize drive detection
-	detectDriveInit();
-	// Build sidebar
-	createSidebar();
 	// Initialize folder to open
 	const cli = await CLIInformations();
 	if (!cli.dirs.length) {
@@ -35,7 +29,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 			Home();
 		}
 		// Initialize Tabs
-		Tab();
+		await Tab();
 	} else {
 		OpenDir(cli.dirs[0], cli.is_reveal);
 		for (let i = 1; i < cli.dirs.length; i++) {
@@ -45,6 +39,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 		// Initialize Tabs
 		Tab(cli.is_reveal);
 	}
+	// Listen to minimize, maximize, exit and reload button
+	windowManager();
+	// Initialize drive detection
+	detectDriveInit();
+	// Build sidebar
+	createSidebar();
+
 	// Update the page styling
 	if (cli.custom_style_sheet) {
 		updateTheme('root', cli.custom_style_sheet);

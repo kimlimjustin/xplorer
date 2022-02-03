@@ -149,17 +149,19 @@ const Tab = async (reveal = false): Promise<void> => {
 						const tabIndex = Object.keys(tabsInfo.tabs)[index];
 						const tabPosition = tabsInfo.tabs[Object.keys(tabsInfo.tabs)[index]].position;
 						document.querySelector('#tab1').id = `tab${tabIndex}`;
+						document.querySelector('#tab-1-1').id = `tab-1-${Object.keys(tabsInfo.tabs)[index]}`;
 						document.getElementById(`tab${tabIndex}`).querySelector<HTMLInputElement>('#tab-position').innerText = await Translate(
 							basename(tabPosition) === '' ? tabPosition : basename(tabPosition)
 						);
 					} else {
 						document.querySelector('#tab1').id = `tab${Object.keys(tabsInfo.tabs)[index]}`;
-						await OpenDir(tabsInfo.tabs[Object.keys(tabsInfo.tabs)[index]].position, false, true);
+						document.querySelector('#tab-1-1').id = `tab-1-${Object.keys(tabsInfo.tabs)[index]}`;
 					}
+					await OpenDir(tabsInfo.tabs[Object.keys(tabsInfo.tabs)[index]].position, false, true, false);
 					_first = false;
 				} else {
 					const tabIndex = Object.keys(tabsInfo.tabs)[index];
-					const tabPosition = tabsInfo.tabs[Object.keys(tabsInfo.tabs)[index]].position;
+					const tabPosition = tabsInfo.tabs[tabIndex].position;
 					const newTab = document.createElement('div');
 					newTab.classList.add('tab');
 					newTab.classList.add('tab-hover-effect');
@@ -168,10 +170,20 @@ const Tab = async (reveal = false): Promise<void> => {
 					newTab.id = `tab${tabIndex}`;
 
 					createNewTabElement.parentElement.insertBefore(newTab, createNewTabElement); // Insert the new tab
-					OpenDir(tabPosition ?? 'xplorer://Home');
 					document.getElementById(`tab${tabIndex}`).querySelector<HTMLInputElement>('#tab-position').innerText = await Translate(
 						basename(tabPosition) === '' ? tabPosition : basename(tabPosition)
 					);
+					const newWorkspaceTabElement = document.createElement('div');
+					newWorkspaceTabElement.classList.add('workspace-tab');
+					newWorkspaceTabElement.id = `tab-1-${tabIndex}`;
+					newWorkspaceTabElement.dataset.path = tabPosition || 'xplorer://Home';
+					GET_WORKSPACE_ELEMENT(1).appendChild(newWorkspaceTabElement);
+
+					document.querySelectorAll('.workspace-tab').forEach((tab: HTMLElement) => {
+						tab.classList.remove('workspace-tab-active');
+					});
+					newWorkspaceTabElement.classList.add('workspace-tab-active');
+					await OpenDir(tabPosition || 'xplorer://Home', false, true, false);
 				}
 			}
 		}
@@ -192,7 +204,7 @@ const Tab = async (reveal = false): Promise<void> => {
 
 		tab.addEventListener('click', (e) => {
 			if ((e.target as HTMLElement).classList.contains('close-tab-btn')) return;
-			SwitchTab(index + 1);
+			SwitchTab(String(parseInt(tab.id.replace('tab', ''))) || '1');
 		});
 	}
 
