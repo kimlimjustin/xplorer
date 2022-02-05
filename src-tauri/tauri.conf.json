@@ -48,7 +48,8 @@
 		"updater": {
 			"active": true,
 			"endpoints": ["https://updater.xplorer.space/api/{{target}}/{{current_version}}"],
-			"dialog": true
+			"dialog": true,
+			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEJENUE0RDlDN0I2Rjc2NEIKUldSTGRtOTduRTFhdmVCSGZmR1ozZ1JuSXNiaFF6WkkyeC8yb0Y3UHdaT3d1ZzgxS2hBZTRGYU4K"
 		},
 		"allowlist": {
 			"all": true,
@@ -56,13 +57,10 @@
 				"all": true,
 				"copyFile": true,
 				"createDir": true,
-				"readBinaryFile": true,
 				"readDir": true,
-				"readTextFile": true,
 				"removeDir": true,
 				"removeFile": true,
 				"renameFile": true,
-				"writeBinaryFile": true,
 				"writeFile": true
 			}
 		},
