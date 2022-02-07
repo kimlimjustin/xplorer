@@ -22,31 +22,39 @@ Vous pouvez quitter les paramètres de Xplorer en cliquant sur le côté en haut
 
 ### Thème de l'appli
 
-Vous pouvez modifier le thème de l'application Xplorer dans l'onglet `Apparence` des Paramètres. Les thèmes disponibles par défaut sont `light`, `light+`, `dark`et `dark+`. En outre, il y a le thème `par défaut du système` qui lira automatiquement votre préférence système. :::info Xplorer prendra bientôt en charge le thème de l'application personnalisée, restez à l'écoute ! :::
+Vous pouvez modifier le thème de l'application Xplorer dans l'onglet `Apparence` des Paramètres. Les thèmes disponibles par défaut sont `light`, `light+`, `dark`et `dark+`. Besides, there is a `System Default` theme that will automatically read your system preference, also you can [try custom themes](/docs/Extensions/theme/).
+
+#### Apply Shadow Effect
+
+| With Shadow Effect                             | Without Shadow Effect                                |
+| ---------------------------------------------- | ---------------------------------------------------- |
+| ![Shadow Effect](/img/docs/shadow-effect.webp) | ![No Shadow Effect](/img/docs/no-shadow-effect.webp) |
+
+Apply platform-dependent shadow effect to the window. On Windows, you can't disable this effect when using [`System Default` frame style](#frame-style).
 
 ### Famille de police
 
-Vous pouvez changer la famille de polices de Xplorer dans l'onglet `Apparence` des Paramètres pour une des familles de polices installées sur votre système.
+You can change Xplorer's font family on the `Appearance` tab of the Settings to one of installed font families installed on your system.
 
 ### Taille de la Police
 
-Vous pouvez modifier la taille de police de Xplorer dans l'onglet `Apparence` des Paramètres. Veuillez noter qu'une taille de police idéale est comprise entre 10 px et 30 px.
+You can change Xplorer's font size on the `Appearance` tab of the Settings. Please note that an ideal font size is between 10px to 30px.
 
 ### Transparence de la Fenêtre
 
-Rendre la fenêtre Xplorer transparente sur l'onglet `Apparence` des Paramètres en combinant les options suivantes. Veuillez noter que la transparence idéale est comprise entre 70 % et 100 %. Vous pouvez désactiver la transparence en désactivant toutes les options de transparence.
+Make Xplorer window transparent on the `Appearance` tab of the Settings by combining following options. Please note that an ideal transparency is between 70% to 100%. You can disable transparency by disable all of the transparency options.
 
-#### Panneau latéral transparent
+#### Transparent Sidebar
 
-Rendre le panneau latéral transparent ![Barre latérale transparente](/img/docs/transparent-sidebar.webp)
+Make the sidebar transparent ![Transparent Sidebar](/img/docs/transparent-sidebar.webp)
 
-#### Barre latérale transparente
+#### Transparent Topbar
 
-Rendre la barre de topbar transparente ![Barre de haut transparent](/img/docs/transparent-topbar.webp)
+Make the topbar transparent ![Transparent Topbar](/img/docs/transparent-topbar.webp)
 
-#### Espace de travail transparent
+#### Transparent Workspace
 
-Make the workspace transparent ![Espace de travail transparent](/img/docs/transparent-workspace.webp)
+Make the workspace transparent ![Transparent Workspace](/img/docs/transparent-workspace.webp)
 
 #### Transparent Effect
 
