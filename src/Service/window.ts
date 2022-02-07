@@ -1,7 +1,7 @@
 import isTauri from '../Util/is-tauri';
 let windowName: string;
 if (isTauri) {
-	const { window } = require('@tauri-apps/api');
+	const window = require('@tauri-apps/api/window');
 	windowName = window.getCurrent().label;
 } else windowName = location.pathname;
 
