@@ -1,5 +1,6 @@
 import formatBytes from '../Functions/filesize';
 import DirectoryAPI from '../../Service/directory';
+import FileAPI from '../../Service/files';
 /**
  * Render file/folder properties into HTML
  * @param {Record<string, unknown>} options - File/folder's properties
@@ -31,19 +32,36 @@ const RenderProperties = (options: Record<string, unknown>) => {
  * @param {string} filePath - Path of the file to show the properties
  * @returns {void}
  */
-const Properties = (filePath: string): void => {
+const Properties = async (filePath: string): Promise<void> => {
 	const fileElement = document.querySelector<HTMLElement>(`[data-path="${encodeURI(filePath)}"]`);
 
-	const size = fileElement.querySelector('.file-size').innerHTML;
-	if (fileElement.dataset.realPath) filePath = fileElement.dataset.realPath;
-	const createdAt = fileElement.dataset.createdAt;
-	const modifiedAt = fileElement.dataset.modifiedAt;
-	const accessedAt = fileElement.dataset.accessedAt;
-	const fileType = fileElement.querySelector('.file-type').innerHTML;
+	let size, createdAt, modifiedAt, accessedAt, fileType, isHidden, isSystem, isReadonly;
+
+	if (fileElement.classList.contains('file')) {
+		size = fileElement.querySelector('.file-size').innerHTML;
+		if (fileElement.dataset.realPath) filePath = fileElement.dataset.realPath;
+		createdAt = fileElement.dataset.createdAt;
+		modifiedAt = fileElement.dataset.modifiedAt;
+		accessedAt = fileElement.dataset.accessedAt;
+		fileType = fileElement.querySelector('.file-type').innerHTML;
+		isHidden = fileElement.dataset.isHidden === 'true';
+		isSystem = fileElement.dataset.isSystem === 'true';
+		isReadonly = fileElement.dataset.isReadonly === 'true';
+	} else {
+		const fileInfo = await new FileAPI(filePath).properties();
+		size = formatBytes(fileInfo.size);
+		createdAt = String(new Date(fileInfo.created.secs_since_epoch * 1000).toLocaleString(navigator.language, { hour12: false }));
+		modifiedAt = String(new Date(fileInfo.last_modified.secs_since_epoch * 1000).toLocaleString(navigator.language, { hour12: false }));
+		accessedAt = String(new Date(fileInfo.last_accessed.secs_since_epoch * 1000).toLocaleString(navigator.language, { hour12: false }));
+		isHidden = fileInfo.is_hidden;
+		isSystem = fileInfo.is_system;
+		isReadonly = fileInfo.readonly;
+		fileType = 'File Folder';
+	}
 	const file_attrs = [];
-	if (fileElement.dataset.isHidden === 'true') file_attrs.push('Hidden');
-	if (fileElement.dataset.isSystem === 'true') file_attrs.push('System file');
-	if (fileElement.dataset.isReadonly === 'true') file_attrs.push('Read only');
+	if (isHidden) file_attrs.push('Hidden');
+	if (isSystem) file_attrs.push('System file');
+	if (isReadonly) file_attrs.push('Read only');
 	const isDirectory = fileElement.dataset.isDir === 'true';
 	const file_attr = file_attrs.join(', ');
 	if (isDirectory) {
