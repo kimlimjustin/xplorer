@@ -7,6 +7,7 @@ import DirectoryAPI from '../../Service/directory';
 import FavoritesAPI from '../../Service/favorites';
 import displayFiles from '../Open/displayFiles';
 import { LOAD_IMAGE } from '../Functions/lazyLoadingImage';
+import { GET_TAB_ELEMENT } from '../../Util/constants';
 let platform: string;
 (async () => {
 	platform = await OS();
@@ -21,7 +22,7 @@ let favoritesData: FavoritesAPI;
 const Home = async (): Promise<void> => {
 	startLoading();
 	// Get the main element
-	const MAIN_ELEMENT = document.getElementById('workspace');
+	const MAIN_ELEMENT = GET_TAB_ELEMENT();
 	if (MAIN_ELEMENT.classList.contains('empty-dir-notification')) MAIN_ELEMENT.classList.remove('empty-dir-notification'); // Remove class if exist
 	const favorites = await Favorites();
 	const drives = await Drives();

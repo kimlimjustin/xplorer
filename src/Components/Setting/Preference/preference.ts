@@ -2,6 +2,7 @@ import { reload } from '../../Layout/windowManager';
 import Translate from '../../I18n/i18n';
 import LocalesAPI from '../../../Service/locales';
 import Storage from '../../../Service/storage';
+import { MAIN_BOX_ELEMENT } from '../../../Util/constants';
 let localesData: LocalesAPI;
 /**
  * Create preference section
@@ -126,7 +127,7 @@ const Preference = async (): Promise<void> => {
 		const preference = (await Storage.get('preference')) ?? {};
 		preference.hideHiddenFiles = event.target.checked;
 		Storage.set('preference', preference);
-		document.getElementById('workspace').dataset.hideHiddenFiles = String(event.target.checked);
+		MAIN_BOX_ELEMENT().dataset.hideHiddenFiles = String(event.target.checked);
 	});
 	settingsMain.querySelector(`[name="hide-system-files"]`).addEventListener('change', async (event: Event & { target: HTMLInputElement }) => {
 		const preference = (await Storage.get('preference')) ?? {};

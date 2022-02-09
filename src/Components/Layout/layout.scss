@@ -307,10 +307,16 @@
 		box-sizing: border-box;
 		display: flex;
 
-		#workspace {
+		.workspace {
 			padding: 1rem;
 			height: calc(100% - 2rem);
 			width: -webkit-fill-available;
+			.workspace-tab {
+				display: none;
+			}
+			.workspace-tab-active {
+				display: block;
+			}
 		}
 	}
 	.infobar {
@@ -322,8 +328,15 @@
 }
 
 .workspace-split {
-	overflow: auto;
 	flex: 1;
+	display: flex;
+	padding: 0 !important;
+	height: 100% !important;
+	.workspace-tab {
+		overflow: auto;
+		max-width: 50%;
+		padding: 1rem;
+	}
 }
 
 #maximize {
