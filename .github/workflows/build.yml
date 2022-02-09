@@ -27,12 +27,13 @@ jobs:
                   sudo apt-get update
                   sudo apt-get install -y webkit2gtk-4.0
             - name: install app dependencies and build it
+              env:
+                  TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+                  TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
               run: yarn && yarn build
             - uses: kimlimjustin/tauri-action@dev
               env:
                   GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-                  TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-                  TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
               with:
                   tagName: app-v__VERSION__
                   releaseName: 'App v__VERSION__'
