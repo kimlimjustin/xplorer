@@ -8,6 +8,7 @@ import FileMetaData from '../../Typings/fileMetaData';
 import NormalizeSlash from '../Functions/path/normalizeSlash';
 import formatBytes from '../Functions/filesize';
 import { LOAD_IMAGE } from '../Functions/lazyLoadingImage';
+import { GET_TAB_ELEMENT } from '../../Util/constants';
 
 interface RecentType {
 	path: string;
@@ -24,7 +25,7 @@ const Recent = async (): Promise<void> => {
 	const layout = (await Storage.get('layout'))?.['Recent'] ?? (await Storage.get('appearance'))?.layout ?? 's';
 	const sort = (await Storage.get('sort'))?.['Recent'] ?? 'F';
 	// Get the main element
-	const MAIN_ELEMENT = document.getElementById('workspace');
+	const MAIN_ELEMENT = GET_TAB_ELEMENT();
 	MAIN_ELEMENT.innerHTML = '';
 	if (MAIN_ELEMENT.classList.contains('empty-dir-notification')) MAIN_ELEMENT.classList.remove('empty-dir-notification'); // Remove class if exist
 	// Get recent files list

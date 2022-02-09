@@ -2,6 +2,7 @@ import FileAPI from '../../Service/files';
 import { IMAGE_TYPES } from '../../Config/file.config';
 import getBasename from '../Functions/path/basename';
 import Storage from '../../Service/storage';
+import { MAIN_BOX_ELEMENT } from '../../Util/constants';
 
 const getExtension = (filename: string): string => {
 	const basename = getBasename(filename);
@@ -21,14 +22,14 @@ const Hover = (): void => {
 	let hoveringElement: HTMLElement;
 	const hoverPreviewElement = document.createElement('div');
 
-	document.querySelector('#workspace').addEventListener('mousemove', (e) => {
+	MAIN_BOX_ELEMENT().addEventListener('mousemove', (e) => {
 		let x = (e as MouseEvent).clientX;
 		let y = (e as MouseEvent).clientY;
 		window.clearTimeout(timeOut);
 		hoverPreviewElement?.parentNode?.removeChild(hoverPreviewElement);
 
 		// Ignore workspace hovering
-		if ((e.target as HTMLElement).id === 'workspace') {
+		if ((e.target as HTMLElement).classList.contains('workspace-tab') || (e.target as HTMLElement).classList.contains('workspace')) {
 			if (hoveringElement?.dataset?.path && displayName) hoveringElement.querySelector('.file-grid-filename').innerHTML = displayName;
 			return;
 		}

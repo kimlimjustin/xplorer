@@ -8,6 +8,7 @@ import { updateTheme } from '../../Theme/theme';
 import { OpenLog } from '../../Functions/log';
 import { OpenDir } from '../../Open/open';
 import isTauri from '../../../Util/is-tauri';
+import { GET_TAB_ELEMENT } from '../../../Util/constants';
 let being_watch: string;
 
 const stopSearchingProcess = async (): Promise<void> => {
@@ -22,7 +23,7 @@ const stopSearchingProcess = async (): Promise<void> => {
  * @returns {Promise<void>}
  */
 const processSearch = async (to_search: string, search_in: string): Promise<void> => {
-	const MAIN_ELEMENT = document.getElementById('workspace');
+	const MAIN_ELEMENT = GET_TAB_ELEMENT();
 	MAIN_ELEMENT.innerHTML = '';
 	if (!to_search.length) OpenDir(search_in);
 	startLoading();
