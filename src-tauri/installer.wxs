@@ -13,18 +13,16 @@
             Id="*"
             Name="{{{product_name}}}"
             UpgradeCode="{{{upgrade_code}}}"
-            Language="{{language_id}}"
-            Codepage="{{ascii_codepage}}"
+             Language="!(loc.TauriLanguage)"
             Manufacturer="{{{manufacturer}}}"
             Version="{{{version}}}">
 
         <Package Id="*"
                  Keywords="Installer"
                  InstallerVersion="450"
-                 Languages="{{language_id}}"
+                  Languages="0"
                  Compressed="yes"
-                 InstallScope="perMachine"
-                 SummaryCodepage="{{ascii_codepage}}"/>
+                 InstallScope="perMachine"  SummaryCodepage="!(loc.TauriCodepage)" />
 
         <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed."
           AllowSameVersionUpgrades="yes" />
