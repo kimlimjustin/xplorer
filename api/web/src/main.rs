@@ -12,6 +12,7 @@ use font_loader::system_fonts;
 use std::collections::HashMap;
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
+#[cfg(target_os = "windows")]
 use std::process::Command;
 
 #[derive(serde::Serialize, Clone, Debug)]
