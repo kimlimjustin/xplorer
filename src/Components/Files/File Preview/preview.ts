@@ -9,7 +9,7 @@ import ConfirmDialog from '../../Prompt/confirm';
 import { marked } from 'marked';
 import getDirname from '../../Functions/path/dirname';
 import isTauri from '../../../Util/is-tauri';
-import { GET_TAB_ELEMENT, GET_WORKSPACE_ELEMENT } from '../../../Util/constants';
+import { GET_WORKSPACE_ELEMENT } from '../../../Util/constants';
 
 const isValidURL = (text: string) => {
 	let url;
