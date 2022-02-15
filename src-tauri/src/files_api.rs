@@ -78,7 +78,7 @@ pub struct TrashInformation {
   files: Vec<TrashMetaData>,
 }
 
-#[derive(serde::Serialize)]
+#[derive(serde::Serialize, Clone)]
 pub struct Event {
   pub path: String,
   pub event: String,
