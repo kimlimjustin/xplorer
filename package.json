@@ -37,7 +37,7 @@
 		"grunt": "grunt",
 		"css:minify": "cleancss --batch --batch-suffix \"\" out/**/*.css ",
 		"prebuild": "yarn compile && yarn grunt && yarn css:minify",
-		"build": "cd src-tauri && cargo tauri build",
+		"build": "cd src-tauri && cargo install tauri-cli --git https://github.com/tauri-apps/tauri && cargo tauri build",
 		"postinstall": "patch-package && husky install",
 		"fakefiles": "python scripts/generate-fake-files.py 1000"
 	},
