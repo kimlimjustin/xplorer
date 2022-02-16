@@ -18,7 +18,7 @@
 	"scripts": {
 		"start": "yarn dev",
 		"web": "concurrently \"cd api/web && cargo run\" \"live-server ./out/src --no-browser\"",
-		"dev": "yarn compile && concurrently --kill-others \"yarn compile:watch\" \"yarn sass:watch\" \"yarn web\" \"cd src-tauri && cargo tauri dev\"",
+		"dev": "yarn compile && concurrently --kill-others \"yarn compile:watch\" \"yarn sass:watch\" \"yarn web\" \"tauri dev\"",
 		"clean": "rimraf out",
 		"sass": "sass src/Public/style.scss out/src/Public/style.css",
 		"sass:watch": "node scripts/sass-watcher.js",
@@ -37,7 +37,7 @@
 		"grunt": "grunt",
 		"css:minify": "cleancss --batch --batch-suffix \"\" out/**/*.css ",
 		"prebuild": "yarn compile && yarn grunt && yarn css:minify",
-		"build": "cd src-tauri && cargo install tauri-cli --git https://github.com/tauri-apps/tauri && cargo tauri build",
+		"build": "tauri build",
 		"postinstall": "patch-package && husky install",
 		"fakefiles": "python scripts/generate-fake-files.py 1000"
 	},
