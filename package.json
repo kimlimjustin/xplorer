@@ -38,7 +38,7 @@
 		"css:minify": "cleancss --batch --batch-suffix \"\" out/**/*.css ",
 		"prebuild": "yarn compile && yarn grunt && yarn css:minify",
 		"build": "tauri build",
-		"postinstall": "patch-package && husky install",
+		"postinstall":  "husky install",
 		"fakefiles": "python scripts/generate-fake-files.py 1000"
 	},
 	"workspaces": [
@@ -73,7 +73,6 @@
 		"jest": "^27.1.0",
 		"live-server": "^1.2.1",
 		"node-watch": "^0.7.1",
-		"patch-package": "^6.4.7",
 		"postinstall-postinstall": "^2.1.0",
 		"prettier": "2.5.1",
 		"rimraf": "^3.0.2",
