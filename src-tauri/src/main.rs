@@ -176,6 +176,35 @@ fn enable_shadow_effect(_effect: bool, _window: tauri::Window) {
   return;
 }
 
+// pub fn log(scope: &mut v8::HandleScope, args: v8::FunctionCallbackArguments, _rv: v8::ReturnValue) {
+//   if args.length() > 0 {
+//     let data = args.get(0);
+//     let data = data.to_string(scope).unwrap();
+//     let data = data.to_rust_string_lossy(scope);
+//     println!("[BENDAHARA DA BEST] {}", data);
+//   }
+// }
+
+// pub fn set_globals(
+//   context: &v8::Local<v8::Context>,
+//   scope: &mut v8::ContextScope<v8::HandleScope>,
+// ) {
+//   let global = context.global(scope);
+
+//   macro_rules! set_func {
+//     ($name:expr, $callback:expr) => {{
+//       let fn_template = v8::FunctionTemplate::new(scope, $callback);
+//       let func = fn_template
+//         .get_function(scope)
+//         .expect("Unable to create function");
+//       let key = v8::String::new(scope, $name).unwrap();
+//       global.set(scope, key.into(), func.into());
+//     }};
+//   }
+
+//   set_func!("log", log);
+// }
+
 #[tokio::main]
 async fn main() {
   extensions::init_extension().await;
@@ -207,7 +236,7 @@ async fn main() {
       storage::write_data,
       storage::read_data,
       storage::delete_storage_data,
-      extensions::listen_stylesheet_change,
+      extensions::themes::listen_stylesheet_change,
       extensions::get_cli_args,
       check_vscode_installed,
       get_available_fonts,
