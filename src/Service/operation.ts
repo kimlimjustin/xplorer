@@ -16,7 +16,10 @@ class OperationAPI {
 	 * @returns {Promise<void>}
 	 */
 	async copyFile(): Promise<void> {
-		return await copyFile(this.src, this.dest);
+		if (isTauri) {
+			const { invoke } = require('@tauri-apps/api');
+			return await invoke('copy', { src: this.src, dest: this.dest });
+		}
 	}
 	/**
 	 * Rename file/dir

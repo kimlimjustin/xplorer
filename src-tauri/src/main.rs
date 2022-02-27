@@ -204,6 +204,7 @@ async fn main() {
       files_api::calculate_files_total_size,
       files_api::search_in_dir,
       files_api::rename,
+      files_api::copy,
       drives::get_drives,
       storage::write_data,
       storage::read_data,

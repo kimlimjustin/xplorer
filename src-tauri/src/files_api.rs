@@ -246,6 +246,14 @@ pub async fn get_file_meta_data(file_path: String) -> Result<FileMetaData, Strin
   }
 }
 #[tauri::command]
+pub async fn copy(src: String, dest: String) -> bool {
+  let result = fs::copy(src, dest);
+  match result {
+    Ok(_) => true,
+    Err(_) => false,
+  }
+}
+#[tauri::command]
 pub async fn rename(path: String, new_path: String) -> bool {
   let result = fs::rename(path, new_path);
   match result {
