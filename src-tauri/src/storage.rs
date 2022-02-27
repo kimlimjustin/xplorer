@@ -30,13 +30,14 @@ pub fn read_data(key: &str) -> Result<StorageData, String> {
     match fs::read(storage_dir.join(key)) {
         Ok(result) => match bincode::deserialize(&result) {
             Ok(deserialized_bincode) => data = deserialized_bincode,
-            Err(..) => data = str::from_utf8(&result).unwrap().to_string(),
+            Err(_) => data = str::from_utf8(&result).unwrap().to_string(),
         },
         Err(e) => {
             status = false;
             data = e.to_string();
         }
     }
+
     let serde_value: Result<serde_json::Value, serde_json::Error> = serde_json::from_str(&data);
     let data = match serde_value {
         Ok(result) => result,
@@ -45,6 +46,7 @@ pub fn read_data(key: &str) -> Result<StorageData, String> {
             serde_json::Value::Null
         }
     };
+
     Ok(StorageData { data, status })
 }
 

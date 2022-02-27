@@ -136,8 +136,9 @@ impl FileSystemUtils {
     #[cfg(unix)]
     #[inline]
     pub fn check_is_hidden(file_path: String) -> bool {
-        let basename = get_basename(file_path);
-        basename.clone().starts_with(".")
+        let basename = Self::get_basename(file_path);
+
+        basename.starts_with(".")
     }
 
     /// Check if a file is system file
@@ -519,7 +520,7 @@ pub async fn delete_file(paths: Vec<String>) -> bool {
 pub fn purge_trashes(paths: Vec<String>) -> Result<bool, String> {
     Ok(paths.iter().all(|path| {
         trash::os_limited::purge_all(trash::os_limited::list().unwrap().into_iter().filter(|x| {
-            Path::new(&x.id.to_str().unwrap().to_string())
+            Path::new(&x.id.to_str().unwrap())
                 .normalize()
                 .unwrap()
                 == Path::new(&path).normalize().unwrap()

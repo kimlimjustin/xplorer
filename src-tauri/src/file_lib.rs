@@ -105,7 +105,7 @@ pub async fn get_type(file_basename: &str, is_dir: bool) -> String {
                             .to_uppercase()
                             .collect::<String>()
                             + &file_type[1..]
-                            + &" File".to_string()
+                            + &" File"
                     }
                 }
             }
