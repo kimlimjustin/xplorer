@@ -245,6 +245,14 @@ pub async fn get_file_meta_data(file_path: String) -> Result<FileMetaData, Strin
     Ok(properties.unwrap())
   }
 }
+#[tauri::command]
+pub async fn rename(path: String, new_path: String) -> bool {
+  let result = fs::rename(path, new_path);
+  match result {
+    Ok(_) => true,
+    Err(_) => false,
+  }
+}
 
 /// Check if a given path is a directory
 ///

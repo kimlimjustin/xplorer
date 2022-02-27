@@ -1,4 +1,5 @@
-import { copyFile, renameFile, removeDir, removeFile } from '@tauri-apps/api/fs';
+import { removeDir, removeFile } from '@tauri-apps/api/fs';
+import isTauri from '../Util/is-tauri';
 import DirectoryAPI from './directory';
 /**
  * Invoke Rust command to operate files/dirs
@@ -22,7 +23,11 @@ class OperationAPI {
 	 * @returns {any}
 	 */
 	async rename(): Promise<void> {
-		return await renameFile(this.src, this.dest);
+		if (isTauri) {
+			const { invoke } = require('@tauri-apps/api');
+
+			return await invoke('rename', { path: this.src, newPath: this.dest });
+		}
 	}
 
 	async cut(): Promise<void> {
