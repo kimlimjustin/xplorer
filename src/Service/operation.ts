@@ -1,4 +1,3 @@
-import { removeDir, removeFile } from '@tauri-apps/api/fs';
 import isTauri from '../Util/is-tauri';
 import DirectoryAPI from './directory';
 /**
@@ -44,10 +43,13 @@ class OperationAPI {
 	 * @returns {Promise<void>}
 	 */
 	async unlink(): Promise<void> {
-		if (await new DirectoryAPI(this.src).isDir()) {
-			return await removeDir(this.src, { recursive: true });
-		} else {
-			return await removeFile(this.src);
+		if (isTauri) {
+			const { invoke } = require('@tauri-apps/api');
+			if (await new DirectoryAPI(this.src).isDir()) {
+				return await invoke('remove_dir', { path: this.src });
+			} else {
+				return await invoke('remove_file', { path: this.src });
+			}
 		}
 	}
 

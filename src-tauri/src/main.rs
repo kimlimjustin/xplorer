@@ -205,6 +205,8 @@ async fn main() {
       files_api::search_in_dir,
       files_api::rename,
       files_api::copy,
+      files_api::remove_dir,
+      files_api::remove_file,
       drives::get_drives,
       storage::write_data,
       storage::read_data,

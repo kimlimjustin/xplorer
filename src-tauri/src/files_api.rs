@@ -245,6 +245,7 @@ pub async fn get_file_meta_data(file_path: String) -> Result<FileMetaData, Strin
     Ok(properties.unwrap())
   }
 }
+/// Copy files/dir to a destination
 #[tauri::command]
 pub async fn copy(src: String, dest: String) -> bool {
   let result = fs::copy(src, dest);
@@ -253,9 +254,30 @@ pub async fn copy(src: String, dest: String) -> bool {
     Err(_) => false,
   }
 }
+/// Rename a file/dir
 #[tauri::command]
 pub async fn rename(path: String, new_path: String) -> bool {
   let result = fs::rename(path, new_path);
+  match result {
+    Ok(_) => true,
+    Err(_) => false,
+  }
+}
+
+/// Permanently remove directory
+#[tauri::command]
+pub async fn remove_dir(path: String) -> bool {
+  let result = fs::remove_dir_all(path);
+  match result {
+    Ok(_) => true,
+    Err(_) => false,
+  }
+}
+
+/// Permanently remove file
+#[tauri::command]
+pub async fn remove_file(path: String) -> bool {
+  let result = fs::remove_file(path);
   match result {
     Ok(_) => true,
     Err(_) => false,
