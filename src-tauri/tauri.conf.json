@@ -62,6 +62,11 @@
 				"removeFile": true,
 				"renameFile": true,
 				"writeFile": true
+			},
+			"protocol": {
+				"all": true,
+				"asset": true,
+				"assetScope": ["*"]
 			}
 		},
 		"windows": [
@@ -78,7 +83,7 @@
 			}
 		],
 		"security": {
-			"csp": null
+			"csp": "default-src asset: blob: data: filesystem: ws: wss: http: https: tauri: 'unsafe-eval' 'unsafe-inline' style-src 'unsafe-inline' 'self' img-src: 'self'; script-src: 'unsafe-eval' asset: https://asset.localhost"
 		}
 	}
 }
