@@ -115,7 +115,7 @@ impl FileSystemUtils {
     /// Check if a file/dir is a symlink
     #[cfg(unix)]
     #[inline]
-    pub fn check_is_symlink(_file_path: String) -> bool {
+    pub fn check_is_symlink(_: &str) -> bool {
         false
     }
 
@@ -135,7 +135,7 @@ impl FileSystemUtils {
     /// Checking a file is hidden by checking if the file name starts with a dot
     #[cfg(unix)]
     #[inline]
-    pub fn check_is_hidden(file_path: String) -> bool {
+    pub fn check_is_hidden(file_path: &str) -> bool {
         let basename = Self::get_basename(file_path);
 
         basename.starts_with(".")
@@ -154,7 +154,7 @@ impl FileSystemUtils {
 
     #[cfg(unix)]
     #[inline]
-    fn check_is_system_file(_: String) -> bool {
+    fn check_is_system_file(_: &str) -> bool {
         false
     }
 }
@@ -737,7 +737,7 @@ pub async fn extract_icon(file_path: &str) -> Result<String, String> {
 #[cfg(not(target_os = "windows"))]
 #[tauri::command]
 #[inline]
-pub async fn extract_icon(_file_path: String) -> Result<String, String> {
+pub async fn extract_icon(_: &str) -> Result<String, String> {
     Err("Not supported".to_string())
 }
 
