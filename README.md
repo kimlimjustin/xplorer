@@ -43,7 +43,7 @@ Xplorer is a modern file explorer built from ground-up to be fully customizable 
 -   Supports multiple tabs
 -   Most importantly, It's an Open Source Software (OSS)!
 
-Xplorer is currently under heavy development. You can give your suggestions and feedback on our [Discussions](https://github.com/kimlimjustin/xplorer/discussions/) page. If you feel comfortable in writing code using Typescript and Rust, we highly encourage you to [contribute to this project](https://xplorer.space/community/Contributing/).
+Xplorer is currently under heavy development. You can give your suggestions and feedback on our [Discussions](https://github.com/kimlimjustin/xplorer/discussions/) page. If you feel comfortable in writing code using Typescript and Rust, we highly encourage you to [contribute to this project](https://xplorer.space/docs/community/Contributing/).
 
 ---
 
@@ -79,7 +79,7 @@ If you find any bugs, please report it by submitting an issue on our [issue page
 
 ## Feature Request
 
-You can also submit a feature request on our [issue page](https://github.com/kimlimjustin/xplorer) or [discussions](https://github.com/kimlimjustin/xplorer/discussions) and we will try to implement it as soon as possible. If you want to contribute to this project, please [contribute to this project](https://xplorer.space/community/Contributing/).
+You can also submit a feature request on our [issue page](https://github.com/kimlimjustin/xplorer) or [discussions](https://github.com/kimlimjustin/xplorer/discussions) and we will try to implement it as soon as possible. If you want to contribute to this project, please [contribute to this project](https://xplorer.space/docs/community/Contributing/).
 
 ---
 
@@ -155,7 +155,7 @@ The easiest way to run Xplorer in Gitpod is to use the [Gitpod](https://gitpod.i
 
 ## Contribution Guide
 
-We highly encourage you to contribute to this project (even if you are a beginner). And if you finally want to contribute to this project, please read [our contribution guide](https://xplorer.space/community/Contributing).
+We highly encourage you to contribute to this project (even if you are a beginner). And if you finally want to contribute to this project, please read [our contribution guide](https://xplorer.space/docs/community/Contributing).
 
 ---
 

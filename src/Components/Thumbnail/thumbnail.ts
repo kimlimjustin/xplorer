@@ -75,7 +75,7 @@ const fileThumbnail = async (filePath: string, category = 'folder', HTMLFormat =
 	}
 	if (category === 'file' && filePath.indexOf('.') === -1) return imageThumbnail(defaultThumbnail.DEFAULT_FILE_THUMBNAIL, HTMLFormat);
 	const ext = filePath.split('.').pop().toLowerCase(); // Get extension of filename
-	const basename = getBasename(filePath);
+	const basename = getBasename(filePath).toLowerCase();
 	const appearance = await Storage.get('appearance');
 	if (IMAGE_TYPES.indexOf(ext) !== -1) {
 		if (imageAsThumbnail) {
