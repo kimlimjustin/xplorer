@@ -255,6 +255,44 @@ pub async fn get_file_meta_data(file_path: &str) -> Result<FileMetaData, String>
         Err(_) => Err("Error reading meta data".to_string()),
     }
 }
+/// Copy files/dir to a destination
+#[tauri::command]
+pub async fn copy(src: String, dest: String) -> bool {
+    let result = fs::copy(src, dest);
+    match result {
+        Ok(_) => true,
+        Err(_) => false,
+    }
+}
+/// Rename a file/dir
+#[tauri::command]
+pub async fn rename(path: String, new_path: String) -> bool {
+    let result = fs::rename(path, new_path);
+    match result {
+        Ok(_) => true,
+        Err(_) => false,
+    }
+}
+
+/// Permanently remove directory
+#[tauri::command]
+pub async fn remove_dir(path: String) -> bool {
+    let result = fs::remove_dir_all(path);
+    match result {
+        Ok(_) => true,
+        Err(_) => false,
+    }
+}
+
+/// Permanently remove file
+#[tauri::command]
+pub async fn remove_file(path: String) -> bool {
+    let result = fs::remove_file(path);
+    match result {
+        Ok(_) => true,
+        Err(_) => false,
+    }
+}
 
 /// Check if a given path is a directory
 ///
@@ -520,9 +558,7 @@ pub async fn delete_file(paths: Vec<String>) -> bool {
 pub fn purge_trashes(paths: Vec<String>) -> Result<bool, String> {
     Ok(paths.iter().all(|path| {
         trash::os_limited::purge_all(trash::os_limited::list().unwrap().into_iter().filter(|x| {
-            Path::new(&x.id.to_str().unwrap())
-                .normalize()
-                .unwrap()
+            Path::new(&x.id.to_str().unwrap()).normalize().unwrap()
                 == Path::new(&path).normalize().unwrap()
         }))
         .is_ok()
