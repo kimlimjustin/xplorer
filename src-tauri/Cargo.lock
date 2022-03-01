@@ -471,33 +471,17 @@ dependencies = [
 
 [[package]]
 name = "clap"
-version = "3.0.0-beta.5"
+version = "3.0.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "feff3878564edb93745d58cf63e17b63f24142506e7a20c87a5521ed7bfb1d63"
+checksum = "b63edc3f163b3c71ec8aa23f9bd6070f77edbf3d1d198b164afa90ff00e4ec62"
 dependencies = [
  "atty",
  "bitflags",
- "clap_derive",
  "indexmap",
- "lazy_static",
  "os_str_bytes",
  "strsim 0.10.0",
  "termcolor",
  "textwrap",
- "unicase",
-]
-
-[[package]]
-name = "clap_derive"
-version = "3.0.0-beta.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b15c6b4f786ffb6192ffe65a36855bc1fc2444bcd0945ae16748dcd6ed7d0d3"
-dependencies = [
- "heck 0.3.3",
- "proc-macro-error",
- "proc-macro2",
- "quote",
- "syn",
 ]
 
 [[package]]
@@ -1953,9 +1937,9 @@ checksum = "830d08ce1d1d941e6b30645f1a0eb5643013d835ce3779a5fc208261dbe10f55"
 
 [[package]]
 name = "libc"
-version = "0.2.109"
+version = "0.2.118"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f98a04dce437184842841303488f70d0188c5f51437d2a834dc097eafa909a01"
+checksum = "06e509672465a0504304aa87f9f176f2b2b716ed8fb105ebe5c02dc6dce96a94"
 
 [[package]]
 name = "lock_api"
@@ -2282,9 +2266,9 @@ checksum = "72ef4a56884ca558e5ddb05a1d1e7e1bfd9a68d9ed024c21704cc98872dae1bb"
 
 [[package]]
 name = "normpath"
-version = "0.3.1"
+version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "640c20e9df4a2d4a5adad5b47e17d76dac3e824346b181931c3ec9f7a85687b1"
+checksum = "04aaf5e9cb0fbf883cc0423159eacdf96a9878022084b35c462c428cab73bcaf"
 dependencies = [
  "winapi 0.3.9",
 ]
@@ -2513,9 +2497,9 @@ dependencies = [
 
 [[package]]
 name = "os_str_bytes"
-version = "4.2.0"
+version = "6.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "addaa943333a514159c80c97ff4a93306530d965d27e139188283cd13e06a799"
+checksum = "8e22443d1643a904602595ba1cd8f7d896afe56d26712531c5ff73a15b2fbf64"
 dependencies = [
  "memchr",
 ]
@@ -3439,15 +3423,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "signal-hook-registry"
-version = "1.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e51e73328dc4ac0c7ccbda3a494dfa03df1de2f46018127f60c693f2648455b0"
-dependencies = [
- "libc",
-]
-
-[[package]]
 name = "siphasher"
 version = "0.3.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3616,9 +3591,9 @@ dependencies = [
 
 [[package]]
 name = "sysinfo"
-version = "0.20.5"
+version = "0.23.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e223c65cd36b485a34c2ce6e38efa40777d31c4166d9076030c74cdcf971679f"
+checksum = "92d82ade9d6621d4ca052a00bb6ea9ed513d223cba75a84625c5e9c0698ab6f5"
 dependencies = [
  "cfg-if 1.0.0",
  "core-foundation-sys",
@@ -3964,9 +3939,6 @@ name = "textwrap"
 version = "0.14.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0066c8d12af8b5acd21e00547c3797fde4e8677254a7ee429176ccebbe93dd80"
-dependencies = [
- "unicode-width",
-]
 
 [[package]]
 name = "thin-slice"
@@ -4039,10 +4011,8 @@ dependencies = [
  "memchr",
  "mio 0.7.14",
  "num_cpus",
- "once_cell",
  "parking_lot",
  "pin-project-lite",
- "signal-hook-registry",
  "tokio-macros",
  "winapi 0.3.9",
 ]
@@ -4201,15 +4171,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "56dee185309b50d1f11bfedef0fe6d036842e3fb77413abef29f8f8d1c5d4c1c"
 
 [[package]]
-name = "unicase"
-version = "2.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "50f37be617794602aabbeee0be4f259dc1778fabe05e2d67ee8f79326d5cb4f6"
-dependencies = [
- "version_check",
-]
-
-[[package]]
 name = "unicode-bidi"
 version = "0.3.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4229,12 +4190,6 @@ name = "unicode-segmentation"
 version = "1.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8895849a949e7845e06bd6dc1aa51731a103c42707010a5b591c0038fb73385b"
-
-[[package]]
-name = "unicode-width"
-version = "0.1.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3ed742d4ea2bd1176e236172c8429aaf54486e7ac098db29ffe6529e0ce50973"
 
 [[package]]
 name = "unicode-xid"
