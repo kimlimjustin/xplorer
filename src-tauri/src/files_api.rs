@@ -322,7 +322,10 @@ pub async fn read_directory(dir: &Path) -> Result<FolderInformation, String> {
         serde_json::Value::Null => true,
         _ => preference["hideSystemFiles"].as_bool().unwrap_or(true),
     };
-    let paths = fs::read_dir(dir).map_err(|err| err.to_string())?;
+    let paths = match fs::read_dir(dir) {
+        Ok(result) => result,
+        Err(e) => return Err(e.to_string().into()),
+    };
     let mut number_of_files = 0;
     let mut files = Vec::new();
     let mut skipped_files = Vec::new();

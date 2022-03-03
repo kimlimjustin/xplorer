@@ -31,13 +31,17 @@ class DirectoryAPI {
 	 * @returns {Promise<DirectoryData>}
 	 */
 	getFiles(): Promise<DirectoryData> {
-		return new Promise((resolve) => {
+		return new Promise((resolve, reject) => {
 			if (isTauri) {
 				const { invoke } = require('@tauri-apps/api');
-				invoke('read_directory', { dir: this.dirName }).then((files: DirectoryData) => {
-					this.files = files.files;
-					resolve(files);
-				});
+				invoke('read_directory', { dir: this.dirName })
+					.then((files: DirectoryData) => {
+						this.files = files.files;
+						resolve(files);
+					})
+					.catch((err: string) => {
+						reject(err);
+					});
 			} else {
 				fetch(READ_DIR_ENDPOINT + this.dirName, { method: 'GET' }).then((res) => {
 					res.json()
