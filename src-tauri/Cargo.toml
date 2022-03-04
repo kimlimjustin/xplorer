@@ -33,7 +33,7 @@ tokio = { version = "^1", features = ["macros", "parking_lot", "rt"] }
 bincode = "1.3"
 
 [target."cfg(any(target_os = \"windows\", target_os = \"macos\"))".dependencies]
-tauri-plugin-vibrancy = { git = "https://github.com/tauri-apps/tauri-plugin-vibrancy", features = ["tauri-impl"] }
+window-vibrancy = { git = "https://github.com/tauri-apps/window-vibrancy" }
 tauri-plugin-shadows = { git = "https://github.com/tauri-apps/tauri-plugin-shadows", features = ["tauri-impl"], rev = "bf34e300d238ea4519dab3220ff8c76f07701a93" }
 
 [features]

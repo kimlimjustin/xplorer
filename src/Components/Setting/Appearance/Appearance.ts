@@ -1,7 +1,7 @@
 import { reload, minimize, maximize, close } from '../../Layout/windowManager';
 import Translate from '../../I18n/i18n';
 import Storage from '../../../Service/storage';
-import OS from '../../../Service/platform';
+import OS, { isWin11 } from '../../../Service/platform';
 import { changeTransparentEffect, getAvailableFonts, enableShadowEffect } from '../../../Service/app';
 import { getElementStyle, getInstalledThemes, updateTheme } from '../../Theme/theme';
 import { setDecorations } from '../../../Service/window';
@@ -131,6 +131,9 @@ const Appearance = async (): Promise<void> => {
 		<option value="acrylic" ${transparentEffect === 'acrylic' ? 'selected' : ''} ${
 		platform !== 'win32' ? 'disabled' : ''
 	} ${disabledForWeb}>Acrylic</option>
+		<option value="mica" ${transparentEffect === 'mica' ? 'selected' : ''} ${
+		!(platform === 'win32' && (await isWin11())) ? 'disabled' : ''
+	} ${disabledForWeb}>Mica</option>
 		<option value="vibrancy" ${transparentEffect === 'vibrancy' ? 'selected' : ''} ${
 		platform !== 'darwin' ? 'disabled' : ''
 	} ${disabledForWeb}>Vibrancy</option>
