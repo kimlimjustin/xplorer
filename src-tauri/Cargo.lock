@@ -59,11 +59,11 @@ dependencies = [
  "tauri",
  "tauri-build",
  "tauri-plugin-shadows",
- "tauri-plugin-vibrancy",
  "tauri-plugin-window-state",
  "tokio",
  "trash",
  "url",
+ "window-vibrancy",
 ]
 
 [[package]]
@@ -3809,17 +3809,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "tauri-plugin-vibrancy"
-version = "0.1.0"
-source = "git+https://github.com/tauri-apps/tauri-plugin-vibrancy#1cf4da4b8429aef5cfd611710f714a57990fa141"
-dependencies = [
- "cocoa",
- "objc",
- "tauri",
- "windows 0.29.0",
-]
-
-[[package]]
 name = "tauri-plugin-window-state"
 version = "0.1.0"
 source = "git+https://github.com/tauri-apps/tauri-plugin-window-state#5b2a041051217ab239b54387ea65953d468faaf5"
@@ -4507,6 +4496,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "712e227841d057c1ee1cd2fb22fa7e5a5461ae8e48fa2ca79ec42cfc1931183f"
 
 [[package]]
+name = "window-vibrancy"
+version = "0.1.0"
+source = "git+https://github.com/tauri-apps/window-vibrancy#56502d146df97372f8f7ed7d67b7c7060676c408"
+dependencies = [
+ "cocoa",
+ "objc",
+ "raw-window-handle",
+ "windows-sys",
+]
+
+[[package]]
 name = "windows"
 version = "0.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4566,6 +4566,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "windows-sys"
+version = "0.33.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "43dbb096663629518eb1dfa72d80243ca5a6aca764cae62a2df70af760a9be75"
+dependencies = [
+ "windows_aarch64_msvc 0.33.0",
+ "windows_i686_gnu 0.33.0",
+ "windows_i686_msvc 0.33.0",
+ "windows_x86_64_gnu 0.33.0",
+ "windows_x86_64_msvc 0.33.0",
+]
+
+[[package]]
 name = "windows_aarch64_msvc"
 version = "0.29.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4576,6 +4589,12 @@ name = "windows_aarch64_msvc"
 version = "0.30.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "29277a4435d642f775f63c7d1faeb927adba532886ce0287bd985bffb16b6bca"
+
+[[package]]
+name = "windows_aarch64_msvc"
+version = "0.33.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cd761fd3eb9ab8cc1ed81e56e567f02dd82c4c837e48ac3b2181b9ffc5060807"
 
 [[package]]
 name = "windows_gen"
@@ -4615,6 +4634,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1145e1989da93956c68d1864f32fb97c8f561a8f89a5125f6a2b7ea75524e4b8"
 
 [[package]]
+name = "windows_i686_gnu"
+version = "0.33.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cab0cf703a96bab2dc0c02c0fa748491294bf9b7feb27e1f4f96340f208ada0e"
+
+[[package]]
 name = "windows_i686_msvc"
 version = "0.24.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4631,6 +4656,12 @@ name = "windows_i686_msvc"
 version = "0.30.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d4a09e3a0d4753b73019db171c1339cd4362c8c44baf1bcea336235e955954a6"
+
+[[package]]
+name = "windows_i686_msvc"
+version = "0.33.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8cfdbe89cc9ad7ce618ba34abc34bbb6c36d99e96cae2245b7943cd75ee773d0"
 
 [[package]]
 name = "windows_macros"
@@ -4685,6 +4716,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8ca64fcb0220d58db4c119e050e7af03c69e6f4f415ef69ec1773d9aab422d5a"
 
 [[package]]
+name = "windows_x86_64_gnu"
+version = "0.33.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b4dd9b0c0e9ece7bb22e84d70d01b71c6d6248b81a3c60d11869451b4cb24784"
+
+[[package]]
 name = "windows_x86_64_msvc"
 version = "0.24.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4701,6 +4738,12 @@ name = "windows_x86_64_msvc"
 version = "0.30.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "08cabc9f0066848fef4bc6a1c1668e6efce38b661d2aeec75d18d8617eebb5f1"
+
+[[package]]
+name = "windows_x86_64_msvc"
+version = "0.33.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ff1e4aa646495048ec7f3ffddc411e1d829c026a2ec62b39da15c1055e406eaa"
 
 [[package]]
 name = "winreg"

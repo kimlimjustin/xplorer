@@ -25,7 +25,9 @@ use tauri::Manager;
 #[cfg(not(target_os = "linux"))]
 use tauri_plugin_shadows::Shadows;
 #[cfg(not(target_os = "linux"))]
-use tauri_plugin_vibrancy::Vibrancy;
+use window_vibrancy::{
+    apply_acrylic, apply_blur, apply_mica, clear_acrylic, clear_blur, clear_mica,
+};
 
 lazy_static! {
     pub static ref ARGS_STRUCT: ArgMatches = {
@@ -147,9 +149,13 @@ fn get_available_fonts() -> Result<Vec<String>, String> {
 #[tauri::command]
 #[inline]
 fn change_transparent_effect(effect: String, window: tauri::Window) {
+    clear_blur(&window).unwrap();
+    clear_acrylic(&window).unwrap();
+    clear_mica(&window).unwrap();
     match effect.as_str() {
-        "blur" => window.apply_blur(),
-        "acrylic" => window.apply_acrylic(),
+        "blur" => apply_blur(&window).unwrap(),
+        "acrylic" => apply_acrylic(&window).unwrap(),
+        "mica" => apply_mica(&window).unwrap(),
         _ => (),
     }
 }
@@ -159,8 +165,8 @@ fn change_transparent_effect(effect: String, window: tauri::Window) {
 #[inline]
 fn change_transparent_effect(effect: String, window: tauri::Window) {
     if effect.as_str() == "vibrancy" {
-        use tauri_plugin_vibrancy::MacOSVibrancy;
-        window.apply_vibrancy(MacOSVibrancy::AppearanceBased);
+        use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
+        apply_vibrancy(&window, NSVisualEffectMaterial::AppearanceBased).unwrap()
     }
 }
 
