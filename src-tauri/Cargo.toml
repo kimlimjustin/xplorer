@@ -34,7 +34,7 @@ bincode = "1.3"
 
 [target."cfg(any(target_os = \"windows\", target_os = \"macos\"))".dependencies]
 window-vibrancy = { git = "https://github.com/tauri-apps/window-vibrancy" }
-tauri-plugin-shadows = { git = "https://github.com/tauri-apps/tauri-plugin-shadows", features = ["tauri-impl"], rev = "bf34e300d238ea4519dab3220ff8c76f07701a93" }
+window-shadows = { git = "https://github.com/tauri-apps/window-shadows" }
 
 [features]
 default = ["custom-protocol"]

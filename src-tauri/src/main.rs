@@ -23,7 +23,7 @@ use std::os::windows::process::CommandExt;
 use std::process::Command;
 use tauri::Manager;
 #[cfg(not(target_os = "linux"))]
-use tauri_plugin_shadows::Shadows;
+use window_shadows::set_shadow;
 #[cfg(not(target_os = "linux"))]
 use window_vibrancy::{
     apply_acrylic, apply_blur, apply_mica, clear_acrylic, clear_blur, clear_mica,
@@ -181,7 +181,7 @@ fn change_transparent_effect(_effect: String, _window: tauri::Window) {
 #[tauri::command]
 #[inline]
 fn enable_shadow_effect(effect: bool, window: tauri::Window) {
-    window.set_shadow(effect);
+    set_shadow(&window, effect).unwrap();
 }
 
 #[cfg(target_os = "linux")]
