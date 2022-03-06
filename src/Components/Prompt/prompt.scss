@@ -58,3 +58,42 @@
 		}
 	}
 }
+
+.notifications {
+	position: fixed;
+	bottom: 10%;
+	right: 5%;
+	z-index: 4;
+	.notification {
+		width: 250px;
+		height: content-height;
+		align-items: center;
+		justify-content: center;
+		padding: 15px;
+		border-radius: 5px;
+		margin: 10px 0;
+		.notification-frame {
+			display: flex;
+			.notification-icon {
+				width: 1rem;
+				height: 1rem;
+				margin-right: 0.5rem;
+			}
+		}
+		.notification-message {
+			font-size: 0.75rem;
+			flex: 1;
+			word-break: break-all;
+		}
+		.notification-exit-btn {
+			border-radius: 50%;
+			padding: 5px;
+			width: 0.5rem;
+			height: 0.5rem;
+			display: block;
+			cursor: pointer;
+			top: -1rem;
+			margin-left: auto;
+		}
+	}
+}

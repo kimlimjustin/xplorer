@@ -238,7 +238,8 @@ async fn main() {
             check_vscode_installed,
             get_available_fonts,
             enable_shadow_effect,
-            change_transparent_effect
+            change_transparent_effect,
+            req_functions_execution,
         ])
         .plugin(tauri_plugin_window_state::WindowState::default())
         .setup(|app| {

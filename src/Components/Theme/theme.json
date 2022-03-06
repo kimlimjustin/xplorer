@@ -89,6 +89,7 @@
 		"properties.color": "inherit",
 
 		"prompt.background": "#1b1e2e",
+		"notification.background": "#1b1e2e",
 		"prompt.promptInput.background": "#292c40",
 		"prompt.promptInput.color": "#87c1ce",
 		"prompt.promptOk.background": "#3879d9",
@@ -96,6 +97,7 @@
 		"prompt.promptCancel.background": "#87c1ce",
 		"prompt.promptCancel.color": "#000",
 		"prompt.promptExitBtn.background": "#ff47f3",
+		"notification.notificationExitBtn.background": "#ff47f3",
 
 		"infobar.background": "#14141b",
 		"infobar.color": "inherit",
@@ -243,6 +245,7 @@
 		"properties.color": "inherit",
 
 		"prompt.background": "#1b1e2e",
+		"notification.background": "#1b1e2e",
 		"prompt.promptInput.background": "#292c40",
 		"prompt.promptInput.color": "#87c1ce",
 		"prompt.promptOk.background": "#3879d9",
@@ -250,6 +253,7 @@
 		"prompt.promptCancel.background": "#87c1ce",
 		"prompt.promptCancel.color": "#000",
 		"prompt.promptExitBtn.background": "#ff47f3",
+		"notification.notificationExitBtn.background": "#ff47f3",
 
 		"hljs.color": "#cbd6e2",
 		"hljs.background": "#0b1c2c",
@@ -394,13 +398,14 @@
 		"properties.color": "inherit",
 
 		"prompt.background": "#f7f7f7",
+		"notification.background": "#f7f7f7",
 		"prompt.promptInput.background": "#ebe9e9",
 		"prompt.promptInput.color": "#5c5757",
 		"prompt.promptOk.background": "#3879d9",
 		"prompt.promptOk.color": "#fff",
 		"prompt.promptCancel.background": "#87c1ce",
 		"prompt.promptCancel.color": "#000",
-		"prompt.promptExitBtn.background": "#ff47f3",
+		"notification.notificationExitBtn.background": "#ff47f3",
 
 		"hljs.color": "#383838",
 		"hljs.background": "#f8f8f8",
@@ -545,6 +550,7 @@
 		"properties.color": "inherit",
 
 		"prompt.background": "#f7f7f7",
+		"notification.background": "#f7f7f7",
 		"prompt.promptInput.background": "#ebe9e9",
 		"prompt.promptInput.color": "#5c5757",
 		"prompt.promptOk.background": "#3879d9",
@@ -552,6 +558,7 @@
 		"prompt.promptCancel.background": "#87c1ce",
 		"prompt.promptCancel.color": "#000",
 		"prompt.promptExitBtn.background": "#ff47f3",
+		"notification.notificationExitBtn.background": "#ff47f3",
 
 		"hljs.color": "#383838",
 		"hljs.background": "#f8f8f8",

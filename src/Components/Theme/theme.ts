@@ -106,6 +106,7 @@ const CATEGORIES = [
 	'prompt',
 	'preview',
 	'properties',
+	'notification'
 ];
 
 /**

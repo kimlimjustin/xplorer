@@ -18,6 +18,7 @@ import Search from './Components/Files/File Operation/search';
 import { listenUpdateTheme } from './Service/window';
 import { Resizer } from './Components/Layout/resizer';
 import { MAIN_BOX_ELEMENT } from './Util/constants';
+import isTauri from './Util/is-tauri';
 // Wait DOM Loaded to be loaded
 document.addEventListener('DOMContentLoaded', async () => {
 	// Read user preferences
@@ -80,4 +81,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 		await Storage.get('extensions', true);
 		updateTheme('*');
 	});
+	if (isTauri) {
+		const Extensions = require('./Service/extensions').default;
+		Extensions();
+	}
 });
