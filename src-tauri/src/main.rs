@@ -200,6 +200,9 @@ async fn req_functions_execution(script_path: String, window: tauri::Window) {
 
 #[tokio::main]
 async fn main() {
+    let platform = v8::new_default_platform(0, false).make_shared();
+    v8::V8::initialize_platform(platform);
+    v8::V8::initialize();
     extensions::init_extension().await;
     tauri::async_runtime::set(tokio::runtime::Handle::current());
     tauri::Builder::default()
