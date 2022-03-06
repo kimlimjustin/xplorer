@@ -279,86 +279,6 @@ pub fn install_extensions(extension: serde_json::Value) {
     install_themes(extension);
 }
 
-pub fn uninstall_extensions(extension_identifier: String) {
-    let extensions = storage::read_data("extensions");
-    let extensions = match extensions {
-        Ok(config) => {
-            if config.status {
-                config.data
-            } else {
-                serde_json::json!({})
-            }
-        }
-        Err(_) => {
-            serde_json::json!({})
-        }
-    }
-    .as_object()
-    .unwrap()
-    .clone();
-
-    // Iterate on every object of extensions and iterate extensions key of the object and remove the extension
-    // let extensions = extensions.as_object_mut().unwrap().clone();
-    let mut new_extensions = serde_json::json!({}).as_object_mut().unwrap().clone();
-    for (key, value) in extensions {
-        let value = value.as_array().unwrap();
-        let _empty_string = serde_json::Value::String(Default::default());
-
-        let new_value = value
-            .iter()
-            .filter(|ext| {
-                let ext_identifier = ext.get("identifier").unwrap_or(&_empty_string);
-                if key == "themes" && ext_identifier == &extension_identifier {
-                    let theme = match storage::read_data("theme") {
-                        Ok(config) => {
-                            if config.status {
-                                config.data
-                            } else {
-                                serde_json::json!({})
-                            }
-                        }
-                        Err(_) => {
-                            serde_json::json!({})
-                        }
-                    }
-                    .as_object()
-                    .unwrap()
-                    .clone();
-
-                    let mut current_active_theme = theme
-                        .get("theme")
-                        .unwrap_or(&serde_json::Value::String(Default::default()))
-                        .as_str()
-                        .unwrap()
-                        .split('@')
-                        .collect::<Vec<_>>()
-                        .first()
-                        .unwrap()
-                        .to_string();
-                    // If the current_active_theme starts with unused " character, remove it
-                    if current_active_theme.starts_with('\"') {
-                        current_active_theme = current_active_theme.split_at(1).1.to_string();
-                    }
-
-                    if &serde_json::Value::String(current_active_theme) == ext_identifier {
-                        storage::write_data(
-                            "theme",
-                            serde_json::json!({"theme": "System Default"}),
-                        );
-                    }
-                }
-
-                ext_identifier != &extension_identifier
-            })
-            .cloned()
-            .collect::<Vec<_>>();
-
-        new_extensions.insert(key.to_string(), serde_json::json!(new_value));
-    }
-
-    storage::write_data("extensions", serde_json::json!(new_extensions));
-}
-
 pub async fn init_theme_extension() {
     // Extensions stuff
     if ARGS_STRUCT.subcommand_matches("extensions").is_some() {
@@ -452,7 +372,7 @@ pub async fn init_theme_extension() {
         }
         if let Some(extension_uninstall_info) = extension_cmd.subcommand_matches("uninstall") {
             match extension_uninstall_info.value_of("extension") {
-                Some(extension) => uninstall_extensions(extension.to_string()),
+                Some(extension) => crate::extensions::uninstall_extensions(extension.to_string()),
                 None => panic!("No extension specified"),
             }
 
