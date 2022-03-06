@@ -183,6 +183,7 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false, writeHi
  * @returns {Promise<void>}
  */
 const OpenHandler = async (e: MouseEvent): Promise<void> => {
+	console.log(e);
 	const preference = await Storage.get('preference');
 	if (document.querySelector('#sidebar-nav').contains(e.target as HTMLElement)) {
 		if (e.detail === 1 && preference?.clickToOpenSidebar && preference?.clickToOpenSidebar !== 'single') return;
@@ -196,7 +197,7 @@ const OpenHandler = async (e: MouseEvent): Promise<void> => {
 		element = element.parentNode as HTMLElement;
 	}
 	if (!element?.dataset?.path) return;
-	if (element.id === 'workspace') return;
+	if (element.classList.contains('workspace-tab')) return;
 
 	const filePath = decodeURI(element.dataset.path);
 
