@@ -13,6 +13,7 @@ import Translate from '../../I18n/i18n';
 import New from '../../Functions/new';
 import { isVSCodeInstalled } from '../../../Service/app';
 import { Purge, Restore } from '../../Files/File Operation/trash';
+import { ExtendedMenu } from '../contextMenu';
 
 interface Favorites {
 	name: string;
@@ -211,6 +212,7 @@ const BodyMenu = async (target: HTMLElement, filePath: string): Promise<contextM
 				},
 			},
 		],
+		...ExtendedMenu,
 	];
 };
 

@@ -33,7 +33,7 @@ impl V8InspectorClientImpl for InspectorClient {
         _stack_trace: &mut V8StackTrace,
     ) {
         println!(
-            "*** context_group_id={}, level={}, message={}",
+            "[CONSOLE] context_group_id={}, level={}, message={}",
             context_group_id, level, message
         );
         unsafe {

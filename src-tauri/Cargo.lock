@@ -55,12 +55,14 @@ dependencies = [
  "reqwest",
  "serde",
  "serde_json",
+ "serde_v8",
  "sysinfo",
  "tauri",
  "tauri-build",
  "tauri-plugin-shadows",
  "tauri-plugin-vibrancy",
  "tauri-plugin-window-state",
+ "thread_local",
  "tokio",
  "trash",
  "url",
@@ -3257,6 +3259,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "serde_bytes"
+version = "0.11.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "16ae07dd2f88a366f15bd0632ba725227018c69a1c8550a927324f8eb8368bb9"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "serde_derive"
 version = "1.0.136"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3299,6 +3310,17 @@ dependencies = [
  "itoa 0.4.8",
  "ryu",
  "serde",
+]
+
+[[package]]
+name = "serde_v8"
+version = "0.35.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ec159951b94e28e498f5febb239c29c41e4f2a53a847809c47c0192cb5244031"
+dependencies = [
+ "serde",
+ "serde_bytes",
+ "v8",
 ]
 
 [[package]]
@@ -3968,9 +3990,9 @@ dependencies = [
 
 [[package]]
 name = "thread_local"
-version = "1.1.3"
+version = "1.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8018d24e04c95ac8790716a5987d0fec4f8b27249ffa0f7d33f1369bdfb88cbd"
+checksum = "5516c27b78311c50bf42c071425c560ac799b11c30b31f87e3081965fe5e0180"
 dependencies = [
  "once_cell",
 ]
@@ -4227,9 +4249,9 @@ dependencies = [
 
 [[package]]
 name = "v8"
-version = "0.40.0"
+version = "0.41.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5b137f2f34fd5fa5a190e78cc3dfacab8abe26f10ef29bb33f291adede5aede7"
+checksum = "a9c3d267007e1f137d79b4da64267139a86034a4d85df4964334979c1c7a708a"
 dependencies = [
  "bitflags",
  "fslock",

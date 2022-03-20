@@ -11,7 +11,7 @@ let contextMenu = document.querySelector('.contextmenu') as HTMLElement;
 let contextMenuSubmenus = document.getElementById('contextmenu-submenus');
 
 interface menuRoles {
-	[key: string]: () => void;
+	[key: string]: any; //eslint-disable-line
 }
 const menuRoles: menuRoles = {};
 
@@ -20,7 +20,13 @@ document.addEventListener('DOMContentLoaded', () => {
 	contextMenuSubmenus = document.getElementById('contextmenu-submenus');
 });
 
+const ExtendedMenu: contextMenuItem[][] = [];
+const addExtendedMenu = (menu: contextMenuItem[]) => {
+	ExtendedMenu.push(menu);
+};
+
 const MenuToElements = async (menu: contextMenuItem[][]): Promise<void> => {
+	console.log(menu);
 	for (let index = 0; index < menu.length; index++) {
 		const section = menu[index];
 		for (let i = 0; i < section.length; i++) {
@@ -41,8 +47,7 @@ const MenuToElements = async (menu: contextMenuItem[][]): Promise<void> => {
 					if (item.shortcut) menu.innerHTML = `${item?.menu?.trim()}<span class="contextmenu-item-shortcut">${item.shortcut}</span>`;
 					else menu.innerHTML = item?.menu?.trim();
 				}
-
-				if (typeof item?.role === 'function') {
+				if (typeof item?.role === 'function' || typeof item?.role === 'string') {
 					const roleIdentifier = Math.random().toString(36).substr(2, 10) + item?.menu?.replace(/\W/g, '')?.trim();
 					menu.setAttribute('role', roleIdentifier);
 					menuRoles[roleIdentifier] = item?.role;
@@ -213,7 +218,11 @@ const ContextMenu = (): void => {
 		const menuRole = menuClicked?.getAttribute('role');
 		if (!menuRole) return;
 
-		menuRoles[menuRole]();
+		if (typeof menuRoles[menuRole] === 'function') menuRoles[menuRole]();
+		else {
+			console.log(menuRole);
+			eval(menuRoles[menuRole]);
+		}
 	});
 	contextMenuSubmenus.addEventListener('click', (e) => {
 		exitContextMenu();
@@ -222,8 +231,10 @@ const ContextMenu = (): void => {
 		const menuRole = menuClicked?.getAttribute('role');
 		if (!menuRole) return;
 
-		menuRoles[menuRole]();
+		if (typeof menuRoles[menuRole] === 'function') menuRoles[menuRole]();
+		else eval(menuRoles[menuRole]);
 	});
 };
 
 export default ContextMenu;
+export { ExtendedMenu, addExtendedMenu };

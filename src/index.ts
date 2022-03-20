@@ -18,7 +18,9 @@ import Search from './Components/Files/File Operation/search';
 import { listenUpdateTheme } from './Service/window';
 import { Resizer } from './Components/Layout/resizer';
 import { MAIN_BOX_ELEMENT } from './Util/constants';
+import { invoke } from '@tauri-apps/api/tauri';
 import isTauri from './Util/is-tauri';
+import { emit } from '@tauri-apps/api/event';
 // Wait DOM Loaded to be loaded
 document.addEventListener('DOMContentLoaded', async () => {
 	// Read user preferences

@@ -10,12 +10,9 @@ mod files_api;
 mod storage;
 mod utils;
 
-use clap::{App, Arg, ArgMatches};
-
 mod tests;
 
 use font_loader::system_fonts;
-use lazy_static::lazy_static;
 use std::env;
 
 #[cfg(target_os = "windows")]
@@ -26,88 +23,6 @@ use tauri::Manager;
 use tauri_plugin_shadows::Shadows;
 #[cfg(not(target_os = "linux"))]
 use tauri_plugin_vibrancy::Vibrancy;
-
-lazy_static! {
-    pub static ref ARGS_STRUCT: ArgMatches = {
-        const VERSION: &str = env!("CARGO_PKG_VERSION");
-        App::new("Xplorer")
-            .version(VERSION)
-            .about("Xplorer, customizable, modern file manager")
-            .arg(
-                Arg::new("reveal")
-                    .short('r')
-                    .long("reveal")
-                    .help("Reveal file in Xplorer")
-                    .takes_value(false),
-            )
-            .subcommand(
-                App::new("extensions")
-                    .alias("ext")
-                    .about("Manage Xplorer extensions")
-                    .subcommand(
-                        App::new("theme")
-                            .about("Manage themes")
-                            .subcommand(
-                                App::new("build").about("Package app into json file").arg(
-                                    Arg::new("configuration")
-                                        .help("Path to package.json")
-                                        .takes_value(true)
-                                        .multiple_values(false),
-                                ),
-                            )
-                            .subcommand(
-                                App::new("install")
-                                    .about("Install theme from json file")
-                                    .arg(
-                                        Arg::new("theme")
-                                            .help("Packaged theme file")
-                                            .takes_value(true)
-                                            .multiple_values(false),
-                                    ),
-                            ),
-                    )
-                    .subcommand(
-                        App::new("install")
-                            .about("Install extension from packaged json file")
-                            .arg(
-                                Arg::new("extension")
-                                    .help("Packaged extension file")
-                                    .takes_value(true)
-                                    .multiple_values(false),
-                            ),
-                    )
-                    .subcommand(
-                        App::new("uninstall").about("Uninstall extension").arg(
-                            Arg::new("extension")
-                                .help("Extension identifier")
-                                .takes_value(true)
-                                .multiple_values(true),
-                        ),
-                    ),
-            )
-            .arg(
-                Arg::new("xtension")
-                    .short('x')
-                    .long("xtension")
-                    .help("Install .xtension file")
-                    .takes_value(true),
-            )
-            .arg(
-                Arg::new("dir")
-                    .help("Directories to open in Xplorer")
-                    .multiple_values(true)
-                    .takes_value(true),
-            )
-            .arg(
-                Arg::new("theme")
-                    .short('t')
-                    .long("theme")
-                    .help("Custom color theme")
-                    .takes_value(true),
-            )
-            .get_matches()
-    };
-}
 
 #[cfg(target_os = "windows")]
 #[tauri::command]

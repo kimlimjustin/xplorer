@@ -25,6 +25,10 @@ module.exports = class extends Generator {
 							name: 'New Color Theme',
 							value: 'theme',
 						},
+						{
+							name: 'New Functions Theme',
+							value: 'functions',
+						},
 					],
 				},
 			]);
@@ -81,14 +85,23 @@ module.exports = class extends Generator {
 			...this.answers,
 			...this.options,
 		};
-		this.fs.copyTpl(this.templatePath('package.json'), this.destinationPath('package.json'), templateData);
 		this.fs.copyTpl(this.templatePath('gitignore'), this.destinationPath('.gitignore'), templateData);
-		this.fs.copyTpl(this.templatePath('README.md'), this.destinationPath('README.md'), templateData);
-		this.fs.copyTpl(
-			this.answers['themeCategory'] === 'light' ? this.templatePath('light-theme.json') : this.templatePath('dark-theme.json'),
-			this.destinationPath(`./themes/${this.answers['extensionIdentifier']}-color-theme.json`),
-			templateData
-		);
+		if (templateData['extensionType'] === 'theme') {
+			this.fs.copyTpl(this.templatePath('themes/package.json'), this.destinationPath('package.json'), templateData);
+			this.fs.copyTpl(this.templatePath('themes/README.md'), this.destinationPath('README.md'), templateData);
+			this.fs.copyTpl(
+				this.answers['themeCategory'] === 'light'
+					? this.templatePath('themes/light-theme.json')
+					: this.templatePath('themes/dark-theme.json'),
+				this.destinationPath(`./themes/${this.answers['extensionIdentifier']}-color-theme.json`),
+				templateData
+			);
+		} else if (templateData['extensionType'] === 'functions') {
+			this.fs.copyTpl(this.templatePath('functions/package.json'), this.destinationPath('package.json'), templateData);
+			this.fs.copyTpl(this.templatePath('functions/README.md'), this.destinationPath('README.md'), templateData);
+			this.fs.copyTpl(this.templatePath('functions/src/index.ts'), this.destinationPath(`./src/index.ts`), templateData);
+			console.log(templateData['bundler']);
+		}
 		if (this.answers['gitInit']) {
 			this.spawnCommandSync('git', ['init', '--quiet']);
 		}

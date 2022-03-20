@@ -9,6 +9,7 @@ import Pin from '../../Files/File Operation/pin';
 import Translate from '../../I18n/i18n';
 import reveal from '../../../Service/reveal';
 import focusingPath from '../../Functions/focusingPath';
+import { ExtendedMenu } from '../contextMenu';
 
 const MultipleSelectedMenu = async (_: HTMLElement, _filePath: string): Promise<contextMenuItem[][]> => {
 	const _focusingPath = await focusingPath();
@@ -116,6 +117,7 @@ const MultipleSelectedMenu = async (_: HTMLElement, _filePath: string): Promise<
 				},
 			},
 		],
+		...ExtendedMenu,
 	];
 };
 

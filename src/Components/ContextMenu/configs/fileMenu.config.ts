@@ -15,6 +15,7 @@ import Translate from '../../I18n/i18n';
 import { OpenDir } from '../../Open/open';
 import FileAPI from '../../../Service/files';
 import Storage from '../../../Service/storage';
+import { ExtendedMenu } from '../contextMenu';
 interface Favorites {
 	name: string;
 	path: string;
@@ -136,6 +137,7 @@ const FileMenu = async (target: HTMLElement, filePath: string): Promise<contextM
 				role: () => Properties(filePath),
 			},
 		],
+		...ExtendedMenu,
 	];
 };
 
