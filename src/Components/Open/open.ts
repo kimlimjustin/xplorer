@@ -44,7 +44,7 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false, writeHi
 	changePosition(dir, forceOpen, writeHistory);
 	const MAIN_ELEMENT = GET_TAB_ELEMENT();
 	MAIN_ELEMENT.innerHTML = '';
-	if (MAIN_ELEMENT.classList.contains('empty-dir-notification')) MAIN_ELEMENT.classList.remove('empty-dir-notification'); // Remove class if exist
+	if (MAIN_ELEMENT.classList.contains('error-reading-files')) MAIN_ELEMENT.classList.remove('error-reading-files'); // Remove class if exist
 	if (dir === 'xplorer://Home') {
 		Home();
 		UpdateInfo('number-of-files', '');
@@ -52,14 +52,14 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false, writeHi
 	} else if (dir === 'xplorer://Trash') {
 		if (!platform) platform = await OS();
 		if (platform === 'darwin') {
-			MAIN_ELEMENT.classList.add('empty-dir-notification');
+			MAIN_ELEMENT.classList.add('error-reading-files');
 			MAIN_ELEMENT.innerText = 'Xploring trash folder is not supported for macOS yet.';
 			stopLoading();
 		} else {
 			getTrashedFiles().then(async (trashedFiles) => {
 				UpdateInfo('number-of-files', `${trashedFiles.files.length} files`);
 				if (!trashedFiles.files.length) {
-					MAIN_ELEMENT.classList.add('empty-dir-notification');
+					MAIN_ELEMENT.classList.add('error-reading-files');
 					MAIN_ELEMENT.innerText = 'This folder is empty.';
 					stopLoading();
 				} else {
@@ -109,31 +109,39 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false, writeHi
 				stopLoading();
 				return;
 			}
-			const files = await directoryInfo.getFiles();
-			UpdateInfo('number-of-files', `${files.number_of_files - files.skipped_files.length} files`);
-			if (!files.files.length) {
-				MAIN_ELEMENT.classList.add('empty-dir-notification');
-				MAIN_ELEMENT.innerText = 'This folder is empty.';
-				stopLoading();
-			} else {
-				await displayFiles(
-					files.files,
-					dir,
-					MAIN_ELEMENT,
-					{
-						reveal,
-						revealDir: normalizeSlash(dir),
-					},
-					null,
-					files.lnk_files
-				);
-				stopLoading();
-				updateTheme('grid');
-				LOAD_IMAGE();
-				changeWindowTitle(getBasename(getDirname(dir)));
-				console.timeEnd(dir);
-				if (!isReload) directoryInfo.listen(() => reload());
-			}
+			await directoryInfo
+				.getFiles()
+				.then(async (files) => {
+					UpdateInfo('number-of-files', `${files.number_of_files - files.skipped_files.length} files`);
+					if (!files.files.length) {
+						MAIN_ELEMENT.classList.add('error-reading-files');
+						MAIN_ELEMENT.innerText = 'This folder is empty.';
+						stopLoading();
+					} else {
+						await displayFiles(
+							files.files,
+							dir,
+							MAIN_ELEMENT,
+							{
+								reveal,
+								revealDir: normalizeSlash(dir),
+							},
+							null,
+							files.lnk_files
+						);
+						stopLoading();
+						updateTheme('grid');
+						LOAD_IMAGE();
+						changeWindowTitle(getBasename(getDirname(dir)));
+						console.timeEnd(dir);
+						if (!isReload) directoryInfo.listen(() => reload());
+					}
+				})
+				.catch((err) => {
+					MAIN_ELEMENT.classList.add('error-reading-files');
+					MAIN_ELEMENT.innerText = err;
+					stopLoading();
+				});
 		} else {
 			directoryInfo = new DirectoryAPI(dir);
 			if (!(await directoryInfo.exists())) {
@@ -141,22 +149,30 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false, writeHi
 				stopLoading();
 				return;
 			}
-			const files = await directoryInfo.getFiles();
-			UpdateInfo('number-of-files', `${files.number_of_files - files.skipped_files.length} files`);
-			if (!files.files.length) {
-				MAIN_ELEMENT.classList.add('empty-dir-notification');
-				MAIN_ELEMENT.innerText = 'This folder is empty.';
-				stopLoading();
-			} else {
-				await displayFiles(files.files, dir, MAIN_ELEMENT, null, null, files.lnk_files);
-				stopLoading();
-				updateTheme('grid');
-				LOAD_IMAGE();
-				changeWindowTitle(getBasename(dir));
-				if (!isReload) directoryInfo.listen(() => reload());
-				console.timeEnd(dir);
-				return;
-			}
+			await directoryInfo
+				.getFiles()
+				.then(async (files) => {
+					UpdateInfo('number-of-files', `${files.number_of_files - files.skipped_files.length} files`);
+					if (!files.files.length) {
+						MAIN_ELEMENT.classList.add('error-reading-files');
+						MAIN_ELEMENT.innerText = 'This folder is empty.';
+						stopLoading();
+					} else {
+						await displayFiles(files.files, dir, MAIN_ELEMENT, null, null, files.lnk_files);
+						stopLoading();
+						updateTheme('grid');
+						LOAD_IMAGE();
+						changeWindowTitle(getBasename(dir));
+						if (!isReload) directoryInfo.listen(() => reload());
+						console.timeEnd(dir);
+						return;
+					}
+				})
+				.catch((err) => {
+					MAIN_ELEMENT.classList.add('error-reading-files');
+					MAIN_ELEMENT.innerText = err;
+					stopLoading();
+				});
 		}
 		OpenLog(dir);
 	}
@@ -167,6 +183,7 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false, writeHi
  * @returns {Promise<void>}
  */
 const OpenHandler = async (e: MouseEvent): Promise<void> => {
+	console.log(e);
 	const preference = await Storage.get('preference');
 	if (document.querySelector('#sidebar-nav').contains(e.target as HTMLElement)) {
 		if (e.detail === 1 && preference?.clickToOpenSidebar && preference?.clickToOpenSidebar !== 'single') return;
@@ -180,7 +197,7 @@ const OpenHandler = async (e: MouseEvent): Promise<void> => {
 		element = element.parentNode as HTMLElement;
 	}
 	if (!element?.dataset?.path) return;
-	if (element.id === 'workspace') return;
+	if (element.classList.contains('workspace-tab')) return;
 
 	const filePath = decodeURI(element.dataset.path);
 

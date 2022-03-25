@@ -35,9 +35,10 @@ v8 = "0.41.0"
 thread_local = "1.1.4"
 serde_v8 = "0.35.0"
 
+
 [target."cfg(any(target_os = \"windows\", target_os = \"macos\"))".dependencies]
-tauri-plugin-vibrancy = { git = "https://github.com/tauri-apps/tauri-plugin-vibrancy", features = ["tauri-impl"] }
-tauri-plugin-shadows = { git = "https://github.com/tauri-apps/tauri-plugin-shadows", features = ["tauri-impl"], rev = "bf34e300d238ea4519dab3220ff8c76f07701a93" }
+window-vibrancy = { git = "https://github.com/tauri-apps/window-vibrancy" }
+window-shadows = { git = "https://github.com/tauri-apps/window-shadows" }
 
 [features]
 default = ["custom-protocol"]
