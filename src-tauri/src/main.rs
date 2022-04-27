@@ -10,7 +10,7 @@ mod files_api;
 mod storage;
 mod utils;
 
-use clap::{App, Arg, ArgMatches};
+use clap::{Arg, ArgMatches, Command as ClapCommand};
 
 mod tests;
 
@@ -32,7 +32,7 @@ use window_vibrancy::{
 lazy_static! {
     pub static ref ARGS_STRUCT: ArgMatches = {
         const VERSION: &str = env!("CARGO_PKG_VERSION");
-        App::new("Xplorer")
+        ClapCommand::new("Xplorer")
             .version(VERSION)
             .about("Xplorer, customizable, modern file manager")
             .arg(
@@ -43,22 +43,24 @@ lazy_static! {
                     .takes_value(false),
             )
             .subcommand(
-                App::new("extensions")
+                ClapCommand::new("extensions")
                     .alias("ext")
                     .about("Manage Xplorer extensions")
                     .subcommand(
-                        App::new("theme")
+                        ClapCommand::new("theme")
                             .about("Manage themes")
                             .subcommand(
-                                App::new("build").about("Package app into json file").arg(
-                                    Arg::new("configuration")
-                                        .help("Path to package.json")
-                                        .takes_value(true)
-                                        .multiple_values(false),
-                                ),
+                                ClapCommand::new("build")
+                                    .about("Package app into json file")
+                                    .arg(
+                                        Arg::new("configuration")
+                                            .help("Path to package.json")
+                                            .takes_value(true)
+                                            .multiple_values(false),
+                                    ),
                             )
                             .subcommand(
-                                App::new("install")
+                                ClapCommand::new("install")
                                     .about("Install theme from json file")
                                     .arg(
                                         Arg::new("theme")
@@ -69,7 +71,7 @@ lazy_static! {
                             ),
                     )
                     .subcommand(
-                        App::new("install")
+                        ClapCommand::new("install")
                             .about("Install extension from packaged json file")
                             .arg(
                                 Arg::new("extension")
@@ -79,12 +81,14 @@ lazy_static! {
                             ),
                     )
                     .subcommand(
-                        App::new("uninstall").about("Uninstall extension").arg(
-                            Arg::new("extension")
-                                .help("Extension identifier")
-                                .takes_value(true)
-                                .multiple_values(true),
-                        ),
+                        ClapCommand::new("uninstall")
+                            .about("Uninstall extension")
+                            .arg(
+                                Arg::new("extension")
+                                    .help("Extension identifier")
+                                    .takes_value(true)
+                                    .multiple_values(true),
+                            ),
                     ),
             )
             .arg(
@@ -153,8 +157,8 @@ fn change_transparent_effect(effect: String, window: tauri::Window) {
     clear_acrylic(&window).unwrap();
     clear_mica(&window).unwrap();
     match effect.as_str() {
-        "blur" => apply_blur(&window).unwrap(),
-        "acrylic" => apply_acrylic(&window).unwrap(),
+        "blur" => apply_blur(&window, Some((18, 18, 18, 125))).unwrap(),
+        "acrylic" => apply_acrylic(&window, Some((18, 18, 18, 125))).unwrap(),
         "mica" => apply_mica(&window).unwrap(),
         _ => (),
     }
@@ -233,7 +237,7 @@ async fn main() {
             enable_shadow_effect,
             change_transparent_effect
         ])
-        .plugin(tauri_plugin_window_state::WindowState::default())
+        // .plugin(tauri_plugin_window_state::Builder::default().build())
         .setup(|app| {
             let window = app.get_window("main").unwrap();
             let appearance = storage::read_data("appearance").unwrap();
