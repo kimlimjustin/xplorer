@@ -1,18 +1,18 @@
 pub mod functions;
 pub mod themes;
 use themes::{get_custom_stylesheet_filepath, install_themes};
+use clap::{Arg, ArgMatches, Command as ClapCommand};
 
 use crate::storage;
 use std::path::Path;
 extern crate path_absolutize;
-use clap::{App, Arg, ArgMatches};
 use lazy_static::lazy_static;
 use path_absolutize::*;
 
 lazy_static! {
     pub static ref ARGS_STRUCT: ArgMatches = {
         const VERSION: &str = env!("CARGO_PKG_VERSION");
-        App::new("Xplorer")
+        ClapCommand::new("Xplorer")
             .version(VERSION)
             .about("Xplorer, customizable, modern file manager")
             .arg(
@@ -23,14 +23,14 @@ lazy_static! {
                     .takes_value(false),
             )
             .subcommand(
-                App::new("extensions")
+                ClapCommand::new("extensions")
                     .alias("ext")
                     .about("Manage Xplorer extensions")
                     .subcommand(
-                        App::new("theme")
+                        ClapCommand::new("theme")
                             .about("Manage themes")
                             .subcommand(
-                                App::new("build").about("Package app into json file").arg(
+                                ClapCommand::new("build").about("Package app into json file").arg(
                                     Arg::new("configuration")
                                         .help("Path to package.json")
                                         .takes_value(true)
@@ -38,7 +38,7 @@ lazy_static! {
                                 ),
                             )
                             .subcommand(
-                                App::new("install")
+                                ClapCommand::new("install")
                                     .about("Install theme from json file")
                                     .arg(
                                         Arg::new("theme")
@@ -49,12 +49,12 @@ lazy_static! {
                             ),
                     )
                     // .subcommand(
-                    //     App::new("function")
+                    //     ClapCommand::new("function")
                     //         .about("Manage function extensions")
                     //         .alias("fn"),
                     // )
                     .subcommand(
-                        App::new("install")
+                        ClapCommand::new("install")
                             .about("Install extension from packaged json file")
                             .arg(
                                 Arg::new("extension")
@@ -64,7 +64,7 @@ lazy_static! {
                             ),
                     )
                     .subcommand(
-                        App::new("uninstall").about("Uninstall extension").arg(
+                        ClapCommand::new("uninstall").about("Uninstall extension").arg(
                             Arg::new("extension")
                                 .help("Extension identifier")
                                 .takes_value(true)

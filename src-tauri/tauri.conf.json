@@ -23,13 +23,11 @@
 			"shortDescription": "",
 			"longDescription": "",
 			"deb": {
-				"depends": [],
-				"useBootstrapper": false
+				"depends": []
 			},
 			"macOS": {
 				"frameworks": [],
 				"minimumSystemVersion": "",
-				"useBootstrapper": false,
 				"exceptionDomain": "",
 				"signingIdentity": null,
 				"entitlements": null,
@@ -83,7 +81,7 @@
 			}
 		],
 		"security": {
-			"csp": "default-src asset: blob: data: filesystem: ws: wss: http: https: tauri: 'unsafe-eval' 'unsafe-inline' style-src 'unsafe-inline' 'self' img-src: 'self'; script-src: 'unsafe-eval' asset: https://asset.localhost"
+			"csp": null
 		}
 	}
 }

@@ -68,8 +68,8 @@ fn change_transparent_effect(effect: String, window: tauri::Window) {
     clear_acrylic(&window).unwrap();
     clear_mica(&window).unwrap();
     match effect.as_str() {
-        "blur" => apply_blur(&window).unwrap(),
-        "acrylic" => apply_acrylic(&window).unwrap(),
+        "blur" => apply_blur(&window, Some((18, 18, 18, 125))).unwrap(),
+        "acrylic" => apply_acrylic(&window, Some((18, 18, 18, 125))).unwrap(),
         "mica" => apply_mica(&window).unwrap(),
         _ => (),
     }
@@ -165,7 +165,7 @@ async fn main() {
             change_transparent_effect,
             req_functions_execution,
         ])
-        .plugin(tauri_plugin_window_state::WindowState::default())
+        // .plugin(tauri_plugin_window_state::Builder::default().build())
         .setup(|app| {
             let window = app.get_window("main").unwrap();
             let appearance = storage::read_data("appearance").unwrap();
