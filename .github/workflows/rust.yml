@@ -19,10 +19,10 @@ jobs:
               uses: actions-rs/toolchain@v1
               with:
                   toolchain: stable
-            - name: install webkit2gtk (ubuntu only)
+            - name: install dependencies (ubuntu only)
               if: matrix.platform == 'ubuntu-latest'
               run: |
                   sudo apt-get update
-                  sudo apt-get install -y webkit2gtk-4.0
+                  sudo apt-get install -y webkit2gtk-4.0 libayatana-appindicator3-dev
             - name: Run tests
               run: yarn && yarn compile && cd src-tauri && cargo test
