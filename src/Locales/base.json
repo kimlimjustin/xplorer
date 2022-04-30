@@ -80,5 +80,6 @@
 	"Restore all files": "Restore all files",
 	"Permanently delete all files": "Permanently delete all files",
 	"Restore these files": "Restore these files",
-	"Permanently delete these files": "Permanently delete these files"
+	"Permanently delete these files": "Permanently delete these files",
+	"Calculate sub folder size": "Calculate sub folder size"
 }
