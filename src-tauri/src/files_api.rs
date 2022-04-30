@@ -199,12 +199,36 @@ pub async fn get_file_properties(file_path: &str) -> Result<FileMetaData, String
         false => file_lib::get_type(&basename, is_dir).await,
     };
 
+    let size = match is_dir {
+        true => {
+            let preference = match storage::read_data("preference") {
+                Ok(result) => result,
+                Err(_) => return Err("Error reading preference".into()),
+            };
+            let preference = if preference.status || preference.data == serde_json::Value::Null {
+                preference.data
+            } else {
+                return Err("Error reading preference".into());
+            };
+            let calculate_sub_folder_size = match preference {
+                serde_json::Value::Null => false,
+                _ => preference["calculateSubFolderSize"].as_bool().unwrap_or(false),
+            };
+            if calculate_sub_folder_size {
+                calculate_files_total_size(vec![file_path.to_string()]).await
+            }
+            else{
+                0
+            }
+        },
+        false => metadata.len(),
+    };
     Ok(FileMetaData {
         is_system,
         is_hidden,
-        is_dir: metadata.is_dir(),
+        is_dir: is_dir,
         is_file: metadata.is_file(),
-        size: metadata.len(),
+        size,
         readonly: metadata.permissions().readonly(),
         last_modified,
         last_accessed,

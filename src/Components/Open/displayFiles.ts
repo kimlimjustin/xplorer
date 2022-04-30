@@ -143,7 +143,7 @@ const displayFiles = async (
 				{ hour12: false }
 			)}</span>
             ${
-				file.size > 0 && !file.is_dir
+				file.size > 0
 					? `<span class="file-size" id="file-size">${formatBytes(
 							file.size // eslint-disable-next-line no-mixed-spaces-and-tabs
 					  )}</span>`
