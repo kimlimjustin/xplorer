@@ -1,4 +1,5 @@
 use std::path::PathBuf;
+use rand::Rng;
 
 pub fn read_to_serde_json(path: PathBuf) -> serde_json::Value {
     let file: Result<serde_json::Value, serde_json::Error> =
@@ -10,6 +11,20 @@ pub fn read_to_serde_json(path: PathBuf) -> serde_json::Value {
             panic!("Error parsing file");
         }
     }
+}
+
+pub fn generate_string(length: usize) -> String {
+    const CHARSET: &[u8] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZ\
+                            abcdefghijklmnopqrstuvwxyz\
+                            0123456789)(*&^%$#@!~";
+    let mut rng = rand::thread_rng();
+    let s: String = (0..length)
+        .map(|_| {
+            let idx = rng.gen_range(0..CHARSET.len());
+            CHARSET[idx] as char
+        })
+        .collect();
+    s
 }
 
 #[macro_export]

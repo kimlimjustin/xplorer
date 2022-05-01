@@ -67,6 +67,7 @@ dependencies = [
  "open",
  "parselnk",
  "path-absolutize",
+ "rand 0.8.5",
  "reqwest",
  "serde",
  "serde_json",

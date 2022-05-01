@@ -11,5 +11,5 @@ interface contextMenuItem {
 		icon?: string;
 	}[];
 }
-declare function contextmenu_addmenu(menu: contextMenuItem);
+declare function contextmenu_addmenu(menu: contextMenuItem.menu, role: contextMenuItem.role);
 declare function contextmenu_addgroupmenu(menu: contextMenuItem[]);

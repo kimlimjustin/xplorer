@@ -13,9 +13,9 @@ interface contextMenuItem {
 }
 
 class ContextMenu {
-	constructor(menu?: contextMenuItem[][]) {}
+	constructor() {}
 	add_menu(new_menu: contextMenuItem) {
-		contextmenu_addmenu(new_menu);
+		contextmenu_addmenu(new_menu.menu, new_menu.role);
 	}
 	add_group_menu(new_menu_group: contextMenuItem[]) {
 		contextmenu_addgroupmenu(new_menu_group);

@@ -1,10 +1,9 @@
 pub mod console;
-use crate::extensions::ARGS_STRUCT;
+use crate::{extensions::ARGS_STRUCT, utils::generate_string};
 use console::InspectorClient;
 use std::sync::mpsc::channel;
-use std::thread;
-use v8::inspector::{StringView, V8Inspector};
-
+use v8::{inspector::{StringView, V8Inspector}, Function};
+use std::ptr::NonNull;
 #[derive(serde::Serialize, Clone)]
 pub struct ExtensionMessage {
     message_type: String,
@@ -24,23 +23,51 @@ pub async fn execute_script(js_script: String) -> String {
     inspector.context_created(context, 1, StringView::empty());
 
     set_globals(&context, scope);
-    // let global = context.global(scope);
-
-    // let deno_key = v8::String::new(scope, "myApp").unwrap();
-    // let deno_val = v8::Object::new(scope);
-    // global.set(scope, deno_key.into(), deno_val.into());
-    // let core_key = v8::String::new(scope, "core").unwrap();
-    // let core_val = v8::Object::new(scope);
-    // deno_val.set(scope, core_key.into(), core_val.into());
-    // let hello_key = v8::String::new(scope, "hello").unwrap();
-    // let hi_key = v8::String::new(scope, "hi").unwrap();
-    // core_val.set(scope, hello_key.into(), hi_key.into());
 
     let code = v8::String::new(scope, &js_script).unwrap();
 
     let script = v8::Script::compile(scope, code, None).unwrap();
     let result = script.run(scope).unwrap();
     let result = result.to_string(scope).unwrap();
+
+
+        unsafe{
+            let (tx, rx) = channel();
+            // let tx = std::sync::Arc::new(std::sync::Mutex::new(tx));
+            crate::TAURI_WINDOW
+                .clone()
+                .unwrap()
+                .listen("call_callback", move |e| {
+                    let payload = e.payload().unwrap();
+                    let payload : serde_json::Value = serde_json::from_str(payload).unwrap();
+                    let key = payload["key"].as_str().unwrap().to_string();
+                    let tx = tx.clone();
+                    tx.send(key).unwrap();
+                });
+             while let Ok(cb_name) = rx.recv() {
+                    
+                    // get the callback from the vector
+                    let cb_item =  CALLBACKS_REV.iter().find(|(name, _)| name == &cb_name).unwrap();
+                    let cb_ptr_bytes = cb_item.1;
+                    let cb = v8::Global::<v8::Function>::from_raw(scope, cb_ptr_bytes);
+                    // Convert Global to Local
+                    let cb_fn = v8::Local::<v8::Function>::new(scope, cb.clone());
+                    // Call the callback
+                    let tc_scope = &mut v8::TryCatch::new(scope);
+                    let this = v8::undefined(tc_scope).into();
+                    let text = v8::String::new(tc_scope, "").unwrap();
+                    cb_fn.call(tc_scope, this, &[text.into()]).unwrap();
+
+                    // remove the callback from the vector
+                    CALLBACKS_REV.retain(|(name, _)| name != &cb_name);
+                    
+                    // save the callback pointer in the vector
+                    let cb_ptr = cb.into_raw();
+                    CALLBACKS_REV.push((cb_name, cb_ptr));
+                }
+        };
+
+    
     result.to_rust_string_lossy(scope)
 }
 
@@ -50,16 +77,18 @@ fn throw_type_error(scope: &mut v8::HandleScope, message: impl AsRef<str>) {
     scope.throw_exception(exception);
 }
 
-fn arg0_to_cb(
+fn arg_to_cb(
     scope: &mut v8::HandleScope,
     args: v8::FunctionCallbackArguments,
+    index: i32,
 ) -> Result<v8::Global<v8::Function>, ()> {
-    v8::Local::<v8::Function>::try_from(args.get(0))
+    v8::Local::<v8::Function>::try_from(args.get(index))
         .map(|cb| v8::Global::new(scope, cb))
         .map_err(|err| throw_type_error(scope, err.to_string()))
 }
 
-pub static mut CALLBACK: Option<v8::Global<v8::Function>> = None;
+// hashmap to store callback raw pointers
+pub static mut CALLBACKS_REV : Vec<(String, NonNull<Function>)> = Vec::new();
 
 pub fn set_globals(
     context: &v8::Local<v8::Context>,
@@ -72,30 +101,12 @@ pub fn set_globals(
         args: v8::FunctionCallbackArguments,
         _rv: v8::ReturnValue,
     ) {
-        if let Ok(new) = arg0_to_cb(scope, args) {
+        if let Ok(new) = arg_to_cb(scope, args, 0) {
             unsafe {
-                CALLBACK = Some(new);
-            }
-            unsafe {
-                let (tx, rx) = channel();
-                let tx = std::sync::Arc::new(std::sync::Mutex::new(tx));
-                crate::TAURI_WINDOW
-                    .clone()
-                    .unwrap()
-                    .listen("hei", move |_| {
-                        let tx = tx.clone();
-                        thread::spawn(move || {
-                            tx.lock().unwrap().send("Clicked").unwrap();
-                        });
-                    });
-                while let Ok(msg) = rx.recv() {
-                    let callback = CALLBACK.clone().unwrap();
-                    let callback_fn = callback.open(scope);
-                    let tc_scope = &mut v8::TryCatch::new(scope);
-                    let this = v8::undefined(tc_scope).into();
-                    let text = v8::String::new(tc_scope, &msg).unwrap();
-                    callback_fn.call(tc_scope, this, &[text.into()]);
-                }
+                // save the callback pointer in the vector
+                let cb_name = "cb".to_string();
+                let cb_ptr = new.into_raw();
+                CALLBACKS_REV.push((cb_name, cb_ptr));
             }
         }
     }
@@ -103,23 +114,29 @@ pub fn set_globals(
     pub fn contextmenu_addmenu(
         scope: &mut v8::HandleScope,
         args: v8::FunctionCallbackArguments,
+
         _rv: v8::ReturnValue,
     ) {
         if args.length() > 0 {
-            let data = args.get(0);
-            let data: serde_json::Value = serde_v8::from_v8(scope, data).unwrap();
-            unsafe {
-                crate::TAURI_WINDOW
-                    .clone()
-                    .unwrap()
-                    .emit(
-                        "extensions",
-                        ExtensionMessage {
-                            message_type: "contextmenu_addmenu".to_string(),
-                            message: data,
-                        },
-                    )
-                    .unwrap();
+            let menu_name = args.get(0).to_rust_string_lossy(scope).to_string();
+            if let Ok(cb) = arg_to_cb(scope, args, 1) {
+                let cb_key = generate_string(10);
+                unsafe {
+                    // save the callback pointer in the vector
+                    let cb_ptr = cb.into_raw();
+                    CALLBACKS_REV.push((cb_key.clone(), cb_ptr));
+                    crate::TAURI_WINDOW
+                        .clone()
+                        .unwrap()
+                        .emit(
+                            "extensions",
+                            ExtensionMessage {
+                                message_type: "contextmenu_addmenu".to_string(),
+                                message: serde_json::json!({"menu": menu_name, "role": format!("__TAURI__.event.emit(\"call_callback\", {{\"key\": \"{}\"}})", cb_key)}),
+                            },
+                        )
+                        .unwrap();
+                }
             }
         }
     }
@@ -130,6 +147,7 @@ pub fn set_globals(
         _rv: v8::ReturnValue,
     ) {
         if args.length() > 0 {
+            println!("Hello");
             let data = args.get(0);
             let data: serde_json::Value = serde_v8::from_v8(scope, data).unwrap();
             println!("{:?}", data);
