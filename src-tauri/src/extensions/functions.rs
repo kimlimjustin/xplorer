@@ -79,7 +79,7 @@ fn throw_type_error(scope: &mut v8::HandleScope, message: impl AsRef<str>) {
 
 fn arg_to_cb(
     scope: &mut v8::HandleScope,
-    args: v8::FunctionCallbackArguments,
+    args: &v8::FunctionCallbackArguments,
     index: i32,
 ) -> Result<v8::Global<v8::Function>, ()> {
     v8::Local::<v8::Function>::try_from(args.get(index))
@@ -101,7 +101,7 @@ pub fn set_globals(
         args: v8::FunctionCallbackArguments,
         _rv: v8::ReturnValue,
     ) {
-        if let Ok(new) = arg_to_cb(scope, args, 0) {
+        if let Ok(new) = arg_to_cb(scope, &args, 0) {
             unsafe {
                 // save the callback pointer in the vector
                 let cb_name = "cb".to_string();
@@ -119,7 +119,7 @@ pub fn set_globals(
     ) {
         if args.length() > 0 {
             let menu_name = args.get(0).to_rust_string_lossy(scope).to_string();
-            if let Ok(cb) = arg_to_cb(scope, args, 1) {
+            if let Ok(cb) = arg_to_cb(scope, &args, 1) {
                 let cb_key = generate_string(10);
                 unsafe {
                     // save the callback pointer in the vector
@@ -147,10 +147,19 @@ pub fn set_globals(
         _rv: v8::ReturnValue,
     ) {
         if args.length() > 0 {
-            println!("Hello");
             let data = args.get(0);
-            let data: serde_json::Value = serde_v8::from_v8(scope, data).unwrap();
-            println!("{:?}", data);
+            let mut data: serde_json::Value = serde_v8::from_v8(scope, data).unwrap();
+            for idx in 0..data.as_array_mut().unwrap().len() {
+                // let item = data.as_array().unwrap()[idx].clone();
+                let callback = arg_to_cb(scope, &args, (idx + 1).try_into().unwrap()).unwrap();
+                let callback_key = generate_string(10);
+                unsafe{
+                    // save the callback pointer in the vector
+                    let cb_ptr = callback.into_raw();
+                    CALLBACKS_REV.push((callback_key.clone(), cb_ptr));
+                }
+                data.as_array_mut().unwrap()[idx]["role"] = serde_json::json!(format!("__TAURI__.event.emit(\"call_callback\", {{\"key\": \"{}\"}})", callback_key));
+            }
             unsafe {
                 crate::TAURI_WINDOW
                     .clone()

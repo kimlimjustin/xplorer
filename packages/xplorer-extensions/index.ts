@@ -18,7 +18,7 @@ class ContextMenu {
 		contextmenu_addmenu(new_menu.menu, new_menu.role);
 	}
 	add_group_menu(new_menu_group: contextMenuItem[]) {
-		contextmenu_addgroupmenu(new_menu_group);
+		contextmenu_addgroupmenu(new_menu_group, ...new_menu_group.map((item) => item.role));
 	}
 }
 
