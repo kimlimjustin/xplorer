@@ -26,6 +26,7 @@ const Preference = async (): Promise<void> => {
 	const clickToOpenSidebar = _preference?.clickToOpenSidebar ?? 'single';
 	const clickToOpenHome = _preference?.clickToOpenHome ?? 'double';
 	const clickToOpenFile = _preference?.clickToOpenFile ?? 'double';
+	const calculateSubFolderSize = _preference?.calculateSubFolderSize ?? false;
 
 	const appLanguage_i18n = await Translate('App Language');
 	const fileAndFolders_i18n = await Translate('Files and Folders');
@@ -39,6 +40,7 @@ const Preference = async (): Promise<void> => {
 	const clickToOpenSidebar_i18n = await Translate('Double click to open items under sidebar section');
 	const clickToOpenHome_i18n = await Translate('Double click to open items under home section');
 	const clickToOpenFile_i18n = await Translate('Double click to open files/folders');
+	const calculateSubFolderSize_i18n = await Translate('Calculate sub folder size');
 	const preferencePage = `<h3 class="settings-title">${appLanguage_i18n}</h3>
 	<select name="language">
 	${Object.keys(localesData.AVAILABLE_LOCALES)
@@ -84,6 +86,13 @@ const Preference = async (): Promise<void> => {
 			<input type="checkbox" name="automatically-change-preview-file" ${automaticallyChangePreviewFile ? 'checked' : ''}>
 			<span class="toggle-slider"></span>
 			<span class="toggle-label">${automaticallyChangePreviewFile_i18n}</span>
+		</label>
+	</div>
+	<div class="toggle-box">
+		<label class="toggle">
+			<input type="checkbox" name="calculate-subfolder-size" ${calculateSubFolderSize ? 'checked' : ''}>
+			<span class="toggle-slider"></span>
+			<span class="toggle-label">${calculateSubFolderSize_i18n}</span>
 		</label>
 	</div>
 	<h3 class="settings-title">${clickToOpen_i18n}</h3>
@@ -152,6 +161,15 @@ const Preference = async (): Promise<void> => {
 			const preference = (await Storage.get('preference')) ?? {};
 			preference.automaticallyChangePreviewFile = event.target.checked;
 			Storage.set('preference', preference);
+		});
+	settingsMain
+		.querySelector(`[name="calculate-subfolder-size"]`)
+		.addEventListener('change', async (event: Event & { target: HTMLInputElement }) => {
+			const preference = (await Storage.get('preference')) ?? {};
+			console.log(event.target);
+			preference.calculateSubFolderSize = event.target.checked;
+			Storage.set('preference', preference);
+			reload();
 		});
 	settingsMain.querySelector(`[name="click-to-open-sidebar"]`).addEventListener('change', async (event: Event & { target: HTMLInputElement }) => {
 		const preference = (await Storage.get('preference')) ?? {};
