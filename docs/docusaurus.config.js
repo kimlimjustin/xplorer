@@ -30,7 +30,8 @@ module.exports = {
 			textColor: '#091E42',
 		},
 		algolia: {
-			apiKey: '801dd9730a1ed22103221e93b49ed9ac',
+			apiKey: '7b47ab88fb7a86f25272ffabd5fec388',
+			appId: '1XKUAWSUJE',
 			indexName: 'xplorer',
 		},
 		navbar: {
