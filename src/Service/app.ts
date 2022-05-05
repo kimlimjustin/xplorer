@@ -1,12 +1,18 @@
 import { GET_AVAILABLE_FONTS_ENDPOINT } from '../Util/constants';
 import isTauri from '../Util/is-tauri';
+import Storage from './storage';
 let _vscodeInstalled: boolean | undefined;
 const isVSCodeInstalled = async (): Promise<boolean> => {
 	if (!isTauri) return false;
 	const { invoke } = require('@tauri-apps/api');
-	if (_vscodeInstalled === undefined) {
-		_vscodeInstalled = await invoke('check_vscode_installed');
-	}
+	const storedUtils = await Storage.get('utils');
+	if (storedUtils?.vscodeInstalled === undefined) {
+		if (_vscodeInstalled === undefined) {
+			_vscodeInstalled = await invoke('check_vscode_installed');
+			storedUtils.vscodeInstalled = _vscodeInstalled;
+			Storage.set('utils', storedUtils);
+		}
+	} else _vscodeInstalled = storedUtils.vscodeInstalled;
 	return _vscodeInstalled;
 };
 
