@@ -3,6 +3,7 @@ import { createNewTab } from '../../Layout/tab';
 import contextMenuItem from '../../../Typings/contextMenuItem';
 import Translate from '../../I18n/i18n';
 import FileAPI from '../../../Service/files';
+import { ExtendedMenu } from '../contextMenu';
 
 const SidebarDriveMenu = async (target: HTMLElement, filePath: string): Promise<contextMenuItem[][]> => {
 	return [
@@ -23,6 +24,7 @@ const SidebarDriveMenu = async (target: HTMLElement, filePath: string): Promise<
 				},
 			},
 		],
+		...ExtendedMenu,
 	];
 };
 

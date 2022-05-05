@@ -1,7 +1,7 @@
 interface contextMenuItem {
 	menu: string;
 	role?: () => void;
-	visible?: boolean;
+	visible?: boolean | string | Array<boolean | string>;
 	icon?: string;
 	shortcut?: string;
 	submenu?: {
@@ -12,14 +12,22 @@ interface contextMenuItem {
 	}[];
 }
 
-class ContextMenu {
-	constructor() {}
-	add_menu(new_menu: contextMenuItem) {
-		contextmenu_addmenu(new_menu.menu, new_menu.role);
-	}
-	add_group_menu(new_menu_group: contextMenuItem[]) {
+export const ContextMenu = {
+	add_menu: (new_menu: contextMenuItem) => {
+		contextmenu_addmenu(new_menu, new_menu.role);
+	},
+	add_group_menu: (new_menu_group: contextMenuItem[]) => {
 		contextmenu_addgroupmenu(new_menu_group, ...new_menu_group.map((item) => item.role));
-	}
-}
+	},
+};
 
-export default ContextMenu;
+export const Helper = {
+	contextMenu: {
+		onTopOfFile: 'onTopOfFile',
+		onTopOfDir: 'onTopOfDir',
+		onMultipleSelected: 'onMultipleSelected',
+		onTopOfWorkspace: 'onTopOfWorkspace',
+		onTopOfSidebarMenu: 'onTopOfSidebarMenu',
+		onTopOfSidebarDriveMenu: 'onTopOfSidebarDriveMenu',
+	},
+};

@@ -183,7 +183,6 @@ const OpenDir = async (dir: string, reveal?: boolean, forceOpen = false, writeHi
  * @returns {Promise<void>}
  */
 const OpenHandler = async (e: MouseEvent): Promise<void> => {
-	console.log(e);
 	const preference = await Storage.get('preference');
 	if (document.querySelector('#sidebar-nav').contains(e.target as HTMLElement)) {
 		if (e.detail === 1 && preference?.clickToOpenSidebar && preference?.clickToOpenSidebar !== 'single') return;

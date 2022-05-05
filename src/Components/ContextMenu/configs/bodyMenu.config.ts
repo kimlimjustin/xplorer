@@ -20,7 +20,6 @@ interface Favorites {
 	path: string;
 }
 const BodyMenu = async (target: HTMLElement, filePath: string): Promise<contextMenuItem[][]> => {
-	console.log(ExtendedMenu);
 	const favorites: Favorites[] = (await Storage.get('sidebar'))?.favorites;
 	const isPinned = !!favorites?.filter((favorite) => favorite.path === filePath).length ?? false;
 	const _focusingPath = await focusingPath();

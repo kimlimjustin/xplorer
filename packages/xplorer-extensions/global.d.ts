@@ -1,7 +1,7 @@
 interface contextMenuItem {
 	menu: string;
 	role?: () => void;
-	visible?: boolean;
+	visible?: boolean | string | Array<boolean | string>;
 	icon?: string;
 	shortcut?: string;
 	submenu?: {

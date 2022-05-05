@@ -118,9 +118,11 @@ pub fn set_globals(
         _rv: v8::ReturnValue,
     ) {
         if args.length() > 0 {
-            let menu_name = args.get(0).to_rust_string_lossy(scope).to_string();
+            let menu_data = args.get(0);
+            let mut menu_data:serde_json::Value = serde_v8::from_v8(scope, menu_data).unwrap();
             if let Ok(cb) = arg_to_cb(scope, &args, 1) {
                 let cb_key = generate_string(10);
+                menu_data.as_object_mut().unwrap()["role"] = serde_json::json!(format!("__TAURI__.event.emit(\"call_callback\", {{\"key\": \"{}\"}})", cb_key));
                 unsafe {
                     // save the callback pointer in the vector
                     let cb_ptr = cb.into_raw();
@@ -132,7 +134,7 @@ pub fn set_globals(
                             "extensions",
                             ExtensionMessage {
                                 message_type: "contextmenu_addmenu".to_string(),
-                                message: serde_json::json!({"menu": menu_name, "role": format!("__TAURI__.event.emit(\"call_callback\", {{\"key\": \"{}\"}})", cb_key)}),
+                                message: menu_data,
                             },
                         )
                         .unwrap();
@@ -150,7 +152,6 @@ pub fn set_globals(
             let data = args.get(0);
             let mut data: serde_json::Value = serde_v8::from_v8(scope, data).unwrap();
             for idx in 0..data.as_array_mut().unwrap().len() {
-                // let item = data.as_array().unwrap()[idx].clone();
                 let callback = arg_to_cb(scope, &args, (idx + 1).try_into().unwrap()).unwrap();
                 let callback_key = generate_string(10);
                 unsafe{

@@ -25,13 +25,45 @@ const addExtendedMenu = (menu: contextMenuItem[]) => {
 	ExtendedMenu.push(menu);
 };
 
-const MenuToElements = async (menu: contextMenuItem[][]): Promise<void> => {
-	console.log(menu);
+const VisibilityHelper = (code: string, target: HTMLElement) => {
+	switch (code) {
+		case 'onTopOfFile':
+			return target.dataset.isdir === undefined
+				? false
+				: target.dataset.isdir !== 'true' && !target.classList.contains('favorite-item') && !target.classList.contains('drive-item');
+		case 'onTopOfDir':
+			return target.dataset.isdir === undefined
+				? false
+				: target.dataset.isdir === 'true' && !target.classList.contains('favorite-item') && !target.classList.contains('drive-item');
+		case 'onMultipleSelected':
+			return getSelected().length > 1;
+		case 'onTopOfWorkspace':
+			return target.classList.contains('workspace-tab') || target.classList.contains('workspace');
+		case 'onTopOfSidebarMenu':
+			return target.classList.contains('favorite-item');
+		case 'onTopOfSidebarDriveMenu':
+			return target.classList.contains('drive-item');
+	}
+};
+
+const MenuToElements = async (menu: contextMenuItem[][], target: HTMLElement): Promise<void> => {
+	console.log(target);
 	for (let index = 0; index < menu.length; index++) {
 		const section = menu[index];
+		let all_are_invisible_items = false;
 		for (let i = 0; i < section.length; i++) {
 			const item = section[i];
-			if (item.visible || item.visible === undefined) {
+			const visible =
+				item.visible === undefined
+					? true
+					: typeof item.visible === 'boolean'
+					? item.visible
+					: typeof item.visible === 'string'
+					? VisibilityHelper(item.visible, target)
+					: item.visible.some((code: string) => VisibilityHelper(code, target));
+			if (visible) all_are_invisible_items = true;
+			console.log(visible, item.visible);
+			if (visible) {
 				const menu = document.createElement('span');
 				menu.classList.add('contextmenu-item');
 
@@ -100,7 +132,7 @@ const MenuToElements = async (menu: contextMenuItem[][]): Promise<void> => {
 				}
 			}
 		}
-		if (index !== menu.length - 1 && section.filter((menu) => menu.visible !== false).length > 0) contextMenu.innerHTML += `<hr />`;
+		if (index !== menu.length - 1 && all_are_invisible_items) contextMenu.innerHTML += `<hr />`;
 	}
 	return;
 };
@@ -132,15 +164,15 @@ const ContextMenu = (): void => {
 
 		// Create the context menu
 		if (getSelected().length > 1) {
-			await MenuToElements(await MultipleSelectedMenu(target, filePath));
+			await MenuToElements(await MultipleSelectedMenu(target, filePath), target);
 		} else if (target.classList.contains('favorite-item')) {
-			await MenuToElements(await SidebarMenu(target, filePath));
+			await MenuToElements(await SidebarMenu(target, filePath), target);
 		} else if (target.classList.contains('drive-item')) {
-			await MenuToElements(await SidebarDriveMenu(target, filePath));
+			await MenuToElements(await SidebarDriveMenu(target, filePath), target);
 		} else if (target.classList.contains('workspace-tab')) {
-			await MenuToElements(await BodyMenu(target, filePath));
+			await MenuToElements(await BodyMenu(target, filePath), target);
 		} else {
-			await MenuToElements(await FileMenu(target, filePath));
+			await MenuToElements(await FileMenu(target, filePath), target);
 		}
 
 		if (coorY + contextMenu.offsetHeight > window.innerHeight && coorY - contextMenu.offsetHeight > -50) {

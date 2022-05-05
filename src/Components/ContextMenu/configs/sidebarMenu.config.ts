@@ -5,6 +5,7 @@ import Translate from '../../I18n/i18n';
 import Preview from '../../Files/File Preview/preview';
 import { OpenDir } from '../../Open/open';
 import FileAPI from '../../../Service/files';
+import { ExtendedMenu } from '../contextMenu';
 
 const SidebarMenu = async (target: HTMLElement, filePath: string): Promise<contextMenuItem[][]> => {
 	return [
@@ -43,6 +44,7 @@ const SidebarMenu = async (target: HTMLElement, filePath: string): Promise<conte
 				},
 			},
 		],
+		...ExtendedMenu,
 	];
 };
 

@@ -51,6 +51,7 @@ const videoPreview = async (filename: string): Promise<string> => {
  * @returns {Promise<string>} the preview of the file/folder
  */
 const fileThumbnail = async (filePath: string, category = 'folder', HTMLFormat = true, imageAsThumbnail = true): Promise<string> => {
+	if (filePath.startsWith('data:image/')) return HTMLFormat ? `<img class="file-grid-preview" src="${filePath}" />` : filePath;
 	if (!trieInitilized) {
 		for (const category of FileLib) {
 			if (category.extensions?.length && category.thumbnail) {
