@@ -7,6 +7,26 @@
 	z-index: 5;
 	border-radius: var(--edge-radius);
 
+	.sidebar-minimized {
+		.settings-sidebar-item {
+			span {
+				opacity: 0;
+			}
+			img {
+				opacity: 1;
+				width: initial !important;
+			}
+		}
+		.exit-setting-btn {
+			.settings-sidebar-heading {
+				opacity: 0;
+			}
+			.exit-setting-icon {
+				font-size: xxx-large;
+			}
+		}
+	}
+
 	.settings-sidebar {
 		border-radius: var(--edge-radius) 0 0 var(--edge-radius);
 		.settings-sidebar-header {
