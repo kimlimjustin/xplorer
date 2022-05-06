@@ -3,6 +3,7 @@ import { IMAGE_TYPES } from '../../Config/file.config';
 import getBasename from '../Functions/path/basename';
 import Storage from '../../Service/storage';
 import { MAIN_BOX_ELEMENT } from '../../Util/constants';
+import focusingPath from '../Functions/focusingPath';
 
 const getExtension = (filename: string): string => {
 	const basename = getBasename(filename);
@@ -50,7 +51,7 @@ const Hover = (): void => {
 
 		timeOut = window.setTimeout(async () => {
 			displayName = filenameGrid.innerHTML;
-			const path = decodeURI(target.dataset.path);
+			const path = decodeURI((await focusingPath()) === 'xplorer://Trash' ? target.dataset.realPath : target.dataset.path);
 			filenameGrid.innerHTML = isOnSearch ? path : getBasename(path);
 			target?.classList?.add('hovering');
 
