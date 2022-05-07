@@ -226,6 +226,7 @@ async fn main() {
             files_api::copy,
             files_api::remove_dir,
             files_api::remove_file,
+            files_api::compress_to_zip,
             drives::get_drives,
             storage::write_data,
             storage::read_data,

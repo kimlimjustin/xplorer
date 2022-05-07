@@ -127,6 +127,13 @@ const FileMenu = async (target: HTMLElement, filePath: string): Promise<contextM
 				icon: 'pin',
 				role: () => Pin([filePath]),
 			},
+			{
+				menu: await Translate('Compress to Zip'),
+				icon: 'zip',
+				role: () => {
+					new FileAPI(filePath).zip();
+				},
+			},
 		],
 		[
 			{
