@@ -167,6 +167,18 @@ class FileAPI {
 			return size;
 		}
 	}
+
+	/**
+	 * Compress file(s) to zip file
+	 * @returns {Promise<void>}
+	 */
+	async zip(): Promise<void> {
+		if (isTauri) {
+			const { invoke } = require('@tauri-apps/api');
+			return await invoke('compress_to_zip', { files: typeof this.fileName === 'string' ? [this.fileName] : this.fileName });
+		}
+		return;
+	}
 }
 
 export default FileAPI;
