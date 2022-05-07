@@ -118,10 +118,16 @@ const ContextMenu = (): void => {
 		let coorY = e.pageY;
 
 		let target = e.target as HTMLElement;
-		while (target.dataset && !target.dataset.path) {
-			target = target.parentNode as HTMLElement;
+		if (target.classList.contains('workspace')) target = target.querySelector('.workspace-tab');
+		else if (target.classList.contains('contextmenu')) {
+			exitContextMenu();
+			return;
+		} else {
+			while (target.dataset && !target.dataset.path) {
+				target = target.parentNode as HTMLElement;
+			}
 		}
-		if (!target?.dataset?.path) return;
+		if (!target?.dataset?.path && !target?.classList?.contains('workspace')) return;
 
 		const filePath = decodeURI(target.dataset.path);
 
