@@ -179,6 +179,19 @@ class FileAPI {
 		}
 		return;
 	}
+
+	/**
+	 * Extract zip file
+	 * @param {string} target_dir - Target directory to extract files
+	 * @returns {any}
+	 */
+	async unzip(target_dir: string): Promise<void> {
+		if (isTauri) {
+			const { invoke } = require('@tauri-apps/api');
+			return await invoke('decompress_from_zip', { zipPath: this.fileName, targetDir: target_dir });
+		}
+		return;
+	}
 }
 
 export default FileAPI;

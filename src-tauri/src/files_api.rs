@@ -914,3 +914,23 @@ pub async fn compress_to_zip(files: Vec<String>){
     }
     zip.finish().unwrap();
 }
+
+#[tauri::command]
+pub async fn decompress_from_zip(zip_path: String, target_dir: String){
+    let mut zip = zip::ZipArchive::new(File::open(zip_path).unwrap()).unwrap();
+    fs::create_dir_all(target_dir.clone()).unwrap();
+    for i in 0..zip.len() {
+        let mut file = zip.by_index(i).unwrap();
+        let file_outpath = match file.enclosed_name(){
+            Some(name) => target_dir.clone() + "/" + &name.to_str().unwrap(),
+            None => continue,
+        };
+        let file_name = file.name();
+        if file_name.ends_with('/') {
+            fs::create_dir_all(&file_outpath).unwrap();
+        }else{
+            let mut outfile  = File::create(file_outpath).unwrap();
+            std::io::copy(&mut file, &mut outfile).unwrap();
+        }
+    }
+}
