@@ -15,6 +15,7 @@ import Translate from '../../I18n/i18n';
 import { OpenDir } from '../../Open/open';
 import FileAPI from '../../../Service/files';
 import Storage from '../../../Service/storage';
+import Ask from '../../Prompt/ask';
 interface Favorites {
 	name: string;
 	path: string;
@@ -126,6 +127,22 @@ const FileMenu = async (target: HTMLElement, filePath: string): Promise<contextM
 				shortcut: 'Alt+P',
 				icon: 'pin',
 				role: () => Pin([filePath]),
+			},
+			{
+				menu: await Translate('Extract'),
+				visible: target?.dataset?.path?.endsWith('.zip') ?? false,
+				icon: 'unzip',
+				role: async () => {
+					const target = await Ask('Extract files', 'Extract files to', { value: filePath.replace('.zip', ''), selectFileName: false });
+					new FileAPI(filePath).unzip(target);
+				},
+			},
+			{
+				menu: await Translate('Compress to Zip'),
+				icon: 'zip',
+				role: () => {
+					new FileAPI(filePath).zip();
+				},
 			},
 		],
 		[

@@ -2,6 +2,7 @@ import dragElement from '../Functions/dragElement';
 
 interface AskOptions {
 	value: string;
+	selectFileName?: boolean;
 }
 /**
  * Prompt a dialog to ask something
@@ -31,7 +32,8 @@ const Ask = async (title: string, message: string, options?: AskOptions): Promis
 	document.body.appendChild(promptElement);
 
 	const promptInput = promptElement.querySelector<HTMLInputElement>('.prompt-input');
-	promptInput.setSelectionRange(0, promptInput.value.lastIndexOf('.'));
+	if (options?.selectFileName ?? true) promptInput.setSelectionRange(0, promptInput.value.lastIndexOf('.'));
+	else promptInput.setSelectionRange(promptInput.value.length, promptInput.value.length);
 	promptInput.focus();
 	return new Promise((resolve) => {
 		promptElement.querySelector('.prompt-ok').addEventListener('click', () => {
