@@ -131,6 +131,7 @@ const FileMenu = async (target: HTMLElement, filePath: string): Promise<contextM
 			{
 				menu: await Translate('Extract'),
 				visible: target?.dataset?.path?.endsWith('.zip') ?? false,
+				icon: 'unzip',
 				role: async () => {
 					const target = await Ask('Extract files', 'Extract files to', { value: filePath.replace('.zip', ''), selectFileName: false });
 					new FileAPI(filePath).unzip(target);
