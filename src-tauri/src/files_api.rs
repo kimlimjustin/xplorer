@@ -16,6 +16,9 @@ use std::path::Path;
 use std::process::Command;
 use std::sync::mpsc::channel;
 use std::time::SystemTime;
+use std::fs::File;
+use std::io::prelude::*;
+use zip::write::FileOptions;
 use tauri::api::dialog::ask;
 #[cfg(target_os = "windows")]
 use tauri::api::path::local_data_dir;
@@ -867,4 +870,67 @@ pub async fn search_in_dir(
     window.unlisten(id);
 
     files
+}
+
+#[tauri::command]
+pub async fn compress_to_zip(files: Vec<String>){
+    let target_name = files[0].to_string() + ".zip";
+    let mut zip = zip::ZipWriter::new(File::create(target_name).unwrap());
+    zip.set_comment("Compressed by Xplorer");
+    let options = FileOptions::default()
+        .compression_method(zip::CompressionMethod::Stored)
+        .unix_permissions(0o755);
+    for(_i, file) in files.iter().enumerate() {
+        let file_name = file.to_string();
+        let file_is_dir = is_dir(std::path::Path::new(&file_name.clone())).unwrap();
+        if file_is_dir{
+            fn add_dir_to_zip(zip: &mut zip::ZipWriter<File>, dir_path: &str, options: &FileOptions, relative_path: &str){
+                zip.add_directory(relative_path.to_owned() , *options).unwrap();
+                let paths = fs::read_dir(dir_path).unwrap();
+                for path in paths {
+                    let path = path.unwrap().path();
+                    let file_name = path.to_str().unwrap();
+                    let file_is_dir = is_dir(std::path::Path::new(&path)).unwrap();
+                    let mut relative_file_path = relative_path.to_owned();
+                    if relative_file_path == "" {
+                        relative_file_path += &FileSystemUtils::get_basename(file_name);
+                    }else{
+                        relative_file_path += &("/".to_owned() + &FileSystemUtils::get_basename(file_name));
+                    }
+                     
+                    if file_is_dir{
+                        add_dir_to_zip(zip, file_name, options, &(relative_file_path));
+                    } else {
+                        zip.start_file(relative_file_path, *options).unwrap();
+                        zip.write_all(fs::read(file_name).unwrap().as_ref()).unwrap();
+                    }
+                }
+            }
+            add_dir_to_zip(&mut zip, &file_name, &options, "");
+        }else{
+            zip.start_file(FileSystemUtils::get_basename(file_name.clone().as_str()), options).unwrap();
+            zip.write_all(&std::fs::read(file_name).unwrap()).unwrap(); 
+        }
+    }
+    zip.finish().unwrap();
+}
+
+#[tauri::command]
+pub async fn decompress_from_zip(zip_path: String, target_dir: String){
+    let mut zip = zip::ZipArchive::new(File::open(zip_path).unwrap()).unwrap();
+    fs::create_dir_all(target_dir.clone()).unwrap();
+    for i in 0..zip.len() {
+        let mut file = zip.by_index(i).unwrap();
+        let file_outpath = match file.enclosed_name(){
+            Some(name) => target_dir.clone() + "/" + &name.to_str().unwrap(),
+            None => continue,
+        };
+        let file_name = file.name();
+        if file_name.ends_with('/') {
+            fs::create_dir_all(&file_outpath).unwrap();
+        }else{
+            let mut outfile  = File::create(file_outpath).unwrap();
+            std::io::copy(&mut file, &mut outfile).unwrap();
+        }
+    }
 }

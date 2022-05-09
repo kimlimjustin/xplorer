@@ -10,7 +10,6 @@ import Translate from '../../I18n/i18n';
 import reveal from '../../../Service/reveal';
 import focusingPath from '../../Functions/focusingPath';
 import FileAPI from '../../../Service/files';
-import { OpenDir } from '../../Open/open';
 const MultipleSelectedMenu = async (_: HTMLElement, _filePath: string): Promise<contextMenuItem[][]> => {
 	const _focusingPath = await focusingPath();
 	const selectedFiles = await getSelected();
@@ -87,6 +86,14 @@ const MultipleSelectedMenu = async (_: HTMLElement, _filePath: string): Promise<
 						paths.push(decodeURI(element.dataset.path));
 					}
 					Trash(paths);
+				},
+			},
+			{
+				menu: await Translate('Compress to Zip'),
+				icon: 'zip',
+				role: () => {
+					const selectedFilesPath = [...selectedFiles].map((file) => decodeURI(file.dataset.path));
+					new FileAPI(selectedFilesPath).zip();
 				},
 			},
 		],
