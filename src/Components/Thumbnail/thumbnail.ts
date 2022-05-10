@@ -77,17 +77,19 @@ const fileThumbnail = async (filePath: string, category = 'folder', HTMLFormat =
 	const ext = filePath.split('.').pop().toLowerCase(); // Get extension of filename
 	const basename = getBasename(filePath).toLowerCase();
 	const appearance = await Storage.get('appearance');
-	if (IMAGE_TYPES.indexOf(ext) !== -1) {
-		if (imageAsThumbnail) {
-			return imageThumbnail(filePath, HTMLFormat, true);
-		} else {
-			return imageThumbnail(DEFAULT_IMAGE_THUMBNAIL, HTMLFormat);
+	if (category === 'file') {
+		if (IMAGE_TYPES.indexOf(ext) !== -1) {
+			if (imageAsThumbnail) {
+				return imageThumbnail(filePath, HTMLFormat, true);
+			} else {
+				return imageThumbnail(DEFAULT_IMAGE_THUMBNAIL, HTMLFormat);
+			}
+		} else if (VIDEO_TYPES.indexOf(ext) !== -1) {
+			const assetSrc = new FileAPI(filePath).readAsset();
+			return HTMLFormat ? await videoPreview(assetSrc) : assetSrc;
+		} else if ((appearance?.extractExeIcon ?? false) && (ext === 'exe' || ext === 'msi')) {
+			return imageThumbnail(await new FileAPI(filePath).extractIcon(), HTMLFormat, true);
 		}
-	} else if (VIDEO_TYPES.indexOf(ext) !== -1) {
-		const assetSrc = new FileAPI(filePath).readAsset();
-		return HTMLFormat ? await videoPreview(assetSrc) : assetSrc;
-	} else if ((appearance?.extractExeIcon ?? false) && (ext === 'exe' || ext === 'msi')) {
-		return imageThumbnail(await new FileAPI(filePath).extractIcon(), HTMLFormat, true);
 	}
 
 	const filename = filePath.toLowerCase(); // Lowercase filename
