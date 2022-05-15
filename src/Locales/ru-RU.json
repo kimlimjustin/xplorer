@@ -103,5 +103,12 @@
 	"Permanently delete these files": "Удалить эти файлы безвозвратно",
 	"Calculate sub folder size": "Вычислять размер подпапок",
 	"Search": "Поиск",
+	"Minimize": "Свернуть",
+	"Maximize": "Развернуть",
+	"Exit (Ctrl + w)": "Закрыть (Ctrl + w)",
+	"Go Back (Alt + Left Arrow)": "Назад (Alt + Стрелка влево)",
+	"Go Forward (Alt + Right Arrow)": "Вперед (Alt + Стрелка вправо)",
+	"Parent Directory (Alt + Up Arrow)": "Вверх (Alt + Стрелка вверх)",
+	"Reload (f5)": "Обновить (f5)",
 	"Close Tab": "Закрыть вкладку"
 }

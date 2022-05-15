@@ -1,3 +1,4 @@
+import Translate from '../I18n/i18n';
 import Storage from '../../Service/storage';
 import windowName, { listenWindowClose, setDecorations } from '../../Service/window';
 import { OpenDir } from '../Open/open';
@@ -73,15 +74,22 @@ const windowManager = async (): Promise<void> => {
 	setDecorations(appearance?.frameStyle === 'os');
 	// Minimize the screen
 	document.querySelector('#minimize')?.addEventListener('click', minimize);
+	document.querySelector('#minimize')?.setAttribute('title', await Translate('Minimize'));
 	// Maximize the screen
 	document.querySelector('#maximize')?.addEventListener('click', maximize);
+	document.querySelector('#maximize')?.setAttribute('title', await Translate('Maximize'));
 	// Exit window
 	document.querySelector('#exit')?.addEventListener('click', close);
+	document.querySelector('#exit')?.setAttribute('title', await Translate('Exit (Ctrl + w)'));
 
 	// Refresh the page
 	document.querySelector('#refresh').addEventListener('click', reload);
+	document.querySelector('#refresh')?.setAttribute('title', await Translate('Reload (f5)'));
 
 	document.querySelector('#go-parent-dir').addEventListener('click', goParentDir);
+	document.querySelector('#go-parent-dir')?.setAttribute('title', await Translate('Parent Directory (Alt + Up Arrow)'));
+	document.querySelector('#go-back')?.setAttribute('title', await Translate('Go Back (Alt + Left Arrow)'));
+	document.querySelector('#go-forward')?.setAttribute('title', await Translate('Go Forward (Alt + Right Arrow)'));
 
 	document.querySelector('.path-navigator').addEventListener('change', (event: Event & { target: HTMLInputElement }) => {
 		OpenDir(event.target.value);

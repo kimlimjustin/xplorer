@@ -103,5 +103,12 @@
 	"Permanently delete these files": "Permanently delete these files",
 	"Calculate sub folder size": "Calculate sub folder size",
 	"Search": "Search",
+	"Minimize": "Minimize",
+	"Maximize": "Maximize",
+	"Exit (Ctrl + w)": "Exit (Ctrl + w)",
+	"Go Back (Alt + Left Arrow)": "Go Back (Alt + Left Arrow)",
+	"Go Forward (Alt + Right Arrow)": "Go Forward (Alt + Right Arrow)",
+	"Parent Directory (Alt + Up Arrow)": "Parent Directory (Alt + Up Arrow)",
+	"Reload (f5)": "Reload (f5)",
 	"Close Tab": "Close Tab"
 }
