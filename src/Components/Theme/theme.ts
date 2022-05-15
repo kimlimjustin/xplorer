@@ -70,7 +70,7 @@ const hoverHandler = (obj: HTMLElement, theme: string, type: ElementType) => {
 	if (obj.getAttribute('being-listened') === 'true') return;
 	obj.setAttribute('being-listened', 'true');
 	obj.addEventListener('mousemove', (e) => {
-		const rect = (e.target as HTMLElement).getBoundingClientRect();
+		const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
 		const x = e.clientX - rect.left;
 		const y = e.clientY - rect.top;
 		if (obj.classList.contains('active')) return (obj.onmouseleave = null);
