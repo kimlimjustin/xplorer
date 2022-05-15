@@ -50,6 +50,10 @@ const Appearance = async (): Promise<void> => {
 	const shadowEffect_i18n = await Translate('Apply Shadow Effect');
 	const filePreview_i18n = await Translate('File Preview');
 	const defaultFileLayout_i18n = await Translate('Default File Layout');
+	const gridViewSmall_i18n = await Translate('Grid View (Small)');
+	const gridViewMedium_i18n = await Translate('Grid View (Medium)');
+	const gridViewLarge_i18n = await Translate('Grid View (Large)');
+	const detailView_i18n = await Translate('Detail View');
 	const systemDefault_i18n = await Translate('System Default');
 	const imageAsThumbnail_i18n = await Translate('Show image as thumbnail');
 	const disabled_i18n = await Translate('Disabled');
@@ -183,10 +187,10 @@ const Appearance = async (): Promise<void> => {
 	</select>
 	<h3 class="settings-title">${defaultFileLayout_i18n}</h3>
 	<select name="layout">
-		<option ${layout === 's' ? 'selected' : ''} value="s">Small Grid View</option>
-		<option ${layout === 'm' ? 'selected' : ''} value="m">Medium Grid View</option>
-		<option ${layout === 'l' ? 'selected' : ''} value="l">Large Grid View</option>
-		<option ${layout === 'd' ? 'selected' : ''} value="d">Detail View</option>
+		<option ${layout === 's' ? 'selected' : ''} value="s">${gridViewSmall_i18n}</option>
+		<option ${layout === 'm' ? 'selected' : ''} value="m">${gridViewMedium_i18n}</option>
+		<option ${layout === 'l' ? 'selected' : ''} value="l">${gridViewLarge_i18n}</option>
+		<option ${layout === 'd' ? 'selected' : ''} value="d">${detailView_i18n}</option>
 	</select>
 	<h3 class="settings-title">${workspace_i18n}</h3>
 	<div class="toggle-box">
