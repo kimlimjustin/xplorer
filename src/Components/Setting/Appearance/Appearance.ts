@@ -146,7 +146,7 @@ const Appearance = async (): Promise<void> => {
 		} ${disabledForWeb}>${mica_i18n}</option>
 		<option value="vibrancy" ${transparentEffect === 'vibrancy' ? 'selected' : ''} ${platform !== 'darwin' ? 'disabled' : ''
 		} ${disabledForWeb}>${vibrancy_i18n}</option>
-		<option value="none" ${transparentEffect === 'none' ? 'selected' : ''}>None</option>
+		<option value="none" ${transparentEffect === 'none' ? 'selected' : ''}>${none_i18n}</option>
 	</select>
 	<h3 class="settings-title">${frameStyle_i18n}</h3>
 	<select name="frame-style">
