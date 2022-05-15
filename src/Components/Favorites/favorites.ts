@@ -45,7 +45,7 @@ const Favorites = async (): Promise<string> => {
 				src="${icon}"
 				alt="${favorite.name} icon"
 				class="favorite-icon"
-			/>${favorite.name}
+			/>${await Translate(favorite.name)}
 		</h3>
 	</div>`;
 	}

@@ -34,6 +34,8 @@ const Preference = async (): Promise<void> => {
 	const hideSystemFiles_i18n = await Translate('Hide system files');
 	const dirAlongsideFiles_i18n = await Translate('List and sort directories alongside files');
 	const on_startup_i18n = await Translate('On startup');
+	const newTab_i18n = await Translate('New tab');
+	const continuePreviousSession_i18n = await Translate('Continue previous session');
 	const detectDriveChange_i18n = await Translate('Detect Drive Change');
 	const automaticallyChangePreviewFile_i18n = await Translate('Automatically change preview file with selected file');
 	const clickToOpen_i18n = await Translate('Single/Double Click to open a file');
@@ -119,8 +121,8 @@ const Preference = async (): Promise<void> => {
 	</div>
 	<h3 class="settings-title">${on_startup_i18n}</h3>
 	<select name="on_startup">
-		<option ${on_startup === 'new' ? 'selected' : ''} value="new">New tab</option>
-		<option ${on_startup === 'continue' ? 'selected' : ''} value="continue">Continue previous session</option>
+		<option ${on_startup === 'new' ? 'selected' : ''} value="new">${newTab_i18n}</option>
+		<option ${on_startup === 'continue' ? 'selected' : ''} value="continue">${continuePreviousSession_i18n}</option>
 	</select>`;
 	settingsMain.innerHTML = preferencePage;
 	settingsMain.querySelector(`[name="language"]`).addEventListener('change', async (event: Event & { target: HTMLInputElement }) => {

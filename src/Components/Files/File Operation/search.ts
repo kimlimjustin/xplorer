@@ -1,3 +1,4 @@
+import Translate from '../../I18n/i18n';
 import focusingPath from '../../Functions/focusingPath';
 import DirectoryAPI from '../../../Service/directory';
 import { startLoading, stopLoading } from '../../Functions/Loading/loading';
@@ -81,10 +82,12 @@ const getFocusingPath = async (): Promise<string> => {
  */
 const Search = async (): Promise<void> => {
 	let listener: ReturnType<typeof setTimeout>;
+	const searchElement = document.querySelector<HTMLInputElement>('.search-bar');
 	if (!isTauri) {
-		document.querySelector('.search-bar').setAttribute('disabled', '');
+		searchElement.setAttribute('disabled', '');
 	}
-	document.querySelector('.search-bar').addEventListener('keydown', async (e: KeyboardEvent) => {
+	searchElement.placeholder = `🔎 ${await Translate('Search')}`;
+	searchElement.addEventListener('keydown', async (e: KeyboardEvent) => {
 		clearTimeout(listener);
 		if (e.ctrlKey && e.key === 'f') {
 			return;

@@ -38,7 +38,7 @@ const FileMenu = async (target: HTMLElement, filePath: string): Promise<contextM
 				},
 			},
 			{
-				menu: await Translate('Open in new tab'),
+				menu: await Translate('Open in New Tab'),
 				visible: target?.dataset?.isdir === 'true',
 				icon: 'open in new tab',
 				role: () => {
@@ -46,7 +46,7 @@ const FileMenu = async (target: HTMLElement, filePath: string): Promise<contextM
 				},
 			},
 			{
-				menu: await Translate('Open in terminal'),
+				menu: await Translate('Open in Terminal'),
 				visible: target?.dataset?.isdir === 'true',
 				shortcut: 'Alt+T',
 				icon: 'terminal',
@@ -55,7 +55,7 @@ const FileMenu = async (target: HTMLElement, filePath: string): Promise<contextM
 				},
 			},
 			{
-				menu: await Translate('Open in VSCcode'),
+				menu: await Translate('Open in VSCode'),
 				visible: await isVSCodeInstalled(),
 				shortcut: 'Shift+Enter',
 				icon: 'vscode',

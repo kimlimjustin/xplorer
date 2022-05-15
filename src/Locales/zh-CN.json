@@ -38,6 +38,7 @@
 	"App Language": "语言",
 	"Files and Folders": "文件和文件夹",
 	"Hide hidden files": "隐藏文件",
+	"Hide system files": "隐藏系统文件",
 	"List and sort directories alongside files": "展开文件同时排序",
 	"On startup": "启动时",
 	"Workspace": "Workspace",
