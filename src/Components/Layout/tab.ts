@@ -196,6 +196,7 @@ const Tab = async (reveal = false): Promise<void> => {
 		const tab = arrayOfTabs[index];
 		const closeTab = document.createElement('span');
 		closeTab.innerHTML = '&times;';
+		closeTab.title = await Translate('Close Tab');
 		tab.dataset.tabIndex = String(parseInt(tab.id.replace('tab', ''))) || '1';
 		closeTab.classList.add('close-tab-btn');
 		tab.appendChild(closeTab);
