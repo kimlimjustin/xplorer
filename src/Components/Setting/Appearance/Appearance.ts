@@ -52,6 +52,9 @@ const Appearance = async (): Promise<void> => {
 	const defaultFileLayout_i18n = await Translate('Default File Layout');
 	const systemDefault_i18n = await Translate('System Default');
 	const imageAsThumbnail_i18n = await Translate('Show image as thumbnail');
+	const disabled_i18n = await Translate('Disabled');
+	const forSmallDirectory_i18n = await Translate('For small directory (recommended)');
+	const enableForAllDirectory_i18n = await Translate('Enable for all directory');
 	const videoAsThumbnail_i18n = await Translate('Automatically play video file as thumbnail (May consume high amount of RAM)');
 	const extractExeIcon_i18n = await Translate('Extract exe file icon and make it as the thumbnail (Turning it on might crashes Xplorer)');
 	const previewImageOnHover_i18n = await Translate('Preview image on hover');
@@ -174,9 +177,9 @@ const Appearance = async (): Promise<void> => {
 	}
 	<h3 class="settings-title">${imageAsThumbnail_i18n}</h3>	
 	<select name="imageAsThumbnail">
-		<option ${imageAsThumbnail === 'no' ? 'selected' : ''} value="no">Disabled</option>
-		<option ${imageAsThumbnail === 'smalldir' ? 'selected' : ''} value="smalldir">For small directory (recommended)</option>
-		<option ${imageAsThumbnail === 'yes' ? 'selected' : ''} value="yes">Enable for all directory</option>
+		<option ${imageAsThumbnail === 'no' ? 'selected' : ''} value="no">${disabled_i18n}</option>
+		<option ${imageAsThumbnail === 'smalldir' ? 'selected' : ''} value="smalldir">${forSmallDirectory_i18n}</option>
+		<option ${imageAsThumbnail === 'yes' ? 'selected' : ''} value="yes">${enableForAllDirectory_i18n}</option>
 	</select>
 	<h3 class="settings-title">${defaultFileLayout_i18n}</h3>
 	<select name="layout">
