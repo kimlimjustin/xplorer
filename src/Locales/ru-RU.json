@@ -38,6 +38,7 @@
 	"App Language": "Язык приложения",
 	"Files and Folders": "Файлы и Папки",
 	"Hide hidden files": "Не отображать скрытые файлы",
+	"Hide system files": "Не отображать системные файлы",
 	"List and sort directories alongside files": "Показывать и сортировать папки наравне с файлами",
 	"On startup": "При запуске",
 	"Workspace": "Рабочая область",

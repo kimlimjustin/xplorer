@@ -38,6 +38,7 @@
 	"App Language": "言語",
 	"Files and Folders": "ファイルとフォルダ",
 	"Hide hidden files": "隠されたファイルを隠す",
+	"Hide system files": "システムファイルを隠す",
 	"List and sort directories alongside files": "ファイルと一緒にディレクトリをリストとソートする",
 	"On startup": "起動時",
 	"Workspace": "ワークスペース",
