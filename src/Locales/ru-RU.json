@@ -48,6 +48,8 @@
 	"Hide system files": "Не отображать системные файлы",
 	"List and sort directories alongside files": "Показывать и сортировать папки наравне с файлами",
 	"On startup": "При запуске",
+	"New tab": "Открыть новую вкладку",
+	"Continue previous session": "Продолжить предыдущую сессию",
 	"Workspace": "Рабочая область",
 	"Show Info Bar": "Показать строку состояния",
 	"About": "О программе",
