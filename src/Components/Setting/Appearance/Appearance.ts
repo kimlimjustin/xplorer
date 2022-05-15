@@ -66,6 +66,11 @@ const Appearance = async (): Promise<void> => {
 	const fontSize_i18n = await Translate('Font Size');
 	const windowTransparency_i18n = await Translate('Window Transparency');
 	const transparentEffect_i18n = await Translate('Transparent Effect');
+	const blur_i18n = await Translate('Blur');
+	const acrylic_i18n = await Translate('Acrylic');
+	const mica_i18n = await Translate('Mica');
+	const vibrancy_i18n = await Translate('Vibrancy');
+	const none_i18n = await Translate('None');
 	const transparentSidebar_i18n = await Translate('Transparent Sidebar');
 	const transparentTopbar_i18n = await Translate('Transparent Topbar');
 	const transparentWorkspace_i18n = await Translate('Transparent Workspace');
@@ -134,16 +139,13 @@ const Appearance = async (): Promise<void> => {
 	</div>
 	<h3 class="settings-title">${transparentEffect_i18n}</h3>
 	<select name="transparent-effect">
-		<option value="blur" ${transparentEffect === 'blur' ? 'selected' : ''} ${platform !== 'win32' ? 'disabled' : ''} ${disabledForWeb}>Blur</option>
-		<option value="acrylic" ${transparentEffect === 'acrylic' ? 'selected' : ''} ${
-		platform !== 'win32' ? 'disabled' : ''
-	} ${disabledForWeb}>Acrylic</option>
-		<option value="mica" ${transparentEffect === 'mica' ? 'selected' : ''} ${
-		!(platform === 'win32' && (await isWin11())) ? 'disabled' : ''
-	} ${disabledForWeb}>Mica</option>
-		<option value="vibrancy" ${transparentEffect === 'vibrancy' ? 'selected' : ''} ${
-		platform !== 'darwin' ? 'disabled' : ''
-	} ${disabledForWeb}>Vibrancy</option>
+		<option value="blur" ${transparentEffect === 'blur' ? 'selected' : ''} ${platform !== 'win32' ? 'disabled' : ''} ${disabledForWeb}>${blur_i18n}</option>
+		<option value="acrylic" ${transparentEffect === 'acrylic' ? 'selected' : ''} ${platform !== 'win32' ? 'disabled' : ''
+		} ${disabledForWeb}>${acrylic_i18n}</option>
+		<option value="mica" ${transparentEffect === 'mica' ? 'selected' : ''} ${!(platform === 'win32' && (await isWin11())) ? 'disabled' : ''
+		} ${disabledForWeb}>${mica_i18n}</option>
+		<option value="vibrancy" ${transparentEffect === 'vibrancy' ? 'selected' : ''} ${platform !== 'darwin' ? 'disabled' : ''
+		} ${disabledForWeb}>${vibrancy_i18n}</option>
 		<option value="none" ${transparentEffect === 'none' ? 'selected' : ''}>None</option>
 	</select>
 	<h3 class="settings-title">${frameStyle_i18n}</h3>
