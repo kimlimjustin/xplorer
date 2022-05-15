@@ -38,6 +38,7 @@
 	"App Language": "Idioma de la aplicación",
 	"Files and Folders": "Archivos y carpetas",
 	"Hide hidden files": "No mostrar archivos ocultos",
+	"Hide system files": "No mostrar archivos del sistema",
 	"List and sort directories alongside files": "Listar y ordenar directorios junto con archivos",
 	"On startup": "Al iniciar",
 	"Workspace": "Área de trabajo",

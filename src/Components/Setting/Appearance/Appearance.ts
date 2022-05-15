@@ -50,8 +50,15 @@ const Appearance = async (): Promise<void> => {
 	const shadowEffect_i18n = await Translate('Apply Shadow Effect');
 	const filePreview_i18n = await Translate('File Preview');
 	const defaultFileLayout_i18n = await Translate('Default File Layout');
+	const gridViewSmall_i18n = await Translate('Grid View (Small)');
+	const gridViewMedium_i18n = await Translate('Grid View (Medium)');
+	const gridViewLarge_i18n = await Translate('Grid View (Large)');
+	const detailView_i18n = await Translate('Detail View');
 	const systemDefault_i18n = await Translate('System Default');
 	const imageAsThumbnail_i18n = await Translate('Show image as thumbnail');
+	const disabled_i18n = await Translate('Disabled');
+	const forSmallDirectory_i18n = await Translate('For small directory (recommended)');
+	const enableForAllDirectory_i18n = await Translate('Enable for all directory');
 	const videoAsThumbnail_i18n = await Translate('Automatically play video file as thumbnail (May consume high amount of RAM)');
 	const extractExeIcon_i18n = await Translate('Extract exe file icon and make it as the thumbnail (Turning it on might crashes Xplorer)');
 	const previewImageOnHover_i18n = await Translate('Preview image on hover');
@@ -59,6 +66,11 @@ const Appearance = async (): Promise<void> => {
 	const fontSize_i18n = await Translate('Font Size');
 	const windowTransparency_i18n = await Translate('Window Transparency');
 	const transparentEffect_i18n = await Translate('Transparent Effect');
+	const blur_i18n = await Translate('Blur');
+	const acrylic_i18n = await Translate('Acrylic');
+	const mica_i18n = await Translate('Mica');
+	const vibrancy_i18n = await Translate('Vibrancy');
+	const none_i18n = await Translate('None');
 	const transparentSidebar_i18n = await Translate('Transparent Sidebar');
 	const transparentTopbar_i18n = await Translate('Transparent Topbar');
 	const transparentWorkspace_i18n = await Translate('Transparent Workspace');
@@ -127,17 +139,14 @@ const Appearance = async (): Promise<void> => {
 	</div>
 	<h3 class="settings-title">${transparentEffect_i18n}</h3>
 	<select name="transparent-effect">
-		<option value="blur" ${transparentEffect === 'blur' ? 'selected' : ''} ${platform !== 'win32' ? 'disabled' : ''} ${disabledForWeb}>Blur</option>
-		<option value="acrylic" ${transparentEffect === 'acrylic' ? 'selected' : ''} ${
-		platform !== 'win32' ? 'disabled' : ''
-	} ${disabledForWeb}>Acrylic</option>
-		<option value="mica" ${transparentEffect === 'mica' ? 'selected' : ''} ${
-		!(platform === 'win32' && (await isWin11())) ? 'disabled' : ''
-	} ${disabledForWeb}>Mica</option>
-		<option value="vibrancy" ${transparentEffect === 'vibrancy' ? 'selected' : ''} ${
-		platform !== 'darwin' ? 'disabled' : ''
-	} ${disabledForWeb}>Vibrancy</option>
-		<option value="none" ${transparentEffect === 'none' ? 'selected' : ''}>None</option>
+		<option value="blur" ${transparentEffect === 'blur' ? 'selected' : ''} ${platform !== 'win32' ? 'disabled' : ''} ${disabledForWeb}>${blur_i18n}</option>
+		<option value="acrylic" ${transparentEffect === 'acrylic' ? 'selected' : ''} ${platform !== 'win32' ? 'disabled' : ''
+		} ${disabledForWeb}>${acrylic_i18n}</option>
+		<option value="mica" ${transparentEffect === 'mica' ? 'selected' : ''} ${!(platform === 'win32' && (await isWin11())) ? 'disabled' : ''
+		} ${disabledForWeb}>${mica_i18n}</option>
+		<option value="vibrancy" ${transparentEffect === 'vibrancy' ? 'selected' : ''} ${platform !== 'darwin' ? 'disabled' : ''
+		} ${disabledForWeb}>${vibrancy_i18n}</option>
+		<option value="none" ${transparentEffect === 'none' ? 'selected' : ''}>${none_i18n}</option>
 	</select>
 	<h3 class="settings-title">${frameStyle_i18n}</h3>
 	<select name="frame-style">
@@ -174,16 +183,16 @@ const Appearance = async (): Promise<void> => {
 	}
 	<h3 class="settings-title">${imageAsThumbnail_i18n}</h3>	
 	<select name="imageAsThumbnail">
-		<option ${imageAsThumbnail === 'no' ? 'selected' : ''} value="no">Disabled</option>
-		<option ${imageAsThumbnail === 'smalldir' ? 'selected' : ''} value="smalldir">For small directory (recommended)</option>
-		<option ${imageAsThumbnail === 'yes' ? 'selected' : ''} value="yes">Enable for all directory</option>
+		<option ${imageAsThumbnail === 'no' ? 'selected' : ''} value="no">${disabled_i18n}</option>
+		<option ${imageAsThumbnail === 'smalldir' ? 'selected' : ''} value="smalldir">${forSmallDirectory_i18n}</option>
+		<option ${imageAsThumbnail === 'yes' ? 'selected' : ''} value="yes">${enableForAllDirectory_i18n}</option>
 	</select>
 	<h3 class="settings-title">${defaultFileLayout_i18n}</h3>
 	<select name="layout">
-		<option ${layout === 's' ? 'selected' : ''} value="s">Small Grid View</option>
-		<option ${layout === 'm' ? 'selected' : ''} value="m">Medium Grid View</option>
-		<option ${layout === 'l' ? 'selected' : ''} value="l">Large Grid View</option>
-		<option ${layout === 'd' ? 'selected' : ''} value="d">Detail View</option>
+		<option ${layout === 's' ? 'selected' : ''} value="s">${gridViewSmall_i18n}</option>
+		<option ${layout === 'm' ? 'selected' : ''} value="m">${gridViewMedium_i18n}</option>
+		<option ${layout === 'l' ? 'selected' : ''} value="l">${gridViewLarge_i18n}</option>
+		<option ${layout === 'd' ? 'selected' : ''} value="d">${detailView_i18n}</option>
 	</select>
 	<h3 class="settings-title">${workspace_i18n}</h3>
 	<div class="toggle-box">
