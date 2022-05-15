@@ -25,7 +25,7 @@
 	"Disabled": "Отключено",
 	"For small directory (recommended)": "Для маленьких папок (рекомендуется)",
 	"Enable for all directory": "Включить для всех папок",
-	"System Default": "По умолчанию",
+	"System Default": "По умолчанию системы",
 	"Automatically play video file as thumbnail (May consume high amount of RAM)": "Автоматически воспроизводить превью видеофайла (Может потреблять больше ОЗУ)",
 	"Extract exe file icon and make it as the thumbnail (Turning it on might crashes Xplorer)": "Сделать превью из извлеченной иконки .exe файла (может привести к вылету Xplorer)",
 	"Preview image on hover": "Предпросмотр картинки при наведении",
