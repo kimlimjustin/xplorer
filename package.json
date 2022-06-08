@@ -65,7 +65,7 @@
 		"concurrently": "^6.2.1",
 		"cpy": "^8.1.2",
 		"eslint": "^8.2.0",
-		"grunt": "^1.4.1",
+		"grunt": "^1.5.3",
 		"grunt-cli": "^1.4.3",
 		"grunt-contrib-uglify": "^5.0.1",
 		"grunt-contrib-watch": "^1.1.0",
