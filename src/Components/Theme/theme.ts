@@ -88,6 +88,7 @@ const ALLOWED_STYLES = [
 	'text',
 	'cursor',
 	'outline',
+	'box-shadow',
 	'--scrollbar',
 	'--tabs-scrollbar',
 	'--preview-object',
