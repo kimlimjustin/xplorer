@@ -21,6 +21,7 @@ import { UpdateInfo } from '../Layout/infobar';
 import { processSearch, stopSearchingProcess } from '../Files/File Operation/search';
 import Storage from '../../Service/storage';
 import { GET_TAB_ELEMENT, MAIN_BOX_ELEMENT } from '../../Util/constants';
+import Error from '../Prompt/error';
 let platform: string;
 let directoryInfo: DirectoryAPI;
 /**
@@ -199,6 +200,10 @@ const OpenHandler = async (e: MouseEvent): Promise<void> => {
 	if (element.classList.contains('workspace-tab')) return;
 
 	const filePath = decodeURI(element.dataset.path);
+
+	if ((await focusingPath()) === 'xplorer://Trash' && element.dataset.isdir !== 'true') {
+		Error('Error opening trashed file', 'Please restore the file first in order to open it.');
+	}
 
 	// Open the file if it's not directory
 	if (element.dataset.isdir !== 'true') {
