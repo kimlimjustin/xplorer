@@ -20,9 +20,10 @@ import { Resizer } from './Components/Layout/resizer';
 import { MAIN_BOX_ELEMENT } from './Util/constants';
 import { invoke } from '@tauri-apps/api/tauri';
 import isTauri from './Util/is-tauri';
-import { emit } from '@tauri-apps/api/event';
 // Wait DOM Loaded to be loaded
 document.addEventListener('DOMContentLoaded', async () => {
+	// Initialize info bar
+	await Infobar();
 	// Read user preferences
 	const _preference = await Storage.get('preference');
 	// Initialize folder to open
@@ -48,7 +49,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 	detectDriveInit();
 	// Build sidebar
 	createSidebar();
-
 	// Update the page styling
 	if (cli.custom_style_sheet) {
 		updateTheme('root', cli.custom_style_sheet);
@@ -65,8 +65,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 	MAIN_BOX_ELEMENT().dataset.hideHiddenFiles = String(_preference?.hideHiddenFiles ?? true);
 	// Initialize settings
 	Setting();
-	// Initialize info bar
-	Infobar();
 	// Initialize context menu
 	ContextMenu();
 	// Initialize hover handler

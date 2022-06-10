@@ -198,6 +198,30 @@ pub fn set_globals(
         }
     }
 
+
+    pub fn edit_infobar_value(scope: &mut v8::HandleScope, args: v8::FunctionCallbackArguments, _rv: v8::ReturnValue) {
+        if args.length() > 0 {
+            let infobar_key = args.get(0);
+            let infobar_key = infobar_key.to_string(scope).unwrap();
+            let infobar_key = infobar_key.to_rust_string_lossy(scope);
+            let new_value = args.get(1);
+            let new_value = new_value.to_string(scope).unwrap();
+            let new_value = new_value.to_rust_string_lossy(scope);
+            let data = serde_json::json!({
+                "infobar_key": infobar_key,
+                "new_value": new_value,
+            });
+
+            unsafe {
+                crate::TAURI_WINDOW
+                    .clone()
+                    .unwrap()
+                    .emit("infobar", data)
+                    .unwrap();
+            }
+        }
+    }
+
     macro_rules! set_func {
         ($name:expr, $callback:expr) => {{
             let fn_template = v8::FunctionTemplate::new(scope, $callback);
@@ -213,6 +237,7 @@ pub fn set_globals(
     set_func!("cb", cb);
     set_func!("contextmenu_addmenu", contextmenu_addmenu);
     set_func!("contextmenu_addgroupmenu", contextmenu_addgroupmenu);
+    set_func!("edit_infobar_value", edit_infobar_value);
 }
 
 pub async fn init_functions_extension() {

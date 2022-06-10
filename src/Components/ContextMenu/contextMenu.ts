@@ -47,7 +47,6 @@ const VisibilityHelper = (code: string, target: HTMLElement) => {
 };
 
 const MenuToElements = async (menu: contextMenuItem[][], target: HTMLElement): Promise<void> => {
-	console.log(target);
 	for (let index = 0; index < menu.length; index++) {
 		const section = menu[index];
 		let all_are_invisible_items = false;
@@ -62,7 +61,6 @@ const MenuToElements = async (menu: contextMenuItem[][], target: HTMLElement): P
 					? VisibilityHelper(item.visible, target)
 					: item.visible.some((code: string) => VisibilityHelper(code, target));
 			if (visible) all_are_invisible_items = true;
-			console.log(visible, item.visible);
 			if (visible) {
 				const menu = document.createElement('span');
 				menu.classList.add('contextmenu-item');
@@ -252,7 +250,6 @@ const ContextMenu = (): void => {
 
 		if (typeof menuRoles[menuRole] === 'function') menuRoles[menuRole]();
 		else {
-			console.log(menuRole);
 			eval(menuRoles[menuRole]);
 		}
 	});

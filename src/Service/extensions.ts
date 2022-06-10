@@ -1,7 +1,8 @@
 import { getCurrent } from '@tauri-apps/api/window';
-import type { ConsoleMessage, ExtensionMessage } from '../Typings/extensions';
+import type { ConsoleMessage, ExtensionMessage, InfobarMessage } from '../Typings/extensions';
 import Notification from '../Components/Prompt/notification';
 import { addExtendedMenu } from '../Components/ContextMenu/contextMenu';
+import { UpdateInfo } from '../Components/Layout/infobar';
 
 const Extensions = () => {
 	getCurrent().listen('alert', (message) => {
@@ -21,7 +22,6 @@ const Extensions = () => {
 		}
 	});
 	getCurrent().listen('extensions', (message: { payload: ExtensionMessage }) => {
-		console.log(message);
 		switch (message.payload.message_type) {
 			case 'contextmenu_addmenu':
 				addExtendedMenu([message.payload.message]);
@@ -30,6 +30,9 @@ const Extensions = () => {
 				addExtendedMenu(message.payload.message);
 				break;
 		}
+	});
+	getCurrent().listen('infobar', (msg: { payload: InfobarMessage }) => {
+		UpdateInfo(msg.payload.infobar_key, msg.payload.new_value);
 	});
 };
 

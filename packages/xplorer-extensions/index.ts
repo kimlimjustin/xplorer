@@ -21,6 +21,16 @@ export const ContextMenu = {
 	},
 };
 
+export class InfobarMenu {
+	private _infobar_key;
+	constructor(infobar_key: string) {
+		this._infobar_key = infobar_key;
+	}
+	public edit(value: string) {
+		edit_infobar_value(this._infobar_key, value);
+	}
+}
+
 export const Helper = {
 	contextMenu: {
 		onTopOfFile: 'onTopOfFile',

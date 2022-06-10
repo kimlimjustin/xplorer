@@ -36,7 +36,6 @@ const BodyMenu = async (target: HTMLElement, filePath: string): Promise<contextM
 		Storage.set('sort', sort);
 		reload();
 	};
-	console.log(ExtendedMenu);
 	return [
 		[
 			{
