@@ -9,14 +9,14 @@ build = "src/build.rs"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { git = "https://github.com/tauri-apps/tauri", branch="dev", features = [] }
+tauri-build = { version="1.0.0", features = [] }
 
 [dependencies]
 sysinfo = "0.23"
 serde_json = "1"
 serde = { version = "^1.0", features = ["derive"] }
-tauri = { version="1.0.0-rc.8", features = ["api-all", "updater"] }
-tauri-plugin-window-state = { git = "https://github.com/tauri-apps/tauri-plugin-window-state", branch="update-deps" }
+tauri = { version="1.0.0", features = ["api-all", "updater"] }
+tauri-plugin-window-state = { git = "https://github.com/tauri-apps/tauri-plugin-window-state" }
 open = "2"
 path-absolutize = "3"
 trash = "2"
