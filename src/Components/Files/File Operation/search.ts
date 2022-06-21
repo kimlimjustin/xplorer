@@ -100,7 +100,9 @@ const Search = async (): Promise<void> => {
 		} else {
 			listener = setTimeout(async () => {
 				const value = (e.target as HTMLInputElement).value;
-				if (value !== being_watch) {
+				if (value === '') {
+					OpenDir(await getFocusingPath());
+				} else if (value !== being_watch) {
 					processSearch(value, await getFocusingPath());
 					being_watch = value;
 				}
