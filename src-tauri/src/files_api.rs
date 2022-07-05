@@ -491,6 +491,7 @@ pub fn open_in_terminal(folder_path: &str) {
             )
             .as_str(),
         ])
+        .creation_flags(0x08000000)
         .output()
         .expect("failed to execute process");
 
@@ -522,6 +523,7 @@ pub fn open_in_vscode(path: String) {
     #[cfg(target_os = "windows")]
     Command::new("cmd")
         .args(["/C", format!("code {path}", path = path).as_str()])
+        .creation_flags(0x08000000)
         .output()
         .expect("failed to execute process");
 
