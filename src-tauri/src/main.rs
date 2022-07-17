@@ -26,7 +26,7 @@ use tauri::Manager;
 use window_shadows::set_shadow;
 #[cfg(not(target_os = "linux"))]
 use window_vibrancy::{
-    apply_acrylic, apply_blur, apply_mica, clear_acrylic, clear_blur, clear_mica,
+    apply_acrylic, apply_blur, clear_acrylic, clear_blur
 };
 
 lazy_static! {
@@ -153,13 +153,23 @@ fn get_available_fonts() -> Result<Vec<String>, String> {
 #[tauri::command]
 #[inline]
 fn change_transparent_effect(effect: String, window: tauri::Window) {
+    use utils::is_win_11;
+
     clear_blur(&window).unwrap();
     clear_acrylic(&window).unwrap();
-    clear_mica(&window).unwrap();
+    if is_win_11(){ 
+        use window_vibrancy::clear_mica;
+        clear_mica(&window).unwrap(); 
+    }
     match effect.as_str() {
         "blur" => apply_blur(&window, Some((18, 18, 18, 125))).unwrap(),
         "acrylic" => apply_acrylic(&window, Some((18, 18, 18, 125))).unwrap(),
-        "mica" => apply_mica(&window).unwrap(),
+        "mica" => {
+            use window_vibrancy::apply_mica;
+            if is_win_11(){ 
+                apply_mica(&window).unwrap()
+            }
+        },
         _ => (),
     }
 }
