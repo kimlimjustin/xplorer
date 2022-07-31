@@ -74,7 +74,7 @@ const Shortcut = (): void => {
 					.querySelector('#file-filename')
 					?.textContent.toLowerCase()
 					.normalize('NFD')
-					.replace(/[\u0300-\u036f]/g, '')
+					.replace(/[\u0300-\u036f]/gu, '')
 					.startsWith(searchingFileName);
 			};
 
