@@ -109,7 +109,7 @@ Simply close and reopen Xplorer, Xplorer will fix itself. If it doesn't, please 
 
 ## Architecture
 
-Xplorer is a cross-platform application built using the [Tauri](https://tauri.studio) framework. Tauri is based on Microsoft Edge-similar webview and Rust to work. Read about tauri [here](https://tauri.studio/en/docs/about/intro)
+Xplorer is a cross-platform application built using the [Tauri](https://tauri.studio) framework. Tauri is based on the OS specific webview and Rust to work. Read about tauri [here](https://tauri.studio/en/docs/about/intro)
 
 Xplorer is a polygot application. Xplorer relies on Rust api for file operations and TS, SCSS for the webview. Rust code are under `src-tauri` directory whereas the webview code are under `src` directory. The API that connects webview with the Rust code is under `src/Api` directory.
 
