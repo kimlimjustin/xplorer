@@ -84,31 +84,32 @@ lazy_static! {
 }
 
 pub async fn get_type(file_basename: &str, is_dir: bool) -> String {
-    match is_dir {
-        true => match FILE_NAMES.get(file_basename) {
-            Some(folder_type) => folder_type.to_owned(),
-            None => "File Folder".to_string(),
-        },
-        false => match FILE_NAMES.get(file_basename) {
-            Some(file_type_according_to_name) => file_type_according_to_name.to_owned(),
-            None => {
-                let file_extension = file_basename.split('.').last().unwrap();
-                match FILE_TYPES.get(file_extension) {
-                    Some(file_type) => file_type.to_string(),
-                    None => {
-                        let file_type = file_extension.to_string();
+    if is_dir {
+        match FILE_NAMES.get(file_basename) {
+        Some(folder_type) => folder_type.to_owned(),
+        None => "File Folder".to_string(),
+    }
+    } else {
+        match FILE_NAMES.get(file_basename) {
+        Some(file_type_according_to_name) => file_type_according_to_name.to_owned(),
+        None => {
+            let file_extension = file_basename.split('.').last().unwrap();
+            match FILE_TYPES.get(file_extension) {
+                Some(file_type) => file_type.to_string(),
+                None => {
+                    let file_type = file_extension.to_string();
 
-                        file_type
-                            .chars()
-                            .next()
-                            .unwrap()
-                            .to_uppercase()
-                            .collect::<String>()
-                            + &file_type[1..]
-                            + &" File"
-                    }
+                    file_type
+                        .chars()
+                        .next()
+                        .unwrap()
+                        .to_uppercase()
+                        .collect::<String>()
+                        + &file_type[1..]
+                        + &" File"
                 }
             }
-        },
+        }
+    }
     }
 }
