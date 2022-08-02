@@ -17,43 +17,43 @@ pub struct ArgsStruct {
 
 pub fn get_custom_stylesheet_filepath() -> Option<String> {
     let custom_style_sheet = ARGS_STRUCT.value_of("theme").unwrap_or_default();
-    match custom_style_sheet.is_empty() {
-        true => None,
-        false => match files_api::file_exist(custom_style_sheet) {
-            true => Some(custom_style_sheet.to_string()),
-            false => {
-                let package_json_path =
-                    Path::new(&env::current_dir().unwrap()).join("package.json");
-                let package_json_file: serde_json::Value = serde_json::from_str(
-                    std::fs::read_to_string(package_json_path).unwrap().as_str(),
-                )
-                .ok()?;
+    if custom_style_sheet.is_empty() {
+        None
+    } else {
+        if files_api::file_exist(custom_style_sheet) {
+        Some(custom_style_sheet.to_string())
+    } else {
+        let package_json_path =
+            Path::new(&env::current_dir().unwrap()).join("package.json");
+        let package_json_file: serde_json::Value = serde_json::from_str(
+            std::fs::read_to_string(package_json_path).unwrap().as_str(),
+        )
+        .ok()?;
 
-                // FIXME: Should it panic when it's `None`?
-                let package_json_file = package_json_file.as_object().unwrap();
-                let extension_field = package_json_file
-                    .get("xplorerExtensionConfig")?
+        // FIXME: Should it panic when it's `None`?
+        let package_json_file = package_json_file.as_object().unwrap();
+        let extension_field = package_json_file
+            .get("xplorerExtensionConfig")?
+            .as_object()
+            .unwrap();
+
+        let themes_field = extension_field.get("themes")?.as_array().unwrap();
+        let theme_field: &serde_json::Value = themes_field
+            .iter()
+            .find(|theme| {
+                theme
                     .as_object()
-                    .unwrap();
+                    .unwrap()
+                    .get("identifier")
+                    .unwrap()
+                    .as_str()
+                    .unwrap()
+                    == custom_style_sheet
+            })
+            .unwrap();
 
-                let themes_field = extension_field.get("themes")?.as_array().unwrap();
-                let theme_field: &serde_json::Value = themes_field
-                    .iter()
-                    .find(|theme| {
-                        theme
-                            .as_object()
-                            .unwrap()
-                            .get("identifier")
-                            .unwrap()
-                            .as_str()
-                            .unwrap()
-                            == custom_style_sheet
-                    })
-                    .unwrap();
-
-                Some(theme_field.get("path").unwrap().to_string())
-            }
-        },
+        Some(theme_field.get("path").unwrap().to_string())
+    }
     }
 }
 
@@ -170,15 +170,16 @@ pub fn build_themes(package_json_path: &Path) {
 
             // FIXME: Should it be absolute path?
             let path = Path::new(relative_path).absolutize().unwrap();
-            let path = match path.exists() {
-                true => path.to_str().unwrap().to_string(),
-                false => (*package_json_path)
-                    .parent()
-                    .unwrap()
-                    .join(relative_path)
-                    .to_str()
-                    .unwrap()
-                    .to_string(),
+            let path = if path.exists() {
+                path.to_str().unwrap().to_string()
+            } else {
+                (*package_json_path)
+                .parent()
+                .unwrap()
+                .join(relative_path)
+                .to_str()
+                .unwrap()
+                .to_string()
             };
             let value = serde_json::from_str(std::fs::read_to_string(path).unwrap().as_str())
                 .unwrap_or_default();
@@ -493,9 +494,10 @@ pub async fn init_extension() {
 
     if let Some(xtension_arg) = ARGS_STRUCT.value_of("xtension") {
         let xtension_arg = Path::new(xtension_arg);
-        match xtension_arg.exists() && xtension_arg.is_file() {
-            true => install_extensions(read_to_serde_json(xtension_arg.to_path_buf())),
-            false => panic!("Extension file not found"),
+        if xtension_arg.exists() && xtension_arg.is_file() {
+            install_extensions(read_to_serde_json(xtension_arg.to_path_buf()))
+        } else {
+            panic!("Extension file not found")
         }
     }
 }
