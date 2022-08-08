@@ -253,16 +253,18 @@ async fn main() {
         .setup(|app| {
             let window = app.get_window("main").unwrap();
             let appearance = storage::read_data("appearance").unwrap();
-            let transparent_effect = match appearance.status {
-                true => appearance.data["transparentEffect"]
-                    .as_str()
-                    .unwrap_or("none")
-                    .to_string(),
-                false => "none".to_string(),
+            let transparent_effect = if appearance.status {
+                appearance.data["transparentEffect"]
+                .as_str()
+                .unwrap_or("none")
+                .to_string()
+            } else {
+                "none".to_string()
             };
-            let shadow_effect_enabled = match appearance.status {
-                true => appearance.data["shadowEffect"].as_bool().unwrap_or(true),
-                false => true,
+            let shadow_effect_enabled = if appearance.status {
+                appearance.data["shadowEffect"].as_bool().unwrap_or(true)
+            } else {
+                true
             };
             enable_shadow_effect(shadow_effect_enabled, window.clone());
             change_transparent_effect(transparent_effect, window);

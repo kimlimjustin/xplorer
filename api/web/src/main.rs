@@ -118,18 +118,21 @@ pub fn get_file_properties(file_path: String) -> Result<FileMetaData, String> {
     Err(e) => return Err(e.to_string()),
   };
   let basename = get_basename(file_path.clone());
-  let is_hidden = match is_symlink {
-    true => false,
-    false => check_is_hidden(file_path.clone()),
-  };
-  let is_system = match is_symlink {
-    true => false,
-    false => check_is_system_file(file_path.clone()),
-  };
-  let file_type = match is_symlink {
-    true => "System link".to_string(),
-    false => file_lib::get_type(basename.clone(), is_dir),
-  };
+  let is_hidden = if is_symlink {
+    false
+} else {
+    check_is_hidden(file_path.clone())
+};
+  let is_system = if is_symlink {
+    false
+} else {
+    check_is_system_file(file_path.clone())
+};
+  let file_type = if is_symlink {
+    "System link".to_string()
+} else {
+    file_lib::get_type(basename.clone(), is_dir)
+};
   Ok(FileMetaData {
     is_system,
     is_hidden,

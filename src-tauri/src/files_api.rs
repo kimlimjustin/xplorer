@@ -186,45 +186,47 @@ pub async fn get_file_properties(file_path: &str) -> Result<FileMetaData, String
     };
 
     let is_symlink = FileSystemUtils::check_is_symlink(file_path);
-    let is_hidden = match is_symlink {
-        true => false,
-        false => FileSystemUtils::check_is_hidden(file_path),
+    let is_hidden = if is_symlink {
+        false
+    } else {
+        FileSystemUtils::check_is_hidden(file_path)
     };
-    let is_system = match is_symlink {
-        true => false,
-        false => FileSystemUtils::check_is_system_file(file_path),
+    let is_system = if is_symlink {
+        false
+    } else {
+        FileSystemUtils::check_is_system_file(file_path)
     };
 
     let is_dir = metadata.is_dir();
     let basename = FileSystemUtils::get_basename(file_path);
-    let file_type = match is_symlink {
-        true => "System link".to_string(),
-        false => file_lib::get_type(&basename, is_dir).await,
+    let file_type = if is_symlink {
+        "System link".to_string()
+    } else {
+        file_lib::get_type(&basename, is_dir).await
     };
 
-    let size = match is_dir {
-        true => {
-            let preference = match storage::read_data("preference") {
-                Ok(result) => result,
-                Err(_) => return Err("Error reading preference".into()),
-            };
-            let preference = if preference.status || preference.data == serde_json::Value::Null {
-                preference.data
-            } else {
-                return Err("Error reading preference".into());
-            };
-            let calculate_sub_folder_size = match preference {
-                serde_json::Value::Null => false,
-                _ => preference["calculateSubFolderSize"].as_bool().unwrap_or(false),
-            };
-            if calculate_sub_folder_size {
-                calculate_files_total_size(vec![file_path.to_string()]).await
-            }
-            else{
-                0
-            }
-        },
-        false => metadata.len(),
+    let size = if is_dir {
+        let preference = match storage::read_data("preference") {
+            Ok(result) => result,
+            Err(_) => return Err("Error reading preference".into()),
+        };
+        let preference = if preference.status || preference.data == serde_json::Value::Null {
+            preference.data
+        } else {
+            return Err("Error reading preference".into());
+        };
+        let calculate_sub_folder_size = match preference {
+            serde_json::Value::Null => false,
+            _ => preference["calculateSubFolderSize"].as_bool().unwrap_or(false),
+        };
+        if calculate_sub_folder_size {
+            calculate_files_total_size(vec![file_path.to_string()]).await
+        }
+        else{
+            0
+        }
+    } else {
+        metadata.len()
     };
     Ok(FileMetaData {
         is_system,
@@ -327,9 +329,10 @@ pub async fn remove_file(path: String) -> bool {
 #[tauri::command]
 #[inline]
 pub fn is_dir(path: &Path) -> Result<bool, String> {
-    match Path::new(path).exists() {
-        true => Ok(fs::metadata(path).unwrap().is_dir()),
-        false => Ok(false),
+    if Path::new(path).exists() {
+        Ok(fs::metadata(path).unwrap().is_dir())
+    } else {
+        Ok(false)
     }
 }
 
@@ -667,25 +670,22 @@ pub fn restore_files(paths: Vec<String>, force: bool) -> Result<ReturnInformatio
             {
                 let target = Path::new(&x.original_parent).join(&x.name);
                 if target.exists() {
-                    match force {
-                        true => {
-                            let metadata = fs::metadata(target.clone()).unwrap();
-                            if metadata.is_dir() {
-                                fs::remove_dir_all(target).unwrap()
-                            } else {
-                                fs::remove_file(target).unwrap()
-                            };
+                    if force {
+                        let metadata = fs::metadata(target.clone()).unwrap();
+                        if metadata.is_dir() {
+                            fs::remove_dir_all(target).unwrap()
+                        } else {
+                            fs::remove_file(target).unwrap()
+                        };
 
-                            true
-                        }
-                        false => {
-                            status = false;
-                            message =
-                                "Target directory with the same name already exist.".to_string();
-                            request_confirmation = true;
+                        true
+                    } else {
+                        status = false;
+                        message =
+                            "Target directory with the same name already exist.".to_string();
+                        request_confirmation = true;
 
-                            false
-                        }
+                        false
                     }
                 } else {
                     fs::create_dir_all(x.original_parent.clone()).is_ok()
@@ -783,21 +783,20 @@ pub async fn extract_icon(file_path: &str) -> Result<String, String> {
     let basename = FileSystemUtils::get_basename(file_path);
     let icon_path = storage_dir.join(basename + ".png");
 
-    match icon_path.exists() {
-        true => Ok(icon_path.to_str().unwrap().to_string()),
-        false => {
-            Command::new("powershell")
-                .args(&[
-                    "./src/extractIcon.ps1",
-                    file_path,
-                    icon_path.to_str().unwrap(),
-                ])
-                .creation_flags(0x08000000)
-                .output()
-                .expect("Failed to extract icon");
+    if icon_path.exists() {
+        Ok(icon_path.to_str().unwrap().to_string())
+    } else {
+        Command::new("powershell")
+            .args(&[
+                "./src/extractIcon.ps1",
+                file_path,
+                icon_path.to_str().unwrap(),
+            ])
+            .creation_flags(0x08000000)
+            .output()
+            .expect("Failed to extract icon");
 
-            Ok(icon_path.to_str().unwrap().to_string())
-        }
+        Ok(icon_path.to_str().unwrap().to_string())
     }
 }
 
@@ -835,9 +834,10 @@ pub async fn search_in_dir(
     window: tauri::Window,
 ) -> Vec<FileMetaData> {
     let glob_pattern = match dir_path.as_ref() {
-        "xplorer://Home" => match cfg!(target_os = "windows") {
-            true => "C://**/".to_string() + &pattern,
-            false => "~/**/".to_string() + &pattern,
+        "xplorer://Home" => if cfg!(target_os = "windows") {
+            "C://**/".to_string() + &pattern
+        } else {
+            "~/**/".to_string() + &pattern
         },
         _ => format!("{dir_path}/**/{pattern}"),
     };
