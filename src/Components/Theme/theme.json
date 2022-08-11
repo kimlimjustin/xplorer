@@ -227,8 +227,7 @@
 		"grid.fileGrid.color": "#87c1ce",
 		"grid.--selectedGridBorder": "#1e88e5",
 		"grid.--selectedGridBackground": "#2893a0",
-		"grid.--selectedGridColor": "inherit",
-
+		"grid.--selectedGridColor": "#ffffff",
 		"preview.background": "#39496a",
 		"preview.color": "inherit",
 		"preview.previewExitBtn.background": "#3e537d",
