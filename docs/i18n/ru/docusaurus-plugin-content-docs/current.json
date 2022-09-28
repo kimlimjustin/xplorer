@@ -1,0 +1,18 @@
+{
+  "version.label": {
+    "message": "Далее",
+    "description": "The label for version current"
+  },
+  "sidebar.tutorialSidebar.category.Guides": {
+    "message": "Руководства",
+    "description": "The label for category Guides in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Extensions (Beta)": {
+    "message": "Расширения (Бета)",
+    "description": "The label for category Extensions (Beta) in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.Community": {
+    "message": "Сообщество",
+    "description": "The label for category Community in sidebar tutorialSidebar"
+  }
+}

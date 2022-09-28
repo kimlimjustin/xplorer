@@ -1,0 +1,26 @@
+{
+  "title": {
+    "message": "Xplorer",
+    "description": "The title in the navbar"
+  },
+  "item.label.Tutorial": {
+    "message": "Руководство",
+    "description": "Navbar item with label Tutorial"
+  },
+  "item.label.Blog": {
+    "message": "Блог",
+    "description": "Navbar item with label Blog"
+  },
+  "item.label.Discord": {
+    "message": "Дискорд",
+    "description": "Navbar item with label Discord"
+  },
+  "item.label.Sponsor us 💗": {
+    "message": "Спонсируйте нас💗",
+    "description": "Navbar item with label Sponsor us 💗"
+  },
+  "item.label.GitHub": {
+    "message": "GitHub",
+    "description": "Navbar item with label GitHub"
+  }
+}
