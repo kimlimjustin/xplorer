@@ -49,6 +49,9 @@ const Hover = (): void => {
 		}
 		hoveringElement = target;
 
+		let openFromPreviewElementListener: { (): void; (this: HTMLDivElement, ev: MouseEvent): any; (this: HTMLDivElement, ev: MouseEvent): any } =
+			null;
+
 		timeOut = window.setTimeout(async () => {
 			displayName = filenameGrid.innerHTML;
 			const path = decodeURI((await focusingPath()) === 'xplorer://Trash' ? target.dataset.realPath : target.dataset.path);
@@ -59,6 +62,11 @@ const Hover = (): void => {
 			if (IMAGE_TYPES.indexOf(getExtension(filenameGrid.innerHTML)) !== -1 && previewImageOnHover) {
 				hoverPreviewElement.innerHTML = `<img src="${new FileAPI(path).readAsset()}">`;
 				hoverPreviewElement.classList.add('hover-preview');
+				openFromPreviewElementListener = () => {
+					new FileAPI(path).openFile();
+					hoverPreviewElement.removeEventListener('click', openFromPreviewElementListener); //eslint-disable-line
+				};
+				hoverPreviewElement.addEventListener('click', openFromPreviewElementListener);
 				document.body.appendChild(hoverPreviewElement);
 
 				if (hoverPreviewElement.clientWidth > window.innerWidth) hoverPreviewElement.style.width = `${0.5 * window.innerWidth}px`;
