@@ -28,7 +28,7 @@ For current implementation, Xplorer write down what to cut locally (not copying 
 
 ## Delete files
 
-You can cut files by right-clicking it and click the `Delete` option or select the file then press `Del` as a shortcut.
+You can delete files by right-clicking it and click the `Delete` option or select the file then press `Del` as a shortcut.
 
 ### Trashed files
 

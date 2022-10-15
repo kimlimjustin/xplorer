@@ -27,7 +27,7 @@ Options:
 Install an extension from `xtension` file type. Command:
 
 ```bash
-xplorer extensions isntall <packaged xtension path/URL>
+xplorer extensions install <packaged xtension path/URL>
 ```
 
 #### Uninstall
