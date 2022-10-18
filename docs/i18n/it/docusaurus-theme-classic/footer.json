@@ -1,0 +1,26 @@
+{
+  "link.title.Docs": {
+    "message": "Documentazione",
+    "description": "The title of the footer links column with title=Docs in the footer"
+  },
+  "link.title.Community": {
+    "message": "Community",
+    "description": "The title of the footer links column with title=Community in the footer"
+  },
+  "link.item.label.Tutorial": {
+    "message": "Tutorial",
+    "description": "The label of footer link with label=Tutorial linking to /docs/intro"
+  },
+  "link.item.label.GitHub Discussions": {
+    "message": "Discussioni di GitHub",
+    "description": "The label of footer link with label=GitHub Discussions linking to https://github.com/kimlimjustin/xplorer/discussions"
+  },
+  "link.item.label.Discord": {
+    "message": "Discord",
+    "description": "The label of footer link with label=Discord linking to https://discord.gg/MHGtSWvfUS"
+  },
+  "copyright": {
+    "message": "Copyright © 2022 Justin Maximillian Kimlim e <a href=\"https://github.com/kimlimjustin/xplorer/graphs/contributors\" target=\"_blank\">contributors</a>. Sito costruito con <a href=\"https://docusaurus.io\" target=\"_blank\">Docusaurus</a>.",
+    "description": "The footer copyright"
+  }
+}
