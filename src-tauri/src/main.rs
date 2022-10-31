@@ -180,7 +180,7 @@ fn change_transparent_effect(effect: String, window: tauri::Window) {
 fn change_transparent_effect(effect: String, window: tauri::Window) {
     if effect.as_str() == "vibrancy" {
         use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
-        apply_vibrancy(&window, NSVisualEffectMaterial::AppearanceBased).unwrap()
+        apply_vibrancy(&window, NSVisualEffectMaterial::HudWindow, None, None).unwrap()
     }
 }
 

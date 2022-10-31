@@ -11,6 +11,7 @@
 		"withGlobalTauri": true
 	},
 	"tauri": {
+		"macOSPrivateApi": true,
 		"bundle": {
 			"active": true,
 			"targets": "all",
@@ -76,7 +77,6 @@
 				"minHeight": 300,
 				"resizable": true,
 				"fullscreen": false,
-				"decorations": false,
 				"transparent": true
 			}
 		],
