@@ -22,7 +22,11 @@ module.exports = {
 		supabaseKey: process.env.SUPABASE_KEY,
 	},
 	themeConfig: {
-		hideableSidebar: true,
+		docs: {
+			sidebar: {
+				hideable: true,
+			},
+		},
 		announcementBar: {
 			id: 'support_us',
 			content: 'Xplorer is still under heavy development, any features might change anytime.',
