@@ -146,6 +146,10 @@ Turning this on will detect drive change and update the sidebar and drives secti
 
 Enabling this will automatically change the preview file with the current selected file.
 
+### Calculate sub folder size
+
+Enabling this option will automatically help you to calculate the size of sub folders recursively and show it on detail view.
+
 ### Single/Double Click to open a file
 
 Enabling this will make Xplorer to open a file with double click. Otherwise, it will open a file with single click.

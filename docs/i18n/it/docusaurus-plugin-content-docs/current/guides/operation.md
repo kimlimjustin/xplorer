@@ -28,7 +28,7 @@ Per l'implementazione attuale, Xplorer scrive cosa tagliare localmente (senza co
 
 ## Eliminazione di file
 
-You can delete files by right-clicking it and click the `Delete` option or select the file then press `Del` as a shortcut.
+È possibile eliminare i file facendo clic con il tasto destro del mouse e fare clic sull'opzione `Elimina` o selezionare il file e poi premere `Canc` come scorciatoia.
 
 ### File nel cestino
 
@@ -67,7 +67,7 @@ Xplorer utilizza [`glob patterns`](https://en.wikipedia.org/wiki/Glob_(programmi
 
 ## Novità
 
-:::attenzione Fai attenzione con il nome del nuovo file/cartella Xplorer tratta `/` nel nome del file/cartella come sotto-cartella/sotto-file :::
+:::caution Fai attenzione con il nome del nuovo file/cartella Xplorer tratta `/` nel nome del file/cartella come sotto-cartella/sotto-file :::
 
 ### Nuovo file
 
