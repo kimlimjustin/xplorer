@@ -25,7 +25,7 @@ for i in range(number_of_files):
         file_path = os.path.join(directory, file_name)
         with open(file_path, 'w') as f:
             f.write('\n' * file_size)
-    except Exception as e:
+    except Exception:
         file_name = ''.join(random.choice('abcdefghijklmnopqrstuvwxyz') for _ in range(10))
         file_path = os.path.join(directory, file_name)
         file_size = random.randint(1, 10000)
