@@ -1,6 +1,6 @@
 # Imposta Come File Explorer Predefinito (Windows)
 
-:::cautela Questa guida comporta la modifica del registro di sistema di Windows, assicurarsi di creare un backup in anticipo per recuperare se si ha qualche problema con Xplorer. Si prega di tenere a mente che questo metodo potrebbe non funzionare per tutti.
+:::caution Questa guida comporta la modifica del registro di sistema di Windows, assicurarsi di creare un backup in anticipo per recuperare se si ha qualche problema con Xplorer. Si prega di tenere a mente che questo metodo potrebbe non funzionare per tutti.
 
 > Clicca [qui](https://support.microsoft.com/en-us/topic/how-to-back-up-and-restore-the-registry-in-windows-855140ad-e318-2a13-2829-d428a2ab0692) per la documentazione ufficiale di Microsoft su come eseguire il backup e ripristinare il Registro di sistema
 

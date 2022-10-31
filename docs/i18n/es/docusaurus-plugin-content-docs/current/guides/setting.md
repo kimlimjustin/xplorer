@@ -75,7 +75,10 @@ Vista previa del archivo aquí puede significar la miniatura del archivo.
 
 #### Reproducir automáticamente el archivo de vídeo como miniatura
 
-Esto reproducirá automáticamente el archivo de vídeo como vista previa. :::Adveretencia ESTE MIGHT CONSUME ALTO USO DE RAM Esto puede consumir una gran cantidad de RAM porque está construido sobre el reproductor de vídeo HTML. Puedes activar esta opción e ignorar esta precaución si tienes un buen equipo. :::
+Esto reproducirá automáticamente el archivo de vídeo como vista previa. :::Adveretencia ESTE MIGHT CONSUME ALTO USO DE RAM
+Esto puede consumir una gran cantidad de RAM porque está construido sobre el reproductor de vídeo HTML.
+Puedes activar esta opción e ignorar esta precaución si tienes un buen equipo.
+:::
 
 #### Vista previa de la imagen al pasar el ratón
 
@@ -143,13 +146,17 @@ Activar esto detectará cambios en la unidad y actualizará la sección de barra
 
 Habilitar esto cambiará automáticamente el archivo de vista previa con el archivo seleccionado actual.
 
-### Clic simple o doble para abrir un archivo
+### Calculate sub folder size
 
-Habilitar esto hará que Xplorer abra un archivo con doble clic. De lo contrario, se abrirá un archivo con un solo clic.
+Enabling this option will automatically help you to calculate the size of sub folders recursively and show it on detail view.
 
-### Al iniciar
+### Single/Double Click to open a file
 
-Opción a hacer al iniciar Xplorer. Opciones disponibles:
+Enabling this will make Xplorer to open a file with double click. Otherwise, it will open a file with single click.
+
+### On startup
+
+Option to do on starting Xplorer. Available options are:
 
 -   Nueva pestaña
 -   Restaurar sesión anterior

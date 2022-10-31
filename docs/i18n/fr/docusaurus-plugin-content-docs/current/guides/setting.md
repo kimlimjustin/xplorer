@@ -75,7 +75,10 @@ File Preview here might means the file thumbnail.
 
 #### Automatically play video file as thumbnail
 
-This will automatically play the video file as a preview. :::caution THIS MIGHT CONSUME HIGH AMOUNT OF RAM This might consume a high amount of RAM because it's built on the HTML video player. You can just enable this setting and ignore this caution if you got a good-spec computer. :::
+This will automatically play the video file as a preview. :::caution THIS MIGHT CONSUME HIGH AMOUNT OF RAM
+This might consume a high amount of RAM because it's built on the HTML video player.
+You can just enable this setting and ignore this caution if you got a good-spec computer.
+:::
 
 #### Preview image on hover
 
@@ -142,6 +145,10 @@ Turning this on will detect drive change and update the sidebar and drives secti
 ### Automatically change preview file with selected file
 
 Enabling this will automatically change the preview file with the current selected file.
+
+### Calculate sub folder size
+
+Enabling this option will automatically help you to calculate the size of sub folders recursively and show it on detail view.
 
 ### Single/Double Click to open a file
 
