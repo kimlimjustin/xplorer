@@ -12,7 +12,7 @@ import focusingPath from '../../Functions/focusingPath';
 import FileAPI from '../../../Service/files';
 const MultipleSelectedMenu = async (_: HTMLElement, _filePath: string): Promise<contextMenuItem[][]> => {
 	const _focusingPath = await focusingPath();
-	const selectedFiles = await getSelected();
+	const selectedFiles = getSelected();
 	const SELECTED_FILES_ARE_FILES = Array.from(selectedFiles).every((file) => file.dataset.isdir !== 'true');
 	return [
 		[
