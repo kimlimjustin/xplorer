@@ -35,7 +35,7 @@ Usiamo la [Sezione Discussioni di GitHub](https://github.com/kimlimjustin/xplore
 
 Puoi chiedere aiuto usando la [Sezione Discussioni](https://github.com/kimlimjustin/xplorer/discussions) o il [Canale Discord](https://discord.gg/kK7rwxPt).
 
-:::n.b.
+:::note
 Ricordati di scegliere la categoria di discussione come Q&A in modo che la tua domanda venga pubblicata con le risposte abilitate.
 :::
 

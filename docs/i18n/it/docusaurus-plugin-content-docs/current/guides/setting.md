@@ -75,7 +75,7 @@ Anteprima del file qui potrebbe significare la miniatura del file.
 
 #### Riproduci automaticamente il file video come miniatura
 
-Questo riprodurrà automaticamente il file video come un'anteprima. :::cautela QUESTO POTREBBE COBNSUMARE UNA GRANDE QUANTITÀ DI RAM
+Questo riprodurrà automaticamente il file video come un'anteprima. :::caution QUESTO POTREBBE COBNSUMARE UNA GRANDE QUANTITÀ DI RAM
 Questo potrebbe consumare una grande quantità di RAM perché è basato sul lettore video HTML.
 È possibile abilitare questa impostazione e ignorare questa cautela se si dispone di un computer di ottime prestazioni.
 :::
@@ -132,7 +132,7 @@ Nascondi i file nascosti su Xplorer, puoi trovare questa impostazione nella sche
 
 ### Nascondi File Di Sistema
 
-Nascondi i file di sistema di Windows su Xplorer. :::consiglio Scopri cosa è il file di sistema [in questa pagina wikipedia](https://en.wikipedia.org/wiki/System_file). Basta disabilitaro se non si capisce cosa è. :::
+Nascondi i file di sistema di Windows su Xplorer. :::tip Scopri cosa è il file di sistema [in questa pagina wikipedia](https://en.wikipedia.org/wiki/System_file). Basta disabilitaro se non si capisce cosa è. :::
 
 ### Elenca e ordina le directory insieme ai file
 
@@ -146,17 +146,17 @@ Attivando questa opzione verrà rilevato ogni cambiamento di unità e si aggiorn
 
 Abilitando questo cambierà automaticamente il file di anteprima con il file attualmente selezionato.
 
-### Calculate sub folder size
+### Calcola la dimensione della sottocartella
 
-Enabling this option will automatically help you to calculate the size of sub folders recursively and show it on detail view.
+Abilitare questa opzione ti aiuterà automaticamente a calcolare la dimensione delle sottocartelle ricorsivamente e mostrarla in vista dettagliata.
 
-### Single/Double Click to open a file
+### Clic singolo/doppio per aprire un file
 
-Enabling this will make Xplorer to open a file with double click. Otherwise, it will open a file with single click.
+Abilitando questa opzione Xplorer aprirà un file con doppio clic. Altrimenti, aprirà un file con un singolo clic.
 
-### On startup
+### All'avvio
 
-Option to do on starting Xplorer. Available options are:
+Opzioni disponibili all'avvio di Xplorer. Le opzioni disponibili sono:
 
 -   Nuova scheda
 -   Riprendi la sessione precedente

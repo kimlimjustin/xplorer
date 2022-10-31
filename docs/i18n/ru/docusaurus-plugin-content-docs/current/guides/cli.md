@@ -27,7 +27,7 @@ Xplorer откроет `папка`, `папка2`, `папка3` как вкл�
 Установить расширение из `xtension` файла. Команда:
 
 ```bash
-xplorer extensions isntall <packaged xtension path/URL>
+xplorer extensions install <packaged xtension path/URL>
 ```
 
 #### Удалить
