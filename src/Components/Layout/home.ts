@@ -29,7 +29,7 @@ const Home = async (): Promise<void> => {
 	MAIN_ELEMENT.innerHTML = favorites + drives;
 	if (platform !== 'win32') {
 		if (!favoritesData?.HOMEDIR_PATH) {
-			favoritesData = await new FavoritesAPI();
+			favoritesData = new FavoritesAPI();
 			await favoritesData.build();
 		}
 		const directoryInfo = new DirectoryAPI(favoritesData.HOMEDIR_PATH);
