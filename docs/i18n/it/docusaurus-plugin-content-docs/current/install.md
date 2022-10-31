@@ -32,7 +32,7 @@ sudo apt install /path/to/deb/file.deb
 
 ### Distribuzioni basate su Arch Linux
 
-> Use your favorite [aur helper](https://wiki.archlinux.org/title/AUR_helpers).
+> Utilizza il tuo [aur helper](https://wiki.archlinux.org/title/AUR_helpers) preferito.
 
 ```bash
 yay -S xplorer-bin

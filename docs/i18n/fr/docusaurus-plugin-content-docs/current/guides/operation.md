@@ -28,7 +28,7 @@ Pour l'implémentation courante, Xplorer écrit ce qu'il faut couper localement 
 
 ## Supprimer les fichiers
 
-Vous pouvez couper des fichiers en faisant un clic droit dessus et cliquez sur l'option `Supprimer` ou sélectionnez le fichier puis appuyez sur `Supprimez` comme raccourci.
+You can delete files by right-clicking it and click the `Delete` option or select the file then press `Del` as a shortcut.
 
 ### Fichiers mis à la corbeille
 

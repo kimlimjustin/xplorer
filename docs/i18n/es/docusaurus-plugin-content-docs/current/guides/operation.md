@@ -28,7 +28,7 @@ Para la implementación actual, Xplorer escribe lo qué se debe cortar localment
 
 ## Borrar archivos
 
-Puede eliminar archivos haciendo clic derecho en él y hacer clic en la opción `Eliminar` o seleccionar el archivo y luego presione `Del` como acceso directo.
+You can delete files by right-clicking it and click the `Delete` option or select the file then press `Del` as a shortcut.
 
 ### Archivos eliminados
 

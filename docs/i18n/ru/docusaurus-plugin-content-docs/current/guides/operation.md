@@ -28,7 +28,7 @@ For current implementation, Xplorer write down what to cut locally (not copying 
 
 ## Удаление файлов
 
-Вы можете удалять файлы нажав ПКМ и нажав на кнопку `Удалить` или выбрать и нажать `Del` на клавиатуре.
+You can delete files by right-clicking it and click the `Delete` option or select the file then press `Del` as a shortcut.
 
 ### Корзина
 
