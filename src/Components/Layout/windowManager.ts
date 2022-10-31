@@ -71,7 +71,7 @@ const windowManager = async (): Promise<void> => {
 	if (appearance?.frameStyle === 'os' || !isTauri) {
 		document.querySelector('.window-manager').parentNode.removeChild(document.querySelector('.window-manager'));
 	}
-	setDecorations(appearance?.frameStyle === 'os');
+	setDecorations(appearance?.frameStyle !== 'default');
 	// Minimize the screen
 	document.querySelector('#minimize')?.addEventListener('click', minimize);
 	document.querySelector('#minimize')?.setAttribute('title', await Translate('Minimize'));
