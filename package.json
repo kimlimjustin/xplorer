@@ -55,7 +55,7 @@
 	"license": "Apache-2.0",
 	"devDependencies": {
 		"@crowdin/cli": "^3.6.5",
-		"@tauri-apps/cli": "1.1.0",
+		"@tauri-apps/cli": "^1.1.1",
 		"@types/jest": "^27.0.2",
 		"@types/marked": "^4.0.1",
 		"@typescript-eslint/eslint-plugin": "^5.4.0",
@@ -84,7 +84,7 @@
 		"webpack-cli": "^4.9.0"
 	},
 	"dependencies": {
-		"@tauri-apps/api": "1.1.0",
+		"@tauri-apps/api": "^1.1.0",
 		"highlight.js": "^11.2.0",
 		"mammoth": "^1.4.18",
 		"marked": "^4.0.15",
