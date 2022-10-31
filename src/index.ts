@@ -35,7 +35,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 		for (let i = 1; i < cli.dirs.length; i++) {
 			createNewTab(cli.dirs[i]);
 		}
-
 		// Initialize Tabs
 		Tab(cli.is_reveal);
 	}
@@ -45,7 +44,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 	detectDriveInit();
 	// Build sidebar
 	createSidebar();
-
 	// Update the page styling
 	if (cli.custom_style_sheet) {
 		updateTheme('root', cli.custom_style_sheet);
