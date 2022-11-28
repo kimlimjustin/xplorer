@@ -6,9 +6,43 @@ import formatBytes from '../../Functions/filesize';
 import Preview from '../File Preview/preview';
 import { ensureElementInViewPort } from '../../Functions/viewport';
 import { MAIN_BOX_ELEMENT } from '../../../Util/constants';
+import { direction } from '../../../Typings/select';
 
 let latestSelected: HTMLElement;
 let latestShiftSelected: HTMLElement;
+
+//Mouse drag selection vars
+class Point {
+	private _x: number;
+    private _y: number;
+
+    constructor(x = 0, y = 0) {
+        this._x = x;
+        this._y = y;
+    }
+
+    public get x(): number { return this._x; }
+    public get y(): number { return this._y; }
+
+    public set x(newX: number) { this._x = newX; }
+    public set y(newY: number) { this._y = newY; }
+
+    public Set(x: number, y: number) {
+        this.x = x;
+        this.y = y;
+    }
+
+	public delta(target: Point) {
+		return new Point(this.x - target.x, this.y - target.y);
+	}
+}
+let selectingDiv: HTMLElement = document.createElement('div');
+selectingDiv.setAttribute('style', 'position: absolute; background-color: rgba(100, 100, 255, 0.2); z-index: 100;');
+let isSelecting: boolean = false;
+let selectingOrigin: Point;
+let mainBoxBounds: DOMRect;
+let selected = 0;
+const selectingDivBounds = { left: 0, top: 0, right: 0, bottom: 0, height: 0, width: 0 };
 
 /**
  * Call this function whenever user selected (a) file grid(s).
@@ -93,11 +127,18 @@ const elementIndex = (element: HTMLElement): number => {
  * @returns {void}
  */
 const SelectInit = (): void => {
-	MAIN_BOX_ELEMENT().addEventListener('click', (e) => {
+	//Saving the main box element in a variable, better than calling MAIN_BOX_ELEMENT() everytime
+	const MAIN_BOX_EL: HTMLElement = MAIN_BOX_ELEMENT();
+	mainBoxBounds = MAIN_BOX_EL.getBoundingClientRect();
+
+	MAIN_BOX_EL.addEventListener('click', (e) => {
 		if (
 			!(e.target as HTMLElement).className.split(' ').some(function (c) {
 				return /file/.test(c);
-			})
+			}) &&
+			//If user doesn't drag the mouse
+			(e.pageX - mainBoxBounds.left == selectingOrigin.x &&
+				e.pageY - mainBoxBounds.top == selectingOrigin.y)
 		) {
 			unselectAllSelected();
 			latestSelected = null;
@@ -108,6 +149,120 @@ const SelectInit = (): void => {
 		if (fileTarget.id === 'workspace' || !fileTarget?.classList?.contains('file')) return;
 
 		Select(fileTarget, e.ctrlKey, e.shiftKey);
+	});
+
+	MAIN_BOX_EL.addEventListener('mousedown', (e) => {
+		/// SelectInit is called async, therefore bounds come before full element calculation.
+		/// Here is to avoid wrong div placement, but we can find a better way without calling getBoundingClientRect each mousedown
+		mainBoxBounds = MAIN_BOX_EL.getBoundingClientRect();
+		//Start selection
+		isSelecting = true;
+		//Save selection starting point
+		selectingOrigin = new Point(e.pageX - mainBoxBounds.left, e.pageY - mainBoxBounds.top);
+		if (
+			!(e.target as HTMLElement).className.split(' ').some(function (c) {
+				return /file/.test(c);
+			})
+		) {
+			MAIN_BOX_EL.prepend(selectingDiv);
+			selectingDiv.style.inset = selectingOrigin.y + 'px auto ' + selectingOrigin.x + 'px auto';
+			selectingDiv.style.width = selectingDiv.style.height = 'auto';
+		}
+	});
+
+	//Check when mouse is released. On window to catch events outside of main box
+	window.addEventListener('mouseup', (e) => {
+		if(isSelecting) {
+			isSelecting = false;
+
+			selectingDiv.style.inset = selectingDiv.style.width = selectingDiv.style.height = 'auto';
+
+			selectingDiv.remove();
+		}
+	});
+
+	//Calculates selection div size and position + which files are selected
+	MAIN_BOX_EL.addEventListener('mousemove', async(e) => {
+		const POSITION = new Point(e.pageX - mainBoxBounds.left, e.pageY - mainBoxBounds.top);
+		if(isSelecting) {
+			const DIRECTION = await getSelectingDivDirection(selectingOrigin, POSITION);
+			let top, right, bottom, left,
+				height = Math.abs(selectingOrigin.y - POSITION.y),
+				width = Math.abs(selectingOrigin.x - POSITION.x);
+			
+			switch(DIRECTION.y) {
+				case 0:
+					top = selectingOrigin.y;
+					bottom = mainBoxBounds.height - selectingOrigin.y;
+					break;
+				case -1:
+					bottom = mainBoxBounds.height - selectingOrigin.y;
+					top = 'auto';
+					break;
+				case 1:
+					bottom = 'auto';
+					top = selectingOrigin.y;
+					break;
+			}
+			
+			switch(DIRECTION.x) {
+				case 0:
+					left = selectingOrigin.x;
+					right = mainBoxBounds.width - selectingOrigin.x;
+					break;
+				case -1:
+					left = 'auto';
+					right = mainBoxBounds.width - selectingOrigin.x;
+					break;
+				case 1:
+					left = selectingOrigin.x;
+					right = 'auto';
+					break;
+			}
+
+			//Updating selecting div bounds manually so we don't call getBoundingClientRect each mousemove
+			selectingDivBounds.bottom = bottom == 'auto' ? mainBoxBounds.height - (top as number) - height : bottom as number;
+			selectingDivBounds.top = top == 'auto' ? mainBoxBounds.height - (bottom as number) - height : top as number;
+			selectingDivBounds.left = left == 'auto' ? mainBoxBounds.width - (right as number) - width : left as number;
+			selectingDivBounds.right = right == 'auto' ? mainBoxBounds.width - (left as number) - width : right as number;
+			selectingDivBounds.width = width;
+			selectingDivBounds.height = height;
+
+			selectingDiv.style.inset = top + (top == 'auto' ? ' ' : 'px ') + right + (right == 'auto' ? ' ' : 'px ')  + 
+				bottom + (bottom == 'auto' ? ' ' : 'px ')  + left + (left == 'auto' ? ' ' : 'px ');
+			selectingDiv.style.height = height + 'px';
+			selectingDiv.style.width = width + 'px';
+
+			const FILES = MAIN_BOX_EL.getElementsByClassName('file');
+			
+			for(let x = 0; x < FILES.length; x++) {
+				const CURRENT = FILES[x] as HTMLElement;
+				//This should be fine since this function is async
+				const BOUNDS = CURRENT.getBoundingClientRect();
+
+				//If overlaps
+				if(!(BOUNDS.right - mainBoxBounds.left < selectingDivBounds.left ||
+					BOUNDS.left - mainBoxBounds.left > mainBoxBounds.width - selectingDivBounds.right ||
+					BOUNDS.bottom - mainBoxBounds.top < selectingDivBounds.top ||
+					BOUNDS.top - mainBoxBounds.top > mainBoxBounds.height - selectingDivBounds.bottom) &&
+					isSelecting) 
+				{
+					if(!CURRENT.classList.contains('selected')) CURRENT.classList.add('selected');
+					selected++;
+				} else {
+					if(CURRENT.classList.contains('selected')) {
+						CURRENT.classList.remove('selected');
+						selected--;
+					}
+				}
+			}
+			if(selected == 0) unselectAllSelected();
+		}
+	});
+
+	//Updates main box bounds on resize
+	MAIN_BOX_EL.addEventListener('resize', (e) => {
+		mainBoxBounds = MAIN_BOX_EL.getBoundingClientRect();
 	});
 
 	const selectShortcut = async (e: KeyboardEvent) => {
@@ -136,6 +291,19 @@ const SelectInit = (): void => {
 	};
 	document.addEventListener('keydown', selectShortcut);
 };
+
+/**
+ * 
+ * @param origin - mouse drag selection origin point
+ * @param last - last mouse position
+ * @returns {Promise<direction>} - direction based on coord deltas, x and y can be either -1, 0 or 1 indicating the direction relative to point 0,0
+ */
+const getSelectingDivDirection = async(origin: Point, last: Point): Promise<direction> => {
+	const delta = origin.delta(last);
+
+	return { x: delta.x == 0 ? 0 : delta.x > 0 ? -1 : 1,
+			y: delta.y == 0 ? 0 : delta.y > 0 ? -1 : 1 };
+}
 /**
  * Unselect all selected file grids.
  * @returns {void}
