@@ -3,102 +3,13 @@
 	<head>
 		<meta charset="UTF-8" />
 		<title>Xplorer</title>
-		<link rel="stylesheet" href="Public/style.css" />
 		<link rel="shortcut icon" href="Public/favicon.ico" type="image/x-icon" />
 		<meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-eval' 'unsafe-inline';" />
 		<script src="./index.js"></script>
 	</head>
 
 	<body>
-		<div class="container">
-			<div class="sidebar">
-				<div id="xplorer-brand">
-					<span>Xplorer</span>
-					<img alt="Xplorer" src="Icon/extension/xplorer.svg" />
-				</div>
-
-				<div id="sidebar-nav">
-					<div id="sidebar-favorites" data-section="favorites">
-						<div class="sidebar-nav-toggle sidebar-hover-effect">
-							<img src="Icon/folder/sidebar-favorite.svg" />
-							<span class="sidebar-text"></span>
-							<span class="sidebar-nav-toggle-arrow"></span>
-						</div>
-						<div class="sidebar-nav-list"></div>
-					</div>
-
-					<div id="sidebar-drives" data-section="drives">
-						<div class="sidebar-nav-toggle sidebar-hover-effect">
-							<img src="Icon/hard-disk.svg" />
-							<span class="sidebar-text"></span>
-							<span class="sidebar-nav-toggle-arrow"></span>
-						</div>
-						<div class="sidebar-nav-list"></div>
-					</div>
-				</div>
-
-				<div id="sidebar-setting-btn" class="sidebar-hover-effect">
-					<div class="sidebar-icon">
-						<img src="Icon/folder/sidebar-setting.svg" />
-					</div>
-					<span class="sidebar-text">Settings</span>
-				</div>
-			</div>
-
-			<div class="main">
-				<div class="topbar" data-tauri-drag-region>
-					<div class="row">
-						<div class="tabs-manager">
-							<div class="tab tab-hover-effect" id="tab1">
-								<span id="tab-position">Home</span>
-							</div>
-							<span class="create-new-tab"> &plus; </span>
-						</div>
-						<div class="window-manager">
-							<span id="minimize" title="Minimize"></span>
-							<span id="maximize" title="Maximize"></span>
-							<span id="exit" title="Exit (Ctrl + w)"></span>
-						</div>
-					</div>
-					<div class="row">
-						<div class="navigator">
-							<span id="go-back" title="Go Back (Alt + Left Arrow)">&larr;</span>
-							<span id="go-forward" title="Go Forward (Alt + Right Arrow)">&rarr;</span>
-							<span id="go-parent-dir" title="Parent Directory (Alt + Up Arrow)">&uarr;</span>
-							<span id="refresh" title="Reload (f5)">&#10227;</span>
-						</div>
-						<input class="path-navigator" type="text" value="xplorer://Home" spellcheck="false" />
-						<input class="search-bar" type="text" value="" spellcheck="false" placeholder="🔎 Search" />
-					</div>
-				</div>
-				<div class="loading-bar" data-loading="false">
-					<span class="loader"></span>
-				</div>
-				<div class="main-box">
-					<div class="workspace" id="workspace-1">
-						<div class="workspace-tab workspace-tab-active" id="tab-1-1" data-path="xplorer://Home"></div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="settings">
-			<div class="settings-sidebar">
-				<div class="settings-sidebar-header exit-setting-btn sidebar-hover-effect">
-					<span class="exit-setting-icon">←</span>
-					<span class="settings-sidebar-heading">Settings</span>
-				</div>
-				<div class="settings-sidebar-items"></div>
-			</div>
-			<div class="settings-main"></div>
-		</div>
-		<div class="contextmenu"></div>
-		<div id="contextmenu-submenus"></div>
-		<div class="properties">
-			<div class="properties-heading">
-				<span class="properties-heading-title"> Properties </span>
-				<span class="properties-heading-exit">&times;</span>
-			</div>
-			<div class="properties-body"></div>
+		<div id="root">
 		</div>
 	</body>
 </html>

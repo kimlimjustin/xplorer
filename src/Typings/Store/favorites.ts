@@ -1,27 +1,27 @@
 import { AppActionBase } from "./actions";
 
 // * Allows for iteration over objects of type IFavorites, IFavoritesReducerState
-interface IFavoritesBase { [k: string]: string }
+interface IFavoritesBase {
+    [k: string]: string;
+}
 
 export interface IFavorites extends IFavoritesBase {
-  DOCUMENT_PATH: string,
-  DOWNLOAD_PATH: string,
-  DESKTOP_PATH: string,
-  PICTURE_PATH: string,
-  MUSIC_PATH: string,
-  VIDEO_PATH: string,
-  HOMEDIR_PATH: string
+    Documents: string;
+    Downloads: string;
+    Desktop: string;
+    Pictures: string;
+    Music: string;
+    Videos: string;
+    Home: string;
 }
 
-export interface IFavoritesReducerState extends IFavorites {
+export interface IFavoritesReducerState extends IFavorites {}
 
-}
+export const FETCH_FAVORITES = "FETCH_FAVORITES";
 
-export const FETCH_FAVORITES = 'FETCH_FAVORITES';
-
-export type FetchFavoritesRequest = AppActionBase<typeof FETCH_FAVORITES, 'REQUEST'> & {};
-export type FetchFavoritesSuccess = AppActionBase<typeof FETCH_FAVORITES, 'SUCCESS'> & { favorites: IFavorites };
-export type FetchFavoritesFailure = AppActionBase<typeof FETCH_FAVORITES, 'FAILURE'> & { message: string };
+export type FetchFavoritesRequest = AppActionBase<typeof FETCH_FAVORITES, "REQUEST"> & {};
+export type FetchFavoritesSuccess = AppActionBase<typeof FETCH_FAVORITES, "SUCCESS"> & { favorites: IFavorites };
+export type FetchFavoritesFailure = AppActionBase<typeof FETCH_FAVORITES, "FAILURE"> & { message: string };
 
 export type FavoritesActions = FetchFavoritesRequest | FetchFavoritesSuccess | FetchFavoritesFailure;
 

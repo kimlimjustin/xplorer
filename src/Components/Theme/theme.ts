@@ -207,33 +207,6 @@ const getInstalledThemes = async (): Promise<CustomTheme[]> => {
 	}
 	return themes;
 };
-
-/**
- * Get all installed themes
- * @returns {Promise<CustomTheme[]>}
- */
-const getInstalledThemes = async (): Promise<CustomTheme[]> => {
-	const extensions = await Storage.get('extensions');
-	const themes: CustomTheme[] = [];
-	if (!extensions?.themes) return themes;
-	for (const extension of extensions.themes) {
-		for (const theme of extension.themes) {
-			themes.push({
-				name: theme.name,
-				identifier: extension.identifier + '@' + theme.identifier,
-				author: extension.author,
-				version: extension.version,
-				description: extension.description,
-				homepage: extension.homepage,
-				repository: extension.repository,
-				license: extension.license,
-				theme: theme.value,
-			});
-		}
-	}
-	return themes;
-};
-
 /**
  * Update the entire page theme
  * @returns {Promise<void>}

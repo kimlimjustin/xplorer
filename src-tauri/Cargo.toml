@@ -12,11 +12,11 @@ build = "src/build.rs"
 tauri-build = { version="1.0.0", features = [] }
 
 [dependencies]
-sysinfo = "0.23"
+sysinfo = "0.28"
 serde_json = "1"
 serde = { version = "^1.0", features = ["derive"] }
 tauri = { version="1.1.1", features = ["api-all", "macos-private-api", "updater"] }
-tauri-plugin-window-state = { git = "https://github.com/tauri-apps/tauri-plugin-window-state" }
+tauri-plugin-window-state = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 open = "2"
 path-absolutize = "3"
 trash = "2"

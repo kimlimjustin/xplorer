@@ -8,24 +8,27 @@ import * as DrivesService from "../../Services/DrivesService";
 import { IDrive } from "../../Typings/Store/drive";
 
 function* fetchDrivesWorker(/* action: FetchDrivesRequest */) {
-  try {
-    const os: string = yield select(state => state.platform.os);
+    try {
+        let os: string = yield select((state) => state.platform.os);
+        if (!os) {
+            yield put(getOSRequest());
+        }
 
-    if (!os) { yield put(getOSRequest()); }
+        // WAIT FOR OS RESOLVE
+        while (!os) {
+            yield new Promise((resolve) => setTimeout(resolve, 100));
+            os = yield select((state) => state.platform.os);
+        }
 
-    // TODO WAIT FOR OS RESOLVE
-
-    const drives: IDrive[] = yield call(DrivesService.fetchDrives, os);
-    yield put(fetchDrivesSuccess(drives));
-  } catch (error) {
-    yield put(fetchDrivesFailure(error.message));
-  }
+        const drives: IDrive[] = yield call(DrivesService.fetchDrives, os);
+        yield put(fetchDrivesSuccess(drives));
+    } catch (error) {
+        yield put(fetchDrivesFailure(error.message));
+    }
 }
 
 function* drivesSaga() {
-  yield all([
-    takeLatest(selectStatus('FETCH_DRIVES'), fetchDrivesWorker)
-  ]);
+    yield all([takeLatest(selectStatus("FETCH_DRIVES"), fetchDrivesWorker)]);
 }
 
 export default drivesSaga;

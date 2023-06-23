@@ -14,76 +14,80 @@
 // import Infobar from './Components/Layout/infobar';
 // import Search from './Components/Files/File Operation/search';
 
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
+import React from "react";
+import ReactDOM from "react-dom";
+import { Provider } from "react-redux";
 
-import App from './App';
-import store from './Store';
+import App from "./App";
+import store from "./Store";
 
-import { fetchFavoritesRequest } from './Store/ActionCreators/FavoritesActionCreators';
-
-store.dispatch(fetchFavoritesRequest());
+import { fetchFavoritesRequest } from "./Store/ActionCreators/FavoritesActionCreators";
+import { fetchDrivesRequest } from "./Store/ActionCreators/DriveActionCreators";
+import { getOSRequest } from "./Store/ActionCreators/PlatformActionCreators";
 
 // Wait DOM Loaded to be loaded
-document.addEventListener('DOMContentLoaded', async () => {
-	ReactDOM.render(
-		<Provider store={store}>
-			<App />
-		</Provider>,
-		document.getElementById("main")
-	);
+document.addEventListener("DOMContentLoaded", async () => {
+    store.dispatch(getOSRequest());
+    store.dispatch(fetchFavoritesRequest());
+    store.dispatch(fetchDrivesRequest());
 
-	// // Read user preferences
-	// const _preference = await Storage.get('preference');
-	// // Listen to minimize, maximize, exit and reload button
-	// windowManager();
-	// // Initialize drive detection
-	// detectDriveInit();
-	// // Build sidebar
-	// createSidebar();
-	// // Initialize folder to open
-	// const cli = await CLIInformations();
-	// if (!cli.args.length) {
-	// 	if ((_preference.on_startup ?? 'new') === 'new') {
-	// 		Home();
-	// 	}
-	// 	// Initialize Tabs
+    ReactDOM.render(
+        <Provider store={store}>
+            <App />
+        </Provider>,
+        document.getElementById("root")
+    );
 
-	// 	Tab();
-	// } else {
-	// 	let reveal = false;
-	// 	if (cli.flags.indexOf('--reveal') !== -1 || cli.flags.indexOf('-r') !== -1) {
-	// 		reveal = true;
-	// 	}
-	// 	OpenDir(cli.args[0], reveal);
-	// 	for (let i = 1; i < cli.args.length; i++) {
-	// 		createNewTab(cli.args[i]);
-	// 	}
+    // // Read user preferences
+    // const _preference = await Storage.get('preference');
+    // // Listen to minimize, maximize, exit and reload button
+    // windowManager();
+    // // Initialize drive detection
+    // detectDriveInit();
+    // // Build sidebar
+    // createSidebar();
+    // // Initialize folder to open
+    // const cli = await CLIInformations();
+    // if (!cli.args.length) {
+    // 	if ((_preference.on_startup ?? 'new') === 'new') {
+    // 		Home();
+    // 	}
+    // 	// Initialize Tabs
 
-	// 	// Initialize Tabs
-	// 	Tab(reveal);
-	// }
-	// // Update the page styling
-	// updateTheme('root');
-	// // Initialize open dir/files listener
-	// OpenInit();
-	// // Intialize shortcuts
-	// Shortcut();
-	// // Initialize select files listener
-	// SelectInit();
-	// // Initialize user preference
-	// document.getElementById('workspace').dataset.hideHiddenFiles = String(_preference.hideHiddenFiles ?? true);
-	// // Initialize settings
-	// Setting();
-	// // Initialize info bar
-	// Infobar();
-	// // Initialize context menu
-	// ContextMenu();
-	// // Initialize hover handler
-	// Hover();
-	// // Initialize search feature
-	// Search();
-	// // Initialize lazy loading image handler (for performance)
-	// LAZY_LOAD_INIT();
+    // 	Tab();
+    // } else {
+    // 	let reveal = false;
+    // 	if (cli.flags.indexOf('--reveal') !== -1 || cli.flags.indexOf('-r') !== -1) {
+    // 		reveal = true;
+    // 	}
+    // 	OpenDir(cli.args[0], reveal);
+    // 	for (let i = 1; i < cli.args.length; i++) {
+    // 		createNewTab(cli.args[i]);
+    // 	}
+
+    // 	// Initialize Tabs
+    // 	Tab(reveal);
+    // }
+    // // Update the page styling
+    // updateTheme('root');
+    // // Initialize open dir/files listener
+    // OpenInit();
+    // // Intialize shortcuts
+    // Shortcut();
+    // // Initialize select files listener
+    // SelectInit();
+    // // Initialize user preference
+    // document.getElementById('workspace').dataset.hideHiddenFiles = String(_preference.hideHiddenFiles ?? true);
+    // // Initialize settings
+    // Setting();
+    // // Initialize info bar
+    // Infobar();
+    // // Initialize context menu
+    // ContextMenu();
+    // // Initialize hover handler
+    // Hover();
+    // // Initialize search feature
+    // Search();
+    // // Initialize lazy loading image handler (for performance)
+    // LAZY_LOAD_INIT();
 });

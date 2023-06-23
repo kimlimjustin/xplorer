@@ -148,14 +148,6 @@ fn get_available_fonts() -> Result<Vec<String>, String> {
 
     Ok(fonts)
 }
-#[tauri::command]
-fn change_transparent_effect(effect: String, window: tauri::Window) {
-  if effect == "blur".to_string() {
-    window.set_blur();
-  } else if effect == "acrylic".to_string() {
-    window.set_acrylic();
-  }
-}
 
 #[cfg(target_os = "windows")]
 #[tauri::command]
@@ -257,25 +249,25 @@ async fn main() {
             enable_shadow_effect,
             change_transparent_effect
         ])
-        .plugin(tauri_plugin_window_state::Builder::default().build())
+        // .plugin(tauri_plugin_window_state::Builder::default().build())
         .setup(|app| {
-            let window = app.get_window("main").unwrap();
-            let appearance = storage::read_data("appearance").unwrap();
-            let transparent_effect = if appearance.status {
-                appearance.data["transparentEffect"]
-                .as_str()
-                .unwrap_or("none")
-                .to_string()
-            } else {
-                "none".to_string()
-            };
-            let shadow_effect_enabled = if appearance.status {
-                appearance.data["shadowEffect"].as_bool().unwrap_or(true)
-            } else {
-                true
-            };
-            enable_shadow_effect(shadow_effect_enabled, window.clone());
-            change_transparent_effect(transparent_effect, window);
+            // let window = app.get_window("main").unwrap();
+            // let appearance = storage::read_data("appearance").unwrap();
+            // let transparent_effect = if appearance.status {
+            //     appearance.data["transparentEffect"]
+            //     .as_str()
+            //     .unwrap_or("none")
+            //     .to_string()
+            // } else {
+            //     "none".to_string()
+            // };
+            // let shadow_effect_enabled = if appearance.status {
+            //     appearance.data["shadowEffect"].as_bool().unwrap_or(true)
+            // } else {
+            //     true
+            // };
+            // enable_shadow_effect(shadow_effect_enabled, window.clone());
+            // change_transparent_effect(transparent_effect, window);
 
             Ok(())
         })
