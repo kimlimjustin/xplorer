@@ -28,7 +28,7 @@ For current implementation, Xplorer write down what to cut locally (not copying 
 
 ## Delete files
 
-You can cut files by right-clicking it and click the `Delete` option or select the file then press `Del` as a shortcut.
+You can delete files by right-clicking it and click the `Delete` option or select the file then press `Del` as a shortcut.
 
 ### Trashed files
 
@@ -55,6 +55,18 @@ You can permanently delete a file by:
 
 1. Delete it into `Trash` and right-clicking it and click the `Permanent Delete` option
 2. Select the file and press `Shift + Del` as a shortcut
+
+## Search files
+
+Xplorer uses [`glob patterns`](<https://en.wikipedia.org/wiki/Glob_(programming)>) to search matched files. [Learn about Glob pattern syntax](<https://en.wikipedia.org/wiki/Glob_(programming)>). To get started, press `Ctrl + F` and type inside the search box.
+
+### Instant search
+
+You can instant search a file/dir by typing the starting characters of the file/dir name and Xplorer will select the file for you. Some rules of instant search:
+
+-   Any english diacritic is removed
+-   The interval for instant search is 750ms. After 750ms, the search query will be reseted.
+-   Typing the same character will make Xplorer to find the next matches.
 
 ## New
 
@@ -90,7 +102,7 @@ You can pin a file/folder into the sidebar by right-clicking it and click `Pin t
 
 You can preview a file directly from Xplorer by right-clicking it and click the `Preview` option or select the file then press `Ctrl+O`.
 
-![Preview Demo](/img/docs/preview.png)
+![Preview Demo](/img/docs/preview.webp)
 
 :::info
 

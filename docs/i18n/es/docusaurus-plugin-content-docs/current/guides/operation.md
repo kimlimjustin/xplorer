@@ -28,7 +28,7 @@ Para la implementación actual, Xplorer escribe lo qué se debe cortar localment
 
 ## Borrar archivos
 
-Puede eliminar archivos haciendo clic derecho en él y hacer clic en la opción `Eliminar` o seleccionar el archivo y luego presione `Del` como acceso directo.
+You can delete files by right-clicking it and click the `Delete` option or select the file then press `Del` as a shortcut.
 
 ### Archivos eliminados
 
@@ -42,80 +42,92 @@ Cualquier contribución a la papelera o al propio Xplorer para este tema es bien
 
 Puede restaurar archivos abriendo `xplorer://trash` y haciendo clic derecho en el archivo, después haga clic en la opción `Restaurar`
 
-### Permanently delete
+### Eliminar permanentemente
 
-:::danger A permanently deleted file cannot be restored. Please check again before permanently delete any files.
+:::danger No se puede restaurar un archivo eliminado permanentemente. Por favor, compruebe de nuevo antes de eliminar permanentemente cualquier archivo.
 
 :::
 
-You can permanently delete a file by:
+Puedes eliminar permanentemente un archivo de las siguientes formas:
 
-1. Delete it into `Trash` and right-clicking it and click the `Permanent Delete` option
-2. Select the file and press `Shift + Del` as a shortcut
+1. Eliminar en la `basura` y haga clic derecho en ella y haga clic en la opción `Eliminar permanente`
+2. Seleccione el archivo y presione `Shift + Del` como atajo de teclado
 
-## New
+## Buscar archivos
 
-:::caution Be careful with new file/folder name Xplorer treats `/` on file name/folder as subdir/subfile :::
+Xplorer usa [`glop patterns`](https://en.wikipedia.org/wiki/Glob_(programming)) para buscar archivos coincidentes. [Aprende sobre la sintaxis de patrón de Glob](https://en.wikipedia.org/wiki/Glob_(programming)). Para empezar, pulsa `Ctrl + F` y escribe dentro del cuadro de búsqueda.
 
-### New file
+### Búsqueda instantánea
 
-You can create a new file by right-clicking the workspace, expand the `New` option and select the `file` option, or press `Alt + N` as a shortcut.
+Puede buscar instantáneamente un archivo/directorio escribiendo los caracteres iniciales del nombre del archivo/dir y Xplorer seleccionará el archivo para usted. Algunas reglas de búsqueda instantánea:
 
-### New folder
+-   Se eliminar cualquier diacritico Ingles
+-   El intervalo para la búsqueda instantánea es de 750ms. Después de 750ms, la consulta de búsqueda se restablecerá.
+-   Escribir el mismo carácter hará que Xplorer encuentre las siguientes coincidencias.
 
-You can create a new folder by right-clicking the workspace, expand the `New` option and select the `folder` option, or press `Shift + N` as a shortcut.
+## Nuevo
 
-## Open file
+:::cuidado Tenga cuidado con el nuevo nombre de archivo/carpeta Xplorer trata `/` en el nombre del archivo/carpeta como subdir/subarchivo :::
 
-You can open a file on the default application by double-clicking it or select the file then press `Enter` as a shortcut.
+### Nuevo archivo
 
-### Open in Terminal
+Puede crear un nuevo archivo haciendo clic derecho en el área de trabajo, expande la `Nueva` opción y seleccione la `opción del archivo`, o presione `Alt + N` como atajo de teclado.
 
-This is a built-in function by Xplorer. You can open a folder on Terminal by right-clicking it and click the `Open in terminal` option or select the folder then press `Alt + T` as a shortcut.
+### Nueva carpeta
 
-### Open in VSCode
+Puede crear un nuevo archivo haciendo clic derecho en el área de trabajo, expande la `Nueva` opción y seleccione la `opción del archivo`, o presione `Alt + N` como atajo de teclado.
 
-This is a built-in function by Xplorer. You can open a file/folder on VSCode by right-clicking it and click the `Open in vscode` option or select the file then press `Ctrl + Enter` as a shortcut. You won't able to do this if you don't have VSCode installed.
+## Abrir archivo
 
-## Pin to Sidebar
+Puede abrir un archivo en la aplicación predeterminada haciendo doble clic en él o seleccionando el archivo y luego presione `Enter` como atajo de teclado.
 
-You can pin a file/folder into the sidebar by right-clicking it and click `Pin to Sidebar` or select the file then press `Alt + P` as a shortcut.
+### Abrir en Terminal
 
-## Preview file
+Esta es una función integrada por Xplorer. Puede eliminar archivos haciendo clic derecho en él y hacer clic en la opción `Eliminar` o seleccionar el archivo y luego presione `Del` como atajo de teclado.
 
-You can preview a file directly from Xplorer by right-clicking it and click the `Preview` option or select the file then press `Ctrl+O`.
+### Abrir en VSCode
 
-![Preview Demo](/img/docs/preview.png)
+Esta es una función integrada por Xplorer. Puede abrir un archivo/carpeta en VSCode haciendo clic derecho en él y haciendo clic en la opción `Abrir en vscode` o seleccionar el archivo y luego presione `Ctrl + Enter` como atajo de teclado. No podrás hacer esto si no tienes VSCode instalado.
+
+## Anclar a la barra lateral
+
+Puede copiar la ruta de un archivo/carpeta en el portapapeles haciendo clic derecho en él y haciendo clic en `Copiar ruta de ubicación` o seleccionar el archivo y luego presione `Alt + Mayús + C` como atajo de teclado.
+
+## Vista previa archivo
+
+Puede previsualizar un archivo directamente desde Xplorer haciendo clic derecho en él y haciendo clic en la opción `Vista previa` o seleccionar el archivo y luego presione `Ctrl+O`.
+
+![Demo de vista previa](/img/docs/preview.webp)
 
 :::info
 
 <details>
 <summary>
-Files available to preview for now:
+Archivos disponibles para previsualizar por ahora:
 </summary>
 
-* Markdown files
-* Image files
-* Text files
-* Video files
-* Pdfs
-* Almost all programming language with syntax highlighting
+* Archivos Markdown
+* Archivos de imagen
+* Ficheros de texto
+* Vídeos
+* Pdf's
+* Casi todos los lenguajes de programación con resaltado de sintaxis
 
 </details>
 
 :::
 
-## Properties
+## Propiedades
 
-You can view properties of a file/folder by right-clicking it and click `Properties` or select the file then press `Ctrl + P` as a shortcut. Available properties for now (will be improved at the next version):
+Puede ver las propiedades de un archivo/carpeta haciendo clic derecho en él y haciendo clic en `Propiedades` o seleccione el archivo y luego presione `Ctrl + P` como atajo de teclado. Propiedades disponibles por ahora (se mejorará en la próxima versión):
 
--   Size
--   File Path
--   Created At
--   Accessed At
--   Modified At
--   Is Hidden
+-   Tamaño
+-   Ruta de archivo
+-   Creada en
+-   Último acceso
+-   Fecha de última modificación
+-   Está oculto
 
-## Rename file/folder
+## Renombrar Archivo/Folder
 
-You can rename a file/folder by right-clicking it and click the `Rename` option or select the file then press `F2` as a shortcut. It will prompt a dialog, enter the new name and the file/folder will be renamed.
+Puede renombrar un archivo/carpeta haciendo clic derecho en él y haciendo clic en la opción `Renombrar` o seleccionar el archivo y luego presione `F2` como atajo de teclado. Le pedirá un diálogo, introduzca el nuevo nombre y el archivo/carpeta será renombrado.

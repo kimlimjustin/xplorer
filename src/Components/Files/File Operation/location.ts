@@ -1,4 +1,4 @@
-import { writeTextToClipboard } from '../../../Api/clipboard';
+import { writeTextToClipboard } from '../../../Service/clipboard';
 
 /**
  * Copy file location from file element into clipborad
@@ -6,7 +6,7 @@ import { writeTextToClipboard } from '../../../Api/clipboard';
  * @returns {void}
  */
 const copyLocation = (element: HTMLElement): void => {
-	const path = unescape(element.dataset.path);
+	const path = decodeURI(element.dataset.path);
 	writeTextToClipboard(path);
 };
 

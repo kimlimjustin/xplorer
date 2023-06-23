@@ -2,168 +2,168 @@
 sidebar_position: 2
 ---
 
-# Contribute
+# Contribuir
 
-👍🎉 First off, thanks for taking the time to contribute! 🎉👍
+🎉👍 En primer lugar, ¡gracias por tomarse el tiempo para contribuir!🎉👍! 🎉👍
 
-Xplorer is currently under heavy development. We are welcoming contributors to collaborate on Xplorer.
+Xplorer se encuentra actualmente en desarrollo. Estamos dando la bienvenida a los colaboradores que deseen ayudar en Xplorer.
 
-## Get involved
+## Involúcrate
 
-There are many ways to contribute to Xplorer, and many of them do not involve writing any code. Here are few ideas to get started:
+Hay muchas maneras de contribuir a Xplorer, y muchas de ellas no implican escribir nada código. Aquí tienes algunas ideas para empezar:
 
--   Start using Xplorer! Go through the Tutorial guides. Does anything work as expected? If not, we're always looking for improvements. Let us know by opening an issue.
--   Look through the [Xplorer issues](https://github.com/kimlimjustin/xplorer/issues). If you find an issue you would like to fix, [open a pull request](#first-pull-request). Issues tagged as [good first issue](https://github.com/kimlimjustin/xplorer/labels/good%20first%20issue) are a good place to get started.
--   Help us make the docs better. File an issue if you find anything that is confusing, any grammatical error, or can be improved.
--   Take a look at [GitHub Discussions](https://github.com/kimlimjustin/xplorer/discussions) and give your opinion into a discussion or consider opening a pull request if you see something you want to work on.
+-   ¡Empieza a usar Xplorer! Sigue los tutoriales. ¿Funciona todo tal y como esperabas? Si no es así, estamos siempre buscando mejoras. Háganos saber abriendo una issue.
+-   Mira a través de los [problemas de Xplorer](https://github.com/kimlimjustin/xplorer/issues). Si encuentras un problema que te gustaría corregir, [abre una issue](#your-first-pull-request). Los problemas etiquetados como [primera issue](https://github.com/kimlimjustin/xplorer/labels/good%20first%20issue) son un buen lugar para empezar.
+-   Ayúdanos a mejorar la documentación. Crea un nuevo problema si encuentras algo que está siendo confuso, algún error gramatical, o si algo puede ser mejorado.
+-   Echa un vistazo a la sección de [conversaciones en GitHub](https://github.com/kimlimjustin/xplorer/discussions) y da tu opinión sobre una discusión o considera abrir un pull request si ves algo en lo que quieres trabajar.
 
-Contributions are very welcome!
+¡Los contribuidores son siempre bienvenidos!
 
-## Our development process
+## Nuestro proceso de desarrollo
 
-Xplorer uses [GitHub](https://github.com/kimlimjustin/xplorer) as its source of truth. The core team will work directly there. All changes will be public from the beginning.
+Xplorer utiliza [GitHub](https://github.com/kimlimjustin/xplorer) como su fuente inicial. El equipo principal trabajará directamente allí. Todos los cambios serán públicos desde el comienzo.
 
-### Reporting new issues/bugs. {#issues}
+### Reportando nuevos problemas/errores. {#issues}
 
-When [opening a new issue](https://github.com/kimlimjustin/xplorer/issues), always make sure to fill out the issue template. We use GitHub issues to track public bugs. Please ensure your description is clear and has sufficient instructions to be able to reproduce the issue.
+Cuando [abra un nuevo problema](https://github.com/kimlimjustin/xplorer/issues), siempre asegúrese de rellenar la plantilla de problemas. Utilizamos problemas de GitHub para rastrear errores públicos. Por favor, asegúrese de que su descripción es clara y tiene suficientes instrucciones para poder reproducir el problema.
 
--   _One issue, one bug_: Please report a single bug per issue.
--   _Provide reproduction steps_: List all the steps necessary to reproduce the issue. The person reading your bug report should be able to follow these steps to reproduce your issue with minimal effort.
+-   _Un problema, un error_: Por favor, informe de un solo error por cada problema.
+-   _Proporciona pasos de reproducción_: Lista todos los pasos necesarios para reproducir el problema. La persona que lea tu informe de fallo debería ser capaz de seguir estos pasos para reproducir su problema con un mínimo esfuerzo.
 
-### Feature Request {#feat}
+### Solicita una funcionalidad {#feat}
 
-We use [GitHub Discussions](https://github.com/kimlimjustin/xplorer/discussions) and [GitHub Issues](https://github.com/kimlimjustin/xplorer) to track ideas from users. Suggest a new feature [here](https://github.com/kimlimjustin/xplorer/discussions/new)! Great Feature Requests tend to have:
+Utilizamos [discusiones en GitHub](https://github.com/kimlimjustin/xplorer/discussions) y [problemas en GitHub](https://github.com/kimlimjustin/xplorer) para rastrear ideas de usuarios. ¡Sugiere una nueva función [aquí](https://github.com/kimlimjustin/xplorer/discussions/new)! Las buenas solicitudes de características tienden a tener:
 
--   A quick idea summary.
--   What & why you wanted to add the specific feature.
--   Additional references like images, links of resources about the feature, etc.
+-   Resumen rápido de la idea.
+-   Qué & por qué quiere añadir la característica específicada.
+-   Contexto adicional como imágenes, enlaces a recursos para implementar la función, etc.
 
-## Working on Xplorer code
+## Trabajando en el código de Xplorer
 
-### Prerequisite
+### Prerequisitos
 
--   [Tauri environment](https://tauri.studio/en/docs/getting-started/intro#setting-up-your-environment)
+-   [Entorno Tauri](https://tauri.studio/en/docs/getting-started/intro#setting-up-your-environment)
 -   [Node JS](https://nodejs.org/en/)
 -   [Git](https://git-scm.com/)
 -   [yarn](https://yarnpkg.com/)
--   Code Editor, we recommend you to use [VS Code](https://code.visualstudio.com/)
+-   Editor de código, te recomendamos que uses [VS Code](https://code.visualstudio.com/)
 
-### Installation
+### Instalación
 
-1. After cloning the repository, run `yarn` in the root of the repository and run `yarn` in the `docs` folder (if you want to working on Xplorer Docs).
-2. To start Xplorer locally, run `yarn dev`.
+1. Después de clonar el repositorio, ejecute `yarn` en la raíz del repositorio y ejecute `yarn` en la carpeta `docs` (si desea trabajar en Xplorer Docs).
+2. Para iniciar Xplorer localmente, ejecute `yarn dev`.
 
-    To start a local development server serving the Docusaurus docs, go into the `docs` directory and run `yarn start`
+    Para iniciar un servidor de desarrollo local que sirva la documentación de Docusaurus, vaya al directorio `docs` y ejecute `yarn start`
 
-### Gitpod for Xplorer's development {#gitpod-env}
+### Gitpod para el desarrollo de Xplorer {#gitpod-env}
 
-The easiest way to run Xplorer in Gitpod is to use the [Gitpod](https://gitpod.io/) service, all what you need to do is to click the button below and log in with your GitHub account. Afterwards, you will see a VS Code-like environment where you can start developing and pushing your changes. Please note that you may have to wait up to minutes to get Xplorer running on the poped up VNC tab.
+La forma más fácil de ejecutar Xplorer en Gitpod es utilizar el servicio de [Gitpod](https://gitpod.io/), todo lo que necesitas hacer es hacer clic en el botón de abajo e iniciar sesión con tu cuenta de GitHub. Después, verás un entorno similar al VS Code donde puedes comenzar a desarrollar y publicar tus cambios. Tenga en cuenta que puede tener que esperar hasta unos minutos para que Xplorer funcione en la pestaña VNC desplegada.
 
-## [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#/https://github.com/kimlimjustin/xplorer)
+## [![Abrir en Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#/https://github.com/kimlimjustin/xplorer)
 
-### Semantic commit messages {#commit-msg}
+### Mensajes de confirmación semántica {#commit-msg}
 
-See how a minor change to your commit message style can make you a better programmer.
+Vea cómo un cambio menor en su estilo de mensaje de confirmación puede hacerle un mejor programador.
 
-Format: `<type>(<scope>): <subject>`
+Formato: `<type>(<scope>): <subject>`
 
-`<scope>` is optional
+`<scope>` es opcional
 
-#### Example
+#### Ejemplo
 
 ```
-feat: allow overriding of webpack config
+función: permitir la sobreescritura de la configuración webpack
 ^--^  ^------------^
 |     |
-|     +-> Summary in present tense.
+| +-> Resumen en el tiempo actual.
 |
-+-------> Type: chore, docs, feat, fix, refactor, style, or test.
++-------> Tipo: chore, docs, feat, fix, refactor, style, o test.
 ```
 
-the various types of commits:
+los distintos tipos de commits:
 
--   `feat`: new feature for the user
--   `fix`: bug fix for the user
--   `docs`: changes to the documentation
--   `style`: formatting, missing semi-colons, etc.
--   `refactor`: refactoring production code, eg. renaming a variable
--   `test`: adding missing tests, refactoring tests.
--   `chore`: updating grunt tasks etc
+-   `feat`: nueva característica para el usuario
+-   `fix`: corrección de errores para el usuario
+-   `docs`: cambios a la documentación
+-   `style`: formateo, falta punto y coma y demás.
+-   `refactor`: refactorizar código de producción, por ejemplo. renombrando una variable
+-   `test`: añadiendo pruebas faltantes, refactorizando pruebas.
+-   `chore`: actualizar tareas grunt, etc
 
-Use lower case not the upper case!
+¡Usar minúsculas no mayúsculas!
 
-## Working on Xplorer docs
+## Trabajando en el código de Xplorer
 
-Xplorer documentation website is built using [Docusaurus 2](https://docusaurus.io/), and its code is located at [`docs`](https://github.com/kimlimjustin/xplorer/tree/master/docs) folder.
+El sitio web de documentación de Xplorer se construye usando [Docusaurus 2](https://docusaurus.io/), y su código se encuentra en [`docs`](https://github.com/kimlimjustin/xplorer/tree/master/docs) carpeta.
 
-### Prerequisite
+### Prerequisitos
 
 -   [node js](https://nodejs.org/en/)
 -   [git](https://git-scm.com/downloads)
 -   [yarn](https://yarnpkg.com/getting-started/install#about-global-installs)
--   Code Editor, we recommend you to use [VS Code](https://code.visualstudio.com/)
+-   Editor de código, te recomendamos que uses [VS Code](https://code.visualstudio.com/)
 
-### Installation
+### Instalación
 
-After cloning the repository, run `yarn` in the `docs` folder (you can go into the `docs` folder by running the `cd docs` command).
+Después de clonar el repositorio, ejecuta `yarn` en la carpeta `docs` (puedes ir a la carpeta `docs` ejecutando el comando `cd docs`).
 
-If you want to use Gitpod, click [here](#gitpod-env) for the guide on how to use Gitpod.
+Si desea utilizar Gitpod, haga clic [aquí](#gitpod-env) para la guía sobre cómo usar Gitpod.
 
-### Local development
+### Desarrollo local
 
-1. Run the `yarn start` command in the `docs` folder.
-2. Edit some markdown texts in the `docs` folder and the website will be hot reloaded.
+1. Ejecute el comando `yarn start` en la carpeta `docs`.
+2. Edite algunos textos de markdown en la carpeta de `documentos` y el sitio web será recargado.
 
-## Pull requests
+## Solicitudes de incorporación de cambios
 
-### Your first pull request. {#first-pull-request}
+### Su primera solicitud de incorporación de cambios. {#first-pull-request}
 
-So you have decided to contribute code back to upstream by opening a pull request. You've invested a good chunk of time, and we appreciate it. We will do our best to work with you and get the PR looked at.
+Así que has decidido contribuir código de vuelta al autor abriendo una solicitud de pull request. Has invertido una buena parte de tiempo, y lo apreciamos. Haremos todo lo posible para trabajar con usted y conseguir que se analice el RP.
 
-Working on your first Pull Request? You can learn how from this free video series:
+Trabajando en tu primera solicitud de Pull Request? Puedes aprender cómo de esta serie de vídeo gratis:
 
-How to Contribute to an Open Source Project on GitHub
+Cómo contribuir a un Proyecto de Código Abierto en GitHub
 
-We have a list of [beginner-friendly issues](https://github.com/kimlimjustin/xplorer/labels/good%20first%20issue) to help you get your feet wet in the Xplorer codebase and familiar with our contribution process. This is a great place to get started.
+Tenemos una lista de [problemas para principiantes](https://github.com/kimlimjustin/xplorer/labels/good%20first%20issue) para ayudarte a introducirte en el código base de Xplorer y familiarizarte con nuestro proceso de contribución. Es un gran lugar para empezar.
 
-### Proposing a change
+### Proponiendo un Cambio
 
-If you would like to request a new feature or enhancement but are not yet thinking about opening a pull request, you can also [open a discussion](#feat) and others will code it!
+Si desea solicitar una nueva característica o mejora pero aún no está pensando en abrir una solicitud de pull request, también puedes [abrir una discusión](#feat) y otros lo codificarán!
 
-If you intend to fix a bug, please discuss it through [Issues](#issues) before submitting a pull request.
+Si tiene la intención de arreglar un error, por favor hágalo a través de [problemas](#issues) antes de enviar una solicitud de incorporación de cambios.
 
-If you intend to add a new feature, please discuss it through [GitHub Discussions](#feat) to avoid multiple people working on the same feature request.
+Si tiene la intención de añadir una nueva característica, por favor discuta a través de [discusiones en GitHub](#feat) para evitar que varias personas trabajen en la misma solicitud de características.
 
-### Sending a Pull Request
+### Enviando una solicitud de incorporación cambios
 
-make sure the PR does only one thing, otherwise please split it. It is recommended to follow this [commit message style](#commit-msg).
+asegúrese de que el PR hace sólo una cosa, de lo contrario por favor dividirla. Se recomienda seguir este [estilo de mensaje de commit](#commit-msg).
 
-1. Fork [the repository](https://github.com/kimlimjustin/xplorer) and create your branch from `master`.
-2. Make changes and ensure your commit message is understandable.
-3. Open a [PR](https://github.com/kimlimjustin/xplorer/pulls) and ensure to describe your pull request clearly.
+1. Forkea [el repositorio](https://github.com/kimlimjustin/xplorer) y cree su rama desde `master`.
+2. Haga cambios y asegúrese de que su mensaje de confirmación es comprensible.
+3. Abre un [PR](https://github.com/kimlimjustin/xplorer/pulls) y asegúrate de describir tu pull request claramente.
 
-## Working on Xplorer resources
+## Trabajando en el código de Xplorer
 
-### Locales
+### Configuración regional
 
-We host our locales on the [crowdin](https://crwd.in/xplorer). To translate it, please follow these steps:
+Alojamos nuestros locales en [crowdin](https://crwd.in/xplorer). Para solucionarlo, por favor sigue estos pasos:
 
--   Sign up on [Crowdin](https://crowdin.com) and Join our project [here](https://crwd.in/xplorer).
--   Make sure your locale exists there, if it does not exist, leave a comment in [this discussion](https://github.com/kimlimjustin/xplorer/discussions/30) and I'll add the language option :)
--   Get familiar with the Crowdin translation UI, as you will need to use it to translate JSON and Markdown files
--   Translate the content!
+-   Regístrate en [Crowdin](https://crowdin.com) y Únete a nuestro proyecto [aquí](https://crwd.in/xplorer).
+-   Asegúrese de que su local existe allí, si no existe, deja un comentario en [esta discusión](https://github.com/kimlimjustin/xplorer/discussions/30) y añadiré la opción de idioma :)
+-   Familiarícese con la interfaz de usuario de traducción de Crowdin, ya que deberá usarla para traducir archivos JSON y Markdown
+-   Traducir el contenido!
 
-#### Priority Files to translate on Crowdin
+#### Archivos prioritarios para traducir en Crowdin
 
-1. `src/Locales` files
-2. `docs/` files
+1. `src/Locales`
+2. `docs/`
 
-#### Production
+#### Producción
 
-Once the files on `src/Locales` have been translated for more than 80%, we will add it into the Xplorer app, and for the docs, we will add it into production once the translation looks good!
+Una vez que los archivos en `src/Locales` han sido traducidos por más del 80%, la añadiremos a la aplicación Xplorer y, para la documentacion, ¡la añadiremos a la producción una vez que la traducción parezca buena!
 
-Please comment [here](https://github.com/kimlimjustin/xplorer/discussions/30) if you have any questions!
+¡Por favor, comenta [aquí](https://github.com/kimlimjustin/xplorer/discussions/30) si tienes alguna pregunta!
 
-### File Library
+### Biblioteca de Archivos
 
-The json library of file types and thumbnail are found under `lib` folder and the icons are found under `src/Icons` folder. You may add file types and icons for file extensions you want to use and submit a PR.
+La librería json de tipos de archivos y miniatura se encuentran en la carpeta `lib` y los iconos se encuentran en la carpeta `src/Icons`. Puedes añadir tipos de archivos e iconos para las extensiones de archivo que quieras usar y enviar un PR.

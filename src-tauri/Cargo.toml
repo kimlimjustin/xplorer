@@ -2,39 +2,47 @@
 name = "app"
 version = "0.1.0"
 description = "A Tauri App"
-authors = ["you"]
-license = ""
-repository = ""
 default-run = "app"
-edition = "2018"
+edition = "2021"
 build = "src/build.rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "1.0.0-beta.4" }
+tauri-build = { version="1.0.0", features = [] }
 
 [dependencies]
-sysinfo = {version="0.20.5"}
-serde_json = "1.0"
-serde = { version = "1.0", features = ["derive"] }
-tauri = {  git = "https://github.com/tauri-apps/tauri", branch = "next", features = ["api-all", "updater"] }
-open = {version = "2.0"}
-path-absolutize = "3.0.11"
-trash = "2.0.2"
-notify = "4.0.17"
-normpath = "0.3.1"
-lazy_static = "1.4.0"
-font-loader = "0.11.0"
-clap = "3.0.0-beta.5"
-glob = "0.3.0"
-tauri-plugin-vibrancy = { git = "https://github.com/amrbashir/tauri-plugin-vibrancy" }
-parselnk = "0.1.0"
-url = "2.2.2"
-reqwest = "0.11.8"
-tokio = {version="1.14", features = ["full"] }
+sysinfo = "0.23"
+serde_json = "1"
+serde = { version = "^1.0", features = ["derive"] }
+tauri = { version="1.1.1", features = ["api-all", "macos-private-api", "updater"] }
+tauri-plugin-window-state = { git = "https://github.com/tauri-apps/tauri-plugin-window-state" }
+open = "2"
+path-absolutize = "3"
+trash = "2"
+notify = "4"
+normpath = "0.3"
+lazy_static = "1.4"
+font-loader = "0.11"
+clap = "3.0.14"
+glob = "0.3"
+parselnk = "0.1"
+url = "2.2"
+reqwest = "0.11"
+tokio = { version = "^1", features = ["macros", "parking_lot", "rt"] }
+bincode = "1.3"
+zip = "0.6.2"
 
+[target."cfg(any(target_os = \"windows\", target_os = \"macos\"))".dependencies]
+window-vibrancy = { git = "https://github.com/tauri-apps/window-vibrancy" }
+window-shadows = { git = "https://github.com/tauri-apps/window-shadows" }
 
 [features]
-default = [ "custom-protocol" ]
-custom-protocol = [ "tauri/custom-protocol" ]
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+strip = true

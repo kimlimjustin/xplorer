@@ -14,11 +14,12 @@ You can download Xplorer from the installer [here](https://github.com/kimlimjust
 
 Grab the **.AppImage** file in the [releases](https://github.com/kimlimjustin/xplorer/releases) page and follow this [guide](https://docs.appimage.org/introduction/quickstart.html#how-to-run-an-appimage).
 
-### Debian and Ubuntu based distros 
+### Debian and Ubuntu based distros
 
 Grab the **.deb** file in the [releases](https://github.com/kimlimjustin/xplorer/releases) page.
 
 You can install it by:
+
 ```bash
 sudo dpkg -i /path/to/deb/file.deb
 ```
@@ -28,9 +29,10 @@ sudo dpkg -i /path/to/deb/file.deb
 ```bash
 sudo apt install /path/to/deb/file.deb
 ```
+
 ### Arch based distros
 
-> Use you favorite [aur helper](https://wiki.archlinux.org/title/AUR_helpers).
+> Use your favorite [aur helper](https://wiki.archlinux.org/title/AUR_helpers).
 
 ```bash
 yay -S xplorer-bin
@@ -39,11 +41,13 @@ yay -S xplorer-bin
 
 pacman build xplorer-bin
 ```
-**or** 
+
+**or**
 
 Grab the **.pacman** file in the [releases](https://github.com/kimlimjustin/xplorer/releases) page.
 
 You can install it by:
+
 ```bash
 sudo pacman -U /path/to/deb/file.pacman
 ```
@@ -51,6 +55,7 @@ sudo pacman -U /path/to/deb/file.pacman
 **or**
 
 build from [source](https://aur.archlinux.org/xplorer-bin.git)
+
 ```bash
 git clone https://aur.archlinux.org/xplorer-bin.git
 
@@ -58,6 +63,7 @@ cd xplorer-bin
 
 makepkg -si
 ```
+
 ## Common Problems
 
 <details>
@@ -69,8 +75,8 @@ This is actually not an error, it's a design choice by Microsoft to protect thos
 
 To handle this, you can just click the `More Info` button, then, just click Run Anyway.
 
-1. ![Step 1](/img/docs/windows-defender-1.png)
-2. ![Step 2](/img/docs/windows-defender-2.png)
+1. ![Step 1](/img/docs/windows-defender-1.webp)
+2. ![Step 2](/img/docs/windows-defender-2.webp)
 
 :::note References
 
@@ -92,6 +98,6 @@ Please try [the official docs](https://support.apple.com/guide/mac-help/open-a-m
 My favorite Installer is not here.
 </summary>
 
-Please address an issue [here](https://github.com/kimlimjustin/xplorer/new).
+Please address an issue [here](https://github.com/kimlimjustin/xplorer/issues/new/choose).
 
 </details>

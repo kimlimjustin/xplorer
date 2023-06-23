@@ -1,6 +1,6 @@
 import createSidebar from '../../Layout/sidebar';
 import defaultFavorites from '../../Favorites/defaultFavorites';
-import Storage from '../../../Api/storage';
+import Storage from '../../../Service/storage';
 import basename from '../../Functions/path/basename';
 interface Favorites {
 	name: string;

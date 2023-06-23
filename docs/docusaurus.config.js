@@ -1,5 +1,6 @@
 const lightCodeTheme = require('prism-react-renderer/themes/github');
 const darkCodeTheme = require('prism-react-renderer/themes/dracula');
+require('dotenv').config({ path: '.env.local' });
 
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 module.exports = {
@@ -15,10 +16,17 @@ module.exports = {
 	trailingSlash: true,
 	i18n: {
 		defaultLocale: 'en',
-		locales: ['en', 'fr', 'pt', 'uk', 'zh-CN'],
+		locales: ['en', 'es', 'fr', 'ru', 'it'],
+	},
+	customFields: {
+		supabaseKey: process.env.SUPABASE_KEY,
 	},
 	themeConfig: {
-		hideableSidebar: true,
+		docs: {
+			sidebar: {
+				hideable: true,
+			},
+		},
 		announcementBar: {
 			id: 'support_us',
 			content: 'Xplorer is still under heavy development, any features might change anytime.',
@@ -26,7 +34,8 @@ module.exports = {
 			textColor: '#091E42',
 		},
 		algolia: {
-			apiKey: '801dd9730a1ed22103221e93b49ed9ac',
+			apiKey: '7b47ab88fb7a86f25272ffabd5fec388',
+			appId: '1XKUAWSUJE',
 			indexName: 'xplorer',
 		},
 		navbar: {
@@ -34,7 +43,7 @@ module.exports = {
 			title: 'Xplorer',
 			logo: {
 				alt: 'Xplorer Logo',
-				src: 'img/icon.png',
+				src: 'img/icon.webp',
 			},
 			items: [
 				{
@@ -45,6 +54,11 @@ module.exports = {
 				},
 				{ to: 'https://dev.to/t/xplorer', label: 'Blog', position: 'left' },
 				{ to: 'https://discord.gg/MHGtSWvfUS', label: 'Discord', position: 'left' },
+				{
+					href: 'https://opencollective.com/xplorer',
+					label: 'Sponsor us 💗',
+					position: 'right',
+				},
 				{
 					type: 'localeDropdown',
 					position: 'right',
@@ -142,7 +156,7 @@ module.exports = {
 					{
 						tagName: 'link',
 						rel: 'icon',
-						href: '/img/icon.png',
+						href: '/img/icon.webp',
 					},
 					{
 						tagName: 'link',

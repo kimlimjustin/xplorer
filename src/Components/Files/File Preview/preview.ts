@@ -1,13 +1,15 @@
 import PromptError from '../../Prompt/error';
-import { HTML_TYPES, IMAGE_TYPES, VIDEO_TYPES, PLAINTEXT_TYPES, MARKDOWN_TYPES } from '../../../Config/file.config';
+import { HTML_TYPE, IMAGE_TYPES, VIDEO_TYPES, PLAIN_TEXT, MARKDOWN_TYPES, AUDIO_TYPES } from '../../../Config/file.config';
 import getBasename from '../../Functions/path/basename';
 import xlsx from 'xlsx';
-import FileAPI from '../../../Api/files';
+import FileAPI from '../../../Service/files';
 import { eURLify, URLify } from '../../Functions/urlify';
 import hljs from 'highlight.js';
 import ConfirmDialog from '../../Prompt/confirm';
 import { marked } from 'marked';
 import getDirname from '../../Functions/path/dirname';
+import isTauri from '../../../Util/is-tauri';
+import { GET_WORKSPACE_ELEMENT } from '../../../Util/constants';
 
 const isValidURL = (text: string) => {
 	let url;
@@ -23,7 +25,7 @@ const isValidURL = (text: string) => {
  * @returns {void}
  */
 const closePreviewFile = (): void => {
-	document.getElementById('workspace').classList.remove('workspace-split');
+	GET_WORKSPACE_ELEMENT(1).classList.remove('workspace-split');
 	document.querySelectorAll('.preview').forEach((element) => element.parentNode.removeChild(element));
 	document.querySelector<HTMLElement>('.main-box').style.overflowY = 'auto';
 };
@@ -33,6 +35,10 @@ const closePreviewFile = (): void => {
  * @returns {void}
  */
 const Preview = async (filePath: string): Promise<void> => {
+	if (!isTauri) {
+		PromptError('Preview unavailable', 'Preview is currently unavailable on Web version');
+		return;
+	}
 	closePreviewFile();
 
 	const previewElement = document.createElement('div');
@@ -50,8 +56,8 @@ const Preview = async (filePath: string): Promise<void> => {
 
 		document.querySelector<HTMLElement>('.main-box').scrollTop = 0;
 		document.querySelector<HTMLElement>('.main-box').style.overflowY = 'hidden';
-		document.getElementById('workspace').classList.toggle('workspace-split');
-		document.querySelector('.main-box').appendChild(previewElement);
+		GET_WORKSPACE_ELEMENT(1).classList.toggle('workspace-split');
+		GET_WORKSPACE_ELEMENT(1).appendChild(previewElement);
 		previewElement.querySelector('.preview-exit-btn').addEventListener('click', () => closePreviewFile());
 		return;
 	};
@@ -86,13 +92,21 @@ const Preview = async (filePath: string): Promise<void> => {
 				filePath
 			).readAsset()}"></video></div>`
 		);
-	} else if (PLAINTEXT_TYPES.indexOf(ext) !== -1) {
+	} else if (AUDIO_TYPES.indexOf(ext) !== -1) {
+		changePreview(
+			`	
+			<div class="preview-object" data-type="audio">
+				<audio controls="" controlsList="nodownload">
+					<source src="${new FileAPI(filePath).readAsset()}">
+				</audio>
+			</div>`
+		);
+	} else if (PLAIN_TEXT.indexOf(ext) !== -1) {
 		changePreview(`<div class='preview-object' data-type="txt">${await new FileAPI(filePath).readFile()}</div>`);
 	} else if (MARKDOWN_TYPES.indexOf(ext) !== -1) {
 		const html = marked(await new FileAPI(filePath).readFile());
 		changePreview(`<div class='preview-object' data-type="md">${eURLify(html)}</div>`);
 		previewElement.querySelectorAll('img').forEach(async (img) => {
-			console.log(isValidURL(img.src), img.src);
 			if (!isValidURL(img.src)) {
 				let imgData = new FileAPI(img.src);
 				if (!(await imgData.exists())) {

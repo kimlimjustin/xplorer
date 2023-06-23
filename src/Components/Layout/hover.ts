@@ -1,7 +1,9 @@
-import FileAPI from '../../Api/files';
+import FileAPI from '../../Service/files';
 import { IMAGE_TYPES } from '../../Config/file.config';
 import getBasename from '../Functions/path/basename';
-import Storage from '../../Api/storage';
+import Storage from '../../Service/storage';
+import { MAIN_BOX_ELEMENT } from '../../Util/constants';
+import focusingPath from '../Functions/focusingPath';
 
 const getExtension = (filename: string): string => {
 	const basename = getBasename(filename);
@@ -21,14 +23,14 @@ const Hover = (): void => {
 	let hoveringElement: HTMLElement;
 	const hoverPreviewElement = document.createElement('div');
 
-	document.querySelector('#workspace').addEventListener('mousemove', (e) => {
+	MAIN_BOX_ELEMENT().addEventListener('mousemove', (e) => {
 		let x = (e as MouseEvent).clientX;
 		let y = (e as MouseEvent).clientY;
 		window.clearTimeout(timeOut);
 		hoverPreviewElement?.parentNode?.removeChild(hoverPreviewElement);
 
 		// Ignore workspace hovering
-		if ((e.target as HTMLElement).id === 'workspace') {
+		if ((e.target as HTMLElement).classList.contains('workspace-tab') || (e.target as HTMLElement).classList.contains('workspace')) {
 			if (hoveringElement?.dataset?.path && displayName) hoveringElement.querySelector('.file-grid-filename').innerHTML = displayName;
 			return;
 		}
@@ -47,9 +49,12 @@ const Hover = (): void => {
 		}
 		hoveringElement = target;
 
+		let openFromPreviewElementListener: { (): void; (this: HTMLDivElement, ev: MouseEvent): any; (this: HTMLDivElement, ev: MouseEvent): any } =
+			null;
+
 		timeOut = window.setTimeout(async () => {
 			displayName = filenameGrid.innerHTML;
-			const path = unescape(target.dataset.path);
+			const path = decodeURI((await focusingPath()) === 'xplorer://Trash' ? target.dataset.realPath : target.dataset.path);
 			filenameGrid.innerHTML = isOnSearch ? path : getBasename(path);
 			target?.classList?.add('hovering');
 
@@ -57,6 +62,11 @@ const Hover = (): void => {
 			if (IMAGE_TYPES.indexOf(getExtension(filenameGrid.innerHTML)) !== -1 && previewImageOnHover) {
 				hoverPreviewElement.innerHTML = `<img src="${new FileAPI(path).readAsset()}">`;
 				hoverPreviewElement.classList.add('hover-preview');
+				openFromPreviewElementListener = () => {
+					new FileAPI(path).openFile();
+					hoverPreviewElement.removeEventListener('click', openFromPreviewElementListener); //eslint-disable-line
+				};
+				hoverPreviewElement.addEventListener('click', openFromPreviewElementListener);
 				document.body.appendChild(hoverPreviewElement);
 
 				if (hoverPreviewElement.clientWidth > window.innerWidth) hoverPreviewElement.style.width = `${0.5 * window.innerWidth}px`;

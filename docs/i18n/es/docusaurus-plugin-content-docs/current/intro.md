@@ -4,22 +4,38 @@ sidebar_position: 1
 
 # Xplorer
 
+![Demo](/img/docs/themed-xplorer.webp)
+
 ## Resumen
 
-Bienvenido a Xplorer, un explorador de archivos libre y de código abierto (FOSS).
+Bienvenido a Xplorer, un explorador de archivos gratis y de código abierto (FOSS).
 
-Xplorer is a file explorer built from ground-up to be fully customizable. ¡E incluso sin ninguna personalización, ya se ve moderno!
+Xplorer es un moderno explorador de archivos construido desde cero para ser totalmente personalizable para adaptarse a las necesidades de 2022. Siempre, Xplorer es una aplicación multiplataforma alimentada por la web que está siendo envuelta usando el framework [Tauri](https://tauri.studio) en el que se puede ejecutar Xplorer en Windows, MacOS o Linux sin tener muchos problemas. Algunas de las características de Xplorer son:
 
-Xplorer es una aplicación multiplataforma construida usando [Tauri](https://tauri.studio), y puede ejecutarla en Windows, MacOS o Linux sin muchos problemas. Una de las características clave es que Xplorer le permite previsualizar los archivos que tiene directamente dentro de Xplorer. Y no solo se limita a la vista previa de imágenes o documentos, sino también a la vista previa de vídeos.
-
-En resumen, las características de Xplorer son:
-
--   It looks modern
+-   Tiene un aspecto moderno
 -   Fácil de usar.
--   Multiplataforma.
--   [File Preview](https://xplorer.space/docs/guides/operation/#preview-file), even for videos!
--   Personalizable
+-   [Multiplataforma](https://xplorer.space/)
+-   [Vista previa](https://xplorer.space/docs/guides/operation/#preview-file), incluso para videos!
+-   [Personalizable](https://xplorer.space/docs/Extensions/theme/)
 -   Soporta multiples pestañas
--   Lo más importante, software libre y de código abierto (FOSS), lo que significa que puede cambiar los componentes dentro de sí lo considera adecuado
+-   Lo más importante es que es un software de código abierto (OSS)!
 
-Xplorer se encuentra actualmente en desarrollo. Puedes dar tus sugerencias y comentarios a nuestra página de [Discusiones](https://github.com/kimlimjustin/xplorer/discussions/). If you feel comfortable in writing code using Typescript and Rust, we highly encourage you to [contribute to this project](https://xplorer.space/community/Contributing/).
+Xplorer se encuentra actualmente en desarrollo. Puedes dar tus sugerencias y comentarios a nuestra página de [Discusiones](https://github.com/kimlimjustin/xplorer/discussions/). Si te sientes cómodo escribiendo código usando Typescript y Rust, te recomendamos que [contribuyas a este proyecto](https://xplorer.space/community/Contributing/).
+
+## Hoja de ruta
+
+-   [x] Navegación de archivos y vista previa.
+-   [x] Múltiples pestañas.
+-   [x] Posibilidad de continuar la sesión anterior al inicio.
+-   [ ] Extensión.
+    -   [ ]  Extensiones de temas.
+    -   [ ] Extensión de funciones.
+    -   [ ] Tienda de extensiones.
+-   [ ] Categoría de archivo personalizado.
+-   [ ] Múltiples espacios de trabajo.
+-   [ ] Aplicación web.
+-   [ ] Archivo remoto (OneDrive, Google Drive, etc.)
+-   [ ] Protección de archivos.
+-   [ ] Ordenación y filtrado de archivos personalizados.
+
+Recomiéndanos una función [abriendo un debate](https://github.com/kimlimjustin/xplorer/discussions) si quieres.

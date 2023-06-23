@@ -1,124 +1,162 @@
-# Settings
+# Ajustes
 
 <details>
 <summary>
-How to open the settings?
+¿Cómo abrir la configuración?
 </summary>
-You can open settings on Xplorer by clicking the `Settings` button on the left down of Xplorer.
+Puede abrir la configuración en Xplorer haciendo clic en el botón `Configuración` a la izquierda de Xplorer.
 
-![Settings](/img/docs/settings.png)
+![Ajustes](/img/docs/settings.webp)
 
 </details> <details>
 <summary>
-How to exit from Settings?
+¿Cómo abrir la configuración?
 </summary>
-You can exit from Settings on Xplorer by clicking on the upside left of Xplorer.
+Puede salir de Ajustes en Xplorer haciendo clic en el lado superior izquierdo de Xplorer.
 
-![Settings](/img/docs/exit-settings.png)
+![Ajustes](/img/docs/exit-settings.webp)
 
 </details>
 
-## Appearance
+## Apariencia
 
-### App Theme
+### Tema de la Aplicación
 
-You can change Xplorer's app theme on the `Appearance` tab of the Settings. Available default themes are `light`, `light+`, `dark`, and `dark+`. Besides, there is a `System Default` theme that will automatically read your system preference. :::info Xplorer will support a custom app theme soon, stay tuned! :::
+Puedes cambiar el tema de la aplicación de Xplorer en la pestaña `Apariencia` de la configuración. Los temas por defecto disponibles son `luz`, `luz +`, `oscuro`y `oscuro +`. Además, hay un tema `Predeterminado del Sistema` que leerá automáticamente su preferencia del sistema, también puede [probar temas personalizados](/docs/Extensions/theme/).
 
-### Font Family
+#### Aplicar efecto de sombra
 
-You can change Xplorer's font family on the `Appearance` tab of the Settings to one of installed font families installed on your system.
+| Con efecto de sombra                           | Sin efecto de sombra                                  |
+| ---------------------------------------------- | ----------------------------------------------------- |
+| ![Efecto Sombra](/img/docs/shadow-effect.webp) | ![Sin Efecto Sombra](/img/docs/no-shadow-effect.webp) |
 
-### Font Size
+Aplicar efecto de sombra dependiente de la plataforma a la ventana. En Windows, no puede desactivar este efecto al usar [`Sistema Predeterminado` estilo de frame](#frame-style).
 
-You can change Xplorer's font size on the `Appearance` tab of the Settings. Please note that an ideal font size is between 10px to 30px.
+### Fuente
 
-### Window Transparency
+Puede cambiar la familia de fuentes de Xplorer en la pestaña `Apariencia` de la configuración a una de las familias de fuentes instaladas en su sistema.
 
-Make Xplorer window transparent on the `Appearance` tab of the Settings by combining following options. Please note that an ideal transparency is between 70% to 100%. You can disable transparency by disable all of the transparency options.
+### Tamaño de la fuente
 
-#### Transparent Sidebar
+Puedes cambiar el tema de la aplicación de Xplorer en la pestaña `Apariencia` de la configuración. Tenga en cuenta que un tamaño de fuente ideal está entre 10px y 30px.
 
-Make the sidebar transparent ![Transparent Sidebar](/img/docs/transparent-sidebar.png)
+### Transparencia de la ventana
 
-#### Transparent Topbar
+Hacer transparente la ventana de Xplorer en la pestaña `Apariencia` de la configuración combinando las siguientes opciones. Tenga en cuenta que una transparencia ideal está entre el 70 % y el 100 %. Puede desactivar la transparencia desactivando todas las opciones de transparencia.
 
-Make the topbar transparent ![Transparent Topbar](/img/docs/transparent-topbar.png)
+#### Barra lateral transparente
 
-#### Transparent Workspace
+Hacer transparente la barra lateral ![Barra lateral transparente](/img/docs/transparent-sidebar.webp)
 
-make the workspace transparent ![Transparent Workspace](/img/docs/transparent-workspace.png)
+#### Barra superior transparente
 
-### Frame Style
+Hacer transparente la barra superior ![Barra superior transparente](/img/docs/transparent-topbar.webp)
 
-You can choose the frame style on the `Appearance` tab of the Settings. The available options are `Default` and `System Default`. `Default` will use Xplorer's default style which is the same across platforms. `System Default` will use the system default frame style which is difference according to your platform.
+#### Espacio de trabajo transparente
 
-### File Preview
+Hacer que el espacio de trabajo sea transparente ![Espacio de trabajo transparente](/img/docs/transparent-workspace.webp)
 
-File Preview here might means the file thumbnail.
+#### Efecto de transparencia
 
-#### Automatically play video file as thumbnail
+Puede actualizar el efecto de transparencia en el área de trabajo cambiando el valor de transparencia en la opción `Efecto de transparencia` (se espera que funcione sólo en Windows 10). Efectos disponibles:
 
-This will automatically play the video file as a preview. :::caution THIS MIGHT CONSUME HIGH AMOUNT OF RAM This might consume a high amount of RAM because it's built on the HTML video player. You can just enable this setting and ignore this caution if you got a good-spec computer. :::
+-   `Desenfoque` (algo rezagado al arrastrar)
+-   `Acylic`(funciona solo en Windows 10 o superior, también tiene un mal rendimiento al redimensionar/arrastrar la ventana)
+-   `Vibrancia` (solo funciona en macOS)
+-   `Ninguno`(recomendado) (necesita reiniciar la aplicación para cambiar de nuevo)
 
-#### Preview image on hover
+### Estilo del frame
 
-This fill automatically show the image when you hovering it for 500ms.
+Puedes elegir el estilo de marco en la pestaña `Apariencia` de los ajustes. Las opciones disponibles son `Predeterminado` y `Predeterminado del Sistema`. `Por defecto` usará el estilo predeterminado de Xplorer, el cual es el mismo entre plataformas. `Sistema Predeterminado` usará el estilo de frame predeterminado del sistema, que es la diferencia de acuerdo a su plataforma.
 
-![Preview on hover](/img/docs/preview-on-hover.png)
+### Vista previa del archivo
 
-Some people might found it annoying and you can disable it by disabling this setting.
+Vista previa del archivo aquí puede significar la miniatura del archivo.
 
-#### Extract exe file icon and make it as the thumbnail
+#### Reproducir automáticamente el archivo de vídeo como miniatura
 
-This will parse and cache the icon from a `exe` file and make it a preview. Only on Windows.
+Esto reproducirá automáticamente el archivo de vídeo como vista previa. :::Adveretencia ESTE MIGHT CONSUME ALTO USO DE RAM
+Esto puede consumir una gran cantidad de RAM porque está construido sobre el reproductor de vídeo HTML.
+Puedes activar esta opción e ignorar esta precaución si tienes un buen equipo.
+:::
 
-![Extract Exe file icon](/img/docs/extract-exe-icon.png)
+#### Vista previa de la imagen al pasar el ratón
 
-:::warning This might causes Xplorer to crash.
+Este relleno muestra automáticamente la imagen al pasar el cursor por 500ms.
 
-This is because Xplorer parses the icon from the exe and if the hexadecimal of the exe file is broken, Xplorer crashes.
+![Vista previa de la imagen al pasar el ratón](/img/docs/preview-on-hover.webp)
 
-The way to fix it is to disable the setting.
+Algunas personas pueden encontrarlo molesto y puedes desactivarlo deshabilitando esta configuración.
+
+#### Extraer icono de archivo exe y hacerlo como miniatura
+
+Esto analizará y almacenará en caché el icono de un archivo `exe` y lo convertirá en una vista previa. Sólo en Windows.
+
+![Extraer icono de archivo Exe](/img/docs/extract-exe-icon.webp)
+
+:::advertencia Esto podría hacer que Xplorer se bloqueara.
+
+Esto se debe a que Xplorer analiza el icono desde el exe y si el hexadecimal del archivo exe está roto, Xplorer falla.
+
+La forma de arreglarlo es deshabilitar la configuración.
 
 :::
 
-:::info Open issue The current approach is by calling the powershell program which might pops up cmd windows.
+:::info Abrir problema El enfoque actual es llamar al programa powershell que podría aparecer ventanas de cmd.
 
-Any contribution to call it directly from Xplorer is welcome. :::
+Cualquier contribución para llamarla directamente desde Xplorer es bienvenida. :::
 
-#### Show Image as Thumbnail
+### Mostrar imagen como miniatura
 
-This will show the image as a thumbnail of a file. Please note that this is not recommended for large directory as it reads the image to memory.
+Esto mostrará la imagen como una miniatura de un archivo. Tenga en cuenta que esto no se recomienda para un directorio grande, ya que lee la imagen a memoria.
 
-#### Default file layout
+### Diseño de archivos predeterminado
 
-Default file layout of a directory. Just give it a try :)
+Diseño de archivo predeterminado de un directorio. Pruébalo :)
 
-## Preference
+### Espacio de trabajo
 
-### App Language
+#### Mostrar barra de información
 
-Localize Xplorer. Help us translate Xplorer [here](https://github.com/kimlimjustin/xplorer/discussions/30).
+Una opción para mostrar la barra de información en el área de trabajo. ![Infobar de Xplorer](/img/docs/infobar.webp)
 
-### Hide Hidden Files
+## Preferencias
 
-Hide hidden files on Xplorer, you can find this setting on the `Preference` tab on Xplorer or by its shortcut, `Ctrl + H`.
+### Idioma de la aplicación
 
-### Hide System Files
+Localizar Xplorer. Ayúdanos a traducir Xplorer, [mira esta discusión](https://github.com/kimlimjustin/xplorer/discussions/30).
 
-Hide Windows' system files on Xplorer. :::tip Learn what is system file [here](https://en.wikipedia.org/wiki/System_file). Just turn it off if you don't understand what it is. :::
+### No mostrar archivos ocultos
 
-### List and sort directories alongside files
+Ocultar archivos ocultos en Xplorer, puede encontrar esta configuración en la pestaña `Preferencia` en Xplorer o por su atajo de teclado `Ctrl + H`.
 
-If disabled, Xplorer will prioritize directories above files.
+### Ocultar archivos del sistema
 
-### Detect Drive Change
+Ocultar archivos de sistema de Windows en Xplorer. :::tip Aprende lo que es el archivo del sistema [en esta wikipedia](https://en.wikipedia.org/wiki/System_file). Sólo apaga si no entiendes lo que es. :::
 
-Turning this on will detect drive change and update the sidebar and drives section. Please note that this will take high ammount of RAM as this is not stabilized yet.
+### Listar y ordenar directorios junto con archivos
+
+Si está deshabilitado, Xplorer priorizará los directorios sobre los archivos.
+
+### Detectar cambio de unidad
+
+Activar esto detectará cambios en la unidad y actualizará la sección de barras laterales y unidades. Tenga en cuenta que esto tomará gran cantidad de RAM ya que esto no está estabilizado todavía.
+
+### Cambiar automáticamente el archivo de vista previa con el archivo seleccionado
+
+Habilitar esto cambiará automáticamente el archivo de vista previa con el archivo seleccionado actual.
+
+### Calculate sub folder size
+
+Enabling this option will automatically help you to calculate the size of sub folders recursively and show it on detail view.
+
+### Single/Double Click to open a file
+
+Enabling this will make Xplorer to open a file with double click. Otherwise, it will open a file with single click.
 
 ### On startup
 
 Option to do on starting Xplorer. Available options are:
 
--   New Tab
--   Continue previous session
+-   Nueva pestaña
+-   Restaurar sesión anterior

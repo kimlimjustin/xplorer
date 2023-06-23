@@ -1,4 +1,4 @@
-import Storage from '../../Api/storage';
+import Storage from '../../Service/storage';
 import fileThumbnail from '../Thumbnail/thumbnail';
 import formatBytes from '../Functions/filesize';
 import type FileMetaData from '../../Typings/fileMetaData';
@@ -114,7 +114,7 @@ const displayFiles = async (
 		}
 		fileGrid.dataset.isdir = String(file.is_dir);
 		if (file.time_deleted) fileGrid.dataset.trashDeletionDate = String(file.time_deleted);
-		if (file.is_trash) fileGrid.dataset.realPath = escape(joinPath(file.original_parent, file.basename));
+		if (file.is_trash) fileGrid.dataset.realPath = encodeURI(joinPath(file.original_parent, file.basename));
 		let preview: string;
 		if (file.file_type === 'Windows Shortcut') {
 			fileGrid.dataset.isLnk = 'true';
@@ -128,7 +128,7 @@ const displayFiles = async (
 			preview = await fileThumbnail(file.file_path, file.is_dir ? 'folder' : 'file', true, imageAsThumbnail);
 		}
 
-		fileGrid.dataset.path = escape(normalizeSlash(file.file_path));
+		fileGrid.dataset.path = encodeURI(normalizeSlash(file.file_path));
 		fileGrid.dataset.isSystem = String(file.is_system);
 		fileGrid.dataset.isTrash = String(file.is_trash);
 		fileGrid.dataset.isDir = String(file.is_dir);
@@ -143,7 +143,7 @@ const displayFiles = async (
 				{ hour12: false }
 			)}</span>
             ${
-				file.size > 0 && !file.is_dir
+				file.size > 0
 					? `<span class="file-size" id="file-size">${formatBytes(
 							file.size // eslint-disable-next-line no-mixed-spaces-and-tabs
 					  )}</span>`
@@ -154,7 +154,7 @@ const displayFiles = async (
 		FilesElement.appendChild(fileGrid);
 	}
 	if (options?.reveal) {
-		Select(document.querySelector<HTMLElement>(`.file[data-path="${escape(options?.revealDir)}"]`), false, false);
+		Select(document.querySelector<HTMLElement>(`.file[data-path="${encodeURI(options?.revealDir)}"]`), false, false);
 	}
 
 	return FilesElement;

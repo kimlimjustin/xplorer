@@ -6,12 +6,12 @@ import copyLocation from '../Files/File Operation/location';
 import { ChangeSelectedEvent, getSelected, Select, unselectAllSelected } from '../Files/File Operation/select';
 import Pin from '../Files/File Operation/pin';
 import New from '../Functions/new';
-import { createNewWindow } from '../../Api/window';
-import Storage from '../../Api/storage';
-import windowName from '../../Api/window';
-import FileAPI from '../../Api/files';
-import DirectoryAPI from '../../Api/directory';
-import reveal from '../../Api/reveal';
+import { createNewWindow } from '../../Service/window';
+import Storage from '../../Service/storage';
+import windowName from '../../Service/window';
+import FileAPI from '../../Service/files';
+import DirectoryAPI from '../../Service/directory';
+import reveal from '../../Service/reveal';
 import NormalizeSlash from '../Functions/path/normalizeSlash';
 import { reload } from '../Layout/windowManager';
 import Cut from '../Files/File Operation/cut';
@@ -25,6 +25,8 @@ import { Trash, PermanentDelete, Purge } from '../Files/File Operation/trash';
 import Properties from '../Properties/properties';
 import Preview, { closePreviewFile } from '../Files/File Preview/preview';
 import { ensureElementInViewPort } from '../Functions/viewport';
+import OperationAPI from '../../Service/operation';
+import { resizeSidebar } from '../Layout/resizer';
 let selectedAll = true;
 let pauseEnterListener = false;
 /**
@@ -49,21 +51,83 @@ const pauseEnter = (): void => {
  * @returns {void}
  */
 const Shortcut = (): void => {
+	const searchElement = document.querySelector<HTMLInputElement>('.search-bar');
+	let searchingState = false;
 	let searchingFileName = '';
-	let _searchListener: ReturnType<typeof setTimeout>;
-	const KeyUpShortcutsHandler = async (e: KeyboardEvent) => {
-		const selectedFile = getSelected()?.[0];
-		const selectedFilePath = unescape(selectedFile?.dataset?.path);
-		const isDir = selectedFile?.dataset.isdir === 'true';
-		const _focusingPath = await focusingPath();
+	let searchingFiles: HTMLElement[] | null = null;
+	let _searchListener: ReturnType<typeof setTimeout> | null = null;
 
+	const KeyUpShortcutsHandler = async (e: KeyboardEvent) => {
 		// Don't react if cursor is over input field
 		if (document.activeElement.tagName === 'INPUT') return;
+
+		const isAlphanumeric = ['Key', 'Digit'].some((a) => e.code.startsWith(a));
+		// Fast search for files
+		if (!e.ctrlKey && !e.shiftKey && !e.altKey && isAlphanumeric) {
+			const resetTimer = () => {
+				clearTimeout(_searchListener);
+				_searchListener = setTimeout(() => (searchingState = false), 400);
+			};
+
+			const isMatchFile = (file: HTMLElement) => {
+				return file
+					.querySelector('#file-filename')
+					?.textContent.toLowerCase()
+					.normalize('NFD')
+					.replace(/[\u0300-\u036f]/gu, '')
+					.startsWith(searchingFileName);
+			};
+
+			const search = (files: HTMLElement[], isStateSwitcher = false) => {
+				if (isStateSwitcher) {
+					searchingState = true;
+					searchingFileName = '';
+				}
+				searchingFileName += e.key.toLowerCase();
+				searchElement.placeholder = '⚡ ' + searchingFileName;
+				searchingFiles = null;
+				resetTimer();
+				unselectAllSelected();
+				const file = files.find((file) => isMatchFile(file));
+				if (!file) return;
+				Select(file, false, false);
+				ensureElementInViewPort(file);
+			};
+
+			const navigate = (files: HTMLElement[]) => {
+				searchingFiles ||= files.filter((file) => isMatchFile(file));
+				const fileIndex = searchingFiles.findIndex((file) => {
+					return file.classList.contains('selected');
+				});
+				unselectAllSelected();
+				const fileNext = searchingFiles[fileIndex + 1] || searchingFiles[0];
+				if (!fileNext) return;
+				Select(fileNext, false, false);
+				ensureElementInViewPort(fileNext);
+			};
+
+			const files = [...document.querySelectorAll<HTMLElement>('.file')];
+			if (searchingState) search(files);
+			else if (e.key.toLowerCase() === searchingFileName.at(-1)) navigate(files);
+			else search(files, true);
+			return;
+		}
+
+		searchingState = false;
+		searchingFileName = '';
+		searchingFiles = null;
+		clearTimeout(_searchListener);
+		searchElement.placeholder = '🔎 Search';
+
+		const selectedFile = getSelected()?.[0];
+		const selectedFilePath = decodeURI(selectedFile?.dataset?.path);
+		const isDir = selectedFile?.dataset.isdir === 'true';
+		const _focusingPath = await focusingPath();
 
 		// Open file shorcut (Enter)
 		if (e.key === 'Enter') {
 			for (const selected of getSelected()) {
-				const targetPath = unescape(selected.dataset.path) === 'undefined' ? _focusingPath : unescape(selected.dataset.path);
+				const targetPath = decodeURI(selected.dataset.path) === 'undefined' ? _focusingPath : decodeURI(selected.dataset.path);
 				if ((await new DirectoryAPI(targetPath).exists()) && !pauseEnterListener) {
 					// Open file in vscode (Shift + Enter)
 					if (e.shiftKey) {
@@ -78,7 +142,15 @@ const Shortcut = (): void => {
 				} else pauseEnterListener = false;
 			}
 		}
-		// New tab shortcut
+		// Collapse sidebar (Ctrl + B)
+		if (e.ctrlKey && e.key === 'b') {
+			resizeSidebar();
+		}
+		// Duplicate file (Ctrl + D)
+		if (e.ctrlKey && e.key === 'd') {
+			new OperationAPI(selectedFilePath).duplicate();
+		}
+		// New tab shortcut (Ctrl + T)
 		else if (e.key === 't' && e.ctrlKey) {
 			createNewTab();
 		}
@@ -105,7 +177,7 @@ const Shortcut = (): void => {
 		else if (e.altKey && e.key === 'p') {
 			let filePaths = [];
 			for (const element of getSelected()) {
-				filePaths.push(unescape(element.dataset.path));
+				filePaths.push(decodeURI(element.dataset.path));
 			}
 			if (!filePaths.length) filePaths = [_focusingPath];
 			Pin(filePaths);
@@ -115,7 +187,7 @@ const Shortcut = (): void => {
 		else if (e.ctrlKey && e.key === 'c') {
 			const filePaths = [];
 			for (const element of getSelected()) {
-				filePaths.push(unescape(element.dataset.path));
+				filePaths.push(decodeURI(element.dataset.path));
 			}
 			Copy(filePaths);
 		}
@@ -159,7 +231,7 @@ const Shortcut = (): void => {
 		else if (e.ctrlKey && e.key === 'x') {
 			const filePaths = [];
 			for (const element of getSelected()) {
-				filePaths.push(unescape(element.dataset.path));
+				filePaths.push(decodeURI(element.dataset.path));
 			}
 			Cut(filePaths);
 		}
@@ -201,7 +273,7 @@ const Shortcut = (): void => {
 			if (e.shiftKey) {
 				const filePaths = [];
 				for (const element of getSelected()) {
-					filePaths.push(unescape(element.dataset.path));
+					filePaths.push(decodeURI(element.dataset.path));
 				}
 				if (_focusingPath === 'xplorer://Trash') Purge(filePaths);
 				else PermanentDelete(filePaths);
@@ -209,7 +281,7 @@ const Shortcut = (): void => {
 				if (_focusingPath === 'xplorer://Trash') return;
 				const filePaths = [];
 				for (const element of getSelected()) {
-					filePaths.push(unescape(element.dataset.path));
+					filePaths.push(decodeURI(element.dataset.path));
 				}
 				Trash(filePaths);
 			}
@@ -279,13 +351,12 @@ const Shortcut = (): void => {
 		else if (e.ctrlKey && e.key === 'p') {
 			e.preventDefault();
 			const selectedFile = getSelected()?.[0];
-			const selectedFilePath = unescape(selectedFile?.dataset?.path);
+			const selectedFilePath = decodeURI(selectedFile?.dataset?.path);
 			Properties(selectedFilePath === 'undefined' ? await focusingPath() : selectedFilePath);
 		}
 		// Find files (Ctrl+F)
 		else if (e.ctrlKey && e.key === 'f') {
 			e.preventDefault();
-			const searchElement = document.querySelector<HTMLInputElement>('.search-bar');
 			searchElement.select();
 			searchElement.focus();
 		}

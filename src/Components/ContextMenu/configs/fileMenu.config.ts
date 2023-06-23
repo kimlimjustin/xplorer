@@ -1,8 +1,8 @@
 import Preview from '../../Files/File Preview/preview';
-import { isVSCodeInstalled } from '../../../Api/app';
+import { isVSCodeInstalled } from '../../../Service/app';
 import contextMenuItem from '../../../Typings/contextMenuItem';
 import { createNewTab } from '../../Layout/tab';
-import reveal from '../../../Api/reveal';
+import reveal from '../../../Service/reveal';
 import Cut from '../../Files/File Operation/cut';
 import Copy from '../../Files/File Operation/copy';
 import copyLocation from '../../Files/File Operation/location';
@@ -13,8 +13,9 @@ import Properties from '../../Properties/properties';
 import focusingPath from '../../Functions/focusingPath';
 import Translate from '../../I18n/i18n';
 import { OpenDir } from '../../Open/open';
-import FileAPI from '../../../Api/files';
-import Storage from '../../../Api/storage';
+import FileAPI from '../../../Service/files';
+import Storage from '../../../Service/storage';
+import Ask from '../../Prompt/ask';
 interface Favorites {
 	name: string;
 	path: string;
@@ -37,7 +38,7 @@ const FileMenu = async (target: HTMLElement, filePath: string): Promise<contextM
 				},
 			},
 			{
-				menu: await Translate('Open in new tab'),
+				menu: await Translate('Open in New Tab'),
 				visible: target?.dataset?.isdir === 'true',
 				icon: 'open in new tab',
 				role: () => {
@@ -45,7 +46,7 @@ const FileMenu = async (target: HTMLElement, filePath: string): Promise<contextM
 				},
 			},
 			{
-				menu: await Translate('Open in terminal'),
+				menu: await Translate('Open in Terminal'),
 				visible: target?.dataset?.isdir === 'true',
 				shortcut: 'Alt+T',
 				icon: 'terminal',
@@ -54,7 +55,7 @@ const FileMenu = async (target: HTMLElement, filePath: string): Promise<contextM
 				},
 			},
 			{
-				menu: await Translate('Open in VSCcode'),
+				menu: await Translate('Open in VSCode'),
 				visible: await isVSCodeInstalled(),
 				shortcut: 'Shift+Enter',
 				icon: 'vscode',
@@ -109,7 +110,7 @@ const FileMenu = async (target: HTMLElement, filePath: string): Promise<contextM
 				icon: 'delete',
 				visible: _focusingPath === 'xplorer://Trash',
 				role: () => {
-					Restore([unescape(filePath)]);
+					Restore([decodeURI(filePath)]);
 				},
 			},
 			{
@@ -118,7 +119,7 @@ const FileMenu = async (target: HTMLElement, filePath: string): Promise<contextM
 				visible: _focusingPath === 'xplorer://Trash',
 				shortcut: 'Shift+Del',
 				role: () => {
-					Purge([unescape(filePath)]);
+					Purge([decodeURI(filePath)]);
 				},
 			},
 			{
@@ -126,6 +127,22 @@ const FileMenu = async (target: HTMLElement, filePath: string): Promise<contextM
 				shortcut: 'Alt+P',
 				icon: 'pin',
 				role: () => Pin([filePath]),
+			},
+			{
+				menu: await Translate('Extract'),
+				visible: target?.dataset?.path?.endsWith('.zip') ?? false,
+				icon: 'unzip',
+				role: async () => {
+					const target = await Ask('Extract files', 'Extract files to', { value: filePath.replace('.zip', ''), selectFileName: false });
+					new FileAPI(filePath).unzip(target);
+				},
+			},
+			{
+				menu: await Translate('Compress to Zip'),
+				icon: 'zip',
+				role: () => {
+					new FileAPI(filePath).zip();
+				},
 			},
 		],
 		[

@@ -7,6 +7,10 @@
     "message": "Guide",
     "description": "The label for category Guides in sidebar tutorialSidebar"
   },
+  "sidebar.tutorialSidebar.category.Extensions (Beta)": {
+    "message": "Extensions (Beta)",
+    "description": "The label for category Extensions (Beta) in sidebar tutorialSidebar"
+  },
   "sidebar.tutorialSidebar.category.Community": {
     "message": "Communauté",
     "description": "The label for category Community in sidebar tutorialSidebar"

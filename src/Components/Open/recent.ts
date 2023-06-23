@@ -1,13 +1,14 @@
 import { startLoading, stopLoading } from '../Functions/Loading/loading';
-import Storage from '../../Api/storage';
+import Storage from '../../Service/storage';
 import fileThumbnail from '../Thumbnail/thumbnail';
 import { updateTheme } from '../Theme/theme';
 import type { OpenLogType } from '../Functions/log';
-import FileAPI from '../../Api/files';
+import FileAPI from '../../Service/files';
 import FileMetaData from '../../Typings/fileMetaData';
 import NormalizeSlash from '../Functions/path/normalizeSlash';
 import formatBytes from '../Functions/filesize';
 import { LOAD_IMAGE } from '../Functions/lazyLoadingImage';
+import { GET_TAB_ELEMENT } from '../../Util/constants';
 
 interface RecentType {
 	path: string;
@@ -24,7 +25,7 @@ const Recent = async (): Promise<void> => {
 	const layout = (await Storage.get('layout'))?.['Recent'] ?? (await Storage.get('appearance'))?.layout ?? 's';
 	const sort = (await Storage.get('sort'))?.['Recent'] ?? 'F';
 	// Get the main element
-	const MAIN_ELEMENT = document.getElementById('workspace');
+	const MAIN_ELEMENT = GET_TAB_ELEMENT();
 	MAIN_ELEMENT.innerHTML = '';
 	if (MAIN_ELEMENT.classList.contains('empty-dir-notification')) MAIN_ELEMENT.classList.remove('empty-dir-notification'); // Remove class if exist
 	// Get recent files list
@@ -105,7 +106,7 @@ const Recent = async (): Promise<void> => {
 			}
 			fileGrid.setAttribute('draggable', 'true');
 			fileGrid.dataset.isdir = String(recent.properties.is_dir);
-			fileGrid.dataset.path = escape(NormalizeSlash(recent.path));
+			fileGrid.dataset.path = encodeURI(NormalizeSlash(recent.path));
 			fileGrid.dataset.isSystem = String(recent.properties.is_system);
 			fileGrid.dataset.isReadOnly = String(recent.properties.readonly);
 			fileGrid.dataset.isHidden = String(recent.properties.is_hidden);

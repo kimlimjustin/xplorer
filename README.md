@@ -17,37 +17,53 @@
 
 # What is Xplorer?
 
-![Demo](docs/static/img/Xplorer_dark.png)
+![Demo](docs/static/img/docs/themed-xplorer.webp)
 
 <details>
 <summary>
 View More Screenshots
 </summary>
 
-![Demo](docs/static/img/Xplorer_dark+.png)
-![Demo](docs/static/img/Xplorer_light.png)
-![Demo](docs/static/img/Xplorer_light+.png)
-![Demo](docs/static/img/Xplorer_mac_light.png)
-![Demo](docs/static/img/Xplorer_mac_dark.png)
-![Demo](docs/static/img/Xplorer_linux.png)
+![Demo](docs/static/img/Xplorer_dark+.webp)
+![Demo](docs/static/img/Xplorer_light.webp)
+![Demo](docs/static/img/Xplorer_light+.webp)
+![Demo](docs/static/img/Xplorer_mac_light.webp)
+![Demo](docs/static/img/Xplorer_mac_dark.webp)
+![Demo](docs/static/img/Xplorer_linux.webp)
 
 </details>
 
-Xplorer is a file explorer built from ground-up to be fully customizable. And even without any customization, it already looks modern!
-
-Xplorer is a cross-platform application built using [Tauri](https://tauri.studio), and you can run it on Windows, MacOS, or Linux without having much trouble. One of the key features is Xplorer allows you to preview the files you have directly inside Xplorer. And it's not only limited to picture or document previews, but also video previews.
-
-To summarize, Xplorer's features contain:
+Xplorer is a modern file explorer built from ground-up to be fully customizable to fit 2022's need. Besides, Xplorer is a cross-platform application powered by the web that is being wrapped using [Tauri](https://tauri.studio) framework in which you can run Xplorer on Windows, MacOS, or Linux without having much trouble. Some Xplorer's features in summary are:
 
 -   It looks modern
 -   Easy to use
--   Cross-platform
+-   [Cross-platform](https://xplorer.space/)
 -   [File Preview](https://xplorer.space/docs/guides/operation/#preview-file), even for videos!
--   Customizable
+-   [Customizable](https://xplorer.space/docs/Extensions/theme/)
 -   Supports multiple tabs
--   Most importantly, Free and Open Source Software(FOSS), which means you can change components inside if you see fit
+-   Most importantly, It's an Open Source Software (OSS)!
 
-Xplorer is currently under heavy development. You can give your suggestions and feedback on our [Discussions](https://github.com/kimlimjustin/xplorer/discussions/) page. If you feel comfortable in writing code using Typescript and Rust, we highly encourage you to [contribute to this project](https://xplorer.space/community/Contributing/).
+Xplorer is currently under heavy development. You can give your suggestions and feedback on our [Discussions](https://github.com/kimlimjustin/xplorer/discussions/) page. If you feel comfortable in writing code using Typescript and Rust, we highly encourage you to [contribute to this project](https://xplorer.space/docs/community/Contributing/).
+
+---
+
+## Project Roadmap
+
+-   [x] File browsing and preview.
+-   [x] Multiple tabs.
+-   [x] Ability to continue the previous session on startup.
+-   [ ] Extension.
+    -   [x] Theme extension.
+    -   [ ] Functions extension.
+    -   [ ] Extension Marketplace.
+-   [ ] Custom file categorization.
+-   [ ] Multiple workspaces.
+-   [ ] Web application.
+-   [ ] Remote file (OneDrive, Google Drive, etc.)
+-   [ ] File protection.
+-   [ ] Custom file sorting and filtering.
+
+Recommend us a feature by [opening an Discussion](https://github.com/kimlimjustin/xplorer/discussions) if you'd like to.
 
 ---
 
@@ -63,7 +79,7 @@ If you find any bugs, please report it by submitting an issue on our [issue page
 
 ## Feature Request
 
-You can also submit a feature request on our [issue page](https://github.com/kimlimjustin/xplorer) or [discussions](https://github.com/kimlimjustin/xplorer/discussions) and we will try to implement it as soon as possible. If you want to contribute to this project, please [contribute to this project](https://xplorer.space/community/Contributing/).
+You can also submit a feature request on our [issue page](https://github.com/kimlimjustin/xplorer) or [discussions](https://github.com/kimlimjustin/xplorer/discussions) and we will try to implement it as soon as possible. If you want to contribute to this project, please [contribute to this project](https://xplorer.space/docs/community/Contributing/).
 
 ---
 
@@ -93,7 +109,7 @@ Simply close and reopen Xplorer, Xplorer will fix itself. If it doesn't, please 
 
 ## Architecture
 
-Xplorer is a cross-platform application built using the [Tauri](https://tauri.studio) framework. Tauri is based on Microsoft Edge-similar webview and Rust to work. Read about tauri [here](https://tauri.studio/en/docs/about/intro)
+Xplorer is a cross-platform application built using the [Tauri](https://tauri.studio) framework. Tauri is based on the OS specific webview and Rust to work. Read about tauri [here](https://tauri.studio/en/docs/about/intro)
 
 Xplorer is a polygot application. Xplorer relies on Rust api for file operations and TS, SCSS for the webview. Rust code are under `src-tauri` directory whereas the webview code are under `src` directory. The API that connects webview with the Rust code is under `src/Api` directory.
 
@@ -139,7 +155,7 @@ The easiest way to run Xplorer in Gitpod is to use the [Gitpod](https://gitpod.i
 
 ## Contribution Guide
 
-We highly encourage you to contribute to this project (even if you are a beginner). And if you finally want to contribute to this project, please read [our contribution guide](https://xplorer.space/community/Contributing).
+We highly encourage you to contribute to this project (even if you are a beginner). And if you finally want to contribute to this project, please read [our contribution guide](https://xplorer.space/docs/community/Contributing).
 
 ---
 

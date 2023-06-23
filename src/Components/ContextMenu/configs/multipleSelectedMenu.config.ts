@@ -1,25 +1,38 @@
 import { getSelected } from '../../Files/File Operation/select';
 import contextMenuItem from '../../../Typings/contextMenuItem';
-import { isVSCodeInstalled } from '../../../Api/app';
+import { isVSCodeInstalled } from '../../../Service/app';
 import { createNewTab } from '../../Layout/tab';
 import Cut from '../../Files/File Operation/cut';
 import Copy from '../../Files/File Operation/copy';
 import { Purge, Restore, Trash } from '../../Files/File Operation/trash';
 import Pin from '../../Files/File Operation/pin';
 import Translate from '../../I18n/i18n';
-import reveal from '../../../Api/reveal';
+import reveal from '../../../Service/reveal';
 import focusingPath from '../../Functions/focusingPath';
-
+import FileAPI from '../../../Service/files';
 const MultipleSelectedMenu = async (_: HTMLElement, _filePath: string): Promise<contextMenuItem[][]> => {
 	const _focusingPath = await focusingPath();
+	const selectedFiles = getSelected();
+	const SELECTED_FILES_ARE_FILES = Array.from(selectedFiles).every((file) => file.dataset.isdir !== 'true');
 	return [
 		[
+			{
+				menu: await Translate('Open'),
+				shortcut: 'Enter',
+				icon: 'open',
+				visible: SELECTED_FILES_ARE_FILES,
+				role: () => {
+					selectedFiles.forEach((file) => {
+						new FileAPI(decodeURI(file.dataset.path)).openFile();
+					});
+				},
+			},
 			{
 				menu: await Translate('Open in New Tab'),
 				role: () => {
 					for (const element of getSelected()) {
 						if (element.dataset.isdir === 'true') {
-							createNewTab(unescape(element.dataset.path));
+							createNewTab(decodeURI(element.dataset.path));
 						}
 					}
 				},
@@ -29,7 +42,7 @@ const MultipleSelectedMenu = async (_: HTMLElement, _filePath: string): Promise<
 				menu: await Translate('Open in VSCode'),
 				role: () => {
 					for (const selected of getSelected()) {
-						const targetPath = unescape(selected.dataset.path) === 'undefined' ? _focusingPath : unescape(selected.dataset.path);
+						const targetPath = decodeURI(selected.dataset.path) === 'undefined' ? _focusingPath : decodeURI(selected.dataset.path);
 						reveal(targetPath, 'vscode');
 					}
 				},
@@ -46,7 +59,7 @@ const MultipleSelectedMenu = async (_: HTMLElement, _filePath: string): Promise<
 				role: () => {
 					const paths = [];
 					for (const element of getSelected()) {
-						paths.push(unescape(element.dataset.path));
+						paths.push(decodeURI(element.dataset.path));
 					}
 					Cut(paths);
 				},
@@ -58,7 +71,7 @@ const MultipleSelectedMenu = async (_: HTMLElement, _filePath: string): Promise<
 				role: () => {
 					const paths = [];
 					for (const element of getSelected()) {
-						paths.push(unescape(element.dataset.path));
+						paths.push(decodeURI(element.dataset.path));
 					}
 					Copy(paths);
 				},
@@ -70,9 +83,17 @@ const MultipleSelectedMenu = async (_: HTMLElement, _filePath: string): Promise<
 				role: () => {
 					const paths = [];
 					for (const element of getSelected()) {
-						paths.push(unescape(element.dataset.path));
+						paths.push(decodeURI(element.dataset.path));
 					}
 					Trash(paths);
+				},
+			},
+			{
+				menu: await Translate('Compress to Zip'),
+				icon: 'zip',
+				role: () => {
+					const selectedFilesPath = [...selectedFiles].map((file) => decodeURI(file.dataset.path));
+					new FileAPI(selectedFilesPath).zip();
 				},
 			},
 		],
@@ -84,7 +105,7 @@ const MultipleSelectedMenu = async (_: HTMLElement, _filePath: string): Promise<
 				role: () => {
 					const filePaths = [];
 					for (const element of getSelected()) {
-						filePaths.push(unescape(element.dataset.path));
+						filePaths.push(decodeURI(element.dataset.path));
 					}
 					Restore(filePaths);
 				},
@@ -96,7 +117,7 @@ const MultipleSelectedMenu = async (_: HTMLElement, _filePath: string): Promise<
 				role: () => {
 					const filePaths = [];
 					for (const element of getSelected()) {
-						filePaths.push(unescape(element.dataset.path));
+						filePaths.push(decodeURI(element.dataset.path));
 					}
 					Purge(filePaths);
 				},
@@ -110,7 +131,7 @@ const MultipleSelectedMenu = async (_: HTMLElement, _filePath: string): Promise<
 				role: () => {
 					const paths = [];
 					for (const element of getSelected()) {
-						paths.push(unescape(element.dataset.path));
+						paths.push(decodeURI(element.dataset.path));
 					}
 					Pin(paths);
 				},

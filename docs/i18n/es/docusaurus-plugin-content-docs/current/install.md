@@ -19,6 +19,7 @@ Tome el archivo **.AppImage** en la página [versiones ](https://github.com/kiml
 Tome el archivo **.deb** en la página [versiones ](https://github.com/kimlimjustin/xplorer/releases).
 
 Puede instalarlo con:
+
 ```bash
 sudo dpkg -i /path/to/deb/file.deb
 ```
@@ -28,9 +29,10 @@ sudo dpkg -i /path/to/deb/file.deb
 ```bash
 sudo apt install /path/to/deb/file.deb
 ```
+
 ### Distribuciones Arch
 
-> Usa tu [helper de Arch](https://wiki.archlinux.org/title/AUR_helpers) favorito.
+> Use your favorite [aur helper](https://wiki.archlinux.org/title/AUR_helpers).
 
 ```bash
 yay -S xplorer-bin
@@ -39,11 +41,13 @@ yay -S xplorer-bin
 
 pacman build xplorer-bin
 ```
+
 **o**
 
 Tome el archivo **.pacman** en la página [versiones ](https://github.com/kimlimjustin/xplorer/releases).
 
 Puede instalarlo con:
+
 ```bash
 sudo pacman -U /path/to/deb/file.pacman
 ```
@@ -51,6 +55,7 @@ sudo pacman -U /path/to/deb/file.pacman
 **o**
 
 compilar desde [fuente](https://aur.archlinux.org/xplorer-bin.git)
+
 ```bash
 git clone https://aur.archlinux.org/xplorer-bin.git
 
@@ -58,6 +63,7 @@ cd xplorer-bin
 
 makepkg -si
 ```
+
 ## Problemas comunes
 
 <details>
@@ -65,16 +71,16 @@ makepkg -si
 ¿Problemas con Windows Defender?
 </summary>
 
-This is actually not an error, it's a design choice by Microsoft to protect those of us who are not tech-savvy (i.e. potentially your friends) from a virus. You don't need to worry about the safety of Xplorer in this case since it's [open source](https://github.com/kimlimjustin/xplorer) and you can inspect the code or even build your own version!
+En realidad no se trata de un error, sino de una decisión de diseño de Microsoft para proteger a los que no sabemos de tecnología (es decir, potencialmente tus amigos) de un virus. No tienes que preocuparte por la seguridad de Xplorer en este caso ya que es [código abierto](https://github.com/kimlimjustin/xplorer) y puedes inspeccionar el código o incluso construir tu propia versión!
 
-To handle this, you can just click the `More Info` button, then, just click Run Anyway.
+Para Solucionarlo, basta con hacer clic en el botón `Más información` y, a continuación, en Ejecutar de todos modos.
 
-1. ![Paso 1](/img/docs/windows-defender-1.png)
-2. ![Paso 2](/img/docs/windows-defender-2.png)
+1. ![Paso 1](/img/docs/windows-defender-1.webp)
+2. ![Paso 2](/img/docs/windows-defender-2.webp)
 
-:::note References
+:::note referencias
 
-Adopted from [Stack Overflow](https://stackoverflow.com/questions/65488839/how-can-i-avoid-windows-protected-your-pc-problem-when-my-friends-try-to-use-m).
+Tomado de [Stack Overflow](https://stackoverflow.com/questions/65488839/how-can-i-avoid-windows-protected-your-pc-problem-when-my-friends-try-to-use-m).
 
 :::
 
@@ -90,6 +96,6 @@ Revise [la documentación oficial](https://support.apple.com/guide/mac-help/open
 Mi instalador favorito no está aquí.
 </summary>
 
-Please address an issue [here](https://github.com/kimlimjustin/xplorer/new).
+Por favor, dirija un problema [aquí](https://github.com/kimlimjustin/xplorer/issues/new/choose).
 
 </details>

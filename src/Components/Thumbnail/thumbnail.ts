@@ -1,8 +1,8 @@
 import { customThumbnail, defaultThumbnail } from '../../Config/folder.config';
 import { IMAGE_TYPES, VIDEO_TYPES } from '../../Config/file.config';
 import getBasename from '../Functions/path/basename';
-import Storage from '../../Api/storage';
-import FileAPI from '../../Api/files';
+import Storage from '../../Service/storage';
+import FileAPI from '../../Service/files';
 import FileLib from '../../../lib/files.json';
 import FolderLib from '../../../lib/folder.json';
 import ThumbnailExtensionTrie from './thumbnailExtensionTrie';
@@ -25,7 +25,7 @@ const DEFAULT_IMAGE_THUMBNAIL = require(`../../Icon/${defaultThumbnail.DEFAULT_I
  */
 const imageThumbnail = async (source: string, HTMLFormat?: boolean, isImg = false): Promise<string> => {
 	if (!HTMLFormat) return (await new FileAPI(source).exists()) ? new FileAPI(source).readAsset() : require(`../../Icon/${source}`);
-	return source.startsWith('data:image/')
+	return source?.startsWith('data:image/')
 		? `<img class="file-grid-preview" src="${source}" />`
 		: `<img data-src = "${source}" data-is-img=${isImg} class="file-grid-preview" src="${DEFAULT_FILE_THUMBNAIL}" onerror="this.onerror=null;this.src='${DEFAULT_IMAGE_THUMBNAIL}'" />`;
 };
@@ -75,19 +75,21 @@ const fileThumbnail = async (filePath: string, category = 'folder', HTMLFormat =
 	}
 	if (category === 'file' && filePath.indexOf('.') === -1) return imageThumbnail(defaultThumbnail.DEFAULT_FILE_THUMBNAIL, HTMLFormat);
 	const ext = filePath.split('.').pop().toLowerCase(); // Get extension of filename
-	const basename = getBasename(filePath);
+	const basename = getBasename(filePath).toLowerCase();
 	const appearance = await Storage.get('appearance');
-	if (IMAGE_TYPES.indexOf(ext) !== -1) {
-		if (imageAsThumbnail) {
-			return imageThumbnail(filePath, HTMLFormat, true);
-		} else {
-			return imageThumbnail(DEFAULT_IMAGE_THUMBNAIL, HTMLFormat);
+	if (category === 'file') {
+		if (IMAGE_TYPES.indexOf(ext) !== -1) {
+			if (imageAsThumbnail) {
+				return imageThumbnail(filePath, HTMLFormat, true);
+			} else {
+				return imageThumbnail(DEFAULT_IMAGE_THUMBNAIL, HTMLFormat);
+			}
+		} else if (VIDEO_TYPES.indexOf(ext) !== -1) {
+			const assetSrc = new FileAPI(filePath).readAsset();
+			return HTMLFormat ? await videoPreview(assetSrc) : assetSrc;
+		} else if ((appearance?.extractExeIcon ?? false) && (ext === 'exe' || ext === 'msi')) {
+			return imageThumbnail(await new FileAPI(filePath).extractIcon(), HTMLFormat, true);
 		}
-	} else if (VIDEO_TYPES.indexOf(ext) !== -1) {
-		const assetSrc = new FileAPI(filePath).readAsset();
-		return HTMLFormat ? await videoPreview(assetSrc) : assetSrc;
-	} else if ((appearance?.extractExeIcon ?? false) && (ext === 'exe' || ext === 'msi')) {
-		return imageThumbnail(await new FileAPI(filePath).extractIcon(), HTMLFormat, true);
 	}
 
 	const filename = filePath.toLowerCase(); // Lowercase filename

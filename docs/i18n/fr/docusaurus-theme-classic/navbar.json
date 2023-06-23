@@ -15,6 +15,10 @@
     "message": "Discord",
     "description": "Navbar item with label Discord"
   },
+  "item.label.Sponsor us 💗": {
+    "message": "Sponsor us 💗",
+    "description": "Navbar item with label Sponsor us 💗"
+  },
   "item.label.GitHub": {
     "message": "GitHub",
     "description": "Navbar item with label GitHub"

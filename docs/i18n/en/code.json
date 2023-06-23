@@ -1,27 +1,12 @@
 {
-  "welcome.title": {
-    "message": "File Explorer."
-  },
-  "welcome.keyword": {
-    "message": "Redefined."
-  },
-  "welcome.description": {
-    "message": "Free and Open Source Software. Runs everywhere."
-  },
-  "welcome.download": {
-    "message": "Download now"
-  },
-  "welcome.xploreTheDocs": {
-    "message": "Read documentation"
-  },
   "about.title": {
     "message": "Cross-platform File Explorer."
   },
   "about.poweredByTheWebTitle": {
-    "message": "Powered by the web."
+    "message": "Powered by the web"
   },
   "about.builtUsing": {
-    "message": "Built using the"
+    "message": "Being built using the"
   },
   "about.written": {
     "message": ", and written using"
@@ -35,23 +20,76 @@
   "about.promise": {
     "message": "Xplorer promises you an unprecedented experience."
   },
-  "feature.design": {
+  "feature.multipleTabs": {
+    "message": "Supports Multiple Tabs"
+  },
+  "feature.multipleTabsDescription": {
+    "message": "Tired of opening multiple windows to explore your files? Xplorer comes with multiple tabs support to help you manage your files easier."
+  },
+  "feature.filePreview": {
+    "message": "File Preview"
+  },
+  "feature.filePreviewDescriptionPart1": {
+    "message": "Xplorer comes with a"
+  },
+  "feature.filePreviewDescriptionPart2": {
+    "message": "built-in file previewer"
+  },
+  "feature.filePreviewDescriptionPart3": {
+    "message": "to help you view files in a more intuitive way. It supports images, videos, PDFs to almost all programming language with Syntax Highlighting."
+  },
+  "feature.designTitle": {
     "message": "Designed out of the box"
   },
   "feature.designDescription": {
     "message": "Say goodbye to the old design by traditional app and say hello to this simple yet powerful design."
   },
-  "feature.multipleTabs": {
-    "message": "Supports Multiple Tabs"
+  "feature.customizableTitle": {
+    "message": "Customizable"
   },
-  "feature.multipleTabsDescription": {
-    "message": "Xplorer helps you organize you files easier by supporting multiple tabs ."
+  "feature.customizableDescriptionPart1": {
+    "message": "You can customize the look and feel of Xplorer by using different themes or"
   },
-  "feature.filePreview": {
-    "message": "File Preview"
+  "feature.customizableDescriptionPart2": {
+    "message": "build your own theme"
   },
-  "feature.filePreviewDescription": {
-    "message": "Xplorer supports files preview, from images, code preview, pdfs, to videos. Learn more"
+  "welcome.keyword": {
+    "message": "Redefined."
+  },
+  "welcome.download": {
+    "message": "Download now"
+  },
+  "welcome.xploreTheDocs": {
+    "message": "Read documentation"
+  },
+  "welcome.description": {
+    "message": "Free and Open Source Software. Runs everywhere."
+  },
+  "newsletter.alreadySubscribed": {
+    "message": "You've already subcribed to this newsletter!"
+  },
+  "newsletter.error": {
+    "message": "Something went wrong, please try again later."
+  },
+  "supports.titlePart1": {
+    "message": "Designed and developed by"
+  },
+  "supports.titlePart2": {
+    "message": "many amazing people."
+  },
+  "supports.descriptionPart1": {
+    "message": "Xplorer is an Open Source project that"
+  },
+  "supports.descriptionPart2": {
+    "message": "everyone can contribute to."
+  },
+  "theme.ErrorPageContent.title": {
+    "message": "This page crashed.",
+    "description": "The title of the fallback page when the page crashed"
+  },
+  "theme.ErrorPageContent.tryAgain": {
+    "message": "Try again",
+    "description": "The label of the button to try again when the page crashed"
   },
   "theme.NotFound.title": {
     "message": "Page Not Found",
@@ -69,6 +107,10 @@
     "message": "Close",
     "description": "The ARIA label for close button of announcement bar"
   },
+  "theme.BackToTopButton.buttonAriaLabel": {
+    "message": "Scroll back to top",
+    "description": "The ARIA label for the back to top button"
+  },
   "theme.blog.archive.title": {
     "message": "Archive",
     "description": "The page & hero title of the blog archive page"
@@ -76,10 +118,6 @@
   "theme.blog.archive.description": {
     "message": "Archive",
     "description": "The page & hero description of the blog archive page"
-  },
-  "theme.BackToTopButton.buttonAriaLabel": {
-    "message": "Scroll back to top",
-    "description": "The ARIA label for the back to top button"
   },
   "theme.blog.paginator.navAriaLabel": {
     "message": "Blog list page navigation",
@@ -169,6 +207,10 @@
     "message": "Collapse sidebar",
     "description": "The title attribute for collapse button of doc sidebar"
   },
+  "theme.DocSidebarItem.toggleCollapsedCategoryAriaLabel": {
+    "message": "Toggle the collapsible sidebar category '{label}'",
+    "description": "The ARIA label to toggle the collapsible sidebar category"
+  },
   "theme.docs.tagDocListPageTitle.nDocsTagged": {
     "message": "One doc tagged|{count} docs tagged",
     "description": "Pluralized label for \"{count} docs tagged\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
@@ -233,6 +275,10 @@
     "message": "On this page",
     "description": "The label used by the button on the collapsible TOC component"
   },
+  "theme.SearchBar.label": {
+    "message": "Search",
+    "description": "The ARIA label and placeholder for search button"
+  },
   "theme.SearchPage.documentsFound.plurals": {
     "message": "One document found|{count} documents found",
     "description": "Pluralized label for \"{count} documents found\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
@@ -264,10 +310,6 @@
   "theme.SearchPage.fetchingNewResults": {
     "message": "Fetching new results...",
     "description": "The paragraph for fetching new search results"
-  },
-  "theme.SearchBar.label": {
-    "message": "Search",
-    "description": "The ARIA label and placeholder for search button"
   },
   "theme.PwaReloadPopup.info": {
     "message": "New version available",

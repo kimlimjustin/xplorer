@@ -12,6 +12,7 @@
 		"root.loader.background": "#4fe0be",
 		"root.sidebarSettingButton.background": "inherit",
 		"root.sidebarSettingButton.color": "#98aec1",
+		"root#sidebarResizer.background": "#141e3e",
 
 		"windowmanager#minimize.background": "#fbd914",
 		"windowmanager#minimize.color": "#14141b",
@@ -56,6 +57,7 @@
 		"settings.numberCtrlMinus.color": "#122430",
 
 		"contextmenu.background": "#1b1e2e",
+		"contextmenu.boxShadow": "1px 1px 1px 1px #7476e7",
 		"contextmenu.Color": "inherit",
 		"contextmenu.contextmenuSubmenu.background": "#1b1e2e",
 		"contextmenu.contextmenuSubmenu.color": "inherit",
@@ -165,6 +167,7 @@
 		"root.loader.background": "#87c1ce",
 		"root.sidebarSettingButton.background": "inherit",
 		"root.sidebarSettingButton.color": "#98aec1",
+		"root#sidebarResizer.background": "#292d42",
 
 		"windowmanager#minimize.background": "#fbd914",
 		"windowmanager#minimize.color": "#14141b",
@@ -209,6 +212,7 @@
 		"settings.numberCtrlMinus.color": "#122430",
 
 		"contextmenu.background": "#1b1e2e",
+		"contextmenu.boxShadow": "1px 1px 1px 1px #22595f",
 		"contextmenu.Color": "inherit",
 		"contextmenu.contextmenuSubmenu.background": "#1b1e2e",
 		"contextmenu.contextmenuSubmenu.color": "inherit",
@@ -223,8 +227,7 @@
 		"grid.fileGrid.color": "#87c1ce",
 		"grid.--selectedGridBorder": "#1e88e5",
 		"grid.--selectedGridBackground": "#2893a0",
-		"grid.--selectedGridColor": "inherit",
-
+		"grid.--selectedGridColor": "#ffffff",
 		"preview.background": "#39496a",
 		"preview.color": "inherit",
 		"preview.previewExitBtn.background": "#3e537d",
@@ -315,6 +318,7 @@
 		"root.loader.background": "#6d94a2",
 		"root.sidebarSettingButton.background": "inherit",
 		"root.sidebarSettingButton.color": "inherit",
+		"root#sidebarResizer.background": "#bcc2e3",
 
 		"windowmanager#minimize.background": "#e9cc21",
 		"windowmanager#minimize.color": "#14141b",
@@ -359,6 +363,7 @@
 		"settings.numberCtrlMinus.color": "#000",
 
 		"contextmenu.background": "#cbccd1",
+		"contextmenu.boxShadow": "1px 1px 1px 1px #aaa",
 		"contextmenu.Color": "inherit",
 		"contextmenu.contextmenuSubmenu.background": "#cbccd1",
 		"contextmenu.contextmenuSubmenu.color": "inherit",
@@ -392,7 +397,7 @@
 
 		"prompt.background": "#f7f7f7",
 		"prompt.promptInput.background": "#ebe9e9",
-		"prompt.promptInput.color": "#87c1ce",
+		"prompt.promptInput.color": "#5c5757",
 		"prompt.promptOk.background": "#3879d9",
 		"prompt.promptOk.color": "#fff",
 		"prompt.promptCancel.background": "#87c1ce",
@@ -465,6 +470,7 @@
 		"root.loader.background": "#8c9a97",
 		"root.sidebarSettingButton.background": "inherit",
 		"root.sidebarSettingButton.color": "inherit",
+		"root#sidebarResizer.background": "#cdd1e7",
 
 		"windowmanager#minimize.background": "#fbd914",
 		"windowmanager#minimize.color": "#14141b",
@@ -509,6 +515,7 @@
 		"settings.numberCtrlMinus.color": "#000",
 
 		"contextmenu.background": "#dedee3",
+		"contextmenu.boxShadow": "1px 1px 1px 1px #aaa",
 		"contextmenu.Color": "inherit",
 		"contextmenu.contextmenuSubmenu.background": "#d1d1d8",
 		"contextmenu.contextmenuSubmenu.color": "inherit",
@@ -542,7 +549,7 @@
 
 		"prompt.background": "#f7f7f7",
 		"prompt.promptInput.background": "#ebe9e9",
-		"prompt.promptInput.color": "#87c1ce",
+		"prompt.promptInput.color": "#5c5757",
 		"prompt.promptOk.background": "#3879d9",
 		"prompt.promptOk.color": "#fff",
 		"prompt.promptCancel.background": "#87c1ce",

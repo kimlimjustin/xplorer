@@ -1,11 +1,11 @@
-import Storage from '../../../Api/storage';
-import OperationAPI from '../../../Api/operation';
-import DirectoryAPI from '../../../Api/directory';
+import Storage from '../../../Service/storage';
+import OperationAPI from '../../../Service/operation';
+import DirectoryAPI from '../../../Service/directory';
 import joinPath from '../../Functions/path/joinPath';
 import getBasename from '../../Functions/path/basename';
 import getDirname from '../../Functions/path/dirname';
 import NormalizeSlash from '../../Functions/path/normalizeSlash';
-import FileAPI from '../../../Api/files';
+import FileAPI from '../../../Service/files';
 import ConfirmDialog from '../../Prompt/confirm';
 import normalizeSlash from '../../Functions/path/normalizeSlash';
 import { OperationLog } from '../../Functions/log';

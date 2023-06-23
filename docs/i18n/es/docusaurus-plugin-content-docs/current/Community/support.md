@@ -2,41 +2,41 @@
 sidebar_position: 1
 ---
 
-# Support
+# Soporte
 
-Xplorer is an open-source project which you can freely join and seek support 😊.
+Xplorer es un proyecto de código abierto al que puede unirse libremente y conseguir ayuda 😊.
 
-On this page, we've listed some communities/forums you can participate in to seek support or help others.
+En esta página hemos enumerado algunas comunidades/foros en los que puedes participar para buscar apoyo o ayudar a otros.
 
-Before participating in Xplorer's communities, please read our [Code Of Conduct](/docs/community/CODE_OF_CONDUCT/).
+Antes de participar en las comunidades de Xplorer, por favor lea nuestro [Código de conducta](/docs/community/CODE_OF_CONDUCT/).
 
-## Issues
+## Problemas
 
-We use GitHub Issues to track public bugs. Please ensure your description is clear and has sufficient instructions to be able to reproduce the issue. Report a bug by opening a new issue [here](https://github.com/kimlimjustin/xplorer/issues/new).
+Utilizamos la sección de problemas en GitHub para rastrear errores públicos. Por favor, asegúrese de que su descripción sea clara y tiene suficientes instrucciones para poder reproducir el problema. Informa de un error abriendo un nuevo problema [aquí](https://github.com/kimlimjustin/xplorer/issues/new).
 
-## GitHub Discussions
+## Debates en GitHub
 
-GitHub Discussions is used for multiple purposes, such as:
+Las discusiones de GitHub se utilizan para múltiples propósitos, tales como:
 
-1. Asking questions
-2. Making feature requests and sharing ideas
-3. Chat on Xplorer
-4. Show and tell: Making custom themes/plug-ins for Xplorer and showing them there!
+1. Hacer preguntas
+2. Hacer peticiones de características y compartir ideas
+3. Chat en Xplorer
+4. Mostrar y decir: ¡Hacer temas personalizados/plug-ins para Xplorer y mostrándolos allí!
 
-### Feature Request
+### Solicitar una característica
 
-We use [GitHub Discussions](https://github.com/kimlimjustin/xplorer/discussion) and [GitHub Issues](https://github.com/kimlimjustin/xplorer/issues) to track ideas from users. Suggest a new feature [here](https://github.com/kimlimjustin/xplorer/discussions/new)! Great Feature Requests tend to have:
+Utilizamos [discusiones en GitHub](https://github.com/kimlimjustin/xplorer/discussion) y [problemas en GitHub](https://github.com/kimlimjustin/xplorer/issues) para seguir las ideas de los usuarios. ¡Sugiere una nueva función [aquí](https://github.com/kimlimjustin/xplorer/discussions/new)! Las buenas solicitudes de características tienden a tener:
 
--   A quick idea summary.
--   What & why you wanted to add the specific feature.
--   Additional context like images, links to resources to implement the feature, etc.
+-   Resumen rápido de la idea.
+-   Qué & por qué quiere añadir la característica específicada.
+-   Contexto adicional como imágenes, enlaces a recursos para implementar la función, etc.
 
-### Help
+### Ayuda
 
-You can ask for help using [GitHub Discussion](https://github.com/kimlimjustin/xplorer/discussions) or [Discord Channel](https://discord.gg/kK7rwxPt).
+Puedes pedir ayuda usando [GitHub Discussion](https://github.com/kimlimjustin/xplorer/discussions) o [Discussion](https://discord.gg/kK7rwxPt).
 
-:::note Remember to choose the discussion category as Q&A so that your question will be published with answers enabled. :::
+:::note Recuerda elegir la categoría de discusión como Q&A para que tu pregunta sea publicada con las respuestas habilitadas. :::
 
-## News
+## Noticias
 
-For the latest news about Xplorer, you can see it through posts on [Forem](https://dev.to/t/xplorer).
+Para las últimas noticias sobre Xplorer, puedes verlas a través de publicaciones en [Forem](https://dev.to/t/xplorer).

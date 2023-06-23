@@ -1,27 +1,12 @@
 {
-  "welcome.title": {
-    "message": "Explorateur de Fichiers."
-  },
-  "welcome.keyword": {
-    "message": "Redéfini."
-  },
-  "welcome.description": {
-    "message": "Logiciel libre et Open Source. Fonctionne partout."
-  },
-  "welcome.download": {
-    "message": "Télécharger maintenant"
-  },
-  "welcome.xploreTheDocs": {
-    "message": "Lire la documentation"
-  },
   "about.title": {
     "message": "Explorateur de fichiers multiplateforme."
   },
   "about.poweredByTheWebTitle": {
-    "message": "Propulsé par le web."
+    "message": "Powered by the web"
   },
   "about.builtUsing": {
-    "message": "Conçue avec"
+    "message": "Being built using the"
   },
   "about.written": {
     "message": ", et écrit en"
@@ -35,23 +20,76 @@
   "about.promise": {
     "message": "Pour le backend, Xplorer vous promet une expérience sans précédent."
   },
-  "feature.design": {
-    "message": "Conçu hors de la boîte"
-  },
-  "feature.designDescription": {
-    "message": "Dites adieu à l'ancien design par application traditionnelle et dites bonjour à ce design simple mais puissant."
-  },
   "feature.multipleTabs": {
     "message": "Prise en charge de plusieurs onglets"
   },
   "feature.multipleTabsDescription": {
-    "message": "Xplorer vous aide à organiser vos fichiers plus facilement en prenant en charge plusieurs onglets."
+    "message": "Tired of opening multiple windows to explore your files? Xplorer comes with multiple tabs support to help you manage your files easier."
   },
   "feature.filePreview": {
     "message": "Aperçu du fichier"
   },
-  "feature.filePreviewDescription": {
-    "message": "Xplorer supporte l'aperçu des fichiers, depuis les images, l'aperçu du code, les pdfs, jusqu'aux vidéos"
+  "feature.filePreviewDescriptionPart1": {
+    "message": "Xplorer comes with a"
+  },
+  "feature.filePreviewDescriptionPart2": {
+    "message": "built-in file previewer"
+  },
+  "feature.filePreviewDescriptionPart3": {
+    "message": "to help you view files in a more intuitive way. It supports images, videos, PDFs to almost all programming language with Syntax Highlighting."
+  },
+  "feature.designTitle": {
+    "message": "Designed out of the box"
+  },
+  "feature.designDescription": {
+    "message": "Dites adieu à l'ancien design par application traditionnelle et dites bonjour à ce design simple mais puissant."
+  },
+  "feature.customizableTitle": {
+    "message": "Customizable"
+  },
+  "feature.customizableDescriptionPart1": {
+    "message": "You can customize the look and feel of Xplorer by using different themes or"
+  },
+  "feature.customizableDescriptionPart2": {
+    "message": "build your own theme"
+  },
+  "welcome.keyword": {
+    "message": "Redéfini."
+  },
+  "welcome.download": {
+    "message": "Télécharger maintenant"
+  },
+  "welcome.xploreTheDocs": {
+    "message": "Lire la documentation"
+  },
+  "welcome.description": {
+    "message": "Logiciel libre et Open Source. Fonctionne partout."
+  },
+  "newsletter.alreadySubscribed": {
+    "message": "You've already subcribed to this newsletter!"
+  },
+  "newsletter.error": {
+    "message": "Something went wrong, please try again later."
+  },
+  "supports.titlePart1": {
+    "message": "Designed and developed by"
+  },
+  "supports.titlePart2": {
+    "message": "many amazing people."
+  },
+  "supports.descriptionPart1": {
+    "message": "Xplorer is an Open Source project that"
+  },
+  "supports.descriptionPart2": {
+    "message": "everyone can contribute to."
+  },
+  "theme.ErrorPageContent.title": {
+    "message": "This page crashed.",
+    "description": "The title of the fallback page when the page crashed"
+  },
+  "theme.ErrorPageContent.tryAgain": {
+    "message": "Try again",
+    "description": "The label of the button to try again when the page crashed"
   },
   "theme.NotFound.title": {
     "message": "Page non trouvée",
@@ -68,6 +106,10 @@
   "theme.AnnouncementBar.closeButtonAriaLabel": {
     "message": "Fermer",
     "description": "The ARIA label for close button of announcement bar"
+  },
+  "theme.BackToTopButton.buttonAriaLabel": {
+    "message": "Retour au début de la page",
+    "description": "The ARIA label for the back to top button"
   },
   "theme.blog.archive.title": {
     "message": "Archives",
@@ -169,6 +211,10 @@
     "message": "Réduire la barre latérale",
     "description": "The title attribute for collapse button of doc sidebar"
   },
+  "theme.DocSidebarItem.toggleCollapsedCategoryAriaLabel": {
+    "message": "Toggle the collapsible sidebar category '{label}'",
+    "description": "The ARIA label to toggle the collapsible sidebar category"
+  },
   "theme.docs.tagDocListPageTitle.nDocsTagged": {
     "message": "Un doc tagué |{count} docs tagués",
     "description": "Pluralized label for \"{count} docs tagged\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
@@ -233,6 +279,10 @@
     "message": "Sur cette page",
     "description": "The label used by the button on the collapsible TOC component"
   },
+  "theme.SearchBar.label": {
+    "message": "Recherche",
+    "description": "The ARIA label and placeholder for search button"
+  },
   "theme.SearchPage.documentsFound.plurals": {
     "message": "Un document trouvé |{count} documents trouvés",
     "description": "Pluralized label for \"{count} documents found\". Use as much plural forms (separated by \"|\") as your language support (see https://www.unicode.org/cldr/cldr-aux/charts/34/supplemental/language_plural_rules.html)"
@@ -264,10 +314,6 @@
   "theme.SearchPage.fetchingNewResults": {
     "message": "Récupération des nouveaux résultats...",
     "description": "The paragraph for fetching new search results"
-  },
-  "theme.SearchBar.label": {
-    "message": "Recherche",
-    "description": "The ARIA label and placeholder for search button"
   },
   "theme.PwaReloadPopup.info": {
     "message": "Nouvelle version disponible",

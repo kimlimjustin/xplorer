@@ -118,21 +118,27 @@ const ContextMenu = (): void => {
 		let coorY = e.pageY;
 
 		let target = e.target as HTMLElement;
-		while (target.dataset && !target.dataset.path) {
-			target = target.parentNode as HTMLElement;
+		if (target.classList.contains('workspace')) target = target.querySelector('.workspace-tab');
+		else if (target.classList.contains('contextmenu')) {
+			exitContextMenu();
+			return;
+		} else {
+			while (target.dataset && !target.dataset.path) {
+				target = target.parentNode as HTMLElement;
+			}
 		}
-		if (!target?.dataset?.path) return;
+		if (!target?.dataset?.path && !target?.classList?.contains('workspace')) return;
 
-		const filePath = unescape(target.dataset.path);
+		const filePath = decodeURI(target.dataset.path);
 
 		// Create the context menu
 		if (getSelected().length > 1) {
 			await MenuToElements(await MultipleSelectedMenu(target, filePath));
-		} else if (target.classList.contains('sidebar-item')) {
+		} else if (target.classList.contains('favorite-item')) {
 			await MenuToElements(await SidebarMenu(target, filePath));
 		} else if (target.classList.contains('drive-item')) {
 			await MenuToElements(await SidebarDriveMenu(target, filePath));
-		} else if (target === document.getElementById('workspace')) {
+		} else if (target.classList.contains('workspace-tab')) {
 			await MenuToElements(await BodyMenu(target, filePath));
 		} else {
 			await MenuToElements(await FileMenu(target, filePath));

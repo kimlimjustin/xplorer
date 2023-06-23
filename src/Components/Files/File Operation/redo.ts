@@ -1,14 +1,14 @@
 import Copy from './copy';
 import Paste from './paste';
-import windowName from '../../../Api/window';
-import Storage from '../../../Api/storage';
+import windowName from '../../../Service/window';
+import Storage from '../../../Service/storage';
 import NewFile from './new';
 import getBasename from '../../Functions/path/basename';
 import getDirname from '../../Functions/path/dirname';
 import NewFolder from '../../Folder/new';
-import DirectoryAPI from '../../../Api/directory';
+import DirectoryAPI from '../../../Service/directory';
 import ConfirmDialog from '../../Prompt/confirm';
-import OperationAPI from '../../../Api/operation';
+import OperationAPI from '../../../Service/operation';
 import joinPath from '../../Functions/path/joinPath';
 import { Trash } from './trash';
 /**
@@ -63,7 +63,6 @@ const Redo = async (): Promise<void> => {
 			increaseIndex();
 			break;
 	}
-	console.log(operationLogs);
 	Storage.set(`operations-${windowName}`, operationLogs);
 };
 export default Redo;

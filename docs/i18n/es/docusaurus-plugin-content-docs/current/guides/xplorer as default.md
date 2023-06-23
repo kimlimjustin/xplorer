@@ -1,27 +1,27 @@
-# Set As Default File Explorer (Windows)
+# Establecer como explorador de archivos por defecto (Windows)
 
-:::caution This guide involves modifying the Windows registry, make sure to create a backup beforehand to recover if you got any problem with Xplorer. Please keep in mind that this method may not work for everyone.
+:::Advertencia Esta guía implica modificar el registro de Windows, asegúrate de crear una copia de seguridad de antemano para recuperarla si tienes algún problema con Xplorer. Por favor, tenga en cuenta que este método puede no funcionar para todos.
 
-> Click [here](https://support.microsoft.com/en-us/topic/how-to-back-up-and-restore-the-registry-in-windows-855140ad-e318-2a13-2829-d428a2ab0692) to Microsoft official documentation on how to backup and restore the registry
+> Haga clic [aquí](https://support.microsoft.com/en-us/topic/how-to-back-up-and-restore-the-registry-in-windows-855140ad-e318-2a13-2829-d428a2ab0692) en la documentación oficial de Microsoft sobre cómo hacer una copia de seguridad y restaurar el registro
 
 :::
 
-## Automatic way
+## Automáticamente
 
-### To install
+### Para instalar
 
-Download [`/packages/registry-scripts/setXplorerAsDefault.reg`](https://github.com/kimlimjustin/xplorer/blob/master/packages/registry-scripts/setXplorerAsDefault.reg) script from GitHub and double click to run it.
+Descarga [`/packages/registry-scripts/setXplorerAsDefault.reg`](https://github.com/kimlimjustin/xplorer/blob/master/packages/registry-scripts/setXplorerAsDefault.reg) script de GitHub y haz doble clic para ejecutarlo.
 
-### To uninstall
+### Para desinstalar
 
-Download [`/packages/registry-scripts/unsetXplorerAsDefault.reg`](https://github.com/kimlimjustin/xplorer/blob/master/packages/registry-scripts/unsetXplorerAsDefault.reg) script from GitHub and double click to run it.
+Descarga [`/packages/registry-scripts/setXplorerAsDefault.reg`](https://github.com/kimlimjustin/xplorer/blob/master/packages/registry-scripts/unsetXplorerAsDefault.reg) script de GitHub y haz doble clic para ejecutarlo.
 
-## Manual way
+## Manualmente
 
-1. Type `Win` + `R` and type `regedit.exe`
-2. Click `Yes` on the question `Do you want to allow this app to make changes to your devices`
-3. Create a backup of the registry (see caution above).
-4. Navigate to `Computer\HKEY_CURRENT_USER\Software\Classes\Directory\shell'`
-5. Update the Default value to `Xplorer`. This will make Xplorer the default file explorer. (To change it back, just update the value to `open`)
+1. Presiona `Win` + `R` y escribe `regedit.exe`
+2. Haga clic en `Sí` en la pregunta `¿Desea permitir que esta aplicación haga cambios en sus dispositivos`
+3. Crear una copia de seguridad del registro (ver precaución anterior).
+4. Vaya a `computer\HKEY_CURRENT_USER\Software\Classes\Directory\shell'`
+5. Actualizar el valor predeterminado a `Xplorer`. Esto hará que Xplorer sea el explorador de archivos predeterminado. (Para volver a cambiarlo, solo actualice el valor a `abrir`)
 
-![Manual way to make Xplorer as default File Explorer (Windows)](/img/docs/edit_registry.gif)
+![Guía manual para hacer Xplorer como explorador de archivos por defecto (Windows)](/img/docs/edit_registry.gif)

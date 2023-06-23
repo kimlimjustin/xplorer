@@ -1,5 +1,5 @@
 - - -
-posición lateral: 3
+posición de la barra lateral: 3
 - - -
 
 # Problemas comunes
@@ -13,9 +13,9 @@ posición lateral: 3
 
 </summary>
 
-Disable the [`Extract exe file icon and make it as preview`](/docs/guides/setting/#extract-exe-file-icon-and-make-it-a-preview) setting.
+Desactivar la configuración [`Extraer el icono del archivo exe y hacerlo como vista previa`](/docs/guides/setting/#extract-exe-file-icon-and-make-it-a-preview).
 
-Also, please make sure that windows defender isn't blocking Xplorer from accessing your documents.
+Además, asegúrate de que Windows Defender no esté bloqueando el acceso de Xplorer a tus documentos.
 
 </details>
 
@@ -26,6 +26,6 @@ Also, please make sure that windows defender isn't blocking Xplorer from accessi
 
 </summary>
 
-Simply restart, Xplorer will fix itself, if it doesn't, please address an issue [here](https://github.com/kimlimjustin/xplorer/issues/new).
+Simplemente reinicie, Xplorer se arreglará solo, si no lo hace, por favor dirija un problema [aquí](https://github.com/kimlimjustin/xplorer/issues/new).
 
 </details>

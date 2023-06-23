@@ -1,11 +1,12 @@
 import { reload, minimize, maximize, close } from '../../Layout/windowManager';
 import Translate from '../../I18n/i18n';
-import Storage from '../../../Api/storage';
-import OS from '../../../Api/platform';
-import { changeTransparentEffect, getAvailableFonts } from '../../../Api/app';
+import Storage from '../../../Service/storage';
+import OS, { isWin11 } from '../../../Service/platform';
+import { changeTransparentEffect, getAvailableFonts, enableShadowEffect } from '../../../Service/app';
 import { getElementStyle, getInstalledThemes, updateTheme } from '../../Theme/theme';
-import { setDecorations } from '../../../Api/window';
+import { setDecorations } from '../../../Service/window';
 import Infobar from '../../Layout/infobar';
+import isTauri from '../../../Util/is-tauri';
 let platform: string;
 /**
  * Create appearence section
@@ -19,6 +20,7 @@ const Appearance = async (): Promise<void> => {
 	const _theme = await Storage.get('theme');
 	const _appearance = await Storage.get('appearance');
 	const theme = _theme?.theme;
+	const shadowEffect = _appearance?.shadowEffect ?? true;
 	const layout = _appearance?.layout ?? 's';
 	const videoAsThumbnail = _appearance?.videoAsThumbnail ?? false;
 	const imageAsThumbnail = _appearance?.imageAsThumbnail ?? 'smalldir';
@@ -26,9 +28,9 @@ const Appearance = async (): Promise<void> => {
 	const previewImageOnHover = _appearance?.previewImageOnHover ?? true;
 	const settingsMain = document.querySelector('.settings-main');
 	const fontFamily = _appearance?.fontFamily ?? getElementStyle('fontFamily');
-	const fontSize = parseInt(_appearance?.fontSize ?? getElementStyle('fontSize'));
+	const fontSize = parseInt(_appearance?.fontSize ?? 16);
 	const windowTransparency = parseInt(_appearance?.windowTransparency ?? 80);
-	const transparentEffect = _appearance?.transparentEffect ?? 'blur';
+	const transparentEffect = _appearance?.transparentEffect ?? 'none';
 	const transparentSidebar = _appearance?.transparentSidebar ?? true;
 	const transparentTopbar = _appearance?.transparentTopbar ?? false;
 	const transparentWorkspace = _appearance?.transparentWorkspace ?? false;
@@ -45,10 +47,18 @@ const Appearance = async (): Promise<void> => {
 	const availableFonts = await getAvailableFonts();
 	const default_i18n = await Translate('Default');
 	const appTheme_i18n = await Translate('App Theme');
+	const shadowEffect_i18n = await Translate('Apply Shadow Effect');
 	const filePreview_i18n = await Translate('File Preview');
 	const defaultFileLayout_i18n = await Translate('Default File Layout');
+	const gridViewSmall_i18n = await Translate('Grid View (Small)');
+	const gridViewMedium_i18n = await Translate('Grid View (Medium)');
+	const gridViewLarge_i18n = await Translate('Grid View (Large)');
+	const detailView_i18n = await Translate('Detail View');
 	const systemDefault_i18n = await Translate('System Default');
 	const imageAsThumbnail_i18n = await Translate('Show image as thumbnail');
+	const disabled_i18n = await Translate('Disabled');
+	const forSmallDirectory_i18n = await Translate('For small directory (recommended)');
+	const enableForAllDirectory_i18n = await Translate('Enable for all directory');
 	const videoAsThumbnail_i18n = await Translate('Automatically play video file as thumbnail (May consume high amount of RAM)');
 	const extractExeIcon_i18n = await Translate('Extract exe file icon and make it as the thumbnail (Turning it on might crashes Xplorer)');
 	const previewImageOnHover_i18n = await Translate('Preview image on hover');
@@ -56,12 +66,18 @@ const Appearance = async (): Promise<void> => {
 	const fontSize_i18n = await Translate('Font Size');
 	const windowTransparency_i18n = await Translate('Window Transparency');
 	const transparentEffect_i18n = await Translate('Transparent Effect');
+	const blur_i18n = await Translate('Blur');
+	const acrylic_i18n = await Translate('Acrylic');
+	const mica_i18n = await Translate('Mica');
+	const vibrancy_i18n = await Translate('Vibrancy');
+	const none_i18n = await Translate('None');
 	const transparentSidebar_i18n = await Translate('Transparent Sidebar');
 	const transparentTopbar_i18n = await Translate('Transparent Topbar');
 	const transparentWorkspace_i18n = await Translate('Transparent Workspace');
 	const frameStyle_i18n = await Translate('Frame Style');
 	const workspace_i18n = await Translate('Workspace');
 	const showInfoBar_i18n = await Translate('Show Info Bar');
+	const disabledForWeb = !isTauri ? 'disabled' : '';
 	const appearancePage = `<h3 class="settings-title">${appTheme_i18n}</h3>
 	<select name="theme">
 		<option  ${developingTheme ? 'disabled' : ''}>${systemDefault_i18n}</option>
@@ -72,6 +88,17 @@ const Appearance = async (): Promise<void> => {
 			}>${availableTheme.name}</option>`;
 		})}
 	</select>
+	${
+		platform !== 'linux'
+			? `<div class="toggle-box">
+		<label class="toggle">
+			<input type="checkbox" name="shadow-effect" ${shadowEffect ? 'checked' : ''} ${disabledForWeb}>
+			<span class="toggle-slider"></span>
+			<span class="toggle-label">${shadowEffect_i18n}</span>
+		</label>
+	</div>`
+			: ''
+	}
 	<h3 class="settings-title">${fontFamily_i18n}</h3>
 	<select name="font">
 		<option value="${fontFamily}" selected>${fontFamily ?? systemDefault_i18n}</option>
@@ -87,39 +114,44 @@ const Appearance = async (): Promise<void> => {
 		<div class="number-ctrl-plus">+</div>
 	</div>
 	<h3 class="settings-title">${windowTransparency_i18n}: <span id='transparency-label'>${windowTransparency}</span>%</h3>
-		<input type="range" value="${windowTransparency}" min="5" max="100" class="transparency-slider">
+		<input type="range" value="${windowTransparency}" min="5" max="100" class="transparency-slider" ${disabledForWeb}>
 	</div>
 	<div class="toggle-box">
 		<label class="toggle">
-			<input type="checkbox" name="transparent-sidebar" ${transparentSidebar ? 'checked' : ''}>
+			<input type="checkbox" name="transparent-sidebar" ${transparentSidebar ? 'checked' : ''} ${disabledForWeb}>
 			<span class="toggle-slider"></span>
 			<span class="toggle-label">${transparentSidebar_i18n}</span>
 		</label>
 	</div>
 	<div class="toggle-box">
 		<label class="toggle">
-			<input type="checkbox" name="transparent-topbar" ${transparentTopbar ? 'checked' : ''}>
+			<input type="checkbox" name="transparent-topbar" ${transparentTopbar ? 'checked' : ''} ${disabledForWeb}>
 			<span class="toggle-slider"></span>
 			<span class="toggle-label">${transparentTopbar_i18n}</span>
 		</label>
 	</div>
 	<div class="toggle-box">
 		<label class="toggle">
-			<input type="checkbox" name="transparent-workspace" ${transparentWorkspace ? 'checked' : ''}>
+			<input type="checkbox" name="transparent-workspace" ${transparentWorkspace ? 'checked' : ''} ${disabledForWeb}>
 			<span class="toggle-slider"></span>
 			<span class="toggle-label">${transparentWorkspace_i18n}</span>
 		</label>
 	</div>
 	<h3 class="settings-title">${transparentEffect_i18n}</h3>
 	<select name="transparent-effect">
-		<option value="blur" ${transparentEffect === 'blur' ? 'selected' : ''}>Blur</option>
-		<option value="acrylic" ${transparentEffect === 'acrylic' ? 'selected' : ''}>Acrylic</option>
-		<option value="none" ${transparentEffect === 'none' ? 'selected' : ''}>None</option>
+		<option value="blur" ${transparentEffect === 'blur' ? 'selected' : ''} ${platform !== 'win32' ? 'disabled' : ''} ${disabledForWeb}>${blur_i18n}</option>
+		<option value="acrylic" ${transparentEffect === 'acrylic' ? 'selected' : ''} ${platform !== 'win32' ? 'disabled' : ''
+		} ${disabledForWeb}>${acrylic_i18n}</option>
+		<option value="mica" ${transparentEffect === 'mica' ? 'selected' : ''} ${!(platform === 'win32' && (await isWin11())) ? 'disabled' : ''
+		} ${disabledForWeb}>${mica_i18n}</option>
+		<option value="vibrancy" ${transparentEffect === 'vibrancy' ? 'selected' : ''} ${platform !== 'darwin' ? 'disabled' : ''
+		} ${disabledForWeb}>${vibrancy_i18n}</option>
+		<option value="none" ${transparentEffect === 'none' ? 'selected' : ''}>${none_i18n}</option>
 	</select>
 	<h3 class="settings-title">${frameStyle_i18n}</h3>
 	<select name="frame-style">
-		<option value="default" ${frameStyle === 'default' ? 'selected' : ''}>${default_i18n}</option>
-		<option value="os" ${frameStyle === 'os' ? 'selected' : ''}>${systemDefault_i18n}</option>
+		<option value="default" ${frameStyle === 'default' ? 'selected' : ''} ${disabledForWeb}>${default_i18n}</option>
+		<option value="os" ${frameStyle === 'os' ? 'selected' : ''} ${disabledForWeb}>${systemDefault_i18n}</option>
 	</select>
 	<h3 class="settings-title">${filePreview_i18n}</h3>
 	<div class="toggle-box">
@@ -151,16 +183,16 @@ const Appearance = async (): Promise<void> => {
 	}
 	<h3 class="settings-title">${imageAsThumbnail_i18n}</h3>	
 	<select name="imageAsThumbnail">
-		<option ${imageAsThumbnail === 'no' ? 'selected' : ''} value="no">Disabled</option>
-		<option ${imageAsThumbnail === 'smalldir' ? 'selected' : ''} value="smalldir">For small directory (recommended)</option>
-		<option ${imageAsThumbnail === 'yes' ? 'selected' : ''} value="yes">Enable for all directory</option>
+		<option ${imageAsThumbnail === 'no' ? 'selected' : ''} value="no">${disabled_i18n}</option>
+		<option ${imageAsThumbnail === 'smalldir' ? 'selected' : ''} value="smalldir">${forSmallDirectory_i18n}</option>
+		<option ${imageAsThumbnail === 'yes' ? 'selected' : ''} value="yes">${enableForAllDirectory_i18n}</option>
 	</select>
 	<h3 class="settings-title">${defaultFileLayout_i18n}</h3>
 	<select name="layout">
-		<option ${layout === 's' ? 'selected' : ''} value="s">Small Grid View</option>
-		<option ${layout === 'm' ? 'selected' : ''} value="m">Medium Grid View</option>
-		<option ${layout === 'l' ? 'selected' : ''} value="l">Large Grid View</option>
-		<option ${layout === 'd' ? 'selected' : ''} value="d">Detail View</option>
+		<option ${layout === 's' ? 'selected' : ''} value="s">${gridViewSmall_i18n}</option>
+		<option ${layout === 'm' ? 'selected' : ''} value="m">${gridViewMedium_i18n}</option>
+		<option ${layout === 'l' ? 'selected' : ''} value="l">${gridViewLarge_i18n}</option>
+		<option ${layout === 'd' ? 'selected' : ''} value="d">${detailView_i18n}</option>
 	</select>
 	<h3 class="settings-title">${workspace_i18n}</h3>
 	<div class="toggle-box">
@@ -172,10 +204,17 @@ const Appearance = async (): Promise<void> => {
 	</div>
 	`;
 	settingsMain.innerHTML = appearancePage;
+	settingsMain.querySelector('[name="shadow-effect"]')?.addEventListener('change', (event: Event & { target: HTMLInputElement }) => {
+		const shadowEffect = event.target.checked;
+		const appearance = _appearance ?? {};
+		appearance.shadowEffect = shadowEffect;
+		enableShadowEffect(shadowEffect);
+		Storage.set('appearance', appearance);
+	});
 	settingsMain.querySelectorAll('.number-ctrl').forEach((ctrl) => {
 		const number = ctrl.querySelector<HTMLInputElement>('.number-ctrl-input');
 		ctrl.querySelector('.number-ctrl-minus').addEventListener('click', () => {
-			number.value = (parseInt(number.value) - 1).toString();
+			number.value = +number.value - 1 + '';
 			const appearance = _appearance ?? {};
 			appearance.fontSize = `${number.value}px`;
 			document.body.style.fontSize = `${number.value}px`;
@@ -183,7 +222,7 @@ const Appearance = async (): Promise<void> => {
 			Storage.set('appearance', appearance);
 		});
 		ctrl.querySelector('.number-ctrl-plus').addEventListener('click', () => {
-			number.value = (parseInt(number.value) + 1).toString();
+			number.value = +number.value + 1 + '';
 			const appearance = _appearance ?? {};
 			appearance.fontSize = `${number.value}px`;
 			document.body.style.fontSize = `${number.value}px`;
@@ -191,6 +230,7 @@ const Appearance = async (): Promise<void> => {
 			Storage.set('appearance', appearance);
 		});
 	});
+
 	settingsMain.querySelector('.transparency-slider').addEventListener('input', (event: Event & { target: HTMLInputElement }) => {
 		const value = parseInt(event.target.value);
 		const appearance = _appearance ?? {};

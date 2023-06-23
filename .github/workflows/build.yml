@@ -4,13 +4,6 @@ on:
         branches: [master]
 
 jobs:
-    empty-draft:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Empty drafts
-              uses: hugo19941994/delete-draft-releases@v1.0.0
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
     publish-tauri:
         strategy:
             fail-fast: false
@@ -28,16 +21,21 @@ jobs:
               uses: actions-rs/toolchain@v1
               with:
                   toolchain: stable
-            - name: install webkit2gtk (ubuntu only)
+            - name: install dependencies (ubuntu only)
               if: matrix.platform == 'ubuntu-latest'
               run: |
                   sudo apt-get update
-                  sudo apt-get install -y webkit2gtk-4.0
+                  sudo apt-get install -y webkit2gtk-4.0 libayatana-appindicator3-dev
             - name: install app dependencies and build it
+              env:
+                  TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+                  TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
               run: yarn && yarn build
-            - uses: tauri-apps/tauri-action@v0
+            - uses: kimlimjustin/tauri-action@dev
               env:
                   GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+                  TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+                  TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
               with:
                   tagName: app-v__VERSION__
                   releaseName: 'App v__VERSION__'

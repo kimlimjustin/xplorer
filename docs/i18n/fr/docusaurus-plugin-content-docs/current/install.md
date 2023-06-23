@@ -19,6 +19,7 @@ Saisissez le fichier **.AppImage** dans la page [releases](https://github.com/ki
 Récupérez le fichier **.deb** dans la page [releases](https://github.com/kimlimjustin/xplorer/releases).
 
 Vous pouvez installer avec :
+
 ```bash
 sudo dpkg -i /path/to/deb/file.deb
 ```
@@ -28,9 +29,10 @@ sudo dpkg -i /path/to/deb/file.deb
 ```bash
 sudo apt install /path/to/deb/file.deb
 ```
+
 ### Distributions basées sur Arch Linux
 
-> Utilisez votre favori [aur helper](https://wiki.archlinux.org/title/AUR_helpers).
+> Use your favorite [aur helper](https://wiki.archlinux.org/title/AUR_helpers).
 
 ```bash
 yay -S xplorer-bin
@@ -39,11 +41,13 @@ yay -S xplorer-bin
 
 pacman build xplorer-bin
 ```
+
 **ou**
 
 Récupérez le fichier **.pacman** dans la page [releases](https://github.com/kimlimjustin/xplorer/releases).
 
 Vous pouvez installer avec :
+
 ```bash
 sudo pacman -U /path/to/deb/file.pacman
 ```
@@ -51,6 +55,7 @@ sudo pacman -U /path/to/deb/file.pacman
 **ou**
 
 construire à partir de la source [ici](https://aur.archlinux.org/xplorer-bin.git)
+
 ```bash
 git clone https://aur.archlinux.org/xplorer-bin.git
 
@@ -58,6 +63,7 @@ cd xplorer-bin
 
 makepkg -si
 ```
+
 ## Problèmes courants
 
 <details>
@@ -69,8 +75,8 @@ En fait, ce n'est pas une erreur, c'est un choix de design de Microsoft pour pro
 
 Pour gérer ceci, vous pouvez simplement cliquer sur le bouton `Plus d'infos` , puis cliquez sur Exécuter de toute façon.
 
-1. ![Étape 1](/img/docs/windows-defender-1.png)
-2. ![Étape 2](/img/docs/windows-defender-2.png)
+1. ![Étape 1](/img/docs/windows-defender-1.webp)
+2. ![Étape 2](/img/docs/windows-defender-2.webp)
 
 :::note Références
 
@@ -90,6 +96,6 @@ Veuillez essayer [la documentation officielle](https://support.apple.com/guide/m
 Mon installateur préféré n'est pas là.
 </summary>
 
-Signalez un bug en ouvrant un nouveau problème [ici](https://github.com/kimlimjustin/xplorer/new).
+Please address an issue [here](https://github.com/kimlimjustin/xplorer/issues/new/choose).
 
 </details>

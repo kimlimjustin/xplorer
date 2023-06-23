@@ -4,9 +4,9 @@ import Ask from '../../Prompt/ask';
 import basename from '../../Functions/path/basename';
 import getDirname from '../../Functions/path/dirname';
 import joinPath from '../../Functions/path/joinPath';
-import OperationAPI from '../../../Api/operation';
+import OperationAPI from '../../../Service/operation';
 import PromptError from '../../Prompt/error';
-import FileAPI from '../../../Api/files';
+import FileAPI from '../../../Service/files';
 import ConfirmDialog from '../../Prompt/confirm';
 /**
  * Rename file/folder name
@@ -25,7 +25,7 @@ const Rename = (filePath: string): void => {
 		} catch (err) {
 			PromptError('Error renaming file', `Failed to rename ${filePath} [${err}]`);
 		}
-		OperationLog('rename', unescape(filePath), target);
+		OperationLog('rename', decodeURI(filePath), target);
 	});
 };
 

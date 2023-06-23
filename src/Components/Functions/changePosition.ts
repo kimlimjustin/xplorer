@@ -1,17 +1,21 @@
 import Translate from '../I18n/i18n';
 import { changeSelectedAllStatus } from '../Shortcut/shortcut';
-import windowName from '../../Api/window';
-import Storage from '../../Api/storage';
+import windowName from '../../Service/window';
+import Storage from '../../Service/storage';
 import basename from './path/basename';
+import { UpdateInfo } from '../Layout/infobar';
+import { GET_TAB_ELEMENT } from '../../Util/constants';
 /**
  * Change current tab position
  * @param {string} newPath - the new position you want to open
  * @param {boolean} forceChange - force changing position
+ * @param {boolean} writeHistory - write open directory history to storage
  * @returns {Promise<void>}
  */
-const changePosition = async (newPath: string, forceChange = false): Promise<void> => {
+const changePosition = async (newPath: string, forceChange = false, writeHistory?: boolean): Promise<void> => {
 	document.querySelector<HTMLInputElement>('.path-navigator').value = newPath;
-	document.getElementById('workspace').dataset.path = escape(newPath);
+	GET_TAB_ELEMENT().dataset.path = encodeURI(newPath);
+	if (!writeHistory) return;
 
 	const tabs = await Storage.get(`tabs-${windowName}`);
 	const _focusingTab = tabs?.tabs[String(tabs?.focus)];
@@ -38,6 +42,7 @@ const changePosition = async (newPath: string, forceChange = false): Promise<voi
 			: basename(newPath)
 	);
 	Storage.set(`tabs-${windowName}`, tabs);
+	UpdateInfo('selected-files', '');
 	changeSelectedAllStatus();
 	return;
 };

@@ -1,7 +1,7 @@
 {
 	"package": {
 		"productName": "Xplorer",
-		"version": "0.2.0"
+		"version": "0.3.1"
 	},
 	"build": {
 		"distDir": "../out/src",
@@ -11,10 +11,11 @@
 		"withGlobalTauri": true
 	},
 	"tauri": {
+		"macOSPrivateApi": true,
 		"bundle": {
 			"active": true,
 			"targets": "all",
-			"identifier": "Justin Maximillian Kimlim",
+			"identifier": "space.xplorer",
 			"icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"],
 			"resources": ["../lib/files.json", "../lib/folder.json", "./src/extractIcon.ps1"],
 			"externalBin": [],
@@ -23,13 +24,11 @@
 			"shortDescription": "",
 			"longDescription": "",
 			"deb": {
-				"depends": [],
-				"useBootstrapper": false
+				"depends": []
 			},
 			"macOS": {
 				"frameworks": [],
 				"minimumSystemVersion": "",
-				"useBootstrapper": false,
 				"exceptionDomain": "",
 				"signingIdentity": null,
 				"entitlements": null,
@@ -48,7 +47,8 @@
 		"updater": {
 			"active": true,
 			"endpoints": ["https://updater.xplorer.space/api/{{target}}/{{current_version}}"],
-			"dialog": true
+			"dialog": true,
+			"pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEJENUE0RDlDN0I2Rjc2NEIKUldSTGRtOTduRTFhdmVCSGZmR1ozZ1JuSXNiaFF6WkkyeC8yb0Y3UHdaT3d1ZzgxS2hBZTRGYU4K"
 		},
 		"allowlist": {
 			"all": true,
@@ -56,14 +56,16 @@
 				"all": true,
 				"copyFile": true,
 				"createDir": true,
-				"readBinaryFile": true,
 				"readDir": true,
-				"readTextFile": true,
 				"removeDir": true,
 				"removeFile": true,
 				"renameFile": true,
-				"writeBinaryFile": true,
 				"writeFile": true
+			},
+			"protocol": {
+				"all": true,
+				"asset": true,
+				"assetScope": ["*"]
 			}
 		},
 		"windows": [
@@ -71,14 +73,15 @@
 				"title": "Xplorer",
 				"width": 1000,
 				"height": 700,
+				"minWidth": 420,
+				"minHeight": 300,
 				"resizable": true,
 				"fullscreen": false,
-				"decorations": false,
 				"transparent": true
 			}
 		],
 		"security": {
-			"csp": "default-src asset: blob: data: filesystem: ws: wss: http: https: tauri: 'unsafe-eval' 'unsafe-inline' 'self' img-src: 'self'"
+			"csp": null
 		}
 	}
 }

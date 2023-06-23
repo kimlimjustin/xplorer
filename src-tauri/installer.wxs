@@ -13,18 +13,16 @@
             Id="*"
             Name="{{{product_name}}}"
             UpgradeCode="{{{upgrade_code}}}"
-            Language="{{language_id}}"
-            Codepage="{{ascii_codepage}}"
+             Language="!(loc.TauriLanguage)"
             Manufacturer="{{{manufacturer}}}"
             Version="{{{version}}}">
 
         <Package Id="*"
                  Keywords="Installer"
                  InstallerVersion="450"
-                 Languages="{{language_id}}"
+                  Languages="0"
                  Compressed="yes"
-                 InstallScope="perMachine"
-                 SummaryCodepage="{{ascii_codepage}}"/>
+                 InstallScope="perMachine"  SummaryCodepage="!(loc.TauriCodepage)" />
 
         <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed."
           AllowSameVersionUpgrades="yes" />
@@ -46,7 +44,13 @@
         <Property Id="ARPNOREPAIR" Value="yes" Secure="yes" />      <!-- Remove repair -->
         <SetProperty Id="ARPNOMODIFY" Value="1" After="InstallValidate" Sequence="execute"/>
 
+         <!-- launch app checkbox -->
+        <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="!(loc.LaunchApp)" />
+        <Property Id="WixShellExecTarget" Value="{{{app_exe_source}}}" />
+        <CustomAction Id="LaunchApplication" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes" />
+
         <UI>
+            <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchApplication">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed</Publish>
             <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
 
             {{#unless license}}

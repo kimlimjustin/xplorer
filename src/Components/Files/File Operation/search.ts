@@ -1,5 +1,6 @@
+import Translate from '../../I18n/i18n';
 import focusingPath from '../../Functions/focusingPath';
-import DirectoryAPI from '../../../Api/directory';
+import DirectoryAPI from '../../../Service/directory';
 import { startLoading, stopLoading } from '../../Functions/Loading/loading';
 import displayFiles from '../../Open/displayFiles';
 import changePosition from '../../Functions/changePosition';
@@ -7,6 +8,8 @@ import { LOAD_IMAGE } from '../../Functions/lazyLoadingImage';
 import { updateTheme } from '../../Theme/theme';
 import { OpenLog } from '../../Functions/log';
 import { OpenDir } from '../../Open/open';
+import isTauri from '../../../Util/is-tauri';
+import { GET_TAB_ELEMENT } from '../../../Util/constants';
 let being_watch: string;
 
 const stopSearchingProcess = async (): Promise<void> => {
@@ -21,7 +24,7 @@ const stopSearchingProcess = async (): Promise<void> => {
  * @returns {Promise<void>}
  */
 const processSearch = async (to_search: string, search_in: string): Promise<void> => {
-	const MAIN_ELEMENT = document.getElementById('workspace');
+	const MAIN_ELEMENT = GET_TAB_ELEMENT();
 	MAIN_ELEMENT.innerHTML = '';
 	if (!to_search.length) OpenDir(search_in);
 	startLoading();
@@ -79,7 +82,12 @@ const getFocusingPath = async (): Promise<string> => {
  */
 const Search = async (): Promise<void> => {
 	let listener: ReturnType<typeof setTimeout>;
-	document.querySelector('.search-bar').addEventListener('keydown', async (e: KeyboardEvent) => {
+	const searchElement = document.querySelector<HTMLInputElement>('.search-bar');
+	if (!isTauri) {
+		searchElement.setAttribute('disabled', '');
+	}
+	searchElement.placeholder = `🔎 ${await Translate('Search')}`;
+	searchElement.addEventListener('keydown', async (e: KeyboardEvent) => {
 		clearTimeout(listener);
 		if (e.ctrlKey && e.key === 'f') {
 			return;
@@ -92,7 +100,9 @@ const Search = async (): Promise<void> => {
 		} else {
 			listener = setTimeout(async () => {
 				const value = (e.target as HTMLInputElement).value;
-				if (value !== being_watch) {
+				if (value === '') {
+					OpenDir(await getFocusingPath());
+				} else if (value !== being_watch) {
 					processSearch(value, await getFocusingPath());
 					being_watch = value;
 				}
