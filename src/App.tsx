@@ -17,21 +17,13 @@ import "./Public/style.scss";
 const App = () => {
     const dispatch = useDispatch();
 
-    const homeDirectory = useSelector<
-        IAppState,
-        IAppState["favorites"]["Home"]
-    >((state) => state.favorites.Home);
-    const activeTab = useSelector<IAppState, IAppState["tabs"]["activeTab"]>(
-        (state) => state.tabs.activeTab
-    );
-    const config = useSelector<IAppState, IAppState["config"]>(
-        (state) => state.config
-    );
+    const homeDirectory = useSelector<IAppState, IAppState["favorites"]["Home"]>((state) => state.favorites.Home);
+    const activeTab = useSelector<IAppState, IAppState["tabs"]["activeTab"]>((state) => state.tabs.activeTab);
+    const config = useSelector<IAppState, IAppState["config"]>((state) => state.config);
 
     const [isLoaded, setIsLoaded] = useState(false); // TODO REPLACE WITH SKELETON LOADING
 
-    const setCurrentDirectory = (path: string) =>
-        dispatch(setActiveTab({ ...activeTab, path }));
+    const setCurrentDirectory = (path: string) => dispatch(setActiveTab({ ...activeTab, path }));
 
     // Waits for homeDirectory to load on initial favorites request
     useEffect(() => {
@@ -53,9 +45,7 @@ const App = () => {
         <div
             id="app-container"
             style={{
-                backgroundColor: `${
-                    config?.background ?? "#000000"
-                }${opacityToHex(config?.opacity ?? 1)}`,
+                backgroundColor: `${config?.background ?? "#000000"}${opacityToHex(config?.opacity ?? 1)}`,
             }}
         >
             <div className="container">

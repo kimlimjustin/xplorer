@@ -7,7 +7,6 @@ import { IDrive, IUniqueDrive } from "../Typings/Store/drive";
  */
 export const fetchDrives = async (platform: string): Promise<IDrive[]> => {
     const drives = await invoke<{ array_of_drives: IDrive[] }>("get_drives");
-    console.log(drives, "a");
     let filteredDrives = drives.array_of_drives.filter((drive) => drive.available_space > 0);
     if (platform !== "win32") filteredDrives = filteredDrives.filter((d) => d.is_removable);
     return filteredDrives;

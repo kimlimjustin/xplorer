@@ -453,6 +453,7 @@ pub fn open_file(file_path: String, window: tauri::Window) -> bool {
 
         true
     } else {
+        println!("Opening file: {}", file_path);
         open::that(file_path).is_ok()
     }
 }
