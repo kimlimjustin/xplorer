@@ -10,7 +10,7 @@ sidebar_position: 1
 
 Welcome to Xplorer, A Free and Open Source (FOSS) File Explorer.
 
-Xplorer is a modern file explorer built from ground-up to be fully customizable to fit 2022's need. Besides, Xplorer is a cross-platform application powered by the web that is being wrapped using [Tauri](https://tauri.studio) framework in which you can run Xplorer on Windows, MacOS, or Linux without having much trouble. Some Xplorer's features in summary are:
+Xplorer is a modern file explorer built from ground-up to be fully customizable to fit 2023's need. Besides, Xplorer is a cross-platform application powered by the web that is being wrapped using [Tauri](https://tauri.studio) framework in which you can run Xplorer on Windows, MacOS, or Linux without having much trouble. Some Xplorer's features in summary are:
 
 -   It looks modern
 -   Easy to use
