@@ -15,6 +15,10 @@
 
 ---
 
+**NB**: This project is currently undergoing major refactoring, introducing exciting new features. While the update isn't yet stable and unavailable on GitHub, feel free to try the previous version and share your thoughts on the Issues page. This development process requires significant costs, and as a student, my resources are limited. If you find this project valuable and would like to contribute, your sponsorship would be greatly appreciated. Interested in hearing about the progress? Don't hesitate to contact me at kimlimjustin@gmail.com.
+
+
+
 # What is Xplorer?
 
 ![Demo](docs/static/img/docs/themed-xplorer.webp)
