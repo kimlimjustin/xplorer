@@ -6,10 +6,10 @@
     "message": "Powered by the web"
   },
   "about.builtUsing": {
-    "message": "Being built using the"
+    "message": "Construit avec le "
   },
   "about.written": {
-    "message": ", et écrit en"
+    "message": ", écrit en"
   },
   "about.typescriptUsage": {
     "message": "pour le frontend et"
@@ -18,7 +18,7 @@
     "message": "pour le backend"
   },
   "about.promise": {
-    "message": "Pour le backend, Xplorer vous promet une expérience sans précédent."
+    "message": "Xplorer vous promet une expérience sans précédent."
   },
   "feature.multipleTabs": {
     "message": "Prise en charge de plusieurs onglets"
