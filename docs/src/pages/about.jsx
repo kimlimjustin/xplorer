@@ -15,7 +15,7 @@ const PoweredByTheWeb = () => {
 
 			<span className="powered-by-web--desc">
 				<Translate id="about.builtUsing">Being built using the</Translate>{' '}
-				<a href="https://tauri.studio" target="_blank">
+				<a href="https://tauri.app" target="_blank">
 					Tauri Framework
 				</a>
 				<Translate id="about.written">, and written using</Translate>{' '}
