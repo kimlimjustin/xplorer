@@ -1,25 +1,28 @@
-import { all, call, takeLatest } from "redux-saga/effects";
+import { all, call, takeLatest, select, take } from "redux-saga/effects";
 
 import { fetchDrivesFailure, fetchDrivesSuccess } from "../ActionCreators/DriveActionCreators";
 import { getOSRequest } from "../ActionCreators/PlatformActionCreators";
 
-import { selectStatus, typedPut as put, typedSelect as select } from "./helpers";
+import { selectStatus, typedPut as put } from "./helpers";
 import * as DrivesService from "../../Services/DrivesService";
 import { IDrive } from "../../Typings/Store/drive";
 
 function* fetchDrivesWorker(/* action: FetchDrivesRequest */) {
     try {
         let os: string = yield select((state) => state.platform.os);
-        if (!os) {
-            yield put(getOSRequest());
-        }
 
-        // WAIT FOR OS RESOLVE
-        while (!os) {
-            yield new Promise((resolve) => setTimeout(resolve, 100));
+        if (!os) {
+            // Request OS information
+            yield put(getOSRequest());
+
+            // Wait for OS to be successfully loaded
+            yield take(selectStatus("GET_OS", "SUCCESS"));
+
+            // Get the OS again after it's been loaded
             os = yield select((state) => state.platform.os);
         }
 
+        console.log("OS detected:", os);
         const drives: IDrive[] = yield call(DrivesService.fetchDrives, os);
         yield put(fetchDrivesSuccess(drives));
     } catch (error) {

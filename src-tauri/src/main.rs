@@ -115,6 +115,12 @@ lazy_static! {
     };
 }
 
+#[tauri::command]
+#[inline]
+fn get_platform() -> String {
+    std::env::consts::OS.to_string()
+}
+
 #[cfg(target_os = "windows")]
 #[tauri::command]
 #[inline]
@@ -249,7 +255,8 @@ async fn main() {
             check_vscode_installed,
             get_available_fonts,
             enable_shadow_effect,
-            change_transparent_effect
+            change_transparent_effect,
+            get_platform
         ])
         // .plugin(tauri_plugin_window_state::Builder::default().build())
         .setup(|app| {
