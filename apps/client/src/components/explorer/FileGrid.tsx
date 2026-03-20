@@ -552,7 +552,7 @@ const FileGrid = ({
     const isCrossTabSelected = mergedCrossTabPaths.has(file.path);
     const isFileRenaming = renamingPath === file.path;
     return (
-      <div key={file.path} style={{ position: 'relative' }}>
+      <div key={file.path} style={{ position: 'relative', overflow: 'hidden', minWidth: 0 }}>
         {isCrossTabSelected && (
           <>
             <div style={crossTabOutlineStyle} />

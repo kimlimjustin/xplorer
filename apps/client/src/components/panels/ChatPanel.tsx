@@ -93,7 +93,19 @@ const ChatPanel = ({
   } = useChatState();
 
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const chatPanelRef = useRef<HTMLDivElement>(null);
   const [showHistory, setShowHistory] = useState(false);
+
+  useEffect(() => {
+    if (!state.isModelDropdownOpen && !state.isContextDropdownOpen) return;
+    const onMouseDown = (e: MouseEvent) => {
+      if (chatPanelRef.current && !chatPanelRef.current.contains(e.target as Node)) {
+        closeAllDropdowns();
+      }
+    };
+    document.addEventListener('mousedown', onMouseDown);
+    return () => document.removeEventListener('mousedown', onMouseDown);
+  }, [state.isModelDropdownOpen, state.isContextDropdownOpen, closeAllDropdowns]);
 
   const contextableFiles = allFiles.filter((file) => !file.name.startsWith('.'));
   const filteredContextFiles = contextableFiles.filter(
@@ -388,6 +400,7 @@ const ChatPanel = ({
 
   return (
     <div
+      ref={chatPanelRef}
       style={{
         display: 'flex',
         flexDirection: 'column',
@@ -930,10 +943,6 @@ const ChatPanel = ({
         onCancel={handleCancel}
       />
 
-      {/* Overlay to close dropdowns */}
-      {(state.isModelDropdownOpen || state.isContextDropdownOpen) && (
-        <div className="fixed inset-0 z-40" onClick={closeAllDropdowns} />
-      )}
     </div>
   );
 }

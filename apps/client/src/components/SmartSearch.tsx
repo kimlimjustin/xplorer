@@ -151,6 +151,7 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
     const [parsedQuery, setParsedQuery] = useState<StructuredQuery | null>(null);
     const [searchProvider, setSearchProvider] = useState<SearchProvider>('local');
     const [showProviderMenu, setShowProviderMenu] = useState(false);
+    const providerMenuRef = useRef<HTMLDivElement>(null);
     const [searchContent, setSearchContent] = useState(false);
 
     const [savedSearches, setSavedSearches] = useState<SavedSearch[]>(() => getSavedSearches());
@@ -159,6 +160,17 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
     const resultsRef = useRef<HTMLDivElement>(null);
     const abortRef = useRef<AbortController | null>(null);
     const { toast } = useToast();
+
+    useEffect(() => {
+      if (!showProviderMenu) return;
+      const onMouseDown = (e: MouseEvent) => {
+        if (providerMenuRef.current && !providerMenuRef.current.contains(e.target as Node)) {
+          setShowProviderMenu(false);
+        }
+      };
+      document.addEventListener('mousedown', onMouseDown);
+      return () => document.removeEventListener('mousedown', onMouseDown);
+    }, [showProviderMenu]);
 
     // Keep saved searches in sync with localStorage changes
     useEffect(() => {
@@ -590,7 +602,7 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
             onMouseDown={(e) => e.preventDefault()}
           >
             {/* Provider selector */}
-            <div className="relative">
+            <div className="relative" ref={providerMenuRef}>
               <button
                 onClick={() => setShowProviderMenu(!showProviderMenu)}
                 className={`text-xs px-1.5 py-0.5 rounded transition-colors flex items-center gap-0.5 ${
@@ -606,7 +618,6 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
 
               {showProviderMenu && (
                 <>
-                  <div className="fixed inset-0 z-40" onClick={() => setShowProviderMenu(false)} />
                   <div
                     className="absolute right-0 top-full mt-1 bg-xp-popover border border-xp-border rounded shadow-xl z-50 min-w-[120px]"
                     onMouseDown={(e) => e.preventDefault()}

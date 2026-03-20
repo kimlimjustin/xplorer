@@ -54,6 +54,19 @@ const GDriveFileBrowser = ({
   );
   const [accountEmail, setAccountEmail] = useState<string>('');
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
+  const sortDropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isSortDropdownOpen) return;
+    const onMouseDown = (e: MouseEvent) => {
+      if (sortDropdownRef.current && !sortDropdownRef.current.contains(e.target as Node)) {
+        setIsSortDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', onMouseDown);
+    return () => document.removeEventListener('mousedown', onMouseDown);
+  }, [isSortDropdownOpen]);
+
   const [showDownloadDialog, setShowDownloadDialog] = useState(false);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [downloadTarget, setDownloadTarget] = useState<{ fileId: string; fileName: string } | null>(
@@ -301,7 +314,7 @@ const GDriveFileBrowser = ({
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             {/* Sort Dropdown */}
-            <div className="relative">
+            <div className="relative" ref={sortDropdownRef}>
               <button
                 onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
                 className="flex items-center space-x-2 px-3 py-2 bg-xp-bg border border-xp-border rounded hover:bg-xp-surface-light"
@@ -423,10 +436,6 @@ const GDriveFileBrowser = ({
           </div>
         </div>
 
-        {/* Close dropdown on outside click */}
-        {isSortDropdownOpen && (
-          <div className="fixed inset-0 z-40" onClick={() => setIsSortDropdownOpen(false)} />
-        )}
       </div>
 
       {/* Content Area */}

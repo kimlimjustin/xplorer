@@ -389,7 +389,7 @@ const FileGridItem = React.memo(
 
       return (
         <>
-          <span className="truncate">
+          <span className="truncate min-w-0">
             {file.name.endsWith('.chat') ? getChatDisplayName(file.name) : file.name}
           </span>
           <GitStatusDot status={gitStatus} />
@@ -417,7 +417,7 @@ const FileGridItem = React.memo(
         }
         ${
           isGridView
-            ? 'p-3 text-center'
+            ? 'p-3 text-center overflow-hidden min-w-0'
             : isListView
               ? 'p-2 flex items-center space-x-2 min-w-0 text-left overflow-hidden'
               : 'p-2 flex items-center space-x-3 overflow-hidden'
@@ -460,7 +460,7 @@ const FileGridItem = React.memo(
         </div>
         <div className={`${isGridView ? 'w-full min-w-0' : 'flex-1 min-w-0'} select-none`}>
           <div
-            className={`font-medium text-xp-text ${isRenaming ? '' : 'truncate'} ${isListView ? 'text-xs' : 'text-sm'} ${isGridView ? 'justify-center' : ''} flex items-center`}
+            className={`font-medium text-xp-text ${isRenaming ? '' : 'overflow-hidden'} ${isListView ? 'text-xs' : 'text-sm'} ${isGridView ? 'justify-center' : ''} flex items-center`}
             style={isRenaming ? { position: 'relative', overflow: 'visible' } : undefined}
           >
             {renderNameArea()}
