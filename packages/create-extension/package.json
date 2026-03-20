@@ -1,0 +1,29 @@
+{
+  "name": "create-xplorer-extension",
+  "version": "1.0.0",
+  "description": "CLI tool to bootstrap Xplorer extensions",
+  "bin": {
+    "create-xplorer-extension": "./bin/index.js"
+  },
+  "type": "module",
+  "license": "MIT",
+  "keywords": ["xplorer", "extension", "cli", "template"],
+  "author": "Xplorer Team",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-repo/xplorer"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "inquirer": "^9.2.0",
+    "fs-extra": "^11.2.0",
+    "commander": "^11.0.0",
+    "ora": "^7.0.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

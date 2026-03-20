@@ -1,12 +1,42 @@
 node_modules
-/dist
-build
-outs
-out
-temp
-yarn-error.log
+dist
 .DS_Store
-.idea
+vite.config.ts.*
+*.tar.gz
 target
-WixTools
-fake-files
+
+# Environment and secrets
+.env
+.env.*
+
+# Debug logs
+*.log
+debug.log
+
+# OS artifacts
+nul
+Thumbs.db
+
+# Build outputs
+apps/client/dist/
+apps/src-tauri/gen/
+.tsbuildinfo
+.next
+
+# IDE
+.vscode
+.idea
+
+# Test artifacts
+playwright-report/
+test-results/
+e2e/screenshots/
+
+# Claude Code
+.claude
+
+# Misc
+*.bak
+*.swp
+
+CLAUDE.md

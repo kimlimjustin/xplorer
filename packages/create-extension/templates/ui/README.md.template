@@ -1,0 +1,34 @@
+# {{displayName}}
+
+{{description}}
+
+## Features
+
+- Custom sidebar panel with interactive UI
+- Persistent state via extension storage
+- File system integration
+
+## Installation
+
+1. Build the extension: `npm run build`
+2. Open Xplorer
+3. Go to Extensions > Install from Folder
+4. Select this extension's directory
+
+## Development
+
+```bash
+npm install
+npm run dev       # Watch mode
+npm run build     # Production build
+npm run package   # Create .spx package
+```
+
+## License
+
+MIT
+
+---
+
+Built with the Xplorer Extension SDK
+

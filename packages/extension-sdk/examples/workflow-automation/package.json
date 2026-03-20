@@ -1,0 +1,49 @@
+{
+  "name": "workflow-automation-extension",
+  "version": "1.0.0",
+  "description": "Workflow automation extension for Xplorer - detects package manager conflicts and more",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "package": "xplorer-sdk package"
+  },
+  "devDependencies": {
+    "@xplorer/extension-sdk": "file:../..",
+    "typescript": "^5.0.0"
+  },
+  "xplorer": {
+    "id": "workflow-automation",
+    "displayName": "Workflow Automation",
+    "category": "tool",
+    "version": "1.0.0",
+    "author": "Xplorer Team",
+    "description": "Automated workflow checks and warnings for common development issues",
+    "keywords": ["workflow", "automation", "lint", "package-manager", "conflict-detection"],
+    "icon": "⚡",
+    "permissions": [
+      "directory:list",
+      "file:read",
+      "ui:notifications"
+    ],
+    "contributes": {
+      "panels": [{
+        "id": "workflow-warnings",
+        "title": "Workflow Warnings",
+        "location": "bottom",
+        "icon": "⚠️",
+        "when": "workspaceHasIssues"
+      }],
+      "commands": [{
+        "command": "scanWorkspace",
+        "title": "Scan for Workflow Issues",
+        "category": "Workflow",
+        "icon": "🔍"
+      }]
+    },
+    "activationEvents": [
+      "onDirectoryOpen",
+      "onFileChange"
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "jsx": "react",
+    "module": "commonjs",
+    "target": "ES2020",
+    "esModuleInterop": true,
+    "strict": true,
+    "lib": ["ES2020", "dom", "dom.iterable"],
+    "types": ["jest", "node"],
+    "typeRoots": ["./node_modules/@types", "../../node_modules/@types"],
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "allowJs": true,
+    "resolveJsonModule": true
+  },
+  "include": ["src/**/*"]
+}

@@ -1,0 +1,507 @@
+{
+  "current_profile": "default",
+  "global_shortcuts_enabled": true,
+  "context_aware": true,
+  "profiles": [
+    {
+      "id": "default",
+      "name": "Default",
+      "description": "Default shortcut profile",
+      "shortcuts": [
+        {
+          "id": "copy",
+          "keys": [
+            "ctrl",
+            "c"
+          ],
+          "action": "Copy",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Copy selected items",
+          "global": false,
+          "key_combination": "ctrl+c"
+        },
+        {
+          "id": "cut",
+          "keys": [
+            "ctrl",
+            "x"
+          ],
+          "action": "Cut",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Cut selected items",
+          "global": false,
+          "key_combination": "ctrl+x"
+        },
+        {
+          "id": "paste",
+          "keys": [
+            "ctrl",
+            "v"
+          ],
+          "action": "Paste",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Paste items",
+          "global": false,
+          "key_combination": "ctrl+v"
+        },
+        {
+          "id": "delete",
+          "keys": [
+            "del"
+          ],
+          "action": "Delete",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Move to trash",
+          "global": false,
+          "key_combination": "del"
+        },
+        {
+          "id": "rename",
+          "keys": [
+            "f2"
+          ],
+          "action": "Rename",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Rename selected item",
+          "global": false,
+          "key_combination": "f2"
+        },
+        {
+          "id": "new-folder",
+          "keys": [
+            "ctrl",
+            "n"
+          ],
+          "action": "NewFolder",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Create new folder",
+          "global": false,
+          "key_combination": "ctrl+n"
+        },
+        {
+          "id": "new-file",
+          "keys": [
+            "ctrl",
+            "shift",
+            "n"
+          ],
+          "action": "NewFile",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Create new file",
+          "global": false,
+          "key_combination": "ctrl+shift+n"
+        },
+        {
+          "id": "navigate-back",
+          "keys": [
+            "alt",
+            "left"
+          ],
+          "action": "NavigateBack",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Go back",
+          "global": false,
+          "key_combination": "alt+left"
+        },
+        {
+          "id": "navigate-forward",
+          "keys": [
+            "alt",
+            "right"
+          ],
+          "action": "NavigateForward",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Go forward",
+          "global": false,
+          "key_combination": "alt+right"
+        },
+        {
+          "id": "navigate-up",
+          "keys": [
+            "alt",
+            "up"
+          ],
+          "action": "NavigateUp",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Go to parent directory",
+          "global": false,
+          "key_combination": "alt+up"
+        },
+        {
+          "id": "go-home",
+          "keys": [
+            "ctrl",
+            "h"
+          ],
+          "action": "GoHome",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Go to home directory",
+          "global": false,
+          "key_combination": "ctrl+h"
+        },
+        {
+          "id": "select-all",
+          "keys": [
+            "ctrl",
+            "a"
+          ],
+          "action": "SelectAll",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Select all files",
+          "global": false,
+          "key_combination": "ctrl+a"
+        },
+        {
+          "id": "invert-selection",
+          "keys": [
+            "ctrl",
+            "i"
+          ],
+          "action": "InvertSelection",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Invert selection",
+          "global": false,
+          "key_combination": "ctrl+i"
+        },
+        {
+          "id": "clear-selection",
+          "keys": [
+            "esc"
+          ],
+          "action": "ClearSelection",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Clear selection",
+          "global": false,
+          "key_combination": "esc"
+        },
+        {
+          "id": "search",
+          "keys": [
+            "ctrl",
+            "f"
+          ],
+          "action": "Search",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Open search",
+          "global": false,
+          "key_combination": "ctrl+f"
+        },
+        {
+          "id": "quick-search",
+          "keys": [
+            "ctrl",
+            "p"
+          ],
+          "action": "QuickSearch",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Quick search",
+          "global": false,
+          "key_combination": "ctrl+p"
+        },
+        {
+          "id": "natural-language-search",
+          "keys": [
+            "ctrl",
+            "shift",
+            "f"
+          ],
+          "action": "NaturalLanguageSearch",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "AI-powered search",
+          "global": false,
+          "key_combination": "ctrl+shift+f"
+        },
+        {
+          "id": "filter-files",
+          "keys": [
+            "ctrl",
+            "shift",
+            "p"
+          ],
+          "action": "FilterFiles",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Filter files",
+          "global": false,
+          "key_combination": "ctrl+shift+p"
+        },
+        {
+          "id": "toggle-left-sidebar",
+          "keys": [
+            "ctrl",
+            "b"
+          ],
+          "action": "ToggleLeftSidebar",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Toggle left sidebar",
+          "global": false,
+          "key_combination": "ctrl+b"
+        },
+        {
+          "id": "toggle-right-sidebar",
+          "keys": [
+            "ctrl",
+            "shift",
+            "b"
+          ],
+          "action": "ToggleRightSidebar",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Toggle right sidebar",
+          "global": false,
+          "key_combination": "ctrl+shift+b"
+        },
+        {
+          "id": "toggle-bottom-panel",
+          "keys": [
+            "ctrl",
+            "j"
+          ],
+          "action": "ToggleBottomPanel",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Toggle bottom panel",
+          "global": false,
+          "key_combination": "ctrl+j"
+        },
+        {
+          "id": "toggle-preview",
+          "keys": [
+            "ctrl",
+            "shift",
+            "v"
+          ],
+          "action": "TogglePreview",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Toggle preview panel",
+          "global": false,
+          "key_combination": "ctrl+shift+v"
+        },
+        {
+          "id": "switch-view-mode",
+          "keys": [
+            "ctrl",
+            "shift",
+            "l"
+          ],
+          "action": "SwitchViewMode",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Cycle view mode",
+          "global": false,
+          "key_combination": "ctrl+shift+l"
+        },
+        {
+          "id": "refresh",
+          "keys": [
+            "f5"
+          ],
+          "action": "Refresh",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Refresh directory",
+          "global": false,
+          "key_combination": "f5"
+        },
+        {
+          "id": "toggle-hidden",
+          "keys": [
+            "ctrl",
+            "."
+          ],
+          "action": "ToggleHiddenFiles",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Toggle hidden files",
+          "global": false,
+          "key_combination": "ctrl+."
+        },
+        {
+          "id": "zoom-in",
+          "keys": [
+            "ctrl",
+            "="
+          ],
+          "action": "ZoomIn",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Zoom in",
+          "global": false,
+          "key_combination": "ctrl+="
+        },
+        {
+          "id": "zoom-out",
+          "keys": [
+            "ctrl",
+            "-"
+          ],
+          "action": "ZoomOut",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Zoom out",
+          "global": false,
+          "key_combination": "ctrl+-"
+        },
+        {
+          "id": "open-settings",
+          "keys": [
+            "ctrl",
+            ","
+          ],
+          "action": "OpenSettings",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Open settings",
+          "global": false,
+          "key_combination": "ctrl+,"
+        },
+        {
+          "id": "close-tab",
+          "keys": [
+            "ctrl",
+            "w"
+          ],
+          "action": "CloseTab",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Close current tab",
+          "global": false,
+          "key_combination": "ctrl+w"
+        },
+        {
+          "id": "next-tab",
+          "keys": [
+            "ctrl",
+            "tab"
+          ],
+          "action": "NextTab",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Switch to next tab",
+          "global": false,
+          "key_combination": "ctrl+tab"
+        },
+        {
+          "id": "prev-tab",
+          "keys": [
+            "ctrl",
+            "shift",
+            "tab"
+          ],
+          "action": "PreviousTab",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Switch to previous tab",
+          "global": false,
+          "key_combination": "ctrl+shift+tab"
+        },
+        {
+          "id": "toggle-fullscreen",
+          "keys": [
+            "f11"
+          ],
+          "action": "ToggleFullscreen",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Toggle fullscreen",
+          "global": false,
+          "key_combination": "f11"
+        },
+        {
+          "id": "new-window",
+          "keys": [
+            "ctrl",
+            "shift",
+            "w"
+          ],
+          "action": "NewWindow",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Open new window",
+          "global": false,
+          "key_combination": "ctrl+shift+w"
+        },
+        {
+          "id": "quit",
+          "keys": [
+            "ctrl",
+            "q"
+          ],
+          "action": "Quit",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Quit application",
+          "global": false,
+          "key_combination": "ctrl+q"
+        },
+        {
+          "id": "open-terminal",
+          "keys": [
+            "ctrl",
+            "`"
+          ],
+          "action": "OpenTerminal",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Open terminal",
+          "global": false,
+          "key_combination": "ctrl+`"
+        }
+      ]
+    }
+  ]
+}

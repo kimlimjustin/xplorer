@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg13" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#04030d"/>
+      <stop offset="100%" style="stop-color:#0e0a22"/>
+    </linearGradient>
+    <linearGradient id="pane13a" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#c084fc"/>
+      <stop offset="100%" style="stop-color:#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="pane13b" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#818cf8"/>
+      <stop offset="100%" style="stop-color:#4f46e5"/>
+    </linearGradient>
+    <linearGradient id="pane13c" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22d3ee"/>
+      <stop offset="100%" style="stop-color:#0891b2"/>
+    </linearGradient>
+    <linearGradient id="pane13d" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e0e7ff"/>
+      <stop offset="100%" style="stop-color:#a5b4fc"/>
+    </linearGradient>
+    <filter id="glassglow13">
+      <feDropShadow dx="0" dy="0" stdDeviation="10" flood-color="#6366f1" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="url(#bg13)"/>
+  <!-- Stacked glass panes — tilted, receding, each a different "layer" -->
+  <g filter="url(#glassglow13)">
+    <!-- Pane 4 (deepest) -->
+    <polygon points="110,380 340,360 360,190 130,210" fill="url(#pane13a)" opacity="0.15"/>
+    <polygon points="110,380 340,360 360,190 130,210" fill="none" stroke="#c084fc" stroke-width="1" opacity="0.2"/>
+    <!-- Pane 3 -->
+    <polygon points="130,360 350,342 368,182 148,200" fill="url(#pane13b)" opacity="0.22"/>
+    <polygon points="130,360 350,342 368,182 148,200" fill="none" stroke="#818cf8" stroke-width="1.2" opacity="0.3"/>
+    <!-- Pane 2 -->
+    <polygon points="155,340 362,324 378,172 170,188" fill="url(#pane13c)" opacity="0.3"/>
+    <polygon points="155,340 362,324 378,172 170,188" fill="none" stroke="#22d3ee" stroke-width="1.5" opacity="0.4"/>
+    <line x1="170" y1="188" x2="378" y2="172" stroke="white" stroke-width="0.5" opacity="0.2"/>
+    <!-- Pane 1 (front, brightest) -->
+    <polygon points="180,320 375,306 390,162 195,176" fill="url(#pane13d)" opacity="0.55"/>
+    <polygon points="180,320 375,306 390,162 195,176" fill="none" stroke="#e0e7ff" stroke-width="1.5" opacity="0.5"/>
+    <line x1="195" y1="176" x2="390" y2="162" stroke="white" stroke-width="1" opacity="0.4"/>
+    <!-- Content lines on front pane -->
+    <line x1="218" y1="210" x2="340" y2="203" stroke="#4f46e5" stroke-width="4" stroke-linecap="round" opacity="0.35"/>
+    <line x1="222" y1="235" x2="310" y2="230" stroke="#4f46e5" stroke-width="4" stroke-linecap="round" opacity="0.25"/>
+    <line x1="226" y1="260" x2="350" y2="253" stroke="#4f46e5" stroke-width="3" stroke-linecap="round" opacity="0.2"/>
+  </g>
+  <!-- Small light leak / refraction at top-right corner -->
+  <circle cx="400" cy="130" r="30" fill="#818cf8" opacity="0.06"/>
+  <circle cx="400" cy="130" r="12" fill="#c7d2fe" opacity="0.08"/>
+</svg>

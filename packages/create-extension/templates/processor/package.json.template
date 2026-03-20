@@ -1,0 +1,57 @@
+{
+  "name": "{{name}}",
+  "version": "1.0.0",
+  "description": "{{description}}",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "vite build",
+    "test": "vitest",
+    "package": "npm run build && zip -r {{name}}.spx dist/ package.json README.md"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0",
+    "vitest": "^1.0.0"
+  },
+  "dependencies": {
+    "@xplorer/extension-sdk": "^1.0.0"
+  },
+  "keywords": ["xplorer", "extension", "processor", "files"],
+  "author": "{{author}}",
+  "license": "MIT",
+  "xplorer": {
+    "id": "{{name}}",
+    "displayName": "{{displayName}}",
+    "category": "action",
+    "version": "1.0.0",
+    "author": "{{author}}",
+    "description": "{{description}}",
+    "icon": "⚙️",
+    "permissions": [
+      "file:read",
+      "file:write",
+      "directory:list",
+      "ui:notifications"
+    ],
+    "contributes": {
+      "commands": [
+        {
+          "command": "process",
+          "title": "Process Files",
+          "category": "{{displayName}}"
+        }
+      ],
+      "context_menus": [
+        {
+          "command": "{{name}}.process",
+          "when": "singleFileSelected",
+          "group": "tools"
+        }
+      ]
+    }
+  }
+}
+

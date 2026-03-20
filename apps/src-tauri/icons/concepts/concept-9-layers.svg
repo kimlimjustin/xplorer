@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg9" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#06050e"/>
+      <stop offset="100%" style="stop-color:#120e24"/>
+    </linearGradient>
+    <linearGradient id="layer9a" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22d3ee"/>
+      <stop offset="100%" style="stop-color:#0891b2"/>
+    </linearGradient>
+    <linearGradient id="layer9b" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#818cf8"/>
+      <stop offset="100%" style="stop-color:#4f46e5"/>
+    </linearGradient>
+    <linearGradient id="layer9c" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#c084fc"/>
+      <stop offset="100%" style="stop-color:#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="layer9d" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e0e7ff"/>
+      <stop offset="100%" style="stop-color:#a5b4fc"/>
+    </linearGradient>
+    <filter id="layerglow">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#6366f1" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="url(#bg9)"/>
+  <!-- Stacked diamond layers — abstract file stack / explorer depth -->
+  <g filter="url(#layerglow)">
+    <!-- Bottom layer (deepest) -->
+    <polygon points="256,400 100,310 256,220 412,310" fill="url(#layer9c)" opacity="0.35"/>
+    <polygon points="256,400 100,310 256,338 412,310" fill="url(#layer9c)" opacity="0.5"/>
+    <!-- Middle-low layer -->
+    <polygon points="256,350 115,268 256,186 397,268" fill="url(#layer9b)" opacity="0.45"/>
+    <polygon points="256,350 115,268 256,296 397,268" fill="url(#layer9b)" opacity="0.6"/>
+    <!-- Middle-high layer -->
+    <polygon points="256,300 130,226 256,152 382,226" fill="url(#layer9a)" opacity="0.55"/>
+    <polygon points="256,300 130,226 256,254 382,226" fill="url(#layer9a)" opacity="0.7"/>
+    <!-- Top layer (front) -->
+    <polygon points="256,250 148,184 256,118 364,184" fill="url(#layer9d)" opacity="0.8"/>
+    <polygon points="256,250 148,184 256,212 364,184" fill="url(#layer9d)"/>
+    <!-- Top layer highlight edge -->
+    <line x1="148" y1="184" x2="256" y2="118" stroke="white" stroke-width="1" opacity="0.3"/>
+    <line x1="256" y1="118" x2="364" y2="184" stroke="white" stroke-width="1" opacity="0.2"/>
+  </g>
+  <!-- Small "X" etched into the top layer -->
+  <g opacity="0.7">
+    <line x1="232" y1="164" x2="280" y2="204" stroke="#4f46e5" stroke-width="6" stroke-linecap="round"/>
+    <line x1="280" y1="164" x2="232" y2="204" stroke="#4f46e5" stroke-width="6" stroke-linecap="round"/>
+  </g>
+</svg>

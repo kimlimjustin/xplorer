@@ -1,0 +1,27 @@
+{
+  "name": "xplorer-dracula-theme",
+  "version": "1.0.0",
+  "description": "Dracula - A dark theme with vibrant colors inspired by the classic Dracula palette",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/index.tsx --bundle --format=iife --outfile=dist/index.js --external:react --external:react-dom --external:@xplorer/extension-sdk --target=es2020 --jsx=transform"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.0",
+    "typescript": "^5.2.0"
+  },
+  "xplorer": {
+    "id": "xplorer-dracula-theme",
+    "name": "Dracula Theme",
+    "displayName": "Dracula",
+    "description": "The iconic Dracula color scheme — dark background with vibrant pink, purple, green, and cyan accents.",
+    "version": "1.0.0",
+    "author": "Xplorer Team",
+    "category": "theme",
+    "icon": "palette",
+    "keywords": ["theme", "dark", "dracula", "purple", "pink"],
+    "permissions": ["ui:notifications"],
+    "activationEvents": ["onStartup"]
+  }
+}

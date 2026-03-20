@@ -1,0 +1,27 @@
+{
+  "name": "xplorer-compare-files",
+  "version": "1.0.0",
+  "description": "Compare two files side by side with diff highlighting",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/index.tsx --bundle --format=iife --outfile=dist/index.js --external:react --external:react-dom --external:@xplorer/extension-sdk --target=es2020 --jsx=transform"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.0",
+    "@types/react": "^18.2.0",
+    "typescript": "^5.2.0"
+  },
+  "xplorer": {
+    "id": "compare-files-dialog",
+    "name": "Compare Files",
+    "displayName": "Compare Files",
+    "description": "Compare two files side by side with diff highlighting",
+    "version": "1.0.0",
+    "author": "Xplorer Team",
+    "category": "tool",
+    "icon": "file-text",
+    "permissions": ["file:read", "ui:panels"],
+    "activationEvents": ["onStartup"]
+  }
+}

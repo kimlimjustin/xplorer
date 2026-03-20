@@ -1,0 +1,42 @@
+import { Extension, ExtensionContext } from '@xplorer/extension-sdk';
+import { registerExtension } from '@xplorer/extension-sdk';
+
+export class {{displayName}}Extension extends Extension {
+  constructor() {
+    super({
+      id: '{{name}}',
+      name: '{{displayName}}',
+      version: '1.0.0',
+      author: '{{author}}',
+      category: 'tool',
+      description: '{{description}}',
+      icon: '🔧',
+      permissions: ['file:read', 'ui:notifications'],
+    });
+  }
+
+  async activate(context: ExtensionContext): Promise<void> {
+    this.log('{{displayName}} extension activated!');
+
+    // Register a command
+    this.registerCommand('hello', () => {
+      this.showMessage('Hello from {{displayName}}!');
+    });
+
+    // Example: list files in the current directory
+    this.registerCommand('listFiles', async () => {
+      const currentPath = this.getAPI().navigation.getCurrentPath();
+      const files = await this.getAPI().files.list(currentPath);
+      this.showMessage(`Found ${files.length} items in ${currentPath}`);
+    });
+  }
+
+  async deactivate(): Promise<void> {
+    this.log('{{displayName}} extension deactivated');
+  }
+}
+
+// Register the extension with Xplorer
+const extension = new {{displayName}}Extension();
+registerExtension(extension);
+

@@ -1,0 +1,80 @@
+import React from 'react';
+import { PanelExtension, ExtensionContext, PanelProps } from '@xplorer/extension-sdk';
+import { registerExtension } from '@xplorer/extension-sdk';
+
+export class {{displayName}}Extension extends PanelExtension {
+  private items: string[] = [];
+
+  constructor() {
+    super({
+      id: '{{name}}',
+      name: '{{displayName}}',
+      version: '1.0.0',
+      author: '{{author}}',
+      description: '{{description}}',
+      icon: '🖼️',
+      permissions: ['file:read', 'directory:list', 'ui:panels', 'ui:notifications'],
+    });
+  }
+
+  async activate(context: ExtensionContext): Promise<void> {
+    await super.activate(context);
+    this.log('{{displayName}} panel activated');
+
+    // Load saved state
+    const saved = await this.getAPI().settings.get<string[]>('items', []);
+    this.items = saved ?? [];
+  }
+
+  async deactivate(): Promise<void> {
+    await super.deactivate();
+  }
+
+  render(props: PanelProps): React.ReactElement {
+    return React.createElement('div', { className: 'p-4 h-full overflow-y-auto' },
+      // Header
+      React.createElement('h3', {
+        className: 'text-sm font-medium mb-3'
+      }, '{{displayName}}'),
+
+      // Content
+      React.createElement('p', {
+        className: 'text-xs text-gray-400 mb-4'
+      }, '{{description}}'),
+
+      // Items list
+      this.items.length > 0
+        ? React.createElement('ul', { className: 'space-y-1' },
+            ...this.items.map((item, i) =>
+              React.createElement('li', {
+                key: i,
+                className: 'text-xs p-2 rounded bg-gray-800 hover:bg-gray-700 transition-colors'
+              }, item)
+            )
+          )
+        : React.createElement('div', {
+            className: 'text-center text-xs text-gray-500 py-8'
+          }, 'No items yet. Start exploring!'),
+
+      // Action button
+      React.createElement('button', {
+        className: 'mt-4 w-full px-3 py-2 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-colors',
+        onClick: async () => {
+          const path = this.getAPI().navigation.getCurrentPath();
+          this.items.push(path);
+          await this.getAPI().settings.set('items', this.items);
+          this.showMessage(`Added: ${path}`);
+        }
+      }, 'Add Current Path')
+    );
+  }
+
+  getPanelLocation(): 'sidebar' | 'bottom' | 'right' {
+    return 'right';
+  }
+}
+
+// Register the extension with Xplorer
+const extension = new {{displayName}}Extension();
+registerExtension(extension);
+

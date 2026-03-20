@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg18" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#050410"/>
+      <stop offset="100%" style="stop-color:#0e0a20"/>
+    </linearGradient>
+    <linearGradient id="plane18a" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#c084fc;stop-opacity:0.35"/>
+      <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:0.1"/>
+    </linearGradient>
+    <linearGradient id="plane18b" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#818cf8;stop-opacity:0.45"/>
+      <stop offset="100%" style="stop-color:#4f46e5;stop-opacity:0.12"/>
+    </linearGradient>
+    <linearGradient id="plane18c" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e0e7ff;stop-opacity:0.6"/>
+      <stop offset="100%" style="stop-color:#a5b4fc;stop-opacity:0.2"/>
+    </linearGradient>
+    <linearGradient id="edge18" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22d3ee"/>
+      <stop offset="100%" style="stop-color:#6366f1"/>
+    </linearGradient>
+    <filter id="planeglow18">
+      <feDropShadow dx="0" dy="3" stdDeviation="10" flood-color="#6366f1" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="url(#bg18)"/>
+  <!-- Three floating rounded-rect planes at different angles and depths -->
+  <g filter="url(#planeglow18)">
+    <!-- Back plane — rotated, largest -->
+    <g transform="rotate(-12 220 260)">
+      <rect x="70" y="130" width="280" height="200" rx="16" fill="url(#plane18a)"/>
+      <rect x="70" y="130" width="280" height="200" rx="16" fill="none" stroke="#c084fc" stroke-width="1.2" opacity="0.3"/>
+      <!-- Title bar -->
+      <line x1="70" y1="158" x2="350" y2="158" stroke="#c084fc" stroke-width="0.8" opacity="0.2"/>
+      <circle cx="90" cy="144" r="3.5" fill="#c084fc" opacity="0.3"/>
+      <circle cx="102" cy="144" r="3.5" fill="#c084fc" opacity="0.2"/>
+    </g>
+    <!-- Middle plane -->
+    <g transform="rotate(3 270 250)">
+      <rect x="140" y="145" width="280" height="200" rx="16" fill="url(#plane18b)"/>
+      <rect x="140" y="145" width="280" height="200" rx="16" fill="none" stroke="#818cf8" stroke-width="1.3" opacity="0.4"/>
+      <line x1="140" y1="173" x2="420" y2="173" stroke="#818cf8" stroke-width="0.8" opacity="0.25"/>
+      <circle cx="160" cy="159" r="3.5" fill="#818cf8" opacity="0.4"/>
+      <circle cx="172" cy="159" r="3.5" fill="#818cf8" opacity="0.3"/>
+      <circle cx="184" cy="159" r="3.5" fill="#818cf8" opacity="0.2"/>
+      <!-- Content lines -->
+      <line x1="162" y1="198" x2="350" y2="198" stroke="#6366f1" stroke-width="3" stroke-linecap="round" opacity="0.2"/>
+      <line x1="162" y1="220" x2="300" y2="220" stroke="#6366f1" stroke-width="3" stroke-linecap="round" opacity="0.15"/>
+    </g>
+    <!-- Front plane — brightest, slight tilt -->
+    <g transform="rotate(-4 300 300)">
+      <rect x="180" y="200" width="280" height="200" rx="16" fill="url(#plane18c)"/>
+      <rect x="180" y="200" width="280" height="200" rx="16" fill="none" stroke="#c7d2fe" stroke-width="1.5" opacity="0.5"/>
+      <!-- Top highlight -->
+      <line x1="196" y1="201" x2="444" y2="201" stroke="white" stroke-width="0.8" opacity="0.25"/>
+      <!-- Title bar -->
+      <line x1="180" y1="228" x2="460" y2="228" stroke="#a5b4fc" stroke-width="0.8" opacity="0.3"/>
+      <circle cx="200" cy="214" r="4" fill="#e0e7ff" opacity="0.5"/>
+      <circle cx="214" cy="214" r="4" fill="#e0e7ff" opacity="0.35"/>
+      <circle cx="228" cy="214" r="4" fill="#e0e7ff" opacity="0.25"/>
+      <!-- Content lines -->
+      <line x1="202" y1="254" x2="410" y2="254" stroke="#4f46e5" stroke-width="4" stroke-linecap="round" opacity="0.3"/>
+      <line x1="202" y1="278" x2="350" y2="278" stroke="#4f46e5" stroke-width="4" stroke-linecap="round" opacity="0.22"/>
+      <line x1="202" y1="302" x2="380" y2="302" stroke="#4f46e5" stroke-width="3" stroke-linecap="round" opacity="0.16"/>
+      <!-- Thumbnail blocks -->
+      <rect x="202" y="325" width="65" height="50" rx="6" fill="#6366f1" opacity="0.15"/>
+      <rect x="280" y="325" width="65" height="50" rx="6" fill="#6366f1" opacity="0.1"/>
+    </g>
+  </g>
+  <!-- Accent glow corner -->
+  <circle cx="440" cy="140" r="35" fill="#22d3ee" opacity="0.04"/>
+  <circle cx="440" cy="140" r="10" fill="#22d3ee" opacity="0.08"/>
+</svg>

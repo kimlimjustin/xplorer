@@ -1,0 +1,119 @@
+import { ThemeExtension, Theme } from '@xplorer/extension-sdk';
+import { registerExtension } from '@xplorer/extension-sdk';
+
+export class {{displayName}}Theme extends ThemeExtension {
+  constructor() {
+    super({
+      id: '{{name}}',
+      name: '{{displayName}}',
+      version: '1.0.0',
+      author: '{{author}}',
+      description: '{{description}}',
+      icon: '🎨',
+    });
+  }
+
+  getTheme(): Theme {
+    return {
+      name: '{{displayName}}',
+      displayName: '{{displayName}}',
+      type: 'dark',
+      colors: {
+        // Core colors — customize these!
+        primary: '#7aa2f7',
+        secondary: '#bb9af7',
+        accent: '#73daca',
+
+        // Background colors
+        background: '#1a1b26',
+        surface: '#24283b',
+        overlay: '#414868',
+
+        // Text colors
+        text: '#c0caf5',
+        textSecondary: '#9aa5ce',
+        textMuted: '#565f89',
+
+        // UI colors
+        border: '#414868',
+        hover: '#2f3349',
+        selected: '#364a82',
+        focus: '#7aa2f7',
+
+        // Status colors
+        success: '#9ece6a',
+        warning: '#e0af68',
+        error: '#f7768e',
+        info: '#7dcfff',
+
+        // File type colors (optional)
+        fileColors: {
+          folder: '#7aa2f7',
+          document: '#c0caf5',
+          image: '#bb9af7',
+          video: '#f7768e',
+          audio: '#73daca',
+          archive: '#e0af68',
+          code: '#9ece6a',
+          executable: '#ff9e64',
+        },
+      },
+      fonts: {
+        main: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
+        mono: 'JetBrains Mono, Consolas, monospace',
+        ui: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
+      },
+      spacing: {
+        xs: '4px',
+        sm: '8px',
+        md: '16px',
+        lg: '24px',
+        xl: '32px',
+      },
+      borderRadius: {
+        sm: '4px',
+        md: '6px',
+        lg: '8px',
+      },
+      shadows: {
+        sm: '0 1px 3px rgba(0, 0, 0, 0.12)',
+        md: '0 3px 6px rgba(0, 0, 0, 0.16)',
+        lg: '0 10px 20px rgba(0, 0, 0, 0.19)',
+      },
+      animations: {
+        duration: {
+          fast: '150ms',
+          normal: '250ms',
+          slow: '350ms',
+        },
+        easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+      },
+    };
+  }
+
+  // Optional: provide a custom CSS override
+  getCustomCSS(): string {
+    return `
+      /* Custom scrollbar for your theme */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: ${this.getTheme().colors.background};
+      }
+      ::-webkit-scrollbar-thumb {
+        background: ${this.getTheme().colors.overlay};
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: ${this.getTheme().colors.textMuted};
+      }
+    `;
+  }
+}
+
+// Register the extension with Xplorer
+const extension = new {{displayName}}Theme();
+registerExtension(extension);
+

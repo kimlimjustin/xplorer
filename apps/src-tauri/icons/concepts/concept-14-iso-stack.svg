@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg14" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#05040e"/>
+      <stop offset="100%" style="stop-color:#100c26"/>
+    </linearGradient>
+    <linearGradient id="top14a" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#6366f1"/>
+      <stop offset="100%" style="stop-color:#818cf8"/>
+    </linearGradient>
+    <linearGradient id="left14a" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4f46e5"/>
+      <stop offset="100%" style="stop-color:#312e81"/>
+    </linearGradient>
+    <linearGradient id="right14a" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3730a3"/>
+      <stop offset="100%" style="stop-color:#1e1b4b"/>
+    </linearGradient>
+    <linearGradient id="top14b" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#22d3ee"/>
+      <stop offset="100%" style="stop-color:#67e8f9"/>
+    </linearGradient>
+    <linearGradient id="left14b" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0891b2"/>
+      <stop offset="100%" style="stop-color:#064e3b"/>
+    </linearGradient>
+    <linearGradient id="right14b" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0e7490"/>
+      <stop offset="100%" style="stop-color:#083344"/>
+    </linearGradient>
+    <linearGradient id="top14c" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#c084fc"/>
+      <stop offset="100%" style="stop-color:#e9d5ff"/>
+    </linearGradient>
+    <linearGradient id="left14c" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#9333ea"/>
+      <stop offset="100%" style="stop-color:#581c87"/>
+    </linearGradient>
+    <linearGradient id="right14c" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7e22ce"/>
+      <stop offset="100%" style="stop-color:#3b0764"/>
+    </linearGradient>
+    <filter id="blockglow14">
+      <feDropShadow dx="0" dy="4" stdDeviation="10" flood-color="#6366f1" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="url(#bg14)"/>
+  <!-- 3D isometric blocks stacked — like file blocks / storage cubes -->
+  <g filter="url(#blockglow14)">
+    <!-- Bottom block (indigo) -->
+    <polygon points="256,360 130,290 256,220 382,290" fill="url(#top14a)"/>
+    <polygon points="130,290 130,350 256,420 256,360" fill="url(#left14a)"/>
+    <polygon points="382,290 382,350 256,420 256,360" fill="url(#right14a)"/>
+    <!-- Edge highlights -->
+    <line x1="130" y1="290" x2="256" y2="220" stroke="white" stroke-width="0.7" opacity="0.2"/>
+    <line x1="256" y1="220" x2="382" y2="290" stroke="white" stroke-width="0.5" opacity="0.15"/>
+
+    <!-- Middle block (cyan) — offset right -->
+    <polygon points="310,270 200,208 310,146 420,208" fill="url(#top14b)"/>
+    <polygon points="200,208 200,260 310,322 310,270" fill="url(#left14b)"/>
+    <polygon points="420,208 420,260 310,322 310,270" fill="url(#right14b)"/>
+    <line x1="200" y1="208" x2="310" y2="146" stroke="white" stroke-width="0.7" opacity="0.25"/>
+
+    <!-- Top block (purple) — offset left -->
+    <polygon points="200,200 100,142 200,84 300,142" fill="url(#top14c)"/>
+    <polygon points="100,142 100,190 200,248 200,200" fill="url(#left14c)"/>
+    <polygon points="300,142 300,190 200,248 200,200" fill="url(#right14c)"/>
+    <line x1="100" y1="142" x2="200" y2="84" stroke="white" stroke-width="0.7" opacity="0.3"/>
+    <line x1="200" y1="84" x2="300" y2="142" stroke="white" stroke-width="0.5" opacity="0.2"/>
+  </g>
+</svg>

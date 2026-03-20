@@ -1,6 +1,8 @@
-build
-dist
-out
 node_modules
-*.min.
-packages/**/*.ejs
+dist
+target
+private
+packages/extensions
+apps/src-tauri
+*.md
+pnpm-lock.yaml

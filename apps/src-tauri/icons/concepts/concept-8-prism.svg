@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg8" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#050510"/>
+      <stop offset="100%" style="stop-color:#10082a"/>
+    </linearGradient>
+    <linearGradient id="prism8l" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#818cf8"/>
+      <stop offset="100%" style="stop-color:#312e81"/>
+    </linearGradient>
+    <linearGradient id="prism8r" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4f46e5"/>
+      <stop offset="100%" style="stop-color:#1e1b4b"/>
+    </linearGradient>
+    <linearGradient id="prism8f" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" style="stop-color:#6366f1"/>
+      <stop offset="100%" style="stop-color:#a5b4fc"/>
+    </linearGradient>
+    <linearGradient id="ray8a" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#e0e7ff"/>
+      <stop offset="100%" style="stop-color:#e0e7ff;stop-opacity:0"/>
+    </linearGradient>
+    <linearGradient id="ray8b" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#c084fc;stop-opacity:0"/>
+      <stop offset="100%" style="stop-color:#c084fc"/>
+    </linearGradient>
+    <linearGradient id="ray8c" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#22d3ee;stop-opacity:0"/>
+      <stop offset="100%" style="stop-color:#22d3ee"/>
+    </linearGradient>
+    <linearGradient id="ray8d" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0"/>
+      <stop offset="100%" style="stop-color:#6366f1"/>
+    </linearGradient>
+    <linearGradient id="ray8e" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#f0abfc;stop-opacity:0"/>
+      <stop offset="100%" style="stop-color:#f0abfc"/>
+    </linearGradient>
+    <filter id="prismglow">
+      <feDropShadow dx="0" dy="0" stdDeviation="14" flood-color="#6366f1" flood-opacity="0.35"/>
+    </filter>
+    <filter id="rayglow">
+      <feGaussianBlur stdDeviation="3"/>
+    </filter>
+  </defs>
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="url(#bg8)"/>
+  <!-- Input beam — single white ray from left -->
+  <line x1="60" y1="256" x2="195" y2="256" stroke="url(#ray8a)" stroke-width="6" stroke-linecap="round"/>
+  <!-- Prism — abstract triangular shape -->
+  <g filter="url(#prismglow)">
+    <polygon points="200,140 320,256 200,372" fill="url(#prism8f)" opacity="0.15"/>
+    <polygon points="200,140 260,198 200,256" fill="url(#prism8l)"/>
+    <polygon points="200,256 260,314 200,372" fill="url(#prism8l)" opacity="0.7"/>
+    <polygon points="260,198 320,256 260,314" fill="url(#prism8r)"/>
+    <!-- Edge highlights -->
+    <line x1="200" y1="140" x2="200" y2="372" stroke="#a5b4fc" stroke-width="1" opacity="0.4"/>
+    <line x1="200" y1="140" x2="320" y2="256" stroke="#c7d2fe" stroke-width="1" opacity="0.3"/>
+  </g>
+  <!-- Output rays — split into colors like dispersed file types -->
+  <g opacity="0.9">
+    <line x1="310" y1="230" x2="440" y2="140" stroke="url(#ray8b)" stroke-width="5" stroke-linecap="round"/>
+    <line x1="315" y1="245" x2="450" y2="210" stroke="url(#ray8c)" stroke-width="5" stroke-linecap="round"/>
+    <line x1="318" y1="258" x2="455" y2="260" stroke="url(#ray8d)" stroke-width="5" stroke-linecap="round"/>
+    <line x1="315" y1="270" x2="450" y2="310" stroke="url(#ray8e)" stroke-width="5" stroke-linecap="round"/>
+    <line x1="310" y1="282" x2="440" y2="375" stroke="url(#ray8b)" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+  </g>
+  <!-- Faint glow halos at ray endpoints — like file type nodes -->
+  <circle cx="440" cy="140" r="8" fill="#c084fc" opacity="0.4"/>
+  <circle cx="450" cy="210" r="8" fill="#22d3ee" opacity="0.4"/>
+  <circle cx="455" cy="260" r="8" fill="#6366f1" opacity="0.4"/>
+  <circle cx="450" cy="310" r="8" fill="#f0abfc" opacity="0.4"/>
+  <circle cx="440" cy="375" r="7" fill="#c084fc" opacity="0.3"/>
+</svg>

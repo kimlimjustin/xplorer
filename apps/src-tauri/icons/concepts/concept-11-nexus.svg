@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg11" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#08071a"/>
+      <stop offset="100%" style="stop-color:#14102e"/>
+    </linearGradient>
+    <linearGradient id="edge11a" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1"/>
+      <stop offset="100%" style="stop-color:#22d3ee"/>
+    </linearGradient>
+    <linearGradient id="edge11b" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8b5cf6"/>
+      <stop offset="100%" style="stop-color:#c084fc"/>
+    </linearGradient>
+    <filter id="nodeglow11">
+      <feDropShadow dx="0" dy="0" stdDeviation="10" flood-color="#818cf8" flood-opacity="0.4"/>
+    </filter>
+    <filter id="edgeglow11">
+      <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="#6366f1" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="url(#bg11)"/>
+  <!-- Connection lines from center to outer nodes — abstract directory graph -->
+  <g filter="url(#edgeglow11)" stroke-linecap="round">
+    <line x1="256" y1="256" x2="140" y2="120" stroke="url(#edge11a)" stroke-width="3"/>
+    <line x1="256" y1="256" x2="380" y2="108" stroke="url(#edge11b)" stroke-width="3"/>
+    <line x1="256" y1="256" x2="420" y2="250" stroke="url(#edge11a)" stroke-width="3"/>
+    <line x1="256" y1="256" x2="390" y2="390" stroke="url(#edge11b)" stroke-width="2.5"/>
+    <line x1="256" y1="256" x2="150" y2="370" stroke="url(#edge11a)" stroke-width="2.5"/>
+    <line x1="256" y1="256" x2="85" y2="240" stroke="url(#edge11b)" stroke-width="2.5"/>
+    <!-- Sub-branches from outer nodes -->
+    <line x1="140" y1="120" x2="85" y2="80" stroke="url(#edge11a)" stroke-width="1.5" opacity="0.5"/>
+    <line x1="140" y1="120" x2="170" y2="62" stroke="url(#edge11a)" stroke-width="1.5" opacity="0.5"/>
+    <line x1="380" y1="108" x2="430" y2="60" stroke="url(#edge11b)" stroke-width="1.5" opacity="0.5"/>
+    <line x1="420" y1="250" x2="460" y2="200" stroke="url(#edge11a)" stroke-width="1.5" opacity="0.4"/>
+    <line x1="420" y1="250" x2="460" y2="290" stroke="url(#edge11a)" stroke-width="1.5" opacity="0.4"/>
+    <line x1="390" y1="390" x2="430" y2="440" stroke="url(#edge11b)" stroke-width="1.5" opacity="0.4"/>
+    <line x1="150" y1="370" x2="100" y2="420" stroke="url(#edge11a)" stroke-width="1.5" opacity="0.4"/>
+    <line x1="150" y1="370" x2="170" y2="430" stroke="url(#edge11a)" stroke-width="1.5" opacity="0.4"/>
+    <line x1="85" y1="240" x2="55" y2="190" stroke="url(#edge11b)" stroke-width="1.5" opacity="0.4"/>
+  </g>
+  <!-- Outer nodes — different sizes like different file types -->
+  <g filter="url(#nodeglow11)">
+    <circle cx="140" cy="120" r="16" fill="#818cf8"/>
+    <circle cx="380" cy="108" r="14" fill="#c084fc"/>
+    <circle cx="420" cy="250" r="13" fill="#22d3ee"/>
+    <circle cx="390" cy="390" r="12" fill="#8b5cf6"/>
+    <circle cx="150" cy="370" r="14" fill="#6366f1"/>
+    <circle cx="85" cy="240" r="11" fill="#a5b4fc"/>
+  </g>
+  <!-- Leaf nodes (sub-files) -->
+  <circle cx="85" cy="80" r="6" fill="#a5b4fc" opacity="0.5"/>
+  <circle cx="170" cy="62" r="5" fill="#22d3ee" opacity="0.5"/>
+  <circle cx="430" cy="60" r="6" fill="#f0abfc" opacity="0.5"/>
+  <circle cx="460" cy="200" r="5" fill="#22d3ee" opacity="0.4"/>
+  <circle cx="460" cy="290" r="5" fill="#6366f1" opacity="0.4"/>
+  <circle cx="430" cy="440" r="5" fill="#c084fc" opacity="0.4"/>
+  <circle cx="100" cy="420" r="5" fill="#818cf8" opacity="0.4"/>
+  <circle cx="170" cy="430" r="5" fill="#22d3ee" opacity="0.4"/>
+  <circle cx="55" cy="190" r="5" fill="#c084fc" opacity="0.4"/>
+  <!-- Center hub — bright, dominant -->
+  <circle cx="256" cy="256" r="28" fill="#e0e7ff" opacity="0.9"/>
+  <circle cx="256" cy="256" r="18" fill="#a5b4fc"/>
+  <circle cx="256" cy="256" r="8" fill="#4f46e5"/>
+</svg>

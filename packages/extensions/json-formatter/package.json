@@ -1,0 +1,38 @@
+{
+  "name": "xplorer-json-formatter",
+  "version": "1.0.0",
+  "description": "Format, minify, and validate JSON files from context menu",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/index.tsx --bundle --format=iife --outfile=dist/index.js --external:react --external:react-dom --external:@xplorer/extension-sdk --target=es2020 --jsx=transform"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.0",
+    "typescript": "^5.2.0"
+  },
+  "xplorer": {
+    "id": "xplorer-json-formatter",
+    "name": "JSON Formatter",
+    "displayName": "JSON Formatter",
+    "description": "Format (pretty-print), minify, and validate JSON files. Right-click any .json file to access these tools.",
+    "version": "1.0.0",
+    "author": "Xplorer Team",
+    "category": "action",
+    "icon": "braces",
+    "keywords": ["action", "json", "format", "minify", "validate", "pretty-print"],
+    "permissions": ["file:read", "file:write", "ui:notifications"],
+    "activationEvents": ["onStartup"],
+    "contributes": {
+      "commands": [
+        { "command": "format", "title": "Format JSON", "category": "JSON Formatter" },
+        { "command": "minify", "title": "Minify JSON", "category": "JSON Formatter" },
+        { "command": "validate", "title": "Validate JSON", "category": "JSON Formatter" }
+      ],
+      "context_menus": [
+        { "command": "xplorer-json-formatter.format", "when": "fileExtension:.json", "group": "tools" },
+        { "command": "xplorer-json-formatter.minify", "when": "fileExtension:.json", "group": "tools" }
+      ]
+    }
+  }
+}

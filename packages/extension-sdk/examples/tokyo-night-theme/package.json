@@ -1,0 +1,25 @@
+{
+  "name": "tokyo-night-theme",
+  "version": "1.0.0",
+  "description": "Tokyo Night theme for Xplorer",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "package": "xplorer-sdk package"
+  },
+  "devDependencies": {
+    "@xplorer/extension-sdk": "file:../..",
+    "typescript": "^5.0.0"
+  },
+  "xplorer": {
+    "id": "tokyo-night-theme",
+    "displayName": "Tokyo Night Theme",
+    "category": "theme",
+    "version": "1.0.0",
+    "author": "Xplorer Team",
+    "description": "A beautiful dark theme inspired by Tokyo Night",
+    "keywords": ["theme", "dark", "tokyo", "night"],
+    "icon": "🌃"
+  }
+}

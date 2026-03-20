@@ -1,0 +1,38 @@
+# {{displayName}}
+
+{{description}}
+
+## Features
+
+- Process individual files from the context menu
+- Batch process all files in a directory
+- Command palette integration
+
+## Installation
+
+1. Build the extension: `npm run build`
+2. Open Xplorer
+3. Go to Extensions > Install from Folder
+4. Select this extension's directory
+
+## Usage
+
+Right-click on a file and select "{{displayName}}: Process" from the context menu.
+
+## Development
+
+```bash
+npm install
+npm run dev       # Watch mode
+npm run build     # Production build
+npm run package   # Create .spx package
+```
+
+## License
+
+MIT
+
+---
+
+Built with the Xplorer Extension SDK
+

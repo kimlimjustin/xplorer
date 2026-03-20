@@ -1,0 +1,13 @@
+packages:
+  - 'apps/client'
+  - 'packages/sdk'
+  - 'packages/extension-sdk'
+  - 'packages/create-extension'
+  - 'packages/extensions/**'
+  # Private submodule (available when cloned)
+  - 'private/web'
+  - 'private/extensions/**'
+
+onlyBuiltDependencies:
+  - '@tailwindcss/oxide'
+  - esbuild

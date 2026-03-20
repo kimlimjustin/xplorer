@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg6" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a1a"/>
+      <stop offset="100%" style="stop-color:#1a1040"/>
+    </linearGradient>
+    <linearGradient id="foldertab6" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#818cf8"/>
+      <stop offset="100%" style="stop-color:#6366f1"/>
+    </linearGradient>
+    <linearGradient id="folderbody6" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4f46e5"/>
+      <stop offset="100%" style="stop-color:#312e81"/>
+    </linearGradient>
+    <linearGradient id="xmark6" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22d3ee"/>
+      <stop offset="100%" style="stop-color:#a78bfa"/>
+    </linearGradient>
+    <filter id="folderglow6">
+      <feDropShadow dx="0" dy="8" stdDeviation="18" flood-color="#4f46e5" flood-opacity="0.5"/>
+    </filter>
+    <filter id="xglow6">
+      <feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#22d3ee" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+  <!-- Background -->
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="url(#bg6)"/>
+  <!-- Stacked files behind folder — depth cue -->
+  <g opacity="0.15">
+    <rect x="110" y="155" width="310" height="220" rx="16" fill="#6366f1" transform="rotate(-3 256 265)"/>
+  </g>
+  <g opacity="0.1">
+    <rect x="120" y="148" width="290" height="210" rx="14" fill="#818cf8" transform="rotate(2 256 253)"/>
+  </g>
+  <!-- Main folder shape -->
+  <g filter="url(#folderglow6)">
+    <!-- Folder tab -->
+    <path d="M95 175 L95 152 Q95 132 115 132 L218 132 Q235 132 241 150 L256 175 Z" fill="url(#foldertab6)"/>
+    <!-- Folder body -->
+    <rect x="75" y="175" width="362" height="230" rx="22" fill="url(#folderbody6)"/>
+    <!-- Glass highlight band -->
+    <rect x="75" y="175" width="362" height="80" rx="22" fill="white" opacity="0.07"/>
+    <!-- Top edge -->
+    <line x1="97" y1="176" x2="415" y2="176" stroke="white" stroke-width="1" opacity="0.2"/>
+    <!-- Bottom crease line -->
+    <line x1="97" y1="365" x2="415" y2="365" stroke="white" stroke-width="0.5" opacity="0.06"/>
+  </g>
+  <!-- X mark on folder -->
+  <g filter="url(#xglow6)">
+    <line x1="196" y1="225" x2="316" y2="355" stroke="url(#xmark6)" stroke-width="34" stroke-linecap="round"/>
+    <line x1="316" y1="225" x2="196" y2="355" stroke="url(#xmark6)" stroke-width="34" stroke-linecap="round"/>
+  </g>
+  <!-- Small file corner-fold details in folder -->
+  <g opacity="0.2">
+    <rect x="340" y="200" width="28" height="35" rx="3" fill="white"/>
+    <polyline points="358,200 358,210 368,210" fill="none" stroke="#4f46e5" stroke-width="1.5"/>
+  </g>
+  <g opacity="0.15">
+    <rect x="375" y="210" width="24" height="30" rx="3" fill="white"/>
+    <polyline points="390,210 390,218 399,218" fill="none" stroke="#4f46e5" stroke-width="1.5"/>
+  </g>
+</svg>

@@ -1,0 +1,27 @@
+{
+  "name": "xplorer-ocean-deep-theme",
+  "version": "1.0.0",
+  "description": "Ocean Deep - Deep navy and teal hues inspired by the depths of the ocean",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/index.tsx --bundle --format=iife --outfile=dist/index.js --external:react --external:react-dom --external:@xplorer/extension-sdk --target=es2020 --jsx=transform"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.0",
+    "typescript": "^5.2.0"
+  },
+  "xplorer": {
+    "id": "xplorer-ocean-deep-theme",
+    "name": "Ocean Deep Theme",
+    "displayName": "Ocean Deep",
+    "description": "Deep navy and teal hues inspired by the depths of the ocean. Bioluminescent accents and smooth gradients.",
+    "version": "1.0.0",
+    "author": "Xplorer Team",
+    "category": "theme",
+    "icon": "palette",
+    "keywords": ["theme", "dark", "ocean", "deep", "navy", "teal", "blue"],
+    "permissions": ["ui:notifications"],
+    "activationEvents": ["onStartup"]
+  }
+}
