@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a2e"/>
+      <stop offset="100%" style="stop-color:#1a1a4e"/>
+    </linearGradient>
+    <linearGradient id="folder1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#818cf8"/>
+      <stop offset="100%" style="stop-color:#4f46e5"/>
+    </linearGradient>
+    <linearGradient id="folderbody1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1"/>
+      <stop offset="100%" style="stop-color:#3730a3"/>
+    </linearGradient>
+    <linearGradient id="x1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e0e7ff"/>
+      <stop offset="50%" style="stop-color:#c7d2fe"/>
+      <stop offset="100%" style="stop-color:#a5b4fc"/>
+    </linearGradient>
+    <filter id="shadow1">
+      <feDropShadow dx="0" dy="6" stdDeviation="14" flood-color="#4f46e5" flood-opacity="0.5"/>
+    </filter>
+    <filter id="xglow1">
+      <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#c7d2fe" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+  <!-- Background rounded square -->
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="url(#bg1)"/>
+  <!-- Large folder shape as the main form -->
+  <g filter="url(#shadow1)">
+    <!-- Folder tab -->
+    <path d="M90 175 L90 148 Q90 128 110 128 L210 128 Q228 128 235 148 L250 175 Z" fill="url(#folder1)"/>
+    <!-- Folder body -->
+    <rect x="70" y="175" width="372" height="230" rx="22" fill="url(#folderbody1)"/>
+    <!-- Glass highlight on folder body -->
+    <rect x="70" y="175" width="372" height="100" rx="22" fill="white" opacity="0.08"/>
+    <line x1="92" y1="176" x2="420" y2="176" stroke="white" stroke-width="1" opacity="0.2"/>
+  </g>
+  <!-- X mark centered on the folder -->
+  <g filter="url(#xglow1)">
+    <line x1="196" y1="230" x2="316" y2="360" stroke="url(#x1)" stroke-width="36" stroke-linecap="round"/>
+    <line x1="316" y1="230" x2="196" y2="360" stroke="url(#x1)" stroke-width="36" stroke-linecap="round"/>
+  </g>
+</svg>

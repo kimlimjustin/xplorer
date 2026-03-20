@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg5" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a1a"/>
+      <stop offset="50%" style="stop-color:#0f0f2e"/>
+      <stop offset="100%" style="stop-color:#1a0a2e"/>
+    </linearGradient>
+    <linearGradient id="x5" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e0e7ff"/>
+      <stop offset="100%" style="stop-color:#a5b4fc"/>
+    </linearGradient>
+    <linearGradient id="orbit5a" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0"/>
+      <stop offset="50%" style="stop-color:#8b5cf6;stop-opacity:0.8"/>
+      <stop offset="100%" style="stop-color:#c084fc;stop-opacity:0"/>
+    </linearGradient>
+    <linearGradient id="orbit5b" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#22d3ee;stop-opacity:0"/>
+      <stop offset="50%" style="stop-color:#06b6d4;stop-opacity:0.6"/>
+      <stop offset="100%" style="stop-color:#22d3ee;stop-opacity:0"/>
+    </linearGradient>
+    <linearGradient id="folder5" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1"/>
+      <stop offset="100%" style="stop-color:#3730a3"/>
+    </linearGradient>
+    <filter id="xglow5">
+      <feDropShadow dx="0" dy="0" stdDeviation="10" flood-color="#a5b4fc" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+  <!-- Background -->
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="url(#bg5)"/>
+  <!-- Orbital rings -->
+  <ellipse cx="256" cy="270" rx="200" ry="80" fill="none" stroke="url(#orbit5a)" stroke-width="2.5" transform="rotate(-30 256 270)"/>
+  <ellipse cx="256" cy="270" rx="200" ry="80" fill="none" stroke="url(#orbit5b)" stroke-width="2" transform="rotate(30 256 270)"/>
+  <!-- Bold X at center -->
+  <g filter="url(#xglow5)">
+    <path d="M192 175 L224 175 L256 225 L288 175 L320 175 L272 270 L320 365 L288 365 L256 315 L224 365 L192 365 L244 270 Z" fill="url(#x5)"/>
+    <!-- Glass highlight on upper half -->
+    <path d="M192 175 L224 175 L256 225 L288 175 L320 175 L272 270 L256 225 L244 270 Z" fill="white" opacity="0.12"/>
+  </g>
+  <!-- Orbiting file/folder particles instead of plain dots -->
+  <!-- Folder particle -->
+  <g transform="translate(118, 155)">
+    <path d="M0 8 L0 4 Q0 0 4 0 L12 0 Q14 0 15 4 L16 8 L28 8 Q32 8 32 12 L32 24 Q32 28 28 28 L4 28 Q0 28 0 24 Z" fill="url(#folder5)" opacity="0.7"/>
+  </g>
+  <!-- File particle -->
+  <g transform="translate(370, 360)">
+    <rect x="0" y="0" width="22" height="28" rx="3" fill="#8b5cf6" opacity="0.6"/>
+    <polyline points="13,0 13,9 22,9" fill="none" stroke="#c7d2fe" stroke-width="1.2" opacity="0.6"/>
+    <line x1="4" y1="15" x2="18" y2="15" stroke="#c7d2fe" stroke-width="1" opacity="0.4"/>
+    <line x1="4" y1="19" x2="14" y2="19" stroke="#c7d2fe" stroke-width="1" opacity="0.3"/>
+  </g>
+  <!-- Image particle -->
+  <g transform="translate(388, 178)">
+    <rect x="0" y="0" width="20" height="18" rx="2" fill="#22d3ee" opacity="0.5"/>
+    <circle cx="7" cy="7" r="3" fill="#0e7490" opacity="0.5"/>
+    <polyline points="2,16 8,10 12,14 16,8 18,12" fill="none" stroke="#cffafe" stroke-width="1" opacity="0.5"/>
+  </g>
+  <!-- Small music file particle -->
+  <g transform="translate(100, 345)">
+    <rect x="0" y="0" width="18" height="22" rx="2" fill="#c084fc" opacity="0.45"/>
+    <circle cx="9" cy="15" r="4" fill="none" stroke="#e9d5ff" stroke-width="1" opacity="0.5"/>
+    <line x1="13" y1="15" x2="13" y2="5" stroke="#e9d5ff" stroke-width="1" opacity="0.5"/>
+  </g>
+</svg>

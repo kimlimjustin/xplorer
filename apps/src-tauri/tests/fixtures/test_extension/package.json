@@ -1,0 +1,45 @@
+{
+  "id": "test-fixture-extension",
+  "name": "Test Fixture Extension",
+  "display_name": "Test Fixture",
+  "description": "A test extension for testing purposes",
+  "version": "1.0.0",
+  "author": "Test Suite",
+  "category": "tool",
+  "icon": "icon.svg",
+  "keywords": ["test", "fixture"],
+  "license": "MIT",
+  "permissions": [
+    "file:read",
+    "ui:notifications"
+  ],
+  "activation_events": [
+    "onFileOpen:*.js",
+    "onFileOpen:*.ts"
+  ],
+  "main": "index.js",
+  "contributes": {
+    "panels": [
+      {
+        "id": "test-panel",
+        "title": "Test Panel",
+        "location": "sidebar",
+        "icon": "panel-icon.svg",
+        "when": "explorerResourceIsFile"
+      }
+    ],
+    "commands": [
+      {
+        "command": "test.hello",
+        "title": "Say Hello",
+        "category": "Test"
+      }
+    ],
+    "context_menus": [
+      {
+        "command": "test.hello",
+        "when": "resourceExtname == .js"
+      }
+    ]
+  }
+}

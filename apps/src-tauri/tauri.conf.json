@@ -1,0 +1,61 @@
+{
+  "productName": "Xplorer",
+  "version": "0.1.0",
+  "identifier": "com.xplorer.app",
+  "build": {
+    "frontendDist": "../client/dist",
+    "devUrl": "http://localhost:5174"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Xplorer - File Explorer",
+        "width": 1200,
+        "height": 800,
+        "minWidth": 800,
+        "minHeight": 600,
+        "resizable": true,
+        "fullscreen": false,
+        "decorations": false,
+        "hiddenTitle": true,
+        "titleBarStyle": "Overlay",
+        "trafficLightPosition": { "x": 12, "y": 30 },
+        "alwaysOnTop": false,
+        "center": true
+      }
+    ],
+    "security": {
+        "csp": "default-src 'self'; script-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' asset: https://asset.localhost http://asset.localhost data:; connect-src 'self' ipc: http://ipc.localhost https://asset.localhost http://asset.localhost; media-src 'self' asset: https://asset.localhost http://asset.localhost; object-src 'none'; base-uri 'self'",
+      "capabilities": ["default"],
+      "assetProtocol": {
+        "enable": true,
+        "scope": ["**", "$HOME/**", "$APPDATA/**", "$LOCALAPPDATA/**", "../client/dist/**", "C:/**", "D:/**", "E:/**", "F:/**", "G:/**"]
+      }
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/icon.png",
+      "icons/icon.ico"
+    ],
+    "publisher": "Xplorer",
+    "copyright": "Copyright 2025 Xplorer",
+    "category": "Utility",
+    "shortDescription": "Modern file explorer",
+    "longDescription": "A modern file explorer built with Tauri, React, and TypeScript",
+    "fileAssociations": [
+      {
+        "ext": ["xtension"],
+        "mimeType": "application/x-xplorer-extension",
+        "description": "Xplorer Extension Package"
+      }
+    ],
+    "windows": {
+      "nsis": {
+        "installerHooks": "./windows/hooks.nsh"
+      }
+    }
+  }
+}

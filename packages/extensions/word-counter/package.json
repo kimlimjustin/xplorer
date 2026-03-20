@@ -1,0 +1,35 @@
+{
+  "name": "xplorer-word-counter",
+  "version": "1.0.0",
+  "description": "Count words, lines, and characters in text files",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/index.tsx --bundle --format=iife --outfile=dist/index.js --external:react --external:react-dom --external:@xplorer/extension-sdk --target=es2020 --jsx=transform"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.0",
+    "typescript": "^5.2.0"
+  },
+  "xplorer": {
+    "id": "xplorer-word-counter",
+    "name": "Word Counter",
+    "displayName": "Word Counter",
+    "description": "Count words, lines, and characters in text files. Registers a command and keyboard shortcut.",
+    "version": "1.0.0",
+    "author": "Xplorer Team",
+    "category": "tool",
+    "icon": "hash",
+    "keywords": ["tool", "word-count", "text", "statistics"],
+    "permissions": ["file:read", "ui:notifications"],
+    "activationEvents": ["onStartup"],
+    "contributes": {
+      "commands": [
+        { "command": "count", "title": "Count Words", "category": "Word Counter" }
+      ],
+      "keybindings": [
+        { "command": "xplorer-word-counter.count", "key": "ctrl+shift+w", "title": "Count Words in File" }
+      ]
+    }
+  }
+}

@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg7" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#07060f"/>
+      <stop offset="100%" style="stop-color:#13102a"/>
+    </linearGradient>
+    <linearGradient id="path7a" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1"/>
+      <stop offset="100%" style="stop-color:#22d3ee"/>
+    </linearGradient>
+    <linearGradient id="path7b" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#c084fc"/>
+      <stop offset="100%" style="stop-color:#6366f1"/>
+    </linearGradient>
+    <filter id="glow7">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <filter id="softglow7">
+      <feGaussianBlur stdDeviation="20" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="url(#bg7)"/>
+  <!-- Abstract branching paths — like a file tree turned into flowing lines -->
+  <g filter="url(#glow7)" fill="none" stroke-linecap="round">
+    <!-- Main trunk going top-left to center -->
+    <path d="M100,100 Q180,180 256,256" stroke="url(#path7a)" stroke-width="28"/>
+    <!-- Branch up-right from center -->
+    <path d="M256,256 Q330,180 412,130" stroke="url(#path7a)" stroke-width="20"/>
+    <!-- Branch down-right from center -->
+    <path d="M256,256 Q340,320 410,380" stroke="url(#path7b)" stroke-width="20"/>
+    <!-- Smaller sub-branch -->
+    <path d="M256,256 Q200,330 130,390" stroke="url(#path7b)" stroke-width="14" opacity="0.7"/>
+    <!-- Tiny twig -->
+    <path d="M340,320 Q370,290 405,270" stroke="url(#path7a)" stroke-width="8" opacity="0.5"/>
+  </g>
+  <!-- Node dots at endpoints — represent files/folders abstractly -->
+  <g filter="url(#softglow7)">
+    <circle cx="100" cy="100" r="14" fill="#6366f1"/>
+    <circle cx="412" cy="130" r="11" fill="#22d3ee"/>
+    <circle cx="410" cy="380" r="11" fill="#c084fc"/>
+    <circle cx="130" cy="390" r="9" fill="#8b5cf6"/>
+    <circle cx="405" cy="270" r="7" fill="#22d3ee" opacity="0.7"/>
+  </g>
+  <!-- Center intersection — the "X" junction point -->
+  <circle cx="256" cy="256" r="22" fill="#e0e7ff"/>
+  <circle cx="256" cy="256" r="12" fill="#6366f1"/>
+</svg>

@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a"/>
+      <stop offset="100%" style="stop-color:#1e1b4b"/>
+    </linearGradient>
+    <linearGradient id="folder2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1"/>
+      <stop offset="100%" style="stop-color:#4338ca"/>
+    </linearGradient>
+    <linearGradient id="x2a" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f0abfc"/>
+      <stop offset="100%" style="stop-color:#6366f1"/>
+    </linearGradient>
+    <linearGradient id="x2b" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#22d3ee"/>
+      <stop offset="100%" style="stop-color:#8b5cf6"/>
+    </linearGradient>
+    <linearGradient id="ring2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22d3ee"/>
+      <stop offset="100%" style="stop-color:#6366f1"/>
+    </linearGradient>
+    <filter id="glow2">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+  <!-- Background -->
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="url(#bg2)"/>
+  <!-- Folder outline behind the compass — establishes file explorer context -->
+  <path d="M110 200 L110 170 Q110 150 130 150 L220 150 Q236 150 242 168 L255 200 L400 200 Q420 200 420 220 L420 380 Q420 400 400 400 L130 400 Q110 400 110 380 Z" fill="none" stroke="url(#folder2)" stroke-width="3" opacity="0.35"/>
+  <!-- Compass ring -->
+  <circle cx="265" cy="290" r="120" fill="none" stroke="url(#ring2)" stroke-width="2.5" opacity="0.5"/>
+  <!-- Tick marks -->
+  <line x1="265" y1="172" x2="265" y2="190" stroke="#22d3ee" stroke-width="2.5" opacity="0.6"/>
+  <line x1="265" y1="390" x2="265" y2="408" stroke="#22d3ee" stroke-width="2.5" opacity="0.6"/>
+  <line x1="147" y1="290" x2="165" y2="290" stroke="#22d3ee" stroke-width="2.5" opacity="0.6"/>
+  <line x1="365" y1="290" x2="383" y2="290" stroke="#22d3ee" stroke-width="2.5" opacity="0.6"/>
+  <!-- X as compass needles -->
+  <g filter="url(#glow2)">
+    <polygon points="265,175 285,268 265,290 245,268" fill="url(#x2a)"/>
+    <polygon points="265,405 245,312 265,290 285,312" fill="url(#x2a)" opacity="0.7"/>
+    <polygon points="383,290 285,268 265,290 285,312" fill="url(#x2b)"/>
+    <polygon points="147,290 245,312 265,290 245,268" fill="url(#x2b)" opacity="0.7"/>
+  </g>
+  <!-- Center dot -->
+  <circle cx="265" cy="290" r="10" fill="#ffffff" opacity="0.9"/>
+  <circle cx="265" cy="290" r="5" fill="#6366f1"/>
+  <!-- Small file icons floating near corners to reinforce "files" -->
+  <g opacity="0.3">
+    <rect x="80" y="100" width="24" height="30" rx="3" fill="#818cf8"/>
+    <path d="M80 100 L92 100 L104 112 L104 130 L80 130 Z" fill="none" stroke="#a5b4fc" stroke-width="1"/>
+    <polyline points="92,100 92,112 104,112" fill="none" stroke="#a5b4fc" stroke-width="1"/>
+  </g>
+  <g opacity="0.25">
+    <rect x="400" y="420" width="20" height="26" rx="3" fill="#818cf8"/>
+    <path d="M400 420 L410 420 L420 430 L420 446 L400 446 Z" fill="none" stroke="#a5b4fc" stroke-width="1"/>
+    <polyline points="410,420 410,430 420,430" fill="none" stroke="#a5b4fc" stroke-width="1"/>
+  </g>
+</svg>

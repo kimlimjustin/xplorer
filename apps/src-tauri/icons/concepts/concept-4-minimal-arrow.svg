@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0c0a1d"/>
+      <stop offset="100%" style="stop-color:#1a103a"/>
+    </linearGradient>
+    <linearGradient id="stroke4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#c084fc"/>
+      <stop offset="50%" style="stop-color:#818cf8"/>
+      <stop offset="100%" style="stop-color:#22d3ee"/>
+    </linearGradient>
+    <linearGradient id="folder4" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#818cf8"/>
+      <stop offset="100%" style="stop-color:#4f46e5"/>
+    </linearGradient>
+    <filter id="neon4">
+      <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#818cf8" flood-opacity="0.6"/>
+    </filter>
+    <filter id="folderglow4">
+      <feDropShadow dx="0" dy="4" stdDeviation="10" flood-color="#4f46e5" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  <!-- Background -->
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="url(#bg4)"/>
+  <!-- Folder shape — outlined, modern -->
+  <g filter="url(#folderglow4)">
+    <path d="M105 195 L105 168 Q105 150 123 150 L213 150 Q228 150 234 166 L248 195 L400 195 Q418 195 418 213 L418 380 Q418 398 400 398 L123 398 Q105 398 105 380 Z" fill="url(#folder4)" opacity="0.2"/>
+    <path d="M105 195 L105 168 Q105 150 123 150 L213 150 Q228 150 234 166 L248 195 L400 195 Q418 195 418 213 L418 380 Q418 398 400 398 L123 398 Q105 398 105 380 Z" fill="none" stroke="url(#folder4)" stroke-width="2.5" opacity="0.5"/>
+  </g>
+  <!-- Clean X strokes inside the folder -->
+  <g filter="url(#neon4)">
+    <line x1="190" y1="230" x2="335" y2="370" stroke="url(#stroke4)" stroke-width="34" stroke-linecap="round"/>
+    <line x1="335" y1="230" x2="190" y2="370" stroke="url(#stroke4)" stroke-width="34" stroke-linecap="round"/>
+  </g>
+  <!-- Small breadcrumb dots at top — suggests navigation -->
+  <circle cx="130" cy="120" r="5" fill="#818cf8" opacity="0.4"/>
+  <rect x="142" y="118" width="16" height="4" rx="2" fill="#818cf8" opacity="0.25"/>
+  <circle cx="166" cy="120" r="5" fill="#a5b4fc" opacity="0.5"/>
+  <rect x="178" y="118" width="16" height="4" rx="2" fill="#818cf8" opacity="0.25"/>
+  <circle cx="202" cy="120" r="5" fill="#c7d2fe" opacity="0.6"/>
+</svg>

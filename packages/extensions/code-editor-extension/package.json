@@ -1,0 +1,53 @@
+{
+  "name": "xplorer-code-editor",
+  "version": "3.0.0",
+  "description": "Syntax-highlighted code editor powered by CodeMirror 6. Registers as the default editor for text/code files.",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/index.tsx --bundle --format=iife --outfile=dist/index.js --external:react --external:react-dom --external:@xplorer/extension-sdk --target=es2020 --jsx=transform",
+    "watch": "esbuild src/index.tsx --bundle --format=iife --outfile=dist/index.js --external:react --external:react-dom --external:@xplorer/extension-sdk --target=es2020 --jsx=transform --watch",
+    "package": "npm run build && cd .. && node -e \"const{execSync}=require('child_process');execSync('tar -cf code-editor-extension.zip -C code-editor-extension .');\""
+  },
+  "dependencies": {
+    "codemirror": "^6.0.0",
+    "@codemirror/lang-javascript": "^6.0.0",
+    "@codemirror/lang-html": "^6.0.0",
+    "@codemirror/lang-css": "^6.0.0",
+    "@codemirror/lang-json": "^6.0.0",
+    "@codemirror/lang-python": "^6.0.0",
+    "@codemirror/lang-markdown": "^6.0.0",
+    "@codemirror/lang-rust": "^6.0.0",
+    "@codemirror/lang-cpp": "^6.0.0",
+    "@codemirror/lang-java": "^6.0.0",
+    "@codemirror/lang-xml": "^6.0.0",
+    "@codemirror/lang-sql": "^6.0.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.0",
+    "@types/react": "^18.2.0",
+    "typescript": "^5.2.0"
+  },
+  "xplorer": {
+    "id": "code-editor",
+    "name": "Code Editor",
+    "displayName": "Code Editor",
+    "description": "Syntax-highlighted code editor powered by CodeMirror 6. Registers as the default editor for text/code files.",
+    "version": "3.0.0",
+    "author": "Xplorer Team",
+    "category": "editor",
+    "icon": "code",
+    "keywords": ["editor", "code", "syntax", "highlighting", "codemirror"],
+    "permissions": ["file:read", "file:write"],
+    "activationEvents": ["onStartup"],
+    "contributes": {
+      "editors": [
+        {
+          "id": "code-editor",
+          "extensions": ["ts", "tsx", "js", "jsx", "json", "py", "rs", "go", "java", "c", "cpp", "h", "hpp", "cs", "html", "css", "scss", "md", "yaml", "yml", "toml", "xml", "sql", "sh", "bash", "lua", "rb", "php", "svg", "txt", "log", "env", "gitignore", "dockerfile", "makefile", "ini", "cfg", "conf", "graphql", "proto", "vim", "cmake", "gradle", "properties", "csv", "tsv"],
+          "priority": 20
+        }
+      ]
+    }
+  }
+}

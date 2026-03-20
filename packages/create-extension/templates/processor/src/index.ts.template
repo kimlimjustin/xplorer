@@ -1,0 +1,83 @@
+import { ActionExtension, ExtensionContext, ActionMenuItem, FileEntry } from '@xplorer/extension-sdk';
+import { registerExtension } from '@xplorer/extension-sdk';
+
+export class {{displayName}}Extension extends ActionExtension {
+  constructor() {
+    super({
+      id: '{{name}}',
+      name: '{{displayName}}',
+      version: '1.0.0',
+      author: '{{author}}',
+      description: '{{description}}',
+      icon: '⚙️',
+      permissions: ['file:read', 'file:write', 'directory:list', 'ui:notifications'],
+    });
+  }
+
+  async activate(context: ExtensionContext): Promise<void> {
+    await super.activate(context);
+    this.log('{{displayName}} processor activated');
+
+    // Register a processing command
+    this.registerCommand('process', async (path?: string) => {
+      const targetPath = path || this.getAPI().navigation.getCurrentPath();
+      await this.processFile(targetPath);
+    });
+  }
+
+  async deactivate(): Promise<void> {
+    await super.deactivate();
+  }
+
+  getActions(): ActionMenuItem[] {
+    return [
+      {
+        id: 'process-file',
+        label: '{{displayName}}: Process',
+        icon: '⚙️',
+        group: 'tools',
+        when: (files: FileEntry[]) => files.length === 1 && !files[0].isDirectory,
+        action: async (files: FileEntry[]) => {
+          await this.processFile(files[0].path);
+        },
+      },
+      {
+        id: 'process-directory',
+        label: '{{displayName}}: Process All',
+        icon: '⚙️',
+        group: 'tools',
+        when: (files: FileEntry[]) => files.length === 1 && files[0].isDirectory,
+        action: async (files: FileEntry[]) => {
+          const dirFiles = await this.getAPI().files.list(files[0].path);
+          let processed = 0;
+          for (const file of dirFiles) {
+            if (!file.isDirectory) {
+              await this.processFile(file.path);
+              processed++;
+            }
+          }
+          this.showMessage(`Processed ${processed} files`);
+        },
+      },
+    ];
+  }
+
+  private async processFile(path: string): Promise<void> {
+    try {
+      const content = await this.getAPI().files.readText(path);
+
+      // TODO: Add your processing logic here
+      const processed = content;
+
+      this.showMessage(`Processed: ${path}`);
+      this.log(`Processed file: ${path} (${content.length} chars)`);
+    } catch (err) {
+      this.showMessage(`Failed to process: ${err}`, 'error');
+    }
+  }
+}
+
+// Register the extension with Xplorer
+const extension = new {{displayName}}Extension();
+registerExtension(extension);
+

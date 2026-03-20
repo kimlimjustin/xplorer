@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg10" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#05040c"/>
+      <stop offset="100%" style="stop-color:#0f0b22"/>
+    </linearGradient>
+    <radialGradient id="portal10" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.5"/>
+      <stop offset="60%" style="stop-color:#4f46e5;stop-opacity:0.15"/>
+      <stop offset="100%" style="stop-color:#1e1b4b;stop-opacity:0"/>
+    </radialGradient>
+    <linearGradient id="ring10a" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#a5b4fc"/>
+      <stop offset="100%" style="stop-color:#6366f1"/>
+    </linearGradient>
+    <linearGradient id="ring10b" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22d3ee"/>
+      <stop offset="100%" style="stop-color:#818cf8"/>
+    </linearGradient>
+    <linearGradient id="arrow10" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#e0e7ff"/>
+      <stop offset="100%" style="stop-color:#e0e7ff;stop-opacity:0"/>
+    </linearGradient>
+    <filter id="portalglow">
+      <feGaussianBlur stdDeviation="16"/>
+    </filter>
+    <filter id="ringglow10">
+      <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#818cf8" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="url(#bg10)"/>
+  <!-- Portal glow center -->
+  <circle cx="256" cy="256" r="160" fill="url(#portal10)" filter="url(#portalglow)"/>
+  <!-- Concentric rings — like zooming through directories -->
+  <g filter="url(#ringglow10)">
+    <ellipse cx="256" cy="256" rx="170" ry="170" fill="none" stroke="url(#ring10a)" stroke-width="2" opacity="0.2"/>
+    <ellipse cx="256" cy="256" rx="130" ry="130" fill="none" stroke="url(#ring10b)" stroke-width="2.5" opacity="0.35"/>
+    <ellipse cx="256" cy="256" rx="88" ry="88" fill="none" stroke="url(#ring10a)" stroke-width="3" opacity="0.5"/>
+    <ellipse cx="256" cy="256" rx="48" ry="48" fill="none" stroke="url(#ring10b)" stroke-width="3.5" opacity="0.7"/>
+  </g>
+  <!-- Streaming particles going toward center — files being "explored" -->
+  <g opacity="0.6">
+    <!-- Top stream -->
+    <line x1="256" y1="70" x2="256" y2="130" stroke="url(#arrow10)" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="256" cy="125" r="3" fill="#e0e7ff"/>
+    <!-- Top-right stream -->
+    <line x1="388" y1="124" x2="340" y2="172" stroke="url(#arrow10)" stroke-width="2" stroke-linecap="round" transform="rotate(0)"/>
+    <circle cx="343" cy="169" r="2.5" fill="#c084fc"/>
+    <!-- Right stream -->
+    <line x1="442" y1="256" x2="382" y2="256" stroke="url(#arrow10)" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="387" cy="256" r="3" fill="#22d3ee"/>
+    <!-- Bottom-right stream -->
+    <line x1="388" y1="388" x2="340" y2="340" stroke="url(#arrow10)" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="343" cy="343" r="2.5" fill="#818cf8"/>
+    <!-- Bottom stream -->
+    <line x1="256" y1="442" x2="256" y2="382" stroke="url(#arrow10)" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="256" cy="387" r="3" fill="#a5b4fc"/>
+    <!-- Bottom-left stream -->
+    <line x1="124" y1="388" x2="172" y2="340" stroke="url(#arrow10)" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="169" cy="343" r="2.5" fill="#c084fc"/>
+    <!-- Left stream -->
+    <line x1="70" y1="256" x2="130" y2="256" stroke="url(#arrow10)" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="125" cy="256" r="3" fill="#22d3ee"/>
+    <!-- Top-left stream -->
+    <line x1="124" y1="124" x2="172" y2="172" stroke="url(#arrow10)" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="169" cy="169" r="2.5" fill="#818cf8"/>
+  </g>
+  <!-- Center bright point — the "you are here" -->
+  <circle cx="256" cy="256" r="14" fill="#e0e7ff" opacity="0.9"/>
+  <circle cx="256" cy="256" r="7" fill="#6366f1"/>
+</svg>

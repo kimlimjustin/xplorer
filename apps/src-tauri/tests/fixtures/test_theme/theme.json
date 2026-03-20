@@ -1,0 +1,53 @@
+{
+  "name": "test-fixture-theme",
+  "display_name": "Test Fixture Theme",
+  "theme_type": "dark",
+  "colors": {
+    "background": "#1e1e1e",
+    "foreground": "#d4d4d4",
+    "accent": "#007acc",
+    "primary": "#0e639c",
+    "secondary": "#f14c4c",
+    "success": "#89d185",
+    "warning": "#ffcc02",
+    "error": "#f14c4c",
+    "info": "#3794ff",
+    "panel": "#252526",
+    "sidebar": "#252526",
+    "toolbar": "#2d2d30",
+    "selection": "#264f78",
+    "border": "#3e3e42",
+    "hover": "#2a2d2e"
+  },
+  "fonts": {
+    "primary": "Inter, system-ui, sans-serif",
+    "monospace": "Fira Code, Consolas, monospace",
+    "size_small": "12px",
+    "size_medium": "14px",
+    "size_large": "16px"
+  },
+  "spacing": {
+    "xs": "4px",
+    "sm": "8px",
+    "md": "16px",
+    "lg": "24px",
+    "xl": "32px"
+  },
+  "border_radius": {
+    "small": "4px",
+    "medium": "8px",
+    "large": "12px",
+    "round": "50%"
+  },
+  "shadows": {
+    "small": "0 1px 3px rgba(0, 0, 0, 0.2)",
+    "medium": "0 4px 12px rgba(0, 0, 0, 0.15)",
+    "large": "0 8px 24px rgba(0, 0, 0, 0.12)"
+  },
+  "animations": {
+    "duration_fast": "150ms",
+    "duration_normal": "300ms",
+    "duration_slow": "500ms",
+    "easing": "cubic-bezier(0.4, 0, 0.2, 1)"
+  }
+}

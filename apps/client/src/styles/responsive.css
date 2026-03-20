@@ -1,0 +1,555 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE & MOBILE-FRIENDLY STYLES
+   Breakpoints:
+     - Tablet:       max-width 1024px
+     - Mobile:       max-width 768px
+     - Small mobile: max-width 480px
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── CSS custom properties for responsive layout ────────────────────────── */
+:root {
+  --sidebar-width: 256px;
+  --right-sidebar-width: 320px;
+  --extensions-bar-width: 48px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOBILE SIDEBAR OVERLAY
+   On screens <= 768px the left sidebar is hidden by default and slides in
+   as an overlay when toggled via the hamburger button.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Overlay backdrop — only visible on mobile when sidebar is open */
+.mobile-sidebar-backdrop {
+  display: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TABLET BREAKPOINT: max-width 1024px
+   - Collapse left sidebar labels (icon-only mode)
+   - Reduce overall padding
+   - Narrow right sidebar
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  /* --- Left sidebar: narrower, compact quick-access items --- */
+  .xp-left-sidebar {
+    max-width: 200px;
+  }
+
+  .xp-left-sidebar [role='region'] h4 {
+    font-size: 9px;
+  }
+
+  /* --- Right sidebar: narrower --- */
+  .xp-right-sidebar {
+    max-width: 280px;
+  }
+
+  /* --- TopBar: tighten spacing --- */
+  .xp-topbar .xp-topbar-row1 {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  /* Hide split-down button on tablet (less common) */
+  .xp-topbar .xp-split-down-btn {
+    display: none;
+  }
+
+  /* --- File grid: reduce gap and columns --- */
+  .grid-cols-auto-fill-large {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 1rem;
+  }
+
+  .grid-cols-auto-fill-medium {
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .grid-cols-auto-fill-tiles {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.5rem;
+  }
+
+  /* Content view: 2 columns instead of 3 */
+  .xp-file-grid .grid-cols-2.lg\:grid-cols-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* --- NavigationBar: reduce breadcrumb max-width --- */
+  .xp-navigation-bar button {
+    max-width: 120px;
+  }
+
+  /* --- StatusBar: hide center path section on smaller tablets --- */
+  .xp-status-bar .xp-status-center {
+    display: none;
+  }
+
+  /* --- Bottom panel: limit height --- */
+  .xp-bottom-panel {
+    max-height: 35vh;
+  }
+
+  /* --- Reduce general padding on panels --- */
+  .xp-left-sidebar [role='region'] {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    padding-top: 0.375rem;
+    padding-bottom: 0.375rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOBILE BREAKPOINT: max-width 768px
+   - Hide left sidebar completely (accessible via hamburger overlay)
+   - Full-width file grid
+   - Simplify TopBar to essential buttons only
+   - Bottom panel becomes collapsible sheet
+   - Larger touch targets (min 44px)
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* --- Left sidebar: overlay mode on mobile ---
+     The sidebar is conditionally rendered (unmounted when collapsed).
+     When rendered on mobile it becomes a fixed overlay. */
+  .xp-left-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 50;
+    width: 280px !important;
+    max-width: 80vw;
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Resize handle next to left sidebar: hide on mobile */
+  .xp-resize-handle-left {
+    display: none !important;
+  }
+
+  /* Mobile sidebar backdrop — shown when sidebar is open on mobile */
+  .mobile-sidebar-backdrop {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 49;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+
+  /* --- Right sidebar: hidden on mobile --- */
+  .xp-right-sidebar {
+    display: none !important;
+  }
+
+  /* Vertical extensions bar: hidden on mobile */
+  .xp-extensions-bar {
+    display: none !important;
+  }
+
+  /* Resize handles next to right sidebar: hidden */
+  .xp-right-sidebar ~ .xp-resize-handle,
+  .xp-extensions-bar + .xp-resize-handle {
+    display: none;
+  }
+
+  /* --- TopBar adjustments --- */
+
+  /* Row 1: tighter padding */
+  .xp-topbar .xp-topbar-row1 {
+    padding: 0.25rem 0.5rem;
+  }
+
+  /* Search bar: take more space */
+  .xp-topbar .xp-search-container {
+    max-width: none;
+    flex: 1;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+  }
+
+  /* Title text: hide on mobile to save space */
+  .xp-topbar .xp-app-title {
+    display: none;
+  }
+
+  /* Row 2: nav and tab actions */
+  .xp-topbar .xp-topbar-row2 {
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+  }
+
+  /* Hide less-essential nav buttons on mobile */
+  .xp-topbar .xp-nav-up-btn,
+  .xp-topbar .xp-refresh-btn,
+  .xp-topbar .xp-new-chat-btn {
+    display: none;
+  }
+
+  /* Hide split controls on mobile */
+  .xp-topbar .xp-split-right-btn,
+  .xp-topbar .xp-split-down-btn,
+  .xp-topbar .xp-keyboard-shortcuts-btn {
+    display: none;
+  }
+
+  /* Tab items: narrower */
+  .xp-topbar [role='tab'] {
+    max-width: 120px;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  /* --- File Grid --- */
+  .grid-cols-auto-fill-large {
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .grid-cols-auto-fill-medium {
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 0.5rem;
+  }
+
+  .grid-cols-auto-fill-small {
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 0.25rem;
+  }
+
+  .grid-cols-auto-fill-tiles {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 0.5rem;
+  }
+
+  .grid-cols-auto-fill-list {
+    grid-template-columns: 1fr;
+  }
+
+  /* Content view: single column */
+  .xp-file-grid .grid-cols-2.lg\:grid-cols-3,
+  .xp-file-grid .grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+
+  /* File items: larger touch targets */
+  .file-item {
+    min-height: 44px;
+    padding: 0.5rem;
+  }
+
+  /* --- NavigationBar: compact breadcrumbs --- */
+  .xp-navigation-bar {
+    padding: 0.25rem 0.5rem;
+  }
+
+  .xp-navigation-bar button {
+    max-width: 100px;
+    padding: 0.375rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  /* Edit path button: hide on mobile (tap breadcrumb bar to edit) */
+  .xp-navigation-bar .xp-edit-path-btn {
+    display: none;
+  }
+
+  /* --- Bottom panel: sheet-style --- */
+  .xp-bottom-panel {
+    max-height: 50vh;
+    border-radius: 12px 12px 0 0;
+  }
+
+  /* Bottom panel resize handle: hide on mobile */
+  .xp-bottom-panel-resize {
+    display: none;
+  }
+
+  /* --- StatusBar: simplified --- */
+  .xp-status-bar {
+    padding: 0.25rem 0.5rem;
+  }
+
+  .xp-status-bar .xp-status-center {
+    display: none;
+  }
+
+  .xp-status-bar .xp-status-right {
+    display: none;
+  }
+
+  /* --- Panel toggle buttons: larger on mobile --- */
+  .xp-panel-toggle {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* --- General touch target improvements --- */
+  button:not(.xp-inline-btn),
+  [role='button'],
+  [role='tab'],
+  [role='treeitem'],
+  [role='option'] {
+    min-height: 36px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SMALL MOBILE BREAKPOINT: max-width 480px
+   - Single column file list (no grid)
+   - Simplified top bar
+   - Bottom navigation hint
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  /* --- Force list-like layout for all grid modes --- */
+  .grid-cols-auto-fill-large,
+  .grid-cols-auto-fill-medium,
+  .grid-cols-auto-fill-small,
+  .grid-cols-auto-fill-tiles {
+    grid-template-columns: 1fr;
+    gap: 0.125rem;
+  }
+
+  /* File items: list-like with more padding */
+  .file-item {
+    min-height: 48px;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0;
+  }
+
+  /* --- TopBar: minimal --- */
+  .xp-topbar .xp-topbar-row1 {
+    padding: 0.25rem;
+  }
+
+  /* Hide add-tab button */
+  .xp-topbar .xp-add-tab-btn {
+    display: none;
+  }
+
+  /* Window controls: tighter */
+  .xp-topbar .xp-window-controls button {
+    padding: 0.375rem;
+  }
+
+  /* Tab container: allow horizontal scroll */
+  .xp-topbar [role='tablist'] {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .xp-topbar [role='tablist']::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Tab items: even narrower */
+  .xp-topbar [role='tab'] {
+    max-width: 100px;
+    font-size: 0.6875rem;
+  }
+
+  /* --- NavigationBar: minimal --- */
+  .xp-navigation-bar {
+    padding: 0.125rem 0.25rem;
+  }
+
+  .xp-navigation-bar button {
+    max-width: 80px;
+    font-size: 0.6875rem;
+    padding: 0.25rem 0.375rem;
+  }
+
+  /* Hide breadcrumb separators (chevrons) after the first */
+  .xp-navigation-bar .xp-breadcrumb-separator:not(:first-of-type) {
+    display: none;
+  }
+
+  /* --- StatusBar: minimal --- */
+  .xp-status-bar {
+    font-size: 0.625rem;
+    padding: 0.125rem 0.375rem;
+    min-height: 20px;
+  }
+
+  /* --- Bottom panel: larger sheet, rounded top --- */
+  .xp-bottom-panel {
+    max-height: 60vh;
+    border-radius: 16px 16px 0 0;
+  }
+
+  /* Search input: full width, slightly larger */
+  .xp-topbar .xp-search-container input {
+    font-size: 0.875rem;
+    padding: 0.5rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TOUCH DEVICE IMPROVEMENTS
+   Detected via (pointer: coarse) — applies to all touch-first devices
+   regardless of screen size.
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (pointer: coarse) {
+  /* Larger click/tap targets for file items */
+  .file-item {
+    min-height: 48px;
+    padding: 8px 12px;
+  }
+
+  /* All interactive elements: minimum 44px touch target */
+  button,
+  [role='button'],
+  [role='tab'],
+  [role='option'],
+  [role='treeitem'],
+  a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Exception: inline tiny buttons (close tab, remove bookmark, etc.) */
+  .xp-inline-btn,
+  [role='tab'] button,
+  .group button {
+    min-height: 32px;
+    min-width: 32px;
+  }
+
+  /* Larger scrollbar thumb for touch */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    min-height: 48px;
+  }
+
+  /* Sidebar quick-access items: taller */
+  .xp-left-sidebar button,
+  .xp-left-sidebar [role='button'] {
+    min-height: 44px;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  /* Tree items: taller for touch */
+  .xp-left-sidebar [role='treeitem'] {
+    min-height: 40px;
+    padding-top: 0.375rem;
+    padding-bottom: 0.375rem;
+  }
+
+  /* Context menu items: taller */
+  [role='menuitem'],
+  [role='menu'] button {
+    min-height: 44px;
+    padding: 0.5rem 1rem;
+  }
+
+  /* Dialog buttons: taller */
+  [role='dialog'] button {
+    min-height: 44px;
+    padding: 0.5rem 1rem;
+  }
+
+  /* Bottom panel tabs: taller */
+  .xp-bottom-panel [role='tab'],
+  .xp-bottom-panel button {
+    min-height: 44px;
+  }
+
+  /* Larger drag handle for bottom panel resize */
+  .xp-bottom-panel-resize {
+    height: 12px;
+    cursor: grab;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HOVER MEDIA QUERY
+   Only apply hover effects on devices that support hover (non-touch).
+   On touch devices, :hover states can be sticky — this prevents that.
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (hover: none) {
+  .file-item:hover {
+    background-color: inherit;
+  }
+
+  .sidebar-item:hover {
+    background-color: inherit;
+  }
+
+  .tab-item:hover {
+    background-color: inherit;
+  }
+
+  .extension-card:hover {
+    border-color: inherit;
+    box-shadow: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LANDSCAPE MOBILE
+   On mobile landscape, reduce top/bottom chrome to maximize vertical space.
+   ═══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) and (orientation: landscape) {
+  .xp-topbar .xp-topbar-row1 {
+    padding-top: 0.125rem;
+    padding-bottom: 0.125rem;
+  }
+
+  .xp-topbar .xp-topbar-row2 {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .xp-status-bar {
+    padding-top: 0.125rem;
+    padding-bottom: 0.125rem;
+    min-height: 18px;
+    font-size: 0.625rem;
+  }
+
+  /* Bottom panel: shorter in landscape */
+  .xp-bottom-panel {
+    max-height: 40vh;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SAFE AREA INSETS
+   For devices with notches, rounded corners, or gesture bars (iOS, Android).
+   ═══════════════════════════════════════════════════════════════════════════ */
+@supports (padding: env(safe-area-inset-top)) {
+  .xp-topbar .xp-topbar-row1 {
+    padding-top: max(0.25rem, env(safe-area-inset-top));
+  }
+
+  .xp-status-bar {
+    padding-bottom: max(0.375rem, env(safe-area-inset-bottom));
+  }
+
+  @media (max-width: 768px) {
+    .xp-left-sidebar {
+      padding-left: env(safe-area-inset-left);
+    }
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SCROLLBAR HIDE UTILITY
+   Hides scrollbars on horizontal scroll containers (e.g. tab bar on mobile).
+   ═══════════════════════════════════════════════════════════════════════════ */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}

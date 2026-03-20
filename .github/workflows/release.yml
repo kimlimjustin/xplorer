@@ -1,0 +1,171 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: 0
+  CARGO_TERM_COLOR: always
+  NODE_VERSION: '20'
+
+jobs:
+  # ─── Run full CI checks before building release artifacts ──────────
+  ci-lint:
+    name: Lint & Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: TypeScript type check
+        run: npx tsc --noEmit
+
+      - name: Prettier format check
+        run: npx prettier --check .
+
+      - name: ESLint
+        run: npx eslint .
+
+  ci-unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run Vitest
+        run: npx vitest run
+
+  ci-rust:
+    name: Rust Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install system dependencies for Tauri
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libssl-dev
+
+      - name: Install Rust stable toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: apps/src-tauri
+
+      - name: Cargo check
+        run: cargo check --manifest-path apps/src-tauri/Cargo.toml
+
+      - name: Clippy lint
+        run: cargo clippy --manifest-path apps/src-tauri/Cargo.toml -- -D warnings
+
+      - name: Format check
+        run: cargo fmt --manifest-path apps/src-tauri/Cargo.toml -- --check
+
+  # ─── Build release artifacts (after CI passes) ─────────────────────
+  build:
+    name: Build (${{ matrix.platform }})
+    needs: [ci-lint, ci-unit-tests, ci-rust]
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - platform: windows-latest
+            target: x86_64-pc-windows-msvc
+          - platform: macos-latest
+            target: aarch64-apple-darwin
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install system dependencies (Linux)
+        if: matrix.platform == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libssl-dev
+
+      - name: Install Rust stable toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: apps/src-tauri
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Tauri app
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          projectPath: apps
+          tagName: ${{ github.ref_name }}
+          releaseName: 'Xplorer ${{ github.ref_name }}'
+          releaseBody: 'See the changelog for details about this release.'
+          releaseDraft: true
+          prerelease: false
+          args: --target ${{ matrix.target }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: xplorer-${{ matrix.target }}
+          path: |
+            apps/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.deb
+            apps/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.AppImage
+            apps/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.msi
+            apps/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.exe
+            apps/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.dmg
+          if-no-files-found: warn

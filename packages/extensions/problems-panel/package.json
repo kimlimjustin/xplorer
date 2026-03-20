@@ -1,0 +1,27 @@
+{
+  "name": "xplorer-problems-panel",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/index.tsx --bundle --format=iife --outfile=dist/index.js --external:react --external:react-dom --external:@xplorer/extension-sdk --target=es2020 --jsx=transform"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.0",
+    "@types/react": "^18.2.0",
+    "typescript": "^5.2.0"
+  },
+  "xplorer": {
+    "id": "xplorer-problems-panel",
+    "name": "Problems Panel",
+    "displayName": "Problems",
+    "description": "Directory diagnostics with customizable problem detection rules",
+    "version": "1.0.0",
+    "author": "Xplorer Team",
+    "category": "tool",
+    "icon": "alert-triangle",
+    "permissions": ["file:read", "storage:read", "storage:write", "ui:notifications"],
+    "activationEvents": ["onStartup"]
+  }
+}

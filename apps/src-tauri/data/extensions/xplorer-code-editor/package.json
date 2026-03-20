@@ -1,0 +1,84 @@
+{
+  "name": "xplorer-code-editor",
+  "version": "2.0.0",
+  "description": "A VS Code-like code editor for Xplorer with syntax highlighting, file tree, tabs, and VS Code settings import",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/index.tsx --bundle --format=iife --outfile=dist/index.js --external:react --external:react-dom --external:@xplorer/extension-sdk --target=es2020 --jsx=transform",
+    "watch": "esbuild src/index.tsx --bundle --format=iife --outfile=dist/index.js --external:react --external:react-dom --external:@xplorer/extension-sdk --target=es2020 --jsx=transform --watch",
+    "package": "npm run build && cd .. && node -e \"const{execSync}=require('child_process');execSync('tar -cf code-editor-extension.zip -C code-editor-extension .');\""
+  },
+  "dependencies": {
+    "codemirror": "^6.0.0",
+    "@codemirror/lang-javascript": "^6.0.0",
+    "@codemirror/lang-html": "^6.0.0",
+    "@codemirror/lang-css": "^6.0.0",
+    "@codemirror/lang-json": "^6.0.0",
+    "@codemirror/lang-python": "^6.0.0",
+    "@codemirror/lang-markdown": "^6.0.0",
+    "@codemirror/lang-rust": "^6.0.0",
+    "@codemirror/lang-cpp": "^6.0.0",
+    "@codemirror/lang-java": "^6.0.0",
+    "@codemirror/lang-xml": "^6.0.0",
+    "@codemirror/lang-sql": "^6.0.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.0",
+    "@types/react": "^18.2.0",
+    "typescript": "^5.2.0"
+  },
+  "xplorer": {
+    "id": "xplorer-code-editor",
+    "name": "Code Editor",
+    "displayName": "Code Editor",
+    "description": "A VS Code-like code editor with syntax highlighting, file tree, multiple tabs, and VS Code settings import. Opens as a full-screen editor overlay.",
+    "version": "2.0.0",
+    "author": "Xplorer Team",
+    "category": "panel",
+    "icon": "code",
+    "keywords": ["editor", "code", "text", "edit", "vscode", "syntax"],
+    "permissions": [
+      "file:read",
+      "file:write",
+      "ui:panels",
+      "ui:notifications"
+    ],
+    "activationEvents": ["onStartup"],
+    "contributes": {
+      "panels": [
+        {
+          "id": "code-editor-panel",
+          "title": "Code Editor",
+          "location": "right",
+          "icon": "code",
+          "when": "always"
+        }
+      ],
+      "commands": [
+        {
+          "command": "codeEditor.save",
+          "title": "Save File",
+          "category": "Code Editor"
+        },
+        {
+          "command": "codeEditor.open",
+          "title": "Open Code Editor",
+          "category": "Code Editor"
+        },
+        {
+          "command": "codeEditor.toggleWrap",
+          "title": "Toggle Word Wrap",
+          "category": "Code Editor"
+        }
+      ],
+      "keybindings": [
+        {
+          "command": "codeEditor.open",
+          "key": "ctrl+shift+e",
+          "title": "Open Code Editor"
+        }
+      ]
+    }
+  }
+}

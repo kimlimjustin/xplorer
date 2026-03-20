@@ -1,0 +1,880 @@
+@import './styles/tokyo-night.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Full height chain — #root styles are inline in index.html */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+:root {
+  /* Glass theme defaults (boots glassmorphic before JS loads) */
+  --background: transparent;
+  --foreground: rgba(255, 255, 255, 0.92);
+  --muted: rgba(255, 255, 255, 0.06);
+  --muted-foreground: rgba(255, 255, 255, 0.6);
+  --popover: rgba(15, 15, 35, 0.85);
+  --popover-foreground: rgba(255, 255, 255, 0.92);
+  --card: rgba(255, 255, 255, 0.06);
+  --card-foreground: rgba(255, 255, 255, 0.92);
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.1);
+  --primary: #6366f1;
+  --primary-foreground: #ffffff;
+  --secondary: rgba(255, 255, 255, 0.06);
+  --secondary-foreground: rgba(255, 255, 255, 0.92);
+  --accent: rgba(255, 255, 255, 0.06);
+  --accent-foreground: rgba(255, 255, 255, 0.92);
+  --destructive: #f87171;
+  --destructive-foreground: #ffffff;
+  --ring: #6366f1;
+  --radius: 0.5rem;
+
+  /* Glass theme — gradient bg, solid surfaces */
+  --xp-bg: transparent;
+  --xp-bg-gradient: linear-gradient(135deg, #0a0a1a 0%, #0f0f2e 25%, #1a0a2e 50%, #0a1a2e 75%, #0a0a1a 100%);
+  --xp-surface: #111122;
+  --xp-surface-light: #161630;
+  --xp-blue: #6366f1;
+  --xp-blue-dark: #4f46e5;
+  --xp-purple: #a78bfa;
+  --xp-pink: #f472b6;
+  --xp-green: #34d399;
+  --xp-orange: #fb923c;
+  --xp-yellow: #fbbf24;
+  --xp-red: #f87171;
+  --xp-cyan: #22d3ee;
+  --xp-text: rgba(255, 255, 255, 0.92);
+  --xp-text-secondary: rgba(255, 255, 255, 0.6);
+  --xp-text-muted: rgba(255, 255, 255, 0.4);
+  --xp-border: rgba(255, 255, 255, 0.1);
+  --xp-border-light: rgba(255, 255, 255, 0.12);
+
+  /* Opaque popover/dropdown bg */
+  --xp-popover: #1a1b2e;
+
+  /* Glow Effects */
+  --glow-blue: 0 0 8px rgba(99, 102, 241, 0.3);
+  --glow-purple: 0 0 8px rgba(167, 139, 250, 0.3);
+  --glow-pink: 0 0 8px rgba(244, 114, 182, 0.3);
+  --glow-green: 0 0 8px rgba(52, 211, 153, 0.3);
+}
+
+/* Theme Classes */
+.theme-glass {
+  --background: transparent;
+  --foreground: rgba(255, 255, 255, 0.92);
+  --muted: rgba(255, 255, 255, 0.06);
+  --muted-foreground: rgba(255, 255, 255, 0.6);
+  --popover: rgba(15, 15, 35, 0.85);
+  --popover-foreground: rgba(255, 255, 255, 0.92);
+  --card: rgba(255, 255, 255, 0.06);
+  --card-foreground: rgba(255, 255, 255, 0.92);
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.1);
+  --primary: #6366f1;
+  --primary-foreground: #ffffff;
+  --secondary: rgba(255, 255, 255, 0.06);
+  --secondary-foreground: rgba(255, 255, 255, 0.92);
+  --accent: rgba(255, 255, 255, 0.06);
+  --accent-foreground: rgba(255, 255, 255, 0.92);
+  --destructive: #f87171;
+  --destructive-foreground: #ffffff;
+  --ring: #6366f1;
+
+  --xp-bg: transparent;
+  --xp-bg-gradient: linear-gradient(135deg, #0a0a1a 0%, #0f0f2e 25%, #1a0a2e 50%, #0a1a2e 75%, #0a0a1a 100%);
+  --xp-surface: #111122;
+  --xp-surface-light: #161630;
+  --xp-blue: #6366f1;
+  --xp-blue-dark: #4f46e5;
+  --xp-purple: #a78bfa;
+  --xp-pink: #f472b6;
+  --xp-green: #34d399;
+  --xp-orange: #fb923c;
+  --xp-yellow: #fbbf24;
+  --xp-red: #f87171;
+  --xp-cyan: #22d3ee;
+  --xp-text: rgba(255, 255, 255, 0.92);
+  --xp-text-secondary: rgba(255, 255, 255, 0.6);
+  --xp-text-muted: rgba(255, 255, 255, 0.4);
+  --xp-border: rgba(255, 255, 255, 0.1);
+  --xp-border-light: rgba(255, 255, 255, 0.12);
+  --xp-popover: #1a1b2e;
+
+  --glow-blue: 0 0 8px rgba(99, 102, 241, 0.3);
+  --glow-purple: 0 0 8px rgba(167, 139, 250, 0.3);
+  --glow-pink: 0 0 8px rgba(244, 114, 182, 0.3);
+  --glow-green: 0 0 8px rgba(52, 211, 153, 0.3);
+}
+
+/* Additional themes available via marketplace extensions:
+   Tokyo Night, Dracula, Nord, Catppuccin, High Contrast,
+   Cyberpunk, Sunset, Ocean Deep, Aurora, Rosé Pine, Solarized Dark */
+
+/* ═══════════════════════════════════════════════════════════════════
+   LIGHT THEME
+   A clean light-mode theme with white/gray backgrounds and dark text.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.theme-light {
+  /* shadcn/ui semantic tokens */
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(222, 47%, 11%);
+  --muted: hsl(210, 40%, 96%);
+  --muted-foreground: hsl(215, 16%, 47%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(222, 47%, 11%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(222, 47%, 11%);
+  --border: hsl(214, 32%, 91%);
+  --input: hsl(214, 32%, 91%);
+  --primary: hsl(221, 83%, 53%);
+  --primary-foreground: hsl(210, 40%, 98%);
+  --secondary: hsl(210, 40%, 96%);
+  --secondary-foreground: hsl(222, 47%, 11%);
+  --accent: hsl(210, 40%, 96%);
+  --accent-foreground: hsl(222, 47%, 11%);
+  --destructive: hsl(0, 72%, 51%);
+  --destructive-foreground: hsl(210, 40%, 98%);
+  --ring: hsl(221, 83%, 53%);
+
+  /* Custom theme variables */
+  --xp-bg: #ffffff;
+  --xp-bg-gradient: #ffffff;
+  --xp-surface: #f8fafc;
+  --xp-surface-light: #f1f5f9;
+  --xp-blue: #3b82f6;
+  --xp-blue-dark: #2563eb;
+  --xp-purple: #8b5cf6;
+  --xp-pink: #ec4899;
+  --xp-green: #16a34a;
+  --xp-orange: #ea580c;
+  --xp-yellow: #ca8a04;
+  --xp-red: #dc2626;
+  --xp-cyan: #0891b2;
+  --xp-text: #1e293b;
+  --xp-text-secondary: #64748b;
+  --xp-text-muted: #94a3b8;
+  --xp-border: #e2e8f0;
+  --xp-border-light: #cbd5e1;
+  --xp-popover: #ffffff;
+
+  /* Glow effects — subtle blue shadows instead of neon glows */
+  --glow-blue: 0 0 8px rgba(59, 130, 246, 0.25), 0 0 16px rgba(59, 130, 246, 0.1);
+  --glow-purple: 0 0 8px rgba(139, 92, 246, 0.25), 0 0 16px rgba(139, 92, 246, 0.1);
+  --glow-pink: 0 0 8px rgba(236, 72, 153, 0.25), 0 0 16px rgba(236, 72, 153, 0.1);
+  --glow-green: 0 0 8px rgba(22, 163, 74, 0.25), 0 0 16px rgba(22, 163, 74, 0.1);
+}
+
+/* Light theme html background — solid white */
+html.theme-light {
+  background: #ffffff;
+  min-height: 100vh;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   FONT SIZE SCALING
+   Applied to html element so all rem-based sizes scale accordingly.
+   ═══════════════════════════════════════════════════════════════════ */
+
+html.font-small {
+  font-size: 12px;
+}
+html.font-medium {
+  font-size: 14px;
+} /* default */
+html.font-large {
+  font-size: 16px;
+}
+html.font-xl {
+  font-size: 18px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   REDUCED MOTION
+   Collapses all animations/transitions for motion-sensitive users.
+   ═══════════════════════════════════════════════════════════════════ */
+
+html.reduce-motion * {
+  animation-duration: 0.001ms !important;
+  transition-duration: 0.001ms !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ENHANCED FOCUS INDICATORS
+   Strong, visible outlines for keyboard navigation accessibility.
+   ═══════════════════════════════════════════════════════════════════ */
+
+html.enhanced-focus *:focus-visible {
+  outline: 3px solid var(--xp-blue) !important;
+  outline-offset: 2px !important;
+  border-radius: 2px;
+}
+
+/* Body gets a very subtle warm gray so panels pop slightly */
+.theme-light body {
+  background: #f8fafc !important;
+}
+
+/* ── Surface panels: light elevated cards ────────────────────── */
+.theme-light .bg-xp-surface {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.06),
+    0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.theme-light .bg-xp-surface-light {
+  background-color: #f1f5f9;
+}
+
+/* Input fields — white with visible border */
+.theme-light input,
+.theme-light select,
+.theme-light textarea {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #1e293b !important;
+}
+
+/* ── Interactive states ───────────────────────────────────────── */
+.theme-light .file-item:hover {
+  background-color: #f1f5f9;
+}
+.theme-light .file-item.selected {
+  background-color: rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.08);
+}
+.theme-light .sidebar-item:hover {
+  background-color: #f1f5f9;
+}
+.theme-light .sidebar-item.active {
+  background-color: rgba(59, 130, 246, 0.12);
+  color: #2563eb;
+}
+.theme-light .extension-card:hover {
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.1);
+}
+.theme-light .tab-item.active {
+  background-color: #ffffff;
+  border-bottom-color: #3b82f6;
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────── */
+.theme-light ::-webkit-scrollbar-track {
+  background: #f8fafc;
+}
+.theme-light ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+.theme-light ::-webkit-scrollbar-thumb:hover {
+  background: #3b82f6;
+}
+
+/* ── Borders ─────────────────────────────────────────────────── */
+.theme-light .border-xp-border {
+  border-color: #e2e8f0;
+}
+
+/* ── Selection color ─────────────────────────────────────────── */
+.theme-light ::selection {
+  background-color: rgba(59, 130, 246, 0.25);
+  color: #1e293b;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   GLASSMORPHIC THEME OVERRIDES
+   The gradient lives on html so every transparent layer shows it.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Gradient background on the html element itself (Windows/Linux fallback) */
+html.theme-glass {
+  background: linear-gradient(
+    135deg,
+    #0a0a1a 0%,
+    #0f0f2e 25%,
+    #1a0a2e 50%,
+    #0a1a2e 75%,
+    #0a0a1a 100%
+  );
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+/* Body gets the gradient background */
+.theme-glass body {
+  background: transparent !important;
+}
+
+/* ── Surface panels ──────────────────────────────────────────── */
+.theme-glass .bg-xp-surface {
+  background-color: #111122;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.theme-glass .bg-xp-surface-light {
+  background-color: #161630;
+}
+
+/* Input fields */
+.theme-glass input,
+.theme-glass select,
+.theme-glass textarea {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* ── Interactive states ───────────────────────────────────────── */
+.theme-glass .file-item:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+.theme-glass .file-item.selected {
+  background-color: rgba(167, 139, 250, 0.2);
+  border: 1px solid rgba(167, 139, 250, 0.4);
+}
+.theme-glass .sidebar-item:hover {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+.theme-glass .sidebar-item.active {
+  background-color: rgba(99, 102, 241, 0.2);
+}
+.theme-glass .extension-card:hover {
+  border-color: rgba(99, 102, 241, 0.3);
+}
+.theme-glass .tab-item.active {
+  background-color: rgba(99, 102, 241, 0.12);
+  border-bottom-color: #6366f1;
+}
+
+/* ── Scrollbar ────────────────────────────────────────────────── */
+.theme-glass ::-webkit-scrollbar-track {
+  background: transparent;
+}
+.theme-glass ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+}
+.theme-glass ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* ── Borders ──────────────────────────────────────────────────── */
+.theme-glass .border-xp-border {
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+/* ── Nested panels ────────────────────────────────────────────── */
+.theme-glass .bg-xp-surface .bg-xp-bg,
+.theme-glass .bg-xp-bg .bg-xp-bg {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.dark {
+  --background: hsl(230, 23%, 9%);
+  --foreground: hsl(221, 24%, 79%);
+  --muted: hsl(230, 16%, 21%);
+  --muted-foreground: hsl(222, 16%, 57%);
+  --popover: hsl(232, 23%, 18%);
+  --popover-foreground: hsl(221, 24%, 79%);
+  --card: hsl(232, 23%, 18%);
+  --card-foreground: hsl(221, 24%, 79%);
+  --border: hsl(226, 25%, 28%);
+  --input: hsl(226, 25%, 28%);
+  --primary: hsl(217, 92%, 76%);
+  --primary-foreground: hsl(232, 97%, 85%);
+  --secondary: hsl(230, 16%, 21%);
+  --secondary-foreground: hsl(221, 24%, 79%);
+  --accent: hsl(230, 16%, 21%);
+  --accent-foreground: hsl(221, 24%, 79%);
+  --destructive: hsl(343, 89%, 74%);
+  --destructive-foreground: hsl(229, 92%, 87%);
+  --ring: hsl(217, 92%, 76%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+
+  /* Tokyo Night Custom Styles */
+  .xp-bg {
+    background-color: var(--xp-bg);
+  }
+
+  .xp-surface {
+    background-color: var(--xp-surface);
+  }
+
+  .xp-surface-light {
+    background-color: var(--xp-surface-light);
+  }
+
+  .xp-text {
+    color: var(--xp-text);
+  }
+
+  .xp-text-secondary {
+    color: var(--xp-text-secondary);
+  }
+
+  .xp-text-muted {
+    color: var(--xp-text-muted);
+  }
+
+  .xp-border {
+    border-color: var(--xp-border);
+  }
+
+  /* Neon Glow Effects */
+  .glow-blue {
+    box-shadow: var(--glow-blue);
+  }
+
+  .glow-purple {
+    box-shadow: var(--glow-purple);
+  }
+
+  .glow-pink {
+    box-shadow: var(--glow-pink);
+  }
+
+  .glow-green {
+    box-shadow: var(--glow-green);
+  }
+
+  /* File Icons */
+  .file-icon-folder {
+    color: var(--xp-blue);
+  }
+
+  .file-icon-js {
+    color: var(--xp-orange);
+  }
+
+  .file-icon-ts {
+    color: var(--xp-blue);
+  }
+
+  .file-icon-json {
+    color: var(--xp-green);
+  }
+
+  .file-icon-html {
+    color: var(--xp-pink);
+  }
+
+  .file-icon-css {
+    color: var(--xp-purple);
+  }
+
+  .file-icon-md {
+    color: var(--xp-text);
+  }
+
+  .file-icon-image {
+    color: var(--xp-green);
+  }
+
+  .file-icon-video {
+    color: var(--xp-pink);
+  }
+
+  .file-icon-audio {
+    color: var(--xp-purple);
+  }
+
+  .file-icon-archive {
+    color: var(--xp-orange);
+  }
+
+  .file-icon-default {
+    color: var(--xp-text-secondary);
+  }
+
+  /* Syntax Highlighting */
+  .hljs {
+    background: var(--xp-surface-light) !important;
+    color: var(--xp-text) !important;
+  }
+
+  .hljs-keyword {
+    color: var(--xp-purple) !important;
+  }
+
+  .hljs-string {
+    color: var(--xp-green) !important;
+  }
+
+  .hljs-number {
+    color: var(--xp-orange) !important;
+  }
+
+  .hljs-comment {
+    color: var(--xp-text-muted) !important;
+  }
+
+  .hljs-function {
+    color: var(--xp-blue) !important;
+  }
+
+  .hljs-variable {
+    color: var(--xp-pink) !important;
+  }
+
+  /* Animations */
+  @keyframes glow {
+    0% {
+      box-shadow: 0 0 5px currentColor;
+    }
+    50% {
+      box-shadow: 0 0 20px currentColor;
+    }
+    100% {
+      box-shadow: 0 0 5px currentColor;
+    }
+  }
+
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-neon {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+
+  .animate-pulse-neon {
+    animation: pulse-neon 2s ease-in-out infinite;
+  }
+
+  /* Scrollbar Styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--xp-surface);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--xp-border);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--xp-blue);
+  }
+
+  /* 3D View Styles */
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+
+  .perspective-1200 {
+    perspective: 1200px;
+  }
+
+  .transform-style-preserve-3d {
+    transform-style: preserve-3d;
+  }
+
+  .rotate-x-12 {
+    transform: rotateX(12deg);
+  }
+
+  .rotate-y-12 {
+    transform: rotateY(12deg);
+  }
+
+  .rotate-x-15 {
+    transform: rotateX(15deg);
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateZ(var(--z-offset, 0px)) rotateY(var(--rotate-y, 0deg)) translateY(0px);
+    }
+    50% {
+      transform: translateZ(var(--z-offset, 0px)) rotateY(var(--rotate-y, 0deg)) translateY(-10px);
+    }
+  }
+
+  /* Skeleton / shimmer loading animation */
+  @keyframes xp-shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+}
+
+/* Component Specific Styles */
+.file-item {
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.file-item:hover {
+  background-color: var(--xp-surface-light);
+}
+
+.file-item.selected {
+  background-color: rgba(167, 139, 250, 0.2);
+  border: 1px solid rgba(167, 139, 250, 0.4);
+  color: white;
+}
+
+.sidebar-item {
+  transition: all 0.2s ease;
+}
+
+.sidebar-item:hover {
+  background-color: var(--xp-surface-light);
+}
+
+.sidebar-item.active {
+  background-color: var(--xp-blue);
+  color: white;
+}
+
+.tab-item {
+  transition: all 0.2s ease;
+}
+
+.tab-item:hover {
+  background-color: var(--xp-surface-light);
+}
+
+.tab-item.active {
+  background-color: var(--xp-bg);
+  border-bottom: 2px solid var(--xp-blue);
+}
+
+.extension-card {
+  transition: all 0.2s ease;
+}
+
+.extension-card:hover {
+  border-color: var(--xp-blue);
+  box-shadow: var(--glow-blue);
+}
+
+.chat-message {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Tour overlay animations */
+@keyframes tour-tooltip-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.tour-tooltip-enter {
+  animation: tour-tooltip-enter 0.3s ease-out;
+}
+
+@keyframes tour-spotlight-pulse {
+  0%,
+  100% {
+    stroke-opacity: 1;
+    filter: drop-shadow(0 0 8px var(--xp-blue, #7aa2f7));
+  }
+  50% {
+    stroke-opacity: 0.6;
+    filter: drop-shadow(0 0 14px var(--xp-blue, #7aa2f7));
+  }
+}
+
+.tour-spotlight-glow {
+  animation: tour-spotlight-pulse 2s ease-in-out infinite;
+}
+
+.backdrop-blur-custom {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Custom Grid Layouts for File Explorer Views */
+.grid-cols-auto-fill-large {
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+}
+
+.grid-cols-auto-fill-medium {
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+}
+
+.grid-cols-auto-fill-small {
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+}
+
+.grid-cols-auto-fill-tiles {
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+}
+
+/* Gallery filmstrip — thin scrollbar for thumbnail strip */
+.gallery-filmstrip {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+.gallery-filmstrip::-webkit-scrollbar {
+  height: 4px;
+}
+.gallery-filmstrip::-webkit-scrollbar-track {
+  background: transparent;
+}
+.gallery-filmstrip::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+}
+
+/* Context menu — thin scrollbar matching glass theme */
+.context-menu-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+.context-menu-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.context-menu-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.context-menu-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+}
+.context-menu-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+/* Preview navigation tab strip — hide scrollbar */
+.preview-nav-tab-strip {
+  scrollbar-width: none;
+}
+.preview-nav-tab-strip::-webkit-scrollbar {
+  display: none;
+}
+
+/* List View Styles */
+.grid-cols-auto-fill-list {
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-auto-rows: min-content;
+  grid-auto-flow: row;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   DRAG AND DROP (Native Tauri drag via data-drop-target attributes)
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Valid drop target highlight — set by DragDropContext via elementFromPoint */
+[data-drop-hover='true'] {
+  outline: 2px solid rgba(122, 162, 247, 0.6) !important;
+  outline-offset: -2px;
+  background-color: rgba(122, 162, 247, 0.1) !important;
+  border-radius: 6px;
+}
+
+/* Invalid drop target highlight */
+[data-drop-invalid='true'] {
+  outline: 2px solid rgba(239, 68, 68, 0.4) !important;
+  outline-offset: -2px;
+  background-color: rgba(239, 68, 68, 0.05) !important;
+  border-radius: 6px;
+}
+
+/* Folder highlight when dragging over a drop-target folder */
+.xp-drop-folder-highlight {
+  outline: 2px solid var(--xp-blue) !important;
+  outline-offset: -2px;
+  background-color: rgba(99, 102, 241, 0.12) !important;
+  border-radius: 6px;
+  box-shadow:
+    0 0 12px rgba(99, 102, 241, 0.3),
+    inset 0 0 8px rgba(99, 102, 241, 0.08);
+}
+
+/* Drag overlay badge (positioned via inline styles, this adds the animation) */
+.xp-drag-overlay {
+  animation: xp-overlay-appear 0.15s ease-out;
+}
+
+@keyframes xp-overlay-appear {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   DIALOG ANIMATIONS
+   Used by overlay dialogs (e.g. KeyboardShortcutsDialog).
+   ═══════════════════════════════════════════════════════════════════ */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   WINDOW DRAG REGION
+   Dragging is handled via appWindow.startDragging() in TopBar.tsx.
+   ═══════════════════════════════════════════════════════════════════ */

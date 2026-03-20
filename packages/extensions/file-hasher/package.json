@@ -1,0 +1,37 @@
+{
+  "name": "xplorer-file-hasher",
+  "version": "1.0.0",
+  "description": "Calculate SHA-256, SHA-1, and MD5 hashes for files via context menu",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/index.tsx --bundle --format=iife --outfile=dist/index.js --external:react --external:react-dom --external:@xplorer/extension-sdk --target=es2020 --jsx=transform"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.0",
+    "typescript": "^5.2.0"
+  },
+  "xplorer": {
+    "id": "xplorer-file-hasher",
+    "name": "File Hasher",
+    "displayName": "File Hasher",
+    "description": "Calculate file hashes (SHA-256, SHA-1, MD5) from the right-click context menu. Copies hash to clipboard.",
+    "version": "1.0.0",
+    "author": "Xplorer Team",
+    "category": "action",
+    "icon": "fingerprint",
+    "keywords": ["action", "hash", "checksum", "sha256", "md5", "security"],
+    "permissions": ["file:read", "ui:notifications", "ui:clipboard"],
+    "activationEvents": ["onStartup"],
+    "contributes": {
+      "commands": [
+        { "command": "sha256", "title": "Calculate SHA-256", "category": "File Hasher" },
+        { "command": "sha1", "title": "Calculate SHA-1", "category": "File Hasher" },
+        { "command": "md5", "title": "Calculate MD5", "category": "File Hasher" }
+      ],
+      "context_menus": [
+        { "command": "xplorer-file-hasher.sha256", "when": "singleFileSelected", "group": "tools" }
+      ]
+    }
+  }
+}

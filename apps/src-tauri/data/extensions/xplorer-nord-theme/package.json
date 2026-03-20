@@ -1,0 +1,27 @@
+{
+  "name": "xplorer-nord-theme",
+  "version": "1.0.0",
+  "description": "Nord - An arctic, north-bluish clean and elegant color palette",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/index.tsx --bundle --format=iife --outfile=dist/index.js --external:react --external:react-dom --external:@xplorer/extension-sdk --target=es2020 --jsx=transform"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.0",
+    "typescript": "^5.2.0"
+  },
+  "xplorer": {
+    "id": "xplorer-nord-theme",
+    "name": "Nord Theme",
+    "displayName": "Nord",
+    "description": "An arctic, north-bluish clean and elegant color palette inspired by the polar night and aurora borealis.",
+    "version": "1.0.0",
+    "author": "Xplorer Team",
+    "category": "theme",
+    "icon": "palette",
+    "keywords": ["theme", "dark", "nord", "arctic", "blue", "clean"],
+    "permissions": ["ui:notifications"],
+    "activationEvents": ["onStartup"]
+  }
+}

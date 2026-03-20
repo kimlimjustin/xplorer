@@ -1,0 +1,39 @@
+# {{displayName}}
+
+{{description}}
+
+## Features
+
+- Custom color scheme for Xplorer
+- File type-specific colors
+- Custom scrollbar styling
+
+## Installation
+
+1. Build the extension: `npm run build`
+2. Open Xplorer
+3. Go to Extensions > Install from Folder
+4. Select this extension's directory
+5. Activate the theme from the Theme Manager
+
+## Customization
+
+Edit `src/index.ts` and modify the colors in `getTheme()` to create your own palette.
+
+## Development
+
+```bash
+npm install
+npm run dev       # Watch mode
+npm run build     # Production build
+npm run package   # Create .spx package
+```
+
+## License
+
+MIT
+
+---
+
+Built with the Xplorer Extension SDK
+

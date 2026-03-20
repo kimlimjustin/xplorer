@@ -1,17 +1,32 @@
 {
-	"compilerOptions": {
-		"module": "commonjs",
-		"noImplicitAny": true,
-		"removeComments": true,
-		"outDir": "out",
-		"target": "ES2021",
-		"baseUrl": ".",
-		"moduleResolution": "node",
-		"resolveJsonModule": true,
-		"esModuleInterop": true,
-		"paths": {
-			"*": ["node_modules/*"]
-		}
-	},
-	"include": ["src/*", "src/Typings/**/*"]
+  "include": ["apps/client/src/**/*"],
+  "exclude": [
+    "node_modules",
+    "build",
+    "dist",
+    "**/*.test.ts",
+    "apps/client/src/__tests__/**/*"
+  ],
+  "compilerOptions": {
+    "incremental": true,
+    "tsBuildInfoFile": "./.tsbuildinfo",
+    "noEmit": true,
+    "module": "ESNext",
+    "strict": true,
+    "target": "ES2020",
+    "downlevelIteration": true,
+    "lib": ["esnext", "dom", "dom.iterable"],
+    "jsx": "preserve",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "moduleResolution": "bundler",
+    "baseUrl": ".",
+    "types": ["node", "vite/client"],
+    "paths": {
+      "@/*": ["./apps/client/src/*"],
+      "@xplorer/sdk": ["./packages/sdk/src/index.ts"],
+      "@xplorer/extension-sdk": ["./packages/extension-sdk/src/index.ts"]
+    }
+  }
 }

@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg17" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#04030b"/>
+      <stop offset="100%" style="stop-color:#0c091c"/>
+    </linearGradient>
+    <linearGradient id="f17a" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e0e7ff"/>
+      <stop offset="100%" style="stop-color:#a5b4fc"/>
+    </linearGradient>
+    <linearGradient id="f17b" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#818cf8"/>
+      <stop offset="100%" style="stop-color:#4f46e5"/>
+    </linearGradient>
+    <linearGradient id="f17c" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1"/>
+      <stop offset="100%" style="stop-color:#312e81"/>
+    </linearGradient>
+    <linearGradient id="f17d" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4338ca"/>
+      <stop offset="100%" style="stop-color:#1e1b4b"/>
+    </linearGradient>
+    <linearGradient id="f17e" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" style="stop-color:#22d3ee"/>
+      <stop offset="100%" style="stop-color:#6366f1"/>
+    </linearGradient>
+    <filter id="gemglow17">
+      <feDropShadow dx="0" dy="0" stdDeviation="18" flood-color="#818cf8" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="url(#bg17)"/>
+  <!-- Hexagonal gem — top-down view of a cut gemstone -->
+  <g filter="url(#gemglow17)">
+    <!-- Outer hex -->
+    <polygon points="256,90 410,175 410,337 256,422 102,337 102,175" fill="url(#f17d)" opacity="0.4"/>
+    <!-- Top facets (crown) -->
+    <polygon points="256,90 410,175 330,220 256,170" fill="url(#f17a)" opacity="0.7"/>
+    <polygon points="256,90 102,175 182,220 256,170" fill="url(#f17b)" opacity="0.6"/>
+    <!-- Side facets -->
+    <polygon points="410,175 410,337 340,300 330,220" fill="url(#f17c)"/>
+    <polygon points="102,175 102,337 172,300 182,220" fill="url(#f17b)" opacity="0.5"/>
+    <!-- Bottom facets -->
+    <polygon points="410,337 256,422 256,340 340,300" fill="url(#f17d)"/>
+    <polygon points="102,337 256,422 256,340 172,300" fill="url(#f17c)" opacity="0.6"/>
+    <!-- Center table (brightest face) -->
+    <polygon points="256,170 330,220 340,300 256,340 172,300 182,220" fill="url(#f17e)" opacity="0.3"/>
+    <!-- Inner star facets on the table -->
+    <polygon points="256,210 300,240 290,290 256,310 222,290 212,240" fill="url(#f17a)" opacity="0.2"/>
+    <!-- Edge highlights -->
+    <line x1="256" y1="90" x2="410" y2="175" stroke="white" stroke-width="1" opacity="0.25"/>
+    <line x1="256" y1="90" x2="102" y2="175" stroke="white" stroke-width="0.8" opacity="0.15"/>
+    <line x1="256" y1="170" x2="330" y2="220" stroke="white" stroke-width="0.8" opacity="0.2"/>
+    <line x1="256" y1="170" x2="182" y2="220" stroke="white" stroke-width="0.8" opacity="0.15"/>
+    <line x1="330" y1="220" x2="340" y2="300" stroke="white" stroke-width="0.5" opacity="0.1"/>
+    <line x1="182" y1="220" x2="172" y2="300" stroke="white" stroke-width="0.5" opacity="0.1"/>
+    <line x1="340" y1="300" x2="256" y2="340" stroke="white" stroke-width="0.5" opacity="0.1"/>
+    <line x1="172" y1="300" x2="256" y2="340" stroke="white" stroke-width="0.5" opacity="0.1"/>
+  </g>
+  <!-- Sparkle -->
+  <circle cx="290" cy="160" r="3" fill="white" opacity="0.6"/>
+  <circle cx="370" cy="200" r="2" fill="white" opacity="0.35"/>
+</svg>
