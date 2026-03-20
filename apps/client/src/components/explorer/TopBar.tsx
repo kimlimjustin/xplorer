@@ -195,10 +195,32 @@ const TopBar = forwardRef<TopBarHandle, TopBarProps>(
             }
           }}
         >
-          <div
-            className="flex items-center space-x-3"
-            style={isMac ? { paddingLeft: '60px' } : undefined}
-          >
+          <div className="flex items-center space-x-3">
+            {isMac && (
+              <div className="flex items-center gap-2 mr-2" role="toolbar" aria-label="Window controls">
+                <button
+                  onClick={() => appWindowRef.current?.close()}
+                  className="group w-3 h-3 rounded-full bg-[#ff5f57] hover:brightness-90 transition-all flex items-center justify-center"
+                  aria-label={t('topBar.closeWindow')}
+                >
+                  <svg className="w-1.5 h-1.5 opacity-0 group-hover:opacity-100 text-[#4a0002]" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M3 3l6 6M9 3l-6 6" /></svg>
+                </button>
+                <button
+                  onClick={() => appWindowRef.current?.minimize()}
+                  className="group w-3 h-3 rounded-full bg-[#febc2e] hover:brightness-90 transition-all flex items-center justify-center"
+                  aria-label={t('topBar.minimize')}
+                >
+                  <svg className="w-1.5 h-1.5 opacity-0 group-hover:opacity-100 text-[#995700]" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M2 6h8" /></svg>
+                </button>
+                <button
+                  onClick={() => appWindowRef.current?.toggleMaximize()}
+                  className="group w-3 h-3 rounded-full bg-[#28c840] hover:brightness-90 transition-all flex items-center justify-center"
+                  aria-label={isMaximized ? t('topBar.restore') : t('topBar.maximize')}
+                >
+                  <svg className="w-1.5 h-1.5 opacity-0 group-hover:opacity-100 text-[#006500]" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M2 3.5l4-2 4 2M2 8.5l4 2 4-2M2 3.5v5M10 3.5v5" /></svg>
+                </button>
+              </div>
+            )}
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => setLeftSidebarCollapsed(!leftSidebarCollapsed)}

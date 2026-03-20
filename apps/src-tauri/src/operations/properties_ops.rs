@@ -6,8 +6,6 @@ use serde::{Deserialize, Serialize};
 
 #[cfg(windows)]
 use std::os::windows::fs::MetadataExt;
-#[cfg(unix)]
-use std::os::unix::fs::MetadataExt;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DetailedFileProperties {

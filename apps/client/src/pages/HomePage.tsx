@@ -671,10 +671,13 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
               {recentFiles.map((file) => {
                 const gradient = recentFileGradient(file.file_type);
                 return (
-                  <button
+                  <div
                     key={`${file.path}-${file.accessed_at}`}
                     onClick={() => handleRecentFileClick(file)}
-                    className="group relative flex items-center gap-2.5 px-3 py-2.5 rounded-lg bg-xp-surface/50 border border-xp-border hover:border-xp-text-muted hover:bg-xp-surface transition-all duration-150 text-left"
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleRecentFileClick(file); } }}
+                    role="button"
+                    tabIndex={0}
+                    className="group relative flex items-center gap-2.5 px-3 py-2.5 rounded-lg bg-xp-surface/50 border border-xp-border hover:border-xp-text-muted hover:bg-xp-surface transition-all duration-150 text-left cursor-pointer"
                     title={file.path}
                   >
                     <div
@@ -710,7 +713,7 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
                         <line x1="6" y1="6" x2="18" y2="18" />
                       </svg>
                     </button>
-                  </button>
+                  </div>
                 );
               })}
             </div>
