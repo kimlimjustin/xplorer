@@ -1,4 +1,5 @@
 use std::path::Path;
+use std::time::SystemTime;
 
 use tauri::command;
 use trash;
@@ -102,6 +103,8 @@ pub async fn restore_trash_item(item_path: String) -> Result<String, String> {
     {
         crate::windows_recycle_bin::restore_from_recycle_bin(&item_path)
     }
+    #[cfg(not(windows))]
+    let _ = item_path;
     
     #[cfg(not(windows))]
     {

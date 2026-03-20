@@ -559,6 +559,10 @@ const LeftSidebar = forwardRef<LeftSidebarHandle, LeftSidebarProps>(function Lef
 
   // Get root directories for the current drive/volume
   const getRootPath = () => {
+    // Protocol URLs (xplorer://home, xplorer://trash, etc.) are virtual paths
+    if (currentPath.startsWith('xplorer://')) {
+      return ROOT_PATH;
+    }
     // Unix-style paths (macOS/Linux)
     if (currentPath.startsWith('/')) {
       return '/';

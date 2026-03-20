@@ -151,7 +151,6 @@ fn get_volume_label(root: &str) -> Option<String> {
     }
 }
 
-use super::analytics_ops::get_disk_space;
 
 #[derive(serde::Serialize)]
 pub struct FileSearchMatch {

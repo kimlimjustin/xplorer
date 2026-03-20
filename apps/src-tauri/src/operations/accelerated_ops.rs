@@ -44,7 +44,7 @@ impl HardwareInfo {
         }
     }
 
-    fn has_cpu_feature(feature: &str) -> bool {
+    fn has_cpu_feature(_feature: &str) -> bool {
         // Enhanced CPU feature detection using runtime detection
         #[cfg(target_arch = "x86_64")]
         {
@@ -671,7 +671,7 @@ fn align_to_cache_line(size: usize, cache_line_size: usize) -> usize {
     (size + cache_line_size - 1) & !(cache_line_size - 1)
 }
 
-fn simd_process_buffer(buffer: &mut [u8], hardware_info: &HardwareInfo) {
+fn simd_process_buffer(buffer: &mut [u8], _hardware_info: &HardwareInfo) {
     // This function can be used for additional SIMD processing like:
     // - Checksum calculation
     // - Data transformation

@@ -386,14 +386,14 @@ fn set_windows_default_application(_extension: &str, _app_path: &str) -> Result<
 }
 
 #[cfg(unix)]
-fn set_unix_default_application(extension: &str, app_path: &str) -> Result<(), String> {
+fn set_unix_default_application(_extension: &str, _app_path: &str) -> Result<(), String> {
     // This would require updating .desktop associations
     // For security reasons, we'll return an error for now
     Err("Setting default applications is not supported in this version".to_string())
 }
 
 #[cfg(target_os = "macos")]
-fn set_macos_default_application(extension: &str, app_path: &str) -> Result<(), String> {
+fn set_macos_default_application(_extension: &str, _app_path: &str) -> Result<(), String> {
     // This would require using Launch Services on macOS
     // For security reasons, we'll return an error for now
     Err("Setting default applications is not supported in this version".to_string())
