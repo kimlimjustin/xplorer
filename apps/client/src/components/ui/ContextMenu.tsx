@@ -233,9 +233,6 @@ const ContextMenu = ({ isOpen, x, y, onClose, items }: ContextMenuProps) => {
 
   return (
     <>
-      {/* Backdrop */}
-      <div className="fixed inset-0 z-40" onClick={onClose} />
-
       {/* Container wrapping main menu + all submenu panels (used for mousedown-outside detection) */}
       <div ref={containerRef} style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 45 }}>
         {/* Main menu */}

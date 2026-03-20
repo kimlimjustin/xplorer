@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   ArrowUp,
   ArrowDown,
@@ -77,9 +77,23 @@ const OperationBar = ({
   const [isViewDropdownOpen, setIsViewDropdownOpen] = useState(false);
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
   const [isSelectionDropdownOpen, setIsSelectionDropdownOpen] = useState(false);
+  const barRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isViewDropdownOpen && !isSortDropdownOpen && !isSelectionDropdownOpen) return;
+    const onMouseDown = (e: MouseEvent) => {
+      if (barRef.current && !barRef.current.contains(e.target as Node)) {
+        setIsViewDropdownOpen(false);
+        setIsSortDropdownOpen(false);
+        setIsSelectionDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', onMouseDown);
+    return () => document.removeEventListener('mousedown', onMouseDown);
+  }, [isViewDropdownOpen, isSortDropdownOpen, isSelectionDropdownOpen]);
 
   return (
-    <div className="bg-xp-surface border-b border-xp-border px-3 py-1.5">
+    <div ref={barRef} className="bg-xp-surface border-b border-xp-border px-3 py-1.5">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-1">
           {/* Sort Dropdown */}
@@ -349,17 +363,6 @@ const OperationBar = ({
         </div>
       </div>
 
-      {/* Close dropdown when clicking outside */}
-      {(isViewDropdownOpen || isSortDropdownOpen || isSelectionDropdownOpen) && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={() => {
-            setIsViewDropdownOpen(false);
-            setIsSortDropdownOpen(false);
-            setIsSelectionDropdownOpen(false);
-          }}
-        />
-      )}
     </div>
   );
 }
