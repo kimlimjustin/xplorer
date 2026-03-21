@@ -173,13 +173,13 @@ const EnhancedFilePreview: React.FC<{
   if (error) {
     return (
       <div className="mt-4">
-        <h4 className="text-xs font-semibold mb-2 text-xp-text">Preview Error</h4>
+        <h4 className="text-xp-text mb-2 text-xs font-semibold">Preview Error</h4>
         <div
-          className="bg-xp-surface border border-xp-border rounded p-4 text-center text-xp-text-secondary"
+          className="bg-xp-surface border-xp-border text-xp-text-secondary rounded border p-4 text-center"
           role="alert"
         >
           <svg
-            className="w-8 h-8 mx-auto mb-2"
+            className="mx-auto mb-2 h-8 w-8"
             fill="currentColor"
             viewBox="0 0 20 20"
             aria-hidden="true"
@@ -191,7 +191,7 @@ const EnhancedFilePreview: React.FC<{
             />
           </svg>
           <p className="text-xs">Preview failed</p>
-          <p className="text-xs mt-1 opacity-70">{error}</p>
+          <p className="mt-1 text-xs opacity-70">{error}</p>
         </div>
       </div>
     );
@@ -208,16 +208,16 @@ const EnhancedFilePreview: React.FC<{
 
   // Fallback for unsupported file types
   return (
-    <div className="h-full flex items-center justify-center">
+    <div className="flex h-full items-center justify-center">
       <div className="text-center">
-        <div className="text-4xl mb-4">{getFileIcon(file)}</div>
-        <p className="text-sm text-xp-text-secondary mb-2">No preview available</p>
-        <p className="text-xs text-xp-text-secondary">
+        <div className="mb-4 text-4xl">{getFileIcon(file)}</div>
+        <p className="text-xp-text-secondary mb-2 text-sm">No preview available</p>
+        <p className="text-xp-text-secondary text-xs">
           {file.size > 50 * 1024 * 1024
             ? 'File is too large for preview'
             : 'Preview not supported for this file type'}
         </p>
-        <p className="text-xs text-xp-text-secondary mt-1">Double-click to open</p>
+        <p className="text-xp-text-secondary mt-1 text-xs">Double-click to open</p>
       </div>
     </div>
   );
@@ -234,10 +234,10 @@ const FolderDetails: React.FC<{
   const calculating = isCalculatingSize?.(file.path) || false;
 
   return (
-    <div className="flex flex-col items-center justify-center h-full">
-      <div className="text-center bg-xp-surface border border-xp-border rounded p-6 max-w-sm">
-        <div className="text-4xl mb-4">{getFileIcon(file)}</div>
-        <h4 className="text-sm font-medium mb-4 text-xp-text">Folder Contents</h4>
+    <div className="flex h-full flex-col items-center justify-center">
+      <div className="bg-xp-surface border-xp-border max-w-sm rounded border p-6 text-center">
+        <div className="mb-4 text-4xl">{getFileIcon(file)}</div>
+        <h4 className="text-xp-text mb-4 text-sm font-medium">Folder Contents</h4>
         <div className="space-y-3 text-sm">
           {folderSize && (
             <>
@@ -260,9 +260,9 @@ const FolderDetails: React.FC<{
             </>
           )}
           {calculating && (
-            <div className="text-center py-2">
-              <div className="inline-flex items-center text-xp-text-secondary">
-                <svg className="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
+            <div className="py-2 text-center">
+              <div className="text-xp-text-secondary inline-flex items-center">
+                <svg className="-ml-1 mr-2 h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
                   <circle
                     className="opacity-25"
                     cx="12"
@@ -270,19 +270,19 @@ const FolderDetails: React.FC<{
                     r="10"
                     stroke="currentColor"
                     strokeWidth="4"
-                  ></circle>
+                  />
                   <path
                     className="opacity-75"
                     fill="currentColor"
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
+                  />
                 </svg>
                 Calculating size...
               </div>
             </div>
           )}
           {!folderSize && !calculating && (
-            <div className="text-center py-2 text-xp-text-secondary text-xs">
+            <div className="text-xp-text-secondary py-2 text-center text-xs">
               Click to calculate folder size
             </div>
           )}
@@ -376,13 +376,13 @@ const PreviewPanel = ({
   if (!selectedFile) {
     return (
       <div
-        className="flex items-center justify-center h-full text-center text-xp-text-secondary"
+        className="text-xp-text-secondary flex h-full items-center justify-center text-center"
         role="region"
         aria-label="No file selected for preview"
       >
         <div>
           <svg
-            className="w-12 h-12 mx-auto mb-3"
+            className="mx-auto mb-3 h-12 w-12"
             fill="currentColor"
             viewBox="0 0 20 20"
             aria-hidden="true"
@@ -406,59 +406,69 @@ const PreviewPanel = ({
 
   return (
     <div
-      className="flex flex-col h-full"
+      className="flex h-full flex-col"
       role="region"
       aria-label={`Preview of ${selectedFile.name}`}
     >
       {/* Main Preview Area - Takes most of the space */}
       <div
-        className="flex-1 min-h-0 overflow-auto"
+        className="min-h-0 flex-1 overflow-auto"
         aria-label={`${selectedFile.is_dir ? 'Folder' : 'File'} preview: ${selectedFile.name}`}
       >
-        {isDebouncing ? (
-          /* Shimmer skeleton during debounce delay */
-          <PreviewSkeleton />
-        ) : previewFile && previewFile.is_dir ? (
-          <div className="h-full flex items-center justify-center">
-            <FolderDetails
-              file={previewFile}
-              getFolderSize={getFolderSize}
-              isCalculatingSize={isCalculatingSize}
-              formatFileSize={formatFileSize}
-            />
-          </div>
-        ) : previewFile ? (
-          <div className="h-full">
-            <EnhancedFilePreview file={previewFile} category={category} currentPath={currentPath} />
-          </div>
-        ) : null}
+        {(() => {
+          if (isDebouncing) return <PreviewSkeleton />;
+          if (previewFile && previewFile.is_dir) {
+            return (
+              <div className="flex h-full items-center justify-center">
+                <FolderDetails
+                  file={previewFile}
+                  getFolderSize={getFolderSize}
+                  isCalculatingSize={isCalculatingSize}
+                  formatFileSize={formatFileSize}
+                />
+              </div>
+            );
+          }
+          if (previewFile) {
+            return (
+              <div className="h-full">
+                <EnhancedFilePreview
+                  file={previewFile}
+                  category={category}
+                  currentPath={currentPath}
+                />
+              </div>
+            );
+          }
+          return null;
+        })()}
       </div>
 
       {/* Quick Actions Bar */}
       <PreviewActionBar file={selectedFile} />
 
       {/* Collapsible File Properties Section */}
-      <div className="border-t border-xp-border bg-xp-surface">
+      <div className="border-xp-border bg-xp-surface border-t">
         {/* Properties Header - Always visible */}
         <button
           onClick={() => setShowProperties(!showProperties)}
-          className="w-full px-3 py-2 flex items-center justify-between text-left hover:bg-xp-surface-light transition-colors"
+          className="hover:bg-xp-surface-light flex w-full items-center justify-between px-3 py-2 text-left transition-colors"
           aria-expanded={showProperties}
           aria-label={`${showProperties ? 'Hide' : 'Show'} file properties`}
         >
           <div className="flex items-center">
-            <div className="text-lg mr-2">{getFileIcon(selectedFile)}</div>
+            <div className="mr-2 text-lg">{getFileIcon(selectedFile)}</div>
             <div>
-              <h3 className="text-sm font-medium truncate" title={selectedFile.name}>
+              <h3 className="truncate text-sm font-medium" title={selectedFile.name}>
                 {selectedFile.name}
               </h3>
-              <p className="text-xs text-xp-text-secondary">
+              <p className="text-xp-text-secondary text-xs">
                 {selectedFile.is_dir ? 'Folder' : formatFileSize(selectedFile.size)}
               </p>
             </div>
           </div>
           <svg
-            className={`w-4 h-4 transition-transform ${showProperties ? 'rotate-180' : ''}`}
+            className={`h-4 w-4 transition-transform ${showProperties ? 'rotate-180' : ''}`}
             fill="currentColor"
             viewBox="0 0 20 20"
           >
@@ -504,13 +514,13 @@ const PreviewPanel = ({
               </div>
 
               <div className="space-y-1">
-                <div className="flex justify-between items-center">
+                <div className="flex items-center justify-between">
                   <span className="text-xp-text-secondary">Path:</span>
                   <button
                     onClick={handleCopyPath}
-                    className={`px-2 py-1 border border-xp-border rounded text-xs transition-colors ${
+                    className={`border-xp-border rounded border px-2 py-1 text-xs transition-colors ${
                       copyFeedback
-                        ? 'bg-xp-green bg-opacity-20 border-xp-border text-xp-green'
+                        ? 'bg-xp-green border-xp-border text-xp-green bg-opacity-20'
                         : 'bg-xp-bg hover:bg-xp-surface-light'
                     }`}
                     title="Copy path to clipboard"
@@ -521,7 +531,7 @@ const PreviewPanel = ({
                     {copyFeedback ? 'Copied!' : 'Copy'}
                   </button>
                 </div>
-                <div className="text-xs font-mono break-all bg-xp-bg p-2 rounded border border-xp-border">
+                <div className="bg-xp-bg border-xp-border break-all rounded border p-2 font-mono text-xs">
                   {selectedFile.path}
                 </div>
               </div>
@@ -531,6 +541,6 @@ const PreviewPanel = ({
       </div>
     </div>
   );
-}
+};
 
 export default PreviewPanel;

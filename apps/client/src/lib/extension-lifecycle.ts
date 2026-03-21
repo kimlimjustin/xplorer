@@ -25,7 +25,7 @@ interface DependencyGraph {
   circular: string[][];
 }
 
-const buildDependencyGraph = (packages: ExtensionPackage[]) : DependencyGraph => {
+const buildDependencyGraph = (packages: ExtensionPackage[]): DependencyGraph => {
   const idSet = new Set(packages.map((p) => p.manifest.id));
   const adjacency = new Map<string, string[]>();
   const inDegree = new Map<string, number>();
@@ -66,9 +66,9 @@ const buildDependencyGraph = (packages: ExtensionPackage[]) : DependencyGraph =>
   }
 
   return { order, circular };
-}
+};
 
-const sortPackagesByDependencyOrder = (packages: ExtensionPackage[]) : ExtensionPackage[] => {
+const sortPackagesByDependencyOrder = (packages: ExtensionPackage[]): ExtensionPackage[] => {
   if (packages.length <= 1) return packages;
 
   const { order, circular } = buildDependencyGraph(packages);
@@ -97,7 +97,7 @@ const sortPackagesByDependencyOrder = (packages: ExtensionPackage[]) : Extension
   }
 
   return sorted;
-}
+};
 
 // ─── Extension Lifecycle ─────────────────────────────────────────────────────
 // Handles loading, activating, deactivating, unloading, reloading extensions,
@@ -304,7 +304,7 @@ export class ExtensionLifecycle {
       }
 
       // Normalize path separators for the backend
-      const fullPath = (pkg.path + '/' + mainFile).replace(/\\/g, '/');
+      const fullPath = `${pkg.path}/${mainFile}`.replace(/\\/g, '/');
 
       try {
         jsContent = await TauriAPI.readTextFile(fullPath);

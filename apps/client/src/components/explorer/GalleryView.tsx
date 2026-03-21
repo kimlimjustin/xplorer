@@ -59,17 +59,11 @@ const GalleryStripThumb = React.memo(
         aria-selected={isSelected}
         aria-label={`${file.name}${file.is_dir ? ', folder' : ', file'}`}
         data-gallery-path={file.path}
-        className={`
-        flex-shrink-0 w-16 h-16 rounded-md overflow-hidden cursor-pointer transition-all
-        border-2
-        ${
-          isFocused
-            ? 'border-xp-blue/70 ring-1 ring-xp-blue/50 scale-105'
-            : isSelected
-              ? 'border-xp-blue/50'
-              : 'border-transparent hover:border-xp-text-muted/30'
-        }
-      `}
+        className={`h-16 w-16 flex-shrink-0 cursor-pointer overflow-hidden rounded-md border-2 transition-all ${(() => {
+          if (isFocused) return 'border-xp-blue/70 ring-xp-blue/50 scale-105 ring-1';
+          if (isSelected) return 'border-xp-blue/50';
+          return 'hover:border-xp-text-muted/30 border-transparent';
+        })()} `}
         style={{ position: 'relative' }}
         onClick={onClick}
         onDoubleClick={onDoubleClick}
@@ -81,7 +75,7 @@ const GalleryStripThumb = React.memo(
             <img
               src={thumbnailUrl}
               alt={file.name}
-              className="w-full h-full object-cover"
+              className="h-full w-full object-cover"
               loading="lazy"
               onLoad={(e) => {
                 const img = e.currentTarget;
@@ -96,7 +90,7 @@ const GalleryStripThumb = React.memo(
             )}
           </>
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-xp-surface-light">
+          <div className="bg-xp-surface-light flex h-full w-full items-center justify-center">
             <span className="text-xl opacity-60">{getFileIcon(file)}</span>
           </div>
         )}
@@ -235,8 +229,9 @@ const GalleryView = ({
     const handleKey = (e: KeyboardEvent) => {
       if (!displayFile) return;
       const target = e.target as HTMLElement;
-      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
         return;
+      }
 
       const idx = files.indexOf(displayFile);
       if (idx === -1) return;
@@ -269,88 +264,102 @@ const GalleryView = ({
   return (
     <div
       ref={bgDropRef}
-      className="flex flex-col h-full overflow-hidden"
+      className="flex h-full flex-col overflow-hidden"
       aria-label="Gallery view"
       onContextMenu={handleBackgroundRightClick || undefined}
     >
       {/* -- Large preview area -- */}
       <div
-        className="flex-1 min-h-0 flex items-center justify-center bg-xp-bg/50 relative overflow-hidden"
+        className="bg-xp-bg/50 relative flex min-h-0 flex-1 items-center justify-center overflow-hidden"
         aria-label={displayFile ? `Preview of ${displayFile.name}` : 'No file selected'}
         onDoubleClick={() => displayFile && handleFileDoubleClick(displayFile)}
         onContextMenu={(e) => displayFile && handleFileRightClick(displayFile, e)}
       >
-        {displayFile ? (
-          isDisplayImage && !previewError ? (
-            <>
-              <img
-                src={getThumbnailUrl(displayFile.path)}
-                alt={displayFile.name}
-                className="max-w-full max-h-full object-contain select-none"
-                draggable={false}
-                onLoad={(e) => {
-                  const img = e.currentTarget;
-                  setPreviewDimensions({ w: img.naturalWidth, h: img.naturalHeight });
-                }}
-                onError={() => setPreviewError(true)}
-              />
-              {/* Image dimensions overlay */}
-              {previewDimensions && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: 8,
-                    right: 8,
-                    fontSize: 11,
-                    padding: '3px 8px',
-                    borderRadius: 4,
-                    background: 'rgba(0,0,0,0.55)',
-                    color: '#fff',
-                    pointerEvents: 'none',
-                    backdropFilter: 'blur(4px)',
-                    fontVariantNumeric: 'tabular-nums',
+        {(() => {
+          if (!displayFile) {
+            return <div className="text-xp-text-muted text-sm">No files</div>;
+          }
+          if (isDisplayImage && !previewError) {
+            return (
+              <>
+                <img
+                  src={getThumbnailUrl(displayFile.path)}
+                  alt={displayFile.name}
+                  className="max-h-full max-w-full select-none object-contain"
+                  draggable={false}
+                  onLoad={(e) => {
+                    const img = e.currentTarget;
+                    setPreviewDimensions({ w: img.naturalWidth, h: img.naturalHeight });
                   }}
-                >
-                  {previewDimensions.w} x {previewDimensions.h}
-                </div>
-              )}
-            </>
-          ) : (
-            <div className="flex flex-col items-center gap-3 text-xp-text-muted">
+                  onError={() => setPreviewError(true)}
+                />
+                {/* Image dimensions overlay */}
+                {previewDimensions && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: 8,
+                      right: 8,
+                      fontSize: 11,
+                      padding: '3px 8px',
+                      borderRadius: 4,
+                      background: 'rgba(0,0,0,0.55)',
+                      color: '#fff',
+                      pointerEvents: 'none',
+                      backdropFilter: 'blur(4px)',
+                      fontVariantNumeric: 'tabular-nums',
+                    }}
+                  >
+                    {previewDimensions.w} x {previewDimensions.h}
+                  </div>
+                )}
+              </>
+            );
+          }
+          return (
+            <div className="text-xp-text-muted flex flex-col items-center gap-3">
               <span className="text-7xl opacity-50">{getFileIcon(displayFile)}</span>
               <span className="text-sm font-medium">{displayFile.name}</span>
               <span className="text-xs">
                 {displayFile.is_dir ? 'Folder' : formatFileSize(displayFile.size)}
               </span>
             </div>
-          )
-        ) : (
-          <div className="text-xp-text-muted text-sm">No files</div>
-        )}
+          );
+        })()}
 
         {/* File info overlay */}
         {displayFile && (
-          <div className="absolute bottom-0 left-0 right-0 px-4 py-2 bg-gradient-to-t from-black/50 to-transparent">
-            <div className="text-sm font-medium text-white truncate">{displayFile.name}</div>
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent px-4 py-2">
+            <div className="truncate text-sm font-medium text-white">{displayFile.name}</div>
             <div className="text-xs text-white/70">
               {displayFile.is_dir ? 'Folder' : formatFileSize(displayFile.size)}
               {displayFile.modified > 0 && <> &middot; {formatDate(displayFile.modified)}</>}
             </div>
-            {aiDescription ? (
-              <div className="text-xs text-white/60 mt-1 line-clamp-2 italic">{aiDescription}</div>
-            ) : indexingStatus === 'indexing' && isDisplayImage ? (
-              <div className="text-xs text-white/50 mt-1 italic flex items-center gap-1.5">
-                <span className="inline-block w-3 h-3 border-2 border-white/30 border-t-white/70 rounded-full animate-spin" />
-                Generating description...
-              </div>
-            ) : null}
+            {(() => {
+              if (aiDescription) {
+                return (
+                  <div className="mt-1 line-clamp-2 text-xs italic text-white/60">
+                    {aiDescription}
+                  </div>
+                );
+              }
+              if (indexingStatus === 'indexing' && isDisplayImage) {
+                return (
+                  <div className="mt-1 flex items-center gap-1.5 text-xs italic text-white/50">
+                    <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-white/30 border-t-white/70" />
+                    Generating description...
+                  </div>
+                );
+              }
+              return null;
+            })()}
           </div>
         )}
       </div>
 
       {/* -- Horizontal filmstrip -- */}
-      <div className="flex-shrink-0 border-t border-xp-border bg-xp-surface">
-        <div ref={stripRef} className="flex gap-1 p-2 overflow-x-auto gallery-filmstrip">
+      <div className="border-xp-border bg-xp-surface flex-shrink-0 border-t">
+        <div ref={stripRef} className="gallery-filmstrip flex gap-1 overflow-x-auto p-2">
           {files.map((file) => (
             <GalleryStripThumb
               key={file.path}

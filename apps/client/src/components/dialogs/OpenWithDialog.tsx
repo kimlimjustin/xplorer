@@ -117,17 +117,17 @@ const OpenWithDialog = ({ isOpen, onClose, filePath }: OpenWithDialogProps) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-xp-surface rounded-lg shadow-2xl w-[500px] max-w-[90vw] max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="bg-xp-surface max-h-[90vh] w-[500px] max-w-[90vw] overflow-hidden rounded-lg shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-xp-border">
-          <h2 className="text-xl font-semibold text-xp-text">Open With</h2>
+        <div className="border-xp-border flex items-center justify-between border-b p-6">
+          <h2 className="text-xp-text text-xl font-semibold">Open With</h2>
           <button
             onClick={handleClose}
-            className="p-2 hover:bg-xp-surface-light rounded-md transition-colors"
+            className="hover:bg-xp-surface-light rounded-md p-2 transition-colors"
             aria-label="Close open with dialog"
           >
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fillRule="evenodd"
                 d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
@@ -138,22 +138,23 @@ const OpenWithDialog = ({ isOpen, onClose, filePath }: OpenWithDialogProps) => {
         </div>
 
         {/* Content */}
-        <div className="p-6 max-h-[60vh] overflow-y-auto">
+        <div className="max-h-[60vh] overflow-y-auto p-6">
+          {/* eslint-disable-next-line no-nested-ternary */}
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-xp-blue"></div>
-              <span className="ml-3 text-xp-text-muted">Loading applications...</span>
+              <div className="border-xp-blue h-8 w-8 animate-spin rounded-full border-b-2" />
+              <span className="text-xp-text-muted ml-3">Loading applications...</span>
             </div>
           ) : error ? (
-            <div className="text-center py-12">
-              <div className="text-red-400 text-4xl mb-4">
+            <div className="py-12 text-center">
+              <div className="mb-4 text-4xl text-red-400">
                 <AlertTriangle size="1em" className="inline-block" />
               </div>
-              <h3 className="text-lg font-medium text-xp-text mb-2">Error Loading Applications</h3>
+              <h3 className="text-xp-text mb-2 text-lg font-medium">Error Loading Applications</h3>
               <p className="text-xp-text-muted mb-4">{error}</p>
               <button
                 onClick={loadFileAssociations}
-                className="px-4 py-2 bg-xp-blue text-white rounded hover:bg-xp-blue-dark transition-colors"
+                className="bg-xp-blue hover:bg-xp-blue-dark rounded px-4 py-2 text-white transition-colors"
               >
                 Try Again
               </button>
@@ -161,7 +162,7 @@ const OpenWithDialog = ({ isOpen, onClose, filePath }: OpenWithDialogProps) => {
           ) : (
             <div className="space-y-6">
               {/* File Information */}
-              <div className="flex items-center space-x-4 p-4 bg-xp-bg rounded-lg">
+              <div className="bg-xp-bg flex items-center space-x-4 rounded-lg p-4">
                 <div className="text-4xl">
                   {getFileIcon({
                     name: getFileName(),
@@ -173,9 +174,9 @@ const OpenWithDialog = ({ isOpen, onClose, filePath }: OpenWithDialogProps) => {
                   })}
                 </div>
                 <div>
-                  <h3 className="text-lg font-medium text-xp-text">{getFileName()}</h3>
+                  <h3 className="text-xp-text text-lg font-medium">{getFileName()}</h3>
                   {fileAssociation && (
-                    <p className="text-sm text-xp-text-muted">
+                    <p className="text-xp-text-muted text-sm">
                       {fileAssociation.extension && `.${fileAssociation.extension} file`}
                       {fileAssociation.mime_type && ` (${fileAssociation.mime_type})`}
                     </p>
@@ -185,28 +186,28 @@ const OpenWithDialog = ({ isOpen, onClose, filePath }: OpenWithDialogProps) => {
 
               {/* Available Applications */}
               <div>
-                <h4 className="text-md font-medium text-xp-text mb-3">Choose an application:</h4>
-                <div className="space-y-2 max-h-64 overflow-y-auto">
+                <h4 className="text-md text-xp-text mb-3 font-medium">Choose an application:</h4>
+                <div className="max-h-64 space-y-2 overflow-y-auto">
                   {/* Recommended applications first */}
                   {fileAssociation?.available_apps && fileAssociation.available_apps.length > 0 && (
                     <>
-                      <p className="text-xs text-xp-text-muted mb-2 px-2">Recommended:</p>
+                      <p className="text-xp-text-muted mb-2 px-2 text-xs">Recommended:</p>
                       {fileAssociation.available_apps.map((app) => (
                         <div
                           key={`recommended-${app.path}`}
-                          className={`flex items-center space-x-3 p-3 rounded cursor-pointer transition-colors ${
+                          className={`flex cursor-pointer items-center space-x-3 rounded p-3 transition-colors ${
                             selectedApp?.path === app.path
-                              ? 'bg-xp-blue bg-opacity-20 border border-xp-blue'
+                              ? 'bg-xp-blue border-xp-blue border bg-opacity-20'
                               : 'hover:bg-xp-surface-light border border-transparent'
                           }`}
                           onClick={() => setSelectedApp(app)}
                         >
                           <div className="text-2xl">{getApplicationIcon(app)}</div>
                           <div className="flex-1">
-                            <div className="font-medium text-xp-text">{app.name}</div>
-                            <div className="text-xs text-xp-text-muted truncate">{app.path}</div>
+                            <div className="text-xp-text font-medium">{app.name}</div>
+                            <div className="text-xp-text-muted truncate text-xs">{app.path}</div>
                             {app.is_default && (
-                              <span className="text-xs bg-xp-green bg-opacity-20 text-xp-green px-2 py-0.5 rounded">
+                              <span className="bg-xp-green text-xp-green rounded bg-opacity-20 px-2 py-0.5 text-xs">
                                 Default
                               </span>
                             )}
@@ -219,7 +220,7 @@ const OpenWithDialog = ({ isOpen, onClose, filePath }: OpenWithDialogProps) => {
                   {/* Other system applications */}
                   {systemApps.length > 0 && (
                     <>
-                      <p className="text-xs text-xp-text-muted mb-2 px-2 mt-4">
+                      <p className="text-xp-text-muted mb-2 mt-4 px-2 text-xs">
                         Other applications:
                       </p>
                       {systemApps
@@ -233,17 +234,17 @@ const OpenWithDialog = ({ isOpen, onClose, filePath }: OpenWithDialogProps) => {
                         .map((app) => (
                           <div
                             key={`system-${app.path}`}
-                            className={`flex items-center space-x-3 p-3 rounded cursor-pointer transition-colors ${
+                            className={`flex cursor-pointer items-center space-x-3 rounded p-3 transition-colors ${
                               selectedApp?.path === app.path
-                                ? 'bg-xp-blue bg-opacity-20 border border-xp-blue'
+                                ? 'bg-xp-blue border-xp-blue border bg-opacity-20'
                                 : 'hover:bg-xp-surface-light border border-transparent'
                             }`}
                             onClick={() => setSelectedApp(app)}
                           >
                             <div className="text-2xl">{getApplicationIcon(app)}</div>
                             <div className="flex-1">
-                              <div className="font-medium text-xp-text">{app.name}</div>
-                              <div className="text-xs text-xp-text-muted truncate">{app.path}</div>
+                              <div className="text-xp-text font-medium">{app.name}</div>
+                              <div className="text-xp-text-muted truncate text-xs">{app.path}</div>
                             </div>
                           </div>
                         ))}
@@ -259,9 +260,9 @@ const OpenWithDialog = ({ isOpen, onClose, filePath }: OpenWithDialogProps) => {
                   id="remember-choice"
                   checked={rememberChoice}
                   onChange={(e) => setRememberChoice(e.target.checked)}
-                  className="w-4 h-4 text-xp-blue bg-xp-bg border-xp-border rounded focus:ring-xp-blue focus:ring-2"
+                  className="text-xp-blue bg-xp-bg border-xp-border focus:ring-xp-blue h-4 w-4 rounded focus:ring-2"
                 />
-                <label htmlFor="remember-choice" className="text-sm text-xp-text cursor-pointer">
+                <label htmlFor="remember-choice" className="text-xp-text cursor-pointer text-sm">
                   Always use this application for .{fileAssociation?.extension || 'this'} files
                 </label>
               </div>
@@ -270,10 +271,10 @@ const OpenWithDialog = ({ isOpen, onClose, filePath }: OpenWithDialogProps) => {
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end space-x-3 p-6 border-t border-xp-border bg-xp-bg">
+        <div className="border-xp-border bg-xp-bg flex justify-end space-x-3 border-t p-6">
           <button
             onClick={handleClose}
-            className="px-4 py-2 text-xp-text hover:bg-xp-surface-light rounded transition-colors"
+            className="text-xp-text hover:bg-xp-surface-light rounded px-4 py-2 transition-colors"
             aria-label="Cancel"
           >
             Cancel
@@ -281,7 +282,7 @@ const OpenWithDialog = ({ isOpen, onClose, filePath }: OpenWithDialogProps) => {
           <button
             onClick={handleOpenWith}
             disabled={!selectedApp || loading}
-            className="px-4 py-2 bg-xp-blue text-white rounded hover:bg-xp-blue-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-xp-blue hover:bg-xp-blue-dark rounded px-4 py-2 text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50"
             aria-label="Open file with selected application"
           >
             Open

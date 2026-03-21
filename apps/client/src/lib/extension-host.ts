@@ -1,21 +1,21 @@
 import React from 'react';
 import { TauriAPI } from './tauri-api';
 import { resolveIcon } from './extension-host-icon';
-import { EventBus } from './extension-host-types';
-import type {
-  ExtensionManifest,
-  ExtensionPackage,
-  PanelRegistration,
-  PanelRenderProps,
-  FileDecoration,
-  FileDecorator,
-  ContextMenuEntry,
-  EditorRegistration,
-  PreviewRegistration,
-  ExtensionFileInfo,
-  CommandHandler,
-  EventCallback,
-  LoadedExtension,
+import {
+  EventBus,
+  type ExtensionManifest,
+  type ExtensionPackage,
+  type PanelRegistration,
+  type PanelRenderProps,
+  type FileDecoration,
+  type FileDecorator,
+  type ContextMenuEntry,
+  type EditorRegistration,
+  type PreviewRegistration,
+  type ExtensionFileInfo,
+  type CommandHandler,
+  type EventCallback,
+  type LoadedExtension,
 } from './extension-host-types';
 import { createExtensionApi } from './extension-api-factory';
 
@@ -38,7 +38,10 @@ class ExtensionHost {
   private editorRegistry = new Map<string, EditorRegistration>();
   private previewRegistry = new Map<string, PreviewRegistration>();
   private commandRegistry = new Map<string, CommandHandler>();
-  private commandMetadata = new Map<string, { title: string; shortcut?: string; category?: string }>();
+  private commandMetadata = new Map<
+    string,
+    { title: string; shortcut?: string; category?: string }
+  >();
   private commandChangeListeners = new Set<() => void>();
   private decoratorRegistry = new Map<string, FileDecorator>();
   private contextMenuEntries = new Map<string, ContextMenuEntry[]>();
@@ -183,7 +186,7 @@ class ExtensionHost {
               );
             }
           },
-            });
+        });
       }
     }
 
@@ -249,7 +252,10 @@ class ExtensionHost {
     }
 
     // Register sidebar tabs from renderSidebarTab + getSidebarTabConfig
-    if (typeof ext.renderSidebarTab === 'function' && typeof ext.getSidebarTabConfig === 'function') {
+    if (
+      typeof ext.renderSidebarTab === 'function' &&
+      typeof ext.getSidebarTabConfig === 'function'
+    ) {
       const stConfig = (
         ext.getSidebarTabConfig as () => { id: string; title: string; icon?: string }
       )();
@@ -379,7 +385,7 @@ class ExtensionHost {
               { className: 'p-4 text-sm text-xp-text-muted' },
               `Panel: ${panel.title}`,
             ),
-            });
+        });
       }
     }
 
@@ -412,7 +418,7 @@ class ExtensionHost {
     }
 
     // Normalize path separators for the backend
-    const fullPath = (pkg.path + '/' + mainFile).replace(/\\/g, '/');
+    const fullPath = `${pkg.path}/${mainFile}`.replace(/\\/g, '/');
 
     let jsContent: string;
     try {
@@ -474,13 +480,15 @@ class ExtensionHost {
       // Safe setTimeout/setInterval that reject string arguments (prevents eval-like behavior)
       const extId = pkg.manifest.id;
       const safeSetTimeout = (fn: Function | string, ms?: number, ...args: unknown[]) => {
-        if (typeof fn === 'string')
+        if (typeof fn === 'string') {
           throw new Error('String argument to setTimeout is not allowed in extension sandbox');
+        }
         return setTimeout(fn, ms, ...args);
       };
       const safeSetInterval = (fn: Function | string, ms?: number, ...args: unknown[]) => {
-        if (typeof fn === 'string')
+        if (typeof fn === 'string') {
           throw new Error('String argument to setInterval is not allowed in extension sandbox');
+        }
         return setInterval(fn, ms, ...args);
       };
 
@@ -496,9 +504,13 @@ class ExtensionHost {
             // Intercept createElement to block script/iframe/object/embed injection
             if (prop === 'createElement' || prop === 'createElementNS') {
               return (...args: unknown[]) => {
-                const tagName = (
-                  typeof args[0] === 'string' ? args[0] : typeof args[1] === 'string' ? args[1] : ''
-                ).toLowerCase();
+                let rawTag = '';
+                if (typeof args[0] === 'string') {
+                  rawTag = args[0];
+                } else if (typeof args[1] === 'string') {
+                  rawTag = args[1];
+                }
+                const tagName = rawTag.toLowerCase();
                 if (['script', 'iframe', 'object', 'embed', 'frame', 'link'].includes(tagName)) {
                   console.warn(
                     `[Sandbox] Extension "${extId}" tried to create blocked element: <${tagName}>`,
@@ -574,16 +586,14 @@ class ExtensionHost {
       // Extensions built with esbuild --format=iife --external:react etc. emit
       // require("react") calls which this shim resolves at runtime.
       const ALLOWED_MODULES: Record<string, unknown> = {
-        'react': (window as unknown as Record<string, unknown>).React,
+        react: (window as unknown as Record<string, unknown>).React,
         'react-dom': (window as unknown as Record<string, unknown>).ReactDOM,
         'react-dom/client': (window as unknown as Record<string, unknown>).ReactDOM,
         '@xplorer/extension-sdk': (window as unknown as Record<string, unknown>).XplorerSDK,
       };
       const sandboxRequire = (moduleId: string): unknown => {
         if (ALLOWED_MODULES[moduleId] !== undefined) return ALLOWED_MODULES[moduleId];
-        throw new Error(
-          `Extension "${extId}" tried to require unknown module: "${moduleId}"`,
-        );
+        throw new Error(`Extension "${extId}" tried to require unknown module: "${moduleId}"`);
       };
 
       const paramNames = [
@@ -607,7 +617,6 @@ class ExtensionHost {
         ...BLOCKED_GLOBALS.map(() => undefined),
       ];
 
-       
       const execFn = new Function(...paramNames, jsContent);
 
       const execResult = execFn(...paramValues);
@@ -696,7 +705,11 @@ class ExtensionHost {
       // Register panels declared by the captured object (from SDK Sidebar.register())
       // that aren't already in the panelRegistry (i.e. not in the backend manifest)
       const capturedManifest = (obj as Record<string, unknown>).manifest as
-        | { contributes?: { panels?: Array<{ id: string; title: string; icon?: string; location?: string }> } }
+        | {
+            contributes?: {
+              panels?: Array<{ id: string; title: string; icon?: string; location?: string }>;
+            };
+          }
         | undefined;
       if (capturedManifest?.contributes?.panels) {
         for (const panel of capturedManifest.contributes.panels) {
@@ -1419,19 +1432,39 @@ class ExtensionHost {
 
   private notifyCommandChange() {
     for (const cb of this.commandChangeListeners) {
-      try { cb(); } catch { /* ignore */ }
+      try {
+        cb();
+      } catch {
+        /* ignore */
+      }
     }
   }
 
   /** Subscribe to command registry changes. Returns dispose function. */
   onCommandsChanged(cb: () => void): { dispose: () => void } {
     this.commandChangeListeners.add(cb);
-    return { dispose: () => { this.commandChangeListeners.delete(cb); } };
+    return {
+      dispose: () => {
+        this.commandChangeListeners.delete(cb);
+      },
+    };
   }
 
   /** Get all extension commands with metadata for the command palette. */
-  getCommandPaletteEntries(): Array<{ id: string; title: string; shortcut?: string; category?: string; action: () => void }> {
-    const entries: Array<{ id: string; title: string; shortcut?: string; category?: string; action: () => void }> = [];
+  getCommandPaletteEntries(): Array<{
+    id: string;
+    title: string;
+    shortcut?: string;
+    category?: string;
+    action: () => void;
+  }> {
+    const entries: Array<{
+      id: string;
+      title: string;
+      shortcut?: string;
+      category?: string;
+      action: () => void;
+    }> = [];
     for (const [id, meta] of this.commandMetadata) {
       const handler = this.commandRegistry.get(id);
       if (handler) {
@@ -1440,7 +1473,9 @@ class ExtensionHost {
           title: meta.title,
           shortcut: meta.shortcut,
           category: meta.category,
-          action: () => { handler(); },
+          action: () => {
+            handler();
+          },
         });
       }
     }

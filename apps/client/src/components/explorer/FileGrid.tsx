@@ -16,8 +16,10 @@ import DetailsView from './DetailsView';
 import ColumnView from './ColumnView';
 import type { FileGroup } from '@/lib/utils';
 import { FileGridSkeleton } from '@/components/ui/Skeleton';
-import { CROSS_TAB_SELECTION_EVENT } from '@/hooks/use-cross-tab-selection';
-import type { CrossTabSelectionEventDetail } from '@/hooks/use-cross-tab-selection';
+import {
+  CROSS_TAB_SELECTION_EVENT,
+  type CrossTabSelectionEventDetail,
+} from '@/hooks/use-cross-tab-selection';
 
 interface FileGridProps {
   files: FileEntry[];
@@ -461,14 +463,14 @@ const FileGrid = ({
     return (
       <div
         ref={bgDropRef}
-        className="flex items-center justify-center h-64"
+        className="flex h-64 items-center justify-center"
         onContextMenu={handleBackgroundRightClick || undefined}
         role="status"
         aria-label="Empty folder"
       >
-        <div className="text-center text-xp-text-secondary">
+        <div className="text-xp-text-secondary text-center">
           <svg
-            className="w-12 h-12 mx-auto mb-4"
+            className="mx-auto mb-4 h-12 w-12"
             fill="currentColor"
             viewBox="0 0 20 20"
             aria-hidden="true"
@@ -480,7 +482,7 @@ const FileGrid = ({
             />
           </svg>
           <p>This folder is empty</p>
-          <p className="text-xs mt-2 text-xp-text-muted">Right-click to create files or folders</p>
+          <p className="text-xp-text-muted mt-2 text-xs">Right-click to create files or folders</p>
         </div>
       </div>
     );
@@ -610,11 +612,11 @@ const FileGrid = ({
         >
           {fileGroups.map((group) => (
             <div key={group.group}>
-              <div className="sticky top-0 z-10 px-3 py-2 bg-xp-surface/80 backdrop-blur-sm border-b border-xp-border">
-                <span className="text-xs font-semibold text-xp-text-muted uppercase tracking-wide">
+              <div className="bg-xp-surface/80 border-xp-border sticky top-0 z-10 border-b px-3 py-2 backdrop-blur-sm">
+                <span className="text-xp-text-muted text-xs font-semibold uppercase tracking-wide">
                   {group.group}
                 </span>
-                <span className="ml-2 text-xs text-xp-text-muted">({group.files.length})</span>
+                <span className="text-xp-text-muted ml-2 text-xs">({group.files.length})</span>
               </div>
               <div className={`${getGridLayout()} p-2`}>{group.files.map(renderFileItem)}</div>
             </div>
@@ -650,7 +652,7 @@ const FileGrid = ({
       role="listbox"
       aria-label="File list"
       aria-multiselectable={true}
-      className="overflow-auto relative h-full"
+      className="relative h-full overflow-auto"
       style={{ padding: '8px' }}
       onContextMenu={handleBackgroundRightClick || undefined}
       onKeyDown={handleGridKeyDown}

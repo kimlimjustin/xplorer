@@ -25,15 +25,15 @@ const BUCKET_LABELS: Record<TimeBucket, string> = {
   'earlier-today': 'Earlier today',
 };
 
-const getBucket = (timestamp: number) : TimeBucket => {
+const getBucket = (timestamp: number): TimeBucket => {
   const diff = Date.now() - timestamp;
   if (diff < 60_000) return 'just-now';
   if (diff < 5 * 60_000) return 'last-5-min';
   if (diff < 30 * 60_000) return 'last-30-min';
   return 'earlier-today';
-}
+};
 
-const groupByBucket = (entries: ActivityEntry[]) : Map<TimeBucket, ActivityEntry[]> => {
+const groupByBucket = (entries: ActivityEntry[]): Map<TimeBucket, ActivityEntry[]> => {
   const buckets = new Map<TimeBucket, ActivityEntry[]>();
   // Iterate in reverse so newest entries appear first within each bucket
   for (let i = entries.length - 1; i >= 0; i--) {
@@ -43,23 +43,23 @@ const groupByBucket = (entries: ActivityEntry[]) : Map<TimeBucket, ActivityEntry
     buckets.get(bucket)!.push(entry);
   }
   return buckets;
-}
+};
 
 /** Format a timestamp as relative time ("2s ago", "5m ago", "1h ago") */
-const formatRelativeTime = (timestamp: number) : string => {
+const formatRelativeTime = (timestamp: number): string => {
   const diff = Math.max(0, Date.now() - timestamp);
   if (diff < 60_000) return `${Math.floor(diff / 1000)}s ago`;
   if (diff < 60 * 60_000) return `${Math.floor(diff / 60_000)}m ago`;
   return `${Math.floor(diff / (60 * 60_000))}h ago`;
-}
+};
 
 /** Extract parent directory as a relative-looking path */
-const getRelativePath = (fullPath: string) : string => {
+const getRelativePath = (fullPath: string): string => {
   const normalized = fullPath.replace(/\\/g, '/');
   const parts = normalized.split('/');
   if (parts.length <= 2) return normalized;
-  return '.../' + parts.slice(-3, -1).join('/');
-}
+  return `.../${parts.slice(-3, -1).join('/')}`;
+};
 
 // ── Filter chip definitions ──────────────────────────────────────────────────
 
@@ -286,10 +286,10 @@ const ActivityRow: React.FC<{ entry: ActivityEntry; onNavigate?: (path: string) 
   });
 ActivityRow.displayName = 'ActivityRow';
 
-const extractName = (fullPath: string) : string => {
+const extractName = (fullPath: string): string => {
   const parts = fullPath.replace(/\\/g, '/').split('/');
   return parts[parts.length - 1] || fullPath;
-}
+};
 
 // ── Main Panel Component ─────────────────────────────────────────────────────
 

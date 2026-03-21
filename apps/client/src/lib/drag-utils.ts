@@ -1,12 +1,12 @@
 import type { FileEntry } from '@/lib/tauri-api';
 
 /** Check if `child` path is inside `parent` path */
-export const isDescendantPath = (parent: string, child: string) : boolean => {
+export const isDescendantPath = (parent: string, child: string): boolean => {
   const normalize = (p: string) => p.replace(/\\/g, '/').replace(/\/+$/, '').toLowerCase();
   const np = normalize(parent);
   const nc = normalize(child);
-  return nc.startsWith(np + '/');
-}
+  return nc.startsWith(`${np}/`);
+};
 
 /** Validate whether files can be dropped on a target */
 export const validateDrop = (
@@ -27,33 +27,33 @@ export const validateDrop = (
     return { valid: false, reason: 'Files are already in this folder' };
   }
   return { valid: true };
-}
+};
 
 /** Build destination path for a file dropped into a target directory */
-export const buildDestinationPath = (sourcePath: string, targetDir: string) : string => {
+export const buildDestinationPath = (sourcePath: string, targetDir: string): string => {
   const name = sourcePath.split(/[/\\]/).pop() || sourcePath;
   const sep = targetDir.includes('\\') ? '\\' : '/';
   return targetDir.replace(/[/\\]+$/, '') + sep + name;
-}
+};
 
 /** Get parent directory of a path */
-export const getParentPath = (filePath: string) : string => {
+export const getParentPath = (filePath: string): string => {
   const parts = filePath.replace(/\\/g, '/').replace(/\/+$/, '').split('/');
   parts.pop();
   return parts.join('/') || '/';
-}
+};
 
-const normalize = (p: string) : string => {
+const normalize = (p: string): string => {
   return p.replace(/\\/g, '/').replace(/\/+$/, '').toLowerCase();
-}
+};
 
 /** MIME type for internal drag data */
 export const XPLORER_DND_MIME = 'application/x-xplorer-files';
 
 /** Serialize file paths for dataTransfer */
-export const serializeDragData = (files: FileEntry[]) : string => {
+export const serializeDragData = (files: FileEntry[]): string => {
   return JSON.stringify(files.map((f) => ({ path: f.path, name: f.name, is_dir: f.is_dir })));
-}
+};
 
 /** Deserialize file paths from dataTransfer */
 export const deserializeDragData = (
@@ -77,4 +77,4 @@ export const deserializeDragData = (
     console.warn('Failed to deserialize drag data:', e);
     return [];
   }
-}
+};

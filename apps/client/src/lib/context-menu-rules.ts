@@ -64,11 +64,11 @@ const KNOWN_MENU_ITEMS: { id: string; label: string }[] = [
 
 // ── CRUD helpers ───────────────────────────────────────────────────
 
-const generateId = () : string => {
+const generateId = (): string => {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-}
+};
 
-export const getContextMenuRules = () : ContextMenuRule[] => {
+export const getContextMenuRules = (): ContextMenuRule[] => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
@@ -76,53 +76,53 @@ export const getContextMenuRules = () : ContextMenuRule[] => {
   } catch {
     return [];
   }
-}
+};
 
-const saveRules = (rules: ContextMenuRule[]) : void => {
+const saveRules = (rules: ContextMenuRule[]): void => {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(rules));
   } catch {
     // storage full or unavailable
   }
-}
+};
 
-export const createRule = (rule: Omit<ContextMenuRule, 'id'>) : ContextMenuRule => {
+export const createRule = (rule: Omit<ContextMenuRule, 'id'>): ContextMenuRule => {
   const newRule: ContextMenuRule = { ...rule, id: generateId() };
   const rules = getContextMenuRules();
   rules.push(newRule);
   saveRules(rules);
   return newRule;
-}
+};
 
-export const updateRule = (id: string, updates: Partial<Omit<ContextMenuRule, 'id'>>) : void => {
+export const updateRule = (id: string, updates: Partial<Omit<ContextMenuRule, 'id'>>): void => {
   const rules = getContextMenuRules();
   const idx = rules.findIndex((r) => r.id === id);
   if (idx === -1) return;
   rules[idx] = { ...rules[idx], ...updates };
   saveRules(rules);
-}
+};
 
-export const deleteRule = (id: string) : void => {
+export const deleteRule = (id: string): void => {
   const rules = getContextMenuRules().filter((r) => r.id !== id);
   saveRules(rules);
-}
+};
 
-export const resetRules = () : void => {
+export const resetRules = (): void => {
   localStorage.removeItem(STORAGE_KEY);
-}
+};
 
 export const getAvailableMenuItems = (): { id: string; label: string }[] => {
   return KNOWN_MENU_ITEMS;
-}
+};
 
 // ── Rule matching ──────────────────────────────────────────────────
 
-const getFileExtension = (file: FileEntry) : string => {
+const getFileExtension = (file: FileEntry): string => {
   const dotIdx = file.name.lastIndexOf('.');
   return dotIdx > 0 ? file.name.slice(dotIdx).toLowerCase() : '';
-}
+};
 
-const matchesRule = (matcher: RuleMatcher, file: FileEntry) : boolean => {
+const matchesRule = (matcher: RuleMatcher, file: FileEntry): boolean => {
   switch (matcher.type) {
     case 'extension': {
       const ext = getFileExtension(file);
@@ -132,7 +132,7 @@ const matchesRule = (matcher: RuleMatcher, file: FileEntry) : boolean => {
         .split(',')
         .map((e) => e.trim().toLowerCase())
         .filter(Boolean)
-        .map((e) => (e.startsWith('.') ? e : '.' + e));
+        .map((e) => (e.startsWith('.') ? e : `.${e}`));
       return exts.includes(ext);
     }
 
@@ -154,7 +154,7 @@ const matchesRule = (matcher: RuleMatcher, file: FileEntry) : boolean => {
       // Simple glob: only * is supported
       if (pattern.includes('*')) {
         const regex = new RegExp(
-          '^' + pattern.replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*') + '$',
+          `^${pattern.replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*')}$`,
         );
         return regex.test(name);
       }
@@ -169,7 +169,7 @@ const matchesRule = (matcher: RuleMatcher, file: FileEntry) : boolean => {
     default:
       return false;
   }
-}
+};
 
 // ── Cached rule lookup (rebuilt on every call but O(n) where n = rules count) ──
 

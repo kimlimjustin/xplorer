@@ -18,8 +18,7 @@ import {
   ChevronDown,
   X,
 } from 'lucide-react';
-import type { FileEntry } from '@/lib/tauri-api';
-import { TauriAPI } from '@/lib/tauri-api';
+import { TauriAPI, type FileEntry } from '@/lib/tauri-api';
 import { formatFileSize } from '@/lib/utils';
 import { detectSep } from '@/lib/constants';
 import {
@@ -278,7 +277,7 @@ const S = {
 
 // ── Status colors ────────────────────────────────────────────────────────────
 
-const getStatusColor = (status: TreeNode['status']) : string => {
+const getStatusColor = (status: TreeNode['status']): string => {
   switch (status) {
     case 'incoming':
       return 'var(--xp-green)';
@@ -288,9 +287,9 @@ const getStatusColor = (status: TreeNode['status']) : string => {
     default:
       return 'var(--xp-text)';
   }
-}
+};
 
-const getStatusBg = (status: TreeNode['status']) : string => {
+const getStatusBg = (status: TreeNode['status']): string => {
   switch (status) {
     case 'incoming':
       return 'rgba(34, 197, 94, 0.08)';
@@ -299,7 +298,7 @@ const getStatusBg = (status: TreeNode['status']) : string => {
     default:
       return 'transparent';
   }
-}
+};
 
 // ── SourceTreeNode (memoized) ────────────────────────────────────────────────
 
@@ -398,6 +397,7 @@ const DestTreeNode = React.memo(function DestTreeNode({
 
         {/* Icon */}
         <div style={S.iconWrap}>
+          {/* eslint-disable-next-line no-nested-ternary */}
           {node.isDir ? (
             isExpanded ? (
               <FolderOpen size={15} style={{ color: 'var(--xp-blue)' }} />
@@ -658,6 +658,7 @@ const MoveTreePreviewDialog = ({
           <div style={S.panel}>
             <div style={S.panelHeader}>Destination: {destName}</div>
             <div style={S.panelContent}>
+              {/* eslint-disable-next-line no-nested-ternary */}
               {loading ? (
                 <div style={S.loading}>
                   <svg
@@ -762,6 +763,6 @@ const MoveTreePreviewDialog = ({
       `}</style>
     </div>
   );
-}
+};
 
 export default MoveTreePreviewDialog;

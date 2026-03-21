@@ -35,15 +35,29 @@ vi.mock('lucide-react', () => ({
 
 // Mock dialog components
 vi.mock('@/components/ui/dialog', () => ({
-  Dialog: ({ children, open }: { children?: React.ReactNode; open?: boolean }) => (open ? <div data-testid="dialog">{children}</div> : null),
-  DialogContent: ({ children }: { children?: React.ReactNode }) => <div data-testid="dialog-content">{children}</div>,
-  DialogHeader: ({ children }: { children?: React.ReactNode }) => <div data-testid="dialog-header">{children}</div>,
-  DialogTitle: ({ children }: { children?: React.ReactNode }) => <h2 data-testid="dialog-title">{children}</h2>,
+  Dialog: ({ children, open }: { children?: React.ReactNode; open?: boolean }) =>
+    open ? <div data-testid="dialog">{children}</div> : null,
+  DialogContent: ({ children }: { children?: React.ReactNode }) => (
+    <div data-testid="dialog-content">{children}</div>
+  ),
+  DialogHeader: ({ children }: { children?: React.ReactNode }) => (
+    <div data-testid="dialog-header">{children}</div>
+  ),
+  DialogTitle: ({ children }: { children?: React.ReactNode }) => (
+    <h2 data-testid="dialog-title">{children}</h2>
+  ),
 }));
 
 // Mock other UI components
 vi.mock('@/components/ui/button', () => ({
-  Button: ({ children, onClick, ...props }: Record<string, unknown> & { children?: React.ReactNode; onClick?: React.MouseEventHandler }) => (
+  Button: ({
+    children,
+    onClick,
+    ...props
+  }: Record<string, unknown> & {
+    children?: React.ReactNode;
+    onClick?: React.MouseEventHandler;
+  }) => (
     <button data-testid="button" onClick={onClick} {...props}>
       {children}
     </button>
@@ -51,7 +65,10 @@ vi.mock('@/components/ui/button', () => ({
 }));
 
 vi.mock('@/components/ui/tabs', () => {
-  const cloneChildrenWithProps = (children: React.ReactNode, props: Record<string, unknown>): React.ReactNode => {
+  const cloneChildrenWithProps = (
+    children: React.ReactNode,
+    props: Record<string, unknown>,
+  ): React.ReactNode => {
     return React.Children.map(children, (child) => {
       if (React.isValidElement(child)) {
         const newProps = { ...props };
@@ -65,7 +82,15 @@ vi.mock('@/components/ui/tabs', () => {
     });
   };
 
-  const TabsImpl = ({ children, value, onValueChange }: { children?: React.ReactNode; value?: string; onValueChange?: (v: string) => void }) => {
+  const TabsImpl = ({
+    children,
+    value,
+    onValueChange,
+  }: {
+    children?: React.ReactNode;
+    value?: string;
+    onValueChange?: (v: string) => void;
+  }) => {
     const [currentTab, setCurrentTab] = React.useState(value);
 
     React.useEffect(() => {
@@ -91,22 +116,51 @@ vi.mock('@/components/ui/tabs', () => {
 
   return {
     Tabs: TabsImpl,
-    TabsList: ({ children, currentTab, onTabChange }: { children?: React.ReactNode; currentTab?: string; onTabChange?: (v: string) => void }) => (
+    TabsList: ({
+      children,
+      currentTab,
+      onTabChange,
+    }: {
+      children?: React.ReactNode;
+      currentTab?: string;
+      onTabChange?: (v: string) => void;
+    }) => (
       <div data-testid="tabs-list">
         {React.Children.map(children, (child) => {
           if (React.isValidElement(child)) {
-            return React.cloneElement(child, { currentTab, onTabChange } as Record<string, unknown>);
+            return React.cloneElement(child, { currentTab, onTabChange } as Record<
+              string,
+              unknown
+            >);
           }
           return child;
         })}
       </div>
     ),
-    TabsTrigger: ({ children, value, currentTab: _currentTab, onTabChange }: { children?: React.ReactNode; value?: string; currentTab?: string; onTabChange?: (v: string) => void }) => (
+    TabsTrigger: ({
+      children,
+      value,
+      currentTab: _currentTab,
+      onTabChange,
+    }: {
+      children?: React.ReactNode;
+      value?: string;
+      currentTab?: string;
+      onTabChange?: (v: string) => void;
+    }) => (
       <button data-testid={`tab-trigger-${value}`} onClick={() => onTabChange?.(value)}>
         {children}
       </button>
     ),
-    TabsContent: ({ children, value, currentTab }: { children?: React.ReactNode; value?: string; currentTab?: string }) =>
+    TabsContent: ({
+      children,
+      value,
+      currentTab,
+    }: {
+      children?: React.ReactNode;
+      value?: string;
+      currentTab?: string;
+    }) =>
       currentTab === value ? <div data-testid={`tab-content-${value}`}>{children}</div> : null,
   };
 });
@@ -120,7 +174,9 @@ vi.mock('@/components/ui/badge', () => ({
 }));
 
 vi.mock('@/components/ui/scroll-area', () => ({
-  ScrollArea: ({ children }: { children?: React.ReactNode }) => <div data-testid="scroll-area">{children}</div>,
+  ScrollArea: ({ children }: { children?: React.ReactNode }) => (
+    <div data-testid="scroll-area">{children}</div>
+  ),
 }));
 
 vi.mock('@/components/ui/separator', () => ({

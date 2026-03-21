@@ -54,7 +54,7 @@ const JsonPreview = ({ file, onError, onLoad }: PreviewProps) => {
     }
 
     if (typeof value === 'string') {
-      const displayValue = value.length > 10000 ? value.slice(0, 10000) + '...[truncated]' : value;
+      const displayValue = value.length > 10000 ? `${value.slice(0, 10000)}...[truncated]` : value;
       return <span className="text-xp-green">"{displayValue}"</span>;
     }
 
@@ -75,6 +75,7 @@ const JsonPreview = ({ file, onError, onLoad }: PreviewProps) => {
         <div>
           <span>[</span>
           {value.map((item: unknown, index: number) => (
+            // eslint-disable-next-line react/no-array-index-key
             <div key={index} className="ml-4">
               {renderJsonValue(item, depth + 1)}
               {index < value.length - 1 && <span>,</span>}
@@ -113,25 +114,25 @@ const JsonPreview = ({ file, onError, onLoad }: PreviewProps) => {
 
   return (
     <div className="mt-4">
-      <div className="flex justify-between items-center mb-2">
-        <h4 className="text-xs font-medium text-xp-text-muted">JSON Preview</h4>
+      <div className="mb-2 flex items-center justify-between">
+        <h4 className="text-xp-text-muted text-xs font-medium">JSON Preview</h4>
         <div className="flex space-x-1">
           <button
             onClick={() => setViewMode('formatted')}
-            className={`px-2 py-1 text-xs rounded ${
+            className={`rounded px-2 py-1 text-xs ${
               viewMode === 'formatted'
                 ? 'bg-xp-blue text-white'
-                : 'bg-xp-bg border border-xp-border hover:bg-xp-surface-light'
+                : 'bg-xp-bg border-xp-border hover:bg-xp-surface-light border'
             }`}
           >
             Formatted
           </button>
           <button
             onClick={() => setViewMode('raw')}
-            className={`px-2 py-1 text-xs rounded ${
+            className={`rounded px-2 py-1 text-xs ${
               viewMode === 'raw'
                 ? 'bg-xp-blue text-white'
-                : 'bg-xp-bg border border-xp-border hover:bg-xp-surface-light'
+                : 'bg-xp-bg border-xp-border hover:bg-xp-surface-light border'
             }`}
           >
             Raw
@@ -140,17 +141,17 @@ const JsonPreview = ({ file, onError, onLoad }: PreviewProps) => {
       </div>
 
       {loading && (
-        <div className="bg-xp-surface border border-xp-border rounded p-4 text-center text-xp-text-muted">
+        <div className="bg-xp-surface border-xp-border text-xp-text-muted rounded border p-4 text-center">
           <div className="animate-pulse">
-            <div className="w-full h-48 bg-xp-bg rounded mb-2"></div>
+            <div className="bg-xp-bg mb-2 h-48 w-full rounded" />
             <p className="text-xs">Loading JSON...</p>
           </div>
         </div>
       )}
 
       {error ? (
-        <div className="bg-xp-surface border border-xp-border rounded p-4 text-center text-xp-text-muted">
-          <svg className="w-8 h-8 mx-auto mb-2" fill="currentColor" viewBox="0 0 20 20">
+        <div className="bg-xp-surface border-xp-border text-xp-text-muted rounded border p-4 text-center">
+          <svg className="mx-auto mb-2 h-8 w-8" fill="currentColor" viewBox="0 0 20 20">
             <path
               fillRule="evenodd"
               d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"
@@ -158,21 +159,22 @@ const JsonPreview = ({ file, onError, onLoad }: PreviewProps) => {
             />
           </svg>
           <p className="text-xs">Cannot preview JSON</p>
-          <p className="text-xs mt-1 opacity-70">{error}</p>
+          <p className="mt-1 text-xs opacity-70">{error}</p>
         </div>
-      ) : jsonData !== null ? (
-        <div className="bg-xp-surface border border-xp-border rounded p-3 max-h-64 overflow-y-auto">
+      ) : null}
+      {!error && jsonData !== null && (
+        <div className="bg-xp-surface border-xp-border max-h-64 overflow-y-auto rounded border p-3">
           {viewMode === 'formatted' ? (
-            <div className="text-xs font-mono text-xp-text">{renderJsonValue(jsonData)}</div>
+            <div className="text-xp-text font-mono text-xs">{renderJsonValue(jsonData)}</div>
           ) : (
-            <pre className="text-xs font-mono whitespace-pre-wrap text-xp-text break-words">
+            <pre className="text-xp-text whitespace-pre-wrap break-words font-mono text-xs">
               {rawContent}
             </pre>
           )}
         </div>
-      ) : null}
+      )}
     </div>
   );
-}
+};
 
 export default JsonPreview;

@@ -3,7 +3,7 @@ import { useState, useCallback } from 'react';
 // ── Helpers for persisting UI state to localStorage ──────────────────────────
 const UI_STATE_KEY = 'xplorer:ui-state';
 
-const loadUiState = <T>(key: string, fallback: T) : T => {
+const loadUiState = <T>(key: string, fallback: T): T => {
   try {
     const raw = localStorage.getItem(UI_STATE_KEY);
     if (raw) {
@@ -14,7 +14,7 @@ const loadUiState = <T>(key: string, fallback: T) : T => {
     console.warn('Failed to parse stored UI state:', e);
   }
   return fallback;
-}
+};
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -25,8 +25,7 @@ export type BottomPanelTabId =
   | 'clipboard'
   | 'changes'
   | 'properties'
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  | (string & {}); // Allow extension-registered tab IDs
+  | (string & Record<never, never>); // Allow extension-registered tab IDs
 
 export interface LayoutState {
   // Panel collapse states
@@ -73,7 +72,7 @@ export interface LayoutState {
 
 // ── Hook ─────────────────────────────────────────────────────────────────────
 
-export const useLayoutState = () : LayoutState => {
+export const useLayoutState = (): LayoutState => {
   // Panel collapse states
   const [leftSidebarCollapsed, setLeftSidebarCollapsed] = useState(() =>
     loadUiState('leftSidebarCollapsed', false),
@@ -104,7 +103,7 @@ export const useLayoutState = () : LayoutState => {
       setBottomPanelCollapsed(false);
     },
     // setBottomPanelCollapsed is a stable useState setter
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
     [],
   );
 
@@ -169,4 +168,4 @@ export const useLayoutState = () : LayoutState => {
     sortOrder,
     setSortOrder,
   };
-}
+};

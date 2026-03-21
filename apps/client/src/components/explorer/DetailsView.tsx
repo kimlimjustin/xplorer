@@ -33,14 +33,11 @@ const FileRow = ({
       tabIndex={0}
       data-file-path={file.path}
       data-drop-target={file.is_dir ? file.path : undefined}
-      className={`
-        grid grid-cols-12 gap-3 items-center py-2.5 px-3 hover:bg-xp-surface-light cursor-pointer transition-colors
-        ${
-          selectedFiles.has(file.path)
-            ? 'bg-xp-purple/20 border border-xp-purple/40'
-            : 'text-xp-text border border-transparent'
-        }
-      `}
+      className={`hover:bg-xp-surface-light grid cursor-pointer grid-cols-12 items-center gap-3 px-3 py-2.5 transition-colors ${
+        selectedFiles.has(file.path)
+          ? 'bg-xp-purple/20 border-xp-purple/40 border'
+          : 'text-xp-text border border-transparent'
+      } `}
       onClick={(e) => handleFileClick(file, e)}
       onDoubleClick={() => handleFileDoubleClick(file)}
       onContextMenu={(e) => handleFileRightClick(file, e)}
@@ -56,15 +53,17 @@ const FileRow = ({
         <span className="text-lg">{getFileIcon(file)}</span>
       </div>
       <div className="col-span-5 min-w-0">
-        <div className="font-medium truncate">{file.name}</div>
+        <div className="truncate font-medium">{file.name}</div>
       </div>
-      <div className="col-span-2 text-right text-xs text-xp-text-muted">
-        {file.is_dir ? (
-          getFolderSize(file.path) || isCalculatingSize(file.path) ? (
-            formatFolderSize(getFolderSize(file.path), isCalculatingSize(file.path))
-          ) : (
+      <div className="text-xp-text-muted col-span-2 text-right text-xs">
+        {(() => {
+          if (!file.is_dir) return formatFileSize(file.size);
+          if (getFolderSize(file.path) || isCalculatingSize(file.path)) {
+            return formatFolderSize(getFolderSize(file.path), isCalculatingSize(file.path));
+          }
+          return (
             <button
-              className="text-xp-text-muted hover:text-xp-accent transition-colors underline decoration-dotted"
+              className="text-xp-text-muted hover:text-xp-accent underline decoration-dotted transition-colors"
               onClick={(e) => {
                 e.stopPropagation();
                 calculateFolderSize?.(file.path);
@@ -73,22 +72,20 @@ const FileRow = ({
             >
               Calculate
             </button>
-          )
-        ) : (
-          formatFileSize(file.size)
-        )}
+          );
+        })()}
       </div>
-      <div className="col-span-2 text-center text-xs text-xp-text-muted">
-        <span className="inline-block px-2 py-1 bg-xp-surface rounded text-xs font-mono capitalize">
+      <div className="text-xp-text-muted col-span-2 text-center text-xs">
+        <span className="bg-xp-surface inline-block rounded px-2 py-1 font-mono text-xs capitalize">
           {file.is_dir ? 'Folder' : file.file_type}
         </span>
       </div>
-      <div className="col-span-2 text-right text-xs text-xp-text-muted font-mono">
+      <div className="text-xp-text-muted col-span-2 text-right font-mono text-xs">
         {formatDate(file.modified)}
       </div>
     </div>
   );
-}
+};
 
 const DetailsView = (props: DetailsViewProps) => {
   const { files, handleBackgroundRightClick, fileGroups } = props;
@@ -106,9 +103,9 @@ const DetailsView = (props: DetailsViewProps) => {
   });
 
   const header = (
-    <div className="sticky top-0 bg-xp-surface border-b border-xp-border z-20" role="row">
-      <div className="grid grid-cols-12 gap-3 items-center py-3 px-3 text-xs font-medium text-xp-text-muted">
-        <div className="col-span-1" role="columnheader" aria-label="Icon"></div>
+    <div className="bg-xp-surface border-xp-border sticky top-0 z-20 border-b" role="row">
+      <div className="text-xp-text-muted grid grid-cols-12 items-center gap-3 px-3 py-3 text-xs font-medium">
+        <div className="col-span-1" role="columnheader" aria-label="Icon" />
         <div className="col-span-5" role="columnheader">
           Name
         </div>
@@ -137,13 +134,13 @@ const DetailsView = (props: DetailsViewProps) => {
         <div role="rowgroup">
           {fileGroups.map((group) => (
             <div key={group.group}>
-              <div className="sticky top-[41px] z-10 px-3 py-2 bg-xp-surface/80 backdrop-blur-sm border-b border-xp-border">
-                <span className="text-xs font-semibold text-xp-text-muted uppercase tracking-wide">
+              <div className="bg-xp-surface/80 border-xp-border sticky top-[41px] z-10 border-b px-3 py-2 backdrop-blur-sm">
+                <span className="text-xp-text-muted text-xs font-semibold uppercase tracking-wide">
                   {group.group}
                 </span>
-                <span className="ml-2 text-xs text-xp-text-muted">({group.files.length})</span>
+                <span className="text-xp-text-muted ml-2 text-xs">({group.files.length})</span>
               </div>
-              <div className="divide-y divide-xp-border divide-opacity-30">
+              <div className="divide-xp-border divide-y divide-opacity-30">
                 {group.files.map((file: FileEntry) => (
                   <FileRow key={file.path} file={file} {...props} />
                 ))}
@@ -164,7 +161,7 @@ const DetailsView = (props: DetailsViewProps) => {
         onContextMenu={handleBackgroundRightClick || undefined}
       >
         {header}
-        <div className="divide-y divide-xp-border divide-opacity-30" role="rowgroup">
+        <div className="divide-xp-border divide-y divide-opacity-30" role="rowgroup">
           {files.map((file: FileEntry) => (
             <FileRow key={file.path} file={file} {...props} />
           ))}
@@ -176,7 +173,7 @@ const DetailsView = (props: DetailsViewProps) => {
   return (
     <div
       ref={scrollRef}
-      className="text-sm overflow-auto h-full"
+      className="h-full overflow-auto text-sm"
       role="table"
       aria-label="File list"
       onContextMenu={handleBackgroundRightClick || undefined}
@@ -211,6 +208,6 @@ const DetailsView = (props: DetailsViewProps) => {
       </div>
     </div>
   );
-}
+};
 
 export default DetailsView;

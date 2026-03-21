@@ -374,7 +374,10 @@ describe('MarketplacePanel', () => {
             () =>
               resolve({
                 ok: true,
-                json: async () => ({ extensions: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 1 } }),
+                json: async () => ({
+                  extensions: [],
+                  pagination: { page: 1, limit: 20, total: 0, totalPages: 1 },
+                }),
               }),
             1000,
           ),

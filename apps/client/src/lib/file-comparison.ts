@@ -91,7 +91,7 @@ export interface SideBySideDiff {
  * Compute a side-by-side diff suitable for rendering.
  * Uses Myers diff via diffArrays to align insertions/deletions.
  */
-export const computeSideBySideDiff = (lines1: string[], lines2: string[]) : SideBySideDiff => {
+export const computeSideBySideDiff = (lines1: string[], lines2: string[]): SideBySideDiff => {
   const changes = diffArrays(lines1, lines2);
   const result: SideBySideLine[] = [];
   let leftLineNum = 1;
@@ -137,7 +137,7 @@ export const computeSideBySideDiff = (lines1: string[], lines2: string[]) : Side
   }
 
   return { lines: result, linesAdded, linesRemoved };
-}
+};
 
 export class FileComparison {
   private static readonly DEFAULT_OPTIONS: ComparisonOptions = {
@@ -579,12 +579,21 @@ export class FileComparison {
       // Hash failed — treat as different
     }
 
+    let similarity: number;
+    if (identical) {
+      similarity = 1.0;
+    } else if (differences.length === 0) {
+      similarity = 0.99;
+    } else {
+      similarity = 0.5;
+    }
+
     return {
       file1,
       file2,
       differences,
       identical,
-      similarity: identical ? 1.0 : differences.length === 0 ? 0.99 : 0.5,
+      similarity,
       comparisonType: type,
       metadata: {
         processingTime: Date.now() - startTime,

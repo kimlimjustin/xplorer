@@ -100,11 +100,14 @@ export const usePerformanceStats = (
       if (auditResult.status === 'fulfilled') {
         const auditData = auditResult.value;
         // Handle both { entries: [...] } (real API) and plain array (mock/fallback)
-        const entries = Array.isArray(auditData)
-          ? auditData
-          : Array.isArray(auditData?.entries)
-            ? auditData.entries
-            : [];
+        let entries: AuditEntry[];
+        if (Array.isArray(auditData)) {
+          entries = auditData;
+        } else if (Array.isArray(auditData?.entries)) {
+          entries = auditData.entries;
+        } else {
+          entries = [];
+        }
         setRecentOps(entries);
       }
 
@@ -130,9 +133,15 @@ export const usePerformanceStats = (
       const newSuggestions: CleanupSuggestion[] = [];
 
       // Trash size
-      const trashList = trashItems.status === 'fulfilled' && Array.isArray(trashItems.value) ? trashItems.value : [];
+      const trashList =
+        trashItems.status === 'fulfilled' && Array.isArray(trashItems.value)
+          ? trashItems.value
+          : [];
       if (trashList.length > 0) {
-        const trashSize = trashList.reduce((sum: number, item: { size: number }) => sum + item.size, 0);
+        const trashSize = trashList.reduce(
+          (sum: number, item: { size: number }) => sum + item.size,
+          0,
+        );
         newSuggestions.push({
           id: 'trash',
           title: `Trash: ${trashList.length} items`,
@@ -166,7 +175,8 @@ export const usePerformanceStats = (
         if (samplePaths.length > 0) {
           const tagBatch = await TauriAPI.getFileTagsBatch(samplePaths);
           // Guard against null/array returns from mock API
-          const tagMap = tagBatch && typeof tagBatch === 'object' && !Array.isArray(tagBatch) ? tagBatch : {};
+          const tagMap =
+            tagBatch && typeof tagBatch === 'object' && !Array.isArray(tagBatch) ? tagBatch : {};
           const untaggedCount = samplePaths.filter(
             (p) => !tagMap[p] || tagMap[p].length === 0,
           ).length;

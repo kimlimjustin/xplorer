@@ -22,13 +22,13 @@ export const formatError = (err: unknown): string => {
 // ── Copy-name generation ─────────────────────────────────────────────────────
 
 /** Generate "Name Copy.ext" or "Name Copy N.ext" */
-export const generateCopyName = (dir: string, name: string, sep: string, n?: number) : string => {
+export const generateCopyName = (dir: string, name: string, sep: string, n?: number): string => {
   const dot = name.lastIndexOf('.');
   const base = dot > 0 ? name.slice(0, dot) : name;
   const ext = dot > 0 ? name.slice(dot) : '';
   const suffix = n && n > 1 ? ` Copy ${n}` : ' Copy';
   return `${dir}${sep}${base}${suffix}${ext}`;
-}
+};
 
 /** Find a non-conflicting "Copy" destination path */
 export const findCopyName = async (dir: string, name: string, sep: string): Promise<string> => {
@@ -81,11 +81,14 @@ export const setClipboardEntries = (
 /**
  * Map a Set of selected file paths to a filtered array of FileEntry objects.
  */
-export const resolveSelectedFiles = (selectedFiles: Set<string>, files: FileEntry[]) : FileEntry[] => {
+export const resolveSelectedFiles = (
+  selectedFiles: Set<string>,
+  files: FileEntry[],
+): FileEntry[] => {
   return Array.from(selectedFiles)
     .map((id) => files.find((f) => f.path === id))
     .filter(Boolean) as FileEntry[];
-}
+};
 
 // ── Find unique new-file path ────────────────────────────────────────────────
 

@@ -1,7 +1,6 @@
 import React from 'react';
-import type { FileEntry, FolderSizeInfo } from '@/lib/tauri-api';
-import { getFileIcon, formatFileSize, formatDate } from '@/lib/utils';
-import { detectSep } from '@/lib/constants';
+import type { FileEntry, FolderSizeInfo, ConflictFileInfo } from '@/lib/tauri-api';
+import { getFileIcon, formatFileSize, formatDate, type ThemeDef } from '@/lib/utils';
 import type { TabItem, SplitLayoutState } from '@/types/split-view';
 import type { FileCollection } from '@/lib/collections';
 import type { SharedPaneActions } from '@/components/split-view/EditorGroupPane';
@@ -12,13 +11,10 @@ import type { useFileComparison } from '@/hooks/use-file-comparison';
 import type { VimModeState } from '@/hooks/use-vim-mode';
 import type { CrossTabSelectionState } from '@/hooks/use-cross-tab-selection';
 import type { PaneSyncState } from '@/hooks/use-pane-sync';
-import type { ContextMenuItem } from '@/components/ui/ContextMenu';
-import type { ThemeDef } from '@/lib/utils';
 import type { Toast } from '@/hooks/use-toast';
 import type { Command } from '@/components/CommandPalette';
 import type { WorkspaceLayoutUiState } from '@/lib/workspace-layouts';
 import type { FileChangeSet } from '@/hooks/use-focus-change-tracker';
-import type { ConflictFileInfo } from '@/lib/tauri-api';
 import type { ConflictResolution } from '@/components/dialogs/FileConflictDialog';
 
 import TopBar, { TopBarHandle } from '@/components/explorer/TopBar';
@@ -27,7 +23,7 @@ import VerticalExtensionsBar from '@/components/explorer/VerticalExtensionsBar';
 import RightSidebar from '@/components/panels/RightSidebar';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import BottomPanel from '@/components/panels/BottomPanel';
-import ContextMenu from '@/components/ui/ContextMenu';
+import ContextMenu, { type ContextMenuItem } from '@/components/ui/ContextMenu';
 import DialogsOverlay from '@/components/explorer/DialogsOverlay';
 import PanelToggleButtons from '@/components/explorer/PanelToggleButtons';
 import ResizeHandle from '@/components/ui/ResizeHandle';
@@ -115,7 +111,10 @@ export interface MainLayoutProps {
   dialogManager: DialogManagerResult;
   fileComparison: ReturnType<typeof useFileComparison>;
   fileConflict: {
-    fileName: string; isDir: boolean; destination: string; remaining: number;
+    fileName: string;
+    isDir: boolean;
+    destination: string;
+    remaining: number;
     sourceInfo?: ConflictFileInfo | null;
     destInfo?: ConflictFileInfo | null;
     resolve: (resolution: ConflictResolution, applyToAll: boolean) => void;
@@ -198,7 +197,7 @@ const MainLayout = (props: MainLayoutProps) => {
   const {
     topBarRef,
     leftSidebarRef,
-    pendingSelectRef,
+    pendingSelectRef: _pendingSelectRef,
     currentPath,
     files,
     filteredFiles,
@@ -318,7 +317,8 @@ const MainLayout = (props: MainLayoutProps) => {
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
-            background: 'var(--xp-bg-gradient, linear-gradient(135deg, #0a0a1a 0%, #0f0f2e 25%, #1a0a2e 50%, #0a1a2e 75%, #0a0a1a 100%))',
+            background:
+              'var(--xp-bg-gradient, linear-gradient(135deg, #0a0a1a 0%, #0f0f2e 25%, #1a0a2e 50%, #0a1a2e 75%, #0a0a1a 100%))',
           }}
         >
           {/* Top Bar */}
@@ -397,7 +397,7 @@ const MainLayout = (props: MainLayoutProps) => {
 
             {/* Center Content -- Split Panes */}
             <div
-              className="flex-1 flex flex-col overflow-hidden"
+              className="flex flex-1 flex-col overflow-hidden"
               style={{ minHeight: 0, position: 'relative' }}
               data-tour="file-grid"
             >
@@ -628,6 +628,6 @@ const MainLayout = (props: MainLayoutProps) => {
       </CrossTabSelectionProvider>
     </DragDropProvider>
   );
-}
+};
 
 export default MainLayout;

@@ -113,7 +113,7 @@ const CodeEditorPanel = ({ selectedFile }: CodeEditorPanelProps) => {
       if (!textarea) return;
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
-      const newContent = content.substring(0, start) + '  ' + content.substring(end);
+      const newContent = `${content.substring(0, start)}  ${content.substring(end)}`;
       setContent(newContent);
       // Restore cursor position after React re-render
       requestAnimationFrame(() => {
@@ -127,7 +127,7 @@ const CodeEditorPanel = ({ selectedFile }: CodeEditorPanelProps) => {
   // No file selected
   if (!selectedFile || selectedFile.is_dir) {
     return (
-      <div className="h-full flex items-center justify-center text-xp-text-muted text-sm">
+      <div className="text-xp-text-muted flex h-full items-center justify-center text-sm">
         Select a file to edit
       </div>
     );
@@ -136,7 +136,7 @@ const CodeEditorPanel = ({ selectedFile }: CodeEditorPanelProps) => {
   // Error state
   if (error && !content) {
     return (
-      <div className="h-full flex items-center justify-center text-xp-text-muted text-sm px-4 text-center">
+      <div className="text-xp-text-muted flex h-full items-center justify-center px-4 text-center text-sm">
         {error}
       </div>
     );
@@ -145,33 +145,33 @@ const CodeEditorPanel = ({ selectedFile }: CodeEditorPanelProps) => {
   // Loading
   if (loading) {
     return (
-      <div className="h-full flex items-center justify-center text-xp-text-muted text-sm">
+      <div className="text-xp-text-muted flex h-full items-center justify-center text-sm">
         Loading...
       </div>
     );
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="flex h-full flex-col">
       {/* Toolbar */}
-      <div className="flex items-center justify-between px-3 py-2 border-b border-xp-border flex-shrink-0">
-        <div className="flex items-center gap-1 min-w-0">
-          <span className="text-xs text-xp-text truncate" title={currentFilePath || ''}>
+      <div className="border-xp-border flex flex-shrink-0 items-center justify-between border-b px-3 py-2">
+        <div className="flex min-w-0 items-center gap-1">
+          <span className="text-xp-text truncate text-xs" title={currentFilePath || ''}>
             {selectedFile.name}
           </span>
-          {isDirty && <span className="text-xs text-xp-orange font-medium ml-1">Modified</span>}
+          {isDirty && <span className="text-xp-orange ml-1 text-xs font-medium">Modified</span>}
         </div>
         <div className="flex items-center gap-1">
           <button
             onClick={handleCopy}
-            className="p-1.5 hover:bg-xp-surface-light rounded text-xp-text-muted hover:text-xp-text transition-colors"
+            className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text rounded p-1.5 transition-colors"
             title="Copy contents"
           >
             {copied ? <Check size={14} className="text-xp-green" /> : <Copy size={14} />}
           </button>
           <button
             onClick={() => setWordWrap(!wordWrap)}
-            className={`p-1.5 hover:bg-xp-surface-light rounded transition-colors ${
+            className={`hover:bg-xp-surface-light rounded p-1.5 transition-colors ${
               wordWrap ? 'text-xp-blue' : 'text-xp-text-muted hover:text-xp-text'
             }`}
             title="Toggle word wrap"
@@ -181,7 +181,7 @@ const CodeEditorPanel = ({ selectedFile }: CodeEditorPanelProps) => {
           <button
             onClick={handleRevert}
             disabled={!isDirty}
-            className="p-1.5 hover:bg-xp-surface-light rounded text-xp-text-muted hover:text-xp-text disabled:opacity-30 transition-colors"
+            className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text rounded p-1.5 transition-colors disabled:opacity-30"
             title="Revert changes"
           >
             <RotateCcw size={14} />
@@ -189,7 +189,7 @@ const CodeEditorPanel = ({ selectedFile }: CodeEditorPanelProps) => {
           <button
             onClick={handleSave}
             disabled={!isDirty || saving}
-            className="p-1.5 hover:bg-xp-surface-light rounded text-xp-text-muted hover:text-xp-blue disabled:opacity-30 transition-colors"
+            className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-blue rounded p-1.5 transition-colors disabled:opacity-30"
             title="Save (Cmd+S)"
           >
             <Save size={14} />
@@ -198,14 +198,14 @@ const CodeEditorPanel = ({ selectedFile }: CodeEditorPanelProps) => {
       </div>
 
       {error && (
-        <div className="px-3 py-1.5 bg-xp-red/10 text-xp-red text-xs flex-shrink-0">{error}</div>
+        <div className="bg-xp-red/10 text-xp-red flex-shrink-0 px-3 py-1.5 text-xs">{error}</div>
       )}
 
       {/* Editor area */}
-      <div className="flex-1 overflow-hidden flex min-h-0">
+      <div className="flex min-h-0 flex-1 overflow-hidden">
         {/* Line numbers */}
-        <div className="flex-shrink-0 bg-xp-surface/50 border-r border-xp-border px-2 py-3 overflow-hidden select-none">
-          <div className="font-mono text-xs leading-[1.4rem] text-xp-text-muted text-right">
+        <div className="bg-xp-surface/50 border-xp-border flex-shrink-0 select-none overflow-hidden border-r px-2 py-3">
+          <div className="text-xp-text-muted text-right font-mono text-xs leading-[1.4rem]">
             {Array.from({ length: lineCount }, (_, i) => (
               <div key={i}>{i + 1}</div>
             ))}
@@ -219,20 +219,20 @@ const CodeEditorPanel = ({ selectedFile }: CodeEditorPanelProps) => {
           onChange={(e) => setContent(e.target.value)}
           onKeyDown={handleKeyDown}
           spellCheck={false}
-          className={`flex-1 bg-transparent text-xp-text font-mono text-xs leading-[1.4rem] p-3 resize-none outline-none ${
-            wordWrap ? 'whitespace-pre-wrap break-words' : 'whitespace-pre overflow-x-auto'
+          className={`text-xp-text flex-1 resize-none bg-transparent p-3 font-mono text-xs leading-[1.4rem] outline-none ${
+            wordWrap ? 'whitespace-pre-wrap break-words' : 'overflow-x-auto whitespace-pre'
           }`}
           style={{ tabSize: 2 }}
         />
       </div>
 
       {/* Status bar */}
-      <div className="flex items-center justify-between px-3 py-1 border-t border-xp-border text-[10px] text-xp-text-muted flex-shrink-0">
+      <div className="border-xp-border text-xp-text-muted flex flex-shrink-0 items-center justify-between border-t px-3 py-1 text-[10px]">
         <span>{lineCount} lines</span>
         <span>{getFileExtension(selectedFile.name).toUpperCase() || 'TEXT'}</span>
       </div>
     </div>
   );
-}
+};
 
 export default CodeEditorPanel;

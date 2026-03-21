@@ -201,13 +201,13 @@ export const ACTION_LABELS: Record<string, string> = {
 };
 
 /** Get category for a ShortcutAction (handles both string and object ExtensionAction) */
-export const getCategoryForAction = (action: string | Record<string, unknown>) : string => {
+export const getCategoryForAction = (action: string | Record<string, unknown>): string => {
   if (typeof action !== 'string') return 'extensions';
   return ACTION_CATEGORIES[action] || 'other';
-}
+};
 
 /** Get display label for a ShortcutAction */
-export const getLabelForAction = (action: string | Record<string, unknown>) : string => {
+export const getLabelForAction = (action: string | Record<string, unknown>): string => {
   if (typeof action !== 'string') {
     if ('ExtensionAction' in action) {
       const ea = action.ExtensionAction as { extension_id: string; action_id: string };
@@ -216,4 +216,4 @@ export const getLabelForAction = (action: string | Record<string, unknown>) : st
     return String(action);
   }
   return ACTION_LABELS[action] || action;
-}
+};

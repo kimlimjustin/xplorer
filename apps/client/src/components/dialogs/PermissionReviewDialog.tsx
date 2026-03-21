@@ -38,33 +38,33 @@ const PermissionReviewDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg bg-xp-bg border-xp-border">
+      <DialogContent className="bg-xp-bg border-xp-border max-w-lg">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-xp-text">
-            <Puzzle className="w-5 h-5 text-xp-blue" />
+          <DialogTitle className="text-xp-text flex items-center gap-2">
+            <Puzzle className="text-xp-blue h-5 w-5" />
             Review Extension
           </DialogTitle>
         </DialogHeader>
 
         {/* Extension Info */}
-        <div className="flex items-start gap-3 p-3 rounded-lg bg-xp-surface border border-xp-border">
-          <div className="w-10 h-10 rounded-lg bg-xp-blue/20 flex items-center justify-center shrink-0">
-            <Package className="w-5 h-5 text-xp-blue" />
+        <div className="bg-xp-surface border-xp-border flex items-start gap-3 rounded-lg border p-3">
+          <div className="bg-xp-blue/20 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg">
+            <Package className="text-xp-blue h-5 w-5" />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="font-medium text-sm text-xp-text truncate">
+            <div className="text-xp-text truncate text-sm font-medium">
               {manifest.display_name || manifest.name}
             </div>
-            <div className="text-xs text-xp-text-muted flex items-center gap-2 mt-0.5">
+            <div className="text-xp-text-muted mt-0.5 flex items-center gap-2 text-xs">
               <span>v{manifest.version}</span>
               <span className="opacity-40">|</span>
               <span className="flex items-center gap-1">
-                <User className="w-3 h-3" />
+                <User className="h-3 w-3" />
                 {manifest.author}
               </span>
             </div>
             {manifest.description && (
-              <p className="text-xs text-xp-text-muted mt-1.5 line-clamp-2">
+              <p className="text-xp-text-muted mt-1.5 line-clamp-2 text-xs">
                 {manifest.description}
               </p>
             )}
@@ -73,20 +73,20 @@ const PermissionReviewDialog = ({
 
         {/* Signature Status */}
         <div
-          className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium ${
+          className={`flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium ${
             verified
-              ? 'bg-xp-green/10 text-xp-green border border-xp-green/30'
-              : 'bg-xp-orange/10 text-xp-orange border border-xp-orange/30'
+              ? 'bg-xp-green/10 text-xp-green border-xp-green/30 border'
+              : 'bg-xp-orange/10 text-xp-orange border-xp-orange/30 border'
           }`}
         >
           {verified ? (
             <>
-              <ShieldCheck className="w-4 h-4" />
+              <ShieldCheck className="h-4 w-4" />
               Verified — Signature matches
             </>
           ) : (
             <>
-              <ShieldQuestion className="w-4 h-4" />
+              <ShieldQuestion className="h-4 w-4" />
               Unsigned — This extension has not been verified
             </>
           )}
@@ -94,20 +94,20 @@ const PermissionReviewDialog = ({
 
         {/* Permissions */}
         <div>
-          <div className="flex items-center justify-between mb-2">
-            <h4 className="text-xs font-semibold text-xp-text uppercase tracking-wider">
+          <div className="mb-2 flex items-center justify-between">
+            <h4 className="text-xp-text text-xs font-semibold uppercase tracking-wider">
               Permissions ({permissions.length})
             </h4>
             {hasDanger && (
-              <span className="text-xs text-xp-red flex items-center gap-1">
-                <ShieldAlert className="w-3 h-3" />
+              <span className="text-xp-red flex items-center gap-1 text-xs">
+                <ShieldAlert className="h-3 w-3" />
                 {counts.danger} dangerous
               </span>
             )}
           </div>
 
           {permissions.length === 0 ? (
-            <div className="text-xs text-xp-text-muted p-3 rounded-lg bg-xp-surface border border-xp-border text-center">
+            <div className="text-xp-text-muted bg-xp-surface border-xp-border rounded-lg border p-3 text-center text-xs">
               This extension requests no special permissions.
             </div>
           ) : (
@@ -119,12 +119,12 @@ const PermissionReviewDialog = ({
                   return (
                     <div
                       key={perm.id}
-                      className={`flex items-start gap-2.5 p-2 rounded-lg border ${colors.bg} ${colors.border}`}
+                      className={`flex items-start gap-2.5 rounded-lg border p-2 ${colors.bg} ${colors.border}`}
                     >
-                      <Icon className={`w-4 h-4 mt-0.5 shrink-0 ${colors.text}`} />
+                      <Icon className={`mt-0.5 h-4 w-4 shrink-0 ${colors.text}`} />
                       <div className="min-w-0">
                         <div className={`text-xs font-medium ${colors.text}`}>{perm.label}</div>
-                        <div className="text-xs text-xp-text-muted">{perm.description}</div>
+                        <div className="text-xp-text-muted text-xs">{perm.description}</div>
                       </div>
                     </div>
                   );
@@ -135,7 +135,7 @@ const PermissionReviewDialog = ({
         </div>
 
         {/* Summary + Buttons */}
-        <div className="flex items-center justify-between pt-2 border-t border-xp-border">
+        <div className="border-xp-border flex items-center justify-between border-t pt-2">
           <Button
             variant="outline"
             size="sm"
@@ -155,9 +155,9 @@ const PermissionReviewDialog = ({
             }`}
           >
             {installing ? (
-              <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
             ) : (
-              <ShieldCheck className="w-3.5 h-3.5" />
+              <ShieldCheck className="h-3.5 w-3.5" />
             )}
             {installing ? 'Installing...' : 'Install & Activate'}
           </Button>
@@ -165,6 +165,6 @@ const PermissionReviewDialog = ({
       </DialogContent>
     </Dialog>
   );
-}
+};
 
 export default PermissionReviewDialog;

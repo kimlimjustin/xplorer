@@ -1,10 +1,17 @@
-import React, { useState, useEffect, useMemo, useCallback, useRef, useImperativeHandle, forwardRef } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+  useRef,
+  useImperativeHandle,
+  forwardRef,
+} from 'react';
 import { FileEntry, TauriAPI, BookmarkEntry, RecentFile } from '@/lib/tauri-api';
 import { PATH_SEPARATOR, isWindows, ROOT_PATH } from '@/lib/constants';
 import {
   getAllCollections,
   deleteCollection,
-  isQuickFilter,
   isSmartFolder,
   type FileCollection,
 } from '@/lib/collections';
@@ -27,11 +34,10 @@ import {
   Plus,
   GripHorizontal,
 } from 'lucide-react';
-import SearchResultsPanel, { type SearchResultsPanelHandle } from '@/components/explorer/SearchResultsPanel';
-import {
-  getPathBookmarks,
-  type PathBookmark,
-} from '@/lib/path-bookmarks';
+import SearchResultsPanel, {
+  type SearchResultsPanelHandle,
+} from '@/components/explorer/SearchResultsPanel';
+import { getPathBookmarks, type PathBookmark } from '@/lib/path-bookmarks';
 import { renderIcon } from '@/lib/utils';
 import { extensionHost } from '@/lib/extension-host';
 import { useTranslation } from 'react-i18next';
@@ -71,22 +77,25 @@ interface UserDirectories {
 type SortBy = 'name' | 'dateModified' | 'size' | 'type';
 type SortOrder = 'asc' | 'desc';
 
-const LeftSidebar = forwardRef<LeftSidebarHandle, LeftSidebarProps>(function LeftSidebar({
-  currentPath,
-  navigateToPath,
-  handleFileClick,
-  handleFileRightClick,
-  handleFileOpen,
-  getFileIcon,
-  width,
-  searchPanelOpen = false,
-  onToggleSearchPanel,
-  onCreateCollection,
-  onEditCollection,
-  activeCollectionFilter,
-  onToggleCollectionFilter,
-  'data-tour': dataTour,
-}, ref) {
+const LeftSidebar = forwardRef<LeftSidebarHandle, LeftSidebarProps>(function LeftSidebar(
+  {
+    currentPath,
+    navigateToPath,
+    handleFileClick,
+    handleFileRightClick,
+    handleFileOpen,
+    getFileIcon,
+    width,
+    searchPanelOpen = false,
+    onToggleSearchPanel,
+    onCreateCollection,
+    onEditCollection,
+    activeCollectionFilter,
+    onToggleCollectionFilter,
+    'data-tour': dataTour,
+  },
+  ref,
+) {
   const { t } = useTranslation();
   const searchPanelRef = useRef<SearchResultsPanelHandle>(null);
 
@@ -117,11 +126,14 @@ const LeftSidebar = forwardRef<LeftSidebarHandle, LeftSidebarProps>(function Lef
   const extensionSidebarTabs = extensionHost.getSidebarTabs();
 
   // Derive the effective active tab ID for the tab bar
-  const activeTabId = activeExtensionTab
-    ? activeExtensionTab
-    : searchPanelOpen
-      ? '__search__'
-      : '__explorer__';
+  let activeTabId: string;
+  if (activeExtensionTab) {
+    activeTabId = activeExtensionTab;
+  } else if (searchPanelOpen) {
+    activeTabId = '__search__';
+  } else {
+    activeTabId = '__explorer__';
+  }
 
   const handleTabClick = (tabId: string) => {
     if (tabId === '__explorer__') {
@@ -157,19 +169,30 @@ const LeftSidebar = forwardRef<LeftSidebarHandle, LeftSidebarProps>(function Lef
     try {
       const saved = localStorage.getItem('xplorer-sidebar-sections');
       if (saved) return JSON.parse(saved);
-    } catch { /* ignore */ }
-    return { quickAccess: false, recent: true, favorites: false, collections: false, drives: false, fileTree: false };
+    } catch {
+      /* ignore */
+    }
+    return {
+      quickAccess: false,
+      recent: true,
+      favorites: false,
+      collections: false,
+      drives: false,
+      fileTree: false,
+    };
   });
   const [sectionHeights, setSectionHeights] = useState<Record<string, number>>(() => {
     try {
       const saved = localStorage.getItem('xplorer-sidebar-heights');
       if (saved) return JSON.parse(saved);
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
     return {};
   });
 
   const toggleSection = useCallback((id: SectionId) => {
-    setSectionCollapsed(prev => {
+    setSectionCollapsed((prev) => {
       const next = { ...prev, [id]: !prev[id] };
       localStorage.setItem('xplorer-sidebar-sections', JSON.stringify(next));
       return next;
@@ -177,11 +200,15 @@ const LeftSidebar = forwardRef<LeftSidebarHandle, LeftSidebarProps>(function Lef
   }, []);
 
   // Resize handle for sections
-  const resizingRef = useRef<{ sectionId: string; startY: number; startHeight: number } | null>(null);
+  const resizingRef = useRef<{ sectionId: string; startY: number; startHeight: number } | null>(
+    null,
+  );
 
   const onResizeStart = useCallback((sectionId: string, e: React.MouseEvent) => {
     e.preventDefault();
-    const sectionEl = document.querySelector(`[data-sidebar-section="${sectionId}"]`) as HTMLElement | null;
+    const sectionEl = document.querySelector(
+      `[data-sidebar-section="${sectionId}"]`,
+    ) as HTMLElement | null;
     if (!sectionEl) return;
     const startHeight = sectionEl.getBoundingClientRect().height;
     resizingRef.current = { sectionId, startY: e.clientY, startHeight };
@@ -190,7 +217,7 @@ const LeftSidebar = forwardRef<LeftSidebarHandle, LeftSidebarProps>(function Lef
       if (!resizingRef.current) return;
       const delta = ev.clientY - resizingRef.current.startY;
       const newHeight = Math.max(32, resizingRef.current.startHeight + delta);
-      setSectionHeights(prev => {
+      setSectionHeights((prev) => {
         const next = { ...prev, [sectionId]: newHeight };
         localStorage.setItem('xplorer-sidebar-heights', JSON.stringify(next));
         return next;
@@ -275,12 +302,12 @@ const LeftSidebar = forwardRef<LeftSidebarHandle, LeftSidebarProps>(function Lef
         const home = isWindows ? 'C:\\Users\\Public' : '/home/user';
         setUserDirectories({
           home,
-          documents: home + PATH_SEPARATOR + 'Documents',
-          downloads: home + PATH_SEPARATOR + 'Downloads',
-          desktop: home + PATH_SEPARATOR + 'Desktop',
-          pictures: home + PATH_SEPARATOR + 'Pictures',
-          videos: home + PATH_SEPARATOR + 'Videos',
-          music: home + PATH_SEPARATOR + 'Music',
+          documents: `${home + PATH_SEPARATOR}Documents`,
+          downloads: `${home + PATH_SEPARATOR}Downloads`,
+          desktop: `${home + PATH_SEPARATOR}Desktop`,
+          pictures: `${home + PATH_SEPARATOR}Pictures`,
+          videos: `${home + PATH_SEPARATOR}Videos`,
+          music: `${home + PATH_SEPARATOR}Music`,
         });
       }
     };
@@ -478,49 +505,52 @@ const LeftSidebar = forwardRef<LeftSidebarHandle, LeftSidebarProps>(function Lef
           aria-selected={currentPath === file.path}
           aria-expanded={file.is_dir ? isExpanded : undefined}
           aria-label={`${file.name}${file.is_dir ? ', folder' : ', file'}`}
-          className={`
-            flex items-center py-1 px-1 hover:bg-xp-surface-light rounded cursor-pointer text-xs transition-colors
-            ${currentPath === file.path ? 'bg-xp-blue bg-opacity-25 text-xp-blue border-l-2 border-xp-blue' : 'text-xp-text'}
-          `}
+          className={`hover:bg-xp-surface-light flex cursor-pointer items-center rounded px-1 py-1 text-xs transition-colors ${currentPath === file.path ? 'bg-xp-blue text-xp-blue border-xp-blue border-l-2 bg-opacity-25' : 'text-xp-text'} `}
           style={{ paddingLeft: `${depth * 16 + 8}px` }}
           onClick={() => handleItemClick(file)}
           onContextMenu={(e) => handleItemRightClick(file, e)}
         >
-          <div className="flex items-center space-x-1 flex-1 min-w-0">
+          <div className="flex min-w-0 flex-1 items-center space-x-1">
             {/* Expand/Collapse Button - only for directories */}
             {file.is_dir ? (
               <button
-                className="p-0.5 hover:bg-xp-surface-light rounded flex-shrink-0 w-5 h-5 flex items-center justify-center transition-colors"
+                className="hover:bg-xp-surface-light flex h-5 w-5 flex-shrink-0 items-center justify-center rounded p-0.5 transition-colors"
                 onClick={(e) => toggleFolder(file.path, e)}
                 aria-expanded={isExpanded}
                 aria-label={isExpanded ? `Collapse ${file.name}` : `Expand ${file.name}`}
               >
-                {isLoading ? (
-                  <svg className="w-3 h-3 animate-spin" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      fillRule="evenodd"
-                      d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                ) : hasChildren && children.length > 0 ? (
-                  <svg
-                    className={`w-3 h-3 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                ) : (
-                  <div className="w-3 h-3" />
-                )}
+                {(() => {
+                  if (isLoading) {
+                    return (
+                      <svg className="h-3 w-3 animate-spin" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                          fillRule="evenodd"
+                          d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    );
+                  }
+                  if (hasChildren && children.length > 0) {
+                    return (
+                      <svg
+                        className={`h-3 w-3 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    );
+                  }
+                  return <div className="h-3 w-3" />;
+                })()}
               </button>
             ) : (
-              <div className="w-5 h-5" />
+              <div className="h-5 w-5" />
             )}
 
             <span className="mr-1 flex-shrink-0">{getFileIcon(file)}</span>
@@ -543,7 +573,7 @@ const LeftSidebar = forwardRef<LeftSidebarHandle, LeftSidebarProps>(function Lef
                   />
                 ) : null;
               })()}
-            <span className="truncate flex-1">{file.name}</span>
+            <span className="flex-1 truncate">{file.name}</span>
           </div>
         </div>
 
@@ -597,13 +627,13 @@ const LeftSidebar = forwardRef<LeftSidebarHandle, LeftSidebarProps>(function Lef
       data-tour={dataTour}
       role="navigation"
       aria-label="File explorer sidebar"
-      className="bg-xp-surface border-r border-xp-border flex flex-col flex-shrink-0"
+      className="bg-xp-surface border-xp-border flex flex-shrink-0 flex-col border-r"
       style={{ width: width ?? 256, minHeight: 0, overflow: 'hidden' }}
     >
       {/* Sidebar tab bar */}
       {onToggleSearchPanel && (
         <div
-          className="border-b border-xp-border"
+          className="border-xp-border border-b"
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -680,138 +710,151 @@ const LeftSidebar = forwardRef<LeftSidebarHandle, LeftSidebarProps>(function Lef
       )}
 
       {/* Extension sidebar tab content */}
-      {activeExtensionTab && (() => {
-        const renderer = extensionHost.getSidebarTabRenderer(activeExtensionTab);
-        if (!renderer) return (
-          <div className="flex-1 flex items-center justify-center p-4 text-xs text-xp-text-muted">
-            Extension tab not available
-          </div>
-        );
-        return renderer({ currentPath, isActive: true });
-      })()}
+      {activeExtensionTab &&
+        (() => {
+          const renderer = extensionHost.getSidebarTabRenderer(activeExtensionTab);
+          if (!renderer) {
+            return (
+              <div className="text-xp-text-muted flex flex-1 items-center justify-center p-4 text-xs">
+                Extension tab not available
+              </div>
+            );
+          }
+          return renderer({ currentPath, isActive: true });
+        })()}
 
       {/* Explorer content (default) */}
       {activeTabId === '__explorer__' && (
         <>
           {/* Quick Access */}
           <div
-            className="border-b border-xp-border"
+            className="border-xp-border border-b"
             role="region"
             aria-label="Quick access"
             data-sidebar-section="quickAccess"
-            style={!sectionCollapsed.quickAccess && sectionHeights.quickAccess ? { height: sectionHeights.quickAccess, overflow: 'hidden' } : undefined}
+            style={
+              !sectionCollapsed.quickAccess && sectionHeights.quickAccess
+                ? { height: sectionHeights.quickAccess, overflow: 'hidden' }
+                : undefined
+            }
           >
             <button
-              className="flex items-center w-full px-3 py-1.5 text-[10px] font-semibold text-xp-text-muted uppercase tracking-widest hover:bg-xp-surface-light/50 transition-colors"
+              className="text-xp-text-muted hover:bg-xp-surface-light/50 flex w-full items-center px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest transition-colors"
               onClick={() => toggleSection('quickAccess')}
               aria-expanded={!sectionCollapsed.quickAccess}
             >
               {sectionCollapsed.quickAccess ? (
-                <ChevronRight className="w-3 h-3 mr-1 flex-shrink-0" />
+                <ChevronRight className="mr-1 h-3 w-3 flex-shrink-0" />
               ) : (
-                <ChevronDown className="w-3 h-3 mr-1 flex-shrink-0" />
+                <ChevronDown className="mr-1 h-3 w-3 flex-shrink-0" />
               )}
               {t('sidebar.quickAccess')}
             </button>
-            {!sectionCollapsed.quickAccess && <div className="px-3 pb-2 space-y-0.5">
-              {userDirectories &&
-                (
-                  [
-                    {
-                      path: userDirectories.home,
-                      Icon: Home,
-                      color: 'text-xp-blue',
-                      labelKey: 'sidebar.home' as const,
-                    },
-                    {
-                      path: userDirectories.documents,
-                      Icon: FileText,
-                      color: 'text-xp-orange',
-                      labelKey: 'sidebar.documents' as const,
-                    },
-                    {
-                      path: userDirectories.downloads,
-                      Icon: Download,
-                      color: 'text-xp-green',
-                      labelKey: 'sidebar.downloads' as const,
-                    },
-                    {
-                      path: userDirectories.desktop,
-                      Icon: Monitor,
-                      color: 'text-xp-purple',
-                      labelKey: 'sidebar.desktop' as const,
-                    },
-                    {
-                      path: userDirectories.pictures,
-                      Icon: Image,
-                      color: 'text-xp-pink',
-                      labelKey: 'sidebar.pictures' as const,
-                    },
-                  ] as const
-                ).map(({ path, Icon, color, labelKey }) => {
-                  const label = t(labelKey);
-                  const isActive = currentPath === path;
-                  return (
-                    <button
-                      key={labelKey}
-                      onClick={() => navigateToPath(path)}
-                      className={`flex items-center w-full px-2 py-1.5 text-xs rounded transition-colors ${
-                        isActive
-                          ? 'bg-xp-blue/15 text-xp-blue'
-                          : 'hover:bg-xp-surface-light text-xp-text'
-                      }`}
-                      aria-label={t('sidebar.navigateTo', { label })}
-                    >
-                      <Icon
-                        size={15}
-                        className={`mr-2.5 flex-shrink-0 ${isActive ? 'text-xp-blue' : color}`}
-                        aria-hidden="true"
-                      />
-                      {label}
-                    </button>
-                  );
-                })}
-            </div>}
+            {!sectionCollapsed.quickAccess && (
+              <div className="space-y-0.5 px-3 pb-2">
+                {userDirectories &&
+                  (
+                    [
+                      {
+                        path: userDirectories.home,
+                        Icon: Home,
+                        color: 'text-xp-blue',
+                        labelKey: 'sidebar.home' as const,
+                      },
+                      {
+                        path: userDirectories.documents,
+                        Icon: FileText,
+                        color: 'text-xp-orange',
+                        labelKey: 'sidebar.documents' as const,
+                      },
+                      {
+                        path: userDirectories.downloads,
+                        Icon: Download,
+                        color: 'text-xp-green',
+                        labelKey: 'sidebar.downloads' as const,
+                      },
+                      {
+                        path: userDirectories.desktop,
+                        Icon: Monitor,
+                        color: 'text-xp-purple',
+                        labelKey: 'sidebar.desktop' as const,
+                      },
+                      {
+                        path: userDirectories.pictures,
+                        Icon: Image,
+                        color: 'text-xp-pink',
+                        labelKey: 'sidebar.pictures' as const,
+                      },
+                    ] as const
+                  ).map(({ path, Icon, color, labelKey }) => {
+                    const label = t(labelKey);
+                    const isActive = currentPath === path;
+                    return (
+                      <button
+                        key={labelKey}
+                        onClick={() => navigateToPath(path)}
+                        className={`flex w-full items-center rounded px-2 py-1.5 text-xs transition-colors ${
+                          isActive
+                            ? 'bg-xp-blue/15 text-xp-blue'
+                            : 'hover:bg-xp-surface-light text-xp-text'
+                        }`}
+                        aria-label={t('sidebar.navigateTo', { label })}
+                      >
+                        <Icon
+                          size={15}
+                          className={`mr-2.5 flex-shrink-0 ${isActive ? 'text-xp-blue' : color}`}
+                          aria-hidden="true"
+                        />
+                        {label}
+                      </button>
+                    );
+                  })}
+              </div>
+            )}
             {/* Resize handle */}
             <div
-              className="h-1 cursor-row-resize hover:bg-xp-blue/30 transition-colors group flex items-center justify-center"
+              className="hover:bg-xp-blue/30 group flex h-1 cursor-row-resize items-center justify-center transition-colors"
               onMouseDown={(e) => onResizeStart('quickAccess', e)}
             >
-              <GripHorizontal className="w-4 h-3 text-xp-text-muted/0 group-hover:text-xp-text-muted/60 transition-colors" />
+              <GripHorizontal className="text-xp-text-muted/0 group-hover:text-xp-text-muted/60 h-3 w-4 transition-colors" />
             </div>
           </div>
 
           {/* Recent Files */}
           <div
-            className="border-b border-xp-border"
+            className="border-xp-border border-b"
             role="region"
             aria-label="Recent files"
             data-sidebar-section="recent"
-            style={!sectionCollapsed.recent && sectionHeights.recent ? { height: sectionHeights.recent, overflow: 'hidden' } : undefined}
+            style={
+              !sectionCollapsed.recent && sectionHeights.recent
+                ? { height: sectionHeights.recent, overflow: 'hidden' }
+                : undefined
+            }
           >
             <button
-              className="flex items-center w-full px-3 py-1.5 text-[10px] font-semibold text-xp-text-muted uppercase tracking-widest hover:bg-xp-surface-light/50 transition-colors"
+              className="text-xp-text-muted hover:bg-xp-surface-light/50 flex w-full items-center px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest transition-colors"
               onClick={() => toggleSection('recent')}
               aria-expanded={!sectionCollapsed.recent}
               aria-label="Toggle recent files"
             >
               {sectionCollapsed.recent ? (
-                <ChevronRight className="w-3 h-3 mr-1 flex-shrink-0" />
+                <ChevronRight className="mr-1 h-3 w-3 flex-shrink-0" />
               ) : (
-                <ChevronDown className="w-3 h-3 mr-1 flex-shrink-0" />
+                <ChevronDown className="mr-1 h-3 w-3 flex-shrink-0" />
               )}
               <Clock size={12} className="mr-1 flex-shrink-0" />
               RECENT
             </button>
             {!sectionCollapsed.recent && (
-              <div className="px-3 pb-2 space-y-0.5">
+              <div className="space-y-0.5 px-3 pb-2">
                 {recentFiles.length === 0 ? (
-                  <p className="text-xs text-xp-text-secondary py-1">No recent files</p>
+                  <p className="text-xp-text-secondary py-1 text-xs">No recent files</p>
                 ) : (
                   recentFiles.map((rf) => (
                     <div
                       key={rf.path}
-                      className="flex items-center w-full px-2 py-1 text-xs hover:bg-xp-surface-light rounded cursor-pointer transition-colors"
+                      className="hover:bg-xp-surface-light flex w-full cursor-pointer items-center rounded px-2 py-1 text-xs transition-colors"
                       onClick={() => {
                         if (rf.file_type === 'folder') {
                           navigateToPath(rf.path);
@@ -826,11 +869,11 @@ const LeftSidebar = forwardRef<LeftSidebarHandle, LeftSidebarProps>(function Lef
                       title={rf.path}
                     >
                       {rf.file_type === 'folder' ? (
-                        <FolderClosed size={14} className="mr-2 text-xp-blue flex-shrink-0" />
+                        <FolderClosed size={14} className="text-xp-blue mr-2 flex-shrink-0" />
                       ) : (
-                        <File size={14} className="mr-2 text-xp-text-secondary flex-shrink-0" />
+                        <File size={14} className="text-xp-text-secondary mr-2 flex-shrink-0" />
                       )}
-                      <span className="truncate flex-1">{rf.name}</span>
+                      <span className="flex-1 truncate">{rf.name}</span>
                     </div>
                   ))
                 )}
@@ -839,139 +882,149 @@ const LeftSidebar = forwardRef<LeftSidebarHandle, LeftSidebarProps>(function Lef
             {/* Resize handle */}
             {!sectionCollapsed.recent && (
               <div
-                className="h-1 cursor-row-resize hover:bg-xp-blue/30 transition-colors group flex items-center justify-center"
+                className="hover:bg-xp-blue/30 group flex h-1 cursor-row-resize items-center justify-center transition-colors"
                 onMouseDown={(e) => onResizeStart('recent', e)}
               >
-                <GripHorizontal className="w-4 h-3 text-xp-text-muted/0 group-hover:text-xp-text-muted/60 transition-colors" />
+                <GripHorizontal className="text-xp-text-muted/0 group-hover:text-xp-text-muted/60 h-3 w-4 transition-colors" />
               </div>
             )}
           </div>
 
           {/* Favorites */}
           <div
-            className="border-b border-xp-border"
+            className="border-xp-border border-b"
             role="region"
             aria-label="Favorites"
             data-sidebar-section="favorites"
-            style={!sectionCollapsed.favorites && sectionHeights.favorites ? { height: sectionHeights.favorites, overflow: 'hidden' } : undefined}
+            style={
+              !sectionCollapsed.favorites && sectionHeights.favorites
+                ? { height: sectionHeights.favorites, overflow: 'hidden' }
+                : undefined
+            }
           >
             <button
-              className="flex items-center w-full px-3 py-1.5 text-[10px] font-semibold text-xp-text-muted uppercase tracking-widest hover:bg-xp-surface-light/50 transition-colors"
+              className="text-xp-text-muted hover:bg-xp-surface-light/50 flex w-full items-center px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest transition-colors"
               onClick={() => toggleSection('favorites')}
               aria-expanded={!sectionCollapsed.favorites}
             >
               {sectionCollapsed.favorites ? (
-                <ChevronRight className="w-3 h-3 mr-1 flex-shrink-0" />
+                <ChevronRight className="mr-1 h-3 w-3 flex-shrink-0" />
               ) : (
-                <ChevronDown className="w-3 h-3 mr-1 flex-shrink-0" />
+                <ChevronDown className="mr-1 h-3 w-3 flex-shrink-0" />
               )}
               {t('sidebar.favorites')}
             </button>
-            {!sectionCollapsed.favorites && <div className="px-3 pb-2 space-y-0.5">
-              {bookmarks.length === 0 ? (
-                <p className="text-xs text-xp-text-secondary py-1">{t('sidebar.noBookmarks')}</p>
-              ) : (
-                bookmarks.map((bookmark) => {
-                  const bookmarkColor = bookmark.is_dir ? getFolderColorHex(bookmark.path) : null;
-                  return (
-                    <div
-                      key={bookmark.path}
-                      className="flex items-center w-full px-2 py-1 text-xs hover:bg-xp-surface-light rounded group cursor-pointer transition-colors"
-                      onClick={() => navigateToPath(bookmark.path)}
-                      onContextMenu={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (handleFileRightClick) {
-                          // Create a synthetic FileEntry from the bookmark
-                          const syntheticFile: FileEntry = {
-                            name: bookmark.name,
-                            path: bookmark.path,
-                            size: 0,
-                            modified: 0,
-                            is_dir: bookmark.is_dir,
-                            file_type: bookmark.is_dir
-                              ? 'folder'
-                              : bookmark.name.split('.').pop() || '',
-                          };
-                          handleFileRightClick(syntheticFile, e);
-                        }
-                      }}
-                      title={bookmark.path}
-                    >
-                      {bookmarkColor && (
-                        <span
-                          style={{
-                            display: 'inline-block',
-                            width: 8,
-                            height: 8,
-                            borderRadius: '50%',
-                            backgroundColor: bookmarkColor,
-                            flexShrink: 0,
-                            marginRight: 4,
-                          }}
-                          aria-hidden="true"
-                        />
-                      )}
-                      {bookmark.is_dir ? (
-                        <FolderClosed
-                          size={14}
-                          className="mr-2 text-xp-blue flex-shrink-0"
-                          style={bookmarkColor ? { color: bookmarkColor } : undefined}
-                        />
-                      ) : (
-                        <File size={14} className="mr-2 text-xp-text-secondary flex-shrink-0" />
-                      )}
-                      <span className="truncate flex-1">{bookmark.name}</span>
-                      <button
-                        onClick={(e) => handleRemoveBookmark(bookmark.path, e)}
-                        className="opacity-0 group-hover:opacity-100 ml-2 flex-shrink-0 text-xp-text-muted hover:text-xp-red transition-opacity"
-                        title="Remove bookmark"
-                        aria-label={`Remove bookmark for ${bookmark.name}`}
+            {!sectionCollapsed.favorites && (
+              <div className="space-y-0.5 px-3 pb-2">
+                {bookmarks.length === 0 ? (
+                  <p className="text-xp-text-secondary py-1 text-xs">{t('sidebar.noBookmarks')}</p>
+                ) : (
+                  bookmarks.map((bookmark) => {
+                    const bookmarkColor = bookmark.is_dir ? getFolderColorHex(bookmark.path) : null;
+                    return (
+                      <div
+                        key={bookmark.path}
+                        className="hover:bg-xp-surface-light group flex w-full cursor-pointer items-center rounded px-2 py-1 text-xs transition-colors"
+                        onClick={() => navigateToPath(bookmark.path)}
+                        onContextMenu={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          if (handleFileRightClick) {
+                            // Create a synthetic FileEntry from the bookmark
+                            const syntheticFile: FileEntry = {
+                              name: bookmark.name,
+                              path: bookmark.path,
+                              size: 0,
+                              modified: 0,
+                              is_dir: bookmark.is_dir,
+                              file_type: bookmark.is_dir
+                                ? 'folder'
+                                : bookmark.name.split('.').pop() || '',
+                            };
+                            handleFileRightClick(syntheticFile, e);
+                          }
+                        }}
+                        title={bookmark.path}
                       >
-                        <span aria-hidden="true">×</span>
-                      </button>
-                    </div>
-                  );
-                })
-              )}
-            </div>}
+                        {bookmarkColor && (
+                          <span
+                            style={{
+                              display: 'inline-block',
+                              width: 8,
+                              height: 8,
+                              borderRadius: '50%',
+                              backgroundColor: bookmarkColor,
+                              flexShrink: 0,
+                              marginRight: 4,
+                            }}
+                            aria-hidden="true"
+                          />
+                        )}
+                        {bookmark.is_dir ? (
+                          <FolderClosed
+                            size={14}
+                            className="text-xp-blue mr-2 flex-shrink-0"
+                            style={bookmarkColor ? { color: bookmarkColor } : undefined}
+                          />
+                        ) : (
+                          <File size={14} className="text-xp-text-secondary mr-2 flex-shrink-0" />
+                        )}
+                        <span className="flex-1 truncate">{bookmark.name}</span>
+                        <button
+                          onClick={(e) => handleRemoveBookmark(bookmark.path, e)}
+                          className="text-xp-text-muted hover:text-xp-red ml-2 flex-shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
+                          title="Remove bookmark"
+                          aria-label={`Remove bookmark for ${bookmark.name}`}
+                        >
+                          <span aria-hidden="true">×</span>
+                        </button>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            )}
             {/* Resize handle */}
             {!sectionCollapsed.favorites && (
               <div
-                className="h-1 cursor-row-resize hover:bg-xp-blue/30 transition-colors group flex items-center justify-center"
+                className="hover:bg-xp-blue/30 group flex h-1 cursor-row-resize items-center justify-center transition-colors"
                 onMouseDown={(e) => onResizeStart('favorites', e)}
               >
-                <GripHorizontal className="w-4 h-3 text-xp-text-muted/0 group-hover:text-xp-text-muted/60 transition-colors" />
+                <GripHorizontal className="text-xp-text-muted/0 group-hover:text-xp-text-muted/60 h-3 w-4 transition-colors" />
               </div>
             )}
           </div>
 
           {/* Collections */}
           <div
-            className="border-b border-xp-border"
+            className="border-xp-border border-b"
             role="region"
             aria-label="Collections"
             data-sidebar-section="collections"
-            style={!sectionCollapsed.collections && sectionHeights.collections ? { height: sectionHeights.collections, overflow: 'hidden' } : undefined}
+            style={
+              !sectionCollapsed.collections && sectionHeights.collections
+                ? { height: sectionHeights.collections, overflow: 'hidden' }
+                : undefined
+            }
           >
             <div className="flex items-center justify-between">
               <button
-                className="flex items-center flex-1 px-3 py-1.5 text-[10px] font-semibold text-xp-text-muted uppercase tracking-widest hover:bg-xp-surface-light/50 transition-colors"
+                className="text-xp-text-muted hover:bg-xp-surface-light/50 flex flex-1 items-center px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest transition-colors"
                 onClick={() => toggleSection('collections')}
                 aria-expanded={!sectionCollapsed.collections}
                 aria-label="Toggle collections"
               >
                 {sectionCollapsed.collections ? (
-                  <ChevronRight className="w-3 h-3 mr-1 flex-shrink-0" />
+                  <ChevronRight className="mr-1 h-3 w-3 flex-shrink-0" />
                 ) : (
-                  <ChevronDown className="w-3 h-3 mr-1 flex-shrink-0" />
+                  <ChevronDown className="mr-1 h-3 w-3 flex-shrink-0" />
                 )}
                 {t('sidebar.collections')}
               </button>
               {onCreateCollection && !sectionCollapsed.collections && (
                 <button
                   onClick={onCreateCollection}
-                  className="text-xp-text-muted hover:text-xp-blue transition-colors mr-2"
+                  className="text-xp-text-muted hover:text-xp-blue mr-2 transition-colors"
                   title="Create new collection"
                   aria-label="Create new collection"
                   style={{ padding: '2px' }}
@@ -981,9 +1034,11 @@ const LeftSidebar = forwardRef<LeftSidebarHandle, LeftSidebarProps>(function Lef
               )}
             </div>
             {!sectionCollapsed.collections && (
-              <div className="px-3 pb-2 space-y-0.5">
+              <div className="space-y-0.5 px-3 pb-2">
                 {collections.length === 0 ? (
-                  <p className="text-xs text-xp-text-secondary py-1">{t('sidebar.noCollections')}</p>
+                  <p className="text-xp-text-secondary py-1 text-xs">
+                    {t('sidebar.noCollections')}
+                  </p>
                 ) : (
                   collections.map((col) => {
                     // Smart folders navigate to collection://; quick filters toggle active filter
@@ -994,20 +1049,19 @@ const LeftSidebar = forwardRef<LeftSidebarHandle, LeftSidebarProps>(function Lef
                     return (
                       <div
                         key={col.id}
-                        className={`flex items-center w-full px-2 py-1 text-xs rounded group cursor-pointer transition-colors ${
-                          isActive
-                            ? 'text-xp-text'
-                            : 'hover:bg-xp-surface-light text-xp-text'
+                        className={`group flex w-full cursor-pointer items-center rounded px-2 py-1 text-xs transition-colors ${
+                          isActive ? 'text-xp-text' : 'hover:bg-xp-surface-light text-xp-text'
                         }`}
                         style={{
-                          borderLeft: isActive && !smartFolder
-                            ? `3px solid ${col.color}`
-                            : isActive && smartFolder
-                              ? '3px solid var(--xp-blue)'
-                              : '3px solid transparent',
-                          backgroundColor: isActive
-                            ? smartFolder ? 'rgba(122,162,247,0.15)' : `${col.color}15`
-                            : undefined,
+                          borderLeft: (() => {
+                            if (isActive && !smartFolder) return `3px solid ${col.color}`;
+                            if (isActive && smartFolder) return '3px solid var(--xp-blue)';
+                            return '3px solid transparent';
+                          })(),
+                          backgroundColor: (() => {
+                            if (!isActive) return undefined;
+                            return smartFolder ? 'rgba(122,162,247,0.15)' : `${col.color}15`;
+                          })(),
                         }}
                         onClick={() => {
                           if (smartFolder) {
@@ -1020,7 +1074,11 @@ const LeftSidebar = forwardRef<LeftSidebarHandle, LeftSidebarProps>(function Lef
                           e.preventDefault();
                           e.stopPropagation();
                           if (!col.builtin) {
-                            setCollectionContextMenu({ x: e.clientX, y: e.clientY, collection: col });
+                            setCollectionContextMenu({
+                              x: e.clientX,
+                              y: e.clientY,
+                              collection: col,
+                            });
                           }
                         }}
                         title={`${col.name} - ${col.filters.length} filter${col.filters.length !== 1 ? 's' : ''}${smartFolder ? ' (smart folder)' : ' (quick filter)'}`}
@@ -1028,7 +1086,7 @@ const LeftSidebar = forwardRef<LeftSidebarHandle, LeftSidebarProps>(function Lef
                         <span className="mr-2 flex-shrink-0 text-sm" aria-hidden="true">
                           {renderIcon(col.icon, 14)}
                         </span>
-                        <span className="truncate flex-1">{col.name}</span>
+                        <span className="flex-1 truncate">{col.name}</span>
                         {isActive && !smartFolder && (
                           <span
                             className="ml-auto flex-shrink-0"
@@ -1042,7 +1100,7 @@ const LeftSidebar = forwardRef<LeftSidebarHandle, LeftSidebarProps>(function Lef
                         )}
                         {smartFolder && (
                           <span
-                            className="ml-auto flex-shrink-0 text-[10px] text-xp-text-muted bg-xp-surface rounded-full px-1.5 py-0"
+                            className="text-xp-text-muted bg-xp-surface ml-auto flex-shrink-0 rounded-full px-1.5 py-0 text-[10px]"
                             style={{ minWidth: '18px', textAlign: 'center' }}
                           >
                             {col.filters.length}
@@ -1057,10 +1115,10 @@ const LeftSidebar = forwardRef<LeftSidebarHandle, LeftSidebarProps>(function Lef
             {/* Resize handle */}
             {!sectionCollapsed.collections && (
               <div
-                className="h-1 cursor-row-resize hover:bg-xp-blue/30 transition-colors group flex items-center justify-center"
+                className="hover:bg-xp-blue/30 group flex h-1 cursor-row-resize items-center justify-center transition-colors"
                 onMouseDown={(e) => onResizeStart('collections', e)}
               >
-                <GripHorizontal className="w-4 h-3 text-xp-text-muted/0 group-hover:text-xp-text-muted/60 transition-colors" />
+                <GripHorizontal className="text-xp-text-muted/0 group-hover:text-xp-text-muted/60 h-3 w-4 transition-colors" />
               </div>
             )}
           </div>
@@ -1086,7 +1144,7 @@ const LeftSidebar = forwardRef<LeftSidebarHandle, LeftSidebarProps>(function Lef
               onClick={(e) => e.stopPropagation()}
             >
               <button
-                className="flex items-center w-full px-3 py-1.5 text-xs text-xp-text hover:bg-xp-surface-light rounded transition-colors"
+                className="text-xp-text hover:bg-xp-surface-light flex w-full items-center rounded px-3 py-1.5 text-xs transition-colors"
                 onClick={() => {
                   if (onEditCollection) onEditCollection(collectionContextMenu.collection);
                   setCollectionContextMenu(null);
@@ -1095,7 +1153,7 @@ const LeftSidebar = forwardRef<LeftSidebarHandle, LeftSidebarProps>(function Lef
                 Edit
               </button>
               <button
-                className="flex items-center w-full px-3 py-1.5 text-xs text-xp-red hover:bg-xp-surface-light rounded transition-colors"
+                className="text-xp-red hover:bg-xp-surface-light flex w-full items-center rounded px-3 py-1.5 text-xs transition-colors"
                 onClick={() => {
                   deleteCollection(collectionContextMenu.collection.id);
                   setCollectionContextMenu(null);
@@ -1108,84 +1166,96 @@ const LeftSidebar = forwardRef<LeftSidebarHandle, LeftSidebarProps>(function Lef
 
           {/* Drives / Volumes */}
           <div
-            className="border-b border-xp-border"
+            className="border-xp-border border-b"
             role="region"
             aria-label={isWindows ? 'Drives' : 'Volumes'}
             data-sidebar-section="drives"
-            style={!sectionCollapsed.drives && sectionHeights.drives ? { height: sectionHeights.drives, overflow: 'hidden' } : undefined}
+            style={
+              !sectionCollapsed.drives && sectionHeights.drives
+                ? { height: sectionHeights.drives, overflow: 'hidden' }
+                : undefined
+            }
           >
             <button
-              className="flex items-center w-full px-3 py-1.5 text-[10px] font-semibold text-xp-text-muted uppercase tracking-widest hover:bg-xp-surface-light/50 transition-colors"
+              className="text-xp-text-muted hover:bg-xp-surface-light/50 flex w-full items-center px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest transition-colors"
               onClick={() => toggleSection('drives')}
               aria-expanded={!sectionCollapsed.drives}
             >
               {sectionCollapsed.drives ? (
-                <ChevronRight className="w-3 h-3 mr-1 flex-shrink-0" />
+                <ChevronRight className="mr-1 h-3 w-3 flex-shrink-0" />
               ) : (
-                <ChevronDown className="w-3 h-3 mr-1 flex-shrink-0" />
+                <ChevronDown className="mr-1 h-3 w-3 flex-shrink-0" />
               )}
               {t(isWindows ? 'sidebar.drives' : 'sidebar.volumes')}
             </button>
-            {!sectionCollapsed.drives && <div className="px-3 pb-2 space-y-1">
-              {drives.map((drive) => {
-                const totalGB =
-                  drive.total_space > 0 ? Math.round(drive.total_space / (1024 * 1024 * 1024)) : 0;
-                const freeGB =
-                  drive.free_space > 0 ? Math.round(drive.free_space / (1024 * 1024 * 1024)) : 0;
-                const usedPct =
-                  drive.total_space > 0
-                    ? Math.round(((drive.total_space - drive.free_space) / drive.total_space) * 100)
-                    : 0;
-                return (
-                  <button
-                    key={drive.path}
-                    onClick={() => navigateToPath(drive.path)}
-                    className="w-full px-2 py-1.5 text-xs hover:bg-xp-surface-light rounded transition-colors text-left"
-                    aria-label={t('navigation.navigateTo', { name: drive.letter ? `${drive.letter}:` : drive.label })}
-                  >
-                    <div className="flex items-center">
-                      <HardDrive
-                        size={15}
-                        className="mr-2.5 text-xp-text-muted flex-shrink-0"
-                        aria-hidden="true"
-                      />
-                      <span className="flex-1 truncate text-xp-text">
-                        {drive.letter ? `${drive.letter}:` : drive.label}
-                      </span>
-                      {totalGB > 0 && (
-                        <span className="text-xp-text-muted ml-2 flex-shrink-0">
-                          {freeGB} GB free
-                        </span>
-                      )}
-                    </div>
-                    {totalGB > 0 && (
-                      <div className="mt-1 ml-[25px] h-1 rounded-full bg-xp-border overflow-hidden">
-                        <div
-                          className={`h-full rounded-full transition-all ${usedPct > 90 ? 'bg-xp-red' : 'bg-xp-blue'}`}
-                          style={{ width: `${usedPct}%` }}
+            {!sectionCollapsed.drives && (
+              <div className="space-y-1 px-3 pb-2">
+                {drives.map((drive) => {
+                  const totalGB =
+                    drive.total_space > 0
+                      ? Math.round(drive.total_space / (1024 * 1024 * 1024))
+                      : 0;
+                  const freeGB =
+                    drive.free_space > 0 ? Math.round(drive.free_space / (1024 * 1024 * 1024)) : 0;
+                  const usedPct =
+                    drive.total_space > 0
+                      ? Math.round(
+                          ((drive.total_space - drive.free_space) / drive.total_space) * 100,
+                        )
+                      : 0;
+                  return (
+                    <button
+                      key={drive.path}
+                      onClick={() => navigateToPath(drive.path)}
+                      className="hover:bg-xp-surface-light w-full rounded px-2 py-1.5 text-left text-xs transition-colors"
+                      aria-label={t('navigation.navigateTo', {
+                        name: drive.letter ? `${drive.letter}:` : drive.label,
+                      })}
+                    >
+                      <div className="flex items-center">
+                        <HardDrive
+                          size={15}
+                          className="text-xp-text-muted mr-2.5 flex-shrink-0"
+                          aria-hidden="true"
                         />
+                        <span className="text-xp-text flex-1 truncate">
+                          {drive.letter ? `${drive.letter}:` : drive.label}
+                        </span>
+                        {totalGB > 0 && (
+                          <span className="text-xp-text-muted ml-2 flex-shrink-0">
+                            {freeGB} GB free
+                          </span>
+                        )}
                       </div>
-                    )}
+                      {totalGB > 0 && (
+                        <div className="bg-xp-border ml-[25px] mt-1 h-1 overflow-hidden rounded-full">
+                          <div
+                            className={`h-full rounded-full transition-all ${usedPct > 90 ? 'bg-xp-red' : 'bg-xp-blue'}`}
+                            style={{ width: `${usedPct}%` }}
+                          />
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+                {!isWindows && userDirectories && (
+                  <button
+                    onClick={() => navigateToPath(userDirectories.home)}
+                    className="hover:bg-xp-surface-light flex w-full items-center rounded px-2 py-1.5 text-xs transition-colors"
+                  >
+                    <User size={15} className="text-xp-cyan mr-2.5 flex-shrink-0" />{' '}
+                    {userDirectories.home.split('/').pop()}
                   </button>
-                );
-              })}
-              {!isWindows && userDirectories && (
-                <button
-                  onClick={() => navigateToPath(userDirectories.home)}
-                  className="flex items-center w-full px-2 py-1.5 text-xs hover:bg-xp-surface-light rounded transition-colors"
-                >
-                  <User size={15} className="mr-2.5 text-xp-cyan flex-shrink-0" />{' '}
-                  {userDirectories.home.split('/').pop()}
-                </button>
-              )}
-            </div>}
+                )}
+              </div>
+            )}
             {/* Resize handle */}
             {!sectionCollapsed.drives && (
               <div
-                className="h-1 cursor-row-resize hover:bg-xp-blue/30 transition-colors group flex items-center justify-center"
+                className="hover:bg-xp-blue/30 group flex h-1 cursor-row-resize items-center justify-center transition-colors"
                 onMouseDown={(e) => onResizeStart('drives', e)}
               >
-                <GripHorizontal className="w-4 h-3 text-xp-text-muted/0 group-hover:text-xp-text-muted/60 transition-colors" />
+                <GripHorizontal className="text-xp-text-muted/0 group-hover:text-xp-text-muted/60 h-3 w-4 transition-colors" />
               </div>
             )}
           </div>
@@ -1199,69 +1269,71 @@ const LeftSidebar = forwardRef<LeftSidebarHandle, LeftSidebarProps>(function Lef
             data-sidebar-section="fileTree"
           >
             <button
-              className="flex items-center w-full px-3 py-1.5 text-[10px] font-semibold text-xp-text-muted uppercase tracking-widest hover:bg-xp-surface-light/50 transition-colors sticky top-0 bg-xp-surface z-10"
+              className="text-xp-text-muted hover:bg-xp-surface-light/50 bg-xp-surface sticky top-0 z-10 flex w-full items-center px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest transition-colors"
               onClick={() => toggleSection('fileTree')}
               aria-expanded={!sectionCollapsed.fileTree}
             >
               {sectionCollapsed.fileTree ? (
-                <ChevronRight className="w-3 h-3 mr-1 flex-shrink-0" />
+                <ChevronRight className="mr-1 h-3 w-3 flex-shrink-0" />
               ) : (
-                <ChevronDown className="w-3 h-3 mr-1 flex-shrink-0" />
+                <ChevronDown className="mr-1 h-3 w-3 flex-shrink-0" />
               )}
               <FolderTree size={12} className="mr-1 flex-shrink-0" />
               {t('sidebar.fileTree')}
             </button>
-            {!sectionCollapsed.fileTree && <div className="px-3 pb-2 space-y-0" role="tree" aria-label="Directory tree">
-              {/* Render current drive tree */}
-              {!currentPath.startsWith('xplorer') &&
-                !currentPath.startsWith('collection://') &&
-                sortedRootContents && (
-                  <div>
-                    <div
-                      role="treeitem"
-                      aria-selected={currentPath === rootPath}
-                      aria-expanded={expandedFolders.has(rootPath)}
-                      aria-label={`Root drive ${rootPath}`}
-                      className={`
-                  flex items-center py-1 px-1 hover:bg-xp-surface-light rounded cursor-pointer text-xs font-medium transition-colors
-                  ${currentPath === rootPath ? 'bg-xp-blue bg-opacity-25 text-xp-blue border-l-2 border-xp-blue' : 'text-xp-text'}
-                `}
-                      onClick={() => navigateToPath(rootPath)}
-                    >
-                      <button
-                        className="p-0.5 hover:bg-xp-surface-light rounded flex-shrink-0 w-5 h-5 flex items-center justify-center transition-colors"
-                        onClick={(e) => toggleFolder(rootPath, e)}
+            {!sectionCollapsed.fileTree && (
+              <div className="space-y-0 px-3 pb-2" role="tree" aria-label="Directory tree">
+                {/* Render current drive tree */}
+                {!currentPath.startsWith('xplorer') &&
+                  !currentPath.startsWith('collection://') &&
+                  sortedRootContents && (
+                    <div>
+                      <div
+                        role="treeitem"
+                        aria-selected={currentPath === rootPath}
                         aria-expanded={expandedFolders.has(rootPath)}
-                        aria-label={
-                          expandedFolders.has(rootPath)
-                            ? `Collapse ${rootPath}`
-                            : `Expand ${rootPath}`
-                        }
+                        aria-label={`Root drive ${rootPath}`}
+                        className={`hover:bg-xp-surface-light flex cursor-pointer items-center rounded px-1 py-1 text-xs font-medium transition-colors ${currentPath === rootPath ? 'bg-xp-blue text-xp-blue border-xp-blue border-l-2 bg-opacity-25' : 'text-xp-text'} `}
+                        onClick={() => navigateToPath(rootPath)}
                       >
-                        <svg
-                          className={`w-3 h-3 transition-transform ${expandedFolders.has(rootPath) ? 'rotate-90' : ''}`}
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
+                        <button
+                          className="hover:bg-xp-surface-light flex h-5 w-5 flex-shrink-0 items-center justify-center rounded p-0.5 transition-colors"
+                          onClick={(e) => toggleFolder(rootPath, e)}
+                          aria-expanded={expandedFolders.has(rootPath)}
+                          aria-label={
+                            expandedFolders.has(rootPath)
+                              ? `Collapse ${rootPath}`
+                              : `Expand ${rootPath}`
+                          }
                         >
-                          <path
-                            fillRule="evenodd"
-                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </button>
-                      <HardDrive size={14} className="mr-1 text-xp-text-secondary flex-shrink-0" />
-                      <span className="truncate">{rootPath}</span>
-                    </div>
-
-                    {expandedFolders.has(rootPath) && (
-                      <div role="group" aria-label={`Contents of ${rootPath}`}>
-                        {sortedRootContents?.map((file) => renderFileItem(file, 1))}
+                          <svg
+                            className={`h-3 w-3 transition-transform ${expandedFolders.has(rootPath) ? 'rotate-90' : ''}`}
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </button>
+                        <HardDrive
+                          size={14}
+                          className="text-xp-text-secondary mr-1 flex-shrink-0"
+                        />
+                        <span className="truncate">{rootPath}</span>
                       </div>
-                    )}
-                  </div>
-                )}
-            </div>}
+
+                      {expandedFolders.has(rootPath) && (
+                        <div role="group" aria-label={`Contents of ${rootPath}`}>
+                          {sortedRootContents?.map((file) => renderFileItem(file, 1))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+              </div>
+            )}
           </div>
         </>
       )}

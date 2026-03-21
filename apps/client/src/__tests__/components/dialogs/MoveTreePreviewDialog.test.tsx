@@ -1,8 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import MoveTreePreviewDialog from '@/components/dialogs/MoveTreePreviewDialog';
-import type { MoveTreePreviewData } from '@/components/dialogs/MoveTreePreviewDialog';
+import MoveTreePreviewDialog, {
+  type MoveTreePreviewData,
+} from '@/components/dialogs/MoveTreePreviewDialog';
 import type { FileEntry } from '@/lib/tauri-api';
 
 const mockReadDirectory = vi.fn();
@@ -26,7 +27,7 @@ vi.mock('@/lib/move-tree-preview', () => ({
   computeMoveTree: vi.fn((sourceFiles: FileEntry[], destPath: string, destFiles: FileEntry[]) => ({
     tree: sourceFiles.map((f) => ({
       name: f.name,
-      path: destPath + '\\' + f.name,
+      path: `${destPath}\\${f.name}`,
       isDir: f.is_dir,
       status: 'incoming' as const,
       size: f.size,

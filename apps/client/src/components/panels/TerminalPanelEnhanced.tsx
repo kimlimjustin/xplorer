@@ -128,31 +128,33 @@ const TerminalPanel = ({
 
   return (
     <div
-      className="bg-xp-bg font-mono text-xs h-full flex flex-col cursor-text"
+      className="bg-xp-bg flex h-full cursor-text flex-col font-mono text-xs"
       onClick={handleTerminalClick}
     >
       {/* Terminal Output */}
       <div ref={terminalOutputRef} className="flex-1 overflow-y-auto px-3 pt-2 leading-snug">
-        {terminalHistory.slice(-500).map((line, index) => (
-          <div
-            key={index}
-            className={`${
-              line.startsWith(terminalCwd.split(/[\\/]/).pop() || terminalCwd)
-                ? 'text-xp-green'
-                : line.startsWith('Error:')
-                  ? 'text-xp-red'
-                  : line.startsWith('Warning:')
-                    ? 'text-xp-yellow'
-                    : 'text-xp-text'
-            } whitespace-pre-wrap`}
-          >
-            {line || '\u00A0'}
-          </div>
-        ))}
+        {terminalHistory.slice(-500).map((line, index) => {
+          const lineColor = (() => {
+            if (line.startsWith(terminalCwd.split(/[\\/]/).pop() || terminalCwd))
+              {return 'text-xp-green';}
+            if (line.startsWith('Error:')) return 'text-xp-red';
+            if (line.startsWith('Warning:')) return 'text-xp-yellow';
+            return 'text-xp-text';
+          })();
+          return (
+            <div
+              // eslint-disable-next-line react/no-array-index-key
+              key={index}
+              className={`${lineColor} whitespace-pre-wrap`}
+            >
+              {line || '\u00A0'}
+            </div>
+          );
+        })}
       </div>
 
       {/* Terminal Input */}
-      <div className="flex items-center px-3 py-1.5 border-t border-xp-border/50">
+      <div className="border-xp-border/50 flex items-center border-t px-3 py-1.5">
         <span className="text-xp-green mr-2 select-none">
           {terminalCwd.split(/[\\/]/).pop() || terminalCwd}
           {'>'}
@@ -163,13 +165,13 @@ const TerminalPanel = ({
           value={terminalInput}
           onChange={(e) => setTerminalInput(e.target.value)}
           onKeyDown={handleTerminalKeyDown}
-          className="flex-1 bg-transparent outline-none text-xp-text font-mono text-xs"
+          className="text-xp-text flex-1 bg-transparent font-mono text-xs outline-none"
           placeholder="Type a command..."
           spellCheck={false}
         />
         <button
           onClick={() => executeTerminalCommand('clear')}
-          className="text-xp-text-muted hover:text-xp-text px-1.5 ml-2"
+          className="text-xp-text-muted hover:text-xp-text ml-2 px-1.5"
           title="Clear (type 'clear')"
         >
           Clear
@@ -177,6 +179,6 @@ const TerminalPanel = ({
       </div>
     </div>
   );
-}
+};
 
 export default TerminalPanel;

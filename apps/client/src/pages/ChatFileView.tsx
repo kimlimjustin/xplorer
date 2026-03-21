@@ -19,7 +19,7 @@ interface ChatFileViewProps {
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 /** Derive a human-readable title from a .chat file path. */
-const deriveTitleFromPath = (filePath: string) : string => {
+const deriveTitleFromPath = (filePath: string): string => {
   // Extract filename from path (handle both / and \)
   const segments = filePath.split(/[/\\]/);
   let name = segments[segments.length - 1] || 'Chat';
@@ -39,7 +39,7 @@ const deriveTitleFromPath = (filePath: string) : string => {
   name = name.replace(/\b\w/g, (c) => c.toUpperCase());
 
   return name || 'Chat';
-}
+};
 
 // ── Model list ────────────────────────────────────────────────────────────────
 
@@ -105,10 +105,10 @@ const ChatFileView = ({ filePath }: ChatFileViewProps) => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-full bg-xp-bg">
+      <div className="bg-xp-bg flex h-full items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-6 h-6 border-2 border-xp-blue border-t-transparent rounded-full animate-spin" />
-          <span className="text-sm text-xp-text-muted">Loading chat...</span>
+          <div className="border-xp-blue h-6 w-6 animate-spin rounded-full border-2 border-t-transparent" />
+          <span className="text-xp-text-muted text-sm">Loading chat...</span>
         </div>
       </div>
     );
@@ -117,21 +117,21 @@ const ChatFileView = ({ filePath }: ChatFileViewProps) => {
   // ── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <div className="flex flex-col h-full bg-xp-bg" role="region" aria-label="Chat file view">
+    <div className="bg-xp-bg flex h-full flex-col" role="region" aria-label="Chat file view">
       {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <div className="flex-shrink-0 border-b border-xp-border bg-xp-surface px-4 py-3">
-        <div className="max-w-3xl mx-auto">
+      <div className="border-xp-border bg-xp-surface flex-shrink-0 border-b px-4 py-3">
+        <div className="mx-auto max-w-3xl">
           {/* Top row: title + model + thinking */}
-          <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex flex-wrap items-center gap-3">
             {/* Title */}
-            <h2 className="text-base font-semibold text-xp-text truncate mr-auto">{title}</h2>
+            <h2 className="text-xp-text mr-auto truncate text-base font-semibold">{title}</h2>
 
             {/* Model selector */}
             <div className="relative">
               <select
                 value={model}
                 onChange={(e) => setModel(e.target.value)}
-                className="appearance-none px-3 py-1.5 pr-7 text-xs bg-xp-bg border border-xp-border rounded hover:bg-xp-bg-hover transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-xp-blue"
+                className="bg-xp-bg border-xp-border hover:bg-xp-bg-hover focus:ring-xp-blue cursor-pointer appearance-none rounded border px-3 py-1.5 pr-7 text-xs transition-colors focus:outline-none focus:ring-1"
                 aria-label="Select AI model"
               >
                 {allModels.map((m) => (
@@ -141,7 +141,7 @@ const ChatFileView = ({ filePath }: ChatFileViewProps) => {
                 ))}
               </select>
               <svg
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-xp-text-muted pointer-events-none"
+                className="text-xp-text-muted pointer-events-none absolute right-2 top-1/2 h-3 w-3 -translate-y-1/2"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -156,7 +156,7 @@ const ChatFileView = ({ filePath }: ChatFileViewProps) => {
             {/* Thinking toggle */}
             <button
               onClick={() => setThinkingEnabled(!thinkingEnabled)}
-              className={`px-3 py-1.5 text-xs rounded transition-colors font-medium ${
+              className={`rounded px-3 py-1.5 text-xs font-medium transition-colors ${
                 thinkingEnabled
                   ? 'bg-xp-cyan text-white hover:opacity-80'
                   : 'bg-xp-border text-xp-text hover:bg-xp-surface-light'
@@ -170,17 +170,17 @@ const ChatFileView = ({ filePath }: ChatFileViewProps) => {
 
           {/* Context chips */}
           {contextFiles.length > 0 && (
-            <div className="flex items-center gap-1.5 mt-2 flex-wrap">
-              <span className="text-xs text-xp-text-muted">Context:</span>
+            <div className="mt-2 flex flex-wrap items-center gap-1.5">
+              <span className="text-xp-text-muted text-xs">Context:</span>
               {contextFiles.map((file) => (
                 <span
                   key={file.path}
-                  className="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-xp-blue/10 border border-xp-blue/20 rounded-full text-xp-text"
+                  className="bg-xp-blue/10 border-xp-blue/20 text-xp-text inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs"
                 >
-                  <span className="truncate max-w-[150px]">{file.name}</span>
+                  <span className="max-w-[150px] truncate">{file.name}</span>
                   <button
                     onClick={() => removeContextFile(file.path)}
-                    className="text-xp-text-muted hover:text-xp-text transition-colors flex-shrink-0"
+                    className="text-xp-text-muted hover:text-xp-text flex-shrink-0 transition-colors"
                     aria-label={`Remove ${file.name} from context`}
                   >
                     {'\u00D7'}
@@ -195,12 +195,12 @@ const ChatFileView = ({ filePath }: ChatFileViewProps) => {
       {/* ── Messages area ──────────────────────────────────────────────────── */}
       <div
         ref={messagesContainerRef}
-        className="flex-1 min-h-0 overflow-y-auto px-4 py-6"
+        className="min-h-0 flex-1 overflow-y-auto px-4 py-6"
         aria-live="polite"
         aria-label="Chat messages"
         role="log"
       >
-        <div className="max-w-3xl mx-auto space-y-4">
+        <div className="mx-auto max-w-3xl space-y-4">
           {messages.length === 0 && !isAgentRunning ? (
             <EmptyState agentEnabled={true} />
           ) : (
@@ -233,13 +233,13 @@ const ChatFileView = ({ filePath }: ChatFileViewProps) => {
             <div className="flex justify-start">
               <details
                 open
-                className="max-w-[85%] min-w-0 rounded-lg overflow-hidden bg-xp-bg border border-xp-border"
+                className="bg-xp-bg border-xp-border min-w-0 max-w-[85%] overflow-hidden rounded-lg border"
               >
-                <summary className="px-3 py-1.5 text-xs text-xp-text-muted cursor-pointer hover:bg-xp-bg-hover select-none flex items-center gap-1.5">
-                  <div className="w-1.5 h-1.5 bg-xp-cyan rounded-full animate-pulse" />
+                <summary className="text-xp-text-muted hover:bg-xp-bg-hover flex cursor-pointer select-none items-center gap-1.5 px-3 py-1.5 text-xs">
+                  <div className="bg-xp-cyan h-1.5 w-1.5 animate-pulse rounded-full" />
                   <span>Thinking...</span>
                 </summary>
-                <div className="px-3 py-2 text-xs text-xp-text-muted border-t border-xp-border whitespace-pre-wrap max-h-48 overflow-y-auto">
+                <div className="text-xp-text-muted border-xp-border max-h-48 overflow-y-auto whitespace-pre-wrap border-t px-3 py-2 text-xs">
                   {streamingThinking}
                 </div>
               </details>
@@ -260,8 +260,8 @@ const ChatFileView = ({ filePath }: ChatFileViewProps) => {
       </div>
 
       {/* ── Input area ─────────────────────────────────────────────────────── */}
-      <div className="flex-shrink-0 border-t border-xp-border bg-xp-surface">
-        <div className="max-w-3xl mx-auto">
+      <div className="border-xp-border bg-xp-surface flex-shrink-0 border-t">
+        <div className="mx-auto max-w-3xl">
           <ChatInput
             chatInput={chatInput}
             setChatInput={setChatInput}
@@ -275,6 +275,6 @@ const ChatFileView = ({ filePath }: ChatFileViewProps) => {
       </div>
     </div>
   );
-}
+};
 
 export default ChatFileView;

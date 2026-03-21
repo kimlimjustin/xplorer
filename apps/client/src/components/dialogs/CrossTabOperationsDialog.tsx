@@ -220,7 +220,7 @@ const FolderIcon = () => {
       <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
     </svg>
   );
-}
+};
 
 const FileIcon = () => {
   return (
@@ -239,7 +239,7 @@ const FileIcon = () => {
       <polyline points="14 2 14 8 20 8" />
     </svg>
   );
-}
+};
 
 const CloseIcon = () => {
   return (
@@ -257,7 +257,7 @@ const CloseIcon = () => {
       <line x1="6" y1="6" x2="18" y2="18" />
     </svg>
   );
-}
+};
 
 // ── Component ────────────────────────────────────────────────────────────────
 
@@ -588,7 +588,7 @@ const CrossTabOperationsDialog = ({
       </div>
     </div>
   );
-}
+};
 
 export default React.memo(CrossTabOperationsDialog);
 
@@ -614,7 +614,7 @@ const MoveIcon = () => {
       <line x1="12" y1="2" x2="12" y2="22" />
     </svg>
   );
-}
+};
 
 const CopyIcon = () => {
   return (
@@ -632,7 +632,7 @@ const CopyIcon = () => {
       <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
     </svg>
   );
-}
+};
 
 const CompressIcon = () => {
   return (
@@ -653,7 +653,7 @@ const CompressIcon = () => {
       <polyline points="16 16 12 20 8 16" />
     </svg>
   );
-}
+};
 
 const TrashIcon = () => {
   return (
@@ -671,13 +671,13 @@ const TrashIcon = () => {
       <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
     </svg>
   );
-}
+};
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-const formatSize = (bytes: number) : string => {
+const formatSize = (bytes: number): string => {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
-}
+};

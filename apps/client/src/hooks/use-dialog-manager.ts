@@ -23,7 +23,7 @@ export interface DialogManagerResult extends DialogState {
 
 // ── Hook ─────────────────────────────────────────────────────────────────────
 
-export const useDialogManager = (deps: UseDialogManagerDeps) : DialogManagerResult => {
+export const useDialogManager = (deps: UseDialogManagerDeps): DialogManagerResult => {
   const { splitLayout, activeGroupId, fileComparison, refetch: _refetch } = deps;
   const dialogs = useDialogs();
 
@@ -66,6 +66,6 @@ export const useDialogManager = (deps: UseDialogManagerDeps) : DialogManagerResu
     handlePasswordPromptClose,
     handleComparisonFromDialog,
   };
-}
+};
 
 export type { PasswordPromptData };

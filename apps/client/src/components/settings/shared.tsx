@@ -21,7 +21,7 @@ export const Toggle = ({
     type="button"
     role="switch"
     aria-checked={checked}
-    className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-xp-accent focus-visible:ring-offset-2 focus-visible:ring-offset-xp-bg ${
+    className={`focus-visible:ring-xp-accent focus-visible:ring-offset-xp-bg relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
       checked ? 'bg-xp-accent' : 'bg-xp-border'
     }`}
     onClick={() => onChange(!checked)}
@@ -70,13 +70,13 @@ export const SettingRow = ({
   description?: string;
   children: React.ReactNode;
 }) => (
-  <div className="group flex items-center justify-between gap-4 rounded-lg px-4 py-3 transition-colors hover:bg-xp-surface-light/50">
-    <div className="flex items-center gap-3 min-w-0">
-      {Icon && <Icon size={18} className="shrink-0 text-xp-text-secondary" />}
+  <div className="hover:bg-xp-surface-light/50 group flex items-center justify-between gap-4 rounded-lg px-4 py-3 transition-colors">
+    <div className="flex min-w-0 items-center gap-3">
+      {Icon && <Icon size={18} className="text-xp-text-secondary shrink-0" />}
       <div className="min-w-0">
-        <div className="text-sm font-medium text-xp-text">{label}</div>
+        <div className="text-xp-text text-sm font-medium">{label}</div>
         {description && (
-          <div className="text-xs text-xp-text-secondary mt-0.5 leading-relaxed">{description}</div>
+          <div className="text-xp-text-secondary mt-0.5 text-xs leading-relaxed">{description}</div>
         )}
       </div>
     </div>
@@ -86,16 +86,16 @@ export const SettingRow = ({
 
 /** Section heading. */
 export const SectionTitle = ({ title, description }: { title: string; description?: string }) => (
-  <div className="mb-1 px-4 pt-2 pb-1">
-    <h3 className="text-xs font-semibold uppercase tracking-wider text-xp-text-secondary">
+  <div className="mb-1 px-4 pb-1 pt-2">
+    <h3 className="text-xp-text-secondary text-xs font-semibold uppercase tracking-wider">
       {title}
     </h3>
-    {description && <p className="text-xs text-xp-text-secondary/70 mt-0.5">{description}</p>}
+    {description && <p className="text-xp-text-secondary/70 mt-0.5 text-xs">{description}</p>}
   </div>
 );
 
 /** Horizontal divider. */
-export const Divider = () => <div className="mx-4 my-2 h-px bg-xp-border/50" />;
+export const Divider = () => <div className="bg-xp-border/50 mx-4 my-2 h-px" />;
 
 /** A single color picker field: label + native color input + hex text input. */
 export const ColorField = ({
@@ -107,13 +107,13 @@ export const ColorField = ({
   value: string;
   onChange: (v: string) => void;
 }) => (
-  <div className="flex items-center gap-2 mb-2">
-    <span className="w-[120px] text-[13px] text-xp-text-secondary shrink-0">{label}</span>
+  <div className="mb-2 flex items-center gap-2">
+    <span className="text-xp-text-secondary w-[120px] shrink-0 text-[13px]">{label}</span>
     <input
       type="color"
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="w-8 h-8 rounded cursor-pointer border-none p-0 bg-transparent shrink-0"
+      className="h-8 w-8 shrink-0 cursor-pointer rounded border-none bg-transparent p-0"
       style={{ WebkitAppearance: 'none' }}
     />
     <input
@@ -123,7 +123,7 @@ export const ColorField = ({
         const v = e.target.value;
         if (/^#[0-9a-fA-F]{0,6}$/.test(v) || v === '') onChange(v || '#000000');
       }}
-      className="w-[90px] px-2 py-1 text-xs font-mono rounded border border-xp-border bg-xp-bg text-xp-text"
+      className="border-xp-border bg-xp-bg text-xp-text w-[90px] rounded border px-2 py-1 font-mono text-xs"
     />
   </div>
 );
@@ -133,10 +133,10 @@ export const PermToggle = ({ enabled, onChange }: { enabled: boolean; onChange: 
   <button
     type="button"
     onClick={onChange}
-    className={`px-3 py-1 rounded-md text-xs font-semibold tracking-wide transition-all ${
+    className={`rounded-md px-3 py-1 text-xs font-semibold tracking-wide transition-all ${
       enabled
-        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 hover:bg-emerald-500/30'
-        : 'bg-red-500/10 text-red-400/70 border border-red-500/20 hover:bg-red-500/20'
+        ? 'border border-emerald-500/40 bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30'
+        : 'border border-red-500/20 bg-red-500/10 text-red-400/70 hover:bg-red-500/20'
     }`}
   >
     {enabled ? 'ON' : 'OFF'}

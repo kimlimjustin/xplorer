@@ -102,11 +102,11 @@ export type SplitLayoutAction =
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 let _nextId = 1;
-export const generateGroupId = () : string => {
+export const generateGroupId = (): string => {
   return `group-${Date.now()}-${_nextId++}`;
-}
+};
 
-export const createDefaultGroup = (id?: string) : EditorGroup => {
+export const createDefaultGroup = (id?: string): EditorGroup => {
   const groupId = id ?? generateGroupId();
   const homeTab: TabItem = {
     id: `tab-home-${groupId}`,
@@ -124,9 +124,9 @@ export const createDefaultGroup = (id?: string) : EditorGroup => {
     pathHistory: ['xplorer://home'],
     historyIndex: 0,
   };
-}
+};
 
-export const createDefaultLayout = () : SplitLayoutState => {
+export const createDefaultLayout = (): SplitLayoutState => {
   const group = createDefaultGroup('default');
   return {
     rootNode: { type: 'leaf', groupId: group.id },
@@ -134,4 +134,4 @@ export const createDefaultLayout = () : SplitLayoutState => {
     activeGroupId: group.id,
     maximizedGroupId: null,
   };
-}
+};

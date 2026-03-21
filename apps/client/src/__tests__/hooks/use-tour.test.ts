@@ -3,7 +3,7 @@ import { renderHook, act } from '@testing-library/react';
 
 vi.mock('@/i18n', () => ({
   default: {
-    t: (key: string) => key.includes('.') ? key.split('.').pop()! : key,
+    t: (key: string) => (key.includes('.') ? key.split('.').pop()! : key),
   },
 }));
 
@@ -57,23 +57,35 @@ describe('useTour', () => {
     it('deactivates the tour', () => {
       const { result } = renderHook(() => useTour());
 
-      act(() => { startTour(); });
-      act(() => { endTour(); });
+      act(() => {
+        startTour();
+      });
+      act(() => {
+        endTour();
+      });
 
       expect(result.current.isActive).toBe(false);
       expect(result.current.currentStep).toBe(0);
     });
 
     it('marks tour as completed in localStorage by default', () => {
-      act(() => { startTour(); });
-      act(() => { endTour(); });
+      act(() => {
+        startTour();
+      });
+      act(() => {
+        endTour();
+      });
 
       expect(localStorage.getItem('xplorer:tour-completed')).toBe('true');
     });
 
     it('does not mark completed when markCompleted=false', () => {
-      act(() => { startTour(); });
-      act(() => { endTour(false); });
+      act(() => {
+        startTour();
+      });
+      act(() => {
+        endTour(false);
+      });
 
       expect(localStorage.getItem('xplorer:tour-completed')).toBeNull();
     });
@@ -83,8 +95,12 @@ describe('useTour', () => {
     it('advances to the next step', () => {
       const { result } = renderHook(() => useTour());
 
-      act(() => { startTour(); });
-      act(() => { nextStep(); });
+      act(() => {
+        startTour();
+      });
+      act(() => {
+        nextStep();
+      });
 
       expect(result.current.currentStep).toBe(1);
     });
@@ -92,16 +108,22 @@ describe('useTour', () => {
     it('ends tour when at the last step', () => {
       const { result } = renderHook(() => useTour());
 
-      act(() => { startTour(); });
+      act(() => {
+        startTour();
+      });
 
       // Advance to last step
       for (let i = 0; i < getTourSteps().length - 1; i++) {
-        act(() => { nextStep(); });
+        act(() => {
+          nextStep();
+        });
       }
       expect(result.current.currentStep).toBe(getTourSteps().length - 1);
 
       // One more should end the tour
-      act(() => { nextStep(); });
+      act(() => {
+        nextStep();
+      });
       expect(result.current.isActive).toBe(false);
     });
   });
@@ -110,20 +132,32 @@ describe('useTour', () => {
     it('goes back one step', () => {
       const { result } = renderHook(() => useTour());
 
-      act(() => { startTour(); });
-      act(() => { nextStep(); });
-      act(() => { nextStep(); });
+      act(() => {
+        startTour();
+      });
+      act(() => {
+        nextStep();
+      });
+      act(() => {
+        nextStep();
+      });
       expect(result.current.currentStep).toBe(2);
 
-      act(() => { prevStep(); });
+      act(() => {
+        prevStep();
+      });
       expect(result.current.currentStep).toBe(1);
     });
 
     it('does nothing at step 0', () => {
       const { result } = renderHook(() => useTour());
 
-      act(() => { startTour(); });
-      act(() => { prevStep(); });
+      act(() => {
+        startTour();
+      });
+      act(() => {
+        prevStep();
+      });
 
       expect(result.current.currentStep).toBe(0);
     });
@@ -133,8 +167,12 @@ describe('useTour', () => {
     it('jumps to a specific step', () => {
       const { result } = renderHook(() => useTour());
 
-      act(() => { startTour(); });
-      act(() => { goToStep(3); });
+      act(() => {
+        startTour();
+      });
+      act(() => {
+        goToStep(3);
+      });
 
       expect(result.current.currentStep).toBe(3);
     });
@@ -142,8 +180,12 @@ describe('useTour', () => {
     it('ignores out-of-range index (negative)', () => {
       const { result } = renderHook(() => useTour());
 
-      act(() => { startTour(); });
-      act(() => { goToStep(-1); });
+      act(() => {
+        startTour();
+      });
+      act(() => {
+        goToStep(-1);
+      });
 
       expect(result.current.currentStep).toBe(0);
     });
@@ -151,8 +193,12 @@ describe('useTour', () => {
     it('ignores out-of-range index (too large)', () => {
       const { result } = renderHook(() => useTour());
 
-      act(() => { startTour(); });
-      act(() => { goToStep(999); });
+      act(() => {
+        startTour();
+      });
+      act(() => {
+        goToStep(999);
+      });
 
       expect(result.current.currentStep).toBe(0);
     });
@@ -164,8 +210,12 @@ describe('useTour', () => {
     });
 
     it('returns true after ending tour with completion', () => {
-      act(() => { startTour(); });
-      act(() => { endTour(true); });
+      act(() => {
+        startTour();
+      });
+      act(() => {
+        endTour(true);
+      });
 
       expect(isTourCompleted()).toBe(true);
     });
@@ -173,8 +223,12 @@ describe('useTour', () => {
 
   describe('resetTourCompleted', () => {
     it('clears the completed flag', () => {
-      act(() => { startTour(); });
-      act(() => { endTour(true); });
+      act(() => {
+        startTour();
+      });
+      act(() => {
+        endTour(true);
+      });
       expect(isTourCompleted()).toBe(true);
 
       resetTourCompleted();
@@ -187,7 +241,9 @@ describe('useTour', () => {
       const { result: result1 } = renderHook(() => useTour());
       const { result: result2 } = renderHook(() => useTour());
 
-      act(() => { startTour(); });
+      act(() => {
+        startTour();
+      });
 
       expect(result1.current.isActive).toBe(true);
       expect(result2.current.isActive).toBe(true);

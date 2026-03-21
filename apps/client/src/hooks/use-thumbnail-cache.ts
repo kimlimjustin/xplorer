@@ -20,7 +20,7 @@ interface UseThumbnailCacheReturn {
  * caches the result, and evicts least-recently-used entries when the
  * cache exceeds `maxSize`.
  */
-export const useThumbnailCache = (maxSize: number = 100) : UseThumbnailCacheReturn => {
+export const useThumbnailCache = (maxSize: number = 100): UseThumbnailCacheReturn => {
   const cacheRef = useRef<Map<string, ThumbnailCacheEntry>>(new Map());
 
   const evictIfNeeded = useCallback(() => {
@@ -69,4 +69,4 @@ export const useThumbnailCache = (maxSize: number = 100) : UseThumbnailCacheRetu
   );
 
   return { getThumbnailUrl, preloadThumbnails };
-}
+};

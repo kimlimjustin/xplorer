@@ -271,7 +271,7 @@ const RightSidebar = ({
   return (
     <div
       ref={outerRef}
-      className="bg-xp-surface border-l border-xp-border"
+      className="bg-xp-surface border-xp-border border-l"
       style={{ width: width ?? 320, flexShrink: 0, minHeight: 0, overflow: 'hidden' }}
     >
       {/* Inner container with explicit measured height -- bypasses WebView2 flex height bug */}
@@ -285,16 +285,16 @@ const RightSidebar = ({
       >
         {/* Right Panel Header */}
         <div
-          className="flex items-center justify-between px-3 py-2 border-b border-xp-border"
+          className="border-xp-border flex items-center justify-between border-b px-3 py-2"
           style={{ flexShrink: 0 }}
         >
-          <h3 className="text-sm font-medium truncate">{getTabTitle()}</h3>
+          <h3 className="truncate text-sm font-medium">{getTabTitle()}</h3>
           <button
             onClick={() => setRightSidebarCollapsed(true)}
-            className="p-1 hover:bg-xp-surface-light rounded flex-shrink-0 ml-2"
+            className="hover:bg-xp-surface-light ml-2 flex-shrink-0 rounded p-1"
             aria-label="Close panel"
           >
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fillRule="evenodd"
                 d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
@@ -332,68 +332,97 @@ const RightSidebar = ({
             outline: 'none',
           }}
         >
-          <React.Suspense fallback={<div className="flex-1 flex items-center justify-center text-xp-text-secondary text-xs">Loading...</div>}>
-            {scrubberCompareFiles ? (
-              <ErrorBoundary>
-                <ComparePreview
-                  leftFile={scrubberCompareFiles[0]}
-                  rightFile={scrubberCompareFiles[1]}
-                  onDismiss={() => setScrubberCompareMode(false)}
-                  formatFileSize={formatFileSize}
-                  formatDate={formatDate}
-                />
-              </ErrorBoundary>
-            ) : showCompare && compareFiles ? (
-              <ErrorBoundary>
-                <ComparePreview
-                  leftFile={compareFiles[0]}
-                  rightFile={compareFiles[1]}
-                  onDismiss={() => setCompareDismissed(true)}
-                  formatFileSize={formatFileSize}
-                  formatDate={formatDate}
-                />
-              </ErrorBoundary>
-            ) : rightPanelTab === 'preview' ? (
-              <ErrorBoundary>
-                <PreviewPanel
-                  selectedFile={showScrubber ? effectivePreviewFile : selectedFile}
-                  formatFileSize={formatFileSize}
-                  formatDate={formatDate}
-                  getFolderSize={getFolderSize}
-                  isCalculatingSize={isCalculatingSize}
-                  currentPath={currentPath}
-                />
-              </ErrorBoundary>
-            ) : rightPanelTab === 'tokenizer' ? (
-              <ErrorBoundary>
-                <TokenizerStatusPanel />
-              </ErrorBoundary>
-            ) : rightPanelTab === 'performance' ? (
-              <ErrorBoundary>
-                <PerformanceDashboard
-                  currentPath={currentPath}
-                  allFiles={allFiles}
-                  navigateToPath={navigateToPath}
-                />
-              </ErrorBoundary>
-            ) : rightPanelTab === 'extensions' ? (
-              <ErrorBoundary>
-                <ExtensionsPanel themes={themes} theme={theme} applyTheme={applyTheme} />
-              </ErrorBoundary>
-            ) : rightPanelTab === 'marketplace' ? (
-              <ErrorBoundary>
-                <MarketplacePanel />
-              </ErrorBoundary>
-            ) : (
-              <ErrorBoundary>
-                <ExtensionPanelHost panelId={rightPanelTab} builtinProps={extensionProps} />
-              </ErrorBoundary>
-            )}
+          <React.Suspense
+            fallback={
+              <div className="text-xp-text-secondary flex flex-1 items-center justify-center text-xs">
+                Loading...
+              </div>
+            }
+          >
+            {(() => {
+              if (scrubberCompareFiles) {
+                return (
+                  <ErrorBoundary>
+                    <ComparePreview
+                      leftFile={scrubberCompareFiles[0]}
+                      rightFile={scrubberCompareFiles[1]}
+                      onDismiss={() => setScrubberCompareMode(false)}
+                      formatFileSize={formatFileSize}
+                      formatDate={formatDate}
+                    />
+                  </ErrorBoundary>
+                );
+              }
+              if (showCompare && compareFiles) {
+                return (
+                  <ErrorBoundary>
+                    <ComparePreview
+                      leftFile={compareFiles[0]}
+                      rightFile={compareFiles[1]}
+                      onDismiss={() => setCompareDismissed(true)}
+                      formatFileSize={formatFileSize}
+                      formatDate={formatDate}
+                    />
+                  </ErrorBoundary>
+                );
+              }
+              if (rightPanelTab === 'preview') {
+                return (
+                  <ErrorBoundary>
+                    <PreviewPanel
+                      selectedFile={showScrubber ? effectivePreviewFile : selectedFile}
+                      formatFileSize={formatFileSize}
+                      formatDate={formatDate}
+                      getFolderSize={getFolderSize}
+                      isCalculatingSize={isCalculatingSize}
+                      currentPath={currentPath}
+                    />
+                  </ErrorBoundary>
+                );
+              }
+              if (rightPanelTab === 'tokenizer') {
+                return (
+                  <ErrorBoundary>
+                    <TokenizerStatusPanel />
+                  </ErrorBoundary>
+                );
+              }
+              if (rightPanelTab === 'performance') {
+                return (
+                  <ErrorBoundary>
+                    <PerformanceDashboard
+                      currentPath={currentPath}
+                      allFiles={allFiles}
+                      navigateToPath={navigateToPath}
+                    />
+                  </ErrorBoundary>
+                );
+              }
+              if (rightPanelTab === 'extensions') {
+                return (
+                  <ErrorBoundary>
+                    <ExtensionsPanel themes={themes} theme={theme} applyTheme={applyTheme} />
+                  </ErrorBoundary>
+                );
+              }
+              if (rightPanelTab === 'marketplace') {
+                return (
+                  <ErrorBoundary>
+                    <MarketplacePanel />
+                  </ErrorBoundary>
+                );
+              }
+              return (
+                <ErrorBoundary>
+                  <ExtensionPanelHost panelId={rightPanelTab} builtinProps={extensionProps} />
+                </ErrorBoundary>
+              );
+            })()}
           </React.Suspense>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default RightSidebar;

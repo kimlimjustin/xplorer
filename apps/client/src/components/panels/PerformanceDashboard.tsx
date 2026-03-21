@@ -1,9 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import {
-  TauriAPI,
-  type OrganizationAnalysis,
-  type OrganizationPlan,
-} from '@/lib/tauri-api';
+import { TauriAPI, type OrganizationAnalysis, type OrganizationPlan } from '@/lib/tauri-api';
 import { formatFileSize } from '@/lib/utils';
 import { FolderClosed, ChevronDown, ChevronRight } from 'lucide-react';
 import { usePerformanceStats, type CleanupSuggestion } from '@/hooks/use-performance-stats';
@@ -21,8 +17,8 @@ import {
   CATEGORY_ICONS,
   OrganizerSectionHeader,
   OrganizerSuggestionItem,
+  type PerformanceDashboardProps,
 } from './performance-dashboard-helpers';
-import type { PerformanceDashboardProps } from './performance-dashboard-helpers';
 
 // ── Organizer Tab Content ────────────────────────────────────────────────────
 
@@ -119,13 +115,28 @@ const OrganizerTabContent = React.memo(function OrganizerTabContent({
 
   const truncatePath = (path: string) => {
     const name = path.split(/[\\/]/).pop() || path;
-    return name.length > 30 ? name.substring(0, 27) + '...' : name;
+    return name.length > 30 ? `${name.substring(0, 27)}...` : name;
   };
 
   return (
-    <div style={{ padding: '10px 12px', overflowY: 'auto', overflowX: 'hidden', flex: '1 1 0%', minHeight: 0 }}>
+    <div
+      style={{
+        padding: '10px 12px',
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        flex: '1 1 0%',
+        minHeight: 0,
+      }}
+    >
       {/* Header with analyze button */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: 12,
+        }}
+      >
         <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--xp-text)' }}>
           File Organizer
         </span>
@@ -145,16 +156,49 @@ const OrganizerTabContent = React.memo(function OrganizerTabContent({
       </div>
 
       {error && (
-        <div style={{ ...cardStyle, background: 'rgba(239,68,68,0.08)', borderColor: 'rgba(239,68,68,0.3)', marginBottom: 12 }}>
+        <div
+          style={{
+            ...cardStyle,
+            background: 'rgba(239,68,68,0.08)',
+            borderColor: 'rgba(239,68,68,0.3)',
+            marginBottom: 12,
+          }}
+        >
           <span style={{ fontSize: 12, color: '#f87171' }}>{error}</span>
         </div>
       )}
 
       {loading && (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px 0', color: 'var(--xp-text-secondary)', fontSize: 12 }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" style={{ marginRight: 8, animation: 'spin 1s linear infinite' }}>
-            <circle opacity="0.25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-            <path opacity="0.75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '32px 0',
+            color: 'var(--xp-text-secondary)',
+            fontSize: 12,
+          }}
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            style={{ marginRight: 8, animation: 'spin 1s linear infinite' }}
+          >
+            <circle
+              opacity="0.25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+              fill="none"
+            />
+            <path
+              opacity="0.75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+            />
           </svg>
           Scanning directory...
         </div>
@@ -170,7 +214,9 @@ const OrganizerTabContent = React.memo(function OrganizerTabContent({
           />
           {!collapsedSections.has('categories') && (
             <div style={{ marginBottom: 16 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 8 }}>
+              <div
+                style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 8 }}
+              >
                 {analysis.categories.map((cat) => (
                   <button
                     key={cat.name}
@@ -183,12 +229,22 @@ const OrganizerTabContent = React.memo(function OrganizerTabContent({
                       padding: '8px 10px',
                       textAlign: 'left',
                       cursor: 'pointer',
-                      borderColor: expandedCategory === cat.name ? 'var(--xp-blue, #3b82f6)' : 'var(--xp-border)',
-                      background: expandedCategory === cat.name ? 'rgba(59, 130, 246, 0.08)' : 'var(--xp-surface-light)',
+                      borderColor:
+                        expandedCategory === cat.name
+                          ? 'var(--xp-blue, #3b82f6)'
+                          : 'var(--xp-border)',
+                      background:
+                        expandedCategory === cat.name
+                          ? 'rgba(59, 130, 246, 0.08)'
+                          : 'var(--xp-surface-light)',
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 4 }}>
-                      <span style={{ fontSize: 14, display: 'inline-flex', alignItems: 'center' }}>{CATEGORY_ICONS[cat.name] || <FolderClosed size={14} className="inline-block" />}</span>
+                      <span style={{ fontSize: 14, display: 'inline-flex', alignItems: 'center' }}>
+                        {CATEGORY_ICONS[cat.name] || (
+                          <FolderClosed size={14} className="inline-block" />
+                        )}
+                      </span>
                       <span
                         style={{
                           fontWeight: 500,
@@ -216,7 +272,13 @@ const OrganizerTabContent = React.memo(function OrganizerTabContent({
                   const cat = analysis.categories.find((c) => c.name === expandedCategory);
                   if (!cat) return null;
                   return (
-                    <div style={{ ...cardStyle, marginBottom: 8, borderColor: 'var(--xp-blue, #3b82f6)' }}>
+                    <div
+                      style={{
+                        ...cardStyle,
+                        marginBottom: 8,
+                        borderColor: 'var(--xp-blue, #3b82f6)',
+                      }}
+                    >
                       <div
                         style={{
                           fontSize: 12,
@@ -229,12 +291,30 @@ const OrganizerTabContent = React.memo(function OrganizerTabContent({
                       </div>
                       <div style={{ maxHeight: 128, overflowY: 'auto' }}>
                         {cat.example_files.map((file, i) => (
-                          <div key={i} style={{ fontSize: 11, color: 'var(--xp-text-secondary)', padding: '2px 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <div
+                            // eslint-disable-next-line react/no-array-index-key
+                            key={i}
+                            style={{
+                              fontSize: 11,
+                              color: 'var(--xp-text-secondary)',
+                              padding: '2px 0',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
                             {file}
                           </div>
                         ))}
                         {cat.file_count > 5 && (
-                          <div style={{ fontSize: 11, color: 'var(--xp-text-secondary)', fontStyle: 'italic', marginTop: 4 }}>
+                          <div
+                            style={{
+                              fontSize: 11,
+                              color: 'var(--xp-text-secondary)',
+                              fontStyle: 'italic',
+                              marginTop: 4,
+                            }}
+                          >
                             ...and {cat.file_count - 5} more
                           </div>
                         )}
@@ -247,7 +327,14 @@ const OrganizerTabContent = React.memo(function OrganizerTabContent({
 
           {/* Project Notice */}
           {analysis.is_project && (
-            <div style={{ ...cardStyle, marginBottom: 16, background: 'rgba(59,130,246,0.08)', borderColor: 'rgba(59,130,246,0.3)' }}>
+            <div
+              style={{
+                ...cardStyle,
+                marginBottom: 16,
+                background: 'rgba(59,130,246,0.08)',
+                borderColor: 'rgba(59,130,246,0.3)',
+              }}
+            >
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                 <svg width="16" height="16" viewBox="0 0 20 20" fill="#3b82f6">
                   <path
@@ -261,7 +348,8 @@ const OrganizerTabContent = React.memo(function OrganizerTabContent({
                 </span>
               </div>
               <p style={{ fontSize: 11, color: 'var(--xp-text-secondary)', lineHeight: 1.5 }}>
-                This is a project directory. File organization is skipped to avoid breaking the project structure.
+                This is a project directory. File organization is skipped to avoid breaking the
+                project structure.
               </p>
             </div>
           )}
@@ -285,6 +373,7 @@ const OrganizerTabContent = React.memo(function OrganizerTabContent({
                   <div style={{ marginBottom: 8 }}>
                     {analysis.suggestions.map((suggestion, idx) => (
                       <OrganizerSuggestionItem
+                        // eslint-disable-next-line react/no-array-index-key
                         key={idx}
                         suggestion={suggestion}
                         selected={selectedSuggestions.has(idx)}
@@ -330,18 +419,30 @@ const OrganizerTabContent = React.memo(function OrganizerTabContent({
 
                   {/* Preview panel */}
                   {showPreview && preview && (
-                    <div style={{ ...cardStyle, marginTop: 8, borderColor: 'rgba(59,130,246,0.3)' }}>
-                      <div style={{ fontSize: 12, fontWeight: 500, marginBottom: 4, color: '#3b82f6' }}>
-                        Preview: {preview.moves.length} file{preview.moves.length !== 1 ? 's' : ''} to move
+                    <div
+                      style={{ ...cardStyle, marginTop: 8, borderColor: 'rgba(59,130,246,0.3)' }}
+                    >
+                      <div
+                        style={{ fontSize: 12, fontWeight: 500, marginBottom: 4, color: '#3b82f6' }}
+                      >
+                        Preview: {preview.moves.length} file{preview.moves.length !== 1 ? 's' : ''}{' '}
+                        to move
                       </div>
                       {preview.creates.length > 0 && (
-                        <div style={{ fontSize: 11, color: 'var(--xp-text-secondary)', marginBottom: 4 }}>
+                        <div
+                          style={{
+                            fontSize: 11,
+                            color: 'var(--xp-text-secondary)',
+                            marginBottom: 4,
+                          }}
+                        >
                           Will create: {preview.creates.map((p) => truncatePath(p)).join(', ')}
                         </div>
                       )}
                       <div style={{ maxHeight: 160, overflowY: 'auto' }}>
                         {preview.moves.map((move, i) => (
                           <div
+                            // eslint-disable-next-line react/no-array-index-key
                             key={i}
                             style={{
                               display: 'flex',
@@ -352,9 +453,28 @@ const OrganizerTabContent = React.memo(function OrganizerTabContent({
                               padding: '2px 0',
                             }}
                           >
-                            <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{truncatePath(move.from)}</span>
+                            <span
+                              style={{
+                                flex: 1,
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                              }}
+                            >
+                              {truncatePath(move.from)}
+                            </span>
                             <span style={{ color: '#3b82f6', flexShrink: 0 }}>&rarr;</span>
-                            <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: '#22c55e' }}>{truncatePath(move.to)}</span>
+                            <span
+                              style={{
+                                flex: 1,
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                                color: '#22c55e',
+                              }}
+                            >
+                              {truncatePath(move.to)}
+                            </span>
                           </div>
                         ))}
                       </div>
@@ -405,7 +525,15 @@ const OrganizerTabContent = React.memo(function OrganizerTabContent({
                 </div>
               ) : (
                 <>
-                  <div style={{ ...cardStyle, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div
+                    style={{
+                      ...cardStyle,
+                      marginBottom: 8,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                    }}
+                  >
                     <div style={{ fontSize: 12 }}>
                       <span style={{ color: '#ef4444', fontWeight: 500 }}>
                         {analysis.duplicate_summary.groups.length} group
@@ -418,13 +546,22 @@ const OrganizerTabContent = React.memo(function OrganizerTabContent({
                     </div>
                   </div>
                   {analysis.duplicate_summary.groups.map((group, i) => (
+                    // eslint-disable-next-line react/no-array-index-key
                     <div key={i} style={{ ...cardStyle, marginBottom: 4 }}>
-                      <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--xp-text)', marginBottom: 4 }}>
+                      <div
+                        style={{
+                          fontSize: 12,
+                          fontWeight: 500,
+                          color: 'var(--xp-text)',
+                          marginBottom: 4,
+                        }}
+                      >
                         {group.files.length} copies &middot; {formatFileSize(group.size)} each
                       </div>
                       <div style={{ maxHeight: 80, overflowY: 'auto' }}>
                         {group.files.map((file, j) => (
                           <div
+                            // eslint-disable-next-line react/no-array-index-key
                             key={j}
                             onClick={() => {
                               const sep = file.path.includes('\\') ? '\\' : '/';
@@ -443,12 +580,21 @@ const OrganizerTabContent = React.memo(function OrganizerTabContent({
                             }}
                           >
                             {file.name}
-                            {j === 0 && <span style={{ color: '#22c55e', marginLeft: 4 }}>(newest)</span>}
+                            {j === 0 && (
+                              <span style={{ color: '#22c55e', marginLeft: 4 }}>(newest)</span>
+                            )}
                           </div>
                         ))}
                       </div>
                       {analysis.duplicate_summary!.recommendations[i] && (
-                        <div style={{ fontSize: 11, color: '#eab308', marginTop: 4, fontStyle: 'italic' }}>
+                        <div
+                          style={{
+                            fontSize: 11,
+                            color: '#eab308',
+                            marginTop: 4,
+                            fontStyle: 'italic',
+                          }}
+                        >
                           {analysis.duplicate_summary!.recommendations[i].reason}
                         </div>
                       )}
@@ -468,14 +614,31 @@ const OrganizerTabContent = React.memo(function OrganizerTabContent({
           {!collapsedSections.has('insights') && (
             <div style={{ marginBottom: 16 }}>
               {/* Stats cards */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 12 }}>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr 1fr',
+                  gap: 8,
+                  marginBottom: 12,
+                }}
+              >
                 {[
                   { label: 'Files', value: analysis.insights.total_files.toString() },
                   { label: 'Size', value: formatFileSize(analysis.insights.total_size) },
                   { label: 'Avg', value: formatFileSize(analysis.insights.avg_file_size) },
                 ].map(({ label, value }) => (
-                  <div key={label} style={{ ...cardStyle, marginBottom: 0, textAlign: 'center', padding: '8px 6px' }}>
-                    <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--xp-text)' }}>{value}</div>
+                  <div
+                    key={label}
+                    style={{
+                      ...cardStyle,
+                      marginBottom: 0,
+                      textAlign: 'center',
+                      padding: '8px 6px',
+                    }}
+                  >
+                    <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--xp-text)' }}>
+                      {value}
+                    </div>
                     <div style={{ fontSize: 11, color: 'var(--xp-text-secondary)' }}>{label}</div>
                   </div>
                 ))}
@@ -484,10 +647,23 @@ const OrganizerTabContent = React.memo(function OrganizerTabContent({
               {/* Type distribution bar */}
               {analysis.insights.type_distribution.length > 0 && (
                 <div style={{ marginBottom: 12 }}>
-                  <div style={{ fontSize: 11, color: 'var(--xp-text-secondary)', marginBottom: 4 }}>Type distribution</div>
-                  <div style={{ display: 'flex', height: 16, borderRadius: 4, overflow: 'hidden', background: 'var(--xp-surface-light)' }}>
+                  <div style={{ fontSize: 11, color: 'var(--xp-text-secondary)', marginBottom: 4 }}>
+                    Type distribution
+                  </div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      height: 16,
+                      borderRadius: 4,
+                      overflow: 'hidden',
+                      background: 'var(--xp-surface-light)',
+                    }}
+                  >
                     {analysis.insights.type_distribution.map((td) => {
-                      const pct = analysis.insights.total_files > 0 ? (td.count / analysis.insights.total_files) * 100 : 0;
+                      const pct =
+                        analysis.insights.total_files > 0
+                          ? (td.count / analysis.insights.total_files) * 100
+                          : 0;
                       if (pct < 1) return null;
                       return (
                         <div
@@ -504,8 +680,25 @@ const OrganizerTabContent = React.memo(function OrganizerTabContent({
                   </div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2px 12px', marginTop: 4 }}>
                     {analysis.insights.type_distribution.map((td) => (
-                      <div key={td.category} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: 'var(--xp-text-secondary)' }}>
-                        <span style={{ width: 8, height: 8, borderRadius: '50%', display: 'inline-block', backgroundColor: CATEGORY_COLORS[td.category] || '#94a3b8' }} />
+                      <div
+                        key={td.category}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 4,
+                          fontSize: 11,
+                          color: 'var(--xp-text-secondary)',
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: '50%',
+                            display: 'inline-block',
+                            backgroundColor: CATEGORY_COLORS[td.category] || '#94a3b8',
+                          }}
+                        />
                         {td.category} ({td.count})
                       </div>
                     ))}
@@ -516,10 +709,12 @@ const OrganizerTabContent = React.memo(function OrganizerTabContent({
               {/* Largest files */}
               {analysis.insights.largest_files.length > 0 && (
                 <div style={{ marginBottom: 12 }}>
-                  <div style={{ fontSize: 11, color: 'var(--xp-text-secondary)', marginBottom: 4 }}>Largest files</div>
-                  {analysis.insights.largest_files.map((file, i) => (
+                  <div style={{ fontSize: 11, color: 'var(--xp-text-secondary)', marginBottom: 4 }}>
+                    Largest files
+                  </div>
+                  {analysis.insights.largest_files.map((file) => (
                     <div
-                      key={i}
+                      key={file.path}
                       onClick={() => {
                         const sep = file.path.includes('\\') ? '\\' : '/';
                         const parent = file.path.substring(0, file.path.lastIndexOf(sep));
@@ -535,8 +730,24 @@ const OrganizerTabContent = React.memo(function OrganizerTabContent({
                         cursor: 'pointer',
                       }}
                     >
-                      <span style={{ fontSize: 12, color: 'var(--xp-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, marginRight: 8 }}>{file.name}</span>
-                      <span style={{ fontSize: 11, color: 'var(--xp-text-secondary)', flexShrink: 0 }}>{formatFileSize(file.size)}</span>
+                      <span
+                        style={{
+                          fontSize: 12,
+                          color: 'var(--xp-text)',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                          flex: 1,
+                          marginRight: 8,
+                        }}
+                      >
+                        {file.name}
+                      </span>
+                      <span
+                        style={{ fontSize: 11, color: 'var(--xp-text-secondary)', flexShrink: 0 }}
+                      >
+                        {formatFileSize(file.size)}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -545,10 +756,12 @@ const OrganizerTabContent = React.memo(function OrganizerTabContent({
               {/* Oldest files */}
               {analysis.insights.oldest_files.length > 0 && (
                 <div style={{ marginBottom: 12 }}>
-                  <div style={{ fontSize: 11, color: 'var(--xp-text-secondary)', marginBottom: 4 }}>Oldest files</div>
-                  {analysis.insights.oldest_files.map((file, i) => (
+                  <div style={{ fontSize: 11, color: 'var(--xp-text-secondary)', marginBottom: 4 }}>
+                    Oldest files
+                  </div>
+                  {analysis.insights.oldest_files.map((file) => (
                     <div
-                      key={i}
+                      key={file.path}
                       onClick={() => {
                         const sep = file.path.includes('\\') ? '\\' : '/';
                         const parent = file.path.substring(0, file.path.lastIndexOf(sep));
@@ -564,9 +777,25 @@ const OrganizerTabContent = React.memo(function OrganizerTabContent({
                         cursor: 'pointer',
                       }}
                     >
-                      <span style={{ fontSize: 12, color: 'var(--xp-text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, marginRight: 8 }}>{file.name}</span>
-                      <span style={{ fontSize: 11, color: 'var(--xp-text-secondary)', flexShrink: 0 }}>
-                        {file.modified > 0 ? new Date(file.modified * 1000).toLocaleDateString() : 'Unknown'}
+                      <span
+                        style={{
+                          fontSize: 12,
+                          color: 'var(--xp-text)',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                          flex: 1,
+                          marginRight: 8,
+                        }}
+                      >
+                        {file.name}
+                      </span>
+                      <span
+                        style={{ fontSize: 11, color: 'var(--xp-text-secondary)', flexShrink: 0 }}
+                      >
+                        {file.modified > 0
+                          ? new Date(file.modified * 1000).toLocaleDateString()
+                          : 'Unknown'}
                       </span>
                     </div>
                   ))}
@@ -578,7 +807,14 @@ const OrganizerTabContent = React.memo(function OrganizerTabContent({
       )}
 
       {!loading && !analysis && !error && (
-        <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--xp-text-secondary)', fontSize: 12 }}>
+        <div
+          style={{
+            textAlign: 'center',
+            padding: '32px 0',
+            color: 'var(--xp-text-secondary)',
+            fontSize: 12,
+          }}
+        >
           Click "Analyze" to scan the current directory
         </div>
       )}
@@ -669,9 +905,11 @@ const PerformanceDashboard = React.memo(function PerformanceDashboard({
               className="hover:bg-xp-surface-light"
               style={sectionHeaderStyle}
             >
-              {metricsExpanded
-                ? <ChevronDown size={14} style={{ flexShrink: 0 }} />
-                : <ChevronRight size={14} style={{ flexShrink: 0 }} />}
+              {metricsExpanded ? (
+                <ChevronDown size={14} style={{ flexShrink: 0 }} />
+              ) : (
+                <ChevronRight size={14} style={{ flexShrink: 0 }} />
+              )}
               Performance Metrics
             </button>
             <button
@@ -724,7 +962,10 @@ const PerformanceDashboard = React.memo(function PerformanceDashboard({
                 <StatRow label="Files" value={directoryStats.fileCount.toLocaleString()} />
                 <StatRow label="Folders" value={directoryStats.folderCount.toLocaleString()} />
                 <StatRow label="Total Size" value={formatFileSize(directoryStats.totalSize)} />
-                <StatRow label="Folders Cached" value={`${directoryStats.cachedFolderCount} folders`} />
+                <StatRow
+                  label="Folders Cached"
+                  value={`${directoryStats.cachedFolderCount} folders`}
+                />
                 {memoryUsage !== null && (
                   <StatRow label="JS Heap Usage" value={formatFileSize(memoryUsage)} />
                 )}
@@ -736,8 +977,16 @@ const PerformanceDashboard = React.memo(function PerformanceDashboard({
 
                 {/* AI Indexer */}
                 <div style={{ marginBottom: 8 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: 12, color: 'var(--xp-text-secondary)' }}>AI Indexer</span>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <span style={{ fontSize: 12, color: 'var(--xp-text-secondary)' }}>
+                      AI Indexer
+                    </span>
                     <span
                       style={{
                         fontSize: 11,
@@ -752,7 +1001,10 @@ const PerformanceDashboard = React.memo(function PerformanceDashboard({
                       {indexingStatus.isAiProcessing ? 'Indexing' : 'Idle'}
                     </span>
                   </div>
-                  <StatRow label="Indexed Files" value={indexingStatus.aiIndexed.toLocaleString()} />
+                  <StatRow
+                    label="Indexed Files"
+                    value={indexingStatus.aiIndexed.toLocaleString()}
+                  />
                   {indexingStatus.aiQueueLength > 0 && (
                     <StatRow label="Queue" value={indexingStatus.aiQueueLength.toLocaleString()} />
                   )}
@@ -785,7 +1037,13 @@ const PerformanceDashboard = React.memo(function PerformanceDashboard({
 
                 {/* Search Tokenizer */}
                 <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
                     <span style={{ fontSize: 12, color: 'var(--xp-text-secondary)' }}>
                       Search Tokenizer
                     </span>
@@ -803,8 +1061,14 @@ const PerformanceDashboard = React.memo(function PerformanceDashboard({
                       {indexingStatus.isTokenizerIndexing ? 'Indexing' : 'Ready'}
                     </span>
                   </div>
-                  <StatRow label="Indexed Files" value={indexingStatus.tokenTotalFiles.toLocaleString()} />
-                  <StatRow label="Total Tokens" value={indexingStatus.tokenTotalTokens.toLocaleString()} />
+                  <StatRow
+                    label="Indexed Files"
+                    value={indexingStatus.tokenTotalFiles.toLocaleString()}
+                  />
+                  <StatRow
+                    label="Total Tokens"
+                    value={indexingStatus.tokenTotalTokens.toLocaleString()}
+                  />
                   {indexingStatus.tokenLastUpdated > 0 && (
                     <StatRow
                       label="Last Updated"
@@ -836,7 +1100,9 @@ const PerformanceDashboard = React.memo(function PerformanceDashboard({
                 <div style={cardTitleStyle}>Recent Operations</div>
 
                 {recentOps.length === 0 ? (
-                  <div style={{ fontSize: 12, color: 'var(--xp-text-secondary)', padding: '4px 0' }}>
+                  <div
+                    style={{ fontSize: 12, color: 'var(--xp-text-secondary)', padding: '4px 0' }}
+                  >
                     No recent operations
                   </div>
                 ) : (
@@ -891,7 +1157,8 @@ const PerformanceDashboard = React.memo(function PerformanceDashboard({
                             alignItems: 'center',
                             gap: 8,
                             padding: '4px 0',
-                            borderBottom: i < recentOps.length - 1 ? '1px solid var(--xp-border)' : 'none',
+                            borderBottom:
+                              i < recentOps.length - 1 ? '1px solid var(--xp-border)' : 'none',
                             fontSize: 12,
                           }}
                         >
@@ -952,7 +1219,8 @@ const PerformanceDashboard = React.memo(function PerformanceDashboard({
                       key={s.id}
                       style={{
                         ...suggestionRowStyle,
-                        borderBottom: i < suggestions.length - 1 ? '1px solid var(--xp-border)' : 'none',
+                        borderBottom:
+                          i < suggestions.length - 1 ? '1px solid var(--xp-border)' : 'none',
                       }}
                     >
                       <div style={{ flex: 1, minWidth: 0 }}>
@@ -974,7 +1242,9 @@ const PerformanceDashboard = React.memo(function PerformanceDashboard({
                         >
                           {s.description}
                           {s.estimatedSize > 0 && (
-                            <span style={{ marginLeft: 4 }}>({formatFileSize(s.estimatedSize)})</span>
+                            <span style={{ marginLeft: 4 }}>
+                              ({formatFileSize(s.estimatedSize)})
+                            </span>
                           )}
                         </div>
                       </div>
@@ -996,17 +1266,16 @@ const PerformanceDashboard = React.memo(function PerformanceDashboard({
             className="hover:bg-xp-surface-light"
             style={sectionHeaderStyle}
           >
-            {organizerExpanded
-              ? <ChevronDown size={14} style={{ flexShrink: 0 }} />
-              : <ChevronRight size={14} style={{ flexShrink: 0 }} />}
+            {organizerExpanded ? (
+              <ChevronDown size={14} style={{ flexShrink: 0 }} />
+            ) : (
+              <ChevronRight size={14} style={{ flexShrink: 0 }} />
+            )}
             File Organizer
           </button>
 
           {organizerExpanded && (
-            <OrganizerTabContent
-              currentPath={currentPath}
-              navigateToPath={navigateToPath}
-            />
+            <OrganizerTabContent currentPath={currentPath} navigateToPath={navigateToPath} />
           )}
         </div>
       </div>

@@ -70,7 +70,7 @@ const getTabIcon = (tab: TabItem) => {
     default:
       return File;
   }
-}
+};
 
 // ── Context Menu ──────────────────────────────────────────────────────────────
 
@@ -479,8 +479,9 @@ const PaneTabBar = ({
         if (
           (e.target as HTMLElement).closest('button') ||
           (e.target as HTMLElement).closest('[data-tab-item]')
-        )
+        ) {
           return;
+        }
         handleToggleMaximize();
       }}
     >
@@ -531,18 +532,17 @@ const PaneTabBar = ({
                 minWidth: 0,
                 maxWidth: isPinned ? 120 : 180,
                 userSelect: 'none',
-                background: isCrossDropTarget
-                  ? 'color-mix(in srgb, var(--xp-blue) 20%, var(--xp-surface))'
-                  : isActive
-                    ? 'var(--xp-bg)'
-                    : isPinned
-                      ? 'color-mix(in srgb, var(--xp-blue) 8%, var(--xp-surface))'
-                      : 'transparent',
-                borderBottom: isCrossDropTarget
-                  ? '2px solid var(--xp-blue)'
-                  : isActive
-                    ? '2px solid var(--xp-blue)'
-                    : '2px solid transparent',
+                background: (() => {
+                  if (isCrossDropTarget)
+                    {return 'color-mix(in srgb, var(--xp-blue) 20%, var(--xp-surface))';}
+                  if (isActive) return 'var(--xp-bg)';
+                  if (isPinned) return 'color-mix(in srgb, var(--xp-blue) 8%, var(--xp-surface))';
+                  return 'transparent';
+                })(),
+                borderBottom: (() => {
+                  if (isCrossDropTarget || isActive) return '2px solid var(--xp-blue)';
+                  return '2px solid transparent';
+                })(),
                 outline: isCrossDropTarget ? '1px dashed var(--xp-blue)' : 'none',
                 outlineOffset: -1,
                 opacity: isBeingDragged ? 0.5 : 1,
@@ -861,6 +861,6 @@ const PaneTabBar = ({
       `}</style>
     </div>
   );
-}
+};
 
 export default PaneTabBar;

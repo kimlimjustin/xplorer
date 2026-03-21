@@ -58,14 +58,11 @@ const TreeView = ({
         aria-label={`${file.name}${file.is_dir ? ', folder' : ', file'}`}
         tabIndex={0}
         data-drop-target={file.is_dir ? file.path : undefined}
-        className={`
-          flex items-center py-1 px-2 hover:bg-xp-surface-light rounded cursor-pointer min-w-0 overflow-hidden transition-colors
-          ${
-            selectedFiles.has(file.path)
-              ? 'bg-xp-purple/20 border border-xp-purple/40'
-              : 'text-xp-text border border-transparent'
-          }
-        `}
+        className={`hover:bg-xp-surface-light flex min-w-0 cursor-pointer items-center overflow-hidden rounded px-2 py-1 transition-colors ${
+          selectedFiles.has(file.path)
+            ? 'bg-xp-purple/20 border-xp-purple/40 border'
+            : 'text-xp-text border border-transparent'
+        } `}
         style={{ paddingLeft: `${depth * 20 + 8}px` }}
         onClick={(e) => {
           if (file.is_dir) {
@@ -83,10 +80,10 @@ const TreeView = ({
           }
         }}
       >
-        <div className="flex items-center space-x-1 flex-1 min-w-0">
+        <div className="flex min-w-0 flex-1 items-center space-x-1">
           {file.is_dir && (
             <button
-              className="p-0.5 hover:bg-xp-surface-light rounded flex-shrink-0"
+              className="hover:bg-xp-surface-light flex-shrink-0 rounded p-0.5"
               onClick={(e) => {
                 e.stopPropagation();
                 toggleFolder(file.path);
@@ -96,7 +93,7 @@ const TreeView = ({
               }
             >
               <svg
-                className={`w-3 h-3 transition-transform ${
+                className={`h-3 w-3 transition-transform ${
                   expandedFolders.has(file.path) ? 'rotate-90' : ''
                 }`}
                 fill="currentColor"
@@ -112,8 +109,8 @@ const TreeView = ({
           )}
           {!file.is_dir && <div className="w-4 flex-shrink-0" />}
 
-          <span className="text-sm mr-2 flex-shrink-0">{getFileIcon(file)}</span>
-          <span className="truncate flex-1 text-sm">{file.name}</span>
+          <span className="mr-2 flex-shrink-0 text-sm">{getFileIcon(file)}</span>
+          <span className="flex-1 truncate text-sm">{file.name}</span>
         </div>
       </div>
 
@@ -132,10 +129,10 @@ const TreeView = ({
               ?.map((childFile) => renderFileItem(childFile, depth + 1))
           ) : (
             <div
-              className="text-xs text-xp-text-muted py-1 flex items-center"
+              className="text-xp-text-muted flex items-center py-1 text-xs"
               style={{ paddingLeft: `${(depth + 1) * 20 + 8}px` }}
             >
-              <svg className="w-3 h-3 mr-2 animate-spin" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="mr-2 h-3 w-3 animate-spin" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fillRule="evenodd"
                   d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
@@ -152,7 +149,7 @@ const TreeView = ({
 
   return (
     <div
-      className="text-sm overflow-hidden"
+      className="overflow-hidden text-sm"
       role="tree"
       aria-label="File tree"
       onContextMenu={handleBackgroundRightClick || undefined}
@@ -160,6 +157,6 @@ const TreeView = ({
       {sortedFiles.map((file) => renderFileItem(file, 0))}
     </div>
   );
-}
+};
 
 export default TreeView;

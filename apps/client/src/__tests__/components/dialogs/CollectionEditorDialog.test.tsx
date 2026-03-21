@@ -23,8 +23,14 @@ vi.mock('@/lib/collections', () => {
   ];
 
   const COLLECTION_COLORS = [
-    '#ef4444', '#f59e0b', '#10b981', '#3b82f6',
-    '#a855f7', '#ec4899', '#06b6d4', '#64748b',
+    '#ef4444',
+    '#f59e0b',
+    '#10b981',
+    '#3b82f6',
+    '#a855f7',
+    '#ec4899',
+    '#06b6d4',
+    '#64748b',
   ];
 
   const FILTER_TYPES: CollectionFilter['type'][] = [
@@ -159,7 +165,9 @@ describe('CollectionEditorDialog', () => {
 
     it('displays the base directory input with current path', () => {
       render(<CollectionEditorDialog {...defaultProps} />);
-      const baseInput = screen.getByPlaceholderText('Leave empty to use as quick filter on current directory');
+      const baseInput = screen.getByPlaceholderText(
+        'Leave empty to use as quick filter on current directory',
+      );
       expect(baseInput).toHaveValue('/home/user/documents');
     });
   });
@@ -188,7 +196,9 @@ describe('CollectionEditorDialog', () => {
 
     it('populates the base directory with the collection basePath', () => {
       render(<CollectionEditorDialog {...defaultProps} collection={existingCollection} />);
-      const baseInput = screen.getByPlaceholderText('Leave empty to use as quick filter on current directory');
+      const baseInput = screen.getByPlaceholderText(
+        'Leave empty to use as quick filter on current directory',
+      );
       expect(baseInput).toHaveValue('/home/user/docs');
     });
   });
@@ -223,7 +233,9 @@ describe('CollectionEditorDialog', () => {
 
     it('allows typing in the base directory input', () => {
       render(<CollectionEditorDialog {...defaultProps} />);
-      const baseInput = screen.getByPlaceholderText('Leave empty to use as quick filter on current directory');
+      const baseInput = screen.getByPlaceholderText(
+        'Leave empty to use as quick filter on current directory',
+      );
       fireEvent.change(baseInput, { target: { value: '/new/path' } });
       expect(baseInput).toHaveValue('/new/path');
     });

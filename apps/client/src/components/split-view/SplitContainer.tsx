@@ -56,16 +56,16 @@ interface SplitContainerProps {
 }
 
 /** Collect all group IDs from a node */
-const collectIds = (node: SplitNode) : string[] => {
+const collectIds = (node: SplitNode): string[] => {
   if (node.type === 'leaf') return [node.groupId];
   return node.children.flatMap(collectIds);
-}
+};
 
 /** Check if a node (or its descendants) contains a specific groupId */
-const nodeContainsGroup = (node: SplitNode, groupId: string) : boolean => {
+const nodeContainsGroup = (node: SplitNode, groupId: string): boolean => {
   if (node.type === 'leaf') return node.groupId === groupId;
   return node.children.some((child) => nodeContainsGroup(child, groupId));
-}
+};
 
 const SplitContainer = ({
   node,
@@ -296,7 +296,7 @@ const SplitContainer = ({
       })}
     </div>
   );
-}
+};
 
 // ── Resize Handle Adapter ────────────────────────────────────────────────────
 
@@ -339,6 +339,6 @@ const SplitResizeHandle = ({
   );
 
   return <ResizeHandle direction={direction} onResize={handleResize} />;
-}
+};
 
 export default SplitContainer;

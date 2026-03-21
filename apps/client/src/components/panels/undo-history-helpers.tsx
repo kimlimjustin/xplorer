@@ -150,7 +150,7 @@ export const operationColor = (type: string): string => {
 };
 
 /** Format a Unix ms timestamp as a relative or absolute time string */
-export const formatTimestamp = (ms: number) : string => {
+export const formatTimestamp = (ms: number): string => {
   if (!ms) return '';
   const now = Date.now();
   const diff = now - ms;
@@ -164,29 +164,29 @@ export const formatTimestamp = (ms: number) : string => {
     hour: '2-digit',
     minute: '2-digit',
   });
-}
+};
 
 /** Extract the file name from a full path */
-export const fileName = (path: string | null) : string => {
+export const fileName = (path: string | null): string => {
   if (!path) return '';
   const parts = path.replace(/\\/g, '/').split('/');
   return parts[parts.length - 1] || path;
-}
+};
 
 /** Extract the parent directory from a full path */
-export const parentDir = (path: string | null) : string => {
+export const parentDir = (path: string | null): string => {
   if (!path) return '';
   const normalized = path.replace(/\\/g, '/');
   const idx = normalized.lastIndexOf('/');
   return idx >= 0 ? normalized.slice(0, idx) : path;
-}
+};
 
 // ── Grouping Logic ───────────────────────────────────────────────────────────
 
 export const groupHistoryEntries = (
   entries: UndoHistoryEntry[],
   expandedGroups: Set<string>,
-) : DisplayItem[] => {
+): DisplayItem[] => {
   if (entries.length === 0) return [];
 
   const result: DisplayItem[] = [];
@@ -229,4 +229,4 @@ export const groupHistoryEntries = (
   }
 
   return result;
-}
+};

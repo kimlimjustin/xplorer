@@ -4,7 +4,9 @@ import { useDialogManager } from '@/hooks/use-dialog-manager';
 
 // Mock use-dialogs to control dialog state
 const mockClosePasswordPrompt = vi.fn();
-const mockPasswordPromptData = { current: null as { archivePath: string; resolve: (password: string | null) => void } | null };
+const mockPasswordPromptData = {
+  current: null as { archivePath: string; resolve: (password: string | null) => void } | null,
+};
 
 vi.mock('@/hooks/use-dialogs', () => ({
   useDialogs: () => ({
@@ -107,7 +109,9 @@ describe('useDialogManager', () => {
   describe('initial state', () => {
     it('returns dialog state plus manager functions', () => {
       const deps = makeDeps();
-      const { result } = renderHook(() => useDialogManager(deps as Parameters<typeof useDialogManager>[0]));
+      const { result } = renderHook(() =>
+        useDialogManager(deps as Parameters<typeof useDialogManager>[0]),
+      );
 
       expect(typeof result.current.handlePasswordPromptSubmit).toBe('function');
       expect(typeof result.current.handlePasswordPromptClose).toBe('function');
@@ -116,7 +120,9 @@ describe('useDialogManager', () => {
 
     it('spreads all dialog state properties', () => {
       const deps = makeDeps();
-      const { result } = renderHook(() => useDialogManager(deps as Parameters<typeof useDialogManager>[0]));
+      const { result } = renderHook(() =>
+        useDialogManager(deps as Parameters<typeof useDialogManager>[0]),
+      );
 
       // Check some dialog properties are passed through
       expect(result.current.propertiesDialogOpen).toBe(false);
@@ -135,7 +141,9 @@ describe('useDialogManager', () => {
       };
 
       const deps = makeDeps();
-      const { result } = renderHook(() => useDialogManager(deps as Parameters<typeof useDialogManager>[0]));
+      const { result } = renderHook(() =>
+        useDialogManager(deps as Parameters<typeof useDialogManager>[0]),
+      );
 
       await act(async () => {
         await result.current.handlePasswordPromptSubmit('mypassword', true);
@@ -152,7 +160,9 @@ describe('useDialogManager', () => {
       };
 
       const deps = makeDeps();
-      const { result } = renderHook(() => useDialogManager(deps as Parameters<typeof useDialogManager>[0]));
+      const { result } = renderHook(() =>
+        useDialogManager(deps as Parameters<typeof useDialogManager>[0]),
+      );
 
       await act(async () => {
         await result.current.handlePasswordPromptSubmit('pass', false);
@@ -165,7 +175,9 @@ describe('useDialogManager', () => {
       mockPasswordPromptData.current = null;
 
       const deps = makeDeps();
-      const { result } = renderHook(() => useDialogManager(deps as Parameters<typeof useDialogManager>[0]));
+      const { result } = renderHook(() =>
+        useDialogManager(deps as Parameters<typeof useDialogManager>[0]),
+      );
 
       await act(async () => {
         await result.current.handlePasswordPromptSubmit('pass', false);
@@ -178,7 +190,9 @@ describe('useDialogManager', () => {
   describe('handlePasswordPromptClose', () => {
     it('closes the password prompt', () => {
       const deps = makeDeps();
-      const { result } = renderHook(() => useDialogManager(deps as Parameters<typeof useDialogManager>[0]));
+      const { result } = renderHook(() =>
+        useDialogManager(deps as Parameters<typeof useDialogManager>[0]),
+      );
 
       act(() => {
         result.current.handlePasswordPromptClose();
@@ -198,7 +212,9 @@ describe('useDialogManager', () => {
         activeGroupId: 'group-main',
       });
 
-      const { result } = renderHook(() => useDialogManager(deps as Parameters<typeof useDialogManager>[0]));
+      const { result } = renderHook(() =>
+        useDialogManager(deps as Parameters<typeof useDialogManager>[0]),
+      );
 
       act(() => {
         result.current.handleComparisonFromDialog('/home/file1.txt', '/home/file2.txt');
@@ -225,7 +241,9 @@ describe('useDialogManager', () => {
         splitLayout: { addTab },
       });
 
-      const { result } = renderHook(() => useDialogManager(deps as Parameters<typeof useDialogManager>[0]));
+      const { result } = renderHook(() =>
+        useDialogManager(deps as Parameters<typeof useDialogManager>[0]),
+      );
 
       act(() => {
         result.current.handleComparisonFromDialog(
@@ -245,7 +263,9 @@ describe('useDialogManager', () => {
         splitLayout: { addTab },
       });
 
-      const { result } = renderHook(() => useDialogManager(deps as Parameters<typeof useDialogManager>[0]));
+      const { result } = renderHook(() =>
+        useDialogManager(deps as Parameters<typeof useDialogManager>[0]),
+      );
 
       act(() => {
         result.current.handleComparisonFromDialog('', '');
@@ -260,7 +280,9 @@ describe('useDialogManager', () => {
       vi.useFakeTimers();
       const addTab = vi.fn();
       const deps = makeDeps({ splitLayout: { addTab } });
-      const { result } = renderHook(() => useDialogManager(deps as Parameters<typeof useDialogManager>[0]));
+      const { result } = renderHook(() =>
+        useDialogManager(deps as Parameters<typeof useDialogManager>[0]),
+      );
 
       act(() => {
         result.current.handleComparisonFromDialog('/a.txt', '/b.txt');

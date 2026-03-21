@@ -201,7 +201,7 @@ export default function TokenizerSettingsComponent({ className }: TokenizerSetti
   if (isLoading) {
     return (
       <div className={`flex items-center justify-center p-8 ${className || ''}`}>
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-xp-blue"></div>
+        <div className="border-xp-blue h-8 w-8 animate-spin rounded-full border-b-2" />
       </div>
     );
   }
@@ -211,35 +211,35 @@ export default function TokenizerSettingsComponent({ className }: TokenizerSetti
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-xp-text">File Tokenizer</h2>
-          <p className="text-sm text-xp-text-muted">
+          <h2 className="text-xp-text text-xl font-semibold">File Tokenizer</h2>
+          <p className="text-xp-text-muted text-sm">
             Index file contents for lightning-fast search and AI integration
           </p>
         </div>
 
         <div className="flex items-center space-x-2">
           {stats && (
-            <div className="text-xs text-xp-text-muted">
+            <div className="text-xp-text-muted text-xs">
               {stats.total_files} files, {stats.total_tokens.toLocaleString()} tokens
             </div>
           )}
           <div
-            className={`w-3 h-3 rounded-full ${settings.enabled ? 'bg-green-500' : 'bg-gray-400'}`}
-          ></div>
+            className={`h-3 w-3 rounded-full ${settings.enabled ? 'bg-green-500' : 'bg-gray-400'}`}
+          />
         </div>
       </div>
 
       {/* Enable/Disable Toggle */}
-      <div className="flex items-center justify-between p-4 bg-xp-surface rounded-lg border border-xp-border">
+      <div className="bg-xp-surface border-xp-border flex items-center justify-between rounded-lg border p-4">
         <div>
-          <h3 className="font-medium text-xp-text">Enable File Indexing</h3>
-          <p className="text-sm text-xp-text-muted">
+          <h3 className="text-xp-text font-medium">Enable File Indexing</h3>
+          <p className="text-xp-text-muted text-sm">
             Automatically index whitelisted directories for fast search
           </p>
         </div>
         <button
           onClick={() => setSettings((prev) => ({ ...prev, enabled: !prev.enabled }))}
-          className={`px-4 py-2 rounded-md transition-colors ${
+          className={`rounded-md px-4 py-2 transition-colors ${
             settings.enabled
               ? 'bg-green-600 text-white hover:bg-green-700'
               : 'bg-gray-600 text-white hover:bg-gray-700'
@@ -250,16 +250,16 @@ export default function TokenizerSettingsComponent({ className }: TokenizerSetti
       </div>
 
       {/* Auto-whitelist visited folders */}
-      <div className="flex items-center justify-between p-4 bg-xp-surface rounded-lg border border-xp-border">
+      <div className="bg-xp-surface border-xp-border flex items-center justify-between rounded-lg border p-4">
         <div>
-          <h3 className="font-medium text-xp-text">Auto-whitelist visited folders</h3>
-          <p className="text-sm text-xp-text-muted">
+          <h3 className="text-xp-text font-medium">Auto-whitelist visited folders</h3>
+          <p className="text-xp-text-muted text-sm">
             Automatically add every folder you navigate to the whitelist for indexing
           </p>
         </div>
         <button
           onClick={() => toggleAutoWhitelist(!autoWhitelist)}
-          className={`px-4 py-2 rounded-md transition-colors ${
+          className={`rounded-md px-4 py-2 transition-colors ${
             autoWhitelist
               ? 'bg-green-600 text-white hover:bg-green-700'
               : 'bg-gray-600 text-white hover:bg-gray-700'
@@ -271,10 +271,10 @@ export default function TokenizerSettingsComponent({ className }: TokenizerSetti
 
       {/* Indexing Status & Progress */}
       {(isIndexing || indexingProgress) && (
-        <div className="p-4 bg-xp-surface rounded-lg border border-xp-border">
-          <div className="flex items-center space-x-2 mb-2">
-            <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-            <h3 className="font-medium text-xp-text">
+        <div className="bg-xp-surface border-xp-border rounded-lg border p-4">
+          <div className="mb-2 flex items-center space-x-2">
+            <div className="h-2 w-2 animate-pulse rounded-full bg-blue-500" />
+            <h3 className="text-xp-text font-medium">
               {isIndexing ? 'Indexing in Progress' : 'Indexing Complete'}
             </h3>
           </div>
@@ -290,14 +290,14 @@ export default function TokenizerSettingsComponent({ className }: TokenizerSetti
                 </span>
               </div>
 
-              <div className="w-full bg-xp-bg rounded-full h-2">
+              <div className="bg-xp-bg h-2 w-full rounded-full">
                 <div
-                  className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                  className="h-2 rounded-full bg-blue-500 transition-all duration-300"
                   style={{ width: `${indexingProgress.progress_percentage}%` }}
-                ></div>
+                />
               </div>
 
-              <div className="text-xs text-xp-text-muted">
+              <div className="text-xp-text-muted text-xs">
                 Current: {indexingProgress.current_file}
               </div>
             </div>
@@ -307,52 +307,52 @@ export default function TokenizerSettingsComponent({ className }: TokenizerSetti
 
       {/* Statistics */}
       {stats && (
-        <div className="p-4 bg-xp-surface rounded-lg border border-xp-border">
-          <h3 className="font-medium text-xp-text mb-3">Index Statistics</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="bg-xp-surface border-xp-border rounded-lg border p-4">
+          <h3 className="text-xp-text mb-3 font-medium">Index Statistics</h3>
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             <div className="text-center">
-              <div className="text-lg font-semibold text-xp-blue">{stats.total_files}</div>
-              <div className="text-xs text-xp-text-muted">Files Indexed</div>
+              <div className="text-xp-blue text-lg font-semibold">{stats.total_files}</div>
+              <div className="text-xp-text-muted text-xs">Files Indexed</div>
             </div>
             <div className="text-center">
-              <div className="text-lg font-semibold text-xp-blue">
+              <div className="text-xp-blue text-lg font-semibold">
                 {stats.total_tokens.toLocaleString()}
               </div>
-              <div className="text-xs text-xp-text-muted">Total Tokens</div>
+              <div className="text-xp-text-muted text-xs">Total Tokens</div>
             </div>
             <div className="text-center">
-              <div className="text-lg font-semibold text-xp-blue">
+              <div className="text-xp-blue text-lg font-semibold">
                 {Object.keys(stats.word_to_files || {}).length.toLocaleString()}
               </div>
-              <div className="text-xs text-xp-text-muted">Unique Words</div>
+              <div className="text-xp-text-muted text-xs">Unique Words</div>
             </div>
             <div className="text-center">
-              <div className="text-lg font-semibold text-xp-blue">
+              <div className="text-xp-blue text-lg font-semibold">
                 {stats.last_updated
                   ? new Date(stats.last_updated * 1000).toLocaleDateString()
                   : 'Never'}
               </div>
-              <div className="text-xs text-xp-text-muted">Last Updated</div>
+              <div className="text-xp-text-muted text-xs">Last Updated</div>
             </div>
           </div>
         </div>
       )}
 
       {/* Whitelisted Paths */}
-      <div className="p-4 bg-xp-surface rounded-lg border border-xp-border">
-        <h3 className="font-medium text-xp-text mb-3">Whitelisted Directories</h3>
-        <p className="text-xs text-xp-text-muted mb-3">
+      <div className="bg-xp-surface border-xp-border rounded-lg border p-4">
+        <h3 className="text-xp-text mb-3 font-medium">Whitelisted Directories</h3>
+        <p className="text-xp-text-muted mb-3 text-xs">
           Only files in these directories will be indexed. Add absolute paths to directories you
           trust.
         </p>
 
-        <div className="space-y-2 mb-3">
-          {settings.whitelisted_paths.map((path, index) => (
-            <div key={index} className="flex items-center justify-between p-2 bg-xp-bg rounded">
-              <span className="text-sm font-mono">{path}</span>
+        <div className="mb-3 space-y-2">
+          {settings.whitelisted_paths.map((path) => (
+            <div key={path} className="bg-xp-bg flex items-center justify-between rounded p-2">
+              <span className="font-mono text-sm">{path}</span>
               <button
                 onClick={() => removeWhitelistedPath(path)}
-                className="text-red-500 hover:text-red-400 p-1"
+                className="p-1 text-red-500 hover:text-red-400"
                 title="Remove path"
               >
                 ×
@@ -361,7 +361,7 @@ export default function TokenizerSettingsComponent({ className }: TokenizerSetti
           ))}
 
           {settings.whitelisted_paths.length === 0 && (
-            <div className="text-center py-4 text-xp-text-muted">
+            <div className="text-xp-text-muted py-4 text-center">
               No directories whitelisted. Add directories to enable indexing.
             </div>
           )}
@@ -374,11 +374,11 @@ export default function TokenizerSettingsComponent({ className }: TokenizerSetti
             onChange={(e) => setNewPath(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && addWhitelistedPath()}
             placeholder="Enter directory path (e.g., /home/user/projects)"
-            className="flex-1 px-3 py-2 bg-xp-bg border border-xp-border rounded text-sm"
+            className="bg-xp-bg border-xp-border flex-1 rounded border px-3 py-2 text-sm"
           />
           <button
             onClick={addWhitelistedPath}
-            className="px-4 py-2 bg-xp-blue text-white rounded hover:bg-xp-blue-dark text-sm"
+            className="bg-xp-blue hover:bg-xp-blue-dark rounded px-4 py-2 text-sm text-white"
           >
             Add
           </button>
@@ -386,18 +386,15 @@ export default function TokenizerSettingsComponent({ className }: TokenizerSetti
       </div>
 
       {/* Blacklisted Extensions */}
-      <div className="p-4 bg-xp-surface rounded-lg border border-xp-border">
-        <h3 className="font-medium text-xp-text mb-3">Blacklisted Extensions</h3>
-        <p className="text-xs text-xp-text-muted mb-3">
+      <div className="bg-xp-surface border-xp-border rounded-lg border p-4">
+        <h3 className="text-xp-text mb-3 font-medium">Blacklisted Extensions</h3>
+        <p className="text-xp-text-muted mb-3 text-xs">
           Files with these extensions will be skipped during indexing.
         </p>
 
-        <div className="flex flex-wrap gap-2 mb-3">
-          {settings.blacklisted_extensions.map((ext, index) => (
-            <span
-              key={index}
-              className="inline-flex items-center px-2 py-1 bg-xp-bg text-sm rounded"
-            >
+        <div className="mb-3 flex flex-wrap gap-2">
+          {settings.blacklisted_extensions.map((ext) => (
+            <span key={ext} className="bg-xp-bg inline-flex items-center rounded px-2 py-1 text-sm">
               .{ext}
               <button
                 onClick={() => removeBlacklistedExtension(ext)}
@@ -417,11 +414,11 @@ export default function TokenizerSettingsComponent({ className }: TokenizerSetti
             onChange={(e) => setNewExtension(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && addBlacklistedExtension()}
             placeholder="Extension (e.g., exe, dll, jpg)"
-            className="flex-1 px-3 py-2 bg-xp-bg border border-xp-border rounded text-sm"
+            className="bg-xp-bg border-xp-border flex-1 rounded border px-3 py-2 text-sm"
           />
           <button
             onClick={addBlacklistedExtension}
-            className="px-4 py-2 bg-xp-blue text-white rounded hover:bg-xp-blue-dark text-sm"
+            className="bg-xp-blue hover:bg-xp-blue-dark rounded px-4 py-2 text-sm text-white"
           >
             Add
           </button>
@@ -429,19 +426,19 @@ export default function TokenizerSettingsComponent({ className }: TokenizerSetti
       </div>
 
       {/* Blacklisted Paths */}
-      <div className="p-4 bg-xp-surface rounded-lg border border-xp-border">
-        <h3 className="font-medium text-xp-text mb-3">Blacklisted Directories</h3>
-        <p className="text-xs text-xp-text-muted mb-3">
+      <div className="bg-xp-surface border-xp-border rounded-lg border p-4">
+        <h3 className="text-xp-text mb-3 font-medium">Blacklisted Directories</h3>
+        <p className="text-xp-text-muted mb-3 text-xs">
           Directories in this list will never be indexed, even with auto-whitelist enabled.
         </p>
 
-        <div className="space-y-2 mb-3">
-          {(settings.blacklisted_paths || []).map((path, index) => (
-            <div key={index} className="flex items-center justify-between p-2 bg-xp-bg rounded">
-              <span className="text-sm font-mono">{path}</span>
+        <div className="mb-3 space-y-2">
+          {(settings.blacklisted_paths || []).map((path) => (
+            <div key={path} className="bg-xp-bg flex items-center justify-between rounded p-2">
+              <span className="font-mono text-sm">{path}</span>
               <button
                 onClick={() => removeBlacklistedPath(path)}
-                className="text-red-500 hover:text-red-400 p-1"
+                className="p-1 text-red-500 hover:text-red-400"
                 title="Remove path"
               >
                 &times;
@@ -450,7 +447,7 @@ export default function TokenizerSettingsComponent({ className }: TokenizerSetti
           ))}
 
           {(!settings.blacklisted_paths || settings.blacklisted_paths.length === 0) && (
-            <div className="text-center py-4 text-xp-text-muted">No directories blacklisted.</div>
+            <div className="text-xp-text-muted py-4 text-center">No directories blacklisted.</div>
           )}
         </div>
 
@@ -461,11 +458,11 @@ export default function TokenizerSettingsComponent({ className }: TokenizerSetti
             onChange={(e) => setNewBlacklistPath(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && addBlacklistedPath()}
             placeholder="Enter directory path to exclude (e.g., C:\Windows)"
-            className="flex-1 px-3 py-2 bg-xp-bg border border-xp-border rounded text-sm"
+            className="bg-xp-bg border-xp-border flex-1 rounded border px-3 py-2 text-sm"
           />
           <button
             onClick={addBlacklistedPath}
-            className="px-4 py-2 bg-xp-blue text-white rounded hover:bg-xp-blue-dark text-sm"
+            className="bg-xp-blue hover:bg-xp-blue-dark rounded px-4 py-2 text-sm text-white"
           >
             Add
           </button>
@@ -473,12 +470,12 @@ export default function TokenizerSettingsComponent({ className }: TokenizerSetti
       </div>
 
       {/* Advanced Settings */}
-      <div className="p-4 bg-xp-surface rounded-lg border border-xp-border">
-        <h3 className="font-medium text-xp-text mb-3">Advanced Settings</h3>
+      <div className="bg-xp-surface border-xp-border rounded-lg border p-4">
+        <h3 className="text-xp-text mb-3 font-medium">Advanced Settings</h3>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label className="mb-2 block text-sm font-medium">
               Max File Size: {formatFileSize(settings.max_file_size)}
             </label>
             <input
@@ -492,13 +489,13 @@ export default function TokenizerSettingsComponent({ className }: TokenizerSetti
               }
               className="w-full"
             />
-            <div className="text-xs text-xp-text-muted mt-1">
+            <div className="text-xp-text-muted mt-1 text-xs">
               Files larger than this will be skipped
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label className="mb-2 block text-sm font-medium">
               Update Interval: {formatDuration(settings.update_interval)}
             </label>
             <input
@@ -512,13 +509,13 @@ export default function TokenizerSettingsComponent({ className }: TokenizerSetti
               }
               className="w-full"
             />
-            <div className="text-xs text-xp-text-muted mt-1">
+            <div className="text-xp-text-muted mt-1 text-xs">
               How often to check for file changes
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label className="mb-2 block text-sm font-medium">
               Memory Limit:{' '}
               {settings.memory_limit_mb >= 1024
                 ? `${(settings.memory_limit_mb / 1024).toFixed(settings.memory_limit_mb % 1024 === 0 ? 0 : 1)} GB`
@@ -535,7 +532,7 @@ export default function TokenizerSettingsComponent({ className }: TokenizerSetti
               }
               className="w-full"
             />
-            <div className="text-xs text-xp-text-muted mt-1">
+            <div className="text-xp-text-muted mt-1 text-xs">
               Maximum RAM the search index can use. Indexing stops when this limit is reached.
             </div>
           </div>
@@ -546,7 +543,7 @@ export default function TokenizerSettingsComponent({ className }: TokenizerSetti
       <div className="flex space-x-3">
         <button
           onClick={saveSettings}
-          className="flex-1 px-4 py-2 bg-xp-blue text-white rounded hover:bg-xp-blue-dark transition-colors"
+          className="bg-xp-blue hover:bg-xp-blue-dark flex-1 rounded px-4 py-2 text-white transition-colors"
         >
           Save Settings
         </button>
@@ -554,7 +551,7 @@ export default function TokenizerSettingsComponent({ className }: TokenizerSetti
         <button
           onClick={handleRebuildIndex}
           disabled={isIndexing || !settings.enabled || settings.whitelisted_paths.length === 0}
-          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="rounded bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isIndexing ? 'Indexing...' : 'Rebuild Index'}
         </button>
@@ -611,7 +608,7 @@ export default function TokenizerSettingsComponent({ className }: TokenizerSetti
               description: 'Settings restored to defaults. Click Save to apply.',
             });
           }}
-          className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
+          className="rounded bg-gray-600 px-4 py-2 text-white transition-colors hover:bg-gray-700"
         >
           Reset to Defaults
         </button>

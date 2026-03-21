@@ -268,7 +268,7 @@ describe('PreviewPanel', () => {
     it('handles file with very long name', () => {
       const longNameFile: FileEntry = {
         ...mockFile,
-        name: 'a'.repeat(200) + '.txt',
+        name: `${'a'.repeat(200)}.txt`,
       };
 
       expect(() =>

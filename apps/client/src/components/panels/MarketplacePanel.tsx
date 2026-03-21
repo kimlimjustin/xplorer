@@ -11,7 +11,6 @@ import {
   AlertCircle,
   Inbox,
   FolderOpen,
-  Check,
   Download,
   Trash2,
 } from 'lucide-react';
@@ -24,7 +23,7 @@ import MarketplacePagination from './marketplace/MarketplacePagination';
 
 const DEFAULT_MARKETPLACE_API = 'http://localhost:3000/api';
 
-const getMarketplaceApi = () : string => {
+const getMarketplaceApi = (): string => {
   try {
     const saved = localStorage.getItem('xplorer:marketplace-url');
     const url = saved || DEFAULT_MARKETPLACE_API;
@@ -44,7 +43,7 @@ const getMarketplaceApi = () : string => {
   } catch {
     return DEFAULT_MARKETPLACE_API;
   }
-}
+};
 
 export interface MarketplaceExtension {
   id: string;
@@ -82,6 +81,104 @@ interface PaginationInfo {
 }
 
 type SortOption = 'popular' | 'recent' | 'rating';
+
+interface ExtensionsContentProps {
+  isLoading: boolean;
+  error: string | null;
+  extensions: MarketplaceExtension[];
+  installedExtensions: string[];
+  installingId: string | null;
+  debouncedSearch: string;
+  selectedCategory: string;
+  handleInstall: (ext: MarketplaceExtension) => void;
+  handleUninstall: (extension: MarketplaceExtension) => void;
+  loadExtensions: (page: number) => void;
+  setSearchTerm: (term: string) => void;
+  setSelectedCategory: (cat: string) => void;
+  setSelectedExtension: (ext: MarketplaceExtension) => void;
+  setShowDetail: (show: boolean) => void;
+}
+
+const ExtensionsContent = ({
+  isLoading,
+  error,
+  extensions,
+  installedExtensions,
+  installingId,
+  debouncedSearch,
+  selectedCategory,
+  handleInstall,
+  handleUninstall,
+  loadExtensions,
+  setSearchTerm,
+  setSelectedCategory,
+  setSelectedExtension,
+  setShowDetail,
+}: ExtensionsContentProps) => {
+  if (isLoading) {
+    return (
+      <div className="flex h-32 flex-col items-center justify-center gap-2">
+        <Loader2 className="text-xp-blue h-6 w-6 animate-spin" />
+        <span className="text-xp-text-muted text-xs">Loading extensions...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-32 flex-col items-center justify-center gap-2 px-4">
+        <AlertCircle className="text-xp-red h-6 w-6" />
+        <span className="text-xp-text-muted text-center text-xs">Failed to load extensions</span>
+        <span className="text-xp-red break-all text-center text-xs">{error}</span>
+        <button
+          onClick={() => loadExtensions(1)}
+          className="bg-xp-surface border-xp-border hover:bg-xp-surface-light text-xp-text mt-1 rounded border px-3 py-1 text-xs transition-colors"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  if (extensions.length === 0) {
+    return (
+      <div className="flex h-32 flex-col items-center justify-center gap-2">
+        <Inbox className="text-xp-text-muted h-6 w-6" />
+        <span className="text-xp-text-muted text-xs">No extensions found</span>
+        {(debouncedSearch || selectedCategory) && (
+          <button
+            onClick={() => {
+              setSearchTerm('');
+              setSelectedCategory('');
+            }}
+            className="text-xp-blue text-xs hover:underline"
+          >
+            Clear filters
+          </button>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      {extensions.map((extension) => (
+        <ExtensionCard
+          key={extension.id}
+          extension={extension}
+          isInstalled={installedExtensions.includes(extension.id)}
+          isInstalling={installingId === extension.id}
+          onInstall={handleInstall}
+          onUninstall={handleUninstall}
+          onSelect={(ext) => {
+            setSelectedExtension(ext);
+            setShowDetail(true);
+          }}
+        />
+      ))}
+    </div>
+  );
+};
 
 const MarketplacePanel = () => {
   const { toast } = useToast();
@@ -126,6 +223,7 @@ const MarketplacePanel = () => {
     loadInstalledExtensions();
     loadCategories();
     loadExtensions(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Reload extensions when filters change
@@ -356,18 +454,18 @@ const MarketplacePanel = () => {
   };
 
   return (
-    <div className="flex flex-col h-full w-full bg-xp-bg text-xp-text overflow-hidden">
+    <div className="bg-xp-bg text-xp-text flex h-full w-full flex-col overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-3 py-2 border-b border-xp-border">
-        <h3 className="text-sm font-semibold flex items-center gap-2">
-          <Package className="h-4 w-4 text-xp-blue" />
+      <div className="border-xp-border flex items-center justify-between border-b px-3 py-2">
+        <h3 className="flex items-center gap-2 text-sm font-semibold">
+          <Package className="text-xp-blue h-4 w-4" />
           Extension Marketplace
         </h3>
         <div className="flex items-center gap-1">
           <button
             onClick={handleInstallFromFile}
             disabled={!!installingId}
-            className="p-1.5 rounded hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text transition-colors"
+            className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text rounded p-1.5 transition-colors"
             title="Install from .xtension file"
           >
             <FolderOpen className="h-3.5 w-3.5" />
@@ -375,14 +473,14 @@ const MarketplacePanel = () => {
           <button
             onClick={() => loadExtensions(pagination.page)}
             disabled={isLoading}
-            className="p-1.5 rounded hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text transition-colors"
+            className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text rounded p-1.5 transition-colors"
             title="Refresh"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? 'animate-spin' : ''}`} />
           </button>
           <button
             onClick={() => window.open('http://localhost:3000', '_blank')}
-            className="p-1.5 rounded hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text transition-colors"
+            className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text rounded p-1.5 transition-colors"
             title="Open Marketplace Website"
           >
             <ExternalLink className="h-3.5 w-3.5" />
@@ -391,26 +489,26 @@ const MarketplacePanel = () => {
       </div>
 
       {/* Search */}
-      <div className="px-3 py-2 border-b border-xp-border">
+      <div className="border-xp-border border-b px-3 py-2">
         <div className="relative">
-          <Search className="absolute left-2.5 top-2 h-4 w-4 text-xp-text-muted" />
+          <Search className="text-xp-text-muted absolute left-2.5 top-2 h-4 w-4" />
           <input
             type="text"
             placeholder="Search extensions..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 bg-xp-surface border border-xp-border rounded-md text-sm text-xp-text placeholder:text-xp-text-muted focus:outline-none focus:border-xp-blue transition-colors"
+            className="bg-xp-surface border-xp-border text-xp-text placeholder:text-xp-text-muted focus:border-xp-blue w-full rounded-md border py-1.5 pl-9 pr-3 text-sm transition-colors focus:outline-none"
           />
         </div>
       </div>
 
       {/* View Toggle: Packs | Extensions */}
-      <div className="flex border-b border-xp-border">
+      <div className="border-xp-border flex border-b">
         <button
           onClick={() => setView('packs')}
-          className={`flex-1 py-1.5 text-xs font-medium text-center transition-colors ${
+          className={`flex-1 py-1.5 text-center text-xs font-medium transition-colors ${
             view === 'packs'
-              ? 'text-xp-blue border-b-2 border-xp-blue'
+              ? 'text-xp-blue border-xp-blue border-b-2'
               : 'text-xp-text-muted hover:text-xp-text'
           }`}
         >
@@ -418,9 +516,9 @@ const MarketplacePanel = () => {
         </button>
         <button
           onClick={() => setView('extensions')}
-          className={`flex-1 py-1.5 text-xs font-medium text-center transition-colors ${
+          className={`flex-1 py-1.5 text-center text-xs font-medium transition-colors ${
             view === 'extensions'
-              ? 'text-xp-blue border-b-2 border-xp-blue'
+              ? 'text-xp-blue border-xp-blue border-b-2'
               : 'text-xp-text-muted hover:text-xp-text'
           }`}
         >
@@ -445,54 +543,62 @@ const MarketplacePanel = () => {
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
         {view === 'packs' ? (
-          <div className="p-3 space-y-3">
+          <div className="space-y-3 p-3">
             {EXTENSION_PACKS.map((pack) => {
               const { total, installedCount, isFullyInstalled } = getPackStatus(pack);
               const isInstalling = installingPackId === pack.id;
               return (
                 <div
                   key={pack.id}
-                  className="border border-xp-border rounded-lg p-3 hover:bg-xp-surface-light/50 transition-colors"
+                  className="border-xp-border hover:bg-xp-surface-light/50 rounded-lg border p-3 transition-colors"
                   style={{ background: 'rgba(var(--xp-surface-rgb, 30,30,46), 0.5)' }}
                 >
                   <div className="flex items-start gap-3">
                     <div
-                      className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                      className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg"
                       style={{ background: 'rgba(var(--xp-blue-rgb, 122,162,247), 0.15)' }}
                     >
-                      <svg className="w-5 h-5 text-xp-blue" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+                      <svg
+                        className="text-xp-blue h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={1.5}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
                         <path d={pack.iconPath} />
                       </svg>
                     </div>
-                    <div className="flex-1 min-w-0">
+                    <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <h4 className="text-sm font-medium truncate">{pack.name}</h4>
+                        <h4 className="truncate text-sm font-medium">{pack.name}</h4>
                         {pack.recommended && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-xp-blue/20 text-xp-blue font-medium">
+                          <span className="bg-xp-blue/20 text-xp-blue rounded px-1.5 py-0.5 text-[10px] font-medium">
                             Recommended
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-xp-text-muted mt-0.5">{pack.description}</p>
-                      <p className="text-[11px] text-xp-text-muted mt-1">
+                      <p className="text-xp-text-muted mt-0.5 text-xs">{pack.description}</p>
+                      <p className="text-xp-text-muted mt-1 text-[11px]">
                         {installedCount}/{total} extensions installed
                       </p>
                     </div>
-                    <div className="flex items-center gap-1.5 flex-shrink-0">
+                    <div className="flex flex-shrink-0 items-center gap-1.5">
                       {isFullyInstalled ? (
                         <button
                           onClick={() => handleUninstallPack(pack)}
                           disabled={isInstalling || !!installingPackId}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-colors bg-xp-red/20 text-xp-red hover:bg-xp-red/30"
+                          className="bg-xp-red/20 text-xp-red hover:bg-xp-red/30 flex items-center gap-1.5 rounded px-3 py-1.5 text-xs font-medium transition-colors"
                         >
                           {isInstalling ? (
                             <>
-                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              <Loader2 className="h-3.5 w-3.5 animate-spin" />
                               Removing...
                             </>
                           ) : (
                             <>
-                              <Trash2 className="w-3.5 h-3.5" />
+                              <Trash2 className="h-3.5 w-3.5" />
                               Uninstall
                             </>
                           )}
@@ -502,20 +608,20 @@ const MarketplacePanel = () => {
                           <button
                             onClick={() => handleInstallPack(pack)}
                             disabled={isInstalling || !!installingPackId}
-                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-colors ${
+                            className={`flex items-center gap-1.5 rounded px-3 py-1.5 text-xs font-medium transition-colors ${
                               isInstalling
                                 ? 'bg-xp-blue/20 text-xp-blue cursor-wait'
-                                : 'bg-xp-blue text-white hover:bg-xp-blue/80'
+                                : 'bg-xp-blue hover:bg-xp-blue/80 text-white'
                             }`}
                           >
                             {isInstalling ? (
                               <>
-                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
                                 Installing...
                               </>
                             ) : (
                               <>
-                                <Download className="w-3.5 h-3.5" />
+                                <Download className="h-3.5 w-3.5" />
                                 {installedCount > 0 ? 'Install Rest' : 'Install Pack'}
                               </>
                             )}
@@ -524,10 +630,10 @@ const MarketplacePanel = () => {
                             <button
                               onClick={() => handleUninstallPack(pack)}
                               disabled={isInstalling || !!installingPackId}
-                              className="flex items-center p-1.5 rounded text-xs transition-colors text-xp-text-muted hover:text-xp-red hover:bg-xp-red/10"
+                              className="text-xp-text-muted hover:text-xp-red hover:bg-xp-red/10 flex items-center rounded p-1.5 text-xs transition-colors"
                               title="Uninstall pack"
                             >
-                              <Trash2 className="w-3.5 h-3.5" />
+                              <Trash2 className="h-3.5 w-3.5" />
                             </button>
                           )}
                         </>
@@ -538,58 +644,23 @@ const MarketplacePanel = () => {
               );
             })}
           </div>
-        ) : isLoading ? (
-          <div className="flex flex-col items-center justify-center h-32 gap-2">
-            <Loader2 className="h-6 w-6 text-xp-blue animate-spin" />
-            <span className="text-xs text-xp-text-muted">Loading extensions...</span>
-          </div>
-        ) : error ? (
-          <div className="flex flex-col items-center justify-center h-32 gap-2 px-4">
-            <AlertCircle className="h-6 w-6 text-xp-red" />
-            <span className="text-xs text-xp-text-muted text-center">
-              Failed to load extensions
-            </span>
-            <span className="text-xs text-xp-red text-center break-all">{error}</span>
-            <button
-              onClick={() => loadExtensions(1)}
-              className="mt-1 px-3 py-1 text-xs bg-xp-surface border border-xp-border rounded hover:bg-xp-surface-light text-xp-text transition-colors"
-            >
-              Retry
-            </button>
-          </div>
-        ) : extensions.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-32 gap-2">
-            <Inbox className="h-6 w-6 text-xp-text-muted" />
-            <span className="text-xs text-xp-text-muted">No extensions found</span>
-            {(debouncedSearch || selectedCategory) && (
-              <button
-                onClick={() => {
-                  setSearchTerm('');
-                  setSelectedCategory('');
-                }}
-                className="text-xs text-xp-blue hover:underline"
-              >
-                Clear filters
-              </button>
-            )}
-          </div>
         ) : (
-          <div>
-            {extensions.map((extension) => (
-              <ExtensionCard
-                key={extension.id}
-                extension={extension}
-                isInstalled={installedExtensions.includes(extension.id)}
-                isInstalling={installingId === extension.id}
-                onInstall={handleInstall}
-                onUninstall={handleUninstall}
-                onSelect={(ext) => {
-                  setSelectedExtension(ext);
-                  setShowDetail(true);
-                }}
-              />
-            ))}
-          </div>
+          <ExtensionsContent
+            isLoading={isLoading}
+            error={error}
+            extensions={extensions}
+            installedExtensions={installedExtensions}
+            installingId={installingId}
+            debouncedSearch={debouncedSearch}
+            selectedCategory={selectedCategory}
+            handleInstall={handleInstall}
+            handleUninstall={handleUninstall}
+            loadExtensions={loadExtensions}
+            setSearchTerm={setSearchTerm}
+            setSelectedCategory={setSelectedCategory}
+            setSelectedExtension={setSelectedExtension}
+            setShowDetail={setShowDetail}
+          />
         )}
       </div>
 
@@ -603,10 +674,10 @@ const MarketplacePanel = () => {
       )}
 
       {/* Footer */}
-      <div className="px-3 py-1.5 border-t border-xp-border">
+      <div className="border-xp-border border-t px-3 py-1.5">
         <button
           onClick={() => window.open('http://localhost:3000/publish', '_blank')}
-          className="w-full text-xs text-xp-blue hover:text-xp-blue/80 text-center transition-colors"
+          className="text-xp-blue hover:text-xp-blue/80 w-full text-center text-xs transition-colors"
         >
           Publish Your Extension
         </button>
@@ -623,6 +694,6 @@ const MarketplacePanel = () => {
       />
     </div>
   );
-}
+};
 
 export default MarketplacePanel;

@@ -28,14 +28,16 @@ const SizeBadge = ({
   file: { name: string; size: number; is_dir: boolean };
   info: SizeBadgeInfo;
 }) => {
-  const percentileLabel =
-    info.percentile >= 90
-      ? 'Top 10%'
-      : info.percentile >= 75
-        ? 'Top 25%'
-        : info.percentile >= 50
-          ? 'Top 50%'
-          : 'Bottom 50%';
+  let percentileLabel: string;
+  if (info.percentile >= 90) {
+    percentileLabel = 'Top 10%';
+  } else if (info.percentile >= 75) {
+    percentileLabel = 'Top 25%';
+  } else if (info.percentile >= 50) {
+    percentileLabel = 'Top 50%';
+  } else {
+    percentileLabel = 'Bottom 50%';
+  }
 
   const tooltipText = file.is_dir
     ? `${file.name} — Folder`
@@ -66,7 +68,7 @@ const SizeBadge = ({
       }}
     />
   );
-}
+};
 
 // ─── Inline rename validation icon ──────────────────────────────────────────
 
@@ -126,7 +128,7 @@ const ValidationIcon = ({ valid, warning }: { valid: boolean; warning: boolean }
       />
     </svg>
   );
-}
+};
 
 // ─── Helper: select filename without extension ──────────────────────────────
 
@@ -141,7 +143,7 @@ const selectFileNameWithoutExtension = (input: HTMLInputElement, name: string, i
   } else {
     input.select();
   }
-}
+};
 
 // ─── Inline rename input component ──────────────────────────────────────────
 
@@ -278,11 +280,11 @@ const InlineRenameInput = React.memo(
               padding: '2px 6px',
               fontSize: '0.65rem',
               lineHeight: 1.3,
-              color: validation.warning
-                ? 'var(--xp-yellow, #e2b340)'
-                : !validation.valid
-                  ? 'var(--xp-red, #f44747)'
-                  : 'var(--xp-text-muted)',
+              color: (() => {
+                if (validation.warning) return 'var(--xp-yellow, #e2b340)';
+                if (!validation.valid) return 'var(--xp-red, #f44747)';
+                return 'var(--xp-text-muted)';
+              })(),
               background: 'var(--xp-surface, rgba(30, 30, 50, 0.95))',
               border: '1px solid var(--xp-border)',
               borderRadius: 3,
@@ -389,7 +391,7 @@ const FileGridItem = React.memo(
 
       return (
         <>
-          <span className="truncate min-w-0">
+          <span className="min-w-0 truncate">
             {file.name.endsWith('.chat') ? getChatDisplayName(file.name) : file.name}
           </span>
           <GitStatusDot status={gitStatus} />
@@ -408,21 +410,16 @@ const FileGridItem = React.memo(
         tabIndex={
           isSelected || (selectedFiles.size === 0 && allFiles[0]?.path === file.path) ? 0 : -1
         }
-        className={`
-        cursor-pointer transition-colors duration-150 rounded-lg
-        ${
+        className={`cursor-pointer rounded-lg transition-colors duration-150 ${
           isSelected
-            ? 'bg-xp-blue/20 ring-2 ring-xp-blue/80 border border-xp-blue'
+            ? 'bg-xp-blue/20 ring-xp-blue/80 border-xp-blue border ring-2'
             : 'hover:bg-xp-surface-light border border-transparent'
-        }
-        ${
-          isGridView
-            ? 'p-3 text-center overflow-hidden min-w-0'
-            : isListView
-              ? 'p-2 flex items-center space-x-2 min-w-0 text-left overflow-hidden'
-              : 'p-2 flex items-center space-x-3 overflow-hidden'
-        }
-      `}
+        } ${(() => {
+          if (isGridView) return 'min-w-0 overflow-hidden p-3 text-center';
+          if (isListView)
+            {return 'flex min-w-0 items-center space-x-2 overflow-hidden p-2 text-left';}
+          return 'flex items-center space-x-3 overflow-hidden p-2';
+        })()} `}
         style={{ position: 'relative' }}
         onClick={(e) => {
           if (!isRenaming) onFileClick(file, e);
@@ -458,21 +455,21 @@ const FileGridItem = React.memo(
         >
           {getFileIcon(file)}
         </div>
-        <div className={`${isGridView ? 'w-full min-w-0' : 'flex-1 min-w-0'} select-none`}>
+        <div className={`${isGridView ? 'w-full min-w-0' : 'min-w-0 flex-1'} select-none`}>
           <div
-            className={`font-medium text-xp-text ${isRenaming ? '' : 'overflow-hidden'} ${isListView ? 'text-xs' : 'text-sm'} ${isGridView ? 'justify-center' : ''} flex items-center`}
+            className={`text-xp-text font-medium ${isRenaming ? '' : 'overflow-hidden'} ${isListView ? 'text-xs' : 'text-sm'} ${isGridView ? 'justify-center' : ''} flex items-center`}
             style={isRenaming ? { position: 'relative', overflow: 'visible' } : undefined}
           >
             {renderNameArea()}
           </div>
           {file.name.endsWith('.chat') && !isRenaming && (
-            <span className="inline-block mt-0.5 px-1.5 py-0.5 text-[9px] bg-xp-purple/20 text-xp-purple rounded-full">
+            <span className="bg-xp-purple/20 text-xp-purple mt-0.5 inline-block rounded-full px-1.5 py-0.5 text-[9px]">
               Chat
             </span>
           )}
           {isGridView && !isRenaming && <TagDots tags={tags} />}
           {!isGridView && !isListView && !isRenaming && (
-            <div className="text-xs text-xp-text-muted flex items-center space-x-4">
+            <div className="text-xp-text-muted flex items-center space-x-4 text-xs">
               <span>
                 {file.is_dir
                   ? formatFolderSize(getFolderSize(file.path), isCalculatingSize(file.path))
@@ -484,7 +481,7 @@ const FileGridItem = React.memo(
             </div>
           )}
           {viewMode === 'content' && !isRenaming && (
-            <div className="text-xs text-xp-text-muted mt-1">
+            <div className="text-xp-text-muted mt-1 text-xs">
               <div>
                 {file.is_dir
                   ? formatFolderSize(getFolderSize(file.path), isCalculatingSize(file.path))

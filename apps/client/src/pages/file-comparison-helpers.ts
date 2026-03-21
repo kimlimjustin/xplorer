@@ -320,8 +320,9 @@ export const buildSegments = (diffLines: SideBySideLine[]): DiffSegment[] => {
         const middle = run.slice(CONTEXT_LINES, run.length - CONTEXT_LINES);
 
         if (topCtx.length > 0) segments.push({ kind: 'lines', lines: topCtx });
-        if (middle.length > 0)
+        if (middle.length > 0) {
           segments.push({ kind: 'collapsed', lines: middle, count: middle.length });
+        }
         if (bottomCtx.length > 0) segments.push({ kind: 'lines', lines: bottomCtx });
       } else {
         segments.push({ kind: 'lines', lines: run });

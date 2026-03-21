@@ -35,11 +35,12 @@ const TerminalPanel = ({
   };
 
   return (
-    <div className="bg-xp-bg rounded p-3 font-mono text-sm h-full flex flex-col">
+    <div className="bg-xp-bg flex h-full flex-col rounded p-3 font-mono text-sm">
       {/* Terminal Output */}
-      <div className="flex-1 overflow-y-auto mb-2">
+      <div className="mb-2 flex-1 overflow-y-auto">
         {terminalHistory.map((line, index) => (
           <div
+            // eslint-disable-next-line react/no-array-index-key
             key={index}
             className={
               line.startsWith(terminalCwd.split(/[\\/]/).pop() || terminalCwd)
@@ -64,13 +65,13 @@ const TerminalPanel = ({
           value={terminalInput}
           onChange={(e) => setTerminalInput(e.target.value)}
           onKeyDown={handleTerminalKeyDown}
-          className="flex-1 bg-transparent outline-none text-xp-text"
+          className="text-xp-text flex-1 bg-transparent outline-none"
           placeholder="Type a command..."
           autoFocus
         />
       </div>
     </div>
   );
-}
+};
 
 export default TerminalPanel;

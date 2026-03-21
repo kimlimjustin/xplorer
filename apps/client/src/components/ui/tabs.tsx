@@ -8,7 +8,13 @@ interface TabsProps {
   children: React.ReactNode;
 }
 
-export const Tabs = ({ value, defaultValue, onValueChange, className = '', children }: TabsProps) => {
+export const Tabs = ({
+  value,
+  defaultValue,
+  onValueChange,
+  className = '',
+  children,
+}: TabsProps) => {
   const [internalValue, setInternalValue] = useState(defaultValue || '');
   const currentValue = value !== undefined ? value : internalValue;
 
@@ -33,7 +39,7 @@ export const Tabs = ({ value, defaultValue, onValueChange, className = '', child
       })}
     </div>
   );
-}
+};
 
 interface TabsListProps {
   className?: string;
@@ -42,7 +48,12 @@ interface TabsListProps {
   onValueChange?: (value: string) => void;
 }
 
-export const TabsList = ({ className = '', children, currentValue, onValueChange }: TabsListProps) => {
+export const TabsList = ({
+  className = '',
+  children,
+  currentValue,
+  onValueChange,
+}: TabsListProps) => {
   return (
     <div
       className={`inline-flex h-10 items-center justify-center rounded-md bg-gray-100 p-1 text-gray-500 ${className}`}
@@ -59,7 +70,7 @@ export const TabsList = ({ className = '', children, currentValue, onValueChange
       })}
     </div>
   );
-}
+};
 
 interface TabsTriggerProps {
   value: string;
@@ -88,7 +99,7 @@ export const TabsTrigger = ({
       {children}
     </button>
   );
-}
+};
 
 interface TabsContentProps {
   value: string;
@@ -97,7 +108,12 @@ interface TabsContentProps {
   currentValue?: string;
 }
 
-export const TabsContent = ({ value, className = '', children, currentValue }: TabsContentProps) => {
+export const TabsContent = ({
+  value,
+  className = '',
+  children,
+  currentValue,
+}: TabsContentProps) => {
   if (currentValue !== value) return null;
 
   return (
@@ -107,4 +123,4 @@ export const TabsContent = ({ value, className = '', children, currentValue }: T
       {children}
     </div>
   );
-}
+};

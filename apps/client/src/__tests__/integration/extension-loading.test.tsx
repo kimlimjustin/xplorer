@@ -48,7 +48,9 @@ vi.mock('@/lib/extension-sandbox', () => ({
   executeSandboxed: vi.fn((code: string) => {
     try {
       new Function(code)();
-    } catch { /* sandboxed execution may fail */ }
+    } catch {
+      /* sandboxed execution may fail */
+    }
   }),
   createExtensionApi: vi.fn(() => ({})),
   requestPermissionApproval: vi.fn(() => Promise.resolve(true)),
@@ -85,8 +87,7 @@ vi.mock('lucide-react', () => {
   };
 });
 
-import { extensionHost } from '@/lib/extension-host';
-import type { ExtensionPackage } from '@/lib/extension-host';
+import { extensionHost, type ExtensionPackage } from '@/lib/extension-host';
 
 const createTestPackage = (
   overrides: Partial<ExtensionPackage['manifest']> & { path?: string; is_active?: boolean } = {},

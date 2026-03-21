@@ -43,7 +43,7 @@ export interface MoveTreeResult {
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-const fileEntryToTreeNode = (entry: FileEntry, status: TreeNodeStatus) : TreeNode => {
+const fileEntryToTreeNode = (entry: FileEntry, status: TreeNodeStatus): TreeNode => {
   return {
     name: entry.name,
     path: entry.path,
@@ -52,23 +52,23 @@ const fileEntryToTreeNode = (entry: FileEntry, status: TreeNodeStatus) : TreeNod
     children: [],
     status,
   };
-}
+};
 
 /**
  * Build a flat list of TreeNode from a set of FileEntry items.
  * Each item becomes a root-level node. Directories are leaf nodes here
  * (we don't recursively read their contents for the preview).
  */
-const buildSourceNodes = (files: FileEntry[]) : TreeNode[] => {
+const buildSourceNodes = (files: FileEntry[]): TreeNode[] => {
   return files.map((f) => ({
     ...fileEntryToTreeNode(f, 'incoming'),
     sourcePath: f.path,
   }));
-}
+};
 
-const buildDestNodes = (files: FileEntry[]) : TreeNode[] => {
+const buildDestNodes = (files: FileEntry[]): TreeNode[] => {
   return files.map((f) => fileEntryToTreeNode(f, 'existing'));
-}
+};
 
 // ── Core merge ───────────────────────────────────────────────────────────────
 
@@ -85,7 +85,7 @@ export const computeMoveTree = (
   sourceFiles: FileEntry[],
   destPath: string,
   destFiles: FileEntry[],
-) : MoveTreeResult => {
+): MoveTreeResult => {
   const sep = detectSep(destPath);
   const destNodes = buildDestNodes(destFiles);
   const sourceNodes = buildSourceNodes(sourceFiles);
@@ -148,18 +148,18 @@ export const computeMoveTree = (
     totalIncomingSize,
     totalExistingSize,
   };
-}
+};
 
 /**
  * Check if all conflicts have been resolved.
  */
-export const allConflictsResolved = (conflicts: TreeNode[]) : boolean => {
+export const allConflictsResolved = (conflicts: TreeNode[]): boolean => {
   return conflicts.every((c) => c.conflictResolution != null);
-}
+};
 
 /**
  * Count unresolved conflicts.
  */
-export const unresolvedConflictCount = (conflicts: TreeNode[]) : number => {
+export const unresolvedConflictCount = (conflicts: TreeNode[]): number => {
   return conflicts.filter((c) => c.conflictResolution == null).length;
-}
+};

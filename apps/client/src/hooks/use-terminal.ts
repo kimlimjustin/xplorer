@@ -90,4 +90,4 @@ export const useTerminal = (deps: UseTerminalDeps) => {
     executeTerminalCommand,
     outputMessages,
   };
-}
+};

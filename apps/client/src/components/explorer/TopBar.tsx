@@ -74,7 +74,7 @@ const getTabIcon = (tab: TabItem) => {
     default:
       return File;
   }
-}
+};
 
 const TopBar = forwardRef<TopBarHandle, TopBarProps>(
   (
@@ -105,7 +105,7 @@ const TopBar = forwardRef<TopBarHandle, TopBarProps>(
       onToggleCollectionFilter,
       onClearCollectionFilter,
     },
-    ref,
+    _ref,
   ) => {
     const { t } = useTranslation();
     const [isMaximized, setIsMaximized] = useState(false);
@@ -171,7 +171,7 @@ const TopBar = forwardRef<TopBarHandle, TopBarProps>(
     }, []);
 
     return (
-      <div data-tour={dataTour} className="flex-none bg-xp-surface border-b border-xp-border">
+      <div data-tour={dataTour} className="bg-xp-surface border-xp-border flex-none border-b">
         {/* Row 1: Title bar (draggable) */}
         <div
           className="flex items-center justify-between px-4 py-1"
@@ -195,15 +195,18 @@ const TopBar = forwardRef<TopBarHandle, TopBarProps>(
             }
           }}
         >
-          <div className="flex items-center space-x-3" style={isMac ? { paddingLeft: '60px' } : undefined}>
+          <div
+            className="flex items-center space-x-3"
+            style={isMac ? { paddingLeft: '60px' } : undefined}
+          >
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => setLeftSidebarCollapsed(!leftSidebarCollapsed)}
-                className="p-1 hover:bg-xp-surface-light rounded transition-colors"
+                className="hover:bg-xp-surface-light rounded p-1 transition-colors"
                 aria-label={t('topBar.toggleSidebar')}
                 title={t('topBar.toggleSidebarShortcut')}
               >
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                   <path
                     fillRule="evenodd"
                     d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
@@ -217,24 +220,24 @@ const TopBar = forwardRef<TopBarHandle, TopBarProps>(
           {/* Spacer — search is in the left sidebar */}
           <div className="flex-1" />
           {!isMac && (
-            <div className="flex items-center ml-2" role="toolbar" aria-label="Window controls">
+            <div className="ml-2 flex items-center" role="toolbar" aria-label="Window controls">
               <button
                 onClick={() => appWindowRef.current?.minimize()}
-                className="p-2 hover:bg-xp-surface-light rounded transition-colors"
+                className="hover:bg-xp-surface-light rounded p-2 transition-colors"
                 aria-label={t('topBar.minimize')}
               >
                 <Minus size={14} />
               </button>
               <button
                 onClick={() => appWindowRef.current?.toggleMaximize()}
-                className="p-2 hover:bg-xp-surface-light rounded transition-colors"
+                className="hover:bg-xp-surface-light rounded p-2 transition-colors"
                 aria-label={isMaximized ? t('topBar.restore') : t('topBar.maximize')}
               >
                 {isMaximized ? <Copy size={14} /> : <Square size={14} />}
               </button>
               <button
                 onClick={() => appWindowRef.current?.close()}
-                className="p-2 xp-close-btn rounded transition-colors"
+                className="xp-close-btn rounded p-2 transition-colors"
                 aria-label={t('topBar.closeWindow')}
               >
                 <X size={14} />
@@ -244,17 +247,17 @@ const TopBar = forwardRef<TopBarHandle, TopBarProps>(
         </div>
 
         {/* Row 2: Nav buttons + Tabs + Split controls */}
-        <div className="flex items-center px-2 gap-0.5">
+        <div className="flex items-center gap-0.5 px-2">
           {/* Nav buttons */}
           {navigateBackInHistory && (
             <button
               onClick={navigateBackInHistory}
               disabled={!canNavigateBackInHistory?.()}
-              className="p-1 hover:bg-xp-surface-light rounded disabled:opacity-30 transition-colors flex-shrink-0"
+              className="hover:bg-xp-surface-light flex-shrink-0 rounded p-1 transition-colors disabled:opacity-30"
               title={t('topBar.goBack')}
               aria-label={t('topBar.goBack')}
             >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fillRule="evenodd"
                   d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
@@ -267,11 +270,11 @@ const TopBar = forwardRef<TopBarHandle, TopBarProps>(
             <button
               onClick={navigateForwardInHistory}
               disabled={!canNavigateForwardInHistory?.()}
-              className="p-1 hover:bg-xp-surface-light rounded disabled:opacity-30 transition-colors flex-shrink-0"
+              className="hover:bg-xp-surface-light flex-shrink-0 rounded p-1 transition-colors disabled:opacity-30"
               title={t('topBar.goForward')}
               aria-label={t('topBar.goForward')}
             >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fillRule="evenodd"
                   d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
@@ -284,7 +287,7 @@ const TopBar = forwardRef<TopBarHandle, TopBarProps>(
             <button
               onClick={navigateUp}
               disabled={currentPath === ROOT_PATH}
-              className="p-1 hover:bg-xp-surface-light rounded disabled:opacity-30 transition-colors flex-shrink-0"
+              className="hover:bg-xp-surface-light flex-shrink-0 rounded p-1 transition-colors disabled:opacity-30"
               title={t('topBar.goUp')}
               aria-label={t('topBar.goUp')}
             >
@@ -294,7 +297,7 @@ const TopBar = forwardRef<TopBarHandle, TopBarProps>(
           {refetch && (
             <button
               onClick={refetch}
-              className="p-1 hover:bg-xp-surface-light rounded transition-colors flex-shrink-0"
+              className="hover:bg-xp-surface-light flex-shrink-0 rounded p-1 transition-colors"
               title={t('topBar.refresh')}
               aria-label={t('topBar.refresh')}
             >
@@ -313,7 +316,7 @@ const TopBar = forwardRef<TopBarHandle, TopBarProps>(
                   console.error('Failed to create chat:', err);
                 }
               }}
-              className="p-1 hover:bg-xp-surface-light rounded transition-colors flex-shrink-0"
+              className="hover:bg-xp-surface-light flex-shrink-0 rounded p-1 transition-colors"
               title={t('topBar.newChatDesc')}
               aria-label={t('topBar.newChat')}
             >
@@ -325,7 +328,7 @@ const TopBar = forwardRef<TopBarHandle, TopBarProps>(
           <div ref={filterDropdownRef} style={{ position: 'relative' }} className="flex-shrink-0">
             <button
               onClick={() => setFilterDropdownOpen(!filterDropdownOpen)}
-              className={`p-1 rounded transition-colors flex-shrink-0 flex items-center gap-1 ${
+              className={`flex flex-shrink-0 items-center gap-1 rounded p-1 transition-colors ${
                 activeCollectionFilter
                   ? 'text-xp-text'
                   : 'hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text'
@@ -395,29 +398,38 @@ const TopBar = forwardRef<TopBarHandle, TopBarProps>(
                   return (
                     <button
                       key={col.id}
-                      className="flex items-center w-full px-3 py-1.5 text-xs rounded transition-colors"
+                      className="flex w-full items-center rounded px-3 py-1.5 text-xs transition-colors"
                       style={{
                         color: 'var(--xp-text)',
                         backgroundColor: isActive ? `${col.color}15` : 'transparent',
-                        borderLeft: isActive
-                          ? `3px solid ${col.color}`
-                          : '3px solid transparent',
+                        borderLeft: isActive ? `3px solid ${col.color}` : '3px solid transparent',
                       }}
                       onMouseEnter={(e) => {
-                        if (!isActive)
+                        if (!isActive) {
                           (e.currentTarget as HTMLElement).style.backgroundColor =
                             'var(--xp-surface-light)';
+                        }
                       }}
                       onMouseLeave={(e) => {
-                        if (!isActive)
+                        if (!isActive) {
                           (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
+                        }
                       }}
                       onClick={() => {
                         onToggleCollectionFilter?.(col);
                         setFilterDropdownOpen(false);
                       }}
                     >
-                      <span style={{ marginRight: '8px', fontSize: '14px', display: 'inline-flex', alignItems: 'center' }}>{renderIcon(col.icon, 14)}</span>
+                      <span
+                        style={{
+                          marginRight: '8px',
+                          fontSize: '14px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                        }}
+                      >
+                        {renderIcon(col.icon, 14)}
+                      </span>
                       <span style={{ flex: 1, textAlign: 'left' }}>{col.name}</span>
                       {isActive && (
                         <span
@@ -438,10 +450,14 @@ const TopBar = forwardRef<TopBarHandle, TopBarProps>(
                 {activeCollectionFilter && (
                   <>
                     <div
-                      style={{ height: '1px', backgroundColor: 'var(--xp-border)', margin: '4px 0' }}
+                      style={{
+                        height: '1px',
+                        backgroundColor: 'var(--xp-border)',
+                        margin: '4px 0',
+                      }}
                     />
                     <button
-                      className="flex items-center w-full px-3 py-1.5 text-xs rounded transition-colors"
+                      className="flex w-full items-center rounded px-3 py-1.5 text-xs transition-colors"
                       style={{ color: 'var(--xp-text-muted)' }}
                       onMouseEnter={(e) => {
                         (e.currentTarget as HTMLElement).style.backgroundColor =
@@ -465,30 +481,30 @@ const TopBar = forwardRef<TopBarHandle, TopBarProps>(
           </div>
 
           {/* Separator */}
-          <div className="w-px h-5 bg-xp-border mx-0.5 flex-shrink-0" />
+          <div className="bg-xp-border mx-0.5 h-5 w-px flex-shrink-0" />
 
           {/* Tabs */}
-          <div className="flex-1 flex overflow-x-auto min-w-0 scrollbar-none">
+          <div className="scrollbar-none flex min-w-0 flex-1 overflow-x-auto">
             {tabs?.map((tab) => {
               const TabIcon = getTabIcon(tab);
               const isActive = activeTabId === tab.id;
               return (
                 <div
                   key={tab.id}
-                  className={`flex items-center px-3 py-1 border-r border-xp-border cursor-pointer min-w-0 max-w-[180px] group flex-shrink-0 ${
-                    isActive ? 'bg-xp-bg border-b-2 border-b-xp-blue' : 'hover:bg-xp-surface-light'
+                  className={`border-xp-border group flex min-w-0 max-w-[180px] flex-shrink-0 cursor-pointer items-center border-r px-3 py-1 ${
+                    isActive ? 'bg-xp-bg border-b-xp-blue border-b-2' : 'hover:bg-xp-surface-light'
                   }`}
                   onClick={() => onSwitchTab?.(tab.id)}
                 >
-                  <TabIcon size={13} className="mr-1.5 flex-shrink-0 text-xp-text-secondary" />
-                  <span className="text-xs font-medium truncate">{tab.name}</span>
+                  <TabIcon size={13} className="text-xp-text-secondary mr-1.5 flex-shrink-0" />
+                  <span className="truncate text-xs font-medium">{tab.name}</span>
                   {tabs.length > 1 && (
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         onCloseTab?.(tab.id);
                       }}
-                      className="ml-1 p-0.5 hover:bg-xp-surface-light rounded opacity-0 group-hover:opacity-100 flex-shrink-0"
+                      className="hover:bg-xp-surface-light ml-1 flex-shrink-0 rounded p-0.5 opacity-0 group-hover:opacity-100"
                       aria-label={`Close ${tab.name}`}
                     >
                       <X size={12} />
@@ -500,11 +516,11 @@ const TopBar = forwardRef<TopBarHandle, TopBarProps>(
           </div>
 
           {/* Split/tab actions */}
-          <div className="flex items-center flex-shrink-0 gap-0.5 ml-0.5">
+          <div className="ml-0.5 flex flex-shrink-0 items-center gap-0.5">
             {onAddTab && (
               <button
                 onClick={onAddTab}
-                className="p-1 hover:bg-xp-surface-light rounded text-xp-text-muted hover:text-xp-text"
+                className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text rounded p-1"
                 title={t('topBar.newTabShortcut')}
                 aria-label={t('topBar.newTab')}
               >
@@ -514,7 +530,7 @@ const TopBar = forwardRef<TopBarHandle, TopBarProps>(
             {onSplitRight && (
               <button
                 onClick={onSplitRight}
-                className="p-1 hover:bg-xp-surface-light rounded text-xp-text-muted hover:text-xp-text"
+                className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text rounded p-1"
                 title={t('topBar.splitRightShortcut')}
                 aria-label={t('topBar.splitRight')}
               >
@@ -524,7 +540,7 @@ const TopBar = forwardRef<TopBarHandle, TopBarProps>(
             {onSplitDown && (
               <button
                 onClick={onSplitDown}
-                className="p-1 hover:bg-xp-surface-light rounded text-xp-text-muted hover:text-xp-text"
+                className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text rounded p-1"
                 title={t('topBar.splitDownShortcut')}
                 aria-label={t('topBar.splitDown')}
               >
@@ -576,8 +592,14 @@ const TopBar = forwardRef<TopBarHandle, TopBarProps>(
                 <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
               </svg>
               {crossTabTotalCount !== 1 || crossTabTabCount !== 1
-                ? t('topBar.crossTabSelectionPlural', { fileCount: crossTabTotalCount, tabCount: crossTabTabCount })
-                : t('topBar.crossTabSelection', { fileCount: crossTabTotalCount, tabCount: crossTabTabCount })}
+                ? t('topBar.crossTabSelectionPlural', {
+                    fileCount: crossTabTotalCount,
+                    tabCount: crossTabTabCount,
+                  })
+                : t('topBar.crossTabSelection', {
+                    fileCount: crossTabTotalCount,
+                    tabCount: crossTabTabCount,
+                  })}
             </span>
 
             <span style={{ color: 'var(--xp-text-muted)', fontSize: 11 }}>

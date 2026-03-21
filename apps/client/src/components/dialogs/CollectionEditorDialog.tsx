@@ -438,6 +438,7 @@ const CollectionEditorDialogInner = ({
           <div style={S.section}>
             <label style={S.label}>Filters</label>
             {filters.map((filter, idx) => (
+              // eslint-disable-next-line react/no-array-index-key
               <div style={S.filterRow} key={idx}>
                 <select
                   style={S.select}
@@ -528,7 +529,7 @@ const CollectionEditorDialogInner = ({
       </div>
     </div>
   );
-}
+};
 
 const CollectionEditorDialog = React.memo(CollectionEditorDialogInner);
 export default CollectionEditorDialog;

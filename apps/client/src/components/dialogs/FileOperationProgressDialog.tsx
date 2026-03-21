@@ -3,19 +3,19 @@ import { TauriAPI, type FileOperationProgress } from '@/lib/tauri-api';
 import { formatFileSize } from '@/lib/utils';
 import { X } from 'lucide-react';
 
-const formatSpeed = (bytesPerSecond: number) : string => {
+const formatSpeed = (bytesPerSecond: number): string => {
   if (bytesPerSecond <= 0) return '—';
-  return formatFileSize(bytesPerSecond) + '/s';
-}
+  return `${formatFileSize(bytesPerSecond)}/s`;
+};
 
-const formatETA = (seconds?: number) : string => {
+const formatETA = (seconds?: number): string => {
   if (!seconds || seconds <= 0) return '—';
   if (seconds < 60) return `${Math.ceil(seconds)}s`;
   if (seconds < 3600) return `${Math.floor(seconds / 60)}m ${Math.ceil(seconds % 60)}s`;
   return `${Math.floor(seconds / 3600)}h ${Math.floor((seconds % 3600) / 60)}m`;
-}
+};
 
-const getStatusColor = (status: string) : string => {
+const getStatusColor = (status: string): string => {
   switch (status) {
     case 'Completed':
       return 'bg-green-500';
@@ -26,7 +26,7 @@ const getStatusColor = (status: string) : string => {
     default:
       return 'bg-xp-blue';
   }
-}
+};
 
 const FileOperationProgressDialog = () => {
   const [operations, setOperations] = useState<Map<string, FileOperationProgress>>(new Map());
@@ -89,7 +89,7 @@ const FileOperationProgressDialog = () => {
   if (operations.size === 0) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full">
+    <div className="fixed bottom-4 right-4 z-50 flex w-full max-w-sm flex-col gap-2">
       {Array.from(operations.values()).map((op) => {
         const fileName =
           op.current_file?.split(/[/\\]/).pop() ||
@@ -102,15 +102,15 @@ const FileOperationProgressDialog = () => {
         return (
           <div
             key={op.operation_id}
-            className="bg-xp-surface border border-xp-border rounded-lg shadow-xl p-3 backdrop-blur-sm"
+            className="bg-xp-surface border-xp-border rounded-lg border p-3 shadow-xl backdrop-blur-sm"
           >
             {/* Header */}
-            <div className="flex items-center justify-between mb-1.5">
-              <div className="flex items-center gap-2 min-w-0">
+            <div className="mb-1.5 flex items-center justify-between">
+              <div className="flex min-w-0 items-center gap-2">
                 <span
-                  className={`w-2 h-2 rounded-full flex-shrink-0 ${getStatusColor(op.status)} ${isActive ? 'animate-pulse' : ''}`}
+                  className={`h-2 w-2 flex-shrink-0 rounded-full ${getStatusColor(op.status)} ${isActive ? 'animate-pulse' : ''}`}
                 />
-                <span className="text-xs font-medium text-xp-text capitalize truncate">
+                <span className="text-xp-text truncate text-xs font-medium capitalize">
                   {op.operation_type || 'File Operation'}
                 </span>
               </div>
@@ -123,14 +123,15 @@ const FileOperationProgressDialog = () => {
             </div>
 
             {/* Current file */}
-            <div className="text-[11px] text-xp-text-muted truncate mb-1.5" title={op.current_file}>
+            <div className="text-xp-text-muted mb-1.5 truncate text-[11px]" title={op.current_file}>
               {fileName}
             </div>
 
             {/* Progress bar */}
-            <div className="w-full h-1.5 bg-xp-bg rounded-full overflow-hidden mb-1.5">
+            <div className="bg-xp-bg mb-1.5 h-1.5 w-full overflow-hidden rounded-full">
               <div
                 className={`h-full rounded-full transition-all duration-300 ${
+                  // eslint-disable-next-line no-nested-ternary
                   isDone ? 'bg-green-500' : isFailed ? 'bg-red-500' : 'bg-xp-blue'
                 }`}
                 style={{ width: `${Math.min(100, op.progress_percentage || 0)}%` }}
@@ -138,8 +139,9 @@ const FileOperationProgressDialog = () => {
             </div>
 
             {/* Stats */}
-            <div className="flex items-center justify-between text-[10px] text-xp-text-muted">
+            <div className="text-xp-text-muted flex items-center justify-between text-[10px]">
               <span>
+                {/* eslint-disable-next-line no-nested-ternary */}
                 {isDone
                   ? 'Done'
                   : isFailed

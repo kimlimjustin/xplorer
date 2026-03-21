@@ -157,7 +157,9 @@ export default function Settings() {
     try {
       const saved = localStorage.getItem(SETTINGS_KEY);
       if (saved) return { ...defaultSettings, ...JSON.parse(saved) };
-    } catch { /* ignore localStorage/parse errors */ }
+    } catch {
+      /* ignore localStorage/parse errors */
+    }
     return defaultSettings;
   });
 
@@ -305,7 +307,7 @@ export default function Settings() {
       role="switch"
       aria-checked={checked}
       aria-label={label}
-      className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-xp-accent focus-visible:ring-offset-2 focus-visible:ring-offset-xp-bg ${
+      className={`focus-visible:ring-xp-accent focus-visible:ring-offset-xp-bg relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
         checked ? 'bg-xp-accent' : 'bg-xp-border'
       }`}
       onClick={() => onChange(!checked)}
@@ -355,13 +357,13 @@ export default function Settings() {
     description?: string;
     children: React.ReactNode;
   }) => (
-    <div className="group flex items-center justify-between gap-4 rounded-lg px-4 py-3 transition-colors hover:bg-xp-surface-light/50">
-      <div className="flex items-center gap-3 min-w-0">
-        {Icon && <Icon size={18} className="shrink-0 text-xp-text-secondary" />}
+    <div className="hover:bg-xp-surface-light/50 group flex items-center justify-between gap-4 rounded-lg px-4 py-3 transition-colors">
+      <div className="flex min-w-0 items-center gap-3">
+        {Icon && <Icon size={18} className="text-xp-text-secondary shrink-0" />}
         <div className="min-w-0">
-          <div className="text-sm font-medium text-xp-text">{label}</div>
+          <div className="text-xp-text text-sm font-medium">{label}</div>
           {description && (
-            <div className="text-xs text-xp-text-secondary mt-0.5 leading-relaxed">
+            <div className="text-xp-text-secondary mt-0.5 text-xs leading-relaxed">
               {description}
             </div>
           )}
@@ -372,15 +374,15 @@ export default function Settings() {
   );
 
   const SectionTitle = ({ title, description }: { title: string; description?: string }) => (
-    <div className="mb-1 px-4 pt-2 pb-1">
-      <h3 className="text-xs font-semibold uppercase tracking-wider text-xp-text-secondary">
+    <div className="mb-1 px-4 pb-1 pt-2">
+      <h3 className="text-xp-text-secondary text-xs font-semibold uppercase tracking-wider">
         {title}
       </h3>
-      {description && <p className="text-xs text-xp-text-secondary/70 mt-0.5">{description}</p>}
+      {description && <p className="text-xp-text-secondary/70 mt-0.5 text-xs">{description}</p>}
     </div>
   );
 
-  const Divider = () => <div className="mx-4 my-2 h-px bg-xp-border/50" />;
+  const Divider = () => <div className="bg-xp-border/50 mx-4 my-2 h-px" />;
 
   const SystemIntegrationSettings = () => {
     const [isDefaultHandler, setIsDefaultHandler] = useState(false);
@@ -389,7 +391,10 @@ export default function Settings() {
     const [isWindows] = useState(() => navigator.userAgent.includes('Windows'));
 
     useEffect(() => {
-      if (!isWindows) { setLoading(false); return; }
+      if (!isWindows) {
+        setLoading(false);
+        return;
+      }
       TauriAPI.getShellIntegrationStatus()
         .then((status) => {
           setIsDefaultHandler(status.is_default_handler);
@@ -400,7 +405,7 @@ export default function Settings() {
     }, [isWindows]);
 
     if (!isWindows) return null;
-    if (loading) return <div className="px-4 py-2 text-sm text-xp-text-muted">Loading...</div>;
+    if (loading) return <div className="text-xp-text-muted px-4 py-2 text-sm">Loading...</div>;
 
     return (
       <>
@@ -454,7 +459,7 @@ export default function Settings() {
           />
         </SettingRow>
         {isDefaultHandler && (
-          <div className="px-4 py-2 text-xs text-amber-400 flex items-center gap-2">
+          <div className="flex items-center gap-2 px-4 py-2 text-xs text-amber-400">
             <AlertTriangle size={12} />
             Folders will open in Xplorer. Disable to restore Windows Explorer.
           </div>
@@ -476,7 +481,11 @@ export default function Settings() {
           options={themes}
         />
       </SettingRow>
-      <SettingRow icon={Globe} label={t('settings.general.language')} description={t('settings.general.languageDesc')}>
+      <SettingRow
+        icon={Globe}
+        label={t('settings.general.language')}
+        description={t('settings.general.languageDesc')}
+      >
         <SelectField
           label="Language"
           value={settings.language || i18n.language?.split('-')[0] || 'en'}
@@ -566,7 +575,7 @@ export default function Settings() {
             setLocation('/');
             setTimeout(() => startTour(), 300);
           }}
-          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium bg-xp-blue text-white hover:opacity-90 transition-opacity"
+          className="bg-xp-blue flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
         >
           Replay Tour
         </button>
@@ -581,7 +590,7 @@ export default function Settings() {
             resetBetaWarning();
             setLocation('/');
           }}
-          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium bg-amber-500 text-white hover:opacity-90 transition-opacity"
+          className="flex items-center gap-2 rounded-md bg-amber-500 px-3 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
         >
           Show Warning
         </button>
@@ -591,7 +600,7 @@ export default function Settings() {
       <div className="px-4 pt-4">
         <button
           onClick={() => setSettings(defaultSettings)}
-          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-xp-red transition-colors hover:bg-xp-red/10"
+          className="text-xp-red hover:bg-xp-red/10 flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors"
         >
           <RotateCcw size={14} />
           Reset all settings to defaults
@@ -707,12 +716,12 @@ export default function Settings() {
       <SectionTitle title="Configuration" />
 
       {/* API Key — special layout */}
-      <div className="rounded-lg px-4 py-3 transition-colors hover:bg-xp-surface-light/50">
-        <div className="flex items-center gap-3 mb-2">
-          <Key size={18} className="shrink-0 text-xp-text-secondary" />
+      <div className="hover:bg-xp-surface-light/50 rounded-lg px-4 py-3 transition-colors">
+        <div className="mb-2 flex items-center gap-3">
+          <Key size={18} className="text-xp-text-secondary shrink-0" />
           <div>
-            <div className="text-sm font-medium text-xp-text">API Key</div>
-            <div className="text-xs text-xp-text-secondary mt-0.5">
+            <div className="text-xp-text text-sm font-medium">API Key</div>
+            <div className="text-xp-text-secondary mt-0.5 text-xs">
               Your Anthropic Claude API key
             </div>
           </div>
@@ -724,12 +733,12 @@ export default function Settings() {
             value={agentSettings.api_key}
             onChange={(e) => updateAgentSetting('api_key', e.target.value)}
             placeholder="sk-ant-..."
-            className="w-full h-9 rounded-md border border-xp-border bg-xp-bg px-3 pr-16 text-sm text-xp-text transition-colors hover:border-xp-text-secondary focus:border-xp-accent focus:outline-none focus:ring-1 focus:ring-xp-accent font-mono"
+            className="border-xp-border bg-xp-bg text-xp-text hover:border-xp-text-secondary focus:border-xp-accent focus:ring-xp-accent h-9 w-full rounded-md border px-3 pr-16 font-mono text-sm transition-colors focus:outline-none focus:ring-1"
           />
           <button
             type="button"
             onClick={() => setShowApiKey(!showApiKey)}
-            className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 rounded px-2 py-1 text-xs text-xp-text-secondary transition-colors hover:text-xp-text hover:bg-xp-surface-light"
+            className="text-xp-text-secondary hover:text-xp-text hover:bg-xp-surface-light absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1 rounded px-2 py-1 text-xs transition-colors"
           >
             {showApiKey ? <EyeOff size={14} /> : <Eye size={14} />}
             {showApiKey ? 'Hide' : 'Show'}
@@ -760,12 +769,12 @@ export default function Settings() {
         agentSettings.model.startsWith('o3') ||
         agentSettings.model.startsWith('o4') ||
         agentSettings.model.startsWith('chatgpt-')) && (
-        <div className="rounded-lg px-4 py-3 transition-colors hover:bg-xp-surface-light/50">
-          <div className="flex items-center gap-3 mb-2">
-            <Key size={18} className="shrink-0 text-xp-text-secondary" />
+        <div className="hover:bg-xp-surface-light/50 rounded-lg px-4 py-3 transition-colors">
+          <div className="mb-2 flex items-center gap-3">
+            <Key size={18} className="text-xp-text-secondary shrink-0" />
             <div>
-              <div className="text-sm font-medium text-xp-text">OpenAI API Key</div>
-              <div className="text-xs text-xp-text-secondary mt-0.5">
+              <div className="text-xp-text text-sm font-medium">OpenAI API Key</div>
+              <div className="text-xp-text-secondary mt-0.5 text-xs">
                 Required for GPT / OpenAI models
               </div>
             </div>
@@ -776,12 +785,12 @@ export default function Settings() {
               value={agentSettings.openai_api_key}
               onChange={(e) => updateAgentSetting('openai_api_key', e.target.value)}
               placeholder="sk-..."
-              className="w-full h-9 rounded-md border border-xp-border bg-xp-bg px-3 pr-16 text-sm text-xp-text transition-colors hover:border-xp-text-secondary focus:border-xp-accent focus:outline-none focus:ring-1 focus:ring-xp-accent font-mono"
+              className="border-xp-border bg-xp-bg text-xp-text hover:border-xp-text-secondary focus:border-xp-accent focus:ring-xp-accent h-9 w-full rounded-md border px-3 pr-16 font-mono text-sm transition-colors focus:outline-none focus:ring-1"
             />
             <button
               type="button"
               onClick={() => setShowOpenaiKey(!showOpenaiKey)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 rounded px-2 py-1 text-xs text-xp-text-secondary transition-colors hover:text-xp-text hover:bg-xp-surface-light"
+              className="text-xp-text-secondary hover:text-xp-text hover:bg-xp-surface-light absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1 rounded px-2 py-1 text-xs transition-colors"
             >
               {showOpenaiKey ? <EyeOff size={14} /> : <Eye size={14} />}
               {showOpenaiKey ? 'Hide' : 'Show'}
@@ -794,12 +803,12 @@ export default function Settings() {
       <SectionTitle title="AI Search" />
 
       {/* OpenAI API Key for search */}
-      <div className="rounded-lg px-4 py-3 transition-colors hover:bg-xp-surface-light/50">
-        <div className="flex items-center gap-3 mb-2">
-          <Key size={18} className="shrink-0 text-xp-text-secondary" />
+      <div className="hover:bg-xp-surface-light/50 rounded-lg px-4 py-3 transition-colors">
+        <div className="mb-2 flex items-center gap-3">
+          <Key size={18} className="text-xp-text-secondary shrink-0" />
           <div>
-            <div className="text-sm font-medium text-xp-text">OpenAI API Key</div>
-            <div className="text-xs text-xp-text-secondary mt-0.5">
+            <div className="text-xp-text text-sm font-medium">OpenAI API Key</div>
+            <div className="text-xp-text-secondary mt-0.5 text-xs">
               For GPT-powered search (optional)
             </div>
           </div>
@@ -810,18 +819,18 @@ export default function Settings() {
             defaultValue={localStorage.getItem('xplorer_openai_key') || ''}
             onChange={(e) => localStorage.setItem('xplorer_openai_key', e.target.value)}
             placeholder="sk-..."
-            className="w-full h-9 rounded-md border border-xp-border bg-xp-bg px-3 text-sm text-xp-text transition-colors hover:border-xp-text-secondary focus:border-xp-accent focus:outline-none focus:ring-1 focus:ring-xp-accent font-mono"
+            className="border-xp-border bg-xp-bg text-xp-text hover:border-xp-text-secondary focus:border-xp-accent focus:ring-xp-accent h-9 w-full rounded-md border px-3 font-mono text-sm transition-colors focus:outline-none focus:ring-1"
           />
         </div>
       </div>
 
       {/* Ollama URL */}
-      <div className="rounded-lg px-4 py-3 transition-colors hover:bg-xp-surface-light/50">
-        <div className="flex items-center gap-3 mb-2">
-          <Cpu size={18} className="shrink-0 text-xp-text-secondary" />
+      <div className="hover:bg-xp-surface-light/50 rounded-lg px-4 py-3 transition-colors">
+        <div className="mb-2 flex items-center gap-3">
+          <Cpu size={18} className="text-xp-text-secondary shrink-0" />
           <div>
-            <div className="text-sm font-medium text-xp-text">Ollama Endpoint</div>
-            <div className="text-xs text-xp-text-secondary mt-0.5">
+            <div className="text-xp-text text-sm font-medium">Ollama Endpoint</div>
+            <div className="text-xp-text-secondary mt-0.5 text-xs">
               Local Ollama server URL for AI search
             </div>
           </div>
@@ -832,7 +841,7 @@ export default function Settings() {
             defaultValue={localStorage.getItem('xplorer_ollama_url') || 'http://localhost:11434'}
             onChange={(e) => localStorage.setItem('xplorer_ollama_url', e.target.value)}
             placeholder="http://localhost:11434"
-            className="w-full h-9 rounded-md border border-xp-border bg-xp-bg px-3 text-sm text-xp-text transition-colors hover:border-xp-text-secondary focus:border-xp-accent focus:outline-none focus:ring-1 focus:ring-xp-accent font-mono"
+            className="border-xp-border bg-xp-bg text-xp-text hover:border-xp-text-secondary focus:border-xp-accent focus:ring-xp-accent h-9 w-full rounded-md border px-3 font-mono text-sm transition-colors focus:outline-none focus:ring-1"
           />
         </div>
       </div>
@@ -841,18 +850,18 @@ export default function Settings() {
       <SectionTitle title="Agent" />
 
       {/* Max Turns — special layout */}
-      <div className="rounded-lg px-4 py-3 transition-colors hover:bg-xp-surface-light/50">
+      <div className="hover:bg-xp-surface-light/50 rounded-lg px-4 py-3 transition-colors">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <SlidersHorizontal size={18} className="shrink-0 text-xp-text-secondary" />
+            <SlidersHorizontal size={18} className="text-xp-text-secondary shrink-0" />
             <div>
-              <div className="text-sm font-medium text-xp-text">Max Turns</div>
-              <div className="text-xs text-xp-text-secondary mt-0.5">
+              <div className="text-xp-text text-sm font-medium">Max Turns</div>
+              <div className="text-xp-text-secondary mt-0.5 text-xs">
                 Maximum conversation turns per task
               </div>
             </div>
           </div>
-          <span className="text-sm font-medium text-xp-accent tabular-nums">
+          <span className="text-xp-accent text-sm font-medium tabular-nums">
             {agentSettings.max_turns}
           </span>
         </div>
@@ -864,9 +873,9 @@ export default function Settings() {
             max={50}
             value={agentSettings.max_turns}
             onChange={(e) => updateAgentSetting('max_turns', Number(e.target.value))}
-            className="w-full h-1.5 rounded-full appearance-none bg-xp-border accent-xp-accent cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-xp-accent [&::-webkit-slider-thumb]:shadow-md"
+            className="bg-xp-border accent-xp-accent [&::-webkit-slider-thumb]:bg-xp-accent h-1.5 w-full cursor-pointer appearance-none rounded-full [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-md"
           />
-          <div className="flex justify-between text-[10px] text-xp-text-secondary/60 mt-1">
+          <div className="text-xp-text-secondary/60 mt-1 flex justify-between text-[10px]">
             <span>5</span>
             <span>50</span>
           </div>
@@ -889,18 +898,18 @@ export default function Settings() {
 
       {/* Thinking Budget — conditional */}
       {agentSettings.thinking_enabled && (
-        <div className="rounded-lg px-4 py-3 transition-colors hover:bg-xp-surface-light/50">
+        <div className="hover:bg-xp-surface-light/50 rounded-lg px-4 py-3 transition-colors">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <SlidersHorizontal size={18} className="shrink-0 text-xp-text-secondary" />
+              <SlidersHorizontal size={18} className="text-xp-text-secondary shrink-0" />
               <div>
-                <div className="text-sm font-medium text-xp-text">Thinking Budget</div>
-                <div className="text-xs text-xp-text-secondary mt-0.5">
+                <div className="text-xp-text text-sm font-medium">Thinking Budget</div>
+                <div className="text-xp-text-secondary mt-0.5 text-xs">
                   Max tokens for reasoning
                 </div>
               </div>
             </div>
-            <span className="text-sm font-medium text-xp-accent tabular-nums">
+            <span className="text-xp-accent text-sm font-medium tabular-nums">
               {agentSettings.thinking_budget.toLocaleString()}
             </span>
           </div>
@@ -912,9 +921,9 @@ export default function Settings() {
               step={5000}
               value={agentSettings.thinking_budget}
               onChange={(e) => updateAgentSetting('thinking_budget', Number(e.target.value))}
-              className="w-full h-1.5 rounded-full appearance-none bg-xp-border accent-xp-accent cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-xp-accent [&::-webkit-slider-thumb]:shadow-md"
+              className="bg-xp-border accent-xp-accent [&::-webkit-slider-thumb]:bg-xp-accent h-1.5 w-full cursor-pointer appearance-none rounded-full [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-md"
             />
-            <div className="flex justify-between text-[10px] text-xp-text-secondary/60 mt-1">
+            <div className="text-xp-text-secondary/60 mt-1 flex justify-between text-[10px]">
               <span>5K</span>
               <span>50K</span>
             </div>
@@ -937,7 +946,7 @@ export default function Settings() {
               thinking_budget: 10000,
             });
           }}
-          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-xp-text-secondary transition-colors hover:text-xp-text hover:bg-xp-surface-light"
+          className="text-xp-text-secondary hover:text-xp-text hover:bg-xp-surface-light flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors"
         >
           <RotateCcw size={14} />
           Reset agent settings
@@ -1013,10 +1022,10 @@ export default function Settings() {
     <button
       type="button"
       onClick={onChange}
-      className={`px-3 py-1 rounded-md text-xs font-semibold tracking-wide transition-all ${
+      className={`rounded-md px-3 py-1 text-xs font-semibold tracking-wide transition-all ${
         enabled
-          ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 hover:bg-emerald-500/30'
-          : 'bg-red-500/10 text-red-400/70 border border-red-500/20 hover:bg-red-500/20'
+          ? 'border border-emerald-500/40 bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30'
+          : 'border border-red-500/20 bg-red-500/10 text-red-400/70 hover:bg-red-500/20'
       }`}
     >
       {enabled ? 'ON' : 'OFF'}
@@ -1027,12 +1036,12 @@ export default function Settings() {
     <div className="space-y-1">
       {/* Internet Sandbox */}
       <SectionTitle title="Network" />
-      <div className="flex items-center justify-between gap-4 rounded-lg px-4 py-3 transition-colors hover:bg-xp-surface-light/50">
-        <div className="flex items-center gap-3 min-w-0">
-          <Globe size={18} className="shrink-0 text-xp-text-secondary" />
+      <div className="hover:bg-xp-surface-light/50 flex items-center justify-between gap-4 rounded-lg px-4 py-3 transition-colors">
+        <div className="flex min-w-0 items-center gap-3">
+          <Globe size={18} className="text-xp-text-secondary shrink-0" />
           <div className="min-w-0">
-            <div className="text-sm font-medium text-xp-text">Block Internet Access</div>
-            <div className="text-xs text-xp-text-secondary mt-0.5 leading-relaxed">
+            <div className="text-xp-text text-sm font-medium">Block Internet Access</div>
+            <div className="text-xp-text-secondary mt-0.5 text-xs leading-relaxed">
               Prevent the agent from running commands that access the network (ping, ftp, telnet,
               nslookup, URLs in arguments, etc.). Core network tools (curl, wget, ssh, nc) are
               always blocked regardless of this setting.
@@ -1057,16 +1066,16 @@ export default function Settings() {
           return (
             <div
               key={tool.name}
-              className={`flex items-center justify-between gap-4 rounded-lg px-4 py-2.5 transition-colors hover:bg-xp-surface-light/50 ${!enabled ? 'opacity-50' : ''}`}
+              className={`hover:bg-xp-surface-light/50 flex items-center justify-between gap-4 rounded-lg px-4 py-2.5 transition-colors ${!enabled ? 'opacity-50' : ''}`}
             >
               <div className="min-w-0">
-                <div className="text-sm font-medium text-xp-text flex items-center gap-2">
-                  <code className="text-[11px] bg-xp-surface px-1.5 py-0.5 rounded text-xp-accent/80 font-mono">
+                <div className="text-xp-text flex items-center gap-2 text-sm font-medium">
+                  <code className="bg-xp-surface text-xp-accent/80 rounded px-1.5 py-0.5 font-mono text-[11px]">
                     {tool.name}
                   </code>
                   {tool.label}
                 </div>
-                <div className="text-xs text-xp-text-secondary mt-0.5">{tool.desc}</div>
+                <div className="text-xp-text-secondary mt-0.5 text-xs">{tool.desc}</div>
               </div>
               <PermToggle enabled={enabled} onChange={() => toggleTool(tool.name)} />
             </div>
@@ -1085,16 +1094,16 @@ export default function Settings() {
           return (
             <div
               key={tool.name}
-              className={`flex items-center justify-between gap-4 rounded-lg px-4 py-2.5 transition-colors hover:bg-xp-surface-light/50 ${!enabled ? 'opacity-50' : ''}`}
+              className={`hover:bg-xp-surface-light/50 flex items-center justify-between gap-4 rounded-lg px-4 py-2.5 transition-colors ${!enabled ? 'opacity-50' : ''}`}
             >
               <div className="min-w-0">
-                <div className="text-sm font-medium text-xp-text flex items-center gap-2">
-                  <code className="text-[11px] bg-xp-surface px-1.5 py-0.5 rounded text-xp-accent/80 font-mono">
+                <div className="text-xp-text flex items-center gap-2 text-sm font-medium">
+                  <code className="bg-xp-surface text-xp-accent/80 rounded px-1.5 py-0.5 font-mono text-[11px]">
                     {tool.name}
                   </code>
                   {tool.label}
                 </div>
-                <div className="text-xs text-xp-text-secondary mt-0.5">{tool.desc}</div>
+                <div className="text-xp-text-secondary mt-0.5 text-xs">{tool.desc}</div>
               </div>
               <PermToggle enabled={enabled} onChange={() => toggleTool(tool.name)} />
             </div>
@@ -1113,7 +1122,7 @@ export default function Settings() {
         }
       />
       {agentSettings.auto_approve ? (
-        <div className="px-4 py-2 text-xs text-xp-text-secondary italic">
+        <div className="text-xp-text-secondary px-4 py-2 text-xs italic">
           Global auto-approve is enabled. Disable it in AI Agent settings to use per-tool rules.
         </div>
       ) : (
@@ -1125,9 +1134,9 @@ export default function Settings() {
             return (
               <div
                 key={tool.name}
-                className="flex items-center justify-between gap-4 rounded-lg px-4 py-2 transition-colors hover:bg-xp-surface-light/50"
+                className="hover:bg-xp-surface-light/50 flex items-center justify-between gap-4 rounded-lg px-4 py-2 transition-colors"
               >
-                <div className="text-sm text-xp-text">{tool.label}</div>
+                <div className="text-xp-text text-sm">{tool.label}</div>
                 <PermToggle enabled={autoApproved} onChange={() => toggleAutoApprove(tool.name)} />
               </div>
             );
@@ -1141,12 +1150,12 @@ export default function Settings() {
         title="Allowed Paths"
         description="If set, the agent can ONLY access these directories"
       />
-      <div className="px-4 space-y-2">
+      <div className="space-y-2 px-4">
         <div className="flex gap-2">
           <input
             type="text"
             placeholder="e.g. D:\Projects"
-            className="flex-1 h-8 rounded-md border border-xp-border bg-xp-bg px-3 text-sm text-xp-text focus:border-xp-accent focus:outline-none focus:ring-1 focus:ring-xp-accent font-mono"
+            className="border-xp-border bg-xp-bg text-xp-text focus:border-xp-accent focus:ring-xp-accent h-8 flex-1 rounded-md border px-3 font-mono text-sm focus:outline-none focus:ring-1"
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 addToList('allowed_paths', e.currentTarget.value);
@@ -1160,7 +1169,7 @@ export default function Settings() {
               addToList('allowed_paths', input.value);
               input.value = '';
             }}
-            className="h-8 px-3 rounded-md text-xs font-medium bg-xp-accent text-white hover:opacity-90 transition-opacity"
+            className="bg-xp-accent h-8 rounded-md px-3 text-xs font-medium text-white transition-opacity hover:opacity-90"
           >
             Add
           </button>
@@ -1169,13 +1178,13 @@ export default function Settings() {
           <div className="space-y-1">
             {permissions.allowed_paths.map((p, i) => (
               <div
-                key={i}
-                className="flex items-center justify-between gap-2 rounded-md bg-xp-surface px-3 py-1.5 text-sm font-mono text-xp-text"
+                key={p}
+                className="bg-xp-surface text-xp-text flex items-center justify-between gap-2 rounded-md px-3 py-1.5 font-mono text-sm"
               >
                 <span className="truncate">{p}</span>
                 <button
                   onClick={() => removeFromList('allowed_paths', i)}
-                  className="text-xp-text-secondary hover:text-red-400 text-xs shrink-0"
+                  className="text-xp-text-secondary shrink-0 text-xs hover:text-red-400"
                 >
                   Remove
                 </button>
@@ -1190,12 +1199,12 @@ export default function Settings() {
         title="Blocked Paths"
         description="Additional paths blocked beyond system defaults"
       />
-      <div className="px-4 space-y-2">
+      <div className="space-y-2 px-4">
         <div className="flex gap-2">
           <input
             type="text"
             placeholder="e.g. D:\Secrets"
-            className="flex-1 h-8 rounded-md border border-xp-border bg-xp-bg px-3 text-sm text-xp-text focus:border-xp-accent focus:outline-none focus:ring-1 focus:ring-xp-accent font-mono"
+            className="border-xp-border bg-xp-bg text-xp-text focus:border-xp-accent focus:ring-xp-accent h-8 flex-1 rounded-md border px-3 font-mono text-sm focus:outline-none focus:ring-1"
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 addToList('blocked_paths', e.currentTarget.value);
@@ -1209,7 +1218,7 @@ export default function Settings() {
               addToList('blocked_paths', input.value);
               input.value = '';
             }}
-            className="h-8 px-3 rounded-md text-xs font-medium bg-xp-accent text-white hover:opacity-90 transition-opacity"
+            className="bg-xp-accent h-8 rounded-md px-3 text-xs font-medium text-white transition-opacity hover:opacity-90"
           >
             Add
           </button>
@@ -1218,13 +1227,13 @@ export default function Settings() {
           <div className="space-y-1">
             {permissions.blocked_paths.map((p, i) => (
               <div
-                key={i}
-                className="flex items-center justify-between gap-2 rounded-md bg-xp-surface px-3 py-1.5 text-sm font-mono text-xp-text"
+                key={p}
+                className="bg-xp-surface text-xp-text flex items-center justify-between gap-2 rounded-md px-3 py-1.5 font-mono text-sm"
               >
                 <span className="truncate">{p}</span>
                 <button
                   onClick={() => removeFromList('blocked_paths', i)}
-                  className="text-xp-text-secondary hover:text-red-400 text-xs shrink-0"
+                  className="text-xp-text-secondary shrink-0 text-xs hover:text-red-400"
                 >
                   Remove
                 </button>
@@ -1240,12 +1249,12 @@ export default function Settings() {
         title="Custom Blocked Commands"
         description="Added on top of 60+ built-in blocked commands"
       />
-      <div className="px-4 space-y-2">
+      <div className="space-y-2 px-4">
         <div className="flex gap-2">
           <input
             type="text"
             placeholder="e.g. npm"
-            className="flex-1 h-8 rounded-md border border-xp-border bg-xp-bg px-3 text-sm text-xp-text focus:border-xp-accent focus:outline-none focus:ring-1 focus:ring-xp-accent font-mono"
+            className="border-xp-border bg-xp-bg text-xp-text focus:border-xp-accent focus:ring-xp-accent h-8 flex-1 rounded-md border px-3 font-mono text-sm focus:outline-none focus:ring-1"
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 addToList('custom_blocked_commands', e.currentTarget.value);
@@ -1259,7 +1268,7 @@ export default function Settings() {
               addToList('custom_blocked_commands', input.value);
               input.value = '';
             }}
-            className="h-8 px-3 rounded-md text-xs font-medium bg-xp-accent text-white hover:opacity-90 transition-opacity"
+            className="bg-xp-accent h-8 rounded-md px-3 text-xs font-medium text-white transition-opacity hover:opacity-90"
           >
             Add
           </button>
@@ -1268,13 +1277,13 @@ export default function Settings() {
           <div className="space-y-1">
             {permissions.custom_blocked_commands.map((c, i) => (
               <div
-                key={i}
-                className="flex items-center justify-between gap-2 rounded-md bg-xp-surface px-3 py-1.5 text-sm font-mono text-xp-text"
+                key={c}
+                className="bg-xp-surface text-xp-text flex items-center justify-between gap-2 rounded-md px-3 py-1.5 font-mono text-sm"
               >
                 <span className="truncate">{c}</span>
                 <button
                   onClick={() => removeFromList('custom_blocked_commands', i)}
-                  className="text-xp-text-secondary hover:text-red-400 text-xs shrink-0"
+                  className="text-xp-text-secondary shrink-0 text-xs hover:text-red-400"
                 >
                   Remove
                 </button>
@@ -1298,7 +1307,7 @@ export default function Settings() {
               block_internet: true,
             });
           }}
-          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-xp-text-secondary transition-colors hover:text-xp-text hover:bg-xp-surface-light"
+          className="text-xp-text-secondary hover:text-xp-text hover:bg-xp-surface-light flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors"
         >
           <RotateCcw size={14} />
           Reset to defaults
@@ -1360,7 +1369,12 @@ export default function Settings() {
         label="Vim Mode"
         description="Navigate files with vim-like keys (j/k/h/l, gg, G, dd, yy, p, v)"
       >
-        <Toggle id="vimMode" label="Vim Mode" checked={vimModeEnabled} onChange={handleVimModeToggle} />
+        <Toggle
+          id="vimMode"
+          label="Vim Mode"
+          checked={vimModeEnabled}
+          onChange={handleVimModeToggle}
+        />
       </SettingRow>
       {vimModeEnabled && (
         <>
@@ -1376,64 +1390,64 @@ export default function Settings() {
               onChange={handleVimLearningModeToggle}
             />
           </SettingRow>
-          <div className="mx-4 mb-2 rounded-md bg-xp-surface-light/50 p-3 text-xs text-xp-text-secondary leading-relaxed space-y-1">
-            <div className="font-medium text-xp-text text-sm mb-1.5">Vim Key Bindings</div>
+          <div className="bg-xp-surface-light/50 text-xp-text-secondary mx-4 mb-2 space-y-1 rounded-md p-3 text-xs leading-relaxed">
+            <div className="text-xp-text mb-1.5 text-sm font-medium">Vim Key Bindings</div>
             <div className="grid grid-cols-2 gap-x-6 gap-y-0.5">
               <span>
-                <kbd className="font-mono bg-xp-bg px-1 rounded">j</kbd> /{' '}
-                <kbd className="font-mono bg-xp-bg px-1 rounded">k</kbd> Move down / up
+                <kbd className="bg-xp-bg rounded px-1 font-mono">j</kbd> /{' '}
+                <kbd className="bg-xp-bg rounded px-1 font-mono">k</kbd> Move down / up
               </span>
               <span>
-                <kbd className="font-mono bg-xp-bg px-1 rounded">h</kbd> Go to parent
+                <kbd className="bg-xp-bg rounded px-1 font-mono">h</kbd> Go to parent
               </span>
               <span>
-                <kbd className="font-mono bg-xp-bg px-1 rounded">l</kbd> /{' '}
-                <kbd className="font-mono bg-xp-bg px-1 rounded">Enter</kbd> Open / enter
+                <kbd className="bg-xp-bg rounded px-1 font-mono">l</kbd> /{' '}
+                <kbd className="bg-xp-bg rounded px-1 font-mono">Enter</kbd> Open / enter
               </span>
               <span>
-                <kbd className="font-mono bg-xp-bg px-1 rounded">gg</kbd> First file
+                <kbd className="bg-xp-bg rounded px-1 font-mono">gg</kbd> First file
               </span>
               <span>
-                <kbd className="font-mono bg-xp-bg px-1 rounded">G</kbd> Last file
+                <kbd className="bg-xp-bg rounded px-1 font-mono">G</kbd> Last file
               </span>
               <span>
-                <kbd className="font-mono bg-xp-bg px-1 rounded">/</kbd> Focus search
+                <kbd className="bg-xp-bg rounded px-1 font-mono">/</kbd> Focus search
               </span>
               <span>
-                <kbd className="font-mono bg-xp-bg px-1 rounded">:</kbd> Command palette
+                <kbd className="bg-xp-bg rounded px-1 font-mono">:</kbd> Command palette
               </span>
               <span>
-                <kbd className="font-mono bg-xp-bg px-1 rounded">i</kbd> Insert mode
+                <kbd className="bg-xp-bg rounded px-1 font-mono">i</kbd> Insert mode
               </span>
               <span>
-                <kbd className="font-mono bg-xp-bg px-1 rounded">dd</kbd> Delete
+                <kbd className="bg-xp-bg rounded px-1 font-mono">dd</kbd> Delete
               </span>
               <span>
-                <kbd className="font-mono bg-xp-bg px-1 rounded">yy</kbd> Copy (yank)
+                <kbd className="bg-xp-bg rounded px-1 font-mono">yy</kbd> Copy (yank)
               </span>
               <span>
-                <kbd className="font-mono bg-xp-bg px-1 rounded">p</kbd> Paste
+                <kbd className="bg-xp-bg rounded px-1 font-mono">p</kbd> Paste
               </span>
               <span>
-                <kbd className="font-mono bg-xp-bg px-1 rounded">v</kbd> Visual mode
+                <kbd className="bg-xp-bg rounded px-1 font-mono">v</kbd> Visual mode
               </span>
               <span>
-                <kbd className="font-mono bg-xp-bg px-1 rounded">V</kbd> Select range
+                <kbd className="bg-xp-bg rounded px-1 font-mono">V</kbd> Select range
               </span>
               <span>
-                <kbd className="font-mono bg-xp-bg px-1 rounded">o</kbd> Open with default
+                <kbd className="bg-xp-bg rounded px-1 font-mono">o</kbd> Open with default
               </span>
               <span>
-                <kbd className="font-mono bg-xp-bg px-1 rounded">r</kbd> Rename
+                <kbd className="bg-xp-bg rounded px-1 font-mono">r</kbd> Rename
               </span>
               <span>
-                <kbd className="font-mono bg-xp-bg px-1 rounded">m</kbd> Bookmark dir
+                <kbd className="bg-xp-bg rounded px-1 font-mono">m</kbd> Bookmark dir
               </span>
               <span>
-                <kbd className="font-mono bg-xp-bg px-1 rounded">.</kbd> Repeat last
+                <kbd className="bg-xp-bg rounded px-1 font-mono">.</kbd> Repeat last
               </span>
               <span>
-                <kbd className="font-mono bg-xp-bg px-1 rounded">Esc</kbd> Clear / exit
+                <kbd className="bg-xp-bg rounded px-1 font-mono">Esc</kbd> Clear / exit
               </span>
             </div>
           </div>
@@ -1450,12 +1464,12 @@ export default function Settings() {
   const renderMarketplace = () => (
     <div className="space-y-1">
       <SectionTitle title="Connection" description="Configure the marketplace server endpoint" />
-      <div className="rounded-lg px-4 py-3 transition-colors hover:bg-xp-surface-light/50">
-        <div className="flex items-center gap-3 mb-2">
-          <Globe size={18} className="shrink-0 text-xp-text-secondary" />
+      <div className="hover:bg-xp-surface-light/50 rounded-lg px-4 py-3 transition-colors">
+        <div className="mb-2 flex items-center gap-3">
+          <Globe size={18} className="text-xp-text-secondary shrink-0" />
           <div>
-            <div className="text-sm font-medium text-xp-text">Marketplace API URL</div>
-            <div className="text-xs text-xp-text-secondary mt-0.5">
+            <div className="text-xp-text text-sm font-medium">Marketplace API URL</div>
+            <div className="text-xp-text-secondary mt-0.5 text-xs">
               Base URL for the extension marketplace server
             </div>
           </div>
@@ -1466,16 +1480,16 @@ export default function Settings() {
             value={marketplaceUrl}
             onChange={(e) => setMarketplaceUrl(e.target.value)}
             placeholder="http://localhost:3000/api"
-            className="w-full h-9 rounded-md border border-xp-border bg-xp-bg px-3 text-sm text-xp-text transition-colors hover:border-xp-text-secondary focus:border-xp-accent focus:outline-none focus:ring-1 focus:ring-xp-accent font-mono"
+            className="border-xp-border bg-xp-bg text-xp-text hover:border-xp-text-secondary focus:border-xp-accent focus:ring-xp-accent h-9 w-full rounded-md border px-3 font-mono text-sm transition-colors focus:outline-none focus:ring-1"
           />
-          <div className="flex items-center justify-between mt-2">
-            <span className="text-[10px] text-xp-text-secondary/60">
+          <div className="mt-2 flex items-center justify-between">
+            <span className="text-xp-text-secondary/60 text-[10px]">
               Default: {defaultMarketplaceUrl}
             </span>
             {marketplaceUrl !== defaultMarketplaceUrl && (
               <button
                 onClick={() => setMarketplaceUrl(defaultMarketplaceUrl)}
-                className="flex items-center gap-1 text-xs text-xp-text-secondary hover:text-xp-text transition-colors"
+                className="text-xp-text-secondary hover:text-xp-text flex items-center gap-1 text-xs transition-colors"
               >
                 <RotateCcw size={12} />
                 Reset
@@ -1509,29 +1523,29 @@ export default function Settings() {
   };
 
   return (
-    <div className="min-h-screen bg-xp-bg text-xp-text flex flex-col">
+    <div className="bg-xp-bg text-xp-text flex min-h-screen flex-col">
       {/* ── Header ──────────────────────────────────────────────── */}
-      <div className="shrink-0 border-b border-xp-border/50 bg-xp-bg/80 backdrop-blur-sm">
-        <div className="max-w-6xl mx-auto flex items-center gap-3 px-6 py-4">
+      <div className="border-xp-border/50 bg-xp-bg/80 shrink-0 border-b backdrop-blur-sm">
+        <div className="mx-auto flex max-w-6xl items-center gap-3 px-6 py-4">
           <button
             onClick={() => setLocation('/')}
-            className="flex items-center justify-center h-8 w-8 rounded-md text-xp-text-secondary transition-colors hover:bg-xp-surface hover:text-xp-text"
+            className="text-xp-text-secondary hover:bg-xp-surface hover:text-xp-text flex h-8 w-8 items-center justify-center rounded-md transition-colors"
             title="Back to Home"
           >
             <ArrowLeft size={18} />
           </button>
           <div>
-            <h1 className="text-lg font-semibold text-xp-text leading-tight">Settings</h1>
-            <p className="text-xs text-xp-text-secondary">Customize your Xplorer experience</p>
+            <h1 className="text-xp-text text-lg font-semibold leading-tight">Settings</h1>
+            <p className="text-xp-text-secondary text-xs">Customize your Xplorer experience</p>
           </div>
         </div>
       </div>
 
       {/* ── Body: Sidebar + Content ─────────────────────────────── */}
       <div className="flex-1 overflow-hidden">
-        <div className="max-w-6xl mx-auto flex h-full">
+        <div className="mx-auto flex h-full max-w-6xl">
           {/* Sidebar */}
-          <nav className="shrink-0 w-56 border-r border-xp-border/50 py-4 px-3 overflow-y-auto">
+          <nav className="border-xp-border/50 w-56 shrink-0 overflow-y-auto border-r px-3 py-4">
             <div className="space-y-1">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
@@ -1540,7 +1554,7 @@ export default function Settings() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`w-full flex items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-all ${
+                    className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-all ${
                       isActive
                         ? 'bg-xp-accent/15 text-xp-accent'
                         : 'text-xp-text-secondary hover:bg-xp-surface hover:text-xp-text'
@@ -1549,15 +1563,15 @@ export default function Settings() {
                     <Icon size={18} className={isActive ? 'text-xp-accent' : ''} />
                     <div className="min-w-0 flex-1">
                       <div
-                        className={`text-sm font-medium truncate ${isActive ? 'text-xp-accent' : ''}`}
+                        className={`truncate text-sm font-medium ${isActive ? 'text-xp-accent' : ''}`}
                       >
                         {tab.label}
                       </div>
-                      <div className="text-[10px] text-xp-text-secondary/60 truncate">
+                      <div className="text-xp-text-secondary/60 truncate text-[10px]">
                         {tab.description}
                       </div>
                     </div>
-                    {isActive && <ChevronRight size={14} className="shrink-0 text-xp-accent/60" />}
+                    {isActive && <ChevronRight size={14} className="text-xp-accent/60 shrink-0" />}
                   </button>
                 );
               })}
@@ -1565,14 +1579,14 @@ export default function Settings() {
           </nav>
 
           {/* Content */}
-          <main className="flex-1 overflow-y-auto py-4 px-2">
+          <main className="flex-1 overflow-y-auto px-2 py-4">
             <div className="max-w-2xl">
               {/* Tab heading */}
-              <div className="px-4 mb-4">
-                <h2 className="text-xl font-semibold text-xp-text">
+              <div className="mb-4 px-4">
+                <h2 className="text-xp-text text-xl font-semibold">
                   {tabs.find((t) => t.id === activeTab)?.label}
                 </h2>
-                <p className="text-sm text-xp-text-secondary mt-0.5">
+                <p className="text-xp-text-secondary mt-0.5 text-sm">
                   {tabs.find((t) => t.id === activeTab)?.description}
                 </p>
               </div>

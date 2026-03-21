@@ -118,9 +118,9 @@ const AUDIO_EXTENSIONS = new Set([
   'aiff',
 ]);
 
-const getExt = (name: string) : string => {
+const getExt = (name: string): string => {
   return name.split('.').pop()?.toLowerCase() || '';
-}
+};
 
 // ── Inline preview renderers ────────────────────────────────────────────────
 
@@ -189,7 +189,7 @@ const TextQuickPreview: React.FC<{ file: FileEntry }> = ({ file }) => {
         // Limit to first ~100 lines
         const lines = text.split('\n');
         const truncated =
-          lines.length > 100 ? lines.slice(0, 100).join('\n') + '\n... (truncated)' : text;
+          lines.length > 100 ? `${lines.slice(0, 100).join('\n')}\n... (truncated)` : text;
         setContent(truncated);
       })
       .catch((err) => {
@@ -579,6 +579,6 @@ const QuickLookOverlay = ({ file, onClose }: QuickLookOverlayProps) => {
       </div>
     </div>
   );
-}
+};
 
 export default QuickLookOverlay;

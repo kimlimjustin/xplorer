@@ -11,9 +11,7 @@ describe('NotFound Page', () => {
 
   it('displays the descriptive message about missing router entry', () => {
     render(<NotFound />);
-    expect(
-      screen.getByText('Did you forget to add the page to the router?'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('Did you forget to add the page to the router?')).toBeInTheDocument();
   });
 
   it('renders the error indicator symbol', () => {

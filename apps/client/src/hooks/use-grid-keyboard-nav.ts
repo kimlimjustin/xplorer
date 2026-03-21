@@ -176,4 +176,4 @@ export const useGridKeyboardNav = ({
   );
 
   return { handleKeyDown };
-}
+};

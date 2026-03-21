@@ -25,12 +25,12 @@ const INVALID_CHARS_DISPLAY = '/ \\ : * ? " < > |';
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-const getExtension = (name: string) : string => {
+const getExtension = (name: string): string => {
   const dot = name.lastIndexOf('.');
   return dot > 0 ? name.slice(dot) : '';
-}
+};
 
-const sortFilesByStrategy = (files: FileEntry[], strategy: SortStrategy) : FileEntry[] => {
+const sortFilesByStrategy = (files: FileEntry[], strategy: SortStrategy): FileEntry[] => {
   const sorted = [...files];
   switch (strategy) {
     case 'by-name':
@@ -47,7 +47,7 @@ const sortFilesByStrategy = (files: FileEntry[], strategy: SortStrategy) : FileE
       break;
   }
   return sorted;
-}
+};
 
 // ── Drag state ────────────────────────────────────────────────────────────────
 
@@ -75,7 +75,7 @@ const useDragReorder = (items: FileEntry[], setItems: (files: FileEntry[]) => vo
   }, [dragIndex, overIndex, items, setItems]);
 
   return { dragIndex, overIndex, handleDragStart, handleDragOver, handleDragEnd };
-}
+};
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
@@ -522,6 +522,7 @@ const PasteRenameDialog = React.memo(function PasteRenameDialog({
             >
               <div style={{ fontWeight: 600, marginBottom: '4px' }}>Rename errors:</div>
               {errors.map((err, i) => (
+                // eslint-disable-next-line react/no-array-index-key
                 <div key={i}>{err}</div>
               ))}
             </div>
@@ -598,13 +599,12 @@ const PasteRenameDialog = React.memo(function PasteRenameDialog({
                           alignItems: 'center',
                           fontSize: '12px',
                           borderBottom: '1px solid var(--xp-border)',
-                          backgroundColor: hasError
-                            ? 'rgba(248, 113, 113, 0.08)'
-                            : hasWarning
-                              ? 'rgba(251, 191, 36, 0.06)'
-                              : isDragOver
-                                ? 'rgba(99, 102, 241, 0.1)'
-                                : 'transparent',
+                          backgroundColor: (() => {
+                            if (hasError) return 'rgba(248, 113, 113, 0.08)';
+                            if (hasWarning) return 'rgba(251, 191, 36, 0.06)';
+                            if (isDragOver) return 'rgba(99, 102, 241, 0.1)';
+                            return 'transparent';
+                          })(),
                           transition: 'background-color 0.15s',
                           cursor: 'grab',
                           opacity: drag.dragIndex === index ? 0.5 : 1,
@@ -659,13 +659,12 @@ const PasteRenameDialog = React.memo(function PasteRenameDialog({
                           style={{
                             display: 'flex',
                             justifyContent: 'center',
-                            color: newName
-                              ? isUnchanged
-                                ? 'var(--xp-text-muted)'
-                                : hasError
-                                  ? 'var(--xp-red)'
-                                  : 'var(--xp-blue)'
-                              : 'var(--xp-text-muted)',
+                            color: (() => {
+                              if (!newName) return 'var(--xp-text-muted)';
+                              if (isUnchanged) return 'var(--xp-text-muted)';
+                              if (hasError) return 'var(--xp-red)';
+                              return 'var(--xp-blue)';
+                            })(),
                           }}
                         >
                           <svg
@@ -694,6 +693,7 @@ const PasteRenameDialog = React.memo(function PasteRenameDialog({
                                   overflow: 'hidden',
                                   textOverflow: 'ellipsis',
                                   display: 'block',
+                                  // eslint-disable-next-line no-nested-ternary
                                   color: hasError
                                     ? 'var(--xp-red)'
                                     : isUnchanged
@@ -709,6 +709,7 @@ const PasteRenameDialog = React.memo(function PasteRenameDialog({
                                 <div style={{ marginTop: '2px' }}>
                                   {lineErrors.map((err, ei) => (
                                     <div
+                                      // eslint-disable-next-line react/no-array-index-key
                                       key={ei}
                                       style={{
                                         fontSize: '10px',

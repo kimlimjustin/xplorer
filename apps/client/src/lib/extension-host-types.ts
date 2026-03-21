@@ -280,7 +280,7 @@ export class EventBus {
 
 // ─── Path Validation ────────────────────────────────────────────────────────────
 
-export const isPathAllowed = (path: string, _extensionPath: string) : boolean => {
+export const isPathAllowed = (path: string, _extensionPath: string): boolean => {
   const normalized = path.replace(/\\/g, '/').toLowerCase();
   const blockedPrefixes = [
     '/etc/',
@@ -308,4 +308,4 @@ export const isPathAllowed = (path: string, _extensionPath: string) : boolean =>
     if (normalized.includes(prefix)) return false;
   }
   return true;
-}
+};

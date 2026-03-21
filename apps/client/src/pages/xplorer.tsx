@@ -1,8 +1,7 @@
 import React, { useState, useMemo, useRef, useCallback } from 'react';
-import { type FileEntry } from '@/lib/tauri-api';
+import { type FileEntry, type ConflictFileInfo } from '@/lib/tauri-api';
 import { useToast } from '@/hooks/use-toast';
 import { sortFiles } from '@/lib/utils';
-import type { ConflictFileInfo } from '@/lib/tauri-api';
 import type { ConflictResolution } from '@/components/dialogs/FileConflictDialog';
 
 import { useFolderSizes } from '@/hooks/use-folder-sizes';
@@ -46,7 +45,7 @@ const ExplorerUnified = () => {
   const currentPath = activeGroup.currentPath;
   const tabs = activeGroup.tabs;
   const activeTab = activeGroup.activeTabId;
-  const activeTabObj = tabs.find(t => t.id === activeTab);
+  const activeTabObj = tabs.find((t) => t.id === activeTab);
   const pathHistory = activeGroup.pathHistory;
   const historyIndex = activeGroup.historyIndex;
 
@@ -58,22 +57,29 @@ const ExplorerUnified = () => {
 
   // File conflict dialog state
   const [fileConflict, setFileConflict] = useState<{
-    fileName: string; isDir: boolean; destination: string; remaining: number;
+    fileName: string;
+    isDir: boolean;
+    destination: string;
+    remaining: number;
     sourceInfo?: ConflictFileInfo | null;
     destInfo?: ConflictFileInfo | null;
     resolve: (resolution: ConflictResolution, applyToAll: boolean) => void;
   } | null>(null);
 
   // Expose for E2E testing
-  if (typeof window !== 'undefined' && (window as any).__XPLORER_E2E__) {
-    (window as any).__setFileConflict__ = setFileConflict;
+  if (
+    typeof window !== 'undefined' &&
+    (window as unknown as Record<string, unknown>).__XPLORER_E2E__
+  ) {
+    (window as unknown as Record<string, unknown>).__setFileConflict__ = setFileConflict;
   }
 
   // Selected file for preview
   const [selectedFile, setSelectedFile] = useState<FileEntry | null>(null);
 
   // ── Dependent hooks ───────────────────────────────────────────────────────
-  const { changes: fileChanges, dismissChanges: dismissFileChanges } = useFocusChangeTracker(currentPath);
+  const { changes: fileChanges, dismissChanges: dismissFileChanges } =
+    useFocusChangeTracker(currentPath);
   const crossTabSelection = useCrossTabSelection();
   const { themes, theme, setTheme, handleApplyTheme } = useThemeManager();
   const fileComparison = useFileComparison();
@@ -86,8 +92,10 @@ const ExplorerUnified = () => {
 
   // Dialog manager
   const dialogManager = useDialogManager({
-    splitLayout, activeGroupId: activeGroup.id,
-    fileComparison, refetch: () => refetch(),
+    splitLayout,
+    activeGroupId: activeGroup.id,
+    fileComparison,
+    refetch: () => refetch(),
   });
 
   // Terminal
@@ -100,18 +108,30 @@ const ExplorerUnified = () => {
   });
 
   // Sorted + filtered files
-  const sortedFiles = useMemo(() => sortFiles(files, layout.sortBy, layout.sortOrder), [files, layout.sortBy, layout.sortOrder]);
+  const sortedFiles = useMemo(
+    () => sortFiles(files, layout.sortBy, layout.sortOrder),
+    [files, layout.sortBy, layout.sortOrder],
+  );
   const filteredFiles = useMemo(() => {
     if (!dialogManager.activeCollectionFilter) return sortedFiles;
     return applyCollectionToFiles(sortedFiles, dialogManager.activeCollectionFilter);
   }, [sortedFiles, dialogManager.activeCollectionFilter]);
 
-  const handleGDriveFileSelect = useCallback((file: FileEntry) => { setSelectedFiles(new Set([file.path])); }, []);
+  const handleGDriveFileSelect = useCallback((file: FileEntry) => {
+    setSelectedFiles(new Set([file.path]));
+  }, []);
 
   // ── File operations ───────────────────────────────────────────────────────
   const fileOps = useFileOperations({
-    currentPath, selectedFiles, setSelectedFiles, files, refetch, toast,
-    splitLayout, activeGroupId: activeGroup.id, fileComparison,
+    currentPath,
+    selectedFiles,
+    setSelectedFiles,
+    files,
+    refetch,
+    toast,
+    splitLayout,
+    activeGroupId: activeGroup.id,
+    fileComparison,
     dialogs: {
       openPropertiesDialog: dialogManager.openPropertiesDialog,
       openOpenWithDialog: dialogManager.openOpenWithDialog,
@@ -146,9 +166,16 @@ const ExplorerUnified = () => {
     resolveConflict: (fileName, isDir, destination, remaining, sourceInfo, destInfo) => {
       return new Promise((resolve) => {
         setFileConflict({
-          fileName, isDir, destination, remaining,
-          sourceInfo: sourceInfo ?? null, destInfo: destInfo ?? null,
-          resolve: (resolution, applyToAll) => { setFileConflict(null); resolve({ resolution, applyToAll }); },
+          fileName,
+          isDir,
+          destination,
+          remaining,
+          sourceInfo: sourceInfo ?? null,
+          destInfo: destInfo ?? null,
+          resolve: (resolution, applyToAll) => {
+            setFileConflict(null);
+            resolve({ resolution, applyToAll });
+          },
         });
       });
     },
@@ -157,8 +184,10 @@ const ExplorerUnified = () => {
   // ── Context menu ──────────────────────────────────────────────────────────
   const ctxMenu = useContextMenu({
     contextMenuFactoryRef: fileOps.contextMenuFactoryRef,
-    selectedFiles, clipboard: fileOps.clipboard,
-    currentPath, markedFile: fileComparison.markedFile,
+    selectedFiles,
+    clipboard: fileOps.clipboard,
+    currentPath,
+    markedFile: fileComparison.markedFile,
   });
 
   // ── Folder sizes ──────────────────────────────────────────────────────────
@@ -166,20 +195,40 @@ const ExplorerUnified = () => {
 
   // ── Actions ───────────────────────────────────────────────────────────────
   const actions = useXplorerActions({
-    currentPath, splitLayout, activeGroup,
-    selectedFiles, setSelectedFiles, setSelectedFile,
-    files, refetch, toast, fileOps, ctxMenu, dialogManager,
-    crossTabSelection, theme, setTheme,
-    handleQuickLook: dialogManager.handleQuickLook, handleGDriveFileSelect,
-    setPaneFiles, paneRefetchRef, pendingSelectRef, topBarRef, leftSidebarRef,
+    currentPath,
+    splitLayout,
+    activeGroup,
+    selectedFiles,
+    setSelectedFiles,
+    setSelectedFile,
+    files,
+    refetch,
+    toast,
+    fileOps,
+    ctxMenu,
+    dialogManager,
+    crossTabSelection,
+    theme,
+    setTheme,
+    handleQuickLook: dialogManager.handleQuickLook,
+    handleGDriveFileSelect,
+    setPaneFiles,
+    paneRefetchRef,
+    pendingSelectRef,
+    topBarRef,
+    leftSidebarRef,
     dismissFileChanges,
-    viewMode: layout.viewMode, leftSidebarCollapsed: layout.leftSidebarCollapsed,
-    rightSidebarCollapsed: layout.rightSidebarCollapsed, bottomPanelCollapsed: layout.bottomPanelCollapsed,
+    viewMode: layout.viewMode,
+    leftSidebarCollapsed: layout.leftSidebarCollapsed,
+    rightSidebarCollapsed: layout.rightSidebarCollapsed,
+    bottomPanelCollapsed: layout.bottomPanelCollapsed,
     setLeftSidebarCollapsed: layout.setLeftSidebarCollapsed,
     setRightSidebarCollapsed: layout.setRightSidebarCollapsed,
     setBottomPanelCollapsed: layout.setBottomPanelCollapsed,
-    setBottomPanelTab: layout.setBottomPanelTab, setViewMode: layout.setViewMode,
-    setShowChangeSummaryToast: dialogManager.setShowChangeSummaryToast, setFileConflict,
+    setBottomPanelTab: layout.setBottomPanelTab,
+    setViewMode: layout.setViewMode,
+    setShowChangeSummaryToast: dialogManager.setShowChangeSummaryToast,
+    setFileConflict,
     setTemplatePickerOpen: dialogManager.setTemplatePickerOpen,
     setFolderCompareOpen: dialogManager.setFolderCompareOpen,
     setFolderComparePaths: dialogManager.setFolderComparePaths,
@@ -195,34 +244,64 @@ const ExplorerUnified = () => {
 
   // ── Effects ───────────────────────────────────────────────────────────────
   const effects = useXplorerEffects({
-    currentPath, files, selectedFiles, setSelectedFiles,
-    selectedFile, setSelectedFile, filteredFiles, refetch, toast,
-    pendingSelectRef, topBarRef, leftSidebarRef,
-    navigateWithHistory: actions.navigateWithHistory, navigateUp: actions.navigateUp,
+    currentPath,
+    files,
+    selectedFiles,
+    setSelectedFiles,
+    selectedFile,
+    setSelectedFile,
+    filteredFiles,
+    refetch,
+    toast,
+    pendingSelectRef,
+    topBarRef,
+    leftSidebarRef,
+    navigateWithHistory: actions.navigateWithHistory,
+    navigateUp: actions.navigateUp,
     navigateBackInHistory: actions.navigateBackInHistory,
     navigateForwardInHistory: actions.navigateForwardInHistory,
-    setCurrentPath: actions.setCurrentPath, handleFileDoubleClick: actions.handleFileDoubleClick,
-    splitLayoutRef: actions.splitLayoutRef, activeGroupRef: actions.activeGroupRef,
+    setCurrentPath: actions.setCurrentPath,
+    handleFileDoubleClick: actions.handleFileDoubleClick,
+    splitLayoutRef: actions.splitLayoutRef,
+    activeGroupRef: actions.activeGroupRef,
     navigateToPathRef: actions.navigateToPathRef,
-    splitLayout, activeGroup, activeTabObj, tabs, activeTab,
-    pathHistory, historyIndex,
-    viewMode: layout.viewMode, setViewMode: layout.setViewMode,
-    leftSidebarCollapsed: layout.leftSidebarCollapsed, setLeftSidebarCollapsed: layout.setLeftSidebarCollapsed,
-    rightSidebarCollapsed: layout.rightSidebarCollapsed, setRightSidebarCollapsed: layout.setRightSidebarCollapsed,
-    bottomPanelCollapsed: layout.bottomPanelCollapsed, setBottomPanelCollapsed: layout.setBottomPanelCollapsed,
-    rightPanelTab: layout.rightPanelTab, setRightPanelTab: layout.setRightPanelTab,
-    bottomPanelTab: layout.bottomPanelTab, setBottomPanelTab: layout.setBottomPanelTab,
-    leftSidebarWidth: layout.leftSidebarWidth, rightSidebarWidth: layout.rightSidebarWidth,
+    splitLayout,
+    activeGroup,
+    activeTabObj,
+    tabs,
+    activeTab,
+    pathHistory,
+    historyIndex,
+    viewMode: layout.viewMode,
+    setViewMode: layout.setViewMode,
+    leftSidebarCollapsed: layout.leftSidebarCollapsed,
+    setLeftSidebarCollapsed: layout.setLeftSidebarCollapsed,
+    rightSidebarCollapsed: layout.rightSidebarCollapsed,
+    setRightSidebarCollapsed: layout.setRightSidebarCollapsed,
+    bottomPanelCollapsed: layout.bottomPanelCollapsed,
+    setBottomPanelCollapsed: layout.setBottomPanelCollapsed,
+    rightPanelTab: layout.rightPanelTab,
+    setRightPanelTab: layout.setRightPanelTab,
+    bottomPanelTab: layout.bottomPanelTab,
+    setBottomPanelTab: layout.setBottomPanelTab,
+    leftSidebarWidth: layout.leftSidebarWidth,
+    rightSidebarWidth: layout.rightSidebarWidth,
     bottomPanelHeight: layout.bottomPanelHeight,
-    searchPanelOpen: layout.searchPanelOpen, setSearchPanelOpen: layout.setSearchPanelOpen,
-    sortBy: layout.sortBy, sortOrder: layout.sortOrder, theme,
-    setCommandPaletteOpen: dialogManager.setCommandPaletteOpen, commandPaletteOpen: dialogManager.commandPaletteOpen,
+    searchPanelOpen: layout.searchPanelOpen,
+    setSearchPanelOpen: layout.setSearchPanelOpen,
+    sortBy: layout.sortBy,
+    sortOrder: layout.sortOrder,
+    theme,
+    setCommandPaletteOpen: dialogManager.setCommandPaletteOpen,
+    commandPaletteOpen: dialogManager.commandPaletteOpen,
     setWorkspaceLayoutDialogOpen: dialogManager.setWorkspaceLayoutDialogOpen,
     setPathBookmarksDialogOpen: dialogManager.setPathBookmarksDialogOpen,
     setShortcutsDialogOpen: dialogManager.setShortcutsDialogOpen,
     setShowChangeSummaryToast: dialogManager.setShowChangeSummaryToast,
-    fileOps, fileChanges,
-    openGDriveTab: actions.openGDriveTab, openGDriveManager: actions.openGDriveManager,
+    fileOps,
+    fileChanges,
+    openGDriveTab: actions.openGDriveTab,
+    openGDriveManager: actions.openGDriveManager,
     vimActions: actions.vimActions,
   });
 
@@ -312,6 +391,6 @@ const ExplorerUnified = () => {
       handleDismissAllChanges={actions.handleDismissAllChanges}
     />
   );
-}
+};
 
 export default ExplorerUnified;

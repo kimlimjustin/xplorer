@@ -91,22 +91,32 @@ export default [
       // TypeScript
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': [
-        'warn',
-        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_', ignoreRestSiblings: true },
       ],
-      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-explicit-any': 'error',
 
       // React
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
+      'react/jsx-no-duplicate-props': 'error',
+      'react/jsx-key': 'error',
+      'react/no-array-index-key': 'warn',
+      'react/self-closing-comp': 'warn',
 
       // General
       'no-console': ['warn', { allow: ['warn', 'error'] }],
-      'prefer-const': 'warn',
+      'prefer-const': 'error',
       'no-var': 'error',
       eqeqeq: ['error', 'always', { null: 'ignore' }],
+      'no-duplicate-imports': 'error',
+      'no-nested-ternary': 'warn',
+      curly: ['warn', 'multi-line'],
+      'no-else-return': 'warn',
+      'object-shorthand': 'warn',
+      'prefer-template': 'warn',
     },
     settings: {
       react: { version: '18' },

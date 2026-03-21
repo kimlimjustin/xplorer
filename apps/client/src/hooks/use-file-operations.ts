@@ -72,10 +72,7 @@ interface UseFileOperationsDeps {
     openBatchMetadataDialog: (files: FileEntry[]) => void;
   };
   setBottomPanelCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
-  setBottomPanelTab: React.Dispatch<
-    React.SetStateAction<BottomPanelTabId
-    >
-  >;
+  setBottomPanelTab: React.Dispatch<React.SetStateAction<BottomPanelTabId>>;
   setTerminalCwd: React.Dispatch<React.SetStateAction<string>>;
   setViewMode: React.Dispatch<React.SetStateAction<string>>;
   setSortBy: React.Dispatch<React.SetStateAction<string>>;
@@ -434,7 +431,10 @@ export const useFileOperations = (deps: UseFileOperationsDeps) => {
       selectAll: () => {
         const allFilePaths = new Set(filesRef.current.map((f) => f.path));
         setSelectedFilesRef.current(allFilePaths);
-        toastRef.current({ title: 'Selected all', description: `Selected ${filesRef.current.length} items` });
+        toastRef.current({
+          title: 'Selected all',
+          description: `Selected ${filesRef.current.length} items`,
+        });
       },
       invertSelection: () => {
         const inverted = invertSelection(filesRef.current, selectedFilesRef.current);

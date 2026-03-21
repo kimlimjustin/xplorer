@@ -1,8 +1,10 @@
 import { describe, it, expect, vi } from 'vitest';
 import { renderHook } from '@testing-library/react';
-import { useCommandPaletteCommands } from '@/hooks/use-command-palette-commands';
+import {
+  useCommandPaletteCommands,
+  type UseCommandPaletteCommandsOptions,
+} from '@/hooks/use-command-palette-commands';
 import type { FileEntry } from '@/lib/tauri-api';
-import type { UseCommandPaletteCommandsOptions } from '@/hooks/use-command-palette-commands';
 
 const makeFile = (name: string, path: string): FileEntry => {
   return { name, path, is_dir: false, size: 100, modified: Date.now(), file_type: 'file' };
@@ -34,7 +36,9 @@ const makeOptions = (overrides: Record<string, unknown> = {}) => {
 describe('useCommandPaletteCommands', () => {
   it('returns an array of commands', () => {
     const opts = makeOptions();
-    const { result } = renderHook(() => useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions));
+    const { result } = renderHook(() =>
+      useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions),
+    );
 
     expect(Array.isArray(result.current)).toBe(true);
     expect(result.current.length).toBeGreaterThan(0);
@@ -42,7 +46,9 @@ describe('useCommandPaletteCommands', () => {
 
   it('each command has id, title, category, and action', () => {
     const opts = makeOptions();
-    const { result } = renderHook(() => useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions));
+    const { result } = renderHook(() =>
+      useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions),
+    );
 
     for (const cmd of result.current) {
       expect(cmd.id).toBeDefined();
@@ -56,7 +62,9 @@ describe('useCommandPaletteCommands', () => {
     it('Go Home navigates to xplorer://home', () => {
       const navigateWithHistory = vi.fn();
       const opts = makeOptions({ navigateWithHistory });
-      const { result } = renderHook(() => useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions));
+      const { result } = renderHook(() =>
+        useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions),
+      );
 
       const homeCmd = result.current.find((c) => c.id === 'home');
       expect(homeCmd).toBeDefined();
@@ -70,7 +78,9 @@ describe('useCommandPaletteCommands', () => {
         currentPath: '/home/user/docs',
         navigateWithHistory,
       });
-      const { result } = renderHook(() => useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions));
+      const { result } = renderHook(() =>
+        useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions),
+      );
 
       const upCmd = result.current.find((c) => c.id === 'up');
       upCmd!.action();
@@ -83,7 +93,9 @@ describe('useCommandPaletteCommands', () => {
         currentPath: '/',
         navigateWithHistory,
       });
-      const { result } = renderHook(() => useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions));
+      const { result } = renderHook(() =>
+        useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions),
+      );
 
       const upCmd = result.current.find((c) => c.id === 'up');
       upCmd!.action();
@@ -98,7 +110,9 @@ describe('useCommandPaletteCommands', () => {
         historyIndex: 2,
         navigateWithHistory,
       });
-      const { result } = renderHook(() => useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions));
+      const { result } = renderHook(() =>
+        useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions),
+      );
 
       const backCmd = result.current.find((c) => c.id === 'back');
       backCmd!.action();
@@ -112,7 +126,9 @@ describe('useCommandPaletteCommands', () => {
         historyIndex: 0,
         navigateWithHistory,
       });
-      const { result } = renderHook(() => useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions));
+      const { result } = renderHook(() =>
+        useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions),
+      );
 
       const backCmd = result.current.find((c) => c.id === 'back');
       backCmd!.action();
@@ -126,7 +142,9 @@ describe('useCommandPaletteCommands', () => {
         historyIndex: 1,
         navigateWithHistory,
       });
-      const { result } = renderHook(() => useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions));
+      const { result } = renderHook(() =>
+        useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions),
+      );
 
       const forwardCmd = result.current.find((c) => c.id === 'forward');
       forwardCmd!.action();
@@ -140,7 +158,9 @@ describe('useCommandPaletteCommands', () => {
         historyIndex: 1,
         navigateWithHistory,
       });
-      const { result } = renderHook(() => useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions));
+      const { result } = renderHook(() =>
+        useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions),
+      );
 
       const forwardCmd = result.current.find((c) => c.id === 'forward');
       forwardCmd!.action();
@@ -150,7 +170,9 @@ describe('useCommandPaletteCommands', () => {
     it('Refresh calls refetch', () => {
       const refetch = vi.fn();
       const opts = makeOptions({ refetch });
-      const { result } = renderHook(() => useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions));
+      const { result } = renderHook(() =>
+        useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions),
+      );
 
       const refreshCmd = result.current.find((c) => c.id === 'refresh');
       refreshCmd!.action();
@@ -162,7 +184,9 @@ describe('useCommandPaletteCommands', () => {
     it('Large Icons sets view mode to large', () => {
       const setViewMode = vi.fn();
       const opts = makeOptions({ setViewMode });
-      const { result } = renderHook(() => useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions));
+      const { result } = renderHook(() =>
+        useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions),
+      );
 
       const cmd = result.current.find((c) => c.id === 'view-large');
       cmd!.action();
@@ -172,7 +196,9 @@ describe('useCommandPaletteCommands', () => {
     it('List View sets view mode to list', () => {
       const setViewMode = vi.fn();
       const opts = makeOptions({ setViewMode });
-      const { result } = renderHook(() => useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions));
+      const { result } = renderHook(() =>
+        useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions),
+      );
 
       const cmd = result.current.find((c) => c.id === 'view-list');
       cmd!.action();
@@ -182,7 +208,9 @@ describe('useCommandPaletteCommands', () => {
     it('Details View sets view mode to details', () => {
       const setViewMode = vi.fn();
       const opts = makeOptions({ setViewMode });
-      const { result } = renderHook(() => useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions));
+      const { result } = renderHook(() =>
+        useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions),
+      );
 
       const cmd = result.current.find((c) => c.id === 'view-details');
       cmd!.action();
@@ -192,7 +220,9 @@ describe('useCommandPaletteCommands', () => {
     it('Gallery View sets view mode to gallery', () => {
       const setViewMode = vi.fn();
       const opts = makeOptions({ setViewMode });
-      const { result } = renderHook(() => useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions));
+      const { result } = renderHook(() =>
+        useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions),
+      );
 
       const cmd = result.current.find((c) => c.id === 'view-gallery');
       cmd!.action();
@@ -202,7 +232,9 @@ describe('useCommandPaletteCommands', () => {
     it('Tree View sets view mode to tree', () => {
       const setViewMode = vi.fn();
       const opts = makeOptions({ setViewMode });
-      const { result } = renderHook(() => useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions));
+      const { result } = renderHook(() =>
+        useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions),
+      );
 
       const cmd = result.current.find((c) => c.id === 'view-tree');
       cmd!.action();
@@ -214,7 +246,9 @@ describe('useCommandPaletteCommands', () => {
     it('Toggle Preview Panel toggles right sidebar', () => {
       const setRightSidebarCollapsed = vi.fn();
       const opts = makeOptions({ setRightSidebarCollapsed });
-      const { result } = renderHook(() => useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions));
+      const { result } = renderHook(() =>
+        useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions),
+      );
 
       const cmd = result.current.find((c) => c.id === 'toggle-preview');
       cmd!.action();
@@ -224,8 +258,15 @@ describe('useCommandPaletteCommands', () => {
     it('Toggle Terminal opens bottom panel and switches to terminal tab when collapsed', () => {
       const setBottomPanelCollapsed = vi.fn();
       const setBottomPanelTab = vi.fn();
-      const opts = makeOptions({ setBottomPanelCollapsed, setBottomPanelTab, bottomPanelCollapsed: true, bottomPanelTab: 'activity-log' });
-      const { result } = renderHook(() => useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions));
+      const opts = makeOptions({
+        setBottomPanelCollapsed,
+        setBottomPanelTab,
+        bottomPanelCollapsed: true,
+        bottomPanelTab: 'activity-log',
+      });
+      const { result } = renderHook(() =>
+        useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions),
+      );
 
       const cmd = result.current.find((c) => c.id === 'toggle-terminal');
       cmd!.action();
@@ -236,8 +277,15 @@ describe('useCommandPaletteCommands', () => {
     it('Toggle Terminal collapses bottom panel when already showing terminal', () => {
       const setBottomPanelCollapsed = vi.fn();
       const setBottomPanelTab = vi.fn();
-      const opts = makeOptions({ setBottomPanelCollapsed, setBottomPanelTab, bottomPanelCollapsed: false, bottomPanelTab: 'terminal' });
-      const { result } = renderHook(() => useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions));
+      const opts = makeOptions({
+        setBottomPanelCollapsed,
+        setBottomPanelTab,
+        bottomPanelCollapsed: false,
+        bottomPanelTab: 'terminal',
+      });
+      const { result } = renderHook(() =>
+        useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions),
+      );
 
       const cmd = result.current.find((c) => c.id === 'toggle-terminal');
       cmd!.action();
@@ -248,7 +296,9 @@ describe('useCommandPaletteCommands', () => {
     it('Toggle Left Sidebar toggles left sidebar', () => {
       const setLeftSidebarCollapsed = vi.fn();
       const opts = makeOptions({ setLeftSidebarCollapsed });
-      const { result } = renderHook(() => useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions));
+      const { result } = renderHook(() =>
+        useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions),
+      );
 
       const cmd = result.current.find((c) => c.id === 'toggle-left-sidebar');
       cmd!.action();
@@ -260,7 +310,9 @@ describe('useCommandPaletteCommands', () => {
     it('New Folder calls handleCreateFolder', () => {
       const handleCreateFolder = vi.fn();
       const opts = makeOptions({ handleCreateFolder });
-      const { result } = renderHook(() => useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions));
+      const { result } = renderHook(() =>
+        useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions),
+      );
 
       const cmd = result.current.find((c) => c.id === 'new-folder');
       cmd!.action();
@@ -269,12 +321,11 @@ describe('useCommandPaletteCommands', () => {
 
     it('Select All selects all file paths', () => {
       const setSelectedFiles = vi.fn();
-      const files = [
-        makeFile('a.txt', '/a.txt'),
-        makeFile('b.txt', '/b.txt'),
-      ];
+      const files = [makeFile('a.txt', '/a.txt'), makeFile('b.txt', '/b.txt')];
       const opts = makeOptions({ setSelectedFiles, files });
-      const { result } = renderHook(() => useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions));
+      const { result } = renderHook(() =>
+        useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions),
+      );
 
       const cmd = result.current.find((c) => c.id === 'select-all');
       cmd!.action();
@@ -284,7 +335,9 @@ describe('useCommandPaletteCommands', () => {
     it('Delete calls handleDelete', () => {
       const handleDelete = vi.fn();
       const opts = makeOptions({ handleDelete });
-      const { result } = renderHook(() => useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions));
+      const { result } = renderHook(() =>
+        useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions),
+      );
 
       const cmd = result.current.find((c) => c.id === 'delete');
       cmd!.action();
@@ -296,7 +349,9 @@ describe('useCommandPaletteCommands', () => {
     it('Open Settings navigates to settings', () => {
       const navigateWithHistory = vi.fn();
       const opts = makeOptions({ navigateWithHistory });
-      const { result } = renderHook(() => useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions));
+      const { result } = renderHook(() =>
+        useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions),
+      );
 
       const cmd = result.current.find((c) => c.id === 'settings');
       cmd!.action();
@@ -306,7 +361,9 @@ describe('useCommandPaletteCommands', () => {
     it('Open Trash navigates to trash', () => {
       const navigateWithHistory = vi.fn();
       const opts = makeOptions({ navigateWithHistory });
-      const { result } = renderHook(() => useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions));
+      const { result } = renderHook(() =>
+        useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions),
+      );
 
       const cmd = result.current.find((c) => c.id === 'trash');
       cmd!.action();
@@ -316,7 +373,9 @@ describe('useCommandPaletteCommands', () => {
     it('Keyboard Shortcuts opens shortcuts dialog', () => {
       const setShortcutsDialogOpen = vi.fn();
       const opts = makeOptions({ setShortcutsDialogOpen });
-      const { result } = renderHook(() => useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions));
+      const { result } = renderHook(() =>
+        useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions),
+      );
 
       const cmd = result.current.find((c) => c.id === 'keyboard-shortcuts');
       cmd!.action();
@@ -327,35 +386,45 @@ describe('useCommandPaletteCommands', () => {
   describe('command categories', () => {
     it('contains Navigation category', () => {
       const opts = makeOptions();
-      const { result } = renderHook(() => useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions));
+      const { result } = renderHook(() =>
+        useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions),
+      );
       const navCmds = result.current.filter((c) => c.category === 'navigation');
       expect(navCmds.length).toBeGreaterThan(0);
     });
 
     it('contains View category', () => {
       const opts = makeOptions();
-      const { result } = renderHook(() => useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions));
+      const { result } = renderHook(() =>
+        useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions),
+      );
       const viewCmds = result.current.filter((c) => c.category === 'view');
       expect(viewCmds.length).toBeGreaterThan(0);
     });
 
     it('contains Panels category', () => {
       const opts = makeOptions();
-      const { result } = renderHook(() => useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions));
+      const { result } = renderHook(() =>
+        useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions),
+      );
       const panelCmds = result.current.filter((c) => c.category === 'panels');
       expect(panelCmds.length).toBeGreaterThan(0);
     });
 
     it('contains File category', () => {
       const opts = makeOptions();
-      const { result } = renderHook(() => useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions));
+      const { result } = renderHook(() =>
+        useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions),
+      );
       const fileCmds = result.current.filter((c) => c.category === 'file');
       expect(fileCmds.length).toBeGreaterThan(0);
     });
 
     it('contains Other category', () => {
       const opts = makeOptions();
-      const { result } = renderHook(() => useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions));
+      const { result } = renderHook(() =>
+        useCommandPaletteCommands(opts as UseCommandPaletteCommandsOptions),
+      );
       const otherCmds = result.current.filter((c) => c.category === 'other');
       expect(otherCmds.length).toBeGreaterThan(0);
     });

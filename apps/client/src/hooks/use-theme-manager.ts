@@ -7,19 +7,20 @@ installThemeEventBridge();
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
-const loadUiTheme = () : string => {
+const loadUiTheme = (): string => {
   try {
     const raw = localStorage.getItem('xplorer:ui-state');
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (typeof parsed === 'object' && parsed !== null && 'theme' in parsed)
+      if (typeof parsed === 'object' && parsed !== null && 'theme' in parsed) {
         return parsed.theme as string;
+      }
     }
   } catch {
     /* ignore */
   }
   return 'glass';
-}
+};
 
 // ── Hook ─────────────────────────────────────────────────────────────────────
 
@@ -43,4 +44,4 @@ export const useThemeManager = () => {
     setTheme,
     handleApplyTheme,
   };
-}
+};

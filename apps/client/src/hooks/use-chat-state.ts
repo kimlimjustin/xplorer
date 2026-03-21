@@ -114,7 +114,7 @@ const initialState: ChatState = {
 
 // ── Reducer ─────────────────────────────────────────────────────────────────
 
-const chatReducer = (state: ChatState, action: ChatAction) : ChatState => {
+const chatReducer = (state: ChatState, action: ChatAction): ChatState => {
   switch (action.type) {
     case 'SET_AVAILABLE_MODELS':
       return { ...state, availableModels: action.models };
@@ -255,7 +255,7 @@ const chatReducer = (state: ChatState, action: ChatAction) : ChatState => {
     default:
       return state;
   }
-}
+};
 
 // ── Hook ────────────────────────────────────────────────────────────────────
 
@@ -405,4 +405,4 @@ export const useChatState = () => {
     agentSendError,
     resetContext,
   };
-}
+};

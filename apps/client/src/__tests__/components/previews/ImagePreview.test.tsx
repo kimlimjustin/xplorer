@@ -352,7 +352,7 @@ describe('ImagePreview', () => {
     });
 
     it('handles very long file names', () => {
-      const longFileName = 'a'.repeat(200) + '.jpg';
+      const longFileName = `${'a'.repeat(200)}.jpg`;
       const longNameFile = { ...mockFile, name: longFileName };
 
       render(<ImagePreview {...mockProps} file={longNameFile} />);

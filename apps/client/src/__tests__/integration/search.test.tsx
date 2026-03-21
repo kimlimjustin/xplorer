@@ -126,7 +126,10 @@ describe('Search Integration', () => {
         total_unique_tokens: 200,
         avg_tokens_per_file: 5,
       } as Record<string, unknown>);
-      mockEnhancedSearch.mockResolvedValue({ results: [], parsed_query: null } as Record<string, unknown>);
+      mockEnhancedSearch.mockResolvedValue({ results: [], parsed_query: null } as Record<
+        string,
+        unknown
+      >);
       mockFindFiles.mockResolvedValue([]);
 
       await act(async () => {

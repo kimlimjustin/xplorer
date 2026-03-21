@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { TauriAPI, type BulkRenameResult, type FileEntry } from '@/lib/tauri-api';
-import type { Preset, PatternTemplate, RegexSnippet } from './bulk-rename-helpers';
 import {
   PRESETS,
   PATTERN_TEMPLATES,
@@ -11,6 +10,9 @@ import {
   WarningIcon,
   CheckIcon,
   ChevronIcon,
+  type Preset,
+  type PatternTemplate,
+  type RegexSnippet,
 } from './bulk-rename-helpers';
 
 interface BulkRenameDialogProps {
@@ -22,12 +24,7 @@ interface BulkRenameDialogProps {
 
 // Helpers, presets, and sub-components extracted to ./bulk-rename-helpers.tsx
 
-const BulkRenameDialog = ({
-  isOpen,
-  onClose,
-  files,
-  onComplete,
-}: BulkRenameDialogProps) => {
+const BulkRenameDialog = ({ isOpen, onClose, files, onComplete }: BulkRenameDialogProps) => {
   const { toast } = useToast();
   const [pattern, setPattern] = useState('');
   const [replacement, setReplacement] = useState('');
@@ -378,8 +375,9 @@ const BulkRenameDialog = ({
               alignItems: 'center',
             }}
             onMouseEnter={(e) => {
-              if (!renaming)
+              if (!renaming) {
                 (e.currentTarget as HTMLElement).style.backgroundColor = 'var(--xp-surface-light)';
+              }
             }}
             onMouseLeave={(e) => {
               (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
@@ -761,7 +759,7 @@ const BulkRenameDialog = ({
                   >
                     {REGEX_SNIPPETS.map((snippet) => (
                       <div
-                        key={snippet.label + '-desc'}
+                        key={`${snippet.label}-desc`}
                         style={{ fontSize: 10, color: 'var(--xp-text-muted)', padding: '1px 0' }}
                       >
                         <code style={{ color: 'var(--xp-cyan)', fontFamily: 'monospace' }}>
@@ -865,7 +863,7 @@ const BulkRenameDialog = ({
                               borderBottom: '1px solid var(--xp-border)',
                               width: '30px',
                             }}
-                          ></th>
+                          />
                           <th
                             style={{
                               textAlign: 'left',
@@ -903,20 +901,77 @@ const BulkRenameDialog = ({
                             ? diffStrings(item.original_name, item.new_name)
                             : null;
 
+                          const rowBg = {
+                             
+                          };
+                          isResult && item.success === false
+                            ? 'rgba(239, 68, 68, 0.08)'
+                            : isConflict
+                              ? 'rgba(245, 158, 11, 0.06)'
+                              : 'transparent';
+
+                          let statusCell: React.ReactNode;
+                          if (isResult) {
+                            statusCell = item.success ? (
+                              <span
+                                style={{
+                                  color: 'var(--xp-green)',
+                                  fontSize: 11,
+                                  fontWeight: 600,
+                                }}
+                                title="Success"
+                              >
+                                OK
+                              </span>
+                            ) : (
+                              <span
+                                style={{
+                                  color: 'var(--xp-red)',
+                                  fontSize: 11,
+                                  fontWeight: 600,
+                                  cursor: 'help',
+                                }}
+                                title={item.error || 'Failed'}
+                              >
+                                ERR
+                              </span>
+                            );
+                          } else if (isConflict) {
+                            statusCell = (
+                              <span title="Name conflict - multiple files would have the same name">
+                                <WarningIcon />
+                              </span>
+                            );
+                          } else if (nameChanged) {
+                            statusCell = (
+                              <span
+                                style={{
+                                  display: 'inline-block',
+                                  width: 8,
+                                  height: 8,
+                                  borderRadius: '50%',
+                                  backgroundColor: 'var(--xp-blue)',
+                                }}
+                                title="Will be renamed"
+                              />
+                            );
+                          } else {
+                            statusCell = (
+                              <span title="No change">
+                                <CheckIcon />
+                              </span>
+                            );
+                          }
+
                           return (
                             <tr
-                              key={index}
+                              key={item.original_name}
                               style={{
                                 borderBottom:
                                   index < displayData.length - 1
                                     ? '1px solid var(--xp-border)'
                                     : 'none',
-                                backgroundColor:
-                                  isResult && item.success === false
-                                    ? 'rgba(239, 68, 68, 0.08)'
-                                    : isConflict
-                                      ? 'rgba(245, 158, 11, 0.06)'
-                                      : 'transparent',
+                                backgroundColor: rowBg,
                                 transition: 'background-color 0.15s',
                               }}
                               onMouseEnter={(e) => {
@@ -990,51 +1045,7 @@ const BulkRenameDialog = ({
 
                               {/* Status */}
                               <td style={{ padding: '6px 10px', textAlign: 'center' }}>
-                                {isResult ? (
-                                  item.success ? (
-                                    <span
-                                      style={{
-                                        color: 'var(--xp-green)',
-                                        fontSize: 11,
-                                        fontWeight: 600,
-                                      }}
-                                      title="Success"
-                                    >
-                                      OK
-                                    </span>
-                                  ) : (
-                                    <span
-                                      style={{
-                                        color: 'var(--xp-red)',
-                                        fontSize: 11,
-                                        fontWeight: 600,
-                                        cursor: 'help',
-                                      }}
-                                      title={item.error || 'Failed'}
-                                    >
-                                      ERR
-                                    </span>
-                                  )
-                                ) : isConflict ? (
-                                  <span title="Name conflict - multiple files would have the same name">
-                                    <WarningIcon />
-                                  </span>
-                                ) : nameChanged ? (
-                                  <span
-                                    style={{
-                                      display: 'inline-block',
-                                      width: 8,
-                                      height: 8,
-                                      borderRadius: '50%',
-                                      backgroundColor: 'var(--xp-blue)',
-                                    }}
-                                    title="Will be renamed"
-                                  />
-                                ) : (
-                                  <span title="No change">
-                                    <CheckIcon />
-                                  </span>
-                                )}
+                                {statusCell}
                               </td>
                             </tr>
                           );
@@ -1074,9 +1085,9 @@ const BulkRenameDialog = ({
                   <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
                     {results
                       .filter((r) => !r.success)
-                      .map((r, i) => (
+                      .map((r) => (
                         <div
-                          key={i}
+                          key={r.original_name}
                           style={{
                             fontSize: 11,
                             color: 'var(--xp-red)',
@@ -1140,9 +1151,10 @@ const BulkRenameDialog = ({
                 transition: 'background-color 0.15s',
               }}
               onMouseEnter={(e) => {
-                if (!renaming)
+                if (!renaming) {
                   (e.currentTarget as HTMLElement).style.backgroundColor =
                     'var(--xp-surface-light)';
+                }
               }}
               onMouseLeave={(e) => {
                 (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
@@ -1253,6 +1265,6 @@ const BulkRenameDialog = ({
       </div>
     </div>
   );
-}
+};
 
 export default BulkRenameDialog;

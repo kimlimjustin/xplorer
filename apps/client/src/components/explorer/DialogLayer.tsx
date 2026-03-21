@@ -1,7 +1,10 @@
 import React from 'react';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import type { FileEntry, ConflictFileInfo } from '@/lib/tauri-api';
-import type { ConflictResolution } from '@/components/dialogs/FileConflictDialog';
+import {
+  FileConflictDialog,
+  type ConflictResolution,
+} from '@/components/dialogs/FileConflictDialog';
 import type { FileDetailsTab } from '@/components/dialogs/FileDetailsDialog';
 import type { Toast } from '@/hooks/use-toast';
 import type { EncryptionMode } from '@/components/dialogs/EncryptionDialog';
@@ -29,7 +32,6 @@ const VersionHistoryDialog = React.lazy(() => import('@/components/dialogs/Versi
 const CreateSymlinkDialog = React.lazy(() => import('@/components/dialogs/CreateSymlinkDialog'));
 const PasteRenameDialog = React.lazy(() => import('@/components/dialogs/PasteRenameDialog'));
 const BatchMetadataDialog = React.lazy(() => import('@/components/dialogs/BatchMetadataDialog'));
-import { FileConflictDialog } from '@/components/dialogs/FileConflictDialog';
 import AdvancedSelectDialog from '@/components/explorer/AdvancedSelectDialog';
 import { AdvancedSelectionExtension } from '@/extensions/advanced-selection';
 
@@ -127,7 +129,7 @@ const ExtensionDialog = ({
   const renderer = extensionHost.getDialogRenderer(dialogId);
   if (!renderer) return null;
   return <ErrorBoundary>{renderer({ isOpen, onClose, data })}</ErrorBoundary>;
-}
+};
 
 const DialogLayer = ({
   dialogManager,
@@ -443,7 +445,7 @@ const DialogLayer = ({
       <ExtensionDialogRenderer />
     </>
   );
-}
+};
 
 /**
  * Renders extension dialogs that were opened via extensionHost.openDialog().
@@ -464,6 +466,7 @@ const ExtensionDialogRenderer = () => {
     const renderer = extensionHost.getDialogRenderer(dialogId);
     if (renderer) {
       elements.push(
+        // eslint-disable-next-line react/no-array-index-key
         <ErrorBoundary key={dialogId}>
           {renderer({
             isOpen: true,
@@ -476,6 +479,6 @@ const ExtensionDialogRenderer = () => {
   });
 
   return <>{elements}</>;
-}
+};
 
 export default DialogLayer;

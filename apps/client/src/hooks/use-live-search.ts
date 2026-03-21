@@ -98,7 +98,7 @@ const CODE_EXTENSIONS = new Set([
 
 // ── Filter helpers ───────────────────────────────────────────────────────────
 
-const matchesFilter = (file: FileEntry, filter: SearchFilterType) : boolean => {
+const matchesFilter = (file: FileEntry, filter: SearchFilterType): boolean => {
   if (filter === 'all') return true;
   if (filter === 'folders') return file.is_dir;
   if (filter === 'files') return !file.is_dir;
@@ -110,11 +110,11 @@ const matchesFilter = (file: FileEntry, filter: SearchFilterType) : boolean => {
   if (filter === 'images') return IMAGE_EXTENSIONS.has(ext);
   if (filter === 'code') return CODE_EXTENSIONS.has(ext);
   return true;
-}
+};
 
 // ── Relevance scoring ────────────────────────────────────────────────────────
 
-const scoreRelevance = (name: string, queryParts: string[]) : number => {
+const scoreRelevance = (name: string, queryParts: string[]): number => {
   const lower = name.toLowerCase();
   let minScore = 3; // Start high and take the minimum across all query parts
 
@@ -133,7 +133,7 @@ const scoreRelevance = (name: string, queryParts: string[]) : number => {
   }
 
   return minScore;
-}
+};
 
 // ── Recursive directory walker ───────────────────────────────────────────────
 
@@ -346,4 +346,4 @@ export const useLiveSearch = (basePath: string) => {
     displayLimit,
     clearSearch,
   };
-}
+};

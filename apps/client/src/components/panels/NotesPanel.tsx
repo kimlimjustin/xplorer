@@ -14,6 +14,48 @@ interface GroupedNotes {
   latestUpdate: string;
 }
 
+const NotesSearchResults = ({
+  searchResults,
+  searching,
+  handleNavigate,
+}: {
+  searchResults: NoteSearchResult[];
+  searching: boolean;
+  handleNavigate: (path: string) => void;
+}) => {
+  if (searchResults.length === 0) {
+    return (
+      <div className="text-xp-text-secondary flex items-center justify-center py-8 text-sm">
+        {searching ? 'Searching...' : 'No matching notes found.'}
+      </div>
+    );
+  }
+
+  return (
+    <ul className="space-y-1.5">
+      {searchResults.map((result) => (
+        <li
+          key={`${result.path}:${result.note.id}`}
+          className="hover:bg-xp-surface-light cursor-pointer rounded px-2 py-2 transition-colors"
+          onClick={() => handleNavigate(result.path)}
+        >
+          <div className="mb-1 flex items-center space-x-2">
+            <FileText className="text-xp-text-muted h-3.5 w-3.5 flex-shrink-0" />
+            <span className="text-xp-text-muted truncate text-xs">
+              {result.path.split(/[\\/]/).pop()}
+            </span>
+          </div>
+          <p className="text-xp-text truncate text-sm font-medium">{result.note.title}</p>
+          <p className="text-xp-text-muted mt-0.5 truncate text-xs">
+            {result.note.content.substring(0, 80)}
+            {result.note.content.length > 80 ? '...' : ''}
+          </p>
+        </li>
+      ))}
+    </ul>
+  );
+};
+
 const NotesPanel = ({ onClose, navigateToPath }: NotesPanelProps) => {
   const [grouped, setGrouped] = useState<GroupedNotes[]>([]);
   const [loading, setLoading] = useState(false);
@@ -79,47 +121,47 @@ const NotesPanel = ({ onClose, navigateToPath }: NotesPanelProps) => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-xp-surface text-xp-text">
+    <div className="bg-xp-surface text-xp-text flex h-full flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between px-3 py-2 border-b border-xp-border flex-shrink-0">
+      <div className="border-xp-border flex flex-shrink-0 items-center justify-between border-b px-3 py-2">
         <div className="flex items-center space-x-2">
-          <StickyNote className="w-4 h-4 text-xp-text-muted" />
-          <span className="text-xs font-semibold text-xp-text uppercase tracking-wider">Notes</span>
+          <StickyNote className="text-xp-text-muted h-4 w-4" />
+          <span className="text-xp-text text-xs font-semibold uppercase tracking-wider">Notes</span>
         </div>
         <div className="flex items-center space-x-1">
           <button
             onClick={loadAllNotes}
             disabled={loading}
-            className="p-1 rounded hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text transition-colors"
+            className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text rounded p-1 transition-colors"
             title="Refresh"
             aria-label="Refresh notes"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
           </button>
           {onClose && (
             <button
               onClick={onClose}
-              className="p-1 rounded hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text transition-colors"
+              className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text rounded p-1 transition-colors"
               title="Close panel"
               aria-label="Close notes panel"
             >
-              <X className="w-3.5 h-3.5" />
+              <X className="h-3.5 w-3.5" />
             </button>
           )}
         </div>
       </div>
 
       {/* Search */}
-      <div className="px-3 py-2 border-b border-xp-border flex-shrink-0">
+      <div className="border-xp-border flex-shrink-0 border-b px-3 py-2">
         <div className="relative">
-          <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-xp-text-muted" />
+          <Search className="text-xp-text-muted absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search notes..."
             aria-label="Search notes"
-            className="w-full bg-xp-bg border border-xp-border rounded pl-7 pr-3 py-1.5 text-sm text-xp-text placeholder:text-xp-text-muted focus:outline-none focus:border-xp-blue transition-colors"
+            className="bg-xp-bg border-xp-border text-xp-text placeholder:text-xp-text-muted focus:border-xp-blue w-full rounded border py-1.5 pl-7 pr-3 text-sm transition-colors focus:outline-none"
           />
         </div>
       </div>
@@ -127,65 +169,45 @@ const NotesPanel = ({ onClose, navigateToPath }: NotesPanelProps) => {
       {/* Body */}
       <div className="flex-1 overflow-y-auto p-2">
         {loading && grouped.length === 0 ? (
-          <div className="flex items-center justify-center py-8 text-xp-text-secondary text-sm">
+          <div className="text-xp-text-secondary flex items-center justify-center py-8 text-sm">
             Loading...
           </div>
-        ) : searchResults !== null ? (
-          // Search results
-          searchResults.length === 0 ? (
-            <div className="flex items-center justify-center py-8 text-xp-text-secondary text-sm">
-              {searching ? 'Searching...' : 'No matching notes found.'}
-            </div>
-          ) : (
-            <ul className="space-y-1.5">
-              {searchResults.map((result, idx) => (
-                <li
-                  key={`${result.path}:${result.note.id}:${idx}`}
-                  className="rounded px-2 py-2 hover:bg-xp-surface-light cursor-pointer transition-colors"
-                  onClick={() => handleNavigate(result.path)}
-                >
-                  <div className="flex items-center space-x-2 mb-1">
-                    <FileText className="w-3.5 h-3.5 text-xp-text-muted flex-shrink-0" />
-                    <span className="text-xs text-xp-text-muted truncate">
-                      {result.path.split(/[\\/]/).pop()}
-                    </span>
-                  </div>
-                  <p className="text-sm font-medium text-xp-text truncate">{result.note.title}</p>
-                  <p className="text-xs text-xp-text-muted truncate mt-0.5">
-                    {result.note.content.substring(0, 80)}
-                    {result.note.content.length > 80 ? '...' : ''}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          )
-        ) : grouped.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-8 text-xp-text-secondary">
-            <StickyNote className="w-8 h-8 mb-2 opacity-40" />
+        ) : null}
+        {!(loading && grouped.length === 0) && searchResults !== null ? (
+          <NotesSearchResults
+            searchResults={searchResults}
+            searching={searching}
+            handleNavigate={handleNavigate}
+          />
+        ) : null}
+        {!(loading && grouped.length === 0) && searchResults === null && grouped.length === 0 ? (
+          <div className="text-xp-text-secondary flex flex-col items-center justify-center py-8">
+            <StickyNote className="mb-2 h-8 w-8 opacity-40" />
             <p className="text-sm">No notes yet.</p>
-            <p className="text-xs mt-1 opacity-60">Right-click a file and choose Notes...</p>
+            <p className="mt-1 text-xs opacity-60">Right-click a file and choose Notes...</p>
           </div>
-        ) : (
+        ) : null}
+        {!(loading && grouped.length === 0) && searchResults === null && grouped.length > 0 && (
           <ul className="space-y-1.5">
             {grouped.map((group) => (
               <li
                 key={group.path}
-                className="rounded px-2 py-2 hover:bg-xp-surface-light cursor-pointer transition-colors"
+                className="hover:bg-xp-surface-light cursor-pointer rounded px-2 py-2 transition-colors"
                 onClick={() => handleNavigate(group.path)}
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2 min-w-0">
-                    <FileText className="w-3.5 h-3.5 text-xp-text-muted flex-shrink-0" />
-                    <span className="text-sm font-medium text-xp-text truncate">
+                  <div className="flex min-w-0 items-center space-x-2">
+                    <FileText className="text-xp-text-muted h-3.5 w-3.5 flex-shrink-0" />
+                    <span className="text-xp-text truncate text-sm font-medium">
                       {group.fileName}
                     </span>
                   </div>
-                  <span className="text-xs text-xp-text-muted flex-shrink-0 ml-2">
+                  <span className="text-xp-text-muted ml-2 flex-shrink-0 text-xs">
                     {group.notes.length} note{group.notes.length !== 1 ? 's' : ''}
                   </span>
                 </div>
                 {group.notes.length > 0 && (
-                  <p className="text-xs text-xp-text-muted truncate mt-1 pl-5">
+                  <p className="text-xp-text-muted mt-1 truncate pl-5 text-xs">
                     {group.notes[group.notes.length - 1].title}
                   </p>
                 )}
@@ -197,8 +219,8 @@ const NotesPanel = ({ onClose, navigateToPath }: NotesPanelProps) => {
 
       {/* Footer */}
       {grouped.length > 0 && !searchResults && (
-        <div className="px-3 py-1.5 border-t border-xp-border flex-shrink-0">
-          <p className="text-xs text-xp-text-muted">
+        <div className="border-xp-border flex-shrink-0 border-t px-3 py-1.5">
+          <p className="text-xp-text-muted text-xs">
             {grouped.reduce((sum, g) => sum + g.notes.length, 0)} note
             {grouped.reduce((sum, g) => sum + g.notes.length, 0) !== 1 ? 's' : ''} across{' '}
             {grouped.length} file{grouped.length !== 1 ? 's' : ''}
@@ -207,6 +229,6 @@ const NotesPanel = ({ onClose, navigateToPath }: NotesPanelProps) => {
       )}
     </div>
   );
-}
+};
 
 export default NotesPanel;

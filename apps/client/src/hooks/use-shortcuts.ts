@@ -80,7 +80,7 @@ const buildMap = (bindings: ShortcutBinding[]) => {
   }
   shortcutMap = map;
   shortcutsLoaded = true;
-}
+};
 
 async function ensureLoaded() {
   if (shortcutsLoaded) return;
@@ -100,10 +100,10 @@ export const reloadShortcuts = () => {
   shortcutsLoaded = false;
   loadPromise = null;
   ensureLoaded();
-}
+};
 
 /** Synchronous lookup — returns the action if a binding matches. */
-const resolveAction = (keyCombo: string, context: string) : ShortcutAction | null => {
+const resolveAction = (keyCombo: string, context: string): ShortcutAction | null => {
   const bindings = shortcutMap.get(keyCombo);
   if (!bindings) return null;
   for (const b of bindings) {
@@ -112,7 +112,7 @@ const resolveAction = (keyCombo: string, context: string) : ShortcutAction | nul
     }
   }
   return null;
-}
+};
 
 // ── Hook ──────────────────────────────────────────────────────────────────
 
@@ -287,4 +287,4 @@ export const useShortcuts = (handlers: ShortcutHandlers, context: string = 'file
       unlistenGlobal.then((unlisten) => unlisten()).catch(console.error);
     };
   }, [context, executeAction]);
-}
+};

@@ -78,8 +78,8 @@ export default function VersioningSettings() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="w-5 h-5 border-2 border-xp-accent border-t-transparent rounded-full animate-spin" />
-        <span className="ml-3 text-sm text-xp-text-secondary">Loading versioning settings...</span>
+        <div className="border-xp-accent h-5 w-5 animate-spin rounded-full border-2 border-t-transparent" />
+        <span className="text-xp-text-secondary ml-3 text-sm">Loading versioning settings...</span>
       </div>
     );
   }
@@ -92,7 +92,7 @@ export default function VersioningSettings() {
       />
 
       {error && (
-        <div className="mx-4 mb-2 rounded-md bg-red-500/10 border border-red-500/20 px-3 py-2 text-xs text-red-400">
+        <div className="mx-4 mb-2 rounded-md border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs text-red-400">
           {error}
         </div>
       )}
@@ -138,7 +138,7 @@ export default function VersioningSettings() {
           <button
             onClick={saveConfig}
             disabled={saving}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-xp-accent/10 text-xp-accent hover:bg-xp-accent/20 transition-colors disabled:opacity-50"
+            className="bg-xp-accent/10 text-xp-accent hover:bg-xp-accent/20 flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors disabled:opacity-50"
           >
             <Save size={14} />
             {saving ? 'Saving...' : 'Save Changes'}
@@ -163,12 +163,12 @@ export default function VersioningSettings() {
               if (e.key === 'Enter') addDirectory();
             }}
             placeholder="Enter directory path..."
-            className="flex-1 h-9 px-3 text-sm rounded-md border border-xp-border bg-xp-bg text-xp-text placeholder:text-xp-text-secondary/50 focus:outline-none focus:ring-1 focus:ring-xp-accent"
+            className="border-xp-border bg-xp-bg text-xp-text placeholder:text-xp-text-secondary/50 focus:ring-xp-accent h-9 flex-1 rounded-md border px-3 text-sm focus:outline-none focus:ring-1"
           />
           <button
             onClick={addDirectory}
             disabled={!newDir.trim()}
-            className="flex items-center gap-1.5 h-9 px-3 rounded-md text-xs font-medium bg-xp-accent/10 text-xp-accent hover:bg-xp-accent/20 transition-colors disabled:opacity-50"
+            className="bg-xp-accent/10 text-xp-accent hover:bg-xp-accent/20 flex h-9 items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors disabled:opacity-50"
           >
             <Plus size={14} />
             Add
@@ -178,28 +178,28 @@ export default function VersioningSettings() {
 
       {config.enabled_dirs.length === 0 ? (
         <div className="px-4 py-4 text-center">
-          <FolderOpen size={24} className="mx-auto text-xp-text-secondary/40 mb-2" />
-          <p className="text-xs text-xp-text-secondary">No directories tracked</p>
-          <p className="text-[11px] text-xp-text-secondary/60 mt-0.5">
+          <FolderOpen size={24} className="text-xp-text-secondary/40 mx-auto mb-2" />
+          <p className="text-xp-text-secondary text-xs">No directories tracked</p>
+          <p className="text-xp-text-secondary/60 mt-0.5 text-[11px]">
             Add a directory path above to start tracking file versions
           </p>
         </div>
       ) : (
-        <div className="px-4 space-y-1 pb-2">
+        <div className="space-y-1 px-4 pb-2">
           {config.enabled_dirs.map((dir) => (
             <div
               key={dir}
-              className="flex items-center justify-between gap-2 rounded-md px-3 py-2 bg-xp-surface/50 border border-xp-border/30"
+              className="bg-xp-surface/50 border-xp-border/30 flex items-center justify-between gap-2 rounded-md border px-3 py-2"
             >
-              <div className="flex items-center gap-2 min-w-0">
-                <FolderOpen size={14} className="shrink-0 text-xp-text-secondary" />
-                <span className="text-xs text-xp-text truncate" title={dir}>
+              <div className="flex min-w-0 items-center gap-2">
+                <FolderOpen size={14} className="text-xp-text-secondary shrink-0" />
+                <span className="text-xp-text truncate text-xs" title={dir}>
                   {dir}
                 </span>
               </div>
               <button
                 onClick={() => removeDirectory(dir)}
-                className="flex items-center justify-center w-6 h-6 rounded-md text-xp-text-secondary hover:bg-red-500/10 hover:text-red-400 transition-colors shrink-0"
+                className="text-xp-text-secondary flex h-6 w-6 shrink-0 items-center justify-center rounded-md transition-colors hover:bg-red-500/10 hover:text-red-400"
                 title="Stop tracking this directory"
               >
                 <Trash2 size={13} />

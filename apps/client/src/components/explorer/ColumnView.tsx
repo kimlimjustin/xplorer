@@ -48,11 +48,11 @@ const ColumnFileRow = ({
         cursor: 'pointer',
         fontSize: '13px',
         color: 'var(--xp-text)',
-        backgroundColor: isActive
-          ? 'var(--xp-accent)'
-          : isSelected
-            ? 'rgba(99, 102, 241, 0.2)'
-            : 'transparent',
+        backgroundColor: (() => {
+          if (isActive) return 'var(--xp-accent)';
+          if (isSelected) return 'rgba(99, 102, 241, 0.2)';
+          return 'transparent';
+        })(),
         borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
         outline: 'none',
         height: `${COLUMN_ROW_HEIGHT}px`,
@@ -115,7 +115,7 @@ const ColumnFileRow = ({
       )}
     </div>
   );
-}
+};
 
 const VirtualizedColumnPane = ({
   column,
@@ -236,7 +236,7 @@ const VirtualizedColumnPane = ({
       </div>
     </div>
   );
-}
+};
 
 const ColumnView = ({
   files,
@@ -334,7 +334,7 @@ const ColumnView = ({
     >
       {columns.map((column, colIndex) => (
         <VirtualizedColumnPane
-          key={`${column.path}-${colIndex}`}
+          key={column.path}
           column={column}
           colIndex={colIndex}
           selectedFiles={selectedFiles}
@@ -413,6 +413,6 @@ const ColumnView = ({
       )}
     </div>
   );
-}
+};
 
 export default ColumnView;

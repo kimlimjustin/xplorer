@@ -3,9 +3,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, FileIcon, FolderIcon, Scale, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { FileIcon, FolderIcon, Scale, X } from 'lucide-react';
 import { TauriAPI } from '@/lib/tauri-api';
 
 interface CompareFilesDialogProps {
@@ -154,16 +153,16 @@ const CompareFilesDialog = ({
 
     if (info.isDir) {
       return (
-        <Badge variant="secondary" className="text-xs gap-1">
-          <FolderIcon className="w-3 h-3" />
+        <Badge variant="secondary" className="gap-1 text-xs">
+          <FolderIcon className="h-3 w-3" />
           Directory (not supported)
         </Badge>
       );
     }
 
     return (
-      <Badge variant="outline" className="text-xs gap-1">
-        <FileIcon className="w-3 h-3" />
+      <Badge variant="outline" className="gap-1 text-xs">
+        <FileIcon className="h-3 w-3" />
         {formatFileSize(info.size)}
       </Badge>
     );
@@ -175,11 +174,11 @@ const CompareFilesDialog = ({
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle className="flex items-center gap-2">
-              <Scale className="w-5 h-5" />
+              <Scale className="h-5 w-5" />
               Compare Files
             </DialogTitle>
             <Button variant="ghost" size="sm" onClick={onClose}>
-              <X className="w-4 h-4" />
+              <X className="h-4 w-4" />
             </Button>
           </div>
         </DialogHeader>
@@ -202,10 +201,10 @@ const CompareFilesDialog = ({
                   Browse
                 </Button>
               </div>
-              <div className="min-h-6 flex items-center">
+              <div className="flex min-h-6 items-center">
                 {renderFileInfo(file1Info, file1Path)}
                 {file1Path && file1Info && (
-                  <span className="text-xs text-gray-600 ml-2 font-mono truncate">
+                  <span className="ml-2 truncate font-mono text-xs text-gray-600">
                     {file1Info.name}
                   </span>
                 )}
@@ -228,10 +227,10 @@ const CompareFilesDialog = ({
                   Browse
                 </Button>
               </div>
-              <div className="min-h-6 flex items-center">
+              <div className="flex min-h-6 items-center">
                 {renderFileInfo(file2Info, file2Path)}
                 {file2Path && file2Info && (
-                  <span className="text-xs text-gray-600 ml-2 font-mono truncate">
+                  <span className="ml-2 truncate font-mono text-xs text-gray-600">
                     {file2Info.name}
                   </span>
                 )}
@@ -240,15 +239,15 @@ const CompareFilesDialog = ({
           </div>
 
           {file1Path && file2Path && file1Path === file2Path && (
-            <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-3">
               <div className="text-sm text-yellow-800">
-                <AlertTriangle size={14} className="inline-block mr-1" /> You have selected the same
+                <AlertTriangle size={14} className="mr-1 inline-block" /> You have selected the same
                 file for both comparisons. Please select two different files to compare.
               </div>
             </div>
           )}
 
-          <div className="text-xs text-gray-500 space-y-1">
+          <div className="space-y-1 text-xs text-gray-500">
             <div>• Both files must be regular files (not directories)</div>
             <div>• Large files may take longer to compare</div>
             <div>• Binary files will be compared byte-by-byte</div>
@@ -256,7 +255,7 @@ const CompareFilesDialog = ({
           </div>
         </div>
 
-        <div className="flex justify-end gap-2 pt-4 border-t">
+        <div className="flex justify-end gap-2 border-t pt-4">
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
@@ -265,13 +264,13 @@ const CompareFilesDialog = ({
             disabled={!canCompare || file1Path === file2Path}
             className="gap-2"
           >
-            <Scale className="w-4 h-4" />
+            <Scale className="h-4 w-4" />
             Compare Files
           </Button>
         </div>
       </DialogContent>
     </Dialog>
   );
-}
+};
 
 export default CompareFilesDialog;

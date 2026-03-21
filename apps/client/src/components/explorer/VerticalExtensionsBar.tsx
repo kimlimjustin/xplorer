@@ -62,7 +62,7 @@ const VerticalExtensionsBar = ({
   return (
     <div
       data-tour={dataTour}
-      className="w-12 bg-xp-surface border-l border-xp-border flex flex-col"
+      className="bg-xp-surface border-xp-border flex w-12 flex-col border-l"
     >
       <div className="flex flex-col py-2">
         {/* Core panels (always available) */}
@@ -78,9 +78,7 @@ const VerticalExtensionsBar = ({
         ))}
 
         {/* Separator between core and extension panels */}
-        {registeredPanels.length > 0 && (
-          <div className="mx-2 my-1 border-t border-xp-border" />
-        )}
+        {registeredPanels.length > 0 && <div className="border-xp-border mx-2 my-1 border-t" />}
 
         {/* Extension-managed panel icons */}
         {registeredPanels.map((panel) => (
@@ -95,7 +93,7 @@ const VerticalExtensionsBar = ({
         ))}
 
         {/* Separator before system panels */}
-        <div className="mx-2 my-1 border-t border-xp-border" />
+        <div className="border-xp-border mx-2 my-1 border-t" />
 
         {/* System panels */}
         {systemPanels.map(({ id, icon, label }) => (
@@ -111,13 +109,13 @@ const VerticalExtensionsBar = ({
       </div>
 
       {/* Spacer */}
-      <div className="flex-1"></div>
+      <div className="flex-1" />
 
       {/* Settings */}
-      <div className="p-2 border-t border-xp-border">
+      <div className="border-xp-border border-t p-2">
         <button
           onClick={() => setLocation('/settings')}
-          className="w-8 h-8 rounded flex items-center justify-center hover:bg-xp-surface-light"
+          className="hover:bg-xp-surface-light flex h-8 w-8 items-center justify-center rounded"
           title="Settings"
         >
           <Settings size={18} />
@@ -125,6 +123,6 @@ const VerticalExtensionsBar = ({
       </div>
     </div>
   );
-}
+};
 
 export default VerticalExtensionsBar;

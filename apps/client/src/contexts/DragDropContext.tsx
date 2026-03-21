@@ -45,7 +45,7 @@ const initialState: DragState = {
   operation: 'move',
 };
 
-const dragReducer = (state: DragState, action: DragAction) : DragState => {
+const dragReducer = (state: DragState, action: DragAction): DragState => {
   switch (action.type) {
     case 'START_DRAG':
       return {
@@ -66,7 +66,7 @@ const dragReducer = (state: DragState, action: DragAction) : DragState => {
     default:
       return state;
   }
-}
+};
 
 // ── Context ──────────────────────────────────────────────────────────────────
 
@@ -278,7 +278,7 @@ export const DragDropProvider = ({ children }: { children: React.ReactNode }) =>
       {dragState.isDragging && <DragOverlay state={dragState} overlayRef={overlayRef} />}
     </DragDropContext.Provider>
   );
-}
+};
 
 // ── DragOverlay ──────────────────────────────────────────────────────────────
 
@@ -344,10 +344,10 @@ const DragOverlay = ({
     </div>,
     document.body,
   );
-}
+};
 
-export const useDragDropContext = () : DragDropContextValue => {
+export const useDragDropContext = (): DragDropContextValue => {
   const ctx = useContext(DragDropContext);
   if (!ctx) throw new Error('useDragDropContext must be used within DragDropProvider');
   return ctx;
-}
+};

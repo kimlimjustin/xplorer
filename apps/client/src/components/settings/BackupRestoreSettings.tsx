@@ -48,7 +48,7 @@ interface ImportCategory {
   keys: string[];
 }
 
-const collectExportableKeys = () : string[] => {
+const collectExportableKeys = (): string[] => {
   const keys = new Set<string>();
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
@@ -58,9 +58,9 @@ const collectExportableKeys = () : string[] => {
     }
   }
   return Array.from(keys).sort();
-}
+};
 
-const categorizeKeys = (keys: string[]) : ImportCategory[] => {
+const categorizeKeys = (keys: string[]): ImportCategory[] => {
   const categories: ImportCategory[] = [];
   const buckets: Record<string, string[]> = {
     'App Settings': [],
@@ -99,9 +99,9 @@ const categorizeKeys = (keys: string[]) : ImportCategory[] => {
   }
 
   return categories;
-}
+};
 
-const buildExportPayload = () : ExportPayload => {
+const buildExportPayload = (): ExportPayload => {
   const keys = collectExportableKeys();
   const settings: Record<string, string> = {};
   for (const key of keys) {
@@ -115,7 +115,7 @@ const buildExportPayload = () : ExportPayload => {
     exportDate: new Date().toISOString(),
     settings,
   };
-}
+};
 
 const downloadJson = (payload: ExportPayload) => {
   const json = JSON.stringify(payload, null, 2);
@@ -129,9 +129,9 @@ const downloadJson = (payload: ExportPayload) => {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-}
+};
 
-const validatePayload = (data: unknown) : data is ExportPayload => {
+const validatePayload = (data: unknown): data is ExportPayload => {
   if (typeof data !== 'object' || data === null) return false;
   const obj = data as Record<string, unknown>;
   if (typeof obj.version !== 'string') return false;
@@ -142,7 +142,7 @@ const validatePayload = (data: unknown) : data is ExportPayload => {
     if (typeof key !== 'string' || typeof val !== 'string') return false;
   }
   return true;
-}
+};
 
 const BackupRestoreSettings = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -249,7 +249,7 @@ const BackupRestoreSettings = () => {
       >
         <button
           onClick={handleExport}
-          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium bg-xp-accent text-white hover:opacity-90 transition-opacity"
+          className="bg-xp-accent flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
         >
           <Download size={14} />
           Export
@@ -257,7 +257,7 @@ const BackupRestoreSettings = () => {
       </SettingRow>
 
       {lastExportDate && (
-        <div className="flex items-center gap-2 px-4 py-1.5 text-xs text-xp-text-secondary">
+        <div className="text-xp-text-secondary flex items-center gap-2 px-4 py-1.5 text-xs">
           <Clock size={12} className="shrink-0" />
           <span>Last exported: {formatDate(lastExportDate)}</span>
         </div>
@@ -276,7 +276,7 @@ const BackupRestoreSettings = () => {
       >
         <button
           onClick={() => fileInputRef.current?.click()}
-          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium border border-xp-border bg-xp-surface text-xp-text hover:bg-xp-surface-light transition-colors"
+          className="border-xp-border bg-xp-surface text-xp-text hover:bg-xp-surface-light flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-medium transition-colors"
         >
           <Upload size={14} />
           Choose File
@@ -293,14 +293,14 @@ const BackupRestoreSettings = () => {
 
       {importStatus.type === 'error' && (
         <div className="mx-4 mt-2 flex items-start gap-2 rounded-lg border border-red-500/30 bg-red-500/10 p-3">
-          <AlertTriangle size={16} className="shrink-0 text-red-400 mt-0.5" />
+          <AlertTriangle size={16} className="mt-0.5 shrink-0 text-red-400" />
           <div>
             <div className="text-sm font-medium text-red-400">Import Error</div>
-            <div className="text-xs text-red-400/80 mt-0.5">{importStatus.message}</div>
+            <div className="mt-0.5 text-xs text-red-400/80">{importStatus.message}</div>
           </div>
           <button
             onClick={handleCancelImport}
-            className="ml-auto shrink-0 text-xs text-red-400/60 hover:text-red-400 transition-colors"
+            className="ml-auto shrink-0 text-xs text-red-400/60 transition-colors hover:text-red-400"
           >
             Dismiss
           </button>
@@ -308,16 +308,16 @@ const BackupRestoreSettings = () => {
       )}
 
       {importStatus.type === 'preview' && (
-        <div className="mx-4 mt-2 rounded-lg border border-xp-border bg-xp-surface p-4">
-          <div className="flex items-center gap-2 mb-3">
+        <div className="border-xp-border bg-xp-surface mx-4 mt-2 rounded-lg border p-4">
+          <div className="mb-3 flex items-center gap-2">
             <FileJson size={16} className="text-xp-accent" />
-            <span className="text-sm font-medium text-xp-text">Import Preview</span>
+            <span className="text-xp-text text-sm font-medium">Import Preview</span>
           </div>
 
-          <div className="text-xs text-xp-text-secondary mb-3 space-y-1">
+          <div className="text-xp-text-secondary mb-3 space-y-1 text-xs">
             <div>
               Version:{' '}
-              <span className="font-mono text-xp-text">{importStatus.payload.version}</span>
+              <span className="text-xp-text font-mono">{importStatus.payload.version}</span>
             </div>
             <div>
               Exported:{' '}
@@ -325,29 +325,29 @@ const BackupRestoreSettings = () => {
             </div>
             <div>
               Total keys:{' '}
-              <span className="font-mono text-xp-text">
+              <span className="text-xp-text font-mono">
                 {Object.keys(importStatus.payload.settings).length}
               </span>
             </div>
           </div>
 
-          <div className="space-y-2 mb-4">
+          <div className="mb-4 space-y-2">
             {importStatus.categories.map((cat) => (
-              <div key={cat.label} className="rounded-md bg-xp-bg/50 px-3 py-2">
+              <div key={cat.label} className="bg-xp-bg/50 rounded-md px-3 py-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-xp-text">{cat.label}</span>
-                  <span className="text-[10px] text-xp-text-secondary font-mono">
+                  <span className="text-xp-text text-xs font-medium">{cat.label}</span>
+                  <span className="text-xp-text-secondary font-mono text-[10px]">
                     {cat.keys.length} key{cat.keys.length !== 1 ? 's' : ''}
                   </span>
                 </div>
-                <div className="mt-1 text-[10px] text-xp-text-secondary/70 font-mono leading-relaxed">
+                <div className="text-xp-text-secondary/70 mt-1 font-mono text-[10px] leading-relaxed">
                   {cat.keys.join(', ')}
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="flex items-center gap-2 p-2 rounded-md bg-amber-500/10 border border-amber-500/20 mb-4">
+          <div className="mb-4 flex items-center gap-2 rounded-md border border-amber-500/20 bg-amber-500/10 p-2">
             <AlertTriangle size={14} className="shrink-0 text-amber-400" />
             <span className="text-xs text-amber-400/90">
               This will overwrite your current settings. The page will reload to apply changes.
@@ -357,13 +357,13 @@ const BackupRestoreSettings = () => {
           <div className="flex justify-end gap-2">
             <button
               onClick={handleCancelImport}
-              className="px-3 py-1.5 rounded-md text-sm border border-xp-border bg-xp-surface text-xp-text hover:bg-xp-surface-light transition-colors"
+              className="border-xp-border bg-xp-surface text-xp-text hover:bg-xp-surface-light rounded-md border px-3 py-1.5 text-sm transition-colors"
             >
               Cancel
             </button>
             <button
               onClick={handleApplyImport}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium bg-xp-accent text-white hover:opacity-90 transition-opacity"
+              className="bg-xp-accent flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
             >
               <CheckCircle size={14} />
               Apply Import
@@ -377,7 +377,7 @@ const BackupRestoreSettings = () => {
           <CheckCircle size={16} className="shrink-0 text-emerald-400" />
           <div>
             <div className="text-sm font-medium text-emerald-400">Import Successful</div>
-            <div className="text-xs text-emerald-400/80 mt-0.5">
+            <div className="mt-0.5 text-xs text-emerald-400/80">
               Restored {importStatus.count} setting{importStatus.count !== 1 ? 's' : ''}.
               Reloading...
             </div>
@@ -386,6 +386,6 @@ const BackupRestoreSettings = () => {
       )}
     </div>
   );
-}
+};
 
 export default BackupRestoreSettings;

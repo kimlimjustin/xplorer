@@ -19,16 +19,21 @@ const UNIT_MULTIPLIERS: Record<SizeUnit, number> = {
   GB: 1024 * 1024 * 1024,
 };
 
-const formatSize = (bytes: number) : string => {
+const formatSize = (bytes: number): string => {
   if (bytes === 0) return '0 B';
   if (bytes === Infinity) return 'Unlimited';
 
   const units = ['B', 'KB', 'MB', 'GB', 'TB'];
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
   return `${(bytes / Math.pow(1024, i)).toFixed(i > 0 ? 1 : 0)} ${units[i]}`;
-}
+};
 
-export const SelectBySizeDialog = ({ isOpen, onClose, onSelect, files }: SelectBySizeDialogProps) => {
+export const SelectBySizeDialog = ({
+  isOpen,
+  onClose,
+  onSelect,
+  files,
+}: SelectBySizeDialogProps) => {
   const sizeStats = useMemo(() => getFileSizeStats(files), [files]);
 
   const [minValue, setMinValue] = useState<string>('');
@@ -96,7 +101,8 @@ export const SelectBySizeDialog = ({ isOpen, onClose, onSelect, files }: SelectB
   // Count files in selected range
   const matchCount = useMemo(() => {
     const minBytes = !minValue ? 0 : parseFloat(minValue) * UNIT_MULTIPLIERS[minUnit];
-    const maxBytes = includeUnlimited || !maxValue ? Infinity : parseFloat(maxValue) * UNIT_MULTIPLIERS[maxUnit];
+    const maxBytes =
+      includeUnlimited || !maxValue ? Infinity : parseFloat(maxValue) * UNIT_MULTIPLIERS[maxUnit];
 
     return files.filter((file) => {
       if (file.is_dir) return false;
@@ -109,13 +115,13 @@ export const SelectBySizeDialog = ({ isOpen, onClose, onSelect, files }: SelectB
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-xp-surface border border-xp-border rounded-lg shadow-xl w-[450px] max-h-[80vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="bg-xp-surface border-xp-border flex max-h-[80vh] w-[450px] flex-col rounded-lg border shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-xp-border">
-          <h2 className="text-lg font-semibold text-xp-text">Select by Size</h2>
-          <button onClick={onClose} className="p-1 hover:bg-xp-surface-light rounded">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="border-xp-border flex items-center justify-between border-b p-4">
+          <h2 className="text-xp-text text-lg font-semibold">Select by Size</h2>
+          <button onClick={onClose} className="hover:bg-xp-surface-light rounded p-1">
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -127,22 +133,22 @@ export const SelectBySizeDialog = ({ isOpen, onClose, onSelect, files }: SelectB
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="flex-1 space-y-4 overflow-y-auto p-4">
           {/* File Size Info */}
-          <div className="p-3 bg-xp-bg rounded-md text-sm space-y-1">
-            <div className="flex justify-between text-xp-text-muted">
+          <div className="bg-xp-bg space-y-1 rounded-md p-3 text-sm">
+            <div className="text-xp-text-muted flex justify-between">
               <span>Total files:</span>
               <span>{totalFileCount}</span>
             </div>
-            <div className="flex justify-between text-xp-text-muted">
+            <div className="text-xp-text-muted flex justify-between">
               <span>Smallest:</span>
               <span>{formatSize(sizeStats.min)}</span>
             </div>
-            <div className="flex justify-between text-xp-text-muted">
+            <div className="text-xp-text-muted flex justify-between">
               <span>Largest:</span>
               <span>{formatSize(sizeStats.max)}</span>
             </div>
-            <div className="flex justify-between text-xp-text-muted">
+            <div className="text-xp-text-muted flex justify-between">
               <span>Average:</span>
               <span>{formatSize(sizeStats.avg)}</span>
             </div>
@@ -150,16 +156,16 @@ export const SelectBySizeDialog = ({ isOpen, onClose, onSelect, files }: SelectB
 
           {/* Presets */}
           <div>
-            <h3 className="text-sm font-medium text-xp-text-muted mb-2">Quick Select</h3>
+            <h3 className="text-xp-text-muted mb-2 text-sm font-medium">Quick Select</h3>
             <div className="grid grid-cols-2 gap-2">
               {SIZE_RANGE_PRESETS.map((preset) => (
                 <button
                   key={preset.label}
                   onClick={() => applyPreset(preset)}
-                  className={`px-3 py-2 text-sm rounded-md transition-colors text-left ${
+                  className={`rounded-md px-3 py-2 text-left text-sm transition-colors ${
                     selectedPreset === preset.label
                       ? 'bg-xp-primary text-white'
-                      : 'bg-xp-bg hover:bg-xp-surface-light border border-xp-border'
+                      : 'bg-xp-bg hover:bg-xp-surface-light border-xp-border border'
                   }`}
                 >
                   {preset.label}
@@ -170,11 +176,11 @@ export const SelectBySizeDialog = ({ isOpen, onClose, onSelect, files }: SelectB
 
           {/* Custom Size Range */}
           <div>
-            <h3 className="text-sm font-medium text-xp-text-muted mb-2">Custom Range</h3>
+            <h3 className="text-xp-text-muted mb-2 text-sm font-medium">Custom Range</h3>
             <div className="space-y-3">
               {/* Min Size */}
               <div className="flex items-center gap-2">
-                <span className="text-sm text-xp-text-muted w-12">Min:</span>
+                <span className="text-xp-text-muted w-12 text-sm">Min:</span>
                 <input
                   type="number"
                   value={minValue}
@@ -184,12 +190,12 @@ export const SelectBySizeDialog = ({ isOpen, onClose, onSelect, files }: SelectB
                   }}
                   min="0"
                   placeholder="0"
-                  className="flex-1 px-3 py-2 bg-xp-bg border border-xp-border rounded-md text-sm"
+                  className="bg-xp-bg border-xp-border flex-1 rounded-md border px-3 py-2 text-sm"
                 />
                 <select
                   value={minUnit}
                   onChange={(e) => setMinUnit(e.target.value as SizeUnit)}
-                  className="px-3 py-2 bg-xp-bg border border-xp-border rounded-md text-sm"
+                  className="bg-xp-bg border-xp-border rounded-md border px-3 py-2 text-sm"
                 >
                   <option value="B">B</option>
                   <option value="KB">KB</option>
@@ -200,7 +206,7 @@ export const SelectBySizeDialog = ({ isOpen, onClose, onSelect, files }: SelectB
 
               {/* Max Size */}
               <div className="flex items-center gap-2">
-                <span className="text-sm text-xp-text-muted w-12">Max:</span>
+                <span className="text-xp-text-muted w-12 text-sm">Max:</span>
                 <input
                   type="number"
                   value={maxValue}
@@ -212,13 +218,13 @@ export const SelectBySizeDialog = ({ isOpen, onClose, onSelect, files }: SelectB
                   min="0"
                   placeholder="No limit"
                   disabled={includeUnlimited}
-                  className="flex-1 px-3 py-2 bg-xp-bg border border-xp-border rounded-md text-sm disabled:opacity-50"
+                  className="bg-xp-bg border-xp-border flex-1 rounded-md border px-3 py-2 text-sm disabled:opacity-50"
                 />
                 <select
                   value={maxUnit}
                   onChange={(e) => setMaxUnit(e.target.value as SizeUnit)}
                   disabled={includeUnlimited}
-                  className="px-3 py-2 bg-xp-bg border border-xp-border rounded-md text-sm disabled:opacity-50"
+                  className="bg-xp-bg border-xp-border rounded-md border px-3 py-2 text-sm disabled:opacity-50"
                 >
                   <option value="B">B</option>
                   <option value="KB">KB</option>
@@ -228,7 +234,7 @@ export const SelectBySizeDialog = ({ isOpen, onClose, onSelect, files }: SelectB
               </div>
 
               {/* No Limit Checkbox */}
-              <label className="flex items-center gap-2 cursor-pointer">
+              <label className="flex cursor-pointer items-center gap-2">
                 <input
                   type="checkbox"
                   checked={includeUnlimited}
@@ -238,36 +244,36 @@ export const SelectBySizeDialog = ({ isOpen, onClose, onSelect, files }: SelectB
                       setMaxValue('');
                     }
                   }}
-                  className="rounded border-xp-border"
+                  className="border-xp-border rounded"
                 />
-                <span className="text-sm text-xp-text-muted">No maximum limit</span>
+                <span className="text-xp-text-muted text-sm">No maximum limit</span>
               </label>
             </div>
           </div>
 
           {/* Preview Count */}
-          <div className="flex items-center justify-between p-3 bg-xp-primary/10 border border-xp-primary/30 rounded-md">
-            <span className="text-sm text-xp-text">Files matching:</span>
-            <span className="text-lg font-semibold text-xp-primary">{matchCount}</span>
+          <div className="bg-xp-primary/10 border-xp-primary/30 flex items-center justify-between rounded-md border p-3">
+            <span className="text-xp-text text-sm">Files matching:</span>
+            <span className="text-xp-primary text-lg font-semibold">{matchCount}</span>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between p-4 border-t border-xp-border">
-          <button onClick={clearValues} className="text-sm text-xp-text-muted hover:text-xp-text">
+        <div className="border-xp-border flex items-center justify-between border-t p-4">
+          <button onClick={clearValues} className="text-xp-text-muted hover:text-xp-text text-sm">
             Clear
           </button>
           <div className="flex gap-2">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-sm text-xp-text-muted hover:text-xp-text"
+              className="text-xp-text-muted hover:text-xp-text px-4 py-2 text-sm"
             >
               Cancel
             </button>
             <button
               onClick={handleSelect}
               disabled={matchCount === 0}
-              className="px-4 py-2 bg-xp-primary text-white rounded-md text-sm disabled:opacity-50"
+              className="bg-xp-primary rounded-md px-4 py-2 text-sm text-white disabled:opacity-50"
             >
               Select {matchCount} Files
             </button>
@@ -276,4 +282,4 @@ export const SelectBySizeDialog = ({ isOpen, onClose, onSelect, files }: SelectB
       </div>
     </div>
   );
-}
+};

@@ -91,7 +91,7 @@ export const useNavigation = ({ currentPath, splitLayout, activeGroup }: UseNavi
     if (currentPath.startsWith('/')) {
       const parts = currentPath.split('/').filter(Boolean);
       if (parts.length <= 1) return;
-      const parentPath = '/' + parts.slice(0, -1).join('/');
+      const parentPath = `/${parts.slice(0, -1).join('/')}`;
       navigateWithHistory(parentPath);
       return;
     }
@@ -145,4 +145,4 @@ export const useNavigation = ({ currentPath, splitLayout, activeGroup }: UseNavi
     canNavigateBackInHistory,
     canNavigateForwardInHistory,
   };
-}
+};

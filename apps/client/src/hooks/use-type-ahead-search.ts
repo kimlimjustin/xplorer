@@ -113,4 +113,4 @@ export const useTypeAheadSearch = ({
   );
 
   return { handleGridKeyDown };
-}
+};

@@ -36,9 +36,9 @@ const CreateSymlinkDialog = ({
       const dotIdx = fileName.lastIndexOf('.');
       let linkName: string;
       if (dotIdx > 0) {
-        linkName = fileName.slice(0, dotIdx) + ' - Link' + fileName.slice(dotIdx);
+        linkName = `${fileName.slice(0, dotIdx)} - Link${fileName.slice(dotIdx)}`;
       } else {
-        linkName = fileName + ' - Link';
+        linkName = `${fileName} - Link`;
       }
       setLinkPath(parentDir + sep + linkName);
       setError(null);
@@ -433,6 +433,6 @@ const CreateSymlinkDialog = ({
       </div>
     </div>
   );
-}
+};
 
 export default CreateSymlinkDialog;

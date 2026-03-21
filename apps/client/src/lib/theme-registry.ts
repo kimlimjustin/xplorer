@@ -7,19 +7,19 @@ const listeners: Set<() => void> = new Set();
 
 const notify = () => {
   listeners.forEach((fn) => fn());
-}
+};
 
 export const registerTheme = (id: string, theme: ThemeDef) => {
   extensionThemes[id] = theme;
   notify();
-}
+};
 
 export const unregisterTheme = (id: string) => {
   delete extensionThemes[id];
   notify();
-}
+};
 
-const getCustomThemeDefs = () : Record<string, ThemeDef> => {
+const getCustomThemeDefs = (): Record<string, ThemeDef> => {
   const custom = loadCustomThemes();
   const defs: Record<string, ThemeDef> = {};
   for (const [slug, ct] of Object.entries(custom)) {
@@ -32,15 +32,15 @@ const getCustomThemeDefs = () : Record<string, ThemeDef> => {
     };
   }
   return defs;
-}
+};
 
-export const getAllThemes = () : Record<string, ThemeDef> => {
+export const getAllThemes = (): Record<string, ThemeDef> => {
   return { ...builtinThemes, ...extensionThemes, ...getCustomThemeDefs() };
-}
+};
 
-export const notifyCustomThemesChanged = () : void => {
+export const notifyCustomThemesChanged = (): void => {
   notify();
-}
+};
 
 const subscribe = (fn: () => void) => {
   listeners.add(fn);
@@ -52,7 +52,7 @@ const subscribe = (fn: () => void) => {
 // ── React hook ────────────────────────────────────────────────────
 let snapshot = getAllThemes();
 
-export const useAllThemes = () : Record<string, ThemeDef> => {
+export const useAllThemes = (): Record<string, ThemeDef> => {
   return useSyncExternalStore(subscribe, () => {
     const next = getAllThemes();
     // Only create new reference when contents changed
@@ -61,7 +61,7 @@ export const useAllThemes = () : Record<string, ThemeDef> => {
     }
     return snapshot;
   });
-}
+};
 
 // ── Event bridge (call once in app root) ──────────────────────────
 let bridgeInstalled = false;
@@ -78,4 +78,4 @@ export const installThemeEventBridge = () => {
   window.addEventListener('xplorer-theme-unregister', ((e: CustomEvent) => {
     if (e.detail?.id) unregisterTheme(e.detail.id);
   }) as EventListener);
-}
+};

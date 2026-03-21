@@ -55,16 +55,16 @@ export const DEFAULT_FILTERS: SearchFilters = {
   extensions: '',
 };
 
-export const hasActiveFilters = (filters: SearchFilters) : boolean => {
+export const hasActiveFilters = (filters: SearchFilters): boolean => {
   return (
     filters.fileTypes.length > 0 ||
     filters.dateRange !== 'any' ||
     filters.sizeRange !== 'any' ||
     filters.extensions.trim() !== ''
   );
-}
+};
 
-export const buildDateFilter = (filters: SearchFilters) : DateFilter | undefined => {
+export const buildDateFilter = (filters: SearchFilters): DateFilter | undefined => {
   const now = Math.floor(Date.now() / 1000);
   switch (filters.dateRange) {
     case 'today':
@@ -91,9 +91,9 @@ export const buildDateFilter = (filters: SearchFilters) : DateFilter | undefined
     default:
       return undefined;
   }
-}
+};
 
-export const buildSizeFilter = (filters: SearchFilters) : SizeFilter | undefined => {
+export const buildSizeFilter = (filters: SearchFilters): SizeFilter | undefined => {
   switch (filters.sizeRange) {
     case 'lt1kb':
       return { max_bytes: 1024 };
@@ -106,20 +106,20 @@ export const buildSizeFilter = (filters: SearchFilters) : SizeFilter | undefined
     default:
       return undefined;
   }
-}
+};
 
-export const parseExtensionFilter = (input: string) : string[] => {
+export const parseExtensionFilter = (input: string): string[] => {
   if (!input.trim()) return [];
   return input
     .split(',')
     .map((e) => e.trim().replace(/^\./, ''))
     .filter(Boolean);
-}
+};
 
 export const clientFilterResults = (
   results: SearchResult[],
   filters: SearchFilters,
-) : SearchResult[] => {
+): SearchResult[] => {
   if (!hasActiveFilters(filters)) return results;
 
   const extensionList = parseExtensionFilter(filters.extensions).map((e) => e.toLowerCase());
@@ -213,9 +213,9 @@ export const clientFilterResults = (
 
     return true;
   });
-}
+};
 
-const parseSizeFromContext = (ctx: string) : number | null => {
+const parseSizeFromContext = (ctx: string): number | null => {
   const match = ctx.match(/Size:\s*([\d.]+)\s*(B|KB|MB|GB|TB)/i);
   if (!match) return null;
   const num = parseFloat(match[1]);
@@ -228,19 +228,19 @@ const parseSizeFromContext = (ctx: string) : number | null => {
     TB: 1024 ** 4,
   };
   return num * (multipliers[unit] || 1);
-}
+};
 
-const parseDateFromContext = (ctx: string) : number | null => {
+const parseDateFromContext = (ctx: string): number | null => {
   const match = ctx.match(/Modified:\s*(.+)/);
   if (!match) return null;
   const ts = new Date(match[1]).getTime();
   if (isNaN(ts)) return null;
   return ts / 1000;
-}
+};
 
 // --- Search History helpers ---
 
-export const getSearchHistory = () : string[] => {
+export const getSearchHistory = (): string[] => {
   try {
     const raw = localStorage.getItem(SEARCH_HISTORY_KEY);
     if (!raw) return [];
@@ -249,9 +249,9 @@ export const getSearchHistory = () : string[] => {
   } catch {
     return [];
   }
-}
+};
 
-export const addSearchHistory = (query: string) : void => {
+export const addSearchHistory = (query: string): void => {
   if (!query.trim()) return;
   const history = getSearchHistory().filter((h) => h !== query);
   history.unshift(query);
@@ -261,15 +261,15 @@ export const addSearchHistory = (query: string) : void => {
   } catch {
     // localStorage may be full
   }
-}
+};
 
-export const clearSearchHistory = () : void => {
+export const clearSearchHistory = (): void => {
   try {
     localStorage.removeItem(SEARCH_HISTORY_KEY);
   } catch {
     // ignore
   }
-}
+};
 
 // --- Grouped Results helpers ---
 
@@ -278,7 +278,7 @@ export interface GroupedResults {
   results: SearchResult[];
 }
 
-export const groupResultsByFolder = (results: SearchResult[]) : GroupedResults[] => {
+export const groupResultsByFolder = (results: SearchResult[]): GroupedResults[] => {
   const map = new Map<string, SearchResult[]>();
   for (const r of results) {
     const lastSep = Math.max(r.path.lastIndexOf('/'), r.path.lastIndexOf('\\'));
@@ -289,7 +289,7 @@ export const groupResultsByFolder = (results: SearchResult[]) : GroupedResults[]
   return Array.from(map.entries())
     .map(([folder, results]) => ({ folder, results }))
     .sort((a, b) => b.results.length - a.results.length);
-}
+};
 
 // --- Search History Dropdown ---
 
@@ -303,9 +303,9 @@ export const SearchHistoryDropdown = ({ onSelect, onClear }: SearchHistoryDropdo
   if (history.length === 0) return null;
 
   return (
-    <div className="absolute top-full left-0 right-0 mt-1 bg-xp-popover border border-xp-border rounded-lg shadow-xl backdrop-blur-xl z-50 overflow-hidden">
-      <div className="flex items-center justify-between px-3 py-2 border-b border-xp-border">
-        <span className="text-xs font-medium text-xp-text-muted flex items-center gap-1.5">
+    <div className="bg-xp-popover border-xp-border absolute left-0 right-0 top-full z-50 mt-1 overflow-hidden rounded-lg border shadow-xl backdrop-blur-xl">
+      <div className="border-xp-border flex items-center justify-between border-b px-3 py-2">
+        <span className="text-xp-text-muted flex items-center gap-1.5 text-xs font-medium">
           <Clock size={12} />
           Recent Searches
         </span>
@@ -315,19 +315,19 @@ export const SearchHistoryDropdown = ({ onSelect, onClear }: SearchHistoryDropdo
             e.stopPropagation();
             onClear();
           }}
-          className="text-xs text-xp-text-muted hover:text-xp-red transition-colors"
+          className="text-xp-text-muted hover:text-xp-red text-xs transition-colors"
         >
           Clear
         </button>
       </div>
-      {history.map((item, index) => (
+      {history.map((item) => (
         <button
-          key={`${item}-${index}`}
+          key={item}
           onMouseDown={(e) => {
             e.preventDefault();
             onSelect(item);
           }}
-          className="w-full px-3 py-2 text-left text-sm hover:bg-xp-surface-light transition-colors flex items-center gap-2 border-b border-xp-border last:border-b-0"
+          className="hover:bg-xp-surface-light border-xp-border flex w-full items-center gap-2 border-b px-3 py-2 text-left text-sm transition-colors last:border-b-0"
         >
           <Clock size={12} className="text-xp-text-muted flex-shrink-0" />
           <span className="truncate">{item}</span>
@@ -335,7 +335,7 @@ export const SearchHistoryDropdown = ({ onSelect, onClear }: SearchHistoryDropdo
       ))}
     </div>
   );
-}
+};
 
 // --- Search Filter Panel ---
 
@@ -388,15 +388,15 @@ const SearchFilterPanel = ({ filters, onChange, onClose }: SearchFilterPanelProp
 
   return (
     <div
-      className="bg-xp-popover border border-xp-border rounded-lg shadow-xl backdrop-blur-xl overflow-hidden"
+      className="bg-xp-popover border-xp-border overflow-hidden rounded-lg border shadow-xl backdrop-blur-xl"
       onMouseDown={(e) => e.preventDefault()}
     >
-      <div className="flex items-center justify-between px-3 py-2 border-b border-xp-border">
-        <span className="text-xs font-medium flex items-center gap-1.5">
+      <div className="border-xp-border flex items-center justify-between border-b px-3 py-2">
+        <span className="flex items-center gap-1.5 text-xs font-medium">
           <Filter size={12} className="text-xp-blue" />
           Search Filters
           {activeCount > 0 && (
-            <span className="bg-xp-blue bg-opacity-20 text-xp-blue text-xs px-1.5 py-0.5 rounded-full font-semibold">
+            <span className="bg-xp-blue text-xp-blue rounded-full bg-opacity-20 px-1.5 py-0.5 text-xs font-semibold">
               {activeCount}
             </span>
           )}
@@ -405,21 +405,21 @@ const SearchFilterPanel = ({ filters, onChange, onClose }: SearchFilterPanelProp
           {activeCount > 0 && (
             <button
               onClick={clearAll}
-              className="text-xs text-xp-text-muted hover:text-xp-red transition-colors"
+              className="text-xp-text-muted hover:text-xp-red text-xs transition-colors"
             >
               Clear all
             </button>
           )}
           <button
             onClick={onClose}
-            className="p-0.5 hover:bg-xp-surface-light rounded transition-colors text-xp-text-muted hover:text-xp-text"
+            className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text rounded p-0.5 transition-colors"
           >
             <X size={14} />
           </button>
         </div>
       </div>
 
-      <div className="max-h-80 overflow-y-auto p-2 space-y-1">
+      <div className="max-h-80 space-y-1 overflow-y-auto p-2">
         {/* File Type Section */}
         <FilterSection
           title="File Type"
@@ -434,10 +434,10 @@ const SearchFilterPanel = ({ filters, onChange, onClose }: SearchFilterPanelProp
                 <button
                   key={opt.value}
                   onClick={() => toggleFileType(opt.value)}
-                  className={`px-2 py-1.5 rounded text-xs transition-colors text-center ${
+                  className={`rounded px-2 py-1.5 text-center text-xs transition-colors ${
                     active
-                      ? 'bg-xp-blue bg-opacity-20 text-xp-blue border border-xp-blue border-opacity-40'
-                      : 'bg-xp-surface hover:bg-xp-surface-light border border-xp-border'
+                      ? 'bg-xp-blue text-xp-blue border-xp-blue border border-opacity-40 bg-opacity-20'
+                      : 'bg-xp-surface hover:bg-xp-surface-light border-xp-border border'
                   }`}
                 >
                   {opt.label}
@@ -459,10 +459,10 @@ const SearchFilterPanel = ({ filters, onChange, onClose }: SearchFilterPanelProp
               <button
                 key={opt.value}
                 onClick={() => setDateRange(opt.value)}
-                className={`px-2 py-1.5 rounded text-xs transition-colors text-center ${
+                className={`rounded px-2 py-1.5 text-center text-xs transition-colors ${
                   filters.dateRange === opt.value
-                    ? 'bg-xp-blue bg-opacity-20 text-xp-blue border border-xp-blue border-opacity-40'
-                    : 'bg-xp-surface hover:bg-xp-surface-light border border-xp-border'
+                    ? 'bg-xp-blue text-xp-blue border-xp-blue border border-opacity-40 bg-opacity-20'
+                    : 'bg-xp-surface hover:bg-xp-surface-light border-xp-border border'
                 }`}
               >
                 {opt.label}
@@ -470,20 +470,20 @@ const SearchFilterPanel = ({ filters, onChange, onClose }: SearchFilterPanelProp
             ))}
           </div>
           {filters.dateRange === 'custom' && (
-            <div className="flex items-center gap-2 mt-2">
+            <div className="mt-2 flex items-center gap-2">
               <input
                 type="date"
                 value={filters.customDateAfter || ''}
                 onChange={(e) => onChange({ ...filters, customDateAfter: e.target.value })}
-                className="flex-1 bg-xp-bg border border-xp-border rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-xp-blue"
+                className="bg-xp-bg border-xp-border focus:ring-xp-blue flex-1 rounded border px-2 py-1 text-xs focus:outline-none focus:ring-1"
                 placeholder="From"
               />
-              <span className="text-xs text-xp-text-muted">to</span>
+              <span className="text-xp-text-muted text-xs">to</span>
               <input
                 type="date"
                 value={filters.customDateBefore || ''}
                 onChange={(e) => onChange({ ...filters, customDateBefore: e.target.value })}
-                className="flex-1 bg-xp-bg border border-xp-border rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-xp-blue"
+                className="bg-xp-bg border-xp-border focus:ring-xp-blue flex-1 rounded border px-2 py-1 text-xs focus:outline-none focus:ring-1"
                 placeholder="To"
               />
             </div>
@@ -502,10 +502,10 @@ const SearchFilterPanel = ({ filters, onChange, onClose }: SearchFilterPanelProp
               <button
                 key={opt.value}
                 onClick={() => setSizeRange(opt.value)}
-                className={`px-2 py-1.5 rounded text-xs transition-colors text-center ${
+                className={`rounded px-2 py-1.5 text-center text-xs transition-colors ${
                   filters.sizeRange === opt.value
-                    ? 'bg-xp-blue bg-opacity-20 text-xp-blue border border-xp-blue border-opacity-40'
-                    : 'bg-xp-surface hover:bg-xp-surface-light border border-xp-border'
+                    ? 'bg-xp-blue text-xp-blue border-xp-blue border border-opacity-40 bg-opacity-20'
+                    : 'bg-xp-surface hover:bg-xp-surface-light border-xp-border border'
                 }`}
               >
                 {opt.label}
@@ -526,14 +526,14 @@ const SearchFilterPanel = ({ filters, onChange, onClose }: SearchFilterPanelProp
             value={filters.extensions}
             onChange={(e) => setExtensions(e.target.value)}
             placeholder="e.g. .ts, .tsx, .json"
-            className="w-full bg-xp-bg border border-xp-border rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-xp-blue placeholder-xp-text-muted"
+            className="bg-xp-bg border-xp-border focus:ring-xp-blue placeholder-xp-text-muted w-full rounded border px-2 py-1.5 text-xs focus:outline-none focus:ring-1"
           />
           {filters.extensions.trim() && (
-            <div className="flex flex-wrap gap-1 mt-1.5">
+            <div className="mt-1.5 flex flex-wrap gap-1">
               {parseExtensionFilter(filters.extensions).map((ext) => (
                 <span
                   key={ext}
-                  className="bg-xp-surface text-xs px-1.5 py-0.5 rounded border border-xp-border"
+                  className="bg-xp-surface border-xp-border rounded border px-1.5 py-0.5 text-xs"
                 >
                   .{ext}
                 </span>
@@ -544,7 +544,7 @@ const SearchFilterPanel = ({ filters, onChange, onClose }: SearchFilterPanelProp
       </div>
     </div>
   );
-}
+};
 
 // --- Collapsible filter section ---
 
@@ -558,16 +558,16 @@ interface FilterSectionProps {
 
 const FilterSection = ({ title, expanded, onToggle, badge, children }: FilterSectionProps) => {
   return (
-    <div className="rounded border border-xp-border overflow-hidden">
+    <div className="border-xp-border overflow-hidden rounded border">
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between px-2.5 py-1.5 text-xs font-medium hover:bg-xp-surface-light transition-colors"
+        className="hover:bg-xp-surface-light flex w-full items-center justify-between px-2.5 py-1.5 text-xs font-medium transition-colors"
       >
         <span className="flex items-center gap-1.5">
           {expanded ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
           {title}
           {badge && (
-            <span className="bg-xp-blue bg-opacity-20 text-xp-blue text-xs px-1 py-0 rounded-full">
+            <span className="bg-xp-blue text-xp-blue rounded-full bg-opacity-20 px-1 py-0 text-xs">
               {badge}
             </span>
           )}
@@ -576,7 +576,7 @@ const FilterSection = ({ title, expanded, onToggle, badge, children }: FilterSec
       {expanded && <div className="px-2.5 pb-2.5">{children}</div>}
     </div>
   );
-}
+};
 
 // --- Grouped Search Results ---
 
@@ -639,10 +639,12 @@ export const GroupedSearchResults = ({
         {highlighted.split('|||').map((part, i) => {
           const isHL = tokens.some((t) => part.toLowerCase() === t.toLowerCase());
           return isHL ? (
-            <mark key={i} className="bg-yellow-300 bg-opacity-30 px-0.5 rounded">
+            // eslint-disable-next-line react/no-array-index-key
+            <mark key={i} className="rounded bg-yellow-300 bg-opacity-30 px-0.5">
               {part}
             </mark>
           ) : (
+            // eslint-disable-next-line react/no-array-index-key
             <span key={i}>{part}</span>
           );
         })}
@@ -658,61 +660,61 @@ export const GroupedSearchResults = ({
           <div key={group.folder}>
             <button
               onClick={() => toggleFolder(group.folder)}
-              className="w-full flex items-center gap-1.5 px-3 py-1.5 bg-xp-bg border-b border-xp-border text-xs font-medium hover:bg-xp-surface-light transition-colors sticky top-0 z-10"
+              className="bg-xp-bg border-xp-border hover:bg-xp-surface-light sticky top-0 z-10 flex w-full items-center gap-1.5 border-b px-3 py-1.5 text-xs font-medium transition-colors"
               onMouseDown={(e) => e.preventDefault()}
             >
               {isCollapsed ? <ChevronRight size={12} /> : <ChevronDown size={12} />}
               <FolderOpen size={12} className="text-xp-blue" />
-              <span className="truncate text-xp-text-muted" title={group.folder}>
+              <span className="text-xp-text-muted truncate" title={group.folder}>
                 {group.folder}
               </span>
-              <span className="ml-auto flex-shrink-0 bg-xp-surface text-xp-text-muted px-1.5 py-0 rounded-full text-xs">
+              <span className="bg-xp-surface text-xp-text-muted ml-auto flex-shrink-0 rounded-full px-1.5 py-0 text-xs">
                 {group.results.length}
               </span>
             </button>
             {!isCollapsed &&
-              group.results.map((result, ri) => {
+              group.results.map((result) => {
                 flatIndex++;
                 const currentFlatIndex = flatIndex;
                 const badge = getRelevanceBadge(result.relevance_type);
                 return (
                   <button
-                    key={`${result.path}-${ri}`}
+                    key={result.path}
                     onClick={() => onSelect(result)}
-                    className={`w-full p-3 pl-6 text-left hover:bg-xp-surface-light transition-colors border-b border-xp-border last:border-b-0 ${
+                    className={`hover:bg-xp-surface-light border-xp-border w-full border-b p-3 pl-6 text-left transition-colors last:border-b-0 ${
                       currentFlatIndex === selectedIndex ? 'bg-xp-surface-light' : ''
                     }`}
                   >
                     <div className="flex items-start space-x-3">
                       <div className="flex-shrink-0 text-lg">{getFileIcon(result.filename)}</div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between mb-0.5">
-                          <h4 className="text-sm font-medium truncate">
+                      <div className="min-w-0 flex-1">
+                        <div className="mb-0.5 flex items-center justify-between">
+                          <h4 className="truncate text-sm font-medium">
                             {highlightMatch(result.filename, result.matches)}
                           </h4>
-                          <div className="flex items-center space-x-1 ml-2 flex-shrink-0">
+                          <div className="ml-2 flex flex-shrink-0 items-center space-x-1">
                             <span
-                              className={`text-xs ${badge.color} bg-opacity-20 text-white px-1.5 py-0.5 rounded`}
+                              className={`text-xs ${badge.color} rounded bg-opacity-20 px-1.5 py-0.5 text-white`}
                             >
                               {badge.label}
                             </span>
-                            <span className="text-xs bg-xp-blue bg-opacity-20 text-xp-blue px-1.5 py-0.5 rounded">
+                            <span className="bg-xp-blue text-xp-blue rounded bg-opacity-20 px-1.5 py-0.5 text-xs">
                               {result.score.toFixed(1)}
                             </span>
                           </div>
                         </div>
-                        <div className="text-xs text-xp-text-muted truncate">{result.filename}</div>
+                        <div className="text-xp-text-muted truncate text-xs">{result.filename}</div>
                         {result.snippet && (
-                          <div className="text-xs text-xp-text-secondary mt-0.5 line-clamp-2 italic opacity-80">
+                          <div className="text-xp-text-secondary mt-0.5 line-clamp-2 text-xs italic opacity-80">
                             &ldquo;{result.snippet}&rdquo;
                           </div>
                         )}
                         {result.matches.length > 0 && (
-                          <div className="space-y-0.5 mt-1">
-                            {result.matches.slice(0, 2).map((match, mi) => (
-                              <div key={mi} className="text-xs">
+                          <div className="mt-1 space-y-0.5">
+                            {result.matches.slice(0, 2).map((match) => (
+                              <div key={match.token} className="text-xs">
                                 <span className="text-xp-text-muted">Match: </span>
-                                <span className="bg-yellow-300 bg-opacity-20 px-1 rounded">
+                                <span className="rounded bg-yellow-300 bg-opacity-20 px-1">
                                   {match.token}
                                 </span>
                                 {match.context && (
@@ -721,7 +723,7 @@ export const GroupedSearchResults = ({
                               </div>
                             ))}
                             {result.matches.length > 2 && (
-                              <div className="text-xs text-xp-text-muted">
+                              <div className="text-xp-text-muted text-xs">
                                 +{result.matches.length - 2} more
                               </div>
                             )}
@@ -729,7 +731,7 @@ export const GroupedSearchResults = ({
                         )}
                         <button
                           onClick={(e) => onFindSimilar(e, result.path)}
-                          className="mt-1 text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
+                          className="mt-1 text-xs text-indigo-400 transition-colors hover:text-indigo-300"
                           title="Find semantically similar files"
                         >
                           Find Similar
@@ -746,7 +748,7 @@ export const GroupedSearchResults = ({
         );
       })}
 
-      <div className="p-3 bg-xp-bg border-t border-xp-border text-xs text-xp-text-muted text-center">
+      <div className="bg-xp-bg border-xp-border text-xp-text-muted border-t p-3 text-center text-xs">
         Found {results.length} results in {groups.length} folder{groups.length !== 1 ? 's' : ''}
         {results.length >= maxResults && ` (showing first ${maxResults})`}
         {searchProvider !== 'local' && ` via ${searchProvider}`}
@@ -757,6 +759,6 @@ export const GroupedSearchResults = ({
       </div>
     </div>
   );
-}
+};
 
 export default SearchFilterPanel;

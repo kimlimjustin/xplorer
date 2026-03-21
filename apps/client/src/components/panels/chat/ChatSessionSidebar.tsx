@@ -15,7 +15,7 @@ interface ChatSessionSidebarProps {
   onClose: () => void;
 }
 
-const formatSessionDate = (iso: string) : string => {
+const formatSessionDate = (iso: string): string => {
   try {
     const d = new Date(iso);
     const now = new Date();
@@ -28,7 +28,7 @@ const formatSessionDate = (iso: string) : string => {
   } catch {
     return '';
   }
-}
+};
 
 const ChatSessionSidebar = ({
   sessions,
@@ -42,7 +42,7 @@ const ChatSessionSidebar = ({
     <div
       style={{ flex: '1 1 0%', minHeight: 0, minWidth: 0, overflowY: 'auto', overflowX: 'hidden' }}
     >
-      <div className="px-3 py-2 border-b border-xp-border flex items-center justify-between">
+      <div className="border-xp-border flex items-center justify-between border-b px-3 py-2">
         <span className="text-xs font-medium">Chat History ({sessions.length})</span>
         {onClearHistory && sessions.length > 0 && (
           <button
@@ -50,7 +50,7 @@ const ChatSessionSidebar = ({
               onClearHistory();
               onClose();
             }}
-            className="text-[10px] text-xp-red hover:underline"
+            className="text-xp-red text-[10px] hover:underline"
           >
             Clear all
           </button>
@@ -58,24 +58,24 @@ const ChatSessionSidebar = ({
       </div>
       <div className="space-y-0.5">
         {sessions.length === 0 ? (
-          <div className="px-3 py-6 text-center text-xs text-xp-text-muted">No saved chats</div>
+          <div className="text-xp-text-muted px-3 py-6 text-center text-xs">No saved chats</div>
         ) : (
           [...sessions]
             .sort((a, b) => b.updated_at.localeCompare(a.updated_at))
             .map((session) => (
               <div
                 key={session.id}
-                className={`group flex items-center gap-2 px-3 py-2 text-xs cursor-pointer hover:bg-xp-bg-hover transition-colors ${
-                  currentSessionId === session.id ? 'bg-xp-blue/10 border-l-2 border-xp-blue' : ''
+                className={`hover:bg-xp-bg-hover group flex cursor-pointer items-center gap-2 px-3 py-2 text-xs transition-colors ${
+                  currentSessionId === session.id ? 'bg-xp-blue/10 border-xp-blue border-l-2' : ''
                 }`}
                 onClick={() => {
                   onLoadSession?.(session.id);
                   onClose();
                 }}
               >
-                <div className="flex-1 min-w-0">
-                  <div className="font-medium truncate">{session.title}</div>
-                  <div className="text-xp-text-muted text-[10px] flex items-center gap-2">
+                <div className="min-w-0 flex-1">
+                  <div className="truncate font-medium">{session.title}</div>
+                  <div className="text-xp-text-muted flex items-center gap-2 text-[10px]">
                     <span>{session.message_count} messages</span>
                     <span>{formatSessionDate(session.updated_at)}</span>
                   </div>
@@ -86,10 +86,10 @@ const ChatSessionSidebar = ({
                       e.stopPropagation();
                       onDeleteSession(session.id);
                     }}
-                    className="opacity-0 group-hover:opacity-100 p-1 text-xp-text-muted hover:text-xp-red transition-all"
+                    className="text-xp-text-muted hover:text-xp-red p-1 opacity-0 transition-all group-hover:opacity-100"
                     title="Delete session"
                   >
-                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
                       <path
                         fillRule="evenodd"
                         d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
@@ -104,7 +104,7 @@ const ChatSessionSidebar = ({
       </div>
     </div>
   );
-}
+};
 
 export type { ChatSessionSummaryItem };
 

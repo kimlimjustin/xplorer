@@ -58,7 +58,7 @@ const EDITABLE_NAMES = new Set([
   'procfile',
 ]);
 
-export const getFileExtension = (name: string) : string => {
+export const getFileExtension = (name: string): string => {
   const lower = name.toLowerCase();
   // Handle dotfiles like .gitignore, .env
   if (lower.startsWith('.') && !lower.includes('.', 1)) {
@@ -66,11 +66,11 @@ export const getFileExtension = (name: string) : string => {
   }
   const parts = lower.split('.');
   return parts.length > 1 ? parts[parts.length - 1] : '';
-}
+};
 
-export const isEditableFile = (file: { name: string; is_dir: boolean }) : boolean => {
+export const isEditableFile = (file: { name: string; is_dir: boolean }): boolean => {
   if (file.is_dir) return false;
   const ext = getFileExtension(file.name);
   if (EDITABLE_NAMES.has(file.name.toLowerCase())) return true;
   return EDITABLE_EXTENSIONS.has(ext);
-}
+};

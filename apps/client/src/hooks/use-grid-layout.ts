@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect, RefObject } from 'react';
 
-const getMinItemWidth = (viewMode: string) : number => {
+const getMinItemWidth = (viewMode: string): number => {
   switch (viewMode) {
     case 'large':
       return 120;
@@ -15,9 +15,9 @@ const getMinItemWidth = (viewMode: string) : number => {
     default:
       return 100;
   }
-}
+};
 
-const getGapSize = (viewMode: string) : number => {
+const getGapSize = (viewMode: string): number => {
   switch (viewMode) {
     case 'large':
       return 24;
@@ -34,18 +34,18 @@ const getGapSize = (viewMode: string) : number => {
     default:
       return 16;
   }
-}
+};
 
-const computeColumns = (containerWidth: number, viewMode: string) : number => {
+const computeColumns = (containerWidth: number, viewMode: string): number => {
   if (viewMode === 'list') return 1;
   const minWidth = getMinItemWidth(viewMode);
   const gap = getGapSize(viewMode);
   if (containerWidth <= 0) return 1;
   const cols = Math.floor((containerWidth + gap) / (minWidth + gap));
   return Math.max(1, cols);
-}
+};
 
-const getFallbackColumns = (viewMode: string) : number => {
+const getFallbackColumns = (viewMode: string): number => {
   switch (viewMode) {
     case 'large':
       return 6;
@@ -62,7 +62,7 @@ const getFallbackColumns = (viewMode: string) : number => {
     default:
       return 8;
   }
-}
+};
 
 export const useGridLayout = (viewMode: string, containerRef?: RefObject<HTMLElement | null>) => {
   const [measuredColumns, setMeasuredColumns] = useState<number | null>(null);
@@ -176,4 +176,4 @@ export const useGridLayout = (viewMode: string, containerRef?: RefObject<HTMLEle
     columns,
     gap,
   };
-}
+};

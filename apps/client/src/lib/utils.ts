@@ -45,7 +45,6 @@ import {
   Headphones,
   Volume2,
   Mic,
-  MusicIcon,
   BookOpenText,
   Search,
   SearchCheck,
@@ -193,89 +192,89 @@ export const getFileIcon = (fileEntry: FileEntry): React.ReactNode => {
 const ICON_REGISTRY: Record<string, LucideIcon> = {
   // File types
   Folder: FolderClosed,
-  FolderOpen: FolderOpen,
+  FolderOpen,
   File: FileIcon,
-  FileText: FileText,
-  FileCode: FileCode,
-  FileJson: FileJson,
-  FileSpreadsheet: FileSpreadsheet,
+  FileText,
+  FileCode,
+  FileJson,
+  FileSpreadsheet,
   Image: ImageIcon,
-  Film: Film,
-  Music: Music,
-  Headphones: Headphones,
-  Volume2: Volume2,
-  Mic: Mic,
-  BookOpen: BookOpen,
-  Presentation: Presentation,
-  Package: Package,
-  Disc: Disc,
-  Globe: Globe,
-  Archive: Archive,
-  Code: Code,
+  Film,
+  Music,
+  Headphones,
+  Volume2,
+  Mic,
+  BookOpen,
+  Presentation,
+  Package,
+  Disc,
+  Globe,
+  Archive,
+  Code,
 
   // Actions / tools
-  Search: Search,
-  SearchCheck: SearchCheck,
-  Pencil: Pencil,
-  PenLine: PenLine,
-  Trash2: Trash2,
-  ArrowRight: ArrowRight,
-  ClipboardList: ClipboardList,
-  ClipboardCopy: ClipboardCopy,
-  Play: Play,
-  Save: Save,
-  MessageCircle: MessageCircle,
-  MessageSquare: MessageSquare,
-  Monitor: Monitor,
-  Laptop: Laptop,
-  Zap: Zap,
-  Settings: Settings,
-  Terminal: Terminal,
-  Eye: Eye,
-  Cpu: Cpu,
-  Plug: Plug,
+  Search,
+  SearchCheck,
+  Pencil,
+  PenLine,
+  Trash2,
+  ArrowRight,
+  ClipboardList,
+  ClipboardCopy,
+  Play,
+  Save,
+  MessageCircle,
+  MessageSquare,
+  Monitor,
+  Laptop,
+  Zap,
+  Settings,
+  Terminal,
+  Eye,
+  Cpu,
+  Plug,
 
   // Categories / metadata
-  Star: Star,
-  Tag: Tag,
-  Tags: Tags,
-  Lock: Lock,
-  Link: Link,
-  Calendar: Calendar,
-  CalendarDays: CalendarDays,
-  Clock: Clock,
-  BarChart3: BarChart3,
-  Clapperboard: Clapperboard,
-  Wrench: Wrench,
-  SlidersHorizontal: SlidersHorizontal,
-  MailOpen: MailOpen,
-  ArchiveX: ArchiveX,
-  AlertTriangle: AlertTriangle,
-  Shield: Shield,
-  Fingerprint: Fingerprint,
-  Hash: Hash,
-  Target: Target,
-  Database: Database,
-  Box: Box,
-  Braces: Braces,
-  Cloud: Cloud,
-  Palette: Palette,
-  GitBranch: GitBranch,
+  Star,
+  Tag,
+  Tags,
+  Lock,
+  Link,
+  Calendar,
+  CalendarDays,
+  Clock,
+  BarChart3,
+  Clapperboard,
+  Wrench,
+  SlidersHorizontal,
+  MailOpen,
+  ArchiveX,
+  AlertTriangle,
+  Shield,
+  Fingerprint,
+  Hash,
+  Target,
+  Database,
+  Box,
+  Braces,
+  Cloud,
+  Palette,
+  GitBranch,
 
   // Layout
-  LayoutGrid: LayoutGrid,
-  Layout: Layout,
-  Grid3X3: Grid3X3,
-  Grid2X2: Grid2X2,
-  LayoutPanelTop: LayoutPanelTop,
-  List: List,
-  Table: Table,
-  FolderTree: FolderTree,
-  GalleryHorizontal: GalleryHorizontal,
-  Columns: Columns,
-  HardDrive: HardDrive,
-  ArrowDownAZ: ArrowDownAZ,
-  BookOpenText: BookOpenText,
+  LayoutGrid,
+  Layout,
+  Grid3X3,
+  Grid2X2,
+  LayoutPanelTop,
+  List,
+  Table,
+  FolderTree,
+  GalleryHorizontal,
+  Columns,
+  HardDrive,
+  ArrowDownAZ,
+  BookOpenText,
 };
 
 /**
@@ -292,7 +291,10 @@ const ICON_REGISTRY: Record<string, LucideIcon> = {
  */
 const normalizeIconName = (name: string): string => {
   if (name.includes('-')) {
-    return name.split('-').map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join('');
+    return name
+      .split('-')
+      .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+      .join('');
   }
   return name;
 };
@@ -340,7 +342,7 @@ export const formatFileSize = (bytes: number, isCalculating?: boolean): string =
   const k = 1024;
   const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
   const i = Math.min(Math.floor(Math.log(bytes) / Math.log(k)), sizes.length - 1);
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
 };
 
 // Format folder size with additional info
@@ -394,10 +396,8 @@ export const sortFiles = (
       case 'size': {
         const aExt = a as FileEntry & { folder_size?: { total_size: number } };
         const bExt = b as FileEntry & { folder_size?: { total_size: number } };
-        const aSize =
-          a.is_dir && aExt.folder_size ? aExt.folder_size.total_size : a.size;
-        const bSize =
-          b.is_dir && bExt.folder_size ? bExt.folder_size.total_size : b.size;
+        const aSize = a.is_dir && aExt.folder_size ? aExt.folder_size.total_size : a.size;
+        const bSize = b.is_dir && bExt.folder_size ? bExt.folder_size.total_size : b.size;
         comparison = aSize - bSize;
         break;
       }

@@ -8,11 +8,7 @@ interface FileAnnotationsDialogProps {
   filePath: string;
 }
 
-const FileAnnotationsDialog = ({
-  isOpen,
-  onClose,
-  filePath,
-}: FileAnnotationsDialogProps) => {
+const FileAnnotationsDialog = ({ isOpen, onClose, filePath }: FileAnnotationsDialogProps) => {
   const [annotations, setAnnotations] = useState<FileAnnotation[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -91,32 +87,33 @@ const FileAnnotationsDialog = ({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="bg-xp-surface border border-xp-border rounded-lg shadow-2xl w-full max-w-md mx-4 flex flex-col overflow-hidden max-h-[80vh]">
+      <div className="bg-xp-surface border-xp-border mx-4 flex max-h-[80vh] w-full max-w-md flex-col overflow-hidden rounded-lg border shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-xp-border flex-shrink-0">
+        <div className="border-xp-border flex flex-shrink-0 items-center justify-between border-b px-4 py-3">
           <div className="flex items-center space-x-2">
-            <MessageSquare className="w-4 h-4 text-xp-text-muted" />
+            <MessageSquare className="text-xp-text-muted h-4 w-4" />
             <div>
-              <h2 className="text-sm font-semibold text-xp-text">Annotations</h2>
-              <p className="text-xs text-xp-text-muted truncate max-w-xs" title={filePath}>
+              <h2 className="text-xp-text text-sm font-semibold">Annotations</h2>
+              <p className="text-xp-text-muted max-w-xs truncate text-xs" title={filePath}>
                 {fileName}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text transition-colors"
+            className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text rounded p-1 transition-colors"
           >
-            <X className="w-4 h-4" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+        <div className="flex-1 space-y-3 overflow-y-auto px-4 py-3">
+          {/* eslint-disable-next-line no-nested-ternary */}
           {loading ? (
-            <p className="text-sm text-xp-text-muted">Loading...</p>
+            <p className="text-xp-text-muted text-sm">Loading...</p>
           ) : annotations.length === 0 ? (
-            <p className="text-sm text-xp-text-muted italic">No annotations yet — add one below.</p>
+            <p className="text-xp-text-muted text-sm italic">No annotations yet — add one below.</p>
           ) : (
             <>
               {/* Active annotations */}
@@ -125,27 +122,27 @@ const FileAnnotationsDialog = ({
                   {activeAnnotations.map((a) => (
                     <div
                       key={a.id}
-                      className="flex items-start space-x-2 rounded px-2 py-2 hover:bg-xp-surface-light group transition-colors"
+                      className="hover:bg-xp-surface-light group flex items-start space-x-2 rounded px-2 py-2 transition-colors"
                     >
                       <button
                         onClick={() => handleToggleResolved(a.id)}
-                        className="mt-0.5 flex-shrink-0 text-xp-text-muted hover:text-green-400 transition-colors"
+                        className="text-xp-text-muted mt-0.5 flex-shrink-0 transition-colors hover:text-green-400"
                         title="Mark as resolved"
                       >
-                        <Circle className="w-4 h-4" />
+                        <Circle className="h-4 w-4" />
                       </button>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm text-xp-text">{a.text}</p>
-                        <p className="text-xs text-xp-text-muted mt-0.5">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xp-text text-sm">{a.text}</p>
+                        <p className="text-xp-text-muted mt-0.5 text-xs">
                           {a.author} &middot; {new Date(a.created_at).toLocaleString()}
                         </p>
                       </div>
                       <button
                         onClick={() => handleDelete(a.id)}
-                        className="flex-shrink-0 p-1 rounded opacity-0 group-hover:opacity-100 hover:bg-xp-surface-light text-xp-text-muted hover:text-red-400 transition-all"
+                        className="hover:bg-xp-surface-light text-xp-text-muted flex-shrink-0 rounded p-1 opacity-0 transition-all hover:text-red-400 group-hover:opacity-100"
                         title="Delete"
                       >
-                        <Trash2 className="w-3 h-3" />
+                        <Trash2 className="h-3 w-3" />
                       </button>
                     </div>
                   ))}
@@ -155,33 +152,33 @@ const FileAnnotationsDialog = ({
               {/* Resolved annotations */}
               {resolvedAnnotations.length > 0 && (
                 <div className="space-y-1">
-                  <p className="text-xs font-medium text-xp-text-muted uppercase tracking-wide pt-1">
+                  <p className="text-xp-text-muted pt-1 text-xs font-medium uppercase tracking-wide">
                     Resolved ({resolvedAnnotations.length})
                   </p>
                   {resolvedAnnotations.map((a) => (
                     <div
                       key={a.id}
-                      className="flex items-start space-x-2 rounded px-2 py-2 hover:bg-xp-surface-light group transition-colors opacity-60"
+                      className="hover:bg-xp-surface-light group flex items-start space-x-2 rounded px-2 py-2 opacity-60 transition-colors"
                     >
                       <button
                         onClick={() => handleToggleResolved(a.id)}
-                        className="mt-0.5 flex-shrink-0 text-green-400 hover:text-xp-text-muted transition-colors"
+                        className="hover:text-xp-text-muted mt-0.5 flex-shrink-0 text-green-400 transition-colors"
                         title="Unresolve"
                       >
-                        <CheckCircle className="w-4 h-4" />
+                        <CheckCircle className="h-4 w-4" />
                       </button>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm text-xp-text line-through">{a.text}</p>
-                        <p className="text-xs text-xp-text-muted mt-0.5">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xp-text text-sm line-through">{a.text}</p>
+                        <p className="text-xp-text-muted mt-0.5 text-xs">
                           {a.author} &middot; {new Date(a.created_at).toLocaleString()}
                         </p>
                       </div>
                       <button
                         onClick={() => handleDelete(a.id)}
-                        className="flex-shrink-0 p-1 rounded opacity-0 group-hover:opacity-100 hover:bg-xp-surface-light text-xp-text-muted hover:text-red-400 transition-all"
+                        className="hover:bg-xp-surface-light text-xp-text-muted flex-shrink-0 rounded p-1 opacity-0 transition-all hover:text-red-400 group-hover:opacity-100"
                         title="Delete"
                       >
-                        <Trash2 className="w-3 h-3" />
+                        <Trash2 className="h-3 w-3" />
                       </button>
                     </div>
                   ))}
@@ -192,14 +189,14 @@ const FileAnnotationsDialog = ({
 
           {/* Error */}
           {error && (
-            <p className="text-xs text-red-400 bg-red-400 bg-opacity-10 border border-red-400 border-opacity-30 rounded px-2 py-1">
+            <p className="rounded border border-red-400 border-opacity-30 bg-red-400 bg-opacity-10 px-2 py-1 text-xs text-red-400">
               {error}
             </p>
           )}
         </div>
 
         {/* Add annotation form */}
-        <div className="px-4 py-3 border-t border-xp-border flex-shrink-0">
+        <div className="border-xp-border flex-shrink-0 border-t px-4 py-3">
           <div className="flex items-center space-x-2">
             <input
               ref={inputRef}
@@ -217,17 +214,17 @@ const FileAnnotationsDialog = ({
               }}
               placeholder="Add an annotation..."
               maxLength={500}
-              className="flex-1 bg-xp-bg border border-xp-border rounded px-3 py-1.5 text-sm text-xp-text placeholder-xp-text-muted focus:outline-none focus:border-xp-blue transition-colors"
+              className="bg-xp-bg border-xp-border text-xp-text placeholder-xp-text-muted focus:border-xp-blue flex-1 rounded border px-3 py-1.5 text-sm transition-colors focus:outline-none"
             />
             <button
               onClick={handleAdd}
               disabled={saving || !newText.trim()}
-              className="flex items-center space-x-1 px-2.5 py-1.5 bg-xp-blue text-white rounded text-sm font-medium hover:bg-opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="bg-xp-blue flex items-center space-x-1 rounded px-2.5 py-1.5 text-sm font-medium text-white transition-colors hover:bg-opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
             >
               {saving ? (
-                <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
               ) : (
-                <Plus className="w-3.5 h-3.5" />
+                <Plus className="h-3.5 w-3.5" />
               )}
               <span>Add</span>
             </button>
@@ -236,6 +233,6 @@ const FileAnnotationsDialog = ({
       </div>
     </div>
   );
-}
+};
 
 export default FileAnnotationsDialog;

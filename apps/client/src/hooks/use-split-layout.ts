@@ -1,21 +1,22 @@
 import { useReducer, useCallback, useEffect, useRef } from 'react';
-import type {
-  SplitLayoutState,
-  SplitLayoutAction,
-  SplitNode,
-  LeafNode,
-  SplitNodeBranch,
-  EditorGroup,
-  TabItem,
+import {
+  generateGroupId,
+  createDefaultLayout,
+  type SplitLayoutState,
+  type SplitLayoutAction,
+  type SplitNode,
+  type LeafNode,
+  type SplitNodeBranch,
+  type EditorGroup,
+  type TabItem,
 } from '@/types/split-view';
-import { generateGroupId, createDefaultLayout } from '@/types/split-view';
 
 // ── Persistence ──────────────────────────────────────────────────────────────
 
 const STORAGE_KEY = 'xplorer:split-layout';
 const MAX_PATH_HISTORY = 200;
 
-const loadLayout = () : SplitLayoutState => {
+const loadLayout = (): SplitLayoutState => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
@@ -51,7 +52,7 @@ const loadLayout = () : SplitLayoutState => {
     console.warn('Failed to parse stored split layout:', e);
   }
   return createDefaultLayout();
-}
+};
 
 const saveLayout = (state: SplitLayoutState) => {
   try {
@@ -59,7 +60,7 @@ const saveLayout = (state: SplitLayoutState) => {
   } catch (e) {
     console.warn('Failed to save split layout (quota exceeded?):', e);
   }
-}
+};
 
 // ── Tree Helpers ─────────────────────────────────────────────────────────────
 
@@ -79,10 +80,10 @@ const findLeafParent = (
     if (result) return result;
   }
   return null;
-}
+};
 
 /** Update sizes at a specific path in the tree */
-const updateSizesAtPath = (node: SplitNode, path: number[], sizes: number[]) : SplitNode => {
+const updateSizesAtPath = (node: SplitNode, path: number[], sizes: number[]): SplitNode => {
   if (path.length === 0 && node.type === 'split') {
     return { ...node, sizes };
   }
@@ -93,25 +94,28 @@ const updateSizesAtPath = (node: SplitNode, path: number[], sizes: number[]) : S
     return { ...node, children: newChildren };
   }
   return node;
-}
+};
 
 /** Collect all leaf group IDs in tree order */
-const collectGroupIds = (node: SplitNode) : string[] => {
+const collectGroupIds = (node: SplitNode): string[] => {
   if (node.type === 'leaf') return [node.groupId];
   return node.children.flatMap(collectGroupIds);
-}
+};
 
 /** Clean up single-child split nodes (collapse unnecessary wrappers) */
-const simplifyTree = (node: SplitNode) : SplitNode => {
+const simplifyTree = (node: SplitNode): SplitNode => {
   if (node.type === 'leaf') return node;
   const simplified = node.children.map(simplifyTree);
   if (simplified.length === 1) return simplified[0];
   return { ...node, children: simplified };
-}
+};
 
 // ── Reducer ──────────────────────────────────────────────────────────────────
 
-const splitLayoutReducer = (state: SplitLayoutState, action: SplitLayoutAction): SplitLayoutState => {
+const splitLayoutReducer = (
+  state: SplitLayoutState,
+  action: SplitLayoutAction,
+): SplitLayoutState => {
   switch (action.type) {
     case 'SPLIT_GROUP': {
       const { groupId, direction } = action;
@@ -754,7 +758,7 @@ const replaceChild = (
   parent: SplitNodeBranch,
   childIndex: number,
   replacement: SplitNode,
-) : SplitNode => {
+): SplitNode => {
   if (root === parent) {
     const newChildren = [...(root as SplitNodeBranch).children];
     newChildren[childIndex] = replacement;
@@ -767,10 +771,14 @@ const replaceChild = (
     };
   }
   return root;
-}
+};
 
 /** Replace an entire node (by reference identity) with a replacement in the tree */
-const replaceNodeInTree = (root: SplitNode, target: SplitNode, replacement: SplitNode) : SplitNode => {
+const replaceNodeInTree = (
+  root: SplitNode,
+  target: SplitNode,
+  replacement: SplitNode,
+): SplitNode => {
   if (root === target) return replacement;
   if (root.type === 'split') {
     return {
@@ -779,7 +787,7 @@ const replaceNodeInTree = (root: SplitNode, target: SplitNode, replacement: Spli
     };
   }
   return root;
-}
+};
 
 // ── Hook ─────────────────────────────────────────────────────────────────────
 
@@ -918,6 +926,6 @@ export const useSplitLayout = () => {
     maximizePane,
     restorePane,
   };
-}
+};
 
 export type SplitLayoutHook = ReturnType<typeof useSplitLayout>;

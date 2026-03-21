@@ -19,12 +19,7 @@ interface SecureDeleteDialogProps {
   files: FileEntry[];
 }
 
-const SecureDeleteDialog = ({
-  isOpen,
-  onClose,
-  onComplete,
-  files,
-}: SecureDeleteDialogProps) => {
+const SecureDeleteDialog = ({ isOpen, onClose, onComplete, files }: SecureDeleteDialogProps) => {
   const { toast } = useToast();
   const [passes, setPasses] = useState(3);
   const [processing, setProcessing] = useState(false);
@@ -138,24 +133,24 @@ const SecureDeleteDialog = ({
     : 0;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div
-        className="bg-xp-surface rounded-lg shadow-2xl w-[520px] max-w-[90vw] overflow-hidden"
+        className="bg-xp-surface w-[520px] max-w-[90vw] overflow-hidden rounded-lg shadow-2xl"
         onKeyDown={handleKeyDown}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-xp-border">
+        <div className="border-xp-border flex items-center justify-between border-b p-6">
           <div className="flex items-center space-x-3">
             <ShieldAlert size={20} className="text-red-400" />
-            <h2 className="text-xl font-semibold text-xp-text">Secure Delete</h2>
+            <h2 className="text-xp-text text-xl font-semibold">Secure Delete</h2>
           </div>
           <button
             onClick={handleClose}
             disabled={processing}
-            className="p-2 hover:bg-xp-surface-light rounded-md transition-colors disabled:opacity-50"
+            className="hover:bg-xp-surface-light rounded-md p-2 transition-colors disabled:opacity-50"
             aria-label="Close secure delete dialog"
           >
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fillRule="evenodd"
                 d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
@@ -166,12 +161,12 @@ const SecureDeleteDialog = ({
         </div>
 
         {/* Content */}
-        <div className="p-6 space-y-5">
+        <div className="space-y-5 p-6">
           {/* Warning banner */}
-          <div className="flex items-start space-x-3 p-4 rounded-lg bg-red-500 bg-opacity-10 border border-red-500 border-opacity-30">
-            <AlertTriangle size={20} className="text-red-400 mt-0.5 shrink-0" />
+          <div className="flex items-start space-x-3 rounded-lg border border-red-500 border-opacity-30 bg-red-500 bg-opacity-10 p-4">
+            <AlertTriangle size={20} className="mt-0.5 shrink-0 text-red-400" />
             <div className="text-sm text-red-300">
-              <p className="font-semibold mb-1">This action is irreversible.</p>
+              <p className="mb-1 font-semibold">This action is irreversible.</p>
               <p>
                 Secure delete overwrites file data multiple times before deletion using the DoD
                 5220.22-M standard. The data cannot be recovered by any means after this operation
@@ -182,11 +177,11 @@ const SecureDeleteDialog = ({
 
           {/* File info */}
           <div className="bg-xp-bg rounded-lg p-4">
-            <div className="text-sm text-xp-text-muted mb-1">
+            <div className="text-xp-text-muted mb-1 text-sm">
               {fileCount === 1 ? 'File' : `Files (${fileCount})`}
             </div>
             <div
-              className="text-sm text-xp-text font-medium truncate"
+              className="text-xp-text truncate text-sm font-medium"
               title={files.map((f) => f.path).join('\n')}
             >
               {displayNames}
@@ -195,19 +190,19 @@ const SecureDeleteDialog = ({
 
           {/* Passes selector */}
           <div>
-            <label className="block text-sm font-medium text-xp-text mb-2">Overwrite Passes</label>
+            <label className="text-xp-text mb-2 block text-sm font-medium">Overwrite Passes</label>
             <div className="flex items-center space-x-4">
               <select
                 value={passes}
                 onChange={(e) => setPasses(Number(e.target.value))}
                 disabled={processing}
-                className="px-3 py-2 border border-xp-border rounded-md bg-xp-bg text-xp-text focus:ring-2 focus:ring-xp-blue focus:border-xp-blue"
+                className="border-xp-border bg-xp-bg text-xp-text focus:ring-xp-blue focus:border-xp-blue rounded-md border px-3 py-2 focus:ring-2"
               >
                 <option value={1}>1 pass (quick)</option>
                 <option value={3}>3 passes (DoD 5220.22-M)</option>
                 <option value={7}>7 passes (maximum)</option>
               </select>
-              <span className="text-xs text-xp-text-muted">
+              <span className="text-xp-text-muted text-xs">
                 {passes === 1 && 'Single random overwrite'}
                 {passes === 3 && 'Zeros, ones, then random data'}
                 {passes === 7 && 'Extended multi-pass overwrite'}
@@ -216,8 +211,8 @@ const SecureDeleteDialog = ({
           </div>
 
           {/* Overwrite method description */}
-          <div className="text-xs text-xp-text-muted bg-xp-bg rounded-lg p-3 space-y-1">
-            <div className="font-medium text-xp-text mb-1">Overwrite pattern per cycle:</div>
+          <div className="text-xp-text-muted bg-xp-bg space-y-1 rounded-lg p-3 text-xs">
+            <div className="text-xp-text mb-1 font-medium">Overwrite pattern per cycle:</div>
             <div>Pass 1: Fill with zeros (0x00)</div>
             <div>Pass 2: Fill with ones (0xFF)</div>
             <div>Pass 3: Fill with random data</div>
@@ -226,15 +221,15 @@ const SecureDeleteDialog = ({
           </div>
 
           {/* Confirmation checkbox */}
-          <label className="flex items-start space-x-3 cursor-pointer select-none">
+          <label className="flex cursor-pointer select-none items-start space-x-3">
             <input
               type="checkbox"
               checked={confirmed}
               onChange={(e) => setConfirmed(e.target.checked)}
               disabled={processing}
-              className="mt-1 rounded border-xp-border text-red-500 focus:ring-red-500"
+              className="border-xp-border mt-1 rounded text-red-500 focus:ring-red-500"
             />
-            <span className="text-sm text-xp-text">
+            <span className="text-xp-text text-sm">
               I understand that this will permanently destroy the selected{' '}
               {fileCount === 1 ? 'file' : `${fileCount} files`} and the data cannot be recovered.
             </span>
@@ -242,26 +237,26 @@ const SecureDeleteDialog = ({
 
           {/* Error message */}
           {error && (
-            <div className="flex items-start space-x-2 p-3 rounded-md bg-red-500 bg-opacity-10 border border-red-500 border-opacity-30">
-              <AlertTriangle size={16} className="text-red-400 mt-0.5 shrink-0" />
-              <span className="text-sm text-red-400 whitespace-pre-wrap">{error}</span>
+            <div className="flex items-start space-x-2 rounded-md border border-red-500 border-opacity-30 bg-red-500 bg-opacity-10 p-3">
+              <AlertTriangle size={16} className="mt-0.5 shrink-0 text-red-400" />
+              <span className="whitespace-pre-wrap text-sm text-red-400">{error}</span>
             </div>
           )}
 
           {/* Progress indicator */}
           {processing && progress && (
             <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm text-xp-text-muted">
-                <span className="truncate max-w-[260px]" title={progress.file}>
+              <div className="text-xp-text-muted flex items-center justify-between text-sm">
+                <span className="max-w-[260px] truncate" title={progress.file}>
                   {progress.file}
                 </span>
                 <span>
                   Pass {progress.pass}/{progress.total_passes} ({progress.pass_label})
                 </span>
               </div>
-              <div className="w-full h-2 bg-xp-bg rounded-full overflow-hidden">
+              <div className="bg-xp-bg h-2 w-full overflow-hidden rounded-full">
                 <div
-                  className="h-full bg-red-500 rounded-full transition-all duration-300"
+                  className="h-full rounded-full bg-red-500 transition-all duration-300"
                   style={{ width: `${progressPercentage}%` }}
                 />
               </div>
@@ -270,18 +265,18 @@ const SecureDeleteDialog = ({
 
           {processing && !progress && (
             <div className="flex items-center justify-center py-2">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-red-400"></div>
-              <span className="ml-3 text-sm text-xp-text-muted">Preparing secure deletion...</span>
+              <div className="h-5 w-5 animate-spin rounded-full border-b-2 border-red-400" />
+              <span className="text-xp-text-muted ml-3 text-sm">Preparing secure deletion...</span>
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end space-x-3 p-6 border-t border-xp-border bg-xp-bg">
+        <div className="border-xp-border bg-xp-bg flex justify-end space-x-3 border-t p-6">
           <button
             onClick={handleClose}
             disabled={processing}
-            className="px-4 py-2 text-xp-text hover:bg-xp-surface-light rounded transition-colors disabled:opacity-50"
+            className="text-xp-text hover:bg-xp-surface-light rounded px-4 py-2 transition-colors disabled:opacity-50"
             aria-label="Cancel"
           >
             Cancel
@@ -289,12 +284,12 @@ const SecureDeleteDialog = ({
           <button
             onClick={handleSubmit}
             disabled={processing || !confirmed}
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+            className="flex items-center space-x-2 rounded bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
             aria-label="Securely delete files"
           >
             {processing ? (
               <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-white" />
                 <span>Wiping...</span>
               </>
             ) : (

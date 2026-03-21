@@ -76,17 +76,18 @@ const splitParentAndPrefix = (inputPath: string): { parentDir: string; prefix: s
     parentDir: inputPath.slice(0, lastSepIdx + 1),
     prefix: inputPath.slice(lastSepIdx + 1),
   };
-}
+};
 
-const parseBreadcrumbSegments = (path: string) : PathSegment[] => {
+const parseBreadcrumbSegments = (path: string): PathSegment[] => {
   if (!path) return [];
   if (
     path.startsWith('xplorer://') ||
     path.startsWith('gdrive://') ||
     path.startsWith('comparison://') ||
     path.startsWith('collection://')
-  )
+  ) {
     return [];
+  }
 
   const segments: PathSegment[] = [];
   const isWin = /^[A-Za-z]:/.test(path);
@@ -112,22 +113,18 @@ const parseBreadcrumbSegments = (path: string) : PathSegment[] => {
     segments.push({ name: '/', fullPath: '/' });
     let accumulated = '/';
     for (let i = 0; i < parts.length; i++) {
-      accumulated = accumulated + parts[i] + '/';
+      accumulated = `${accumulated + parts[i]}/`;
       segments.push({ name: parts[i], fullPath: accumulated });
     }
   }
   return segments;
-}
+};
 
 // ── Validation state type ──────────────────────────────────────────────────────
 
 type PathValidation = 'idle' | 'valid' | 'invalid' | 'checking';
 
-const NavigationBar = ({
-  currentPath,
-  navigateToPath,
-  refetch: _refetch,
-}: NavigationBarProps) => {
+const NavigationBar = ({ currentPath, navigateToPath, refetch: _refetch }: NavigationBarProps) => {
   const { t } = useTranslation();
   const [isEditingPath, setIsEditingPath] = useState(false);
   const [editPathValue, setEditPathValue] = useState(currentPath);
@@ -400,7 +397,9 @@ const NavigationBar = ({
 
   const segments = parseBreadcrumbSegments(currentPath);
   const specialConfig = SPECIAL_PATHS_CONFIG[currentPath];
-  const special = specialConfig ? { label: t(specialConfig.labelKey), icon: specialConfig.icon } : null;
+  const special = specialConfig
+    ? { label: t(specialConfig.labelKey), icon: specialConfig.icon }
+    : null;
 
   // Resolve collection name for collection:// paths
   const collectionLabel = useMemo((): React.ReactNode | null => {
@@ -410,16 +409,16 @@ const NavigationBar = ({
     if (!col) return t('navigation.collection');
     return (
       <>
-        <span className="inline-flex items-center mr-1">{renderIcon(col.icon, 14)}</span>
+        <span className="mr-1 inline-flex items-center">{renderIcon(col.icon, 14)}</span>
         {col.name}
       </>
     );
-  }, [currentPath]);
+  }, [currentPath, t]);
 
   return (
-    <div className="bg-xp-surface border-b border-xp-border px-3 py-1">
+    <div className="bg-xp-surface border-xp-border border-b px-3 py-1">
       <div
-        className="bg-xp-bg border border-xp-border rounded px-2 py-0.5 flex items-center min-w-0 relative"
+        className="bg-xp-bg border-xp-border relative flex min-w-0 items-center rounded border px-2 py-0.5"
         style={
           isEditingPath && validationBorderColor
             ? {
@@ -432,201 +431,222 @@ const NavigationBar = ({
           if (!isEditingPath) setIsEditingPath(true);
         }}
       >
-        {isEditingPath ? (
-          <div className="w-full relative">
-            <div className="flex items-center gap-1.5 w-full">
-              {/* Validation indicator dot */}
-              {validation !== 'idle' && (
-                <span
-                  style={{
-                    width: 6,
-                    height: 6,
-                    borderRadius: '50%',
-                    flexShrink: 0,
-                    backgroundColor: validationBorderColor,
-                    transition: 'background-color 0.2s ease',
-                  }}
-                  title={
-                    validation === 'valid'
-                      ? t('navigation.pathExists')
-                      : validation === 'invalid'
-                        ? t('navigation.pathNotFound')
-                        : t('navigation.checking')
-                  }
-                />
-              )}
-              <input
-                ref={pathInputRef}
-                type="text"
-                value={editPathValue}
-                onChange={(e) => handleInputChange(e.target.value)}
-                onKeyDown={handleKeyDown}
-                onBlur={handleBlur}
-                className="w-full bg-transparent text-sm outline-none"
-                placeholder={t('navigation.pathPlaceholder')}
-                aria-label={t('navigation.filePath')}
-                aria-expanded={showDropdown}
-                aria-autocomplete="list"
-                aria-controls={showDropdown ? 'nav-autocomplete-list' : undefined}
-                aria-activedescendant={
-                  selectedIndex >= 0 ? `nav-suggestion-${selectedIndex}` : undefined
-                }
-                autoComplete="off"
-                spellCheck={false}
-              />
-            </div>
-
-            {/* ── Autocomplete Dropdown ── */}
-            {showDropdown && suggestions.length > 0 && (
-              <div
-                ref={dropdownRef}
-                id="nav-autocomplete-list"
-                role="listbox"
-                style={{
-                  position: 'absolute',
-                  top: '100%',
-                  left: -8,
-                  right: -8,
-                  marginTop: 4,
-                  maxHeight: MAX_VISIBLE_SUGGESTIONS * 30,
-                  overflowY: 'auto',
-                  background: 'var(--xp-surface, rgba(30, 30, 46, 0.95))',
-                  backdropFilter: 'blur(12px)',
-                  WebkitBackdropFilter: 'blur(12px)',
-                  border: '1px solid var(--xp-border, rgba(255,255,255,0.1))',
-                  borderRadius: 6,
-                  zIndex: 9999,
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
-                  padding: '4px 0',
-                }}
-              >
-                {suggestions.map((suggestion, idx) => (
-                  <div
-                    key={suggestion.fullPath}
-                    data-suggestion
-                    id={`nav-suggestion-${idx}`}
-                    role="option"
-                    aria-selected={idx === selectedIndex}
-                    tabIndex={-1}
-                    onMouseDown={(e) => {
-                      e.preventDefault(); // Prevent input blur
-                      selectSuggestion(suggestion);
-                    }}
-                    onMouseEnter={() => setSelectedIndex(idx)}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 8,
-                      padding: '4px 10px',
-                      cursor: 'pointer',
-                      fontSize: 13,
-                      color:
-                        idx === selectedIndex
-                          ? 'var(--xp-text, #e0e0e0)'
-                          : 'var(--xp-text-muted, #a0a0a0)',
-                      backgroundColor:
-                        idx === selectedIndex
-                          ? 'var(--xp-accent, rgba(100, 108, 255, 0.25))'
-                          : 'transparent',
-                      borderRadius: 4,
-                      margin: '0 4px',
-                      transition: 'background-color 0.1s ease, color 0.1s ease',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    }}
-                  >
-                    <Folder
-                      size={14}
-                      style={{
-                        flexShrink: 0,
-                        color: 'var(--xp-accent, #646cff)',
-                        opacity: 0.8,
-                      }}
-                    />
-                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {suggestion.name}
-                    </span>
+        {(() => {
+          if (isEditingPath) {
+            return (
+              <div className="relative w-full">
+                <div className="flex w-full items-center gap-1.5">
+                  {/* Validation indicator dot */}
+                  {validation !== 'idle' && (
                     <span
                       style={{
-                        marginLeft: 'auto',
-                        fontSize: 11,
-                        color: 'var(--xp-text-muted, #666)',
-                        opacity: 0.6,
+                        width: 6,
+                        height: 6,
+                        borderRadius: '50%',
                         flexShrink: 0,
+                        backgroundColor: validationBorderColor,
+                        transition: 'background-color 0.2s ease',
                       }}
-                    >
-                      {suggestion.fullPath}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        ) : special ? (
-          <div className="flex items-center gap-2 h-full cursor-text px-1">
-            <span className="text-xp-text-muted">{special.icon}</span>
-            <span className="text-sm font-medium">{special.label}</span>
-          </div>
-        ) : collectionLabel ? (
-          <div className="flex items-center gap-2 h-full cursor-text px-1">
-            <span className="text-sm font-medium">{collectionLabel}</span>
-          </div>
-        ) : (
-          <nav
-            aria-label="Breadcrumb"
-            className="flex items-center gap-0.5 overflow-x-auto h-full scrollbar-none cursor-text"
-          >
-            {segments.map((seg, i) => (
-              <React.Fragment key={i}>
-                {i > 0 && (
-                  <ChevronRight size={12} className="flex-shrink-0 text-xp-text-muted opacity-60" />
-                )}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigateToPath?.(seg.fullPath);
-                  }}
-                  className={`px-1.5 py-0.5 rounded text-sm truncate max-w-[160px] flex-shrink-0 hover:bg-xp-surface-light transition-colors ${
-                    i === segments.length - 1
-                      ? 'font-semibold text-xp-text'
-                      : 'text-xp-text-muted hover:text-xp-text'
-                  }`}
-                  title={seg.fullPath}
-                  aria-current={i === segments.length - 1 ? 'location' : undefined}
-                  aria-label={t('navigation.navigateTo', { name: seg.name })}
-                >
-                  {i === 0 && /^[A-Za-z]:$/.test(seg.name) ? (
-                    <span className="flex items-center gap-1">
-                      <HardDrive size={12} className="flex-shrink-0" />
-                      {seg.name}
-                    </span>
-                  ) : i === 0 && seg.name === '/' ? (
-                    <span className="flex items-center gap-1">
-                      <HardDrive size={12} className="flex-shrink-0" />/
-                    </span>
-                  ) : (
-                    seg.name
+                      title={(() => {
+                        if (validation === 'valid') return t('navigation.pathExists');
+                        if (validation === 'invalid') return t('navigation.pathNotFound');
+                        return t('navigation.checking');
+                      })()}
+                    />
                   )}
-                </button>
-              </React.Fragment>
-            ))}
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsEditingPath(true);
-              }}
-              className="ml-1 p-0.5 rounded hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text transition-colors flex-shrink-0"
-              title={t('navigation.editPath')}
-              aria-label={t('navigation.editPath')}
+                  <input
+                    ref={pathInputRef}
+                    type="text"
+                    value={editPathValue}
+                    onChange={(e) => handleInputChange(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    onBlur={handleBlur}
+                    className="w-full bg-transparent text-sm outline-none"
+                    placeholder={t('navigation.pathPlaceholder')}
+                    aria-label={t('navigation.filePath')}
+                    aria-expanded={showDropdown}
+                    aria-autocomplete="list"
+                    aria-controls={showDropdown ? 'nav-autocomplete-list' : undefined}
+                    aria-activedescendant={
+                      selectedIndex >= 0 ? `nav-suggestion-${selectedIndex}` : undefined
+                    }
+                    autoComplete="off"
+                    spellCheck={false}
+                  />
+                </div>
+
+                {/* ── Autocomplete Dropdown ── */}
+                {showDropdown && suggestions.length > 0 && (
+                  <div
+                    ref={dropdownRef}
+                    id="nav-autocomplete-list"
+                    role="listbox"
+                    style={{
+                      position: 'absolute',
+                      top: '100%',
+                      left: -8,
+                      right: -8,
+                      marginTop: 4,
+                      maxHeight: MAX_VISIBLE_SUGGESTIONS * 30,
+                      overflowY: 'auto',
+                      background: 'var(--xp-surface, rgba(30, 30, 46, 0.95))',
+                      backdropFilter: 'blur(12px)',
+                      WebkitBackdropFilter: 'blur(12px)',
+                      border: '1px solid var(--xp-border, rgba(255,255,255,0.1))',
+                      borderRadius: 6,
+                      zIndex: 9999,
+                      boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+                      padding: '4px 0',
+                    }}
+                  >
+                    {suggestions.map((suggestion, idx) => (
+                      <div
+                        key={suggestion.fullPath}
+                        data-suggestion
+                        id={`nav-suggestion-${idx}`}
+                        role="option"
+                        aria-selected={idx === selectedIndex}
+                        tabIndex={-1}
+                        onMouseDown={(e) => {
+                          e.preventDefault(); // Prevent input blur
+                          selectSuggestion(suggestion);
+                        }}
+                        onMouseEnter={() => setSelectedIndex(idx)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 8,
+                          padding: '4px 10px',
+                          cursor: 'pointer',
+                          fontSize: 13,
+                          color:
+                            idx === selectedIndex
+                              ? 'var(--xp-text, #e0e0e0)'
+                              : 'var(--xp-text-muted, #a0a0a0)',
+                          backgroundColor:
+                            idx === selectedIndex
+                              ? 'var(--xp-accent, rgba(100, 108, 255, 0.25))'
+                              : 'transparent',
+                          borderRadius: 4,
+                          margin: '0 4px',
+                          transition: 'background-color 0.1s ease, color 0.1s ease',
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        <Folder
+                          size={14}
+                          style={{
+                            flexShrink: 0,
+                            color: 'var(--xp-accent, #646cff)',
+                            opacity: 0.8,
+                          }}
+                        />
+                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {suggestion.name}
+                        </span>
+                        <span
+                          style={{
+                            marginLeft: 'auto',
+                            fontSize: 11,
+                            color: 'var(--xp-text-muted, #666)',
+                            opacity: 0.6,
+                            flexShrink: 0,
+                          }}
+                        >
+                          {suggestion.fullPath}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          }
+          if (special) {
+            return (
+              <div className="flex h-full cursor-text items-center gap-2 px-1">
+                <span className="text-xp-text-muted">{special.icon}</span>
+                <span className="text-sm font-medium">{special.label}</span>
+              </div>
+            );
+          }
+          if (collectionLabel) {
+            return (
+              <div className="flex h-full cursor-text items-center gap-2 px-1">
+                <span className="text-sm font-medium">{collectionLabel}</span>
+              </div>
+            );
+          }
+          return (
+            <nav
+              aria-label="Breadcrumb"
+              className="scrollbar-none flex h-full cursor-text items-center gap-0.5 overflow-x-auto"
             >
-              <Pencil size={12} />
-            </button>
-          </nav>
-        )}
+              {segments.map((seg, i) => {
+                const segContent = (() => {
+                  if (i === 0 && /^[A-Za-z]:$/.test(seg.name)) {
+                    return (
+                      <span className="flex items-center gap-1">
+                        <HardDrive size={12} className="flex-shrink-0" />
+                        {seg.name}
+                      </span>
+                    );
+                  }
+                  if (i === 0 && seg.name === '/') {
+                    return (
+                      <span className="flex items-center gap-1">
+                        <HardDrive size={12} className="flex-shrink-0" />/
+                      </span>
+                    );
+                  }
+                  return seg.name;
+                })();
+                return (
+                  <React.Fragment key={seg.fullPath}>
+                    {i > 0 && (
+                      <ChevronRight
+                        size={12}
+                        className="text-xp-text-muted flex-shrink-0 opacity-60"
+                      />
+                    )}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigateToPath?.(seg.fullPath);
+                      }}
+                      className={`hover:bg-xp-surface-light max-w-[160px] flex-shrink-0 truncate rounded px-1.5 py-0.5 text-sm transition-colors ${
+                        i === segments.length - 1
+                          ? 'text-xp-text font-semibold'
+                          : 'text-xp-text-muted hover:text-xp-text'
+                      }`}
+                      title={seg.fullPath}
+                      aria-current={i === segments.length - 1 ? 'location' : undefined}
+                      aria-label={t('navigation.navigateTo', { name: seg.name })}
+                    >
+                      {segContent}
+                    </button>
+                  </React.Fragment>
+                );
+              })}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsEditingPath(true);
+                }}
+                className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text ml-1 flex-shrink-0 rounded p-0.5 transition-colors"
+                title={t('navigation.editPath')}
+                aria-label={t('navigation.editPath')}
+              >
+                <Pencil size={12} />
+              </button>
+            </nav>
+          );
+        })()}
       </div>
     </div>
   );
-}
+};
 
 export default NavigationBar;

@@ -38,7 +38,7 @@ const LS_KEY_MODE = 'xplorer:pane-sync-mode';
  * Manages the enabled/disabled state and sync mode for dual-pane sync
  * navigation. Persists both values to localStorage.
  */
-export const usePaneSync = () : PaneSyncState => {
+export const usePaneSync = (): PaneSyncState => {
   const [enabled, setEnabled] = useState<boolean>(() => {
     try {
       return localStorage.getItem(LS_KEY_ENABLED) === 'true';
@@ -51,7 +51,9 @@ export const usePaneSync = () : PaneSyncState => {
     try {
       const saved = localStorage.getItem(LS_KEY_MODE);
       if (saved === 'mirror' || saved === 'relative') return saved;
-    } catch { /* ignore localStorage errors */ }
+    } catch {
+      /* ignore localStorage errors */
+    }
     return 'mirror';
   });
 
@@ -60,7 +62,9 @@ export const usePaneSync = () : PaneSyncState => {
       const next = !prev;
       try {
         localStorage.setItem(LS_KEY_ENABLED, String(next));
-      } catch { /* ignore localStorage errors */ }
+      } catch {
+        /* ignore localStorage errors */
+      }
       return next;
     });
   }, []);
@@ -69,11 +73,13 @@ export const usePaneSync = () : PaneSyncState => {
     setSyncModeRaw(mode);
     try {
       localStorage.setItem(LS_KEY_MODE, mode);
-    } catch { /* ignore localStorage errors */ }
+    } catch {
+      /* ignore localStorage errors */
+    }
   }, []);
 
   return { enabled, toggle, syncMode, setSyncMode };
-}
+};
 
 // ── Event helpers ─────────────────────────────────────────────────────────────
 
@@ -81,9 +87,9 @@ export const usePaneSync = () : PaneSyncState => {
  * Emit a sync-navigate event.  The `_syncGuard` ref should be checked by the
  * caller so that a pane receiving the event does not re-emit.
  */
-export const emitPaneSyncNavigate = (detail: PaneSyncNavigateDetail) : void => {
+export const emitPaneSyncNavigate = (detail: PaneSyncNavigateDetail): void => {
   window.dispatchEvent(new CustomEvent<PaneSyncNavigateDetail>('pane-sync-navigate', { detail }));
-}
+};
 
 /**
  * Given a `relative` mode sync event, compute the target path for the
@@ -101,19 +107,19 @@ export const computeRelativeSyncPath = (
   sourcePreviousPath: string,
   sourceNewPath: string,
   receiverCurrentPath: string,
-) : string | null => {
+): string | null => {
   const normSrc = normalizePath(sourcePreviousPath);
   const normNew = normalizePath(sourceNewPath);
   const normRecv = normalizePath(receiverCurrentPath);
 
   // Check if the new path is a child of the previous path (navigating down)
-  if (normNew.startsWith(normSrc + '/')) {
+  if (normNew.startsWith(`${normSrc}/`)) {
     const relativePart = normNew.slice(normSrc.length); // includes leading /
     return denormalizePath(normRecv + relativePart, receiverCurrentPath);
   }
 
   // Check if the new path is a parent of the previous path (navigating up)
-  if (normSrc.startsWith(normNew + '/')) {
+  if (normSrc.startsWith(`${normNew}/`)) {
     const droppedPart = normSrc.slice(normNew.length); // e.g. /reports
     const droppedSegments = droppedPart.split('/').filter(Boolean).length;
 
@@ -132,7 +138,7 @@ export const computeRelativeSyncPath = (
     }
     // Preserve Unix root
     if (receiverCurrentPath.startsWith('/') && !result.startsWith('/')) {
-      result = '/' + result;
+      result = `/${result}`;
     }
 
     return result;
@@ -140,19 +146,19 @@ export const computeRelativeSyncPath = (
 
   // Paths share no parent-child relationship — can't compute relative
   return null;
-}
+};
 
 // ── Internal utilities ────────────────────────────────────────────────────────
 
 /** Normalize a path to forward slashes and lowercase for comparison. */
-const normalizePath = (p: string) : string => {
+const normalizePath = (p: string): string => {
   return p.replace(/\\/g, '/').replace(/\/+$/, '').toLowerCase();
-}
+};
 
 /** Convert a normalized path back using the separator style of the reference path. */
-const denormalizePath = (normalized: string, reference: string) : string => {
+const denormalizePath = (normalized: string, reference: string): string => {
   if (reference.includes('\\')) {
     return normalized.replace(/\//g, '\\');
   }
   return normalized;
-}
+};

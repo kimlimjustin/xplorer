@@ -55,10 +55,10 @@ const ICON_MAP: Record<string, LucideIcon> = {
   'git-commit': GitCommit,
 };
 
-export const resolveIcon = (icon: unknown) : React.ReactNode => {
+export const resolveIcon = (icon: unknown): React.ReactNode => {
   if (React.isValidElement(icon)) return icon;
   if (typeof icon === 'string' && ICON_MAP[icon.toLowerCase()]) {
     return React.createElement(ICON_MAP[icon.toLowerCase()], { size: 18 });
   }
   return React.createElement(Puzzle, { size: 18 });
-}
+};

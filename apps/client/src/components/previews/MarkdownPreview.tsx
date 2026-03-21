@@ -89,32 +89,32 @@ const MarkdownPreview = ({ file, onError, onLoad }: PreviewProps) => {
     html = html.replace(/\n/g, '<br>');
 
     // Wrap in paragraph
-    html = '<p class="mb-2">' + html + '</p>';
+    html = `<p class="mb-2">${html}</p>`;
 
     return html;
   };
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
-      <div className="flex justify-between items-center px-3 py-2 flex-shrink-0">
-        <h4 className="text-xs font-medium text-xp-text-muted">Markdown Preview</h4>
+    <div className="flex h-full flex-col overflow-hidden">
+      <div className="flex flex-shrink-0 items-center justify-between px-3 py-2">
+        <h4 className="text-xp-text-muted text-xs font-medium">Markdown Preview</h4>
         <div className="flex space-x-1">
           <button
             onClick={() => setViewMode('rendered')}
-            className={`px-2 py-1 text-xs rounded ${
+            className={`rounded px-2 py-1 text-xs ${
               viewMode === 'rendered'
                 ? 'bg-xp-blue text-white'
-                : 'bg-xp-bg border border-xp-border hover:bg-xp-surface-light'
+                : 'bg-xp-bg border-xp-border hover:bg-xp-surface-light border'
             }`}
           >
             Rendered
           </button>
           <button
             onClick={() => setViewMode('raw')}
-            className={`px-2 py-1 text-xs rounded ${
+            className={`rounded px-2 py-1 text-xs ${
               viewMode === 'raw'
                 ? 'bg-xp-blue text-white'
-                : 'bg-xp-bg border border-xp-border hover:bg-xp-surface-light'
+                : 'bg-xp-bg border-xp-border hover:bg-xp-surface-light border'
             }`}
           >
             Raw
@@ -122,19 +122,19 @@ const MarkdownPreview = ({ file, onError, onLoad }: PreviewProps) => {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto min-h-0 px-3 pb-3">
+      <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-3">
         {loading && (
-          <div className="bg-xp-surface border border-xp-border rounded p-4 text-center text-xp-text-muted">
+          <div className="bg-xp-surface border-xp-border text-xp-text-muted rounded border p-4 text-center">
             <div className="animate-pulse">
-              <div className="w-full h-48 bg-xp-bg rounded mb-2"></div>
+              <div className="bg-xp-bg mb-2 h-48 w-full rounded" />
               <p className="text-xs">Loading markdown...</p>
             </div>
           </div>
         )}
 
         {error ? (
-          <div className="bg-xp-surface border border-xp-border rounded p-4 text-center text-xp-text-muted">
-            <svg className="w-8 h-8 mx-auto mb-2" fill="currentColor" viewBox="0 0 20 20">
+          <div className="bg-xp-surface border-xp-border text-xp-text-muted rounded border p-4 text-center">
+            <svg className="mx-auto mb-2 h-8 w-8" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fillRule="evenodd"
                 d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
@@ -142,25 +142,26 @@ const MarkdownPreview = ({ file, onError, onLoad }: PreviewProps) => {
               />
             </svg>
             <p className="text-xs">Cannot preview markdown</p>
-            <p className="text-xs mt-1 opacity-70">{error}</p>
+            <p className="mt-1 text-xs opacity-70">{error}</p>
           </div>
-        ) : content ? (
-          <div className="bg-xp-surface border border-xp-border rounded p-3">
+        ) : null}
+        {!error && content && (
+          <div className="bg-xp-surface border-xp-border rounded border p-3">
             {viewMode === 'rendered' ? (
               <div
-                className="text-xs text-xp-text prose-sm"
+                className="text-xp-text prose-sm text-xs"
                 dangerouslySetInnerHTML={{ __html: htmlContent }}
               />
             ) : (
-              <pre className="text-xs font-mono whitespace-pre-wrap text-xp-text break-words">
+              <pre className="text-xp-text whitespace-pre-wrap break-words font-mono text-xs">
                 {content}
               </pre>
             )}
           </div>
-        ) : null}
+        )}
       </div>
     </div>
   );
-}
+};
 
 export default MarkdownPreview;

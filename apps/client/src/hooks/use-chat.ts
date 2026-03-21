@@ -32,17 +32,17 @@ const formatError = (err: unknown): string => {
 };
 
 /** Generate a short unique ID */
-const generateId = () : string => {
+const generateId = (): string => {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-}
+};
 
 /** Derive a session title from the first user message */
-const deriveTitle = (messages: ChatMessage[]) : string => {
+const deriveTitle = (messages: ChatMessage[]): string => {
   const first = messages.find((m) => m.role === 'user');
   if (!first) return 'New Chat';
   const text = first.content.trim();
-  return text.length > 60 ? text.slice(0, 57) + '...' : text;
-}
+  return text.length > 60 ? `${text.slice(0, 57)}...` : text;
+};
 
 // ── Hook ─────────────────────────────────────────────────────────────────────
 
@@ -278,4 +278,4 @@ export const useChat = (deps: UseChatDeps) => {
     deleteSession,
     clearAllHistory,
   };
-}
+};

@@ -13,9 +13,10 @@ import { useTranslation } from 'react-i18next';
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
 /** Detect encoding from raw bytes (BOM sniffing + heuristic). */
-const detectEncoding = (bytes: Uint8Array) : string => {
-  if (bytes.length >= 3 && bytes[0] === 0xef && bytes[1] === 0xbb && bytes[2] === 0xbf)
+const detectEncoding = (bytes: Uint8Array): string => {
+  if (bytes.length >= 3 && bytes[0] === 0xef && bytes[1] === 0xbb && bytes[2] === 0xbf) {
     return 'UTF-8 BOM';
+  }
   // Check UTF-32 before UTF-16 since UTF-32 LE starts with the same FF FE prefix
   if (
     bytes.length >= 4 &&
@@ -23,16 +24,18 @@ const detectEncoding = (bytes: Uint8Array) : string => {
     bytes[1] === 0xfe &&
     bytes[2] === 0x00 &&
     bytes[3] === 0x00
-  )
+  ) {
     return 'UTF-32 LE';
+  }
   if (
     bytes.length >= 4 &&
     bytes[0] === 0x00 &&
     bytes[1] === 0x00 &&
     bytes[2] === 0xfe &&
     bytes[3] === 0xff
-  )
+  ) {
     return 'UTF-32 BE';
+  }
   if (bytes.length >= 2 && bytes[0] === 0xff && bytes[1] === 0xfe) return 'UTF-16 LE';
   if (bytes.length >= 2 && bytes[0] === 0xfe && bytes[1] === 0xff) return 'UTF-16 BE';
 
@@ -48,10 +51,10 @@ const detectEncoding = (bytes: Uint8Array) : string => {
   if (hasNullByte) return 'Binary';
   if (!hasHighByte) return 'ASCII';
   return 'UTF-8';
-}
+};
 
 /** Detect line endings from text content. */
-const detectLineEndings = (text: string) : 'CRLF' | 'LF' | 'CR' | null => {
+const detectLineEndings = (text: string): 'CRLF' | 'LF' | 'CR' | null => {
   const crlfCount = (text.match(/\r\n/g) || []).length;
   const crCount = (text.replace(/\r\n/g, '').match(/\r/g) || []).length;
   const lfCount = (text.replace(/\r\n/g, '').match(/\n/g) || []).length;
@@ -60,12 +63,12 @@ const detectLineEndings = (text: string) : 'CRLF' | 'LF' | 'CR' | null => {
   if (crlfCount >= lfCount && crlfCount >= crCount) return 'CRLF';
   if (crCount > lfCount) return 'CR';
   return 'LF';
-}
+};
 
 /** Check if a FileEntry is a text/editable file. */
-const isTextFile = (file: FileEntry) : boolean => {
+const isTextFile = (file: FileEntry): boolean => {
   return !file.is_dir && isEditableFile(file);
-}
+};
 
 // ── Badge sub-component ──────────────────────────────────────────────────────
 
@@ -95,7 +98,7 @@ const Badge = ({
       {children}
     </span>
   );
-}
+};
 
 // ── Separator ────────────────────────────────────────────────────────────────
 
@@ -108,7 +111,7 @@ const separatorStyle: React.CSSProperties = {
 
 const Separator = () => {
   return <span style={separatorStyle} aria-hidden="true" />;
-}
+};
 
 // ── Cursor position event type ───────────────────────────────────────────────
 
@@ -140,13 +143,7 @@ interface GitInfo {
 
 // ── Component ────────────────────────────────────────────────────────────────
 
-const StatusBar = ({
-  files,
-  selectedFiles,
-  currentPath,
-  activeTab,
-  vimState,
-}: StatusBarProps) => {
+const StatusBar = ({ files, selectedFiles, currentPath, activeTab, vimState }: StatusBarProps) => {
   const { t } = useTranslation();
   const [gitInfo, setGitInfo] = useState<GitInfo | null>(null);
   const [freeSpace, setFreeSpace] = useState<string | null>(null);
@@ -328,9 +325,13 @@ const StatusBar = ({
   const gitTooltip = React.useMemo(() => {
     if (!gitInfo) return '';
     const parts = [t('statusBar.branch', { name: gitInfo.branch })];
-    if (gitInfo.modifiedCount > 0) parts.push(t('statusBar.modified', { count: gitInfo.modifiedCount }));
+    if (gitInfo.modifiedCount > 0) {
+      parts.push(t('statusBar.modified', { count: gitInfo.modifiedCount }));
+    }
     if (gitInfo.stagedCount > 0) parts.push(t('statusBar.staged', { count: gitInfo.stagedCount }));
-    if (gitInfo.untrackedCount > 0) parts.push(t('statusBar.untracked', { count: gitInfo.untrackedCount }));
+    if (gitInfo.untrackedCount > 0) {
+      parts.push(t('statusBar.untracked', { count: gitInfo.untrackedCount }));
+    }
     return parts.join(' | ');
   }, [gitInfo, t]);
 
@@ -342,22 +343,20 @@ const StatusBar = ({
   const handleGitClick = useCallback(() => {
     if (extensionHost.isExtensionActive('git')) {
       // Open the git extension's bottom tab panel
-      window.dispatchEvent(
-        new CustomEvent('xplorer-set-bottom-tab', { detail: { tab: 'git' } }),
-      );
+      window.dispatchEvent(new CustomEvent('xplorer-set-bottom-tab', { detail: { tab: 'git' } }));
     } else {
       toast({
         title: t('statusBar.gitNotInstalled'),
         description: t('statusBar.gitNotInstalledDesc'),
       });
     }
-  }, []);
+  }, [t]);
 
   return (
     <div
       role="status"
       aria-live="polite"
-      className="bg-xp-surface border-t border-xp-border px-3 text-xs text-xp-text-secondary flex items-center justify-between select-none flex-shrink-0"
+      className="bg-xp-surface border-xp-border text-xp-text-secondary flex flex-shrink-0 select-none items-center justify-between border-t px-3 text-xs"
       style={{ minHeight: '24px', height: '24px' }}
     >
       {/* Left section */}
@@ -384,7 +383,7 @@ const StatusBar = ({
       </div>
 
       {/* Center section */}
-      <div className="flex-1 text-center truncate px-4 opacity-80" title={currentPath}>
+      <div className="flex-1 truncate px-4 text-center opacity-80" title={currentPath}>
         {displayPath}
       </div>
 
@@ -406,7 +405,10 @@ const StatusBar = ({
         {/* Encoding */}
         {encoding && encoding !== 'Binary' && (
           <>
-            <Badge title={t('statusBar.encoding', { encoding })} ariaLabel={t('statusBar.encoding', { encoding })}>
+            <Badge
+              title={t('statusBar.encoding', { encoding })}
+              ariaLabel={t('statusBar.encoding', { encoding })}
+            >
               {encoding}
             </Badge>
             <Separator />
@@ -416,7 +418,10 @@ const StatusBar = ({
         {/* Line endings */}
         {lineEnding && (
           <>
-            <Badge title={t('statusBar.lineEndings', { type: lineEnding })} ariaLabel={t('statusBar.lineEndings', { type: lineEnding })}>
+            <Badge
+              title={t('statusBar.lineEndings', { type: lineEnding })}
+              ariaLabel={t('statusBar.lineEndings', { type: lineEnding })}
+            >
               {lineEnding}
             </Badge>
             <Separator />
@@ -429,12 +434,19 @@ const StatusBar = ({
             <button
               type="button"
               className="flex items-center gap-1 rounded px-1.5 py-0.5 transition-colors hover:bg-white/10 active:bg-white/15"
-              style={{ cursor: 'pointer', border: 'none', background: 'transparent', color: 'inherit', fontSize: 'inherit', lineHeight: 'inherit' }}
+              style={{
+                cursor: 'pointer',
+                border: 'none',
+                background: 'transparent',
+                color: 'inherit',
+                fontSize: 'inherit',
+                lineHeight: 'inherit',
+              }}
               title={gitTooltip || t('statusBar.openGitPanel')}
               aria-label={gitTooltip || t('statusBar.openGitPanel')}
               onClick={handleGitClick}
             >
-              <GitBranch className="w-3.5 h-3.5" aria-hidden="true" />
+              <GitBranch className="h-3.5 w-3.5" aria-hidden="true" />
               {gitInfo.branch}
               {totalGitChanges > 0 && (
                 <span
@@ -460,13 +472,16 @@ const StatusBar = ({
 
         {/* Free disk space */}
         {freeSpace && (
-          <span title={t('statusBar.freeSpace')} aria-label={t('statusBar.freeSpaceLabel', { size: freeSpace })}>
+          <span
+            title={t('statusBar.freeSpace')}
+            aria-label={t('statusBar.freeSpaceLabel', { size: freeSpace })}
+          >
             {t('statusBar.freeSpaceShort', { size: freeSpace })}
           </span>
         )}
       </div>
     </div>
   );
-}
+};
 
 export default StatusBar;

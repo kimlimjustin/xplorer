@@ -68,19 +68,22 @@ const ExtensionsPanel = ({ themes, theme, applyTheme }: ExtensionsPanelProps) =>
     }
   }, []);
 
-  const handleUninstall = useCallback(async (id: string) => {
-    try {
-      await extensionHost.unloadExtension(id);
-      await TauriAPI.uninstallExtensionById(id);
-    } catch (err) {
-      console.error('Failed to uninstall extension:', err);
-      toast({
-        variant: 'destructive',
-        title: 'Uninstall Failed',
-        description: `Failed to uninstall extension: ${err}`,
-      });
-    }
-  }, [toast]);
+  const handleUninstall = useCallback(
+    async (id: string) => {
+      try {
+        await extensionHost.unloadExtension(id);
+        await TauriAPI.uninstallExtensionById(id);
+      } catch (err) {
+        console.error('Failed to uninstall extension:', err);
+        toast({
+          variant: 'destructive',
+          title: 'Uninstall Failed',
+          description: `Failed to uninstall extension: ${err}`,
+        });
+      }
+    },
+    [toast],
+  );
 
   const handleInstallFromFolder = useCallback(async () => {
     try {
@@ -121,27 +124,27 @@ const ExtensionsPanel = ({ themes, theme, applyTheme }: ExtensionsPanelProps) =>
   }, [pendingInstall, toast]);
 
   return (
-    <div className="p-4 h-full overflow-y-auto">
-      <h3 className="text-xs font-semibold text-xp-text uppercase tracking-wider mb-4">
+    <div className="h-full overflow-y-auto p-4">
+      <h3 className="text-xp-text mb-4 text-xs font-semibold uppercase tracking-wider">
         Extensions
       </h3>
 
       {/* Claude Agent Extension — hardcoded system feature */}
       <div className="mb-4">
-        <div className="p-3 bg-xp-bg rounded-lg border border-xp-border">
-          <div className="flex items-center justify-between mb-2">
-            <h4 className="text-sm font-medium flex items-center">
+        <div className="bg-xp-bg border-xp-border rounded-lg border p-3">
+          <div className="mb-2 flex items-center justify-between">
+            <h4 className="flex items-center text-sm font-medium">
               <Bot size={16} className="mr-2 inline-block" />
               Claude Agent
             </h4>
             <div className="flex items-center space-x-2">
               <div
-                className={`w-2 h-2 rounded-full ${agentEnabled ? 'bg-xp-purple' : 'bg-xp-border'}`}
-              ></div>
+                className={`h-2 w-2 rounded-full ${agentEnabled ? 'bg-xp-purple' : 'bg-xp-border'}`}
+              />
               <button
                 onClick={toggleAgent}
                 aria-label={agentEnabled ? 'Disable Claude Agent' : 'Enable Claude Agent'}
-                className={`px-2 py-1 text-xs rounded transition-colors ${
+                className={`rounded px-2 py-1 text-xs transition-colors ${
                   agentEnabled
                     ? 'bg-xp-purple bg-opacity-80 text-white hover:bg-opacity-100'
                     : 'bg-xp-border text-xp-text hover:bg-xp-surface-light'
@@ -151,15 +154,15 @@ const ExtensionsPanel = ({ themes, theme, applyTheme }: ExtensionsPanelProps) =>
               </button>
             </div>
           </div>
-          <p className="text-xs text-xp-text-muted">Autonomous AI agent powered by Claude.</p>
+          <p className="text-xp-text-muted text-xs">Autonomous AI agent powered by Claude.</p>
         </div>
       </div>
 
       {/* Theme Manager */}
-      <div className="mb-4 p-3 bg-xp-bg rounded-lg border border-xp-border">
-        <div className="flex items-center justify-between mb-2">
+      <div className="bg-xp-bg border-xp-border mb-4 rounded-lg border p-3">
+        <div className="mb-2 flex items-center justify-between">
           <h4 className="text-sm font-medium">Theme Manager</h4>
-          <div className="w-2 h-2 bg-xp-green rounded-full"></div>
+          <div className="bg-xp-green h-2 w-2 rounded-full" />
         </div>
         <div className="grid grid-cols-2 gap-2">
           {Object.entries(themes).map(([key, themeData]) => (
@@ -168,17 +171,17 @@ const ExtensionsPanel = ({ themes, theme, applyTheme }: ExtensionsPanelProps) =>
               onClick={() => applyTheme(key)}
               aria-label={`Apply ${themeData.name} theme`}
               aria-pressed={theme === key}
-              className={`text-left p-2 rounded text-xs transition-colors ${
+              className={`rounded p-2 text-left text-xs transition-colors ${
                 theme === key
-                  ? 'bg-xp-blue bg-opacity-20 text-xp-blue border border-xp-blue'
+                  ? 'bg-xp-blue text-xp-blue border-xp-blue border bg-opacity-20'
                   : 'hover:bg-xp-surface-light'
               }`}
             >
               <div className="flex items-center space-x-2">
                 <div
-                  className="w-3 h-3 rounded-full"
+                  className="h-3 w-3 rounded-full"
                   style={{ backgroundColor: themeData.primary }}
-                ></div>
+                />
                 <span>{themeData.name}</span>
               </div>
             </button>
@@ -189,27 +192,27 @@ const ExtensionsPanel = ({ themes, theme, applyTheme }: ExtensionsPanelProps) =>
       {/* Installed Extensions */}
       {allExtensions.length > 0 && (
         <div className="mb-4">
-          <h4 className="text-xs font-semibold text-xp-text uppercase tracking-wider mb-2">
+          <h4 className="text-xp-text mb-2 text-xs font-semibold uppercase tracking-wider">
             Installed Extensions ({allExtensions.length})
           </h4>
           <div className="space-y-1.5">
             {allExtensions.map((ext) => (
               <div
                 key={ext.id}
-                className="flex items-center justify-between p-2 rounded hover:bg-xp-surface-light transition-colors group"
+                className="hover:bg-xp-surface-light group flex items-center justify-between rounded p-2 transition-colors"
               >
-                <div className="flex items-center space-x-2 min-w-0">
-                  <span className="text-base flex-shrink-0">{resolveIcon(ext.manifest.icon)}</span>
+                <div className="flex min-w-0 items-center space-x-2">
+                  <span className="flex-shrink-0 text-base">{resolveIcon(ext.manifest.icon)}</span>
                   <div className="min-w-0">
-                    <p className="text-sm text-xp-text truncate">
+                    <p className="text-xp-text truncate text-sm">
                       {ext.manifest.display_name || ext.manifest.name}
                     </p>
-                    <p className="text-xs text-xp-text-muted">
+                    <p className="text-xp-text-muted text-xs">
                       v{ext.manifest.version} by {ext.manifest.author}
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-1 flex-shrink-0">
+                <div className="flex flex-shrink-0 items-center space-x-1">
                   <button
                     onClick={() => handleToggleExtension(ext.id)}
                     aria-label={
@@ -217,9 +220,9 @@ const ExtensionsPanel = ({ themes, theme, applyTheme }: ExtensionsPanelProps) =>
                         ? `Disable ${ext.manifest.display_name || ext.manifest.name}`
                         : `Enable ${ext.manifest.display_name || ext.manifest.name}`
                     }
-                    className={`px-2 py-0.5 text-xs rounded transition-colors ${
+                    className={`rounded px-2 py-0.5 text-xs transition-colors ${
                       ext.isActive
-                        ? 'bg-xp-green bg-opacity-20 text-xp-green'
+                        ? 'bg-xp-green text-xp-green bg-opacity-20'
                         : 'bg-xp-border text-xp-text-muted'
                     }`}
                   >
@@ -228,7 +231,7 @@ const ExtensionsPanel = ({ themes, theme, applyTheme }: ExtensionsPanelProps) =>
                   <button
                     onClick={() => handleUninstall(ext.id)}
                     aria-label={`Uninstall ${ext.manifest.display_name || ext.manifest.name}`}
-                    className="px-2 py-0.5 text-xs rounded text-xp-red opacity-0 group-hover:opacity-100 hover:bg-xp-red hover:bg-opacity-10 transition-all"
+                    className="text-xp-red hover:bg-xp-red rounded px-2 py-0.5 text-xs opacity-0 transition-all hover:bg-opacity-10 group-hover:opacity-100"
                   >
                     Uninstall
                   </button>
@@ -240,15 +243,15 @@ const ExtensionsPanel = ({ themes, theme, applyTheme }: ExtensionsPanelProps) =>
       )}
 
       {/* Install Extension */}
-      <div className="border-t border-xp-border pt-3">
+      <div className="border-xp-border border-t pt-3">
         <button
           onClick={handleInstallFromFolder}
           disabled={installing}
           aria-label="Install extension from folder"
-          className="w-full flex items-center justify-center space-x-2 px-3 py-2 bg-xp-blue text-white rounded text-sm font-medium hover:bg-opacity-90 disabled:opacity-50 transition-colors"
+          className="bg-xp-blue flex w-full items-center justify-center space-x-2 rounded px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-opacity-90 disabled:opacity-50"
         >
           {installing ? (
-            <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
           ) : (
             <span>+ Install from Folder</span>
           )}
@@ -264,6 +267,6 @@ const ExtensionsPanel = ({ themes, theme, applyTheme }: ExtensionsPanelProps) =>
       />
     </div>
   );
-}
+};
 
 export default ExtensionsPanel;

@@ -5,19 +5,19 @@ export const PATH_SEPARATOR = isWindows ? '\\' : '/';
 export const ROOT_PATH = isWindows ? 'C:\\' : '/';
 
 /** Join path parts using the platform-aware separator. Avoids doubled separators. */
-export const joinPath = (...parts: string[]) : string => {
+export const joinPath = (...parts: string[]): string => {
   return parts.reduce((acc, part) => {
     if (!acc) return part;
     if (!part) return acc;
     const needsSep = !acc.endsWith('/') && !acc.endsWith('\\');
     return acc + (needsSep ? PATH_SEPARATOR : '') + part;
   }, '');
-}
+};
 
 /** Detect the separator used in a given path string. */
-export const detectSep = (filePath: string) : string => {
+export const detectSep = (filePath: string): string => {
   return filePath.includes('/') ? '/' : PATH_SEPARATOR;
-}
+};
 
 // ── Timing constants ─────────────────────────────────────────────────────────
 

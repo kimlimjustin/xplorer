@@ -57,8 +57,7 @@ vi.mock('@/lib/tauri-api', () => ({
   FileEntry: {},
 }));
 
-import { extensionHost } from '@/lib/extension-host';
-import type { ExtensionPackage } from '@/lib/extension-host';
+import { extensionHost, type ExtensionPackage } from '@/lib/extension-host';
 
 describe('ExtensionHost Security', () => {
   let consoleSpy: ReturnType<typeof vi.spyOn>;

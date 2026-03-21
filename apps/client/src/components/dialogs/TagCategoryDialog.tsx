@@ -29,7 +29,7 @@ interface TreeNode {
   depth: number;
 }
 
-const buildTree = (categories: TagCategory[]) : TreeNode[] => {
+const buildTree = (categories: TagCategory[]): TreeNode[] => {
   const map = new Map<string, TreeNode>();
   const roots: TreeNode[] = [];
 
@@ -56,20 +56,20 @@ const buildTree = (categories: TagCategory[]) : TreeNode[] => {
       n.depth = depth;
       setDepths(n.children, depth + 1);
     }
-  }
+  };
   setDepths(roots, 0);
 
   return roots;
-}
+};
 
-const flattenTree = (nodes: TreeNode[]) : TreeNode[] => {
+const flattenTree = (nodes: TreeNode[]): TreeNode[] => {
   const result: TreeNode[] = [];
   for (const n of nodes) {
     result.push(n);
     result.push(...flattenTree(n.children));
   }
   return result;
-}
+};
 
 const TagCategoryDialog = ({ isOpen, onClose }: TagCategoryDialogProps) => {
   const [categories, setCategories] = useState<TagCategory[]>([]);
@@ -190,28 +190,29 @@ const TagCategoryDialog = ({ isOpen, onClose }: TagCategoryDialogProps) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="bg-xp-surface border border-xp-border rounded-lg shadow-2xl w-full max-w-md mx-4 flex flex-col overflow-hidden max-h-[80vh]">
+      <div className="bg-xp-surface border-xp-border mx-4 flex max-h-[80vh] w-full max-w-md flex-col overflow-hidden rounded-lg border shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-xp-border flex-shrink-0">
+        <div className="border-xp-border flex flex-shrink-0 items-center justify-between border-b px-4 py-3">
           <div className="flex items-center space-x-2">
-            <Tags className="w-4 h-4 text-xp-text-muted" />
-            <h2 className="text-sm font-semibold text-xp-text">Tag Categories</h2>
+            <Tags className="text-xp-text-muted h-4 w-4" />
+            <h2 className="text-xp-text text-sm font-semibold">Tag Categories</h2>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text transition-colors"
+            className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text rounded p-1 transition-colors"
             aria-label="Close tag categories dialog"
           >
-            <X className="w-4 h-4" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto px-4 py-3 space-y-2">
+        <div className="flex-1 space-y-2 overflow-y-auto px-4 py-3">
+          {/* eslint-disable-next-line no-nested-ternary */}
           {loading ? (
-            <p className="text-sm text-xp-text-muted">Loading...</p>
+            <p className="text-xp-text-muted text-sm">Loading...</p>
           ) : flatNodes.length === 0 && !showAddForm ? (
-            <p className="text-sm text-xp-text-muted italic">
+            <p className="text-xp-text-muted text-sm italic">
               No tag categories yet — add one below.
             </p>
           ) : (
@@ -219,13 +220,13 @@ const TagCategoryDialog = ({ isOpen, onClose }: TagCategoryDialogProps) => {
               {flatNodes.map((node) => (
                 <li
                   key={node.category.id}
-                  className="flex items-center justify-between rounded px-2 py-1.5 hover:bg-xp-surface-light group transition-colors"
+                  className="hover:bg-xp-surface-light group flex items-center justify-between rounded px-2 py-1.5 transition-colors"
                   style={{ paddingLeft: `${8 + node.depth * 20}px` }}
                 >
                   {editingId === node.category.id ? (
-                    <div className="flex items-center space-x-2 flex-1">
+                    <div className="flex flex-1 items-center space-x-2">
                       <span
-                        className="w-3 h-3 rounded-full flex-shrink-0 border border-black border-opacity-20 cursor-pointer"
+                        className="h-3 w-3 flex-shrink-0 cursor-pointer rounded-full border border-black border-opacity-20"
                         style={{ backgroundColor: editColor }}
                         onClick={() => {
                           const idx = PRESET_COLORS.findIndex((c) => c.value === editColor);
@@ -242,50 +243,50 @@ const TagCategoryDialog = ({ isOpen, onClose }: TagCategoryDialogProps) => {
                           if (e.key === 'Enter') handleUpdate(node.category.id);
                           if (e.key === 'Escape') setEditingId(null);
                         }}
-                        className="flex-1 bg-xp-bg border border-xp-border rounded px-2 py-0.5 text-sm text-xp-text focus:outline-none focus:ring-2 focus:ring-xp-blue focus:border-xp-blue"
+                        className="bg-xp-bg border-xp-border text-xp-text focus:ring-xp-blue focus:border-xp-blue flex-1 rounded border px-2 py-0.5 text-sm focus:outline-none focus:ring-2"
                         autoFocus
                       />
                       <button
                         onClick={() => handleUpdate(node.category.id)}
-                        className="p-1 rounded text-green-400 hover:bg-xp-surface-light transition-colors"
+                        className="hover:bg-xp-surface-light rounded p-1 text-green-400 transition-colors"
                       >
-                        <Check className="w-3 h-3" />
+                        <Check className="h-3 w-3" />
                       </button>
                       <button
                         onClick={() => setEditingId(null)}
-                        className="p-1 rounded text-xp-text-muted hover:bg-xp-surface-light transition-colors"
+                        className="text-xp-text-muted hover:bg-xp-surface-light rounded p-1 transition-colors"
                       >
-                        <X className="w-3 h-3" />
+                        <X className="h-3 w-3" />
                       </button>
                     </div>
                   ) : (
                     <>
-                      <div className="flex items-center space-x-2 min-w-0">
+                      <div className="flex min-w-0 items-center space-x-2">
                         {node.children.length > 0 && (
-                          <ChevronRight className="w-3 h-3 text-xp-text-muted flex-shrink-0" />
+                          <ChevronRight className="text-xp-text-muted h-3 w-3 flex-shrink-0" />
                         )}
                         <span
-                          className="w-3 h-3 rounded-full flex-shrink-0 border border-black border-opacity-20"
+                          className="h-3 w-3 flex-shrink-0 rounded-full border border-black border-opacity-20"
                           style={{ backgroundColor: node.category.color }}
                         />
-                        <span className="text-sm text-xp-text truncate">{node.category.name}</span>
+                        <span className="text-xp-text truncate text-sm">{node.category.name}</span>
                       </div>
-                      <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 ml-2">
+                      <div className="ml-2 flex flex-shrink-0 items-center space-x-1 opacity-0 transition-opacity group-hover:opacity-100">
                         <button
                           onClick={() => startEditing(node.category)}
-                          className="p-1 rounded hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-blue transition-colors"
+                          className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-blue rounded p-1 transition-colors"
                           title="Edit"
                           aria-label={`Edit category ${node.category.name}`}
                         >
-                          <Pencil className="w-3 h-3" />
+                          <Pencil className="h-3 w-3" />
                         </button>
                         <button
                           onClick={() => handleDelete(node.category.id)}
-                          className="p-1 rounded hover:bg-xp-surface-light text-xp-text-muted hover:text-red-400 transition-colors"
+                          className="hover:bg-xp-surface-light text-xp-text-muted rounded p-1 transition-colors hover:text-red-400"
                           title="Delete"
                           aria-label={`Delete category ${node.category.name}`}
                         >
-                          <Trash2 className="w-3 h-3" />
+                          <Trash2 className="h-3 w-3" />
                         </button>
                       </div>
                     </>
@@ -297,7 +298,7 @@ const TagCategoryDialog = ({ isOpen, onClose }: TagCategoryDialogProps) => {
 
           {/* Add form */}
           {showAddForm && (
-            <div className="border border-xp-blue border-opacity-50 rounded-md p-3 space-y-2">
+            <div className="border-xp-blue space-y-2 rounded-md border border-opacity-50 p-3">
               <input
                 ref={nameInputRef}
                 type="text"
@@ -310,7 +311,7 @@ const TagCategoryDialog = ({ isOpen, onClose }: TagCategoryDialogProps) => {
                   if (e.key === 'Enter') handleAdd();
                   if (e.key === 'Escape') setShowAddForm(false);
                 }}
-                className="w-full bg-xp-bg border border-xp-border rounded px-3 py-1.5 text-sm text-xp-text placeholder-xp-text-muted focus:outline-none focus:ring-2 focus:ring-xp-blue focus:border-xp-blue transition-colors"
+                className="bg-xp-bg border-xp-border text-xp-text placeholder-xp-text-muted focus:ring-xp-blue focus:border-xp-blue w-full rounded border px-3 py-1.5 text-sm transition-colors focus:outline-none focus:ring-2"
                 placeholder="Category name..."
                 maxLength={50}
               />
@@ -321,7 +322,7 @@ const TagCategoryDialog = ({ isOpen, onClose }: TagCategoryDialogProps) => {
                   <button
                     key={c.value}
                     onClick={() => setNewColor(c.value)}
-                    className="w-5 h-5 rounded-full border-2 transition-all flex items-center justify-center"
+                    className="flex h-5 w-5 items-center justify-center rounded-full border-2 transition-all"
                     style={{
                       backgroundColor: c.value,
                       borderColor: newColor === c.value ? 'white' : 'transparent',
@@ -331,7 +332,7 @@ const TagCategoryDialog = ({ isOpen, onClose }: TagCategoryDialogProps) => {
                     aria-label={`Select ${c.label} color`}
                   >
                     {newColor === c.value && (
-                      <Check className="w-2.5 h-2.5 text-white drop-shadow" />
+                      <Check className="h-2.5 w-2.5 text-white drop-shadow" />
                     )}
                   </button>
                 ))}
@@ -355,22 +356,22 @@ const TagCategoryDialog = ({ isOpen, onClose }: TagCategoryDialogProps) => {
                 </SelectContent>
               </Select>
 
-              <div className="flex items-center space-x-2 justify-end">
+              <div className="flex items-center justify-end space-x-2">
                 <button
                   onClick={() => setShowAddForm(false)}
-                  className="px-2.5 py-1 text-xs text-xp-text-muted hover:text-xp-text rounded transition-colors"
+                  className="text-xp-text-muted hover:text-xp-text rounded px-2.5 py-1 text-xs transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleAdd}
                   disabled={saving || !newName.trim()}
-                  className="flex items-center space-x-1 px-2.5 py-1 bg-xp-blue text-white rounded text-xs font-medium hover:bg-opacity-90 disabled:opacity-40 transition-colors"
+                  className="bg-xp-blue flex items-center space-x-1 rounded px-2.5 py-1 text-xs font-medium text-white transition-colors hover:bg-opacity-90 disabled:opacity-40"
                 >
                   {saving ? (
-                    <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span className="h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent" />
                   ) : (
-                    <Plus className="w-3 h-3" />
+                    <Plus className="h-3 w-3" />
                   )}
                   <span>Add</span>
                 </button>
@@ -380,30 +381,30 @@ const TagCategoryDialog = ({ isOpen, onClose }: TagCategoryDialogProps) => {
 
           {/* Error */}
           {error && (
-            <p className="text-xs text-red-400 bg-red-400 bg-opacity-10 border border-red-400 border-opacity-30 rounded px-2 py-1">
+            <p className="rounded border border-red-400 border-opacity-30 bg-red-400 bg-opacity-10 px-2 py-1 text-xs text-red-400">
               {error}
             </p>
           )}
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-4 py-3 border-t border-xp-border flex-shrink-0">
-          <span className="text-xs text-xp-text-muted">
+        <div className="border-xp-border flex flex-shrink-0 items-center justify-between border-t px-4 py-3">
+          <span className="text-xp-text-muted text-xs">
             {categories.length} categor{categories.length !== 1 ? 'ies' : 'y'}
           </span>
           <div className="flex items-center space-x-2">
             {!showAddForm && (
               <button
                 onClick={() => setShowAddForm(true)}
-                className="flex items-center space-x-1.5 px-3 py-1.5 bg-xp-blue text-white rounded text-sm font-medium hover:bg-opacity-90 transition-colors"
+                className="bg-xp-blue flex items-center space-x-1.5 rounded px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-opacity-90"
               >
-                <Plus className="w-3.5 h-3.5" />
+                <Plus className="h-3.5 w-3.5" />
                 <span>Add Category</span>
               </button>
             )}
             <button
               onClick={onClose}
-              className="px-3 py-1.5 text-sm text-xp-text-muted hover:text-xp-text hover:bg-xp-surface-light rounded transition-colors"
+              className="text-xp-text-muted hover:text-xp-text hover:bg-xp-surface-light rounded px-3 py-1.5 text-sm transition-colors"
             >
               Close
             </button>

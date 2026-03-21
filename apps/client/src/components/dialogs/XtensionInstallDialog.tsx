@@ -53,50 +53,50 @@ const XtensionInstallDialog = ({
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
       {/* Dialog */}
-      <div className="relative bg-xp-bg border border-xp-border rounded-lg shadow-2xl w-[420px] max-w-[90vw] overflow-hidden">
+      <div className="bg-xp-bg border-xp-border relative w-[420px] max-w-[90vw] overflow-hidden rounded-lg border shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-xp-border">
+        <div className="border-xp-border flex items-center justify-between border-b px-5 py-4">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-xp-blue/20 border border-xp-blue/30 flex items-center justify-center">
-              <Package className="h-5 w-5 text-xp-blue" />
+            <div className="bg-xp-blue/20 border-xp-blue/30 flex h-10 w-10 items-center justify-center rounded-lg border">
+              <Package className="text-xp-blue h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-xp-text">Install Extension</h2>
-              <p className="text-xs text-xp-text-muted">.xtension package</p>
+              <h2 className="text-xp-text text-sm font-semibold">Install Extension</h2>
+              <p className="text-xp-text-muted text-xs">.xtension package</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text transition-colors"
+            className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text rounded p-1.5 transition-colors"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="px-5 py-4 space-y-4">
+        <div className="space-y-4 px-5 py-4">
           {/* Extension info */}
           <div className="space-y-1">
-            <h3 className="text-base font-medium text-xp-text">{displayName}</h3>
-            <p className="text-xs text-xp-text-muted">
+            <h3 className="text-xp-text text-base font-medium">{displayName}</h3>
+            <p className="text-xp-text-muted text-xs">
               v{manifest.version} by {manifest.author}
             </p>
             {manifest.description && (
-              <p className="text-sm text-xp-text-secondary mt-2">{manifest.description}</p>
+              <p className="text-xp-text-secondary mt-2 text-sm">{manifest.description}</p>
             )}
           </div>
 
           {/* Permissions */}
           {permissions.length > 0 && (
             <div className="space-y-2">
-              <div className="flex items-center gap-1.5 text-xs font-medium text-xp-text-muted">
+              <div className="text-xp-text-muted flex items-center gap-1.5 text-xs font-medium">
                 <Shield className="h-3.5 w-3.5" />
                 Requested Permissions
               </div>
-              <div className="bg-xp-surface border border-xp-border rounded-md p-3 space-y-1.5">
+              <div className="bg-xp-surface border-xp-border space-y-1.5 rounded-md border p-3">
                 {permissions.map((perm) => (
                   <div key={perm} className="flex items-center gap-2 text-xs">
-                    <div className="h-1.5 w-1.5 rounded-full bg-xp-yellow flex-shrink-0" />
+                    <div className="bg-xp-yellow h-1.5 w-1.5 flex-shrink-0 rounded-full" />
                     <span className="text-xp-text">{PERMISSION_LABELS[perm] || perm}</span>
                   </div>
                 ))}
@@ -106,18 +106,18 @@ const XtensionInstallDialog = ({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-2 px-5 py-3 border-t border-xp-border bg-xp-surface/50">
+        <div className="border-xp-border bg-xp-surface/50 flex items-center justify-end gap-2 border-t px-5 py-3">
           <button
             onClick={onClose}
             disabled={installing}
-            className="px-4 py-2 text-sm rounded-md border border-xp-border bg-xp-surface text-xp-text hover:bg-xp-surface-light transition-colors disabled:opacity-50"
+            className="border-xp-border bg-xp-surface text-xp-text hover:bg-xp-surface-light rounded-md border px-4 py-2 text-sm transition-colors disabled:opacity-50"
           >
             Cancel
           </button>
           <button
             onClick={handleInstall}
             disabled={installing}
-            className="px-4 py-2 text-sm rounded-md bg-xp-blue hover:bg-xp-blue/80 text-white transition-colors disabled:opacity-50 flex items-center gap-2"
+            className="bg-xp-blue hover:bg-xp-blue/80 flex items-center gap-2 rounded-md px-4 py-2 text-sm text-white transition-colors disabled:opacity-50"
           >
             {installing ? (
               <>
@@ -135,6 +135,6 @@ const XtensionInstallDialog = ({
       </div>
     </div>
   );
-}
+};
 
 export default XtensionInstallDialog;

@@ -46,13 +46,13 @@ const ResizeHandle = ({ direction, onResize, onResizeEnd }: ResizeHandleProps) =
   return (
     <div
       onMouseDown={handleMouseDown}
-      className={`flex-shrink-0 group ${
+      className={`group flex-shrink-0 ${
         isHorizontal
-          ? 'w-1 cursor-col-resize hover:bg-xp-blue/40 active:bg-xp-blue/60'
-          : 'h-1 cursor-row-resize hover:bg-xp-blue/40 active:bg-xp-blue/60'
+          ? 'hover:bg-xp-blue/40 active:bg-xp-blue/60 w-1 cursor-col-resize'
+          : 'hover:bg-xp-blue/40 active:bg-xp-blue/60 h-1 cursor-row-resize'
       } transition-colors`}
     />
   );
-}
+};
 
 export default ResizeHandle;

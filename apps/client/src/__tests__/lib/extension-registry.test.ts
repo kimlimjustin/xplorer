@@ -12,10 +12,12 @@ vi.mock('@/lib/tauri-api', () => ({
 
 // Mock extension-host-icon
 vi.mock('@/lib/extension-host-icon', () => ({
-  resolveIcon: (icon?: string) => icon ? React.createElement('span', null, icon) : null,
+  resolveIcon: (icon?: string) => (icon ? React.createElement('span', null, icon) : null),
 }));
 
-const makeExtensionsMap = (entries: Array<{ id: string; isActive: boolean }>): Map<string, LoadedExtension> => {
+const makeExtensionsMap = (
+  entries: Array<{ id: string; isActive: boolean }>,
+): Map<string, LoadedExtension> => {
   const map = new Map<string, LoadedExtension>();
   for (const e of entries) {
     map.set(e.id, {
@@ -342,11 +344,15 @@ describe('ExtensionRegistry', () => {
       const { dispose } = registry.registerCommand('test.temp', vi.fn());
       dispose();
 
-      await expect(registry.executeCommand('test.temp')).rejects.toThrow('Command "test.temp" not found');
+      await expect(registry.executeCommand('test.temp')).rejects.toThrow(
+        'Command "test.temp" not found',
+      );
     });
 
     it('throws for unknown command', async () => {
-      await expect(registry.executeCommand('nonexistent')).rejects.toThrow('Command "nonexistent" not found');
+      await expect(registry.executeCommand('nonexistent')).rejects.toThrow(
+        'Command "nonexistent" not found',
+      );
     });
 
     it('propagates handler errors', async () => {
@@ -362,10 +368,15 @@ describe('ExtensionRegistry', () => {
     it('registers and queries decorators', () => {
       registry.registerDecorator({
         extensionId: 'test-ext',
-        decorate: (file) => file.name.endsWith('.ts') ? { badge: 'TS', badgeColor: '#3178c6' } : null,
+        decorate: (file) =>
+          file.name.endsWith('.ts') ? { badge: 'TS', badgeColor: '#3178c6' } : null,
       });
 
-      const decorations = registry.getFileDecorations({ name: 'app.ts', path: '/app.ts', is_dir: false });
+      const decorations = registry.getFileDecorations({
+        name: 'app.ts',
+        path: '/app.ts',
+        is_dir: false,
+      });
       expect(decorations).toHaveLength(1);
       expect(decorations[0].badge).toBe('TS');
     });
@@ -373,10 +384,14 @@ describe('ExtensionRegistry', () => {
     it('returns empty array for non-matching files', () => {
       registry.registerDecorator({
         extensionId: 'test-ext',
-        decorate: (file) => file.name.endsWith('.ts') ? { badge: 'TS' } : null,
+        decorate: (file) => (file.name.endsWith('.ts') ? { badge: 'TS' } : null),
       });
 
-      const decorations = registry.getFileDecorations({ name: 'file.txt', path: '/file.txt', is_dir: false });
+      const decorations = registry.getFileDecorations({
+        name: 'file.txt',
+        path: '/file.txt',
+        is_dir: false,
+      });
       expect(decorations).toHaveLength(0);
     });
 
@@ -388,7 +403,11 @@ describe('ExtensionRegistry', () => {
 
       dispose();
 
-      const decorations = registry.getFileDecorations({ name: 'file.txt', path: '/file.txt', is_dir: false });
+      const decorations = registry.getFileDecorations({
+        name: 'file.txt',
+        path: '/file.txt',
+        is_dir: false,
+      });
       expect(decorations).toHaveLength(0);
     });
 
@@ -466,11 +485,17 @@ describe('ExtensionRegistry', () => {
 
     it('getRegisteredDialogIds returns all registered dialog IDs', () => {
       registry.dialogRegistry.set('dlg-a', {
-        id: 'dlg-a', extensionId: 'test-ext', title: 'A', icon: null,
+        id: 'dlg-a',
+        extensionId: 'test-ext',
+        title: 'A',
+        icon: null,
         render: () => React.createElement('div'),
       });
       registry.dialogRegistry.set('dlg-b', {
-        id: 'dlg-b', extensionId: 'test-ext', title: 'B', icon: null,
+        id: 'dlg-b',
+        extensionId: 'test-ext',
+        title: 'B',
+        icon: null,
         render: () => React.createElement('div'),
       });
 
@@ -515,7 +540,11 @@ describe('ExtensionRegistry', () => {
         render: () => React.createElement('div'),
       });
 
-      const result = registry.queryPreview({ name: 'photo.png', path: '/photo.png', is_dir: false });
+      const result = registry.queryPreview({
+        name: 'photo.png',
+        path: '/photo.png',
+        is_dir: false,
+      });
       expect(result).toBeDefined();
       expect(result!.id).toBe('img-preview');
     });
@@ -535,7 +564,9 @@ describe('ExtensionRegistry', () => {
         render: () => React.createElement('div'),
       });
 
-      expect(registry.queryPreview({ name: 'file.txt', path: '/file.txt', is_dir: false })).toBeNull();
+      expect(
+        registry.queryPreview({ name: 'file.txt', path: '/file.txt', is_dir: false }),
+      ).toBeNull();
     });
   });
 
