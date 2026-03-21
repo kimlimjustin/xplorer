@@ -7,22 +7,21 @@ interface ChangeReviewPanelProps {
   onNavigate?: (path: string) => void;
 }
 
-const formatSize = (bytes: number) : string => {
+const formatSize = (bytes: number): string => {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
-}
+};
 
-const formatTimestamp = (ts: number) : string => {
+const formatTimestamp = (ts: number): string => {
   if (!ts) return '';
   const d = new Date(ts * 1000);
-  return (
-    d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }) +
-    ' ' +
-    d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
-  );
-}
+  return `${d.toLocaleTimeString(undefined, {
+    hour: '2-digit',
+    minute: '2-digit',
+  })} ${d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`;
+};
 
 const sectionHeaderStyle = (color: string): React.CSSProperties => ({
   display: 'flex',
@@ -140,7 +139,7 @@ const ChangeSection = ({
       ))}
     </>
   );
-}
+};
 
 const ChangeReviewPanel = React.memo(function ChangeReviewPanel({
   changes,

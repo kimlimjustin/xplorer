@@ -1,13 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { TauriAPI } from '../../lib/tauri-api';
-import type {
-  UndoHistoryEntry,
-  UndoHistorySnapshot,
-  HistoryGroup,
-  DisplayItem,
-  ContextMenuState,
-  DetailsPopoverState,
-} from './undo-history-helpers';
 import {
   operationIcon,
   operationColor,
@@ -15,6 +7,12 @@ import {
   fileName,
   parentDir,
   groupHistoryEntries,
+  type UndoHistoryEntry,
+  type UndoHistorySnapshot,
+  type HistoryGroup,
+  type DisplayItem,
+  type ContextMenuState,
+  type DetailsPopoverState,
 } from './undo-history-helpers';
 
 // ── Memoized Sub-Components ──────────────────────────────────────────────────
@@ -869,11 +867,11 @@ export default function UndoHistoryPanel() {
             borderBottom: isCurrentDivider
               ? 'none'
               : '1px solid var(--xp-border, rgba(255,255,255,0.06))',
-            backgroundColor: inGroup
-              ? 'rgba(255,255,255,0.015)'
-              : isRedone
-                ? 'rgba(255,255,255,0.02)'
-                : 'transparent',
+            backgroundColor: (() => {
+              if (inGroup) return 'rgba(255,255,255,0.015)';
+              if (isRedone) return 'rgba(255,255,255,0.02)';
+              return 'transparent';
+            })(),
             opacity: isRedone ? 0.45 : 1,
             cursor: 'default',
             transition: 'opacity 200ms ease, background-color 200ms ease',

@@ -77,8 +77,9 @@ export const useCommandPaletteCommands = ({
         shortcut: 'Alt+Right',
         category: t('commands.categories.navigation'),
         action: () => {
-          if (historyIndex < pathHistory.length - 1)
+          if (historyIndex < pathHistory.length - 1) {
             navigateWithHistory(pathHistory[historyIndex + 1]);
+          }
         },
       },
       {
@@ -100,7 +101,12 @@ export const useCommandPaletteCommands = ({
         category: t('commands.categories.view'),
         action: () => setViewMode('medium'),
       },
-      { id: 'view-list', title: t('commands.listView'), category: t('commands.categories.view'), action: () => setViewMode('list') },
+      {
+        id: 'view-list',
+        title: t('commands.listView'),
+        category: t('commands.categories.view'),
+        action: () => setViewMode('list'),
+      },
       {
         id: 'view-details',
         title: t('commands.detailsView'),
@@ -113,7 +119,12 @@ export const useCommandPaletteCommands = ({
         category: t('commands.categories.view'),
         action: () => setViewMode('gallery'),
       },
-      { id: 'view-tree', title: t('commands.treeView'), category: t('commands.categories.view'), action: () => setViewMode('tree') },
+      {
+        id: 'view-tree',
+        title: t('commands.treeView'),
+        category: t('commands.categories.view'),
+        action: () => setViewMode('tree'),
+      },
       {
         id: 'toggle-preview',
         title: t('commands.togglePreview'),

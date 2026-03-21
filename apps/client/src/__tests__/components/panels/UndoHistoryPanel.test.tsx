@@ -17,7 +17,6 @@ vi.mock('@/lib/tauri-api', () => ({
   },
 }));
 
-
 describe('UndoHistoryPanel', () => {
   const sampleSnapshot = {
     entries: [

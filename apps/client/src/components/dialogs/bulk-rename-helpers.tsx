@@ -284,11 +284,13 @@ export const DiffText = ({ spans }: { spans: DiffSpan[] }) => {
     <span>
       {spans.map((span, i) => {
         if (span.type === 'same') {
+          // eslint-disable-next-line react/no-array-index-key
           return <span key={i}>{span.text}</span>;
         }
         if (span.type === 'removed') {
           return (
             <span
+              // eslint-disable-next-line react/no-array-index-key
               key={i}
               style={{
                 backgroundColor: 'rgba(239, 68, 68, 0.25)',
@@ -305,6 +307,7 @@ export const DiffText = ({ spans }: { spans: DiffSpan[] }) => {
         // added
         return (
           <span
+            // eslint-disable-next-line react/no-array-index-key
             key={i}
             style={{
               backgroundColor: 'rgba(34, 197, 94, 0.25)',

@@ -152,7 +152,7 @@ const PaneFileExplorer = React.memo(function PaneFileExplorer({
         onToggleSizeBadges={toggleSizeBadges}
       />
 
-      <div className="flex-1 p-4 overflow-auto">
+      <div className="flex-1 overflow-auto p-4">
         <FileGrid
           files={displayFiles}
           fileGroups={colorFilter ? null : fileGroups}
@@ -178,8 +178,8 @@ const PaneFileExplorer = React.memo(function PaneFileExplorer({
         />
       </div>
 
-      <div className="bg-xp-surface border-t border-xp-border px-4 py-2 text-xs text-xp-text-muted flex-shrink-0">
-        <div className="flex justify-between items-center">
+      <div className="bg-xp-surface border-xp-border text-xp-text-muted flex-shrink-0 border-t px-4 py-2 text-xs">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <span>
               {displayFiles.length} items{colorFilter ? ` (filtered)` : ''}

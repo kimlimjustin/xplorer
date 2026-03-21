@@ -54,20 +54,20 @@ const DocumentPreview = ({ file, onError, onLoad }: PreviewProps) => {
 
   return (
     <div className="mt-4">
-      <h4 className="text-xs font-medium mb-2 text-xp-text-muted">Document Preview</h4>
+      <h4 className="text-xp-text-muted mb-2 text-xs font-medium">Document Preview</h4>
 
       {loading && (
-        <div className="bg-xp-surface border border-xp-border rounded p-4 text-center text-xp-text-muted">
+        <div className="bg-xp-surface border-xp-border text-xp-text-muted rounded border p-4 text-center">
           <div className="animate-pulse">
-            <div className="w-full h-48 bg-xp-bg rounded mb-2"></div>
+            <div className="bg-xp-bg mb-2 h-48 w-full rounded" />
             <p className="text-xs">Loading document...</p>
           </div>
         </div>
       )}
 
       {error ? (
-        <div className="bg-xp-surface border border-xp-border rounded p-4 text-center text-xp-text-muted">
-          <svg className="w-8 h-8 mx-auto mb-2" fill="currentColor" viewBox="0 0 20 20">
+        <div className="bg-xp-surface border-xp-border text-xp-text-muted rounded border p-4 text-center">
+          <svg className="mx-auto mb-2 h-8 w-8" fill="currentColor" viewBox="0 0 20 20">
             <path
               fillRule="evenodd"
               d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
@@ -75,12 +75,13 @@ const DocumentPreview = ({ file, onError, onLoad }: PreviewProps) => {
             />
           </svg>
           <p className="text-xs">Cannot preview document</p>
-          <p className="text-xs mt-1 opacity-70">{error}</p>
+          <p className="mt-1 text-xs opacity-70">{error}</p>
         </div>
-      ) : htmlContent ? (
-        <div className="bg-xp-surface border border-xp-border rounded p-4 max-h-64 overflow-y-auto">
+      ) : null}
+      {!error && htmlContent && (
+        <div className="bg-xp-surface border-xp-border max-h-64 overflow-y-auto rounded border p-4">
           <div
-            className="text-xs prose prose-sm max-w-none text-xp-text"
+            className="text-xp-text prose prose-sm max-w-none text-xs"
             dangerouslySetInnerHTML={{ __html: htmlContent }}
             style={{
               fontFamily: 'inherit',
@@ -88,9 +89,9 @@ const DocumentPreview = ({ file, onError, onLoad }: PreviewProps) => {
             }}
           />
         </div>
-      ) : null}
+      )}
     </div>
   );
-}
+};
 
 export default DocumentPreview;

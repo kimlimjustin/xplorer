@@ -40,7 +40,15 @@ vi.mock('@/components/panels/PreviewNavigationBar', () => ({
   default: () => <div data-testid="preview-nav-bar">Preview Nav</div>,
 }));
 vi.mock('@/components/previews/ComparePreview', () => ({
-  default: ({ leftFile, rightFile, onDismiss }: { leftFile?: string; rightFile?: string; onDismiss?: () => void }) => (
+  default: ({
+    leftFile,
+    rightFile,
+    onDismiss,
+  }: {
+    leftFile?: string;
+    rightFile?: string;
+    onDismiss?: () => void;
+  }) => (
     <div data-testid="compare-preview">
       Compare: {leftFile?.name} vs {rightFile?.name}
       <button onClick={onDismiss}>Dismiss</button>
@@ -160,7 +168,9 @@ describe('RightSidebar', () => {
         modified: Date.now(),
         file_type: 'text',
       };
-      renderWithSuspense(<RightSidebar {...defaultProps} rightPanelTab="preview" selectedFile={file} />);
+      renderWithSuspense(
+        <RightSidebar {...defaultProps} rightPanelTab="preview" selectedFile={file} />,
+      );
       expect(await screen.findByText('Preview: test.txt')).toBeInTheDocument();
     });
 

@@ -10,7 +10,12 @@ interface SelectByDateDialogProps {
   files: FileEntry[];
 }
 
-export const SelectByDateDialog = ({ isOpen, onClose, onSelect, files }: SelectByDateDialogProps) => {
+export const SelectByDateDialog = ({
+  isOpen,
+  onClose,
+  onSelect,
+  files,
+}: SelectByDateDialogProps) => {
   const dateRange = useMemo(() => getFileDateRange(files), [files]);
 
   const [dateFrom, setDateFrom] = useState<string>('');
@@ -62,13 +67,13 @@ export const SelectByDateDialog = ({ isOpen, onClose, onSelect, files }: SelectB
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-xp-surface border border-xp-border rounded-lg shadow-xl w-[450px] max-h-[80vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="bg-xp-surface border-xp-border flex max-h-[80vh] w-[450px] flex-col rounded-lg border shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-xp-border">
-          <h2 className="text-lg font-semibold text-xp-text">Select by Date</h2>
-          <button onClick={onClose} className="p-1 hover:bg-xp-surface-light rounded">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="border-xp-border flex items-center justify-between border-b p-4">
+          <h2 className="text-xp-text text-lg font-semibold">Select by Date</h2>
+          <button onClick={onClose} className="hover:bg-xp-surface-light rounded p-1">
+            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -80,14 +85,14 @@ export const SelectByDateDialog = ({ isOpen, onClose, onSelect, files }: SelectB
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="flex-1 space-y-4 overflow-y-auto p-4">
           {/* File Date Info */}
-          <div className="p-3 bg-xp-bg rounded-md text-sm">
-            <div className="flex justify-between text-xp-text-muted">
+          <div className="bg-xp-bg rounded-md p-3 text-sm">
+            <div className="text-xp-text-muted flex justify-between">
               <span>Oldest file:</span>
               <span>{dateRange.oldest.toLocaleDateString()}</span>
             </div>
-            <div className="flex justify-between text-xp-text-muted">
+            <div className="text-xp-text-muted flex justify-between">
               <span>Newest file:</span>
               <span>{dateRange.newest.toLocaleDateString()}</span>
             </div>
@@ -95,16 +100,16 @@ export const SelectByDateDialog = ({ isOpen, onClose, onSelect, files }: SelectB
 
           {/* Presets */}
           <div>
-            <h3 className="text-sm font-medium text-xp-text-muted mb-2">Quick Select</h3>
+            <h3 className="text-xp-text-muted mb-2 text-sm font-medium">Quick Select</h3>
             <div className="grid grid-cols-2 gap-2">
               {DATE_RANGE_PRESETS.map((preset) => (
                 <button
                   key={preset.label}
                   onClick={() => applyPreset(preset)}
-                  className={`px-3 py-2 text-sm rounded-md transition-colors ${
+                  className={`rounded-md px-3 py-2 text-sm transition-colors ${
                     selectedPreset === preset.label
                       ? 'bg-xp-primary text-white'
-                      : 'bg-xp-bg hover:bg-xp-surface-light border border-xp-border'
+                      : 'bg-xp-bg hover:bg-xp-surface-light border-xp-border border'
                   }`}
                 >
                   {preset.label}
@@ -115,10 +120,10 @@ export const SelectByDateDialog = ({ isOpen, onClose, onSelect, files }: SelectB
 
           {/* Custom Date Range */}
           <div>
-            <h3 className="text-sm font-medium text-xp-text-muted mb-2">Custom Range</h3>
+            <h3 className="text-xp-text-muted mb-2 text-sm font-medium">Custom Range</h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs text-xp-text-muted mb-1">From</label>
+                <label className="text-xp-text-muted mb-1 block text-xs">From</label>
                 <input
                   type="date"
                   value={dateFrom}
@@ -127,11 +132,11 @@ export const SelectByDateDialog = ({ isOpen, onClose, onSelect, files }: SelectB
                     setSelectedPreset(null);
                   }}
                   max={dateTo || undefined}
-                  className="w-full px-3 py-2 bg-xp-bg border border-xp-border rounded-md text-sm"
+                  className="bg-xp-bg border-xp-border w-full rounded-md border px-3 py-2 text-sm"
                 />
               </div>
               <div>
-                <label className="block text-xs text-xp-text-muted mb-1">To</label>
+                <label className="text-xp-text-muted mb-1 block text-xs">To</label>
                 <input
                   type="date"
                   value={dateTo}
@@ -140,7 +145,7 @@ export const SelectByDateDialog = ({ isOpen, onClose, onSelect, files }: SelectB
                     setSelectedPreset(null);
                   }}
                   min={dateFrom || undefined}
-                  className="w-full px-3 py-2 bg-xp-bg border border-xp-border rounded-md text-sm"
+                  className="bg-xp-bg border-xp-border w-full rounded-md border px-3 py-2 text-sm"
                 />
               </div>
             </div>
@@ -148,29 +153,29 @@ export const SelectByDateDialog = ({ isOpen, onClose, onSelect, files }: SelectB
 
           {/* Preview Count */}
           {dateFrom && dateTo && (
-            <div className="flex items-center justify-between p-3 bg-xp-primary/10 border border-xp-primary/30 rounded-md">
-              <span className="text-sm text-xp-text">Files matching:</span>
-              <span className="text-lg font-semibold text-xp-primary">{matchCount}</span>
+            <div className="bg-xp-primary/10 border-xp-primary/30 flex items-center justify-between rounded-md border p-3">
+              <span className="text-xp-text text-sm">Files matching:</span>
+              <span className="text-xp-primary text-lg font-semibold">{matchCount}</span>
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between p-4 border-t border-xp-border">
-          <button onClick={clearDates} className="text-sm text-xp-text-muted hover:text-xp-text">
+        <div className="border-xp-border flex items-center justify-between border-t p-4">
+          <button onClick={clearDates} className="text-xp-text-muted hover:text-xp-text text-sm">
             Clear
           </button>
           <div className="flex gap-2">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-sm text-xp-text-muted hover:text-xp-text"
+              className="text-xp-text-muted hover:text-xp-text px-4 py-2 text-sm"
             >
               Cancel
             </button>
             <button
               onClick={handleSelect}
               disabled={!dateFrom || !dateTo || matchCount === 0}
-              className="px-4 py-2 bg-xp-primary text-white rounded-md text-sm disabled:opacity-50"
+              className="bg-xp-primary rounded-md px-4 py-2 text-sm text-white disabled:opacity-50"
             >
               Select {matchCount} Files
             </button>
@@ -179,4 +184,4 @@ export const SelectByDateDialog = ({ isOpen, onClose, onSelect, files }: SelectB
       </div>
     </div>
   );
-}
+};

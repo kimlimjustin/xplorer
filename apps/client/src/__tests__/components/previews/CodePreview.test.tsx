@@ -8,15 +8,29 @@ import { FileEntry, TauriAPI } from '@/lib/tauri-api';
 vi.mock('react-syntax-highlighter', () => {
   const React = require('react');
   return {
-    Prism: React.forwardRef(({ children, language, showLineNumbers, ..._rest }: Record<string, unknown> & { children?: React.ReactNode; language?: string; showLineNumbers?: boolean }, _ref: React.Ref<HTMLElement>) => (
-      <pre
-        data-testid="syntax-highlighter"
-        data-language={language}
-        data-show-line-numbers={String(showLineNumbers)}
-      >
-        <code>{children}</code>
-      </pre>
-    )),
+    Prism: React.forwardRef(
+      (
+        {
+          children,
+          language,
+          showLineNumbers,
+          ..._rest
+        }: Record<string, unknown> & {
+          children?: React.ReactNode;
+          language?: string;
+          showLineNumbers?: boolean;
+        },
+        _ref: React.Ref<HTMLElement>,
+      ) => (
+        <pre
+          data-testid="syntax-highlighter"
+          data-language={language}
+          data-show-line-numbers={String(showLineNumbers)}
+        >
+          <code>{children}</code>
+        </pre>
+      ),
+    ),
   };
 });
 

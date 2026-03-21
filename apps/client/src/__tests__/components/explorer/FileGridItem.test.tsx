@@ -77,8 +77,10 @@ describe('FileGridItem', () => {
     allFiles: [sampleFile],
     getFileIcon: (file: FileEntry) => <span data-testid={`file-icon-${file.name}`}>icon</span>,
     formatFileSize: (bytes: number) => `${bytes} B`,
-    formatFolderSize: (info: unknown, isCalc?: boolean) =>
-      isCalc ? 'Calculating...' : info ? '1 MB' : '',
+    formatFolderSize: (info: unknown, isCalc?: boolean) => {
+      if (isCalc) return 'Calculating...';
+      return info ? '1 MB' : '';
+    },
     formatDate: (_ts: number) => 'Mar 2025',
     onFileClick: mockOnFileClick,
     onFileDoubleClick: mockOnFileDoubleClick,

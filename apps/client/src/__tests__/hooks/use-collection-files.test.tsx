@@ -8,8 +8,7 @@ vi.mock('@/lib/collections', () => ({
 }));
 
 import { useCollectionFiles } from '@/hooks/use-collection-files';
-import { TauriAPI } from '@/lib/tauri-api';
-import type { FileEntry } from '@/lib/tauri-api';
+import { TauriAPI, type FileEntry } from '@/lib/tauri-api';
 import { getCollection, matchesFilter } from '@/lib/collections';
 
 const mockReadDirectory = vi.mocked(TauriAPI.readDirectory);
@@ -66,12 +65,14 @@ describe('useCollectionFiles', () => {
       mockReadDirectory.mockResolvedValue(files as FileEntry[]);
 
       // matchesFilter: only the PDF matches
-      mockMatchesFilter.mockImplementation((file: FileEntry, filter: { type: string; value: string }) => {
-        if (filter.type === 'extension') {
-          return file.name.endsWith(filter.value);
-        }
-        return true;
-      });
+      mockMatchesFilter.mockImplementation(
+        (file: FileEntry, filter: { type: string; value: string }) => {
+          if (filter.type === 'extension') {
+            return file.name.endsWith(filter.value);
+          }
+          return true;
+        },
+      );
 
       const { result } = renderHook(() => useCollectionFiles('col-1', '/fallback'));
 

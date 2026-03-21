@@ -4,13 +4,25 @@ import '@testing-library/jest-dom';
 import { FileConflictDialog } from '@/components/dialogs/FileConflictDialog';
 
 vi.mock('lucide-react', () => ({
-  AlertTriangle: ({ className }: { className?: string }) => <span data-testid="alert-icon" className={className} />,
-  FileIcon: ({ className }: { className?: string }) => <span data-testid="file-icon" className={className} />,
-  FolderClosed: ({ className }: { className?: string }) => <span data-testid="folder-icon" className={className} />,
-  Replace: ({ className }: { className?: string }) => <span data-testid="replace-icon" className={className} />,
-  Copy: ({ className }: { className?: string }) => <span data-testid="copy-icon" className={className} />,
+  AlertTriangle: ({ className }: { className?: string }) => (
+    <span data-testid="alert-icon" className={className} />
+  ),
+  FileIcon: ({ className }: { className?: string }) => (
+    <span data-testid="file-icon" className={className} />
+  ),
+  FolderClosed: ({ className }: { className?: string }) => (
+    <span data-testid="folder-icon" className={className} />
+  ),
+  Replace: ({ className }: { className?: string }) => (
+    <span data-testid="replace-icon" className={className} />
+  ),
+  Copy: ({ className }: { className?: string }) => (
+    <span data-testid="copy-icon" className={className} />
+  ),
   X: ({ className }: { className?: string }) => <span data-testid="x-icon" className={className} />,
-  ArrowRight: ({ className }: { className?: string }) => <span data-testid="arrow-right" className={className} />,
+  ArrowRight: ({ className }: { className?: string }) => (
+    <span data-testid="arrow-right" className={className} />
+  ),
 }));
 
 describe('FileConflictDialog', () => {

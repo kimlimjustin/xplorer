@@ -38,12 +38,20 @@ vi.mock('lucide-react', () => ({
   AlertTriangle: () => <span data-testid="alert-icon">Alert</span>,
   FolderOpen: () => <span data-testid="folder-open">FolderOpen</span>,
   Package: () => <span data-testid="package-icon">Package</span>,
-  Archive: ({ size: _size, className: _className }: { size?: number; className?: string }) => <span data-testid="archive-icon">Archive</span>,
+  Archive: ({ size: _size, className: _className }: { size?: number; className?: string }) => (
+    <span data-testid="archive-icon">Archive</span>
+  ),
   FileText: () => <span data-testid="file-text">FileText</span>,
-  FolderClosed: ({ size: _size, className: _className }: { size?: number; className?: string }) => <span data-testid="folder-closed">FolderClosed</span>,
+  FolderClosed: ({ size: _size, className: _className }: { size?: number; className?: string }) => (
+    <span data-testid="folder-closed">FolderClosed</span>
+  ),
   File: () => <span data-testid="file-icon">File</span>,
-  Lock: ({ size: _size, className: _className }: { size?: number; className?: string }) => <span data-testid="lock-icon">Lock</span>,
-  CheckSquare: ({ size: _size }: { size?: number }) => <span data-testid="check-square">CheckSquare</span>,
+  Lock: ({ size: _size, className: _className }: { size?: number; className?: string }) => (
+    <span data-testid="lock-icon">Lock</span>
+  ),
+  CheckSquare: ({ size: _size }: { size?: number }) => (
+    <span data-testid="check-square">CheckSquare</span>
+  ),
   Square: ({ size: _size }: { size?: number }) => <span data-testid="square-icon">Square</span>,
 }));
 

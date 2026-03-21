@@ -1,8 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useFocusChangeTracker } from '@/hooks/use-focus-change-tracker';
-import { TauriAPI } from '@/lib/tauri-api';
-import type { FileEntry } from '@/lib/tauri-api';
+import { TauriAPI, type FileEntry } from '@/lib/tauri-api';
 
 const makeFile = (name: string, path: string, size = 1024, modified = 1700000000): FileEntry => {
   return {

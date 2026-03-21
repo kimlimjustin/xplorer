@@ -134,7 +134,7 @@ export const Dialog = ({
           aria-modal="true"
           aria-labelledby={titleId}
           tabIndex={-1}
-          className="bg-xp-popover rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden border border-xp-border"
+          className="bg-xp-popover border-xp-border mx-4 max-h-[90vh] w-full max-w-4xl overflow-hidden rounded-lg border shadow-xl"
           style={{ outline: 'none' }}
           onClick={(e) => e.stopPropagation()}
           onKeyDown={handleKeyDown}
@@ -144,7 +144,7 @@ export const Dialog = ({
       </div>
     </DialogContext.Provider>
   );
-}
+};
 
 interface DialogContentProps {
   children: React.ReactNode;
@@ -153,15 +153,15 @@ interface DialogContentProps {
 
 export const DialogContent = ({ children, className = '' }: DialogContentProps) => {
   return <div className={`p-6 ${className}`}>{children}</div>;
-}
+};
 
 interface DialogHeaderProps {
   children: React.ReactNode;
 }
 
 export const DialogHeader = ({ children }: DialogHeaderProps) => {
-  return <div className="mb-4 pb-4 border-b border-xp-border">{children}</div>;
-}
+  return <div className="border-xp-border mb-4 border-b pb-4">{children}</div>;
+};
 
 interface DialogTitleProps {
   children: React.ReactNode;
@@ -175,19 +175,19 @@ export const DialogTitle = ({ children, className = '', id: idProp }: DialogTitl
   const resolvedId = idProp ?? ctx?.titleId;
 
   return (
-    <h2 id={resolvedId} className={`text-xl font-semibold text-xp-text ${className}`}>
+    <h2 id={resolvedId} className={`text-xp-text text-xl font-semibold ${className}`}>
       {children}
     </h2>
   );
-}
+};
 
 interface DialogDescriptionProps {
   children: React.ReactNode;
 }
 
 export const DialogDescription = ({ children }: DialogDescriptionProps) => {
-  return <p className="text-sm text-xp-text-secondary mt-2">{children}</p>;
-}
+  return <p className="text-xp-text-secondary mt-2 text-sm">{children}</p>;
+};
 
 interface DialogTriggerProps {
   children: React.ReactNode;
@@ -196,12 +196,12 @@ interface DialogTriggerProps {
 
 export const DialogTrigger = ({ children }: DialogTriggerProps) => {
   return <>{children}</>;
-}
+};
 
 interface DialogFooterProps {
   children: React.ReactNode;
 }
 
 export const DialogFooter = ({ children }: DialogFooterProps) => {
-  return <div className="flex justify-end gap-2 pt-4 border-t border-xp-border">{children}</div>;
-}
+  return <div className="border-xp-border flex justify-end gap-2 border-t pt-4">{children}</div>;
+};

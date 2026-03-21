@@ -18,12 +18,12 @@ export type ActivityFilter = 'all' | 'created' | 'modified' | 'deleted' | 'renam
 const MAX_ENTRIES = 200;
 
 let entryCounter = 0;
-const generateEntryId = () : string => {
+const generateEntryId = (): string => {
   return `activity-${Date.now()}-${entryCounter++}`;
-}
+};
 
 /** Map backend fs-change event_type strings to ActivityEntry type */
-const mapEventType = (eventType: string) : ActivityEntry['type'] | null => {
+const mapEventType = (eventType: string): ActivityEntry['type'] | null => {
   switch (eventType) {
     case 'file-created':
     case 'create':
@@ -39,13 +39,13 @@ const mapEventType = (eventType: string) : ActivityEntry['type'] | null => {
     default:
       return 'modified';
   }
-}
+};
 
 /** Extract file name from a full path */
-const extractName = (filePath: string) : string => {
+const extractName = (filePath: string): string => {
   const parts = filePath.replace(/\\/g, '/').split('/');
   return parts[parts.length - 1] || filePath;
-}
+};
 
 // ── Hook ─────────────────────────────────────────────────────────────────────
 
@@ -180,4 +180,4 @@ export const useActivityFeed = () => {
     clearFeed,
     recentCount,
   };
-}
+};

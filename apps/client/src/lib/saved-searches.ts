@@ -14,11 +14,11 @@ export interface SavedSearch {
   created: number;
 }
 
-const generateId = () : string => {
+const generateId = (): string => {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-}
+};
 
-export const getSavedSearches = () : SavedSearch[] => {
+export const getSavedSearches = (): SavedSearch[] => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
@@ -27,9 +27,9 @@ export const getSavedSearches = () : SavedSearch[] => {
   } catch {
     return [];
   }
-}
+};
 
-export const saveSearch = (search: Omit<SavedSearch, 'id' | 'created'>) : SavedSearch => {
+export const saveSearch = (search: Omit<SavedSearch, 'id' | 'created'>): SavedSearch => {
   const entry: SavedSearch = {
     ...search,
     id: generateId(),
@@ -45,9 +45,9 @@ export const saveSearch = (search: Omit<SavedSearch, 'id' | 'created'>) : SavedS
   }
   window.dispatchEvent(new Event('saved-searches-changed'));
   return entry;
-}
+};
 
-export const deleteSavedSearch = (id: string) : void => {
+export const deleteSavedSearch = (id: string): void => {
   const list = getSavedSearches().filter((s) => s.id !== id);
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
@@ -55,9 +55,9 @@ export const deleteSavedSearch = (id: string) : void => {
     // ignore
   }
   window.dispatchEvent(new Event('saved-searches-changed'));
-}
+};
 
-export const renameSavedSearch = (id: string, name: string) : void => {
+export const renameSavedSearch = (id: string, name: string): void => {
   const list = getSavedSearches();
   const entry = list.find((s) => s.id === id);
   if (!entry) return;
@@ -68,4 +68,4 @@ export const renameSavedSearch = (id: string, name: string) : void => {
     // ignore
   }
   window.dispatchEvent(new Event('saved-searches-changed'));
-}
+};

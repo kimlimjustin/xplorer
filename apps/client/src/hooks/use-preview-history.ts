@@ -39,4 +39,4 @@ export const usePreviewHistory = () => {
   }, []);
 
   return { getHistory, addToHistory, clearHistory, versionRef };
-}
+};

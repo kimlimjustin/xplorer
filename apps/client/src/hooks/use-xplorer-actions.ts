@@ -78,11 +78,17 @@ export interface XplorerActionsDeps {
 
   // Dialog state setters
   setShowChangeSummaryToast: React.Dispatch<React.SetStateAction<boolean>>;
-  setFileConflict: React.Dispatch<React.SetStateAction<{
-    fileName: string; isDir: boolean; destination: string; remaining: number;
-    sourceInfo?: ConflictFileInfo | null; destInfo?: ConflictFileInfo | null;
-    resolve: (resolution: ConflictResolution, applyToAll: boolean) => void;
-  } | null>>;
+  setFileConflict: React.Dispatch<
+    React.SetStateAction<{
+      fileName: string;
+      isDir: boolean;
+      destination: string;
+      remaining: number;
+      sourceInfo?: ConflictFileInfo | null;
+      destInfo?: ConflictFileInfo | null;
+      resolve: (resolution: ConflictResolution, applyToAll: boolean) => void;
+    } | null>
+  >;
   setTemplatePickerOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setFolderCompareOpen: React.Dispatch<React.SetStateAction<boolean>>;
   setFolderComparePaths: React.Dispatch<React.SetStateAction<{ left: string; right: string }>>;
@@ -118,7 +124,7 @@ export const useXplorerActions = (deps: XplorerActionsDeps) => {
     setPaneFiles,
     paneRefetchRef,
     pendingSelectRef,
-    topBarRef,
+    topBarRef: _topBarRef,
     leftSidebarRef,
     dismissFileChanges,
     viewMode,
@@ -229,7 +235,7 @@ export const useXplorerActions = (deps: XplorerActionsDeps) => {
     if (currentPath.startsWith('/')) {
       const parts = currentPath.split('/').filter(Boolean);
       if (parts.length <= 1) return;
-      const parentPath = '/' + parts.slice(0, -1).join('/');
+      const parentPath = `/${parts.slice(0, -1).join('/')}`;
       navigateWithHistory(parentPath);
       return;
     }
@@ -739,7 +745,6 @@ export const useXplorerActions = (deps: XplorerActionsDeps) => {
       navigateUp,
       navigateToPath: navigateWithHistory,
       refetchFiles: refetch,
-       
     }),
     [
       theme,
@@ -807,7 +812,7 @@ export const useXplorerActions = (deps: XplorerActionsDeps) => {
     }),
     [
       fileOps,
-      topBarRef,
+      leftSidebarRef,
       refetch,
       toast,
       navigateWithHistory,
@@ -913,4 +918,4 @@ export const useXplorerActions = (deps: XplorerActionsDeps) => {
     activeGroupRef,
     navigateToPathRef,
   };
-}
+};

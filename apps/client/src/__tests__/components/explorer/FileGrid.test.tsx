@@ -78,9 +78,10 @@ describe('FileGrid', () => {
     groupId: 'main',
     getFileIcon: vi.fn((file: FileEntry) => (file.is_dir ? '📁' : '📄')),
     formatFileSize: vi.fn((bytes: number) => `${bytes} B`),
-    formatFolderSize: vi.fn((info: FolderSizeInfo | null, isCalculating?: boolean) =>
-      isCalculating ? 'Calculating...' : info ? `${info.file_count} items` : '--',
-    ),
+    formatFolderSize: vi.fn((info: FolderSizeInfo | null, isCalculating?: boolean) => {
+      if (isCalculating) return 'Calculating...';
+      return info ? `${info.file_count} items` : '--';
+    }),
     formatDate: vi.fn((timestamp: number) => new Date(timestamp).toLocaleDateString()),
     handleFileClick: vi.fn(),
     handleFileDoubleClick: vi.fn(),

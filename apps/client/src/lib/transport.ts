@@ -18,8 +18,9 @@ const detectMode = (): 'tauri' | 'http' => {
   const override = import.meta.env.VITE_API_MODE;
   if (override === 'http') return 'http';
   if (override === 'tauri') return 'tauri';
-  if (typeof window !== 'undefined' && ('__TAURI_INTERNALS__' in window || '__TAURI__' in window))
+  if (typeof window !== 'undefined' && ('__TAURI_INTERNALS__' in window || '__TAURI__' in window)) {
     return 'tauri';
+  }
   return 'http';
 };
 

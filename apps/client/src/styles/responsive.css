@@ -36,7 +36,7 @@
     max-width: 200px;
   }
 
-  .xp-left-sidebar [role='region'] h4 {
+  .xp-left-sidebar [role="region"] h4 {
     font-size: 9px;
   }
 
@@ -93,7 +93,7 @@
   }
 
   /* --- Reduce general padding on panels --- */
-  .xp-left-sidebar [role='region'] {
+  .xp-left-sidebar [role="region"] {
     padding-left: 0.5rem;
     padding-right: 0.5rem;
     padding-top: 0.375rem;
@@ -200,7 +200,7 @@
   }
 
   /* Tab items: narrower */
-  .xp-topbar [role='tab'] {
+  .xp-topbar [role="tab"] {
     max-width: 120px;
     padding-left: 0.5rem;
     padding-right: 0.5rem;
@@ -291,10 +291,10 @@
 
   /* --- General touch target improvements --- */
   button:not(.xp-inline-btn),
-  [role='button'],
-  [role='tab'],
-  [role='treeitem'],
-  [role='option'] {
+  [role="button"],
+  [role="tab"],
+  [role="treeitem"],
+  [role="option"] {
     min-height: 36px;
   }
 }
@@ -338,17 +338,17 @@
   }
 
   /* Tab container: allow horizontal scroll */
-  .xp-topbar [role='tablist'] {
+  .xp-topbar [role="tablist"] {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
   }
-  .xp-topbar [role='tablist']::-webkit-scrollbar {
+  .xp-topbar [role="tablist"]::-webkit-scrollbar {
     display: none;
   }
 
   /* Tab items: even narrower */
-  .xp-topbar [role='tab'] {
+  .xp-topbar [role="tab"] {
     max-width: 100px;
     font-size: 0.6875rem;
   }
@@ -403,10 +403,10 @@
 
   /* All interactive elements: minimum 44px touch target */
   button,
-  [role='button'],
-  [role='tab'],
-  [role='option'],
-  [role='treeitem'],
+  [role="button"],
+  [role="tab"],
+  [role="option"],
+  [role="treeitem"],
   a {
     min-height: 44px;
     min-width: 44px;
@@ -414,7 +414,7 @@
 
   /* Exception: inline tiny buttons (close tab, remove bookmark, etc.) */
   .xp-inline-btn,
-  [role='tab'] button,
+  [role="tab"] button,
   .group button {
     min-height: 32px;
     min-width: 32px;
@@ -431,34 +431,34 @@
 
   /* Sidebar quick-access items: taller */
   .xp-left-sidebar button,
-  .xp-left-sidebar [role='button'] {
+  .xp-left-sidebar [role="button"] {
     min-height: 44px;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
   }
 
   /* Tree items: taller for touch */
-  .xp-left-sidebar [role='treeitem'] {
+  .xp-left-sidebar [role="treeitem"] {
     min-height: 40px;
     padding-top: 0.375rem;
     padding-bottom: 0.375rem;
   }
 
   /* Context menu items: taller */
-  [role='menuitem'],
-  [role='menu'] button {
+  [role="menuitem"],
+  [role="menu"] button {
     min-height: 44px;
     padding: 0.5rem 1rem;
   }
 
   /* Dialog buttons: taller */
-  [role='dialog'] button {
+  [role="dialog"] button {
     min-height: 44px;
     padding: 0.5rem 1rem;
   }
 
   /* Bottom panel tabs: taller */
-  .xp-bottom-panel [role='tab'],
+  .xp-bottom-panel [role="tab"],
   .xp-bottom-panel button {
     min-height: 44px;
   }

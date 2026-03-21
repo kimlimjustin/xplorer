@@ -173,7 +173,7 @@ const PERMISSIONS: Record<string, PermissionInfo> = {
 
 const RISK_ORDER: Record<RiskLevel, number> = { danger: 0, warning: 1, safe: 2 };
 
-export const getPermissionInfo = (permission: string) : PermissionInfo => {
+export const getPermissionInfo = (permission: string): PermissionInfo => {
   return (
     PERMISSIONS[permission] ?? {
       id: permission,
@@ -183,19 +183,19 @@ export const getPermissionInfo = (permission: string) : PermissionInfo => {
       icon: Eye,
     }
   );
-}
+};
 
 /** Sort permissions by risk (danger first) then alphabetically. */
-export const sortPermissions = (permissions: string[]) : PermissionInfo[] => {
+export const sortPermissions = (permissions: string[]): PermissionInfo[] => {
   return permissions
     .map(getPermissionInfo)
     .sort((a, b) => RISK_ORDER[a.risk] - RISK_ORDER[b.risk] || a.label.localeCompare(b.label));
-}
+};
 
-export const countByRisk = (permissions: string[]) : Record<RiskLevel, number> => {
+export const countByRisk = (permissions: string[]): Record<RiskLevel, number> => {
   const counts: Record<RiskLevel, number> = { danger: 0, warning: 0, safe: 0 };
   for (const p of permissions) {
     counts[getPermissionInfo(p).risk]++;
   }
   return counts;
-}
+};

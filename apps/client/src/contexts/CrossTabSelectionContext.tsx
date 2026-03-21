@@ -13,8 +13,8 @@ export const CrossTabSelectionProvider = ({
   return (
     <CrossTabSelectionContext.Provider value={value}>{children}</CrossTabSelectionContext.Provider>
   );
-}
+};
 
-export const useCrossTabSelectionContext = () : CrossTabSelectionState | null => {
+export const useCrossTabSelectionContext = (): CrossTabSelectionState | null => {
   return useContext(CrossTabSelectionContext);
-}
+};

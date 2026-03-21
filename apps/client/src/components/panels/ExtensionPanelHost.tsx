@@ -10,7 +10,7 @@ const ExtensionPanelHost = ({ panelId, builtinProps }: ExtensionPanelHostProps) 
   const panel = extensionHost.getPanel(panelId);
 
   if (!panel) {
-    return <div className="p-4 text-sm text-xp-text-muted">Panel not found: {panelId}</div>;
+    return <div className="text-xp-text-muted p-4 text-sm">Panel not found: {panelId}</div>;
   }
 
   try {
@@ -22,6 +22,6 @@ const ExtensionPanelHost = ({ panelId, builtinProps }: ExtensionPanelHostProps) 
       </div>
     );
   }
-}
+};
 
 export default ExtensionPanelHost;

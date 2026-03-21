@@ -29,9 +29,9 @@ const MarkdownRenderer = ({ content, className = '' }: MarkdownRendererProps) =>
       {elements}
     </div>
   );
-}
+};
 
-const parseMarkdown = (text: string) : React.ReactNode[] => {
+const parseMarkdown = (text: string): React.ReactNode[] => {
   const lines = text.split('\n');
   const elements: React.ReactNode[] = [];
   let i = 0;
@@ -52,7 +52,7 @@ const parseMarkdown = (text: string) : React.ReactNode[] => {
       elements.push(
         <pre
           key={key++}
-          className="bg-xp-bg border border-xp-border rounded-md p-3 my-2 overflow-x-auto text-xs"
+          className="bg-xp-bg border-xp-border my-2 overflow-x-auto rounded-md border p-3 text-xs"
         >
           <code className="text-xp-text">{codeLines.join('\n')}</code>
         </pre>,
@@ -86,13 +86,13 @@ const parseMarkdown = (text: string) : React.ReactNode[] => {
 
       elements.push(
         <div key={key++} className="my-2 overflow-x-auto">
-          <table className="w-full text-xs border-collapse border border-xp-border">
+          <table className="border-xp-border w-full border-collapse border text-xs">
             <thead>
               <tr className="bg-xp-bg">
                 {tableRows[0].map((cell, ci) => (
                   <th
-                    key={ci}
-                    className="px-2 py-1.5 border border-xp-border text-left font-semibold"
+                    key={`header-${ci}`} // eslint-disable-line react/no-array-index-key
+                    className="border-xp-border border px-2 py-1.5 text-left font-semibold"
                     style={{ textAlign: alignments[ci] || 'left' }}
                   >
                     {renderInline(cell)}
@@ -102,11 +102,12 @@ const parseMarkdown = (text: string) : React.ReactNode[] => {
             </thead>
             <tbody>
               {tableRows.slice(1).map((row, ri) => (
-                <tr key={ri} className={ri % 2 === 0 ? '' : 'bg-xp-bg/30'}>
+                // eslint-disable-next-line react/no-array-index-key
+                <tr key={`row-${ri}`} className={ri % 2 === 0 ? '' : 'bg-xp-bg/30'}>
                   {row.map((cell, ci) => (
                     <td
-                      key={ci}
-                      className="px-2 py-1 border border-xp-border"
+                      key={`cell-${ci}`} // eslint-disable-line react/no-array-index-key
+                      className="border-xp-border border px-2 py-1"
                       style={{ textAlign: alignments[ci] || 'left' }}
                     >
                       {renderInline(cell)}
@@ -151,10 +152,10 @@ const parseMarkdown = (text: string) : React.ReactNode[] => {
       elements.push(
         <blockquote
           key={key++}
-          className="border-l-2 border-xp-border-light pl-3 my-2 text-xp-text-muted"
+          className="border-xp-border-light text-xp-text-muted my-2 border-l-2 pl-3"
         >
           {quoteLines.map((ql, qi) => (
-            <p key={qi}>{renderInline(ql)}</p>
+            <p key={`quote-${qi}`}>{renderInline(ql)}</p> // eslint-disable-line react/no-array-index-key
           ))}
         </blockquote>,
       );
@@ -169,9 +170,10 @@ const parseMarkdown = (text: string) : React.ReactNode[] => {
         i++;
       }
       elements.push(
-        <ul key={key++} className="list-disc list-inside my-1 space-y-0.5">
+        <ul key={key++} className="my-1 list-inside list-disc space-y-0.5">
           {items.map((item, idx) => (
-            <li key={idx} className="text-sm">
+            // eslint-disable-next-line react/no-array-index-key
+            <li key={`ul-${idx}`} className="text-sm">
               {renderInline(item)}
             </li>
           ))}
@@ -188,9 +190,10 @@ const parseMarkdown = (text: string) : React.ReactNode[] => {
         i++;
       }
       elements.push(
-        <ol key={key++} className="list-decimal list-inside my-1 space-y-0.5">
+        <ol key={key++} className="my-1 list-inside list-decimal space-y-0.5">
           {items.map((item, idx) => (
-            <li key={idx} className="text-sm">
+            // eslint-disable-next-line react/no-array-index-key
+            <li key={`ol-${idx}`} className="text-sm">
               {renderInline(item)}
             </li>
           ))}
@@ -215,19 +218,19 @@ const parseMarkdown = (text: string) : React.ReactNode[] => {
   }
 
   return elements;
-}
+};
 
 /** Parse a markdown table row into cells */
-const parseTableRow = (line: string) : string[] => {
+const parseTableRow = (line: string): string[] => {
   return line
     .replace(/^\|/, '')
     .replace(/\|$/, '')
     .split('|')
     .map((cell) => cell.trim());
-}
+};
 
 /** Parse table alignment from separator row (e.g. |:---|:---:|---:| ) */
-const parseTableAlignments = (sepLine: string) : ('left' | 'center' | 'right')[] => {
+const parseTableAlignments = (sepLine: string): ('left' | 'center' | 'right')[] => {
   return sepLine
     .replace(/^\|/, '')
     .replace(/\|$/, '')
@@ -240,7 +243,7 @@ const parseTableAlignments = (sepLine: string) : ('left' | 'center' | 'right')[]
       if (right) return 'right';
       return 'left';
     });
-}
+};
 
 /**
  * Render inline markdown: bold, italic, code, links
@@ -259,7 +262,7 @@ const renderInline = (text: string): React.ReactNode => {
       parts.push(
         <code
           key={`c-${segKey++}`}
-          className="bg-xp-bg text-xp-purple px-1 py-0.5 rounded text-xs break-all"
+          className="bg-xp-bg text-xp-purple break-all rounded px-1 py-0.5 text-xs"
         >
           {match[2]}
         </code>,
@@ -281,7 +284,7 @@ const renderInline = (text: string): React.ReactNode => {
             href={href}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xp-blue underline break-all"
+            className="text-xp-blue break-all underline"
           >
             {match[2]}
           </a>,
@@ -306,7 +309,7 @@ const renderInline = (text: string): React.ReactNode => {
   return parts.length === 1 ? parts[0] : <>{parts}</>;
 };
 
-const renderBoldItalic = (text: string, keyBase: number) : React.ReactNode[] => {
+const renderBoldItalic = (text: string, keyBase: number): React.ReactNode[] => {
   const parts: React.ReactNode[] = [];
   let remaining = text;
   let k = 0;
@@ -347,7 +350,7 @@ const renderBoldItalic = (text: string, keyBase: number) : React.ReactNode[] => 
           {match[2]}
         </em>,
       );
-      remaining = match[3] ? ' ' + match[3] : '';
+      remaining = match[3] ? ` ${match[3]}` : '';
       continue;
     }
 
@@ -359,6 +362,6 @@ const renderBoldItalic = (text: string, keyBase: number) : React.ReactNode[] => 
   }
 
   return parts;
-}
+};
 
 export default MarkdownRenderer;

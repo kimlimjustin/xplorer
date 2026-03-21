@@ -81,12 +81,12 @@ const getOperationMeta = (operation: BatchOperationType) => {
       confirmClass: 'bg-xp-blue hover:opacity-90 text-white',
     }
   );
-}
+};
 
-const getExtension = (name: string) : string => {
+const getExtension = (name: string): string => {
   const dot = name.lastIndexOf('.');
   return dot > 0 ? name.slice(dot + 1).toUpperCase() : '';
-}
+};
 
 // ── Component ────────────────────────────────────────────────────────────────
 
@@ -131,7 +131,7 @@ const BatchConfirmDialog = ({
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
       role="presentation"
     >
       <div
@@ -140,23 +140,23 @@ const BatchConfirmDialog = ({
         aria-labelledby="batch-confirm-title"
         aria-modal="true"
         tabIndex={-1}
-        className="bg-xp-surface border border-xp-border rounded-lg w-[540px] max-w-[90vw] max-h-[80vh] flex flex-col outline-none shadow-2xl"
+        className="bg-xp-surface border-xp-border flex max-h-[80vh] w-[540px] max-w-[90vw] flex-col rounded-lg border shadow-2xl outline-none"
         onKeyDown={handleKeyDown}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-xp-border shrink-0">
+        <div className="border-xp-border flex shrink-0 items-center justify-between border-b p-5">
           <div className="flex items-center gap-3">
             {meta.icon}
-            <h2 id="batch-confirm-title" className="text-lg font-semibold text-xp-text">
+            <h2 id="batch-confirm-title" className="text-xp-text text-lg font-semibold">
               {meta.label} {files.length} Items
             </h2>
           </div>
           <button
             onClick={onCancel}
-            className="p-2 hover:bg-xp-surface-light rounded-md transition-colors"
+            className="hover:bg-xp-surface-light rounded-md p-2 transition-colors"
             aria-label="Close"
           >
-            <svg className="w-4 h-4 text-xp-text-muted" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="text-xp-text-muted h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fillRule="evenodd"
                 d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
@@ -168,19 +168,19 @@ const BatchConfirmDialog = ({
 
         {/* Warning Banner (destructive ops only) */}
         {meta.destructive && meta.warning && (
-          <div className="mx-5 mt-4 flex items-start gap-3 p-3 rounded-lg bg-red-500/10 border border-red-500/30 shrink-0">
-            <AlertTriangle size={18} className="text-red-400 mt-0.5 shrink-0" />
+          <div className="mx-5 mt-4 flex shrink-0 items-start gap-3 rounded-lg border border-red-500/30 bg-red-500/10 p-3">
+            <AlertTriangle size={18} className="mt-0.5 shrink-0 text-red-400" />
             <p className="text-sm text-red-300">{meta.warning}</p>
           </div>
         )}
 
         {/* Destination (move operations) */}
         {operation === 'move' && destination && (
-          <div className="mx-5 mt-4 flex items-center gap-2 p-3 rounded-lg bg-xp-surface-light border border-xp-border shrink-0">
+          <div className="bg-xp-surface-light border-xp-border mx-5 mt-4 flex shrink-0 items-center gap-2 rounded-lg border p-3">
             <ArrowRight size={16} className="text-xp-blue shrink-0" />
             <div className="min-w-0">
-              <div className="text-xs text-xp-text-muted">Destination</div>
-              <div className="text-sm text-xp-text truncate" title={destination}>
+              <div className="text-xp-text-muted text-xs">Destination</div>
+              <div className="text-xp-text truncate text-sm" title={destination}>
                 {destination}
               </div>
             </div>
@@ -188,16 +188,16 @@ const BatchConfirmDialog = ({
         )}
 
         {/* File list */}
-        <div className="mx-5 mt-4 flex-1 min-h-0 overflow-hidden">
-          <div className="text-xs font-medium text-xp-text-muted mb-2 uppercase tracking-wide">
+        <div className="mx-5 mt-4 min-h-0 flex-1 overflow-hidden">
+          <div className="text-xp-text-muted mb-2 text-xs font-medium uppercase tracking-wide">
             Affected Items
           </div>
-          <div className="max-h-[280px] overflow-y-auto rounded-lg border border-xp-border bg-xp-bg">
+          <div className="border-xp-border bg-xp-bg max-h-[280px] overflow-y-auto rounded-lg border">
             {files.map((file, index) => (
               <div
                 key={file.path}
                 className={`flex items-center gap-3 px-3 py-2 text-sm ${
-                  index < files.length - 1 ? 'border-b border-xp-border/50' : ''
+                  index < files.length - 1 ? 'border-xp-border/50 border-b' : ''
                 }`}
               >
                 {/* Icon */}
@@ -212,18 +212,18 @@ const BatchConfirmDialog = ({
                   <div className="text-xp-text truncate" title={file.name}>
                     {file.name}
                   </div>
-                  <div className="text-xs text-xp-text-muted truncate" title={file.path}>
+                  <div className="text-xp-text-muted truncate text-xs" title={file.path}>
                     {file.path}
                   </div>
                 </div>
 
                 {/* Type */}
-                <div className="text-xs text-xp-text-muted shrink-0 w-12 text-right">
+                <div className="text-xp-text-muted w-12 shrink-0 text-right text-xs">
                   {file.is_dir ? 'Folder' : getExtension(file.name) || 'File'}
                 </div>
 
                 {/* Size */}
-                <div className="text-xs text-xp-text-muted shrink-0 w-16 text-right">
+                <div className="text-xp-text-muted w-16 shrink-0 text-right text-xs">
                   {file.is_dir ? '--' : formatFileSize(file.size)}
                 </div>
               </div>
@@ -232,23 +232,23 @@ const BatchConfirmDialog = ({
         </div>
 
         {/* Summary line */}
-        <div className="mx-5 mt-3 text-xs text-xp-text-muted shrink-0">
+        <div className="text-xp-text-muted mx-5 mt-3 shrink-0 text-xs">
           {summaryText}
           {sizeText ? `, ${sizeText} total` : ''}
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end gap-3 p-5 border-t border-xp-border mt-4 shrink-0">
+        <div className="border-xp-border mt-4 flex shrink-0 justify-end gap-3 border-t p-5">
           <button
             onClick={onCancel}
-            className="px-4 py-2 text-sm text-xp-text hover:bg-xp-surface-light rounded-md transition-colors border border-xp-border"
+            className="text-xp-text hover:bg-xp-surface-light border-xp-border rounded-md border px-4 py-2 text-sm transition-colors"
             aria-label="Cancel"
           >
             Cancel
           </button>
           <button
             onClick={onConfirm}
-            className={`px-4 py-2 text-sm rounded-md transition-colors flex items-center gap-2 ${meta.confirmClass}`}
+            className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm transition-colors ${meta.confirmClass}`}
             aria-label={meta.confirmLabel}
           >
             {meta.icon}
@@ -258,6 +258,6 @@ const BatchConfirmDialog = ({
       </div>
     </div>
   );
-}
+};
 
 export default BatchConfirmDialog;

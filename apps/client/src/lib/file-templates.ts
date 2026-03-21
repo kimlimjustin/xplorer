@@ -228,11 +228,11 @@ const CUSTOM_TEMPLATES_KEY = 'xplorer:custom-templates';
 
 // ── Public API ──────────────────────────────────────────────────────────────
 
-export const getBuiltinTemplates = () : FileTemplate[] => {
+export const getBuiltinTemplates = (): FileTemplate[] => {
   return BUILTIN_TEMPLATES;
-}
+};
 
-export const getCustomTemplates = () : FileTemplate[] => {
+export const getCustomTemplates = (): FileTemplate[] => {
   try {
     const raw = localStorage.getItem(CUSTOM_TEMPLATES_KEY);
     if (!raw) return [];
@@ -242,13 +242,13 @@ export const getCustomTemplates = () : FileTemplate[] => {
   } catch {
     return [];
   }
-}
+};
 
-export const getAllTemplates = () : FileTemplate[] => {
+export const getAllTemplates = (): FileTemplate[] => {
   return [...getBuiltinTemplates(), ...getCustomTemplates()];
-}
+};
 
-export const saveCustomTemplate = (template: Omit<FileTemplate, 'id' | 'isBuiltin'>) : void => {
+export const saveCustomTemplate = (template: Omit<FileTemplate, 'id' | 'isBuiltin'>): void => {
   const customs = getCustomTemplates();
   const newTemplate: FileTemplate = {
     ...template,
@@ -257,17 +257,17 @@ export const saveCustomTemplate = (template: Omit<FileTemplate, 'id' | 'isBuilti
   };
   customs.push(newTemplate);
   localStorage.setItem(CUSTOM_TEMPLATES_KEY, JSON.stringify(customs));
-}
+};
 
-export const deleteCustomTemplate = (id: string) : void => {
+export const deleteCustomTemplate = (id: string): void => {
   const customs = getCustomTemplates().filter((t) => t.id !== id);
   localStorage.setItem(CUSTOM_TEMPLATES_KEY, JSON.stringify(customs));
-}
+};
 
 /**
  * Extract all `{{variable}}` placeholders from template content.
  */
-export const extractVariables = (content: string) : string[] => {
+export const extractVariables = (content: string): string[] => {
   const regex = /\{\{(\w+)\}\}/g;
   const vars = new Set<string>();
   let match: RegExpExecArray | null;
@@ -275,24 +275,27 @@ export const extractVariables = (content: string) : string[] => {
     vars.add(match[1]);
   }
   return Array.from(vars);
-}
+};
 
 /**
  * Replace `{{var}}` placeholders in template content with actual values.
  */
-export const renderTemplate = (template: FileTemplate, variables: Record<string, string>) : string => {
+export const renderTemplate = (
+  template: FileTemplate,
+  variables: Record<string, string>,
+): string => {
   let result = template.content;
   for (const [key, value] of Object.entries(variables)) {
     const regex = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
     result = result.replace(regex, value);
   }
   return result;
-}
+};
 
 /**
  * Return context-aware default values for common template variables.
  */
-export const getDefaultVariables = (currentPath: string) : Record<string, string> => {
+export const getDefaultVariables = (currentPath: string): Record<string, string> => {
   const parts = currentPath.replace(/\\/g, '/').split('/').filter(Boolean);
   const projectName = parts[parts.length - 1] || 'my-project';
 
@@ -303,4 +306,4 @@ export const getDefaultVariables = (currentPath: string) : Record<string, string
     author: 'Author',
     title: projectName,
   };
-}
+};

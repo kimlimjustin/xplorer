@@ -25,4 +25,4 @@ export const useDroppable = (targetPath: string, disabled?: boolean) => {
   }, [targetPath, disabled]);
 
   return ref;
-}
+};

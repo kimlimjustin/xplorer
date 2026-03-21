@@ -25,7 +25,7 @@ const RuleToggle = ({
     type="button"
     role="switch"
     aria-checked={checked}
-    className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-xp-accent ${
+    className={`focus-visible:ring-xp-accent relative inline-flex h-5 w-9 shrink-0 items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 ${
       checked ? 'bg-xp-accent' : 'bg-xp-border'
     }`}
     onClick={() => onChange(!checked)}
@@ -40,11 +40,11 @@ const RuleToggle = ({
 
 // ── Condition label helpers ────────────────────────────────────────
 
-const conditionLabel = (c: ContextMenuRule['condition']) : string => {
+const conditionLabel = (c: ContextMenuRule['condition']): string => {
   return c === 'show_only_for' ? 'Show only for' : 'Hide for';
-}
+};
 
-const matcherLabel = (m: RuleMatcher) : string => {
+const matcherLabel = (m: RuleMatcher): string => {
   switch (m.type) {
     case 'extension':
       return `extensions ${m.value}`;
@@ -55,7 +55,7 @@ const matcherLabel = (m: RuleMatcher) : string => {
     case 'is_directory':
       return m.value === 'true' ? 'directories' : 'files';
   }
-}
+};
 
 // ── Inline rule editor form ────────────────────────────────────────
 
@@ -98,14 +98,14 @@ const RuleForm = React.memo(function RuleForm({
   };
 
   return (
-    <div className="rounded-lg border border-xp-border bg-xp-surface/50 p-3 space-y-3">
+    <div className="border-xp-border bg-xp-surface/50 space-y-3 rounded-lg border p-3">
       {/* Menu item selector */}
       <div>
-        <label className="block text-xs font-medium text-xp-text-secondary mb-1">Menu Item</label>
+        <label className="text-xp-text-secondary mb-1 block text-xs font-medium">Menu Item</label>
         <select
           value={form.menuItemId}
           onChange={(e) => setForm((f) => ({ ...f, menuItemId: e.target.value }))}
-          className="w-full h-8 rounded border border-xp-border bg-xp-bg text-sm text-xp-text px-2 focus:border-xp-accent focus:outline-none"
+          className="border-xp-border bg-xp-bg text-xp-text focus:border-xp-accent h-8 w-full rounded border px-2 text-sm focus:outline-none"
         >
           {menuItems.map((item) => (
             <option key={item.id} value={item.id}>
@@ -117,12 +117,12 @@ const RuleForm = React.memo(function RuleForm({
 
       {/* Condition */}
       <div>
-        <label className="block text-xs font-medium text-xp-text-secondary mb-1">Condition</label>
+        <label className="text-xp-text-secondary mb-1 block text-xs font-medium">Condition</label>
         <div className="flex gap-3">
           {(['show_only_for', 'hide_for'] as const).map((cond) => (
             <label
               key={cond}
-              className="flex items-center gap-1.5 text-sm text-xp-text cursor-pointer"
+              className="text-xp-text flex cursor-pointer items-center gap-1.5 text-sm"
             >
               <input
                 type="radio"
@@ -140,7 +140,7 @@ const RuleForm = React.memo(function RuleForm({
       {/* Matcher type + value */}
       <div className="flex gap-2">
         <div className="w-1/3">
-          <label className="block text-xs font-medium text-xp-text-secondary mb-1">Match By</label>
+          <label className="text-xp-text-secondary mb-1 block text-xs font-medium">Match By</label>
           <select
             value={form.matcherType}
             onChange={(e) => {
@@ -151,7 +151,7 @@ const RuleForm = React.memo(function RuleForm({
                 matcherValue: type === 'is_directory' ? 'true' : f.matcherValue,
               }));
             }}
-            className="w-full h-8 rounded border border-xp-border bg-xp-bg text-sm text-xp-text px-2 focus:border-xp-accent focus:outline-none"
+            className="border-xp-border bg-xp-bg text-xp-text focus:border-xp-accent h-8 w-full rounded border px-2 text-sm focus:outline-none"
           >
             <option value="extension">Extension</option>
             <option value="file_type">File Type</option>
@@ -160,12 +160,12 @@ const RuleForm = React.memo(function RuleForm({
           </select>
         </div>
         <div className="flex-1">
-          <label className="block text-xs font-medium text-xp-text-secondary mb-1">Value</label>
+          <label className="text-xp-text-secondary mb-1 block text-xs font-medium">Value</label>
           {form.matcherType === 'is_directory' ? (
             <select
               value={form.matcherValue || 'true'}
               onChange={(e) => setForm((f) => ({ ...f, matcherValue: e.target.value }))}
-              className="w-full h-8 rounded border border-xp-border bg-xp-bg text-sm text-xp-text px-2 focus:border-xp-accent focus:outline-none"
+              className="border-xp-border bg-xp-bg text-xp-text focus:border-xp-accent h-8 w-full rounded border px-2 text-sm focus:outline-none"
             >
               <option value="true">Yes (directories)</option>
               <option value="false">No (files only)</option>
@@ -176,7 +176,7 @@ const RuleForm = React.memo(function RuleForm({
               value={form.matcherValue}
               onChange={(e) => setForm((f) => ({ ...f, matcherValue: e.target.value }))}
               placeholder={placeholders[form.matcherType]}
-              className="w-full h-8 rounded border border-xp-border bg-xp-bg text-sm text-xp-text px-2 focus:border-xp-accent focus:outline-none"
+              className="border-xp-border bg-xp-bg text-xp-text focus:border-xp-accent h-8 w-full rounded border px-2 text-sm focus:outline-none"
             />
           )}
         </div>
@@ -186,7 +186,7 @@ const RuleForm = React.memo(function RuleForm({
       <div className="flex justify-end gap-2 pt-1">
         <button
           onClick={onCancel}
-          className="flex items-center gap-1 rounded px-3 py-1.5 text-xs font-medium text-xp-text-secondary hover:bg-xp-surface-light transition-colors"
+          className="text-xp-text-secondary hover:bg-xp-surface-light flex items-center gap-1 rounded px-3 py-1.5 text-xs font-medium transition-colors"
         >
           <X size={12} />
           Cancel
@@ -194,7 +194,7 @@ const RuleForm = React.memo(function RuleForm({
         <button
           onClick={handleSave}
           disabled={!form.matcherValue.trim() && form.matcherType !== 'is_directory'}
-          className="flex items-center gap-1 rounded px-3 py-1.5 text-xs font-medium bg-xp-accent text-white hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
+          className="bg-xp-accent flex items-center gap-1 rounded px-3 py-1.5 text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
         >
           <Check size={12} />
           Save
@@ -218,28 +218,28 @@ const RuleRow = React.memo(function RuleRow({
   onDelete: () => void;
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-xp-surface-light/50 group">
+    <div className="hover:bg-xp-surface-light/50 group flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors">
       <RuleToggle checked={rule.enabled} onChange={onToggle} />
-      <div className="flex-1 min-w-0">
-        <div className="text-sm text-xp-text truncate">
+      <div className="min-w-0 flex-1">
+        <div className="text-xp-text truncate text-sm">
           <span className="font-medium">{rule.menuItemLabel}</span>
-          <span className="mx-1.5 text-xp-text-secondary">—</span>
+          <span className="text-xp-text-secondary mx-1.5">—</span>
           <span className="text-xp-text-secondary">
             {conditionLabel(rule.condition)} {matcherLabel(rule.matcher)}
           </span>
         </div>
       </div>
-      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
         <button
           onClick={onEdit}
-          className="p-1.5 rounded text-xp-text-secondary hover:text-xp-text hover:bg-xp-surface-light transition-colors"
+          className="text-xp-text-secondary hover:text-xp-text hover:bg-xp-surface-light rounded p-1.5 transition-colors"
           title="Edit rule"
         >
           <Pencil size={13} />
         </button>
         <button
           onClick={onDelete}
-          className="p-1.5 rounded text-xp-text-secondary hover:text-xp-red hover:bg-xp-red/10 transition-colors"
+          className="text-xp-text-secondary hover:text-xp-red hover:bg-xp-red/10 rounded p-1.5 transition-colors"
           title="Delete rule"
         >
           <Trash2 size={13} />
@@ -365,8 +365,8 @@ const ContextMenuRulesCard = () => {
         </div>
       ) : (
         <div className="px-4 py-6 text-center">
-          <div className="text-sm text-xp-text-secondary">No rules configured</div>
-          <div className="text-xs text-xp-text-secondary/60 mt-1">
+          <div className="text-xp-text-secondary text-sm">No rules configured</div>
+          <div className="text-xp-text-secondary/60 mt-1 text-xs">
             Add rules to control which menu items appear for specific file types
           </div>
         </div>
@@ -389,7 +389,7 @@ const ContextMenuRulesCard = () => {
               setShowForm(true);
               setEditingId(null);
             }}
-            className="flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium bg-xp-accent text-white hover:opacity-90 transition-opacity"
+            className="bg-xp-accent flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
           >
             <Plus size={14} />
             Add Rule
@@ -398,7 +398,7 @@ const ContextMenuRulesCard = () => {
         {rules.length > 0 && (
           <button
             onClick={handleReset}
-            className="flex items-center gap-1.5 rounded-md px-3 py-2 text-sm text-xp-text-secondary hover:text-xp-text hover:bg-xp-surface-light transition-colors"
+            className="text-xp-text-secondary hover:text-xp-text hover:bg-xp-surface-light flex items-center gap-1.5 rounded-md px-3 py-2 text-sm transition-colors"
           >
             <RotateCcw size={14} />
             Reset to Defaults
@@ -407,6 +407,6 @@ const ContextMenuRulesCard = () => {
       </div>
     </div>
   );
-}
+};
 
 export default ContextMenuRulesCard;

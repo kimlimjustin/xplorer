@@ -306,7 +306,7 @@ const FileIcon = ({ extension }: { extension: string }) => {
       <polyline points="14 2 14 8 20 8" />
     </svg>
   );
-}
+};
 
 // ── Component ───────────────────────────────────────────────────────────────
 
@@ -573,6 +573,6 @@ const TemplatePickerDialog = ({
       </div>
     </div>
   );
-}
+};
 
 export default React.memo(TemplatePickerDialog);

@@ -13,4 +13,4 @@ export const Label = ({ className = '', children, ...props }: LabelProps) => {
       {children}
     </label>
   );
-}
+};

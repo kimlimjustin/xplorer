@@ -11,7 +11,9 @@ const renderWithSuspense = (ui: React.ReactElement) => {
 
 // Mock sub-panels (lazy-loaded)
 vi.mock('@/components/panels/TerminalPanelEnhanced', () => ({
-  default: (props: Record<string, unknown> & { terminalCwd?: string }) => <div data-testid="terminal-panel">Terminal: {props.terminalCwd}</div>,
+  default: (props: Record<string, unknown> & { terminalCwd?: string }) => (
+    <div data-testid="terminal-panel">Terminal: {props.terminalCwd}</div>
+  ),
 }));
 vi.mock('@/components/panels/UndoHistoryPanel', () => ({
   default: () => <div data-testid="undo-history-panel">Undo History</div>,
@@ -20,7 +22,9 @@ vi.mock('@/components/panels/NotificationCenter', () => ({
   default: () => <div data-testid="notification-center">Notifications</div>,
 }));
 vi.mock('@/components/panels/ClipboardHistoryPanel', () => ({
-  default: ({ onPaste: _onPaste }: { onPaste?: () => void }) => <div data-testid="clipboard-panel">Clipboard</div>,
+  default: ({ onPaste: _onPaste }: { onPaste?: () => void }) => (
+    <div data-testid="clipboard-panel">Clipboard</div>
+  ),
 }));
 vi.mock('@/components/panels/ChangeReviewPanel', () => ({
   default: ({ changes }: { changes?: unknown }) => (
@@ -156,7 +160,11 @@ describe('BottomPanel', () => {
 
     it('shows output messages in activity-log tab', () => {
       render(
-        <BottomPanel {...defaultProps} bottomPanelTab="activity-log" outputMessages={['[INFO] Ready']} />,
+        <BottomPanel
+          {...defaultProps}
+          bottomPanelTab="activity-log"
+          outputMessages={['[INFO] Ready']}
+        />,
       );
       expect(screen.getByText('[INFO] Ready')).toBeInTheDocument();
     });

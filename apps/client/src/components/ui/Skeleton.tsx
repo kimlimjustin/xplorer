@@ -33,7 +33,7 @@ export const SkeletonLine = ({ width = '100%', height = 12, style }: SkeletonLin
       }}
     />
   );
-}
+};
 
 // ─── SkeletonBlock ───────────────────────────────────────────────────────────
 // A rectangular shimmer placeholder.
@@ -63,7 +63,7 @@ export const SkeletonBlock = ({
       }}
     />
   );
-}
+};
 
 // ─── SkeletonCircle ──────────────────────────────────────────────────────────
 // A circular shimmer placeholder (avatars, icons, etc.).
@@ -86,7 +86,7 @@ export const SkeletonCircle = ({ size = 40, style }: SkeletonCircleProps) => {
       }}
     />
   );
-}
+};
 
 // ─── FileGridSkeleton ────────────────────────────────────────────────────────
 // Matches the FileGrid layout: a grid of file-item-shaped placeholders.
@@ -139,7 +139,7 @@ export const FileGridSkeleton = ({ count = 12, viewMode = 'medium' }: FileGridSk
       ))}
     </div>
   );
-}
+};
 
 // ─── FileListSkeleton ────────────────────────────────────────────────────────
 // Matches the list/details view: rows with icon + text.
@@ -177,7 +177,7 @@ export const FileListSkeleton = ({ count = 10 }: FileListSkeletonProps) => {
       ))}
     </div>
   );
-}
+};
 
 // ─── PreviewSkeleton ─────────────────────────────────────────────────────────
 // Placeholder for the preview panel while content is loading.
@@ -209,7 +209,7 @@ export const PreviewSkeleton = () => {
       </div>
     </div>
   );
-}
+};
 
 // ─── SidebarSkeleton ─────────────────────────────────────────────────────────
 // Placeholder for the sidebar tree while it loads (quick links, drives, etc.).
@@ -250,4 +250,4 @@ export const SidebarSkeleton = ({ sections = 3, itemsPerSection = 4 }: SidebarSk
       ))}
     </div>
   );
-}
+};

@@ -264,37 +264,36 @@ ${JSON.stringify(tree, null, 2)}`;
         }
 
         return tree;
-      } else {
-        // It's a file, read its content
-        try {
-          const content = await TauriAPI.readTextFile(filePath);
-          const metadata = await TauriAPI.getFileProperties(filePath);
+      }
+      // It's a file, read its content
+      try {
+        const content = await TauriAPI.readTextFile(filePath);
+        const metadata = await TauriAPI.getFileProperties(filePath);
 
-          return {
-            path: filePath,
-            name: metadata.name,
-            is_dir: false,
-            size: metadata.size,
-            modified: metadata.modified,
-            content,
-            children: undefined,
-            error: undefined,
-          };
-        } catch (error) {
-          // If reading as text fails, it might be binary
-          const metadata = await TauriAPI.getFileProperties(filePath);
+        return {
+          path: filePath,
+          name: metadata.name,
+          is_dir: false,
+          size: metadata.size,
+          modified: metadata.modified,
+          content,
+          children: undefined,
+          error: undefined,
+        };
+      } catch (error) {
+        // If reading as text fails, it might be binary
+        const metadata = await TauriAPI.getFileProperties(filePath);
 
-          return {
-            path: filePath,
-            name: metadata.name,
-            is_dir: false,
-            size: metadata.size,
-            modified: metadata.modified,
-            content: undefined,
-            children: undefined,
-            error: `Binary file or read error: ${error}`,
-          };
-        }
+        return {
+          path: filePath,
+          name: metadata.name,
+          is_dir: false,
+          size: metadata.size,
+          modified: metadata.modified,
+          content: undefined,
+          children: undefined,
+          error: `Binary file or read error: ${error}`,
+        };
       }
     } catch (error) {
       throw new Error(`Failed to analyze context item: ${error}`, { cause: error });

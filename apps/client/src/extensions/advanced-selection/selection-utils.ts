@@ -8,7 +8,7 @@ export const applySelectionCriteria = (
   files: FileEntry[],
   criteria: SelectionCriteria,
   currentSelection: Set<string>,
-) : SelectionResult => {
+): SelectionResult => {
   let matched: string[] = [];
 
   switch (criteria.type) {
@@ -45,12 +45,12 @@ export const applySelectionCriteria = (
     matched,
     total: files.length,
   };
-}
+};
 
 /**
  * Select files by extension
  */
-export const selectByExtension = (files: FileEntry[], extensions: string[]) : string[] => {
+export const selectByExtension = (files: FileEntry[], extensions: string[]): string[] => {
   const normalizedExtensions = extensions.map((ext) => ext.toLowerCase().replace(/^\./, ''));
 
   return files
@@ -60,12 +60,12 @@ export const selectByExtension = (files: FileEntry[], extensions: string[]) : st
       return normalizedExtensions.includes(fileExt);
     })
     .map((file) => file.path);
-}
+};
 
 /**
  * Select files by date range
  */
-export const selectByDateRange = (files: FileEntry[], dateFrom?: Date, dateTo?: Date) : string[] => {
+export const selectByDateRange = (files: FileEntry[], dateFrom?: Date, dateTo?: Date): string[] => {
   return files
     .filter((file) => {
       const fileDate = new Date(file.modified * 1000); // Convert Unix timestamp to Date
@@ -76,7 +76,7 @@ export const selectByDateRange = (files: FileEntry[], dateFrom?: Date, dateTo?: 
       return true;
     })
     .map((file) => file.path);
-}
+};
 
 /**
  * Select files by size range
@@ -85,7 +85,7 @@ export const selectBySizeRange = (
   files: FileEntry[],
   minSize?: number,
   maxSize?: number,
-) : string[] => {
+): string[] => {
   return files
     .filter((file) => {
       if (file.is_dir) return false;
@@ -96,13 +96,13 @@ export const selectBySizeRange = (
       return true;
     })
     .map((file) => file.path);
-}
+};
 
 /**
  * Select files similar to a reference file
  * Similarity is determined by: same extension, similar size (within 50%), or same type
  */
-export const selectSimilar = (files: FileEntry[], referenceFile: FileEntry) : string[] => {
+export const selectSimilar = (files: FileEntry[], referenceFile: FileEntry): string[] => {
   const refExtension = getFileExtension(referenceFile.name).toLowerCase();
   const refSize = referenceFile.size;
   const refType = referenceFile.file_type;
@@ -139,19 +139,19 @@ export const selectSimilar = (files: FileEntry[], referenceFile: FileEntry) : st
       return false;
     })
     .map((file) => file.path);
-}
+};
 
 /**
  * Invert current selection
  */
-export const invertSelection = (files: FileEntry[], currentSelection: Set<string>) : string[] => {
+export const invertSelection = (files: FileEntry[], currentSelection: Set<string>): string[] => {
   return files.filter((file) => !currentSelection.has(file.path)).map((file) => file.path);
-}
+};
 
 /**
  * Select files by name pattern (glob-like)
  */
-export const selectByPattern = (files: FileEntry[], pattern: string) : string[] => {
+export const selectByPattern = (files: FileEntry[], pattern: string): string[] => {
   // Convert glob pattern to regex
   const regexPattern = pattern
     .replace(/[.+^${}()|[\]\\]/g, '\\$&') // Escape special regex chars except * and ?
@@ -161,12 +161,12 @@ export const selectByPattern = (files: FileEntry[], pattern: string) : string[] 
   const regex = new RegExp(`^${regexPattern}$`, 'i');
 
   return files.filter((file) => regex.test(file.name)).map((file) => file.path);
-}
+};
 
 /**
  * Get all unique extensions from files
  */
-export const getUniqueExtensions = (files: FileEntry[]) : string[] => {
+export const getUniqueExtensions = (files: FileEntry[]): string[] => {
   const extensions = new Set<string>();
 
   files.forEach((file) => {
@@ -179,12 +179,14 @@ export const getUniqueExtensions = (files: FileEntry[]) : string[] => {
   });
 
   return Array.from(extensions).sort();
-}
+};
 
 /**
  * Get file size statistics
  */
-export const getFileSizeStats = (files: FileEntry[]): {
+export const getFileSizeStats = (
+  files: FileEntry[],
+): {
   min: number;
   max: number;
   avg: number;
@@ -202,12 +204,14 @@ export const getFileSizeStats = (files: FileEntry[]): {
     avg: fileSizes.reduce((a, b) => a + b, 0) / fileSizes.length,
     total: fileSizes.reduce((a, b) => a + b, 0),
   };
-}
+};
 
 /**
  * Get date range of files
  */
-export const getFileDateRange = (files: FileEntry[]): {
+export const getFileDateRange = (
+  files: FileEntry[],
+): {
   oldest: Date;
   newest: Date;
 } => {
@@ -222,21 +226,21 @@ export const getFileDateRange = (files: FileEntry[]): {
     oldest: new Date(Math.min(...dates)),
     newest: new Date(Math.max(...dates)),
   };
-}
+};
 
 /**
  * Helper: Get file extension
  */
-const getFileExtension = (filename: string) : string => {
+const getFileExtension = (filename: string): string => {
   const lastDot = filename.lastIndexOf('.');
   if (lastDot === -1 || lastDot === 0) return '';
   return filename.substring(lastDot + 1);
-}
+};
 
 /**
  * Count files by extension
  */
-export const countByExtension = (files: FileEntry[]) : Map<string, number> => {
+export const countByExtension = (files: FileEntry[]): Map<string, number> => {
   const counts = new Map<string, number>();
 
   files.forEach((file) => {
@@ -247,4 +251,4 @@ export const countByExtension = (files: FileEntry[]) : Map<string, number> => {
   });
 
   return counts;
-}
+};

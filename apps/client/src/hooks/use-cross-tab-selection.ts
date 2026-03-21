@@ -45,7 +45,7 @@ export interface CrossTabSelectionEventDetail {
 
 // ── Hook ─────────────────────────────────────────────────────────────────────
 
-export const useCrossTabSelection = () : CrossTabSelectionState => {
+export const useCrossTabSelection = (): CrossTabSelectionState => {
   const [selections, setSelections] = useState<Map<string, CrossTabSelection>>(() => new Map());
 
   const addSelection = useCallback((tabId: string, tabPath: string, files: FileEntry[]) => {
@@ -116,4 +116,4 @@ export const useCrossTabSelection = () : CrossTabSelectionState => {
     clearAll,
     getAllSelectedFiles,
   };
-}
+};

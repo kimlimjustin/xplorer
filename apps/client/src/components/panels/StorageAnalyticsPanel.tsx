@@ -29,32 +29,29 @@ const SIZE_CAT_COLORS = [
   'var(--xp-red)', // Huge - red
 ];
 
-const formatFileSize = (bytes: number) : string => {
+const formatFileSize = (bytes: number): string => {
   if (bytes === 0) return '0 B';
   const k = 1024;
   const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
-}
+};
 
-const formatNumber = (n: number) : string => {
+const formatNumber = (n: number): string => {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
   if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
   return n.toLocaleString();
-}
+};
 
-const truncatePath = (p: string, maxLen: number) : string => {
+const truncatePath = (p: string, maxLen: number): string => {
   if (p.length <= maxLen) return p;
   const sep = p.includes('\\') ? '\\' : '/';
   const parts = p.split(sep);
-  if (parts.length <= 3) return '...' + p.slice(-(maxLen - 3));
-  return parts[0] + sep + '...' + sep + parts.slice(-2).join(sep);
-}
+  if (parts.length <= 3) return `...${p.slice(-(maxLen - 3))}`;
+  return `${parts[0] + sep}...${sep}${parts.slice(-2).join(sep)}`;
+};
 
-const StorageAnalyticsPanel = ({
-  currentPath,
-  navigateToPath,
-}: StorageAnalyticsPanelProps) => {
+const StorageAnalyticsPanel = ({ currentPath, navigateToPath }: StorageAnalyticsPanelProps) => {
   const [analytics, setAnalytics] = useState<StorageAnalytics | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -112,14 +109,14 @@ const StorageAnalyticsPanel = ({
   // --- Loading state ---
   if (loading) {
     return (
-      <div className="p-4 flex flex-col items-center justify-center gap-3 h-full">
+      <div className="flex h-full flex-col items-center justify-center gap-3 p-4">
         <div
-          className="loading-spinner w-8 h-8 border-2 border-current border-t-transparent rounded-full"
+          className="loading-spinner h-8 w-8 rounded-full border-2 border-current border-t-transparent"
           style={{ borderColor: 'var(--xp-blue)', borderTopColor: 'transparent' }}
         />
-        <p className="text-sm text-xp-text-muted">Analyzing storage...</p>
+        <p className="text-xp-text-muted text-sm">Analyzing storage...</p>
         {progress && (
-          <div className="w-full space-y-1 text-xs text-xp-text-muted">
+          <div className="text-xp-text-muted w-full space-y-1 text-xs">
             <p>
               {formatNumber(progress.files_processed)} files /{' '}
               {formatNumber(progress.dirs_processed)} folders scanned
@@ -137,9 +134,9 @@ const StorageAnalyticsPanel = ({
   // --- Error state ---
   if (error) {
     return (
-      <div className="p-4 space-y-3">
+      <div className="space-y-3 p-4">
         <div
-          className="p-3 rounded-lg border"
+          className="rounded-lg border p-3"
           style={{
             borderColor: 'color-mix(in srgb, var(--xp-red) 20%, transparent)',
             backgroundColor: 'color-mix(in srgb, var(--xp-red) 7%, transparent)',
@@ -151,7 +148,7 @@ const StorageAnalyticsPanel = ({
         </div>
         <button
           onClick={runAnalysis}
-          className="w-full px-3 py-2 text-sm rounded-lg bg-xp-surface-light hover:bg-xp-blue text-xp-text transition-colors"
+          className="bg-xp-surface-light hover:bg-xp-blue text-xp-text w-full rounded-lg px-3 py-2 text-sm transition-colors"
         >
           Retry
         </button>
@@ -162,17 +159,17 @@ const StorageAnalyticsPanel = ({
   // --- No data yet ---
   if (!analytics) {
     return (
-      <div className="p-4 flex flex-col items-center justify-center gap-3 h-full text-center">
+      <div className="flex h-full flex-col items-center justify-center gap-3 p-4 text-center">
         <div className="text-3xl">
           <BarChart3 size="1em" className="inline-block" />
         </div>
-        <p className="text-sm text-xp-text-muted">
+        <p className="text-xp-text-muted text-sm">
           {currentPath ? 'Click Analyze to scan storage' : 'Navigate to a folder to analyze'}
         </p>
         {currentPath && (
           <button
             onClick={runAnalysis}
-            className="px-4 py-2 text-sm rounded-lg bg-xp-blue text-white hover:opacity-90 transition-colors"
+            className="bg-xp-blue rounded-lg px-4 py-2 text-sm text-white transition-colors hover:opacity-90"
           >
             Analyze Storage
           </button>
@@ -201,18 +198,18 @@ const StorageAnalyticsPanel = ({
   const maxCatSize = size_categories.reduce((max, c) => Math.max(max, c.total_size), 1);
 
   return (
-    <div className="p-3 space-y-4 overflow-y-auto text-sm" style={{ maxHeight: '100%' }}>
+    <div className="space-y-4 overflow-y-auto p-3 text-sm" style={{ maxHeight: '100%' }}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="min-w-0 flex-1">
-          <h3 className="text-sm font-semibold text-xp-text">Storage Analytics</h3>
-          <p className="text-xs text-xp-text-muted truncate" title={analyzedPath}>
+          <h3 className="text-xp-text text-sm font-semibold">Storage Analytics</h3>
+          <p className="text-xp-text-muted truncate text-xs" title={analyzedPath}>
             {analyzedPath}
           </p>
         </div>
         <button
           onClick={runAnalysis}
-          className="ml-2 shrink-0 px-2 py-1 text-xs rounded bg-xp-surface-light hover:bg-xp-blue hover:text-white transition-colors border border-xp-border"
+          className="bg-xp-surface-light hover:bg-xp-blue border-xp-border ml-2 shrink-0 rounded border px-2 py-1 text-xs transition-colors hover:text-white"
           title="Refresh analysis"
         >
           Refresh
@@ -223,85 +220,86 @@ const StorageAnalyticsPanel = ({
       <div className="grid grid-cols-3 gap-2">
         {/* Total Size */}
         <div
-          className="rounded-xl p-2.5 border border-xp-border"
+          className="border-xp-border rounded-xl border p-2.5"
           style={{
             backgroundColor: 'rgba(var(--xp-surface-rgb, 36, 40, 59), 0.5)',
             backdropFilter: 'blur(16px)',
           }}
         >
-          <div className="text-base mb-0.5">
+          <div className="mb-0.5 text-base">
             <HardDrive size="1em" className="inline-block" />
           </div>
-          <div className="text-sm font-bold text-xp-text">
+          <div className="text-xp-text text-sm font-bold">
             {formatFileSize(hasDiskInfo ? total_size : used_size)}
           </div>
-          <div className="text-[10px] text-xp-text-muted">
+          <div className="text-xp-text-muted text-[10px]">
             {hasDiskInfo ? 'Disk Total' : 'Total Size'}
           </div>
         </div>
         {/* Files */}
         <div
-          className="rounded-xl p-2.5 border border-xp-border"
+          className="border-xp-border rounded-xl border p-2.5"
           style={{
             backgroundColor: 'rgba(var(--xp-surface-rgb, 36, 40, 59), 0.5)',
             backdropFilter: 'blur(16px)',
           }}
         >
-          <div className="text-base mb-0.5">
+          <div className="mb-0.5 text-base">
             <FileText size="1em" className="inline-block" />
           </div>
-          <div className="text-sm font-bold text-xp-text">{formatNumber(file_count)}</div>
-          <div className="text-[10px] text-xp-text-muted">Files</div>
+          <div className="text-xp-text text-sm font-bold">{formatNumber(file_count)}</div>
+          <div className="text-xp-text-muted text-[10px]">Files</div>
         </div>
         {/* Folders */}
         <div
-          className="rounded-xl p-2.5 border border-xp-border"
+          className="border-xp-border rounded-xl border p-2.5"
           style={{
             backgroundColor: 'rgba(var(--xp-surface-rgb, 36, 40, 59), 0.5)',
             backdropFilter: 'blur(16px)',
           }}
         >
-          <div className="text-base mb-0.5">
+          <div className="mb-0.5 text-base">
             <FolderClosed size="1em" className="inline-block" />
           </div>
-          <div className="text-sm font-bold text-xp-text">{formatNumber(dir_count)}</div>
-          <div className="text-[10px] text-xp-text-muted">Folders</div>
+          <div className="text-xp-text text-sm font-bold">{formatNumber(dir_count)}</div>
+          <div className="text-xp-text-muted text-[10px]">Folders</div>
         </div>
       </div>
 
       {/* Disk Usage Bar */}
       {hasDiskInfo && (
         <div
-          className="rounded-xl p-3 border border-xp-border"
+          className="border-xp-border rounded-xl border p-3"
           style={{
             backgroundColor: 'rgba(var(--xp-surface-rgb, 36, 40, 59), 0.5)',
             backdropFilter: 'blur(16px)',
           }}
         >
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-medium text-xp-text">Disk Usage</span>
-            <span className="text-xs text-xp-text-muted">
+          <div className="mb-2 flex items-center justify-between">
+            <span className="text-xp-text text-xs font-medium">Disk Usage</span>
+            <span className="text-xp-text-muted text-xs">
               {formatFileSize(used_size)} / {formatFileSize(total_size)}
             </span>
           </div>
           <div
-            className="w-full h-3 rounded-full overflow-hidden"
+            className="h-3 w-full overflow-hidden rounded-full"
             style={{ backgroundColor: 'rgba(var(--xp-overlay-rgb, 86, 90, 110), 0.3)' }}
           >
             <div
               className="h-full rounded-full transition-all duration-500"
               style={{
                 width: `${usedPercent}%`,
-                background:
-                  usedPercent > 90
-                    ? 'linear-gradient(90deg, var(--xp-orange), var(--xp-red))'
-                    : usedPercent > 70
-                      ? 'linear-gradient(90deg, var(--xp-blue), var(--xp-orange))'
-                      : 'linear-gradient(90deg, var(--xp-blue), var(--xp-green))',
+                background: (() => {
+                  if (usedPercent > 90)
+                    {return 'linear-gradient(90deg, var(--xp-orange), var(--xp-red))';}
+                  if (usedPercent > 70)
+                    {return 'linear-gradient(90deg, var(--xp-blue), var(--xp-orange))';}
+                  return 'linear-gradient(90deg, var(--xp-blue), var(--xp-green))';
+                })(),
               }}
             />
           </div>
-          <div className="flex justify-between mt-1.5 text-[10px] text-xp-text-muted">
+          <div className="text-xp-text-muted mt-1.5 flex justify-between text-[10px]">
             <span>Used: {usedPercent}%</span>
             <span>
               Free: {freePercent}% ({formatFileSize(free_size)})
@@ -313,13 +311,13 @@ const StorageAnalyticsPanel = ({
       {/* File Type Distribution */}
       {top10Types.length > 0 && (
         <div
-          className="rounded-xl p-3 border border-xp-border"
+          className="border-xp-border rounded-xl border p-3"
           style={{
             backgroundColor: 'rgba(var(--xp-surface-rgb, 36, 40, 59), 0.5)',
             backdropFilter: 'blur(16px)',
           }}
         >
-          <h4 className="text-xs font-medium text-xp-text mb-2">File Types (Top 10 by Size)</h4>
+          <h4 className="text-xp-text mb-2 text-xs font-medium">File Types (Top 10 by Size)</h4>
           <div className="space-y-1.5">
             {top10Types.map((t, i) => {
               const pct = totalFilesSize > 0 ? (t.total_size / totalFilesSize) * 100 : 0;
@@ -327,23 +325,23 @@ const StorageAnalyticsPanel = ({
               const color = BAR_COLORS[i % BAR_COLORS.length];
               return (
                 <div key={t.extension} className="group">
-                  <div className="flex items-center gap-1.5 mb-0.5">
+                  <div className="mb-0.5 flex items-center gap-1.5">
                     <span
-                      className="inline-block w-2 h-2 rounded-sm shrink-0"
+                      className="inline-block h-2 w-2 shrink-0 rounded-sm"
                       style={{ backgroundColor: color }}
                     />
                     <span
-                      className="text-[11px] font-mono text-xp-text truncate"
+                      className="text-xp-text truncate font-mono text-[11px]"
                       style={{ minWidth: 50 }}
                     >
                       .{t.extension}
                     </span>
-                    <span className="text-[10px] text-xp-text-muted ml-auto shrink-0">
+                    <span className="text-xp-text-muted ml-auto shrink-0 text-[10px]">
                       {formatFileSize(t.total_size)} ({pct.toFixed(1)}%)
                     </span>
                   </div>
                   <div
-                    className="w-full h-1.5 rounded-full overflow-hidden"
+                    className="h-1.5 w-full overflow-hidden rounded-full"
                     style={{ backgroundColor: 'rgba(var(--xp-overlay-rgb, 86, 90, 110), 0.2)' }}
                   >
                     <div
@@ -351,7 +349,7 @@ const StorageAnalyticsPanel = ({
                       style={{ width: `${barWidth}%`, backgroundColor: color }}
                     />
                   </div>
-                  <div className="text-[10px] text-xp-text-muted mt-0.5">
+                  <div className="text-xp-text-muted mt-0.5 text-[10px]">
                     {formatNumber(t.count)} files
                   </div>
                 </div>
@@ -364,27 +362,27 @@ const StorageAnalyticsPanel = ({
       {/* Size Distribution */}
       {size_categories.length > 0 && (
         <div
-          className="rounded-xl p-3 border border-xp-border"
+          className="border-xp-border rounded-xl border p-3"
           style={{
             backgroundColor: 'rgba(var(--xp-surface-rgb, 36, 40, 59), 0.5)',
             backdropFilter: 'blur(16px)',
           }}
         >
-          <h4 className="text-xs font-medium text-xp-text mb-2">Size Distribution</h4>
+          <h4 className="text-xp-text mb-2 text-xs font-medium">Size Distribution</h4>
           <div className="space-y-1.5">
             {size_categories.map((cat, i) => {
               const barWidth = maxCatSize > 0 ? (cat.total_size / maxCatSize) * 100 : 0;
               const color = SIZE_CAT_COLORS[i % SIZE_CAT_COLORS.length];
               return (
                 <div key={cat.label}>
-                  <div className="flex items-center justify-between mb-0.5">
-                    <span className="text-[11px] text-xp-text">{cat.label}</span>
-                    <span className="text-[10px] text-xp-text-muted">
+                  <div className="mb-0.5 flex items-center justify-between">
+                    <span className="text-xp-text text-[11px]">{cat.label}</span>
+                    <span className="text-xp-text-muted text-[10px]">
                       {formatNumber(cat.count)} files / {formatFileSize(cat.total_size)}
                     </span>
                   </div>
                   <div
-                    className="w-full h-1.5 rounded-full overflow-hidden"
+                    className="h-1.5 w-full overflow-hidden rounded-full"
                     style={{ backgroundColor: 'rgba(var(--xp-overlay-rgb, 86, 90, 110), 0.2)' }}
                   >
                     <div
@@ -402,34 +400,34 @@ const StorageAnalyticsPanel = ({
       {/* Largest Files */}
       {largest_files.length > 0 && (
         <div
-          className="rounded-xl p-3 border border-xp-border"
+          className="border-xp-border rounded-xl border p-3"
           style={{
             backgroundColor: 'rgba(var(--xp-surface-rgb, 36, 40, 59), 0.5)',
             backdropFilter: 'blur(16px)',
           }}
         >
-          <h4 className="text-xs font-medium text-xp-text mb-2">
+          <h4 className="text-xp-text mb-2 text-xs font-medium">
             Largest Files (Top {largest_files.length})
           </h4>
-          <div className="space-y-1 max-h-64 overflow-y-auto">
+          <div className="max-h-64 space-y-1 overflow-y-auto">
             {largest_files.map((file, i) => (
               <div
                 key={file.path}
-                className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-xp-surface-light cursor-pointer transition-colors group"
+                className="hover:bg-xp-surface-light group flex cursor-pointer items-center gap-2 rounded-lg p-1.5 transition-colors"
                 onClick={() => handleFileClick(file.path)}
                 title={file.path}
               >
-                <span className="text-[10px] text-xp-text-muted w-4 text-right shrink-0">
+                <span className="text-xp-text-muted w-4 shrink-0 text-right text-[10px]">
                   {i + 1}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[11px] text-xp-text truncate">{file.name}</p>
-                  <p className="text-[10px] text-xp-text-muted truncate opacity-60 group-hover:opacity-100">
+                  <p className="text-xp-text truncate text-[11px]">{file.name}</p>
+                  <p className="text-xp-text-muted truncate text-[10px] opacity-60 group-hover:opacity-100">
                     {truncatePath(file.path, 45)}
                   </p>
                 </div>
                 <span
-                  className="text-[11px] font-mono shrink-0"
+                  className="shrink-0 font-mono text-[11px]"
                   style={{ color: 'var(--xp-orange)' }}
                 >
                   {formatFileSize(file.size)}
@@ -441,6 +439,6 @@ const StorageAnalyticsPanel = ({
       )}
     </div>
   );
-}
+};
 
 export default StorageAnalyticsPanel;

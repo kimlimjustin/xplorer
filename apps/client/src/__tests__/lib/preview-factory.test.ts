@@ -1,5 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { PreviewFactory, defaultPreviewFactory, type PreviewType, type PreviewCapability } from '@/lib/preview-factory';
+import {
+  PreviewFactory,
+  defaultPreviewFactory,
+  type PreviewType,
+  type PreviewCapability,
+} from '@/lib/preview-factory';
 import type { FileEntry } from '@/lib/tauri-api';
 
 // Mock all the dynamic imports that preview-factory uses
@@ -64,12 +69,29 @@ describe('PreviewFactory', () => {
     });
 
     // Code types
-    it.each(['js', 'ts', 'jsx', 'tsx', 'py', 'java', 'cpp', 'c', 'cs', 'php', 'rb', 'go', 'rs', 'html', 'css', 'scss', 'less', 'vue', 'svelte'])(
-      'identifies .%s as code',
-      (ext) => {
-        expect(factory.getFileType(makeFile(`app.${ext}`))).toBe('code');
-      },
-    );
+    it.each([
+      'js',
+      'ts',
+      'jsx',
+      'tsx',
+      'py',
+      'java',
+      'cpp',
+      'c',
+      'cs',
+      'php',
+      'rb',
+      'go',
+      'rs',
+      'html',
+      'css',
+      'scss',
+      'less',
+      'vue',
+      'svelte',
+    ])('identifies .%s as code', (ext) => {
+      expect(factory.getFileType(makeFile(`app.${ext}`))).toBe('code');
+    });
 
     // CSV/TSV
     it('identifies .csv as csv', () => {
@@ -91,9 +113,12 @@ describe('PreviewFactory', () => {
     });
 
     // Video types
-    it.each(['mp4', 'webm', 'mkv', 'avi', 'mov', 'm4v', 'ogv'])('identifies .%s as video', (ext) => {
-      expect(factory.getFileType(makeFile(`clip.${ext}`))).toBe('video');
-    });
+    it.each(['mp4', 'webm', 'mkv', 'avi', 'mov', 'm4v', 'ogv'])(
+      'identifies .%s as video',
+      (ext) => {
+        expect(factory.getFileType(makeFile(`clip.${ext}`))).toBe('video');
+      },
+    );
 
     // Audio types
     it.each(['mp3', 'wav', 'ogg', 'flac', 'm4a', 'aac', 'wma', 'opus', 'aiff'])(

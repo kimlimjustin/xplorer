@@ -21,23 +21,14 @@ import {
   tokenizeLine,
   detectHunks,
   buildSegments,
-  COLLAPSE_THRESHOLD,
-  CONTEXT_LINES,
-} from './file-comparison-helpers';
-import type {
-  Token,
-  DiffHunk,
-  DiffSegment,
-  ViewMode,
-  FileComparisonPageProps,
+  type DiffHunk,
+  type DiffSegment,
+  type ViewMode,
+  type FileComparisonPageProps,
 } from './file-comparison-helpers';
 
 // ─── Main component ────────────────────────────────────────────────────────
-const FileComparisonPage = ({
-  file1Path,
-  file2Path,
-  onError,
-}: FileComparisonPageProps) => {
+const FileComparisonPage = ({ file1Path, file2Path, onError }: FileComparisonPageProps) => {
   const [result, setResult] = useState<FileComparisonResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('side-by-side');
@@ -295,6 +286,7 @@ const FileComparisonPage = ({
         >
           {[file1, file2].map((file, i) => (
             <div
+              // eslint-disable-next-line react/no-array-index-key
               key={i}
               style={{
                 display: 'flex',
@@ -351,6 +343,7 @@ const FileComparisonPage = ({
         >
           {[file1, file2].map((file, i) => (
             <div
+              // eslint-disable-next-line react/no-array-index-key
               key={i}
               style={{
                 display: 'flex',
@@ -460,7 +453,7 @@ const FileComparisonPage = ({
       </div>
     </div>
   );
-}
+};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Sub-components
@@ -491,12 +484,41 @@ const StatsHeader = ({
   formatSize: (b: number) => string;
 }) => {
   const sizeDiff = file2.size - file1.size;
-  const sizeDiffStr =
-    sizeDiff > 0
-      ? `+${formatSize(sizeDiff)}`
-      : sizeDiff < 0
-        ? `-${formatSize(Math.abs(sizeDiff))}`
-        : 'same';
+  let sizeDiffStr: string;
+  if (sizeDiff > 0) {
+    sizeDiffStr = `+${formatSize(sizeDiff)}`;
+  } else if (sizeDiff < 0) {
+    sizeDiffStr = `-${formatSize(Math.abs(sizeDiff))}`;
+  } else {
+    sizeDiffStr = 'same';
+  }
+
+  let sizeBgColor: string;
+  if (sizeDiff === 0) {
+    sizeBgColor = 'rgba(255,255,255,0.05)';
+  } else if (sizeDiff > 0) {
+    sizeBgColor = 'rgba(52,211,153,0.12)';
+  } else {
+    sizeBgColor = 'rgba(248,113,113,0.12)';
+  }
+
+  let sizeTextColor: string;
+  if (sizeDiff === 0) {
+    sizeTextColor = 'var(--xp-text-muted)';
+  } else if (sizeDiff > 0) {
+    sizeTextColor = 'var(--xp-green)';
+  } else {
+    sizeTextColor = 'var(--xp-red)';
+  }
+
+  let similarityColor: string;
+  if (identical) {
+    similarityColor = 'var(--xp-green)';
+  } else if (similarity > 0.8) {
+    similarityColor = 'var(--xp-yellow)';
+  } else {
+    similarityColor = 'var(--xp-red)';
+  }
 
   return (
     <div
@@ -542,18 +564,8 @@ const StatsHeader = ({
             fontSize: 10,
             padding: '1px 5px',
             borderRadius: 3,
-            backgroundColor:
-              sizeDiff === 0
-                ? 'rgba(255,255,255,0.05)'
-                : sizeDiff > 0
-                  ? 'rgba(52,211,153,0.12)'
-                  : 'rgba(248,113,113,0.12)',
-            color:
-              sizeDiff === 0
-                ? 'var(--xp-text-muted)'
-                : sizeDiff > 0
-                  ? 'var(--xp-green)'
-                  : 'var(--xp-red)',
+            backgroundColor: sizeBgColor,
+            color: sizeTextColor,
           }}
         >
           {sizeDiffStr}
@@ -569,11 +581,7 @@ const StatsHeader = ({
         <span
           style={{
             fontWeight: 600,
-            color: identical
-              ? 'var(--xp-green)'
-              : similarity > 0.8
-                ? 'var(--xp-yellow)'
-                : 'var(--xp-red)',
+            color: similarityColor,
           }}
         >
           {(similarity * 100).toFixed(1)}%
@@ -887,6 +895,7 @@ const SideBySideView = ({
           {segments.map((seg, segIdx) =>
             seg.kind === 'collapsed' ? (
               <CollapsedSection
+                // eslint-disable-next-line react/no-array-index-key
                 key={`c-${segIdx}`}
                 count={seg.count}
                 onExpand={() => onToggleSection(segIdx)}
@@ -922,6 +931,7 @@ const SideBySideView = ({
           {segments.map((seg, segIdx) =>
             seg.kind === 'collapsed' ? (
               <CollapsedSection
+                // eslint-disable-next-line react/no-array-index-key
                 key={`c-${segIdx}`}
                 count={seg.count}
                 onExpand={() => onToggleSection(segIdx)}
@@ -972,6 +982,7 @@ const UnifiedView = ({
         {segments.map((seg, segIdx) =>
           seg.kind === 'collapsed' ? (
             <CollapsedSection
+              // eslint-disable-next-line react/no-array-index-key
               key={`c-${segIdx}`}
               count={seg.count}
               onExpand={() => onToggleSection(segIdx)}
@@ -1088,6 +1099,7 @@ const DiffRowEnhanced = ({
       {/* Content with syntax highlighting */}
       <span style={{ flex: 1, whiteSpace: 'pre', paddingRight: 16 }}>
         {tokens.map((t, i) => (
+          // eslint-disable-next-line react/no-array-index-key
           <span key={i} style={{ color: t.color }}>
             {t.text}
           </span>
@@ -1095,7 +1107,7 @@ const DiffRowEnhanced = ({
       </span>
     </div>
   );
-}
+};
 
 // ─── Unified diff row ────────────────────────────────────────────────────
 const UnifiedDiffRow = ({
@@ -1191,6 +1203,7 @@ const UnifiedDiffRow = ({
       {/* Content */}
       <span style={{ flex: 1, whiteSpace: 'pre', paddingRight: 16 }}>
         {tokens.map((t, i) => (
+          // eslint-disable-next-line react/no-array-index-key
           <span key={i} style={{ color: t.color }}>
             {t.text}
           </span>
@@ -1198,7 +1211,7 @@ const UnifiedDiffRow = ({
       </span>
     </div>
   );
-}
+};
 
 // ─── Collapsed section ───────────────────────────────────────────────────
 const CollapsedSection = ({ count, onExpand }: { count: number; onExpand: () => void }) => {

@@ -103,63 +103,63 @@ export const GDriveUploadDialog = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-xp-surface border border-xp-border rounded-lg p-6 w-96 max-w-full">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-medium text-xp-text">Upload File</h3>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="bg-xp-surface border-xp-border w-96 max-w-full rounded-lg border p-6">
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-xp-text text-lg font-medium">Upload File</h3>
           <button
             onClick={handleClose}
             disabled={uploadState === 'uploading'}
-            className="text-xp-text-muted hover:text-xp-text disabled:opacity-50 focus:outline-none focus:ring-1 focus:ring-xp-blue"
+            className="text-xp-text-muted hover:text-xp-text focus:ring-xp-blue focus:outline-none focus:ring-1 disabled:opacity-50"
             aria-label="Close upload dialog"
           >
-            <XCircle className="w-5 h-5" />
+            <XCircle className="h-5 w-5" />
           </button>
         </div>
 
-        <div className="text-center py-4">
+        <div className="py-4 text-center">
           {(uploadState === 'idle' || uploadState === 'picking') && (
             <>
-              <Upload className="w-12 h-12 mx-auto mb-3 text-xp-blue animate-pulse" />
-              <p className="text-sm text-xp-text mb-1">Select a file to upload...</p>
-              <p className="text-xs text-xp-text-muted">Choose a file from your computer</p>
+              <Upload className="text-xp-blue mx-auto mb-3 h-12 w-12 animate-pulse" />
+              <p className="text-xp-text mb-1 text-sm">Select a file to upload...</p>
+              <p className="text-xp-text-muted text-xs">Choose a file from your computer</p>
             </>
           )}
 
           {uploadState === 'uploading' && (
             <>
-              <div className="w-12 h-12 mx-auto mb-3">
-                <div className="animate-spin rounded-full h-12 w-12 border-4 border-xp-border border-t-tokyo-blue" />
+              <div className="mx-auto mb-3 h-12 w-12">
+                <div className="border-xp-border border-t-tokyo-blue h-12 w-12 animate-spin rounded-full border-4" />
               </div>
-              <p className="text-sm text-xp-text mb-1">Uploading...</p>
-              <p className="text-xs text-xp-text-muted">{selectedFileName}</p>
+              <p className="text-xp-text mb-1 text-sm">Uploading...</p>
+              <p className="text-xp-text-muted text-xs">{selectedFileName}</p>
             </>
           )}
 
           {uploadState === 'success' && (
             <>
-              <CheckCircle className="w-12 h-12 mx-auto mb-3 text-xp-green" />
-              <p className="text-sm text-xp-text mb-1">Upload complete!</p>
-              <p className="text-xs text-xp-text-muted">{selectedFileName}</p>
+              <CheckCircle className="text-xp-green mx-auto mb-3 h-12 w-12" />
+              <p className="text-xp-text mb-1 text-sm">Upload complete!</p>
+              <p className="text-xp-text-muted text-xs">{selectedFileName}</p>
             </>
           )}
 
           {uploadState === 'error' && (
             <>
-              <XCircle className="w-12 h-12 mx-auto mb-3 text-xp-red" />
-              <p className="text-sm text-xp-text mb-1">Upload failed</p>
-              <p className="text-xs text-xp-text-muted mb-3">{errorMessage}</p>
+              <XCircle className="text-xp-red mx-auto mb-3 h-12 w-12" />
+              <p className="text-xp-text mb-1 text-sm">Upload failed</p>
+              <p className="text-xp-text-muted mb-3 text-xs">{errorMessage}</p>
               <div className="flex justify-center space-x-2">
                 <button
                   onClick={startUpload}
-                  className="px-4 py-2 text-sm bg-xp-blue text-white rounded hover:bg-xp-blue-dark transition-colors focus:outline-none focus:ring-1 focus:ring-xp-blue"
+                  className="bg-xp-blue hover:bg-xp-blue-dark focus:ring-xp-blue rounded px-4 py-2 text-sm text-white transition-colors focus:outline-none focus:ring-1"
                   aria-label="Retry upload"
                 >
                   Retry
                 </button>
                 <button
                   onClick={handleClose}
-                  className="px-4 py-2 text-sm border border-xp-border rounded hover:bg-xp-surface-light transition-colors text-xp-text focus:outline-none focus:ring-1 focus:ring-xp-blue"
+                  className="border-xp-border hover:bg-xp-surface-light text-xp-text focus:ring-xp-blue rounded border px-4 py-2 text-sm transition-colors focus:outline-none focus:ring-1"
                   aria-label="Cancel upload"
                 >
                   Cancel
@@ -171,4 +171,4 @@ export const GDriveUploadDialog = ({
       </div>
     </div>
   );
-}
+};

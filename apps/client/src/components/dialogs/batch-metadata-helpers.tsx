@@ -1,7 +1,6 @@
 import React from 'react';
 import { type FileTag, type FileNote, type FileEntry } from '@/lib/tauri-api';
-import { Tag, X, Plus, Check, StickyNote, FileText } from 'lucide-react';
-import { getFileIcon } from '@/lib/utils';
+import { X, Plus, Check, FileText } from 'lucide-react';
 
 // ── Constants ────────────────────────────────────────────────────────────────
 

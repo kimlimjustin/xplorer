@@ -51,12 +51,12 @@ const PdfPreview = ({ file, onError, onLoad }: PreviewProps) => {
   };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="flex h-full flex-col">
       {loading && (
-        <div className="flex-1 flex items-center justify-center bg-xp-surface border border-xp-border rounded">
-          <div className="text-center text-xp-text-muted">
+        <div className="bg-xp-surface border-xp-border flex flex-1 items-center justify-center rounded border">
+          <div className="text-xp-text-muted text-center">
             <div className="animate-pulse">
-              <div className="w-16 h-20 bg-xp-bg rounded mb-2 mx-auto"></div>
+              <div className="bg-xp-bg mx-auto mb-2 h-20 w-16 rounded" />
               <p className="text-xs">Loading PDF...</p>
             </div>
           </div>
@@ -64,9 +64,9 @@ const PdfPreview = ({ file, onError, onLoad }: PreviewProps) => {
       )}
 
       {error ? (
-        <div className="flex-1 flex items-center justify-center bg-xp-surface border border-xp-border rounded">
-          <div className="text-center text-xp-text-muted">
-            <svg className="w-12 h-12 mx-auto mb-2" fill="currentColor" viewBox="0 0 20 20">
+        <div className="bg-xp-surface border-xp-border flex flex-1 items-center justify-center rounded border">
+          <div className="text-xp-text-muted text-center">
+            <svg className="mx-auto mb-2 h-12 w-12" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fillRule="evenodd"
                 d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
@@ -74,12 +74,12 @@ const PdfPreview = ({ file, onError, onLoad }: PreviewProps) => {
               />
             </svg>
             <p className="text-sm">Cannot preview PDF</p>
-            <p className="text-xs mt-1 opacity-70">{error}</p>
+            <p className="mt-1 text-xs opacity-70">{error}</p>
           </div>
         </div>
       ) : (
-        <div className="flex-1 flex flex-col">
-          <div className="flex-1 flex items-center justify-center bg-xp-surface border border-xp-border rounded overflow-hidden">
+        <div className="flex flex-1 flex-col">
+          <div className="bg-xp-surface border-xp-border flex flex-1 items-center justify-center overflow-hidden rounded border">
             <Document
               file={pdfSrc}
               onLoadSuccess={onDocumentLoadSuccess}
@@ -97,11 +97,11 @@ const PdfPreview = ({ file, onError, onLoad }: PreviewProps) => {
           </div>
 
           {numPages > 0 && (
-            <div className="flex items-center justify-between mt-2 px-2 py-1 bg-xp-bg border border-xp-border rounded text-xs">
+            <div className="bg-xp-bg border-xp-border mt-2 flex items-center justify-between rounded border px-2 py-1 text-xs">
               <button
                 onClick={goToPrevPage}
                 disabled={pageNumber <= 1}
-                className="px-2 py-1 bg-xp-surface border border-xp-border rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-xp-surface-light"
+                className="bg-xp-surface border-xp-border hover:bg-xp-surface-light rounded border px-2 py-1 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Previous
               </button>
@@ -113,7 +113,7 @@ const PdfPreview = ({ file, onError, onLoad }: PreviewProps) => {
               <button
                 onClick={goToNextPage}
                 disabled={pageNumber >= numPages}
-                className="px-2 py-1 bg-xp-surface border border-xp-border rounded disabled:opacity-50 disabled:cursor-not-allowed hover:bg-xp-surface-light"
+                className="bg-xp-surface border-xp-border hover:bg-xp-surface-light rounded border px-2 py-1 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Next
               </button>
@@ -123,6 +123,6 @@ const PdfPreview = ({ file, onError, onLoad }: PreviewProps) => {
       )}
     </div>
   );
-}
+};
 
 export default React.memo(PdfPreview);

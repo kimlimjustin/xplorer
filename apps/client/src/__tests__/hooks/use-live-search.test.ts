@@ -1,8 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useLiveSearch } from '@/hooks/use-live-search';
-import { TauriAPI } from '@/lib/tauri-api';
-import type { FileEntry } from '@/lib/tauri-api';
+import { TauriAPI, type FileEntry } from '@/lib/tauri-api';
 
 // SEARCH_DEBOUNCE_MS is 300 from constants
 vi.mock('@/lib/constants', () => ({

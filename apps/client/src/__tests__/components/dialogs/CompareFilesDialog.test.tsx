@@ -35,15 +35,31 @@ vi.mock('lucide-react', () => ({
 
 // Mock dialog components
 vi.mock('@/components/ui/dialog', () => ({
-  Dialog: ({ children, open }: { children?: React.ReactNode; open?: boolean }) => (open ? <div data-testid="dialog">{children}</div> : null),
-  DialogContent: ({ children }: { children?: React.ReactNode }) => <div data-testid="dialog-content">{children}</div>,
-  DialogHeader: ({ children }: { children?: React.ReactNode }) => <div data-testid="dialog-header">{children}</div>,
-  DialogTitle: ({ children }: { children?: React.ReactNode }) => <h2 data-testid="dialog-title">{children}</h2>,
+  Dialog: ({ children, open }: { children?: React.ReactNode; open?: boolean }) =>
+    open ? <div data-testid="dialog">{children}</div> : null,
+  DialogContent: ({ children }: { children?: React.ReactNode }) => (
+    <div data-testid="dialog-content">{children}</div>
+  ),
+  DialogHeader: ({ children }: { children?: React.ReactNode }) => (
+    <div data-testid="dialog-header">{children}</div>
+  ),
+  DialogTitle: ({ children }: { children?: React.ReactNode }) => (
+    <h2 data-testid="dialog-title">{children}</h2>
+  ),
 }));
 
 // Mock other UI components
 vi.mock('@/components/ui/button', () => ({
-  Button: ({ children, onClick, disabled, ...props }: Record<string, unknown> & { children?: React.ReactNode; onClick?: React.MouseEventHandler; disabled?: boolean }) => (
+  Button: ({
+    children,
+    onClick,
+    disabled,
+    ...props
+  }: Record<string, unknown> & {
+    children?: React.ReactNode;
+    onClick?: React.MouseEventHandler;
+    disabled?: boolean;
+  }) => (
     <button data-testid="button" onClick={onClick} disabled={disabled} {...props}>
       {children}
     </button>
@@ -51,7 +67,16 @@ vi.mock('@/components/ui/button', () => ({
 }));
 
 vi.mock('@/components/ui/input', () => ({
-  Input: ({ value, onChange, placeholder, ...props }: Record<string, unknown> & { value?: string; onChange?: React.ChangeEventHandler<HTMLInputElement>; placeholder?: string }) => (
+  Input: ({
+    value,
+    onChange,
+    placeholder,
+    ...props
+  }: Record<string, unknown> & {
+    value?: string;
+    onChange?: React.ChangeEventHandler<HTMLInputElement>;
+    placeholder?: string;
+  }) => (
     <input
       data-testid="input"
       value={value}

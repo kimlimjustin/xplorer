@@ -22,11 +22,11 @@ export interface ClipboardEntry {
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-const generateId = () : string => {
+const generateId = (): string => {
   return `clip-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-}
+};
 
-const readStorage = () : ClipboardEntry[] => {
+const readStorage = (): ClipboardEntry[] => {
   try {
     const raw = sessionStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
@@ -36,7 +36,7 @@ const readStorage = () : ClipboardEntry[] => {
     // Corrupted — reset
   }
   return [];
-}
+};
 
 const writeStorage = (entries: ClipboardEntry[]) => {
   try {
@@ -44,19 +44,19 @@ const writeStorage = (entries: ClipboardEntry[]) => {
   } catch {
     // Storage full — silently drop
   }
-}
+};
 
 // ── Public API ───────────────────────────────────────────────────────────────
 
 /** Return all clipboard history entries, newest first. */
-export const getHistory = () : ClipboardEntry[] => {
+export const getHistory = (): ClipboardEntry[] => {
   return readStorage();
-}
+};
 
 /** Return a single entry by id, or undefined. */
-export const getEntry = (id: string) : ClipboardEntry | undefined => {
+export const getEntry = (id: string): ClipboardEntry | undefined => {
   return readStorage().find((e) => e.id === id);
-}
+};
 
 /**
  * Record a new clipboard operation. Deduplicates by matching the exact set of
@@ -65,7 +65,7 @@ export const getEntry = (id: string) : ClipboardEntry | undefined => {
 export const addEntry = (
   files: { path: string; name: string; isDir: boolean }[],
   operation: 'copy' | 'cut',
-) : ClipboardEntry => {
+): ClipboardEntry => {
   const entry: ClipboardEntry = {
     id: generateId(),
     files: files.map((f) => ({ path: f.path, name: f.name, isDir: f.isDir })),
@@ -102,15 +102,15 @@ export const addEntry = (
   window.dispatchEvent(new CustomEvent('clipboard-history-changed'));
 
   return entry;
-}
+};
 
 /** Clear all clipboard history. */
-export const clearHistory = () : void => {
+export const clearHistory = (): void => {
   sessionStorage.removeItem(STORAGE_KEY);
   window.dispatchEvent(new CustomEvent('clipboard-history-changed'));
-}
+};
 
 /** Return the most recent N entries (defaults to 5). */
-export const getRecentEntries = (count = 5) : ClipboardEntry[] => {
+export const getRecentEntries = (count = 5): ClipboardEntry[] => {
   return readStorage().slice(0, count);
-}
+};

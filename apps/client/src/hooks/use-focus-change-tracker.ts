@@ -179,4 +179,4 @@ export const useFocusChangeTracker = (currentPath: string) => {
   }, [currentPath]);
 
   return { changes, dismissChanges };
-}
+};

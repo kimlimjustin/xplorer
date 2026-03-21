@@ -15,11 +15,11 @@ export const IMAGE_EXTENSIONS = new Set([
   'tif',
 ]);
 
-export const isImageFile = (file: FileEntry) : boolean => {
+export const isImageFile = (file: FileEntry): boolean => {
   if (file.is_dir) return false;
   const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
   return IMAGE_EXTENSIONS.has(ext);
-}
+};
 
 // ─── Tag dots displayed under / beside a file name ───────────────────────────
 
@@ -27,18 +27,18 @@ export const TagDots = ({ tags }: { tags: FileTag[] }) => {
   if (!tags || tags.length === 0) return null;
 
   return (
-    <div className="flex items-center gap-0.5 flex-wrap mt-0.5">
-      {tags.map((tag, i) => (
+    <div className="mt-0.5 flex flex-wrap items-center gap-0.5">
+      {tags.map((tag) => (
         <span
-          key={i}
-          className="w-2 h-2 rounded-full flex-shrink-0 border border-black border-opacity-20"
+          key={tag.name}
+          className="h-2 w-2 flex-shrink-0 rounded-full border border-black border-opacity-20"
           style={{ backgroundColor: tag.color }}
           title={tag.name}
         />
       ))}
     </div>
   );
-}
+};
 
 // ─── Git status dot displayed next to a file name ────────────────────────────
 
@@ -60,9 +60,9 @@ export const GitStatusDot = ({ status }: { status: string | null }) => {
 
   return (
     <span
-      className="inline-block w-2 h-2 rounded-full flex-shrink-0 ml-1"
+      className="ml-1 inline-block h-2 w-2 flex-shrink-0 rounded-full"
       style={{ backgroundColor: color }}
       title={`Git: ${label}`}
     />
   );
-}
+};

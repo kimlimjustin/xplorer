@@ -7,7 +7,7 @@ interface PreviewActionBarProps {
 }
 
 /** Tiny feedback label that fades out after a short delay. */
-const useFeedback = () : [string | null, (msg: string) => void] => {
+const useFeedback = (): [string | null, (msg: string) => void] => {
   const [msg, setMsg] = useState<string | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const show = useCallback((text: string) => {
@@ -19,7 +19,7 @@ const useFeedback = () : [string | null, (msg: string) => void] => {
     }, 1500);
   }, []);
   return [msg, show];
-}
+};
 
 // Inline SVG icons -- kept tiny & self-contained to avoid extra deps.
 const icons = {
@@ -295,6 +295,6 @@ const PreviewActionBar = ({ file }: PreviewActionBarProps) => {
       {feedback && <span style={feedbackStyle}>{feedback}</span>}
     </div>
   );
-}
+};
 
 export default PreviewActionBar;

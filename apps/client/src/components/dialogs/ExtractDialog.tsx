@@ -20,12 +20,7 @@ interface ExtractDialogProps {
   archivePath: string;
 }
 
-const ExtractDialog = ({
-  isOpen,
-  onClose,
-  onComplete,
-  archivePath,
-}: ExtractDialogProps) => {
+const ExtractDialog = ({ isOpen, onClose, onComplete, archivePath }: ExtractDialogProps) => {
   const { toast } = useToast();
   const [archiveInfo, setArchiveInfo] = useState<ArchiveInfo | null>(null);
   const [loading, setLoading] = useState(false);
@@ -249,23 +244,23 @@ const ExtractDialog = ({
   };
 
   const getArchiveIcon = (): React.ReactNode => {
-    return <Archive size={24} className="inline-block text-xp-orange" />;
+    return <Archive size={24} className="text-xp-orange inline-block" />;
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-xp-surface rounded-lg shadow-2xl w-[600px] max-w-[90vw] max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="bg-xp-surface max-h-[90vh] w-[600px] max-w-[90vw] overflow-hidden rounded-lg shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-xp-border">
-          <h2 className="text-xl font-semibold text-xp-text">Extract Archive</h2>
+        <div className="border-xp-border flex items-center justify-between border-b p-6">
+          <h2 className="text-xp-text text-xl font-semibold">Extract Archive</h2>
           <button
             onClick={handleClose}
             disabled={extracting}
-            className="p-2 hover:bg-xp-surface-light rounded-md transition-colors disabled:opacity-50"
+            className="hover:bg-xp-surface-light rounded-md p-2 transition-colors disabled:opacity-50"
           >
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fillRule="evenodd"
                 d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
@@ -276,22 +271,23 @@ const ExtractDialog = ({
         </div>
 
         {/* Content */}
-        <div className="p-6 max-h-[60vh] overflow-y-auto">
+        <div className="max-h-[60vh] overflow-y-auto p-6">
+          {/* eslint-disable-next-line no-nested-ternary */}
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-xp-blue"></div>
-              <span className="ml-3 text-xp-text-muted">Analyzing archive...</span>
+              <div className="border-xp-blue h-8 w-8 animate-spin rounded-full border-b-2" />
+              <span className="text-xp-text-muted ml-3">Analyzing archive...</span>
             </div>
           ) : error ? (
-            <div className="text-center py-12">
-              <div className="text-red-400 text-4xl mb-4">
+            <div className="py-12 text-center">
+              <div className="mb-4 text-4xl text-red-400">
                 <AlertTriangle size="1em" className="inline-block" />
               </div>
-              <h3 className="text-lg font-medium text-xp-text mb-2">Error Analyzing Archive</h3>
+              <h3 className="text-xp-text mb-2 text-lg font-medium">Error Analyzing Archive</h3>
               <p className="text-xp-text-muted mb-4">{error}</p>
               <button
                 onClick={loadArchiveInfo}
-                className="px-4 py-2 bg-xp-blue text-white rounded hover:bg-xp-blue-dark transition-colors"
+                className="bg-xp-blue hover:bg-xp-blue-dark rounded px-4 py-2 text-white transition-colors"
               >
                 Try Again
               </button>
@@ -301,16 +297,16 @@ const ExtractDialog = ({
               {/* Archive Summary */}
               {archiveInfo && (
                 <div className="bg-xp-bg rounded-lg p-4">
-                  <div className="flex items-center mb-3">
-                    <span className="text-2xl mr-3">{getArchiveIcon()}</span>
+                  <div className="mb-3 flex items-center">
+                    <span className="mr-3 text-2xl">{getArchiveIcon()}</span>
                     <div>
-                      <h3 className="text-md font-medium text-xp-text">
+                      <h3 className="text-md text-xp-text font-medium">
                         {archivePath.split(/[/\\]/).pop()}
                       </h3>
-                      <p className="text-sm text-xp-text-muted">
+                      <p className="text-xp-text-muted text-sm">
                         {archiveInfo.format} Archive
                         {archiveInfo.is_encrypted && (
-                          <span className="ml-2 text-yellow-400 inline-flex items-center gap-1">
+                          <span className="ml-2 inline-flex items-center gap-1 text-yellow-400">
                             <Lock size={14} /> Encrypted
                           </span>
                         )}
@@ -321,27 +317,27 @@ const ExtractDialog = ({
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <span className="text-xp-text-muted">Files:</span>
-                      <span className="ml-2 text-xp-text">
+                      <span className="text-xp-text ml-2">
                         {archiveInfo.total_files.toLocaleString()}
                       </span>
                     </div>
                     <div>
                       <span className="text-xp-text-muted">Directories:</span>
-                      <span className="ml-2 text-xp-text">
+                      <span className="text-xp-text ml-2">
                         {archiveInfo.total_directories.toLocaleString()}
                       </span>
                     </div>
                     <div>
                       <span className="text-xp-text-muted">Compressed size:</span>
-                      <span className="ml-2 text-xp-text">
+                      <span className="text-xp-text ml-2">
                         {formatFileSize(archiveInfo.compressed_size)}
                       </span>
                     </div>
                     <div>
                       <span className="text-xp-text-muted">Uncompressed size:</span>
-                      <span className="ml-2 text-xp-text">
+                      <span className="text-xp-text ml-2">
                         {formatFileSize(archiveInfo.total_size)}
-                        <span className="ml-1 text-xp-green text-xs">
+                        <span className="text-xp-green ml-1 text-xs">
                           ({getCompressionRatio()})
                         </span>
                       </span>
@@ -352,7 +348,7 @@ const ExtractDialog = ({
 
               {/* Output Directory */}
               <div>
-                <label className="block text-sm font-medium text-xp-text mb-2">
+                <label className="text-xp-text mb-2 block text-sm font-medium">
                   Extract to Directory
                 </label>
                 <div className="flex space-x-2">
@@ -360,12 +356,12 @@ const ExtractDialog = ({
                     type="text"
                     value={outputDirectory}
                     onChange={(e) => setOutputDirectory(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-xp-border rounded-md bg-xp-bg text-xp-text focus:ring-xp-blue focus:border-xp-blue"
+                    className="border-xp-border bg-xp-bg text-xp-text focus:ring-xp-blue focus:border-xp-blue flex-1 rounded-md border px-3 py-2"
                     placeholder="Enter output directory..."
                   />
                   <button
                     onClick={handleBrowseOutputDirectory}
-                    className="px-3 py-2 border border-xp-border rounded-md hover:bg-xp-surface-light transition-colors"
+                    className="border-xp-border hover:bg-xp-surface-light rounded-md border px-3 py-2 transition-colors"
                   >
                     <FolderOpen size={16} />
                   </button>
@@ -375,18 +371,18 @@ const ExtractDialog = ({
               {/* Password (if encrypted) */}
               {archiveInfo?.is_encrypted && (
                 <div>
-                  <label className="block text-sm font-medium text-xp-text mb-2">
+                  <label className="text-xp-text mb-2 block text-sm font-medium">
                     Archive Password
                   </label>
                   <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-3 py-2 border border-xp-border rounded-md bg-xp-bg text-xp-text focus:ring-xp-blue focus:border-xp-blue"
+                    className="border-xp-border bg-xp-bg text-xp-text focus:ring-xp-blue focus:border-xp-blue w-full rounded-md border px-3 py-2"
                     placeholder="Enter archive password..."
                   />
-                  <p className="text-xs text-yellow-400 mt-1">
-                    <Lock size={12} className="inline-block mr-1" /> This archive is encrypted and
+                  <p className="mt-1 text-xs text-yellow-400">
+                    <Lock size={12} className="mr-1 inline-block" /> This archive is encrypted and
                     requires a password to extract
                   </p>
                 </div>
@@ -394,34 +390,34 @@ const ExtractDialog = ({
 
               {/* Options */}
               <div className="space-y-3">
-                <h4 className="text-sm font-medium text-xp-text">Extraction Options</h4>
+                <h4 className="text-xp-text text-sm font-medium">Extraction Options</h4>
                 <div className="space-y-2">
-                  <label className="flex items-center space-x-2 cursor-pointer">
+                  <label className="flex cursor-pointer items-center space-x-2">
                     <input
                       type="checkbox"
                       checked={overwriteExisting}
                       onChange={(e) => setOverwriteExisting(e.target.checked)}
-                      className="w-4 h-4 text-xp-blue bg-xp-bg border-xp-border rounded focus:ring-xp-blue"
+                      className="text-xp-blue bg-xp-bg border-xp-border focus:ring-xp-blue h-4 w-4 rounded"
                     />
-                    <span className="text-sm text-xp-text">Overwrite existing files</span>
+                    <span className="text-xp-text text-sm">Overwrite existing files</span>
                   </label>
-                  <label className="flex items-center space-x-2 cursor-pointer">
+                  <label className="flex cursor-pointer items-center space-x-2">
                     <input
                       type="checkbox"
                       checked={preservePermissions}
                       onChange={(e) => setPreservePermissions(e.target.checked)}
-                      className="w-4 h-4 text-xp-blue bg-xp-bg border-xp-border rounded focus:ring-xp-blue"
+                      className="text-xp-blue bg-xp-bg border-xp-border focus:ring-xp-blue h-4 w-4 rounded"
                     />
-                    <span className="text-sm text-xp-text">Preserve file permissions</span>
+                    <span className="text-xp-text text-sm">Preserve file permissions</span>
                   </label>
-                  <label className="flex items-center space-x-2 cursor-pointer">
+                  <label className="flex cursor-pointer items-center space-x-2">
                     <input
                       type="checkbox"
                       checked={includeHidden}
                       onChange={(e) => setIncludeHidden(e.target.checked)}
-                      className="w-4 h-4 text-xp-blue bg-xp-bg border-xp-border rounded focus:ring-xp-blue"
+                      className="text-xp-blue bg-xp-bg border-xp-border focus:ring-xp-blue h-4 w-4 rounded"
                     />
-                    <span className="text-sm text-xp-text">Include hidden files</span>
+                    <span className="text-xp-text text-sm">Include hidden files</span>
                   </label>
                 </div>
               </div>
@@ -429,28 +425,28 @@ const ExtractDialog = ({
               {/* Archive Contents with Selection */}
               {archiveInfo && archiveInfo.files.length > 0 && (
                 <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="text-sm font-medium text-xp-text">
+                  <div className="mb-2 flex items-center justify-between">
+                    <h4 className="text-xp-text text-sm font-medium">
                       Archive Contents ({archiveInfo.files.length} items)
                       {selectionCount > 0 && (
-                        <span className="ml-2 px-2 py-0.5 text-xs rounded-full bg-xp-blue text-white">
+                        <span className="bg-xp-blue ml-2 rounded-full px-2 py-0.5 text-xs text-white">
                           {selectionCount} selected
                         </span>
                       )}
                     </h4>
                     <button
                       onClick={allSelected ? deselectAll : selectAll}
-                      className="flex items-center gap-1 px-2 py-1 text-xs text-xp-blue hover:text-xp-blue-dark transition-colors"
+                      className="text-xp-blue hover:text-xp-blue-dark flex items-center gap-1 px-2 py-1 text-xs transition-colors"
                     >
                       {allSelected ? <CheckSquare size={14} /> : <Square size={14} />}
                       {allSelected ? 'Deselect All' : 'Select All'}
                     </button>
                   </div>
-                  <div className="max-h-48 overflow-y-auto bg-xp-bg rounded border border-xp-border">
-                    {archiveInfo.files.map((file, index) => (
+                  <div className="bg-xp-bg border-xp-border max-h-48 overflow-y-auto rounded border">
+                    {archiveInfo.files.map((file, _index) => (
                       <div
-                        key={index}
-                        className={`flex items-center space-x-2 px-3 py-1 text-xs border-b border-xp-border last:border-b-0 cursor-pointer hover:bg-xp-surface-light transition-colors ${selectedEntries.has(file.path) ? 'bg-xp-blue/10' : ''}`}
+                        key={file.path}
+                        className={`border-xp-border hover:bg-xp-surface-light flex cursor-pointer items-center space-x-2 border-b px-3 py-1 text-xs transition-colors last:border-b-0 ${selectedEntries.has(file.path) ? 'bg-xp-blue/10' : ''}`}
                         onClick={() => toggleEntry(file.path)}
                       >
                         <input
@@ -458,7 +454,7 @@ const ExtractDialog = ({
                           checked={selectedEntries.has(file.path)}
                           onChange={() => toggleEntry(file.path)}
                           onClick={(e) => e.stopPropagation()}
-                          className="w-3.5 h-3.5 text-xp-blue bg-xp-bg border-xp-border rounded focus:ring-xp-blue flex-shrink-0"
+                          className="text-xp-blue bg-xp-bg border-xp-border focus:ring-xp-blue h-3.5 w-3.5 flex-shrink-0 rounded"
                         />
                         <span className="text-xp-text-muted flex-shrink-0">
                           {file.is_directory ? (
@@ -467,7 +463,7 @@ const ExtractDialog = ({
                             <FileIcon size={12} className="inline-block" />
                           )}
                         </span>
-                        <span className="flex-1 text-xp-text truncate">{file.path}</span>
+                        <span className="text-xp-text flex-1 truncate">{file.path}</span>
                         <span className="text-xp-text-muted flex-shrink-0">
                           {file.is_directory ? '' : formatFileSize(file.size)}
                         </span>
@@ -481,11 +477,11 @@ const ExtractDialog = ({
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end space-x-3 p-6 border-t border-xp-border bg-xp-bg">
+        <div className="border-xp-border bg-xp-bg flex justify-end space-x-3 border-t p-6">
           <button
             onClick={handleClose}
             disabled={extracting}
-            className="px-4 py-2 text-xp-text hover:bg-xp-surface-light rounded transition-colors disabled:opacity-50"
+            className="text-xp-text hover:bg-xp-surface-light rounded px-4 py-2 transition-colors disabled:opacity-50"
           >
             Cancel
           </button>
@@ -498,10 +494,10 @@ const ExtractDialog = ({
                 !outputDirectory.trim() ||
                 (archiveInfo?.is_encrypted && !password.trim())
               }
-              className="px-4 py-2 bg-xp-green text-white rounded hover:opacity-90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+              className="bg-xp-green flex items-center space-x-2 rounded px-4 py-2 text-white transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {extracting && (
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-white" />
               )}
               <span>{extracting ? 'Extracting...' : `Extract Selected (${selectionCount})`}</span>
             </button>
@@ -514,10 +510,10 @@ const ExtractDialog = ({
               !outputDirectory.trim() ||
               (archiveInfo?.is_encrypted && !password.trim())
             }
-            className="px-4 py-2 bg-xp-blue text-white rounded hover:bg-xp-blue-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+            className="bg-xp-blue hover:bg-xp-blue-dark flex items-center space-x-2 rounded px-4 py-2 text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50"
           >
             {extracting && (
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-white" />
             )}
             <span>{extracting ? 'Extracting...' : 'Extract All'}</span>
           </button>
@@ -525,6 +521,6 @@ const ExtractDialog = ({
       </div>
     </div>
   );
-}
+};
 
 export default ExtractDialog;

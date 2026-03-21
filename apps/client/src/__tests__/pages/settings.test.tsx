@@ -9,7 +9,8 @@ vi.mock('wouter', async () => {
   return {
     useLocation: vi.fn(() => ['/settings', mockSetLocation]),
     Route: ({ children }: { children: React.ReactNode }) => children,
-    Link: ({ children, href }: { children: React.ReactNode; href: string }) => React.createElement('a', { href }, children),
+    Link: ({ children, href }: { children: React.ReactNode; href: string }) =>
+      React.createElement('a', { href }, children),
   };
 });
 
@@ -52,9 +53,27 @@ vi.mock('@radix-ui/react-select', async () => {
 // Mock theme-registry
 vi.mock('@/lib/theme-registry', () => ({
   useAllThemes: vi.fn(() => ({
-    glass: { name: 'Xplorer Glass', primary: '#7c3aed', bg: '#0a0a1a', surface: '#1a1a2e', text: '#e2e8f0' },
-    'tokyo-night': { name: 'Tokyo Night', primary: '#7aa2f7', bg: '#1a1b26', surface: '#24283b', text: '#c0caf5' },
-    dracula: { name: 'Dracula', primary: '#bd93f9', bg: '#282a36', surface: '#44475a', text: '#f8f8f2' },
+    glass: {
+      name: 'Xplorer Glass',
+      primary: '#7c3aed',
+      bg: '#0a0a1a',
+      surface: '#1a1a2e',
+      text: '#e2e8f0',
+    },
+    'tokyo-night': {
+      name: 'Tokyo Night',
+      primary: '#7aa2f7',
+      bg: '#1a1b26',
+      surface: '#24283b',
+      text: '#c0caf5',
+    },
+    dracula: {
+      name: 'Dracula',
+      primary: '#bd93f9',
+      bg: '#282a36',
+      surface: '#44475a',
+      text: '#f8f8f2',
+    },
   })),
 }));
 

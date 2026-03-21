@@ -11,7 +11,7 @@ import {
 import { extensionHost } from '@/lib/extension-host';
 import { startTour, isTourCompleted } from '@/hooks/use-tour';
 import { useShortcuts } from '@/hooks/use-shortcuts';
-import { useVimMode, isVimModeEnabled } from '@/hooks/use-vim-mode';
+import { useVimMode, isVimModeEnabled, type VimModeActions } from '@/hooks/use-vim-mode';
 import { useCommandPaletteCommands } from '@/hooks/use-command-palette-commands';
 import type { TabItem, EditorGroup } from '@/types/split-view';
 import type { BottomPanelTabId } from '@/hooks/use-layout-state';
@@ -22,7 +22,6 @@ import type { ContextMenuAction } from '@/lib/context-menu-factory';
 import type { FileChangeSet } from '@/hooks/use-focus-change-tracker';
 import type { TopBarHandle } from '@/components/explorer/TopBar';
 import type { LeftSidebarHandle } from '@/components/explorer/LeftSidebar';
-import type { VimModeActions } from '@/hooks/use-vim-mode';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -49,7 +48,7 @@ const saveUiState = (patch: Record<string, unknown>) => {
   } catch (e) {
     console.warn('Failed to save UI state:', e);
   }
-}
+};
 
 const formatError = (err: unknown): string => {
   if (err instanceof Error) return err.message;
@@ -166,7 +165,7 @@ export const useXplorerEffects = (deps: XplorerEffectsDeps) => {
     refetch,
     toast,
     pendingSelectRef,
-    topBarRef,
+    topBarRef: _topBarRef,
     leftSidebarRef,
     navigateWithHistory,
     navigateUp,
@@ -257,8 +256,9 @@ export const useXplorerEffects = (deps: XplorerEffectsDeps) => {
           !currentPath ||
           currentPath.startsWith('xplorer://') ||
           currentPath.startsWith('collection://')
-        )
+        ) {
           return;
+        }
         const folderName = await showInputToast({
           title: 'Create New Folder',
           description: 'Enter a name for the new folder',
@@ -299,8 +299,9 @@ export const useXplorerEffects = (deps: XplorerEffectsDeps) => {
           !currentPath ||
           currentPath.startsWith('xplorer://') ||
           currentPath.startsWith('collection://')
-        )
+        ) {
           return;
+        }
         const filesToDuplicate = Array.from(selectedFiles);
         let duplicated = 0;
         for (const filePath of filesToDuplicate) {
@@ -418,8 +419,9 @@ export const useXplorerEffects = (deps: XplorerEffectsDeps) => {
   useEffect(() => {
     const handleSplitShortcuts = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
-      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
         return;
+      }
       if (e.ctrlKey && e.key === '\\') {
         e.preventDefault();
         const ag = activeGroupRef.current;
@@ -702,8 +704,9 @@ export const useXplorerEffects = (deps: XplorerEffectsDeps) => {
   useEffect(() => {
     const handleOpenGDriveTab = (e: Event) => {
       const detail = (e as CustomEvent).detail;
-      if (detail?.accountId)
+      if (detail?.accountId) {
         openGDriveTab(detail.accountId, detail.accountName || detail.accountId);
+      }
     };
     const handleOpenGDriveManager = () => openGDriveManager();
     window.addEventListener('open-gdrive-tab', handleOpenGDriveTab);
@@ -720,15 +723,21 @@ export const useXplorerEffects = (deps: XplorerEffectsDeps) => {
   useEffect(() => {
     let unlisten: (() => void) | undefined;
 
-    import('@tauri-apps/api/event').then(({ listen }) => {
-      listen<string>('folder-opened', (event) => {
-        if (event.payload && typeof event.payload === 'string') {
-          navigateWithHistory(event.payload);
-        }
-      }).then((fn) => { unlisten = fn; });
-    }).catch(() => {});
+    import('@tauri-apps/api/event')
+      .then(({ listen }) => {
+        listen<string>('folder-opened', (event) => {
+          if (event.payload && typeof event.payload === 'string') {
+            navigateWithHistory(event.payload);
+          }
+        }).then((fn) => {
+          unlisten = fn;
+        });
+      })
+      .catch(() => {});
 
-    return () => { unlisten?.(); };
+    return () => {
+      unlisten?.();
+    };
   }, [navigateWithHistory]);
 
   // ── Persist UI state to localStorage (debounced) ──────────────────────────
@@ -839,4 +848,4 @@ export const useXplorerEffects = (deps: XplorerEffectsDeps) => {
     vimEnabled,
     commandPaletteCommands,
   };
-}
+};

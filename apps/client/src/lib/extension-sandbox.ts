@@ -1,9 +1,14 @@
 import { TauriAPI } from './tauri-api';
 import { transport } from './transport';
-import { Duplicates, Organizer, Analytics } from '@xplorer/sdk';
-import type { CompressionOptions, ExtractionOptions, OrganizationPlan } from '@xplorer/sdk';
-import type { ExtensionManifest, EventCallback } from './extension-host-types';
-import { isPathAllowed } from './extension-host-types';
+import {
+  Duplicates,
+  Organizer,
+  Analytics,
+  type CompressionOptions,
+  type ExtractionOptions,
+  type OrganizationPlan,
+} from '@xplorer/sdk';
+import { isPathAllowed, type ExtensionManifest, type EventCallback } from './extension-host-types';
 
 declare global {
   interface Window {
@@ -22,7 +27,7 @@ export const logPermissionViolation = (
   extensionId: string,
   permission: string,
   action: string,
-) : void => {
+): void => {
   const entry = {
     timestamp: Date.now(),
     extensionId,
@@ -43,15 +48,15 @@ export const logPermissionViolation = (
   } catch {
     // localStorage may be unavailable in some contexts -- silently ignore
   }
-}
+};
 
-export const hasPermission = (manifest: ExtensionManifest, permission: string) : boolean => {
+export const hasPermission = (manifest: ExtensionManifest, permission: string): boolean => {
   const granted = (manifest.permissions || []).includes(permission);
   if (!granted) {
     logPermissionViolation(manifest.id, permission, `access requiring "${permission}"`);
   }
   return granted;
-}
+};
 
 /**
  * Request user approval for an extension's permissions before loading.
@@ -63,7 +68,7 @@ export const requestPermissionApproval = (
   extensionId: string,
   extensionName: string,
   permissions: string[],
-) : Promise<boolean> => {
+): Promise<boolean> => {
   return new Promise((resolve) => {
     let resolved = false;
     const event = new CustomEvent('extension-permission-request', {
@@ -95,7 +100,7 @@ export const requestPermissionApproval = (
       }
     }, 30000);
   });
-}
+};
 
 // ─── Preprocessor ─────────────────────────────────────────────────────────────
 
@@ -174,15 +179,17 @@ export const executeSandboxed = (
   // Safe setTimeout/setInterval that reject string arguments (prevents eval-like behavior)
   // and track timer IDs for cleanup on extension unload
   const safeSetTimeout = (fn: Function | string, ms?: number, ...args: unknown[]) => {
-    if (typeof fn === 'string')
+    if (typeof fn === 'string') {
       throw new Error('String argument to setTimeout is not allowed in extension sandbox');
+    }
     const id = setTimeout(fn, ms, ...args) as unknown as number;
     trackedTimers.timeouts.push(id);
     return id;
   };
   const safeSetInterval = (fn: Function | string, ms?: number, ...args: unknown[]) => {
-    if (typeof fn === 'string')
+    if (typeof fn === 'string') {
       throw new Error('String argument to setInterval is not allowed in extension sandbox');
+    }
     const id = setInterval(fn, ms, ...args) as unknown as number;
     trackedTimers.intervals.push(id);
     return id;
@@ -216,9 +223,13 @@ export const executeSandboxed = (
         // Intercept createElement to block script/iframe/object/embed injection
         if (prop === 'createElement' || prop === 'createElementNS') {
           return (...args: unknown[]) => {
-            const tagName = (
-              typeof args[0] === 'string' ? args[0] : typeof args[1] === 'string' ? args[1] : ''
-            ).toLowerCase();
+            let rawTag = '';
+            if (typeof args[0] === 'string') {
+              rawTag = args[0];
+            } else if (typeof args[1] === 'string') {
+              rawTag = args[1];
+            }
+            const tagName = rawTag.toLowerCase();
             if (['script', 'iframe', 'object', 'embed', 'frame', 'link'].includes(tagName)) {
               console.warn(
                 `[Sandbox] Extension "${extId}" tried to create blocked element: <${tagName}>`,
@@ -334,11 +345,10 @@ export const executeSandboxed = (
     ...BLOCKED_GLOBALS.map(() => undefined),
   ];
 
-   
   const execFn = new Function(...paramNames, jsContent);
 
   return execFn(...paramValues);
-}
+};
 
 // ─── Global Hardening ────────────────────────────────────────────────────────
 
@@ -346,7 +356,7 @@ export const executeSandboxed = (
  * Harden global prototypes to make sandbox escapes harder.
  * This is defense-in-depth only -- see the SECURITY TODO in executeSandboxed.
  */
-export const hardenGlobals = () : void => {
+export const hardenGlobals = (): void => {
   // Prevent Function constructor escape
   try {
     Object.defineProperty(Function.prototype, 'constructor', {
@@ -928,43 +938,51 @@ export const createExtensionApi = (
     },
     gdrive: {
       authenticate: async () => {
-        if (!hasPermission(manifest, 'gdrive:access'))
+        if (!hasPermission(manifest, 'gdrive:access')) {
           throw new Error(`Extension "${manifest.id}" missing permission: gdrive:access`);
+        }
         return transport('gdrive_authenticate');
       },
       disconnect: async (accountId: string) => {
-        if (!hasPermission(manifest, 'gdrive:access'))
+        if (!hasPermission(manifest, 'gdrive:access')) {
           throw new Error(`Extension "${manifest.id}" missing permission: gdrive:access`);
+        }
         return transport('gdrive_disconnect', { accountId });
       },
       listAccounts: async () => {
-        if (!hasPermission(manifest, 'gdrive:access'))
+        if (!hasPermission(manifest, 'gdrive:access')) {
           throw new Error(`Extension "${manifest.id}" missing permission: gdrive:access`);
+        }
         return transport('gdrive_list_accounts');
       },
       listFiles: async (accountId: string, folderId: string) => {
-        if (!hasPermission(manifest, 'gdrive:access'))
+        if (!hasPermission(manifest, 'gdrive:access')) {
           throw new Error(`Extension "${manifest.id}" missing permission: gdrive:access`);
+        }
         return transport('gdrive_list_files', { accountId, folderId });
       },
       downloadFile: async (accountId: string, fileId: string, localPath: string) => {
-        if (!hasPermission(manifest, 'gdrive:access'))
+        if (!hasPermission(manifest, 'gdrive:access')) {
           throw new Error(`Extension "${manifest.id}" missing permission: gdrive:access`);
+        }
         return transport('gdrive_download_file', { accountId, fileId, localPath });
       },
       uploadFile: async (accountId: string, localPath: string, parentFolderId: string) => {
-        if (!hasPermission(manifest, 'gdrive:access'))
+        if (!hasPermission(manifest, 'gdrive:access')) {
           throw new Error(`Extension "${manifest.id}" missing permission: gdrive:access`);
+        }
         return transport('gdrive_upload_file', { accountId, localPath, parentFolderId });
       },
       deleteFile: async (accountId: string, fileId: string) => {
-        if (!hasPermission(manifest, 'gdrive:access'))
+        if (!hasPermission(manifest, 'gdrive:access')) {
           throw new Error(`Extension "${manifest.id}" missing permission: gdrive:access`);
+        }
         return transport('gdrive_delete_file', { accountId, fileId });
       },
       renameFile: async (accountId: string, fileId: string, newName: string) => {
-        if (!hasPermission(manifest, 'gdrive:access'))
+        if (!hasPermission(manifest, 'gdrive:access')) {
           throw new Error(`Extension "${manifest.id}" missing permission: gdrive:access`);
+        }
         return transport('gdrive_rename_file', { accountId, fileId, newName });
       },
       moveFile: async (
@@ -973,164 +991,190 @@ export const createExtensionApi = (
         newParentId: string,
         oldParentId: string,
       ) => {
-        if (!hasPermission(manifest, 'gdrive:access'))
+        if (!hasPermission(manifest, 'gdrive:access')) {
           throw new Error(`Extension "${manifest.id}" missing permission: gdrive:access`);
+        }
         return transport('gdrive_move_file', { accountId, fileId, newParentId, oldParentId });
       },
       createFolder: async (accountId: string, name: string, parentFolderId: string) => {
-        if (!hasPermission(manifest, 'gdrive:access'))
+        if (!hasPermission(manifest, 'gdrive:access')) {
           throw new Error(`Extension "${manifest.id}" missing permission: gdrive:access`);
+        }
         return transport('gdrive_create_folder', { accountId, name, parentFolderId });
       },
       getFileContent: async (accountId: string, fileId: string) => {
-        if (!hasPermission(manifest, 'gdrive:access'))
+        if (!hasPermission(manifest, 'gdrive:access')) {
           throw new Error(`Extension "${manifest.id}" missing permission: gdrive:access`);
+        }
         return transport('gdrive_get_file_content', { accountId, fileId });
       },
       getSettings: async () => {
-        if (!hasPermission(manifest, 'gdrive:access'))
+        if (!hasPermission(manifest, 'gdrive:access')) {
           throw new Error(`Extension "${manifest.id}" missing permission: gdrive:access`);
+        }
         return transport('get_gdrive_settings');
       },
       updateSettings: async (clientId: string, clientSecret: string) => {
-        if (!hasPermission(manifest, 'gdrive:access'))
+        if (!hasPermission(manifest, 'gdrive:access')) {
           throw new Error(`Extension "${manifest.id}" missing permission: gdrive:access`);
+        }
         return transport('update_gdrive_settings', { clientId, clientSecret });
       },
     },
     git: {
       findRepository: async (path: string) => {
-        if (!hasPermission(manifest, 'git:read'))
+        if (!hasPermission(manifest, 'git:read')) {
           throw new Error(`Extension "${manifest.id}" missing permission: git:read`);
+        }
         return transport('find_git_repository', { path });
       },
       getRepositoryInfo: async (repoPath: string) => {
-        if (!hasPermission(manifest, 'git:read'))
+        if (!hasPermission(manifest, 'git:read')) {
           throw new Error(`Extension "${manifest.id}" missing permission: git:read`);
+        }
         return transport('get_repository_info', { repoPath });
       },
       getFileHistory: async (repoPath: string, filePath: string, limit?: number) => {
-        if (!hasPermission(manifest, 'git:read'))
+        if (!hasPermission(manifest, 'git:read')) {
           throw new Error(`Extension "${manifest.id}" missing permission: git:read`);
+        }
         return transport('get_file_history', { repoPath, filePath, limit });
       },
       getFileBlame: async (repoPath: string, filePath: string) => {
-        if (!hasPermission(manifest, 'git:read'))
+        if (!hasPermission(manifest, 'git:read')) {
           throw new Error(`Extension "${manifest.id}" missing permission: git:read`);
+        }
         return transport('get_file_blame', { repoPath, filePath });
       },
       getFileDiff: async (repoPath: string, filePath: string, commitHash?: string) => {
-        if (!hasPermission(manifest, 'git:read'))
+        if (!hasPermission(manifest, 'git:read')) {
           throw new Error(`Extension "${manifest.id}" missing permission: git:read`);
+        }
         return transport('get_file_diff', { repoPath, filePath, commitHash });
       },
       getCommitDiff: async (repoPath: string, commitHash: string) => {
-        if (!hasPermission(manifest, 'git:read'))
+        if (!hasPermission(manifest, 'git:read')) {
           throw new Error(`Extension "${manifest.id}" missing permission: git:read`);
+        }
         return transport('get_commit_diff', { repoPath, commitHash });
       },
       getAllCommits: async (repoPath: string, limit?: number, branch?: string) => {
-        if (!hasPermission(manifest, 'git:read'))
+        if (!hasPermission(manifest, 'git:read')) {
           throw new Error(`Extension "${manifest.id}" missing permission: git:read`);
+        }
         return transport('get_all_commits', { repoPath, limit, branch });
       },
       getFileStatus: async (repoPath: string) => {
-        if (!hasPermission(manifest, 'git:read'))
+        if (!hasPermission(manifest, 'git:read')) {
           throw new Error(`Extension "${manifest.id}" missing permission: git:read`);
+        }
         return transport('get_file_status', { repoPath });
       },
       getBranches: async (repoPath: string) => {
-        if (!hasPermission(manifest, 'git:read'))
+        if (!hasPermission(manifest, 'git:read')) {
           throw new Error(`Extension "${manifest.id}" missing permission: git:read`);
+        }
         return transport('get_branches', { repoPath });
       },
       createBranch: async (repoPath: string, branchName: string, fromCommit?: string) => {
-        if (!hasPermission(manifest, 'git:write'))
+        if (!hasPermission(manifest, 'git:write')) {
           throw new Error(`Extension "${manifest.id}" missing permission: git:write`);
+        }
         return transport('create_branch', { repoPath, branchName, fromCommit });
       },
       switchBranch: async (repoPath: string, branchName: string) => {
-        if (!hasPermission(manifest, 'git:write'))
+        if (!hasPermission(manifest, 'git:write')) {
           throw new Error(`Extension "${manifest.id}" missing permission: git:write`);
+        }
         return transport('switch_branch', { repoPath, branchName });
       },
       deleteBranch: async (repoPath: string, branchName: string, force?: boolean) => {
-        if (!hasPermission(manifest, 'git:write'))
+        if (!hasPermission(manifest, 'git:write')) {
           throw new Error(`Extension "${manifest.id}" missing permission: git:write`);
+        }
         return transport('delete_branch', { repoPath, branchName, force });
       },
       stageFile: async (repoPath: string, filePath: string) => {
-        if (!hasPermission(manifest, 'git:write'))
+        if (!hasPermission(manifest, 'git:write')) {
           throw new Error(`Extension "${manifest.id}" missing permission: git:write`);
+        }
         return transport('stage_file', { repoPath, filePath });
       },
       unstageFile: async (repoPath: string, filePath: string) => {
-        if (!hasPermission(manifest, 'git:write'))
+        if (!hasPermission(manifest, 'git:write')) {
           throw new Error(`Extension "${manifest.id}" missing permission: git:write`);
+        }
         return transport('unstage_file', { repoPath, filePath });
       },
       commitChanges: async (repoPath: string, message: string, amend?: boolean) => {
-        if (!hasPermission(manifest, 'git:write'))
+        if (!hasPermission(manifest, 'git:write')) {
           throw new Error(`Extension "${manifest.id}" missing permission: git:write`);
+        }
         return transport('commit_changes', { repoPath, message, amend });
       },
       getStashes: async (repoPath: string) => {
-        if (!hasPermission(manifest, 'git:read'))
+        if (!hasPermission(manifest, 'git:read')) {
           throw new Error(`Extension "${manifest.id}" missing permission: git:read`);
+        }
         return transport('get_stashes', { repoPath });
       },
       createStash: async (repoPath: string, message?: string, includeUntracked?: boolean) => {
-        if (!hasPermission(manifest, 'git:write'))
+        if (!hasPermission(manifest, 'git:write')) {
           throw new Error(`Extension "${manifest.id}" missing permission: git:write`);
+        }
         return transport('create_stash', { repoPath, message, includeUntracked });
       },
       applyStash: async (repoPath: string, stashIndex: number, pop?: boolean) => {
-        if (!hasPermission(manifest, 'git:write'))
+        if (!hasPermission(manifest, 'git:write')) {
           throw new Error(`Extension "${manifest.id}" missing permission: git:write`);
+        }
         return transport('apply_stash', { repoPath, stashIndex, pop });
       },
       dropStash: async (repoPath: string, stashIndex: number) => {
-        if (!hasPermission(manifest, 'git:write'))
+        if (!hasPermission(manifest, 'git:write')) {
           throw new Error(`Extension "${manifest.id}" missing permission: git:write`);
+        }
         return transport('drop_stash', { repoPath, stashIndex });
       },
       getGitStatus: async (directory: string) => {
-        if (!hasPermission(manifest, 'git:read'))
+        if (!hasPermission(manifest, 'git:read')) {
           throw new Error(`Extension "${manifest.id}" missing permission: git:read`);
+        }
         return transport('get_git_status', { directory });
       },
       getGitRepoInfo: async (directory: string) => {
-        if (!hasPermission(manifest, 'git:read'))
+        if (!hasPermission(manifest, 'git:read')) {
           throw new Error(`Extension "${manifest.id}" missing permission: git:read`);
+        }
         return transport('get_git_repo_info', { directory });
       },
       pull: async (dir: string) => {
-        if (!hasPermission(manifest, 'git:write'))
+        if (!hasPermission(manifest, 'git:write')) {
           throw new Error(`Extension "${manifest.id}" missing permission: git:write`);
+        }
         return transport('git_pull', { directory: dir });
       },
       push: async (dir: string, force?: boolean) => {
-        if (!hasPermission(manifest, 'git:write'))
+        if (!hasPermission(manifest, 'git:write')) {
           throw new Error(`Extension "${manifest.id}" missing permission: git:write`);
+        }
         return transport('git_push', { directory: dir, force: force ?? false });
       },
       fetch: async (dir: string) => {
-        if (!hasPermission(manifest, 'git:read'))
+        if (!hasPermission(manifest, 'git:read')) {
           throw new Error(`Extension "${manifest.id}" missing permission: git:read`);
+        }
         return transport('git_fetch', { directory: dir });
       },
       getRemotes: async (dir: string) => {
-        if (!hasPermission(manifest, 'git:read'))
+        if (!hasPermission(manifest, 'git:read')) {
           throw new Error(`Extension "${manifest.id}" missing permission: git:read`);
+        }
         return transport('git_get_remotes', { directory: dir });
       },
     },
     diagnostics: {
-      diagnoseDirectory: async (
-        path: string,
-        skipHidden = true,
-        skipGitignored = true,
-      ) => {
+      diagnoseDirectory: async (path: string, skipHidden = true, skipGitignored = true) => {
         if (!hasPermission(manifest, 'file:read') && !hasPermission(manifest, 'files:read')) {
           throw new Error(`Extension "${manifest.id}" missing permission: files:read`);
         }
@@ -1139,43 +1183,51 @@ export const createExtensionApi = (
     },
     docker: {
       isAvailable: async () => {
-        if (!hasPermission(manifest, 'system:exec'))
+        if (!hasPermission(manifest, 'system:exec')) {
           throw new Error(`Extension "${manifest.id}" missing permission: system:exec`);
+        }
         return transport('docker_is_available');
       },
       listContainers: async (all: boolean) => {
-        if (!hasPermission(manifest, 'system:exec'))
+        if (!hasPermission(manifest, 'system:exec')) {
           throw new Error(`Extension "${manifest.id}" missing permission: system:exec`);
+        }
         return transport('docker_list_containers', { all });
       },
       listImages: async () => {
-        if (!hasPermission(manifest, 'system:exec'))
+        if (!hasPermission(manifest, 'system:exec')) {
           throw new Error(`Extension "${manifest.id}" missing permission: system:exec`);
+        }
         return transport('docker_list_images');
       },
       startContainer: async (id: string) => {
-        if (!hasPermission(manifest, 'system:exec'))
+        if (!hasPermission(manifest, 'system:exec')) {
           throw new Error(`Extension "${manifest.id}" missing permission: system:exec`);
+        }
         return transport('docker_start_container', { id });
       },
       stopContainer: async (id: string) => {
-        if (!hasPermission(manifest, 'system:exec'))
+        if (!hasPermission(manifest, 'system:exec')) {
           throw new Error(`Extension "${manifest.id}" missing permission: system:exec`);
+        }
         return transport('docker_stop_container', { id });
       },
       removeContainer: async (id: string, force: boolean) => {
-        if (!hasPermission(manifest, 'system:exec'))
+        if (!hasPermission(manifest, 'system:exec')) {
           throw new Error(`Extension "${manifest.id}" missing permission: system:exec`);
+        }
         return transport('docker_remove_container', { id, force });
       },
       removeImage: async (id: string, force: boolean) => {
-        if (!hasPermission(manifest, 'system:exec'))
+        if (!hasPermission(manifest, 'system:exec')) {
           throw new Error(`Extension "${manifest.id}" missing permission: system:exec`);
+        }
         return transport('docker_remove_image', { id, force });
       },
       containerLogs: async (id: string, lines: number) => {
-        if (!hasPermission(manifest, 'system:exec'))
+        if (!hasPermission(manifest, 'system:exec')) {
           throw new Error(`Extension "${manifest.id}" missing permission: system:exec`);
+        }
         return transport('docker_container_logs', { id, lines });
       },
     },

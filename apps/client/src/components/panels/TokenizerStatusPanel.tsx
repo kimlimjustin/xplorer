@@ -110,8 +110,11 @@ const TokenizerStatusPanel = () => {
 
     try {
       await TauriAPI.triggerAIIndexing(settings.whitelisted_paths, aiProvider, apiKey);
-      const providerLabel =
-        aiProvider === 'claude' ? 'Claude' : aiProvider === 'openai' ? 'OpenAI' : 'Ollama';
+      const providerLabel = (() => {
+        if (aiProvider === 'claude') return 'Claude';
+        if (aiProvider === 'openai') return 'OpenAI';
+        return 'Ollama';
+      })();
       toast({
         title: 'AI Indexing Started',
         description: `Processing images with ${providerLabel} vision model...`,
@@ -168,24 +171,24 @@ const TokenizerStatusPanel = () => {
 
   if (isLoading) {
     return (
-      <div className="h-full flex items-center justify-center">
+      <div className="flex h-full items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-xp-blue mx-auto mb-2"></div>
-          <p className="text-sm text-xp-text-muted">Loading tokenizer stats...</p>
+          <div className="border-xp-blue mx-auto mb-2 h-8 w-8 animate-spin rounded-full border-b-2" />
+          <p className="text-xp-text-muted text-sm">Loading tokenizer stats...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="h-full flex flex-col bg-xp-bg text-xp-text">
+    <div className="bg-xp-bg text-xp-text flex h-full flex-col">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-xp-border">
-        <div className="flex items-center justify-between mb-2">
+      <div className="border-xp-border border-b px-4 py-3">
+        <div className="mb-2 flex items-center justify-between">
           <h3 className="text-sm font-medium">Search & Indexing</h3>
           {isIndexing && (
-            <div className="flex items-center gap-2 text-xs text-xp-blue">
-              <div className="animate-spin rounded-full h-3 w-3 border-b border-xp-blue"></div>
+            <div className="text-xp-blue flex items-center gap-2 text-xs">
+              <div className="border-xp-blue h-3 w-3 animate-spin rounded-full border-b" />
               <span>Indexing...</span>
             </div>
           )}
@@ -193,7 +196,7 @@ const TokenizerStatusPanel = () => {
       </div>
 
       {/* Stats */}
-      <div className="px-4 py-3 border-b border-xp-border space-y-2">
+      <div className="border-xp-border space-y-2 border-b px-4 py-3">
         <div className="flex justify-between text-sm">
           <span className="text-xp-text-muted">Status:</span>
           <span className={settings?.enabled ? 'text-xp-green' : 'text-xp-red'}>
@@ -221,35 +224,39 @@ const TokenizerStatusPanel = () => {
       </div>
 
       {/* Actions */}
-      <div className="px-4 py-3 border-b border-xp-border space-y-2">
+      <div className="border-xp-border space-y-2 border-b px-4 py-3">
         <button
           onClick={handleRebuildIndex}
           disabled={isIndexing}
-          className="w-full px-3 py-2 text-sm bg-xp-blue hover:bg-xp-blue/80 disabled:bg-xp-surface-light disabled:text-xp-text-muted text-white rounded transition-colors"
+          className="bg-xp-blue hover:bg-xp-blue/80 disabled:bg-xp-surface-light disabled:text-xp-text-muted w-full rounded px-3 py-2 text-sm text-white transition-colors"
         >
           {isIndexing ? 'Rebuilding...' : 'Rebuild Index'}
         </button>
       </div>
 
       {/* AI Indexing Section (Phase 3) */}
-      <div className="px-4 py-3 border-b border-xp-border">
-        <h4 className="text-sm font-medium mb-2">AI Vision Indexing</h4>
+      <div className="border-xp-border border-b px-4 py-3">
+        <h4 className="mb-2 text-sm font-medium">AI Vision Indexing</h4>
         <div className="space-y-2">
           {/* Provider Selector */}
           <div className="flex items-center gap-2">
-            <span className="text-xs text-xp-text-muted whitespace-nowrap">Provider:</span>
-            <div className="flex gap-1 flex-1">
+            <span className="text-xp-text-muted whitespace-nowrap text-xs">Provider:</span>
+            <div className="flex flex-1 gap-1">
               {(['ollama', 'claude', 'openai'] as const).map((p) => (
                 <button
                   key={p}
                   onClick={() => setAiProvider(p)}
-                  className={`flex-1 px-2 py-1 text-xs rounded transition-colors ${
+                  className={`flex-1 rounded px-2 py-1 text-xs transition-colors ${
                     aiProvider === p
                       ? 'bg-purple-600 text-white'
                       : 'bg-xp-surface text-xp-text-muted hover:bg-xp-surface-light'
                   }`}
                 >
-                  {p === 'ollama' ? 'Ollama' : p === 'claude' ? 'Claude' : 'OpenAI'}
+                  {(() => {
+                    if (p === 'ollama') return 'Ollama';
+                    if (p === 'claude') return 'Claude';
+                    return 'OpenAI';
+                  })()}
                 </button>
               ))}
             </div>
@@ -257,7 +264,7 @@ const TokenizerStatusPanel = () => {
 
           {/* Hint for online providers */}
           {aiProvider !== 'ollama' && (
-            <p className="text-[10px] text-xp-text-muted">Uses API key from Settings</p>
+            <p className="text-xp-text-muted text-[10px]">Uses API key from Settings</p>
           )}
 
           {aiStatus ? (
@@ -269,39 +276,41 @@ const TokenizerStatusPanel = () => {
               {aiStatus.vision_model && (
                 <div className="flex justify-between text-xs">
                   <span className="text-xp-text-muted">Vision Model:</span>
-                  <span className="text-xp-text truncate ml-2">{aiStatus.vision_model}</span>
+                  <span className="text-xp-text ml-2 truncate">{aiStatus.vision_model}</span>
                 </div>
               )}
               {aiStatus.is_processing && (
                 <div className="flex items-center gap-2 text-xs text-purple-400">
-                  <div className="animate-spin rounded-full h-3 w-3 border-b border-purple-400"></div>
+                  <div className="h-3 w-3 animate-spin rounded-full border-b border-purple-400" />
                   <span className="truncate">
                     Processing: {aiStatus.current_file?.split(/[/\\]/).pop() || '...'}
                   </span>
                 </div>
               )}
               {aiStatus.queue_length > 0 && (
-                <div className="text-xs text-xp-text-muted">
+                <div className="text-xp-text-muted text-xs">
                   Queue: {aiStatus.queue_length} files remaining
                 </div>
               )}
               <button
                 onClick={handleTriggerAIIndexing}
                 disabled={aiStatus.is_processing}
-                className="w-full px-3 py-1.5 text-xs bg-purple-600 hover:bg-purple-500 disabled:bg-xp-surface-light disabled:text-xp-text-muted text-white rounded transition-colors"
+                className="disabled:bg-xp-surface-light disabled:text-xp-text-muted w-full rounded bg-purple-600 px-3 py-1.5 text-xs text-white transition-colors hover:bg-purple-500"
               >
                 {aiStatus.is_processing ? 'Processing...' : 'Index Images with AI'}
               </button>
             </>
-          ) : aiProvider === 'ollama' ? (
-            <p className="text-xs text-xp-text-muted">
+          ) : null}
+          {!aiStatus && aiProvider === 'ollama' && (
+            <p className="text-xp-text-muted text-xs">
               Requires Ollama with a vision model (llava, bakllava, moondream)
             </p>
-          ) : (
+          )}
+          {!aiStatus && aiProvider !== 'ollama' && (
             <button
               onClick={handleTriggerAIIndexing}
               disabled={!settings?.whitelisted_paths?.length}
-              className="w-full px-3 py-1.5 text-xs bg-purple-600 hover:bg-purple-500 disabled:bg-xp-surface-light disabled:text-xp-text-muted text-white rounded transition-colors"
+              className="disabled:bg-xp-surface-light disabled:text-xp-text-muted w-full rounded bg-purple-600 px-3 py-1.5 text-xs text-white transition-colors hover:bg-purple-500"
             >
               Index Images with AI
             </button>
@@ -310,9 +319,9 @@ const TokenizerStatusPanel = () => {
       </div>
 
       {/* Search */}
-      <div className="px-4 py-3 border-b border-xp-border">
-        <h4 className="text-sm font-medium mb-2">Content Search</h4>
-        <p className="text-xs text-xp-text-muted mb-2">
+      <div className="border-xp-border border-b px-4 py-3">
+        <h4 className="mb-2 text-sm font-medium">Content Search</h4>
+        <p className="text-xp-text-muted mb-2 text-xs">
           Try: "large videos from last month" or "recent photos"
         </p>
         <div className="flex gap-2">
@@ -322,17 +331,17 @@ const TokenizerStatusPanel = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
             onKeyPress={handleSearchKeyPress}
             placeholder="Search files by content or metadata..."
-            className="flex-1 px-3 py-2 text-sm bg-xp-surface border border-xp-border rounded focus:outline-none focus:border-xp-blue text-xp-text placeholder:text-xp-text-muted"
+            className="bg-xp-surface border-xp-border focus:border-xp-blue text-xp-text placeholder:text-xp-text-muted flex-1 rounded border px-3 py-2 text-sm focus:outline-none"
           />
           <button
             onClick={handleSearch}
             disabled={isSearching || !searchQuery.trim()}
-            className="px-3 py-2 text-sm bg-xp-blue hover:bg-xp-blue/80 disabled:bg-xp-surface-light disabled:text-xp-text-muted text-white rounded transition-colors"
+            className="bg-xp-blue hover:bg-xp-blue/80 disabled:bg-xp-surface-light disabled:text-xp-text-muted rounded px-3 py-2 text-sm text-white transition-colors"
           >
             {isSearching ? (
-              <div className="animate-spin rounded-full h-4 w-4 border-b border-white"></div>
+              <div className="h-4 w-4 animate-spin rounded-full border-b border-white" />
             ) : (
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fillRule="evenodd"
                   d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
@@ -348,34 +357,35 @@ const TokenizerStatusPanel = () => {
       <div className="flex-1 overflow-y-auto">
         {searchResults.length > 0 ? (
           <div>
-            <div className="px-4 py-2 text-xs text-xp-text-muted bg-xp-surface">
+            <div className="text-xp-text-muted bg-xp-surface px-4 py-2 text-xs">
               Found {searchResults.length} result{searchResults.length !== 1 ? 's' : ''}
             </div>
             {searchResults.map((result, index) => {
               const badge = getSourceBadge(result.relevance_type);
               return (
                 <div
+                  // eslint-disable-next-line react/no-array-index-key
                   key={index}
-                  className="px-4 py-3 hover:bg-xp-surface-light cursor-pointer border-b border-xp-border/30 transition-colors"
+                  className="hover:bg-xp-surface-light border-xp-border/30 cursor-pointer border-b px-4 py-3 transition-colors"
                 >
-                  <div className="flex items-start justify-between gap-2 mb-1">
-                    <span className="text-sm text-xp-text truncate">{result.filename}</span>
-                    <div className="flex items-center gap-1 flex-shrink-0">
+                  <div className="mb-1 flex items-start justify-between gap-2">
+                    <span className="text-xp-text truncate text-sm">{result.filename}</span>
+                    <div className="flex flex-shrink-0 items-center gap-1">
                       <span
-                        className={`text-xs px-1.5 py-0.5 rounded ${badge.color} bg-opacity-20 text-white`}
+                        className={`rounded px-1.5 py-0.5 text-xs ${badge.color} bg-opacity-20 text-white`}
                       >
                         {badge.label}
                       </span>
-                      <span className="text-xs px-1.5 py-0.5 rounded bg-xp-blue/20 text-xp-blue">
+                      <span className="bg-xp-blue/20 text-xp-blue rounded px-1.5 py-0.5 text-xs">
                         {result.score.toFixed(1)}
                       </span>
                     </div>
                   </div>
-                  <p className="text-xs text-xp-text-muted truncate mb-1" title={result.path}>
+                  <p className="text-xp-text-muted mb-1 truncate text-xs" title={result.path}>
                     {result.path}
                   </p>
                   {result.matches && result.matches.length > 0 && (
-                    <p className="text-xs text-xp-text-muted line-clamp-2 bg-xp-surface px-2 py-1 rounded mt-1">
+                    <p className="text-xp-text-muted bg-xp-surface mt-1 line-clamp-2 rounded px-2 py-1 text-xs">
                       {result.matches[0].context}
                     </p>
                   )}
@@ -383,11 +393,12 @@ const TokenizerStatusPanel = () => {
               );
             })}
           </div>
-        ) : searchQuery && !isSearching ? (
-          <div className="flex items-center justify-center h-32 text-xp-text-muted text-sm">
+        ) : null}
+        {searchResults.length === 0 && searchQuery && !isSearching && (
+          <div className="text-xp-text-muted flex h-32 items-center justify-center text-sm">
             No results found
           </div>
-        ) : null}
+        )}
       </div>
 
       {/* Indexed Paths List */}
@@ -395,15 +406,15 @@ const TokenizerStatusPanel = () => {
         settings.whitelisted_paths &&
         settings.whitelisted_paths.length > 0 &&
         !searchQuery && (
-          <div className="border-t border-xp-border">
-            <div className="px-4 py-2 text-xs text-xp-text-muted bg-xp-surface">
+          <div className="border-xp-border border-t">
+            <div className="text-xp-text-muted bg-xp-surface px-4 py-2 text-xs">
               Indexed Directories
             </div>
             <div className="max-h-32 overflow-y-auto">
-              {settings.whitelisted_paths.map((path, index) => (
+              {settings.whitelisted_paths.map((path) => (
                 <div
-                  key={index}
-                  className="px-4 py-2 text-xs text-xp-text-muted border-b border-xp-border/30 truncate hover:bg-xp-surface-light"
+                  key={path}
+                  className="text-xp-text-muted border-xp-border/30 hover:bg-xp-surface-light truncate border-b px-4 py-2 text-xs"
                   title={path}
                 >
                   {path}
@@ -414,6 +425,6 @@ const TokenizerStatusPanel = () => {
         )}
     </div>
   );
-}
+};
 
 export default TokenizerStatusPanel;

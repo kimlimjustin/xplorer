@@ -30,25 +30,25 @@ const ImagePreview = ({ file, onError, onLoad }: PreviewProps) => {
   };
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="flex h-full flex-col">
       {loading && <PreviewSkeleton />}
       {!imageError && (
         <div
-          className={`flex-1 flex items-center justify-center bg-xp-surface border border-xp-border rounded overflow-hidden ${loading ? 'hidden' : ''}`}
+          className={`bg-xp-surface border-xp-border flex flex-1 items-center justify-center overflow-hidden rounded border ${loading ? 'hidden' : ''}`}
         >
           <img
             src={imageSrc}
             alt={file.name}
-            className="max-w-full max-h-full object-contain"
+            className="max-h-full max-w-full object-contain"
             onLoad={handleImageLoad}
             onError={handleImageError}
           />
         </div>
       )}
       {imageError && (
-        <div className="flex-1 flex items-center justify-center bg-xp-surface border border-xp-border rounded">
-          <div className="text-center text-xp-text-muted">
-            <svg className="w-12 h-12 mx-auto mb-2" fill="currentColor" viewBox="0 0 20 20">
+        <div className="bg-xp-surface border-xp-border flex flex-1 items-center justify-center rounded border">
+          <div className="text-xp-text-muted text-center">
+            <svg className="mx-auto mb-2 h-12 w-12" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fillRule="evenodd"
                 d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
@@ -56,12 +56,12 @@ const ImagePreview = ({ file, onError, onLoad }: PreviewProps) => {
               />
             </svg>
             <p className="text-sm">Cannot preview image</p>
-            <p className="text-xs mt-1 opacity-70">The image format may not be supported</p>
+            <p className="mt-1 text-xs opacity-70">The image format may not be supported</p>
           </div>
         </div>
       )}
     </div>
   );
-}
+};
 
 export default React.memo(ImagePreview);

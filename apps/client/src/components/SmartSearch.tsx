@@ -8,11 +8,7 @@ import React, {
 } from 'react';
 import { TauriAPI, SearchResult, SearchMatch, StructuredQuery } from '@/lib/tauri-api';
 import { useToast } from '@/hooks/use-toast';
-import {
-  getSavedSearches,
-  saveSearch,
-  type SavedSearch,
-} from '@/lib/saved-searches';
+import { getSavedSearches, saveSearch, type SavedSearch } from '@/lib/saved-searches';
 // Native debounce — replaces lodash dependency
 const debounce = <T extends (...args: Parameters<T>) => ReturnType<T>>(
   fn: T,
@@ -181,7 +177,7 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
 
     const handleSaveSearch = () => {
       if (!query.trim()) return;
-      const name = query.trim().length > 30 ? query.trim().slice(0, 30) + '...' : query.trim();
+      const name = query.trim().length > 30 ? `${query.trim().slice(0, 30)}...` : query.trim();
       saveSearch({
         name,
         query: query.trim(),
@@ -230,122 +226,127 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
     };
 
     // Unified search function
-    const debouncedSearch = useMemo(() =>
-      debounce(async (searchQuery: string) => {
-        if (!searchQuery.trim()) {
-          setResults([]);
-          setParsedQuery(null);
-          setIsSearching(false);
-          return;
-        }
+    const debouncedSearch = useMemo(
+      () =>
+        debounce(async (searchQuery: string) => {
+          if (!searchQuery.trim()) {
+            setResults([]);
+            setParsedQuery(null);
+            setIsSearching(false);
+            return;
+          }
 
-        // Cancel previous in-flight search
-        if (abortRef.current) abortRef.current.abort();
-        const controller = new AbortController();
-        abortRef.current = controller;
+          // Cancel previous in-flight search
+          if (abortRef.current) abortRef.current.abort();
+          const controller = new AbortController();
+          abortRef.current = controller;
 
-        setIsSearching(true);
+          setIsSearching(true);
 
-        try {
-          let searchResults: SearchResult[] = [];
+          try {
+            let searchResults: SearchResult[] = [];
 
-          if (searchProvider !== 'local') {
-            // AI-powered search: BM25F pre-filter → AI re-rank
-            try {
-              const aiResult = await TauriAPI.aiSearch(
-                searchQuery,
-                searchProvider,
-                undefined, // API key from env/settings
-                undefined, // model default
-                maxResults,
-              );
-              searchResults = aiResult.results;
-            } catch (err) {
-              // AI search failed, fall through to local
-              console.warn('AI search failed, falling back to local:', err);
-              toast({
-                title: 'AI Search Unavailable',
-                description: `${PROVIDER_LABELS[searchProvider]} search failed. Using local search.`,
-                variant: 'destructive',
+            if (searchProvider !== 'local') {
+              // AI-powered search: BM25F pre-filter → AI re-rank
+              try {
+                const aiResult = await TauriAPI.aiSearch(
+                  searchQuery,
+                  searchProvider,
+                  undefined, // API key from env/settings
+                  undefined, // model default
+                  maxResults,
+                );
+                searchResults = aiResult.results;
+              } catch (err) {
+                // AI search failed, fall through to local
+                console.warn('AI search failed, falling back to local:', err);
+                toast({
+                  title: 'AI Search Unavailable',
+                  description: `${PROVIDER_LABELS[searchProvider]} search failed. Using local search.`,
+                  variant: 'destructive',
+                });
+              }
+            }
+
+            // Local search (or AI fallback)
+            if (searchResults.length === 0) {
+              // Always try indexed search first (BM25F scored)
+              try {
+                if (shouldUseEnhancedSearch(searchQuery)) {
+                  const enhanced = await TauriAPI.enhancedSearch(
+                    searchQuery,
+                    undefined,
+                    maxResults,
+                  );
+                  if (!controller.signal.aborted) {
+                    setParsedQuery(enhanced.parsed_query);
+                    searchResults = enhanced.results;
+                  }
+                } else {
+                  const tokenResults = await TauriAPI.searchTokens(searchQuery, maxResults);
+                  if (!controller.signal.aborted) {
+                    setParsedQuery(null);
+                    searchResults = tokenResults;
+                  }
+                }
+              } catch {
+                // Index search failed — not a problem, we'll fall back
+                if (!controller.signal.aborted) setParsedQuery(null);
+              }
+
+              // If index returned nothing, fall back to filesystem search
+              if (searchResults.length === 0 && !controller.signal.aborted) {
+                const searchPath =
+                  currentPath && !currentPath.startsWith('xplorer://') ? currentPath : undefined;
+                if (searchPath) {
+                  try {
+                    const paths = await TauriAPI.findFiles(searchQuery, searchPath);
+                    if (!controller.signal.aborted) {
+                      searchResults = paths.slice(0, maxResults).map((p) => {
+                        const filename = p.split(/[/\\]/).pop() || p;
+                        return {
+                          path: p,
+                          filename,
+                          matches: [{ token: searchQuery, context: 'Filename match' }],
+                          score: computeFilesystemScore(filename, searchQuery),
+                          relevance_type: 'exact',
+                        } as SearchResult;
+                      });
+                    }
+                  } catch {
+                    // Filesystem search also failed
+                  }
+                }
+              }
+            }
+
+            if (controller.signal.aborted) return;
+
+            // Sort results: by default name matches first, or pure score if content mode
+            if (searchContent) {
+              searchResults.sort((a, b) => b.score - a.score);
+            } else {
+              const queryLower = searchQuery.toLowerCase();
+              searchResults.sort((a, b) => {
+                const aNameMatch = a.filename.toLowerCase().includes(queryLower) ? 1 : 0;
+                const bNameMatch = b.filename.toLowerCase().includes(queryLower) ? 1 : 0;
+                if (aNameMatch !== bNameMatch) return bNameMatch - aNameMatch;
+                return b.score - a.score;
               });
             }
-          }
-
-          // Local search (or AI fallback)
-          if (searchResults.length === 0) {
-            // Always try indexed search first (BM25F scored)
-            try {
-              if (shouldUseEnhancedSearch(searchQuery)) {
-                const enhanced = await TauriAPI.enhancedSearch(searchQuery, undefined, maxResults);
-                if (!controller.signal.aborted) {
-                  setParsedQuery(enhanced.parsed_query);
-                  searchResults = enhanced.results;
-                }
-              } else {
-                const tokenResults = await TauriAPI.searchTokens(searchQuery, maxResults);
-                if (!controller.signal.aborted) {
-                  setParsedQuery(null);
-                  searchResults = tokenResults;
-                }
-              }
-            } catch {
-              // Index search failed — not a problem, we'll fall back
-              if (!controller.signal.aborted) setParsedQuery(null);
+            setResults(searchResults.slice(0, maxResults));
+            setSelectedIndex(-1);
+          } catch (error) {
+            if (!controller.signal.aborted) {
+              console.error('Search failed:', error);
+              setResults([]);
             }
-
-            // If index returned nothing, fall back to filesystem search
-            if (searchResults.length === 0 && !controller.signal.aborted) {
-              const searchPath =
-                currentPath && !currentPath.startsWith('xplorer://') ? currentPath : undefined;
-              if (searchPath) {
-                try {
-                  const paths = await TauriAPI.findFiles(searchQuery, searchPath);
-                  if (!controller.signal.aborted) {
-                    searchResults = paths.slice(0, maxResults).map((p) => {
-                      const filename = p.split(/[/\\]/).pop() || p;
-                      return {
-                        path: p,
-                        filename,
-                        matches: [{ token: searchQuery, context: 'Filename match' }],
-                        score: computeFilesystemScore(filename, searchQuery),
-                        relevance_type: 'exact',
-                      } as SearchResult;
-                    });
-                  }
-                } catch {
-                  // Filesystem search also failed
-                }
-              }
+          } finally {
+            if (!controller.signal.aborted) {
+              setIsSearching(false);
             }
           }
-
-          if (controller.signal.aborted) return;
-
-          // Sort results: by default name matches first, or pure score if content mode
-          if (searchContent) {
-            searchResults.sort((a, b) => b.score - a.score);
-          } else {
-            const queryLower = searchQuery.toLowerCase();
-            searchResults.sort((a, b) => {
-              const aNameMatch = a.filename.toLowerCase().includes(queryLower) ? 1 : 0;
-              const bNameMatch = b.filename.toLowerCase().includes(queryLower) ? 1 : 0;
-              if (aNameMatch !== bNameMatch) return bNameMatch - aNameMatch;
-              return b.score - a.score;
-            });
-          }
-          setResults(searchResults.slice(0, maxResults));
-          setSelectedIndex(-1);
-        } catch (error) {
-          if (!controller.signal.aborted) {
-            console.error('Search failed:', error);
-            setResults([]);
-          }
-        } finally {
-          if (!controller.signal.aborted) {
-            setIsSearching(false);
-          }
-        }
-      }, SEARCH_DEBOUNCE_MS),
+        }, SEARCH_DEBOUNCE_MS),
       [maxResults, searchProvider, currentPath, searchContent, toast],
     );
 
@@ -427,57 +428,57 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
       switch (ext) {
         case 'js':
         case 'ts':
-          return <FileCode {...props} className="inline-block text-xp-yellow" />;
+          return <FileCode {...props} className="text-xp-yellow inline-block" />;
         case 'jsx':
         case 'tsx':
-          return <FileCode {...props} className="inline-block text-xp-cyan" />;
+          return <FileCode {...props} className="text-xp-cyan inline-block" />;
         case 'html':
-          return <Globe {...props} className="inline-block text-xp-orange" />;
+          return <Globe {...props} className="text-xp-orange inline-block" />;
         case 'css':
         case 'scss':
         case 'sass':
-          return <Palette {...props} className="inline-block text-xp-purple" />;
+          return <Palette {...props} className="text-xp-purple inline-block" />;
         case 'json':
         case 'xml':
         case 'yaml':
         case 'yml':
-          return <FileJson {...props} className="inline-block text-xp-green" />;
+          return <FileJson {...props} className="text-xp-green inline-block" />;
         case 'md':
-          return <BookOpen {...props} className="inline-block text-xp-blue" />;
+          return <BookOpen {...props} className="text-xp-blue inline-block" />;
         case 'txt':
-          return <FileText {...props} className="inline-block text-xp-text-muted" />;
+          return <FileText {...props} className="text-xp-text-muted inline-block" />;
         case 'log':
-          return <ScrollText {...props} className="inline-block text-xp-text-muted" />;
+          return <ScrollText {...props} className="text-xp-text-muted inline-block" />;
         case 'pdf':
-          return <BookMarked {...props} className="inline-block text-xp-red" />;
+          return <BookMarked {...props} className="text-xp-red inline-block" />;
         case 'docx':
-          return <FileText {...props} className="inline-block text-xp-blue" />;
+          return <FileText {...props} className="text-xp-blue inline-block" />;
         case 'xlsx':
-          return <FileSpreadsheet {...props} className="inline-block text-xp-green" />;
+          return <FileSpreadsheet {...props} className="text-xp-green inline-block" />;
         case 'pptx':
-          return <Presentation {...props} className="inline-block text-xp-orange" />;
+          return <Presentation {...props} className="text-xp-orange inline-block" />;
         case 'jpg':
         case 'jpeg':
         case 'png':
         case 'gif':
         case 'svg':
-          return <ImageIcon {...props} className="inline-block text-xp-purple" />;
+          return <ImageIcon {...props} className="text-xp-purple inline-block" />;
         case 'mp4':
         case 'avi':
         case 'mov':
         case 'mkv':
-          return <Film {...props} className="inline-block text-xp-red" />;
+          return <Film {...props} className="text-xp-red inline-block" />;
         case 'mp3':
         case 'wav':
         case 'flac':
-          return <Music {...props} className="inline-block text-xp-cyan" />;
+          return <Music {...props} className="text-xp-cyan inline-block" />;
         case 'zip':
         case 'rar':
         case 'tar':
         case 'gz':
-          return <Package {...props} className="inline-block text-xp-orange" />;
+          return <Package {...props} className="text-xp-orange inline-block" />;
         default:
-          return <FileIcon {...props} className="inline-block text-xp-text-muted" />;
+          return <FileIcon {...props} className="text-xp-text-muted inline-block" />;
       }
     };
 
@@ -521,10 +522,12 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
               (token) => part.toLowerCase() === token.toLowerCase(),
             );
             return isHighlighted ? (
-              <mark key={index} className="bg-yellow-300 bg-opacity-30 px-1 rounded">
+              // eslint-disable-next-line react/no-array-index-key
+              <mark key={index} className="rounded bg-yellow-300 bg-opacity-30 px-1">
                 {part}
               </mark>
             ) : (
+              // eslint-disable-next-line react/no-array-index-key
               <span key={index}>{part}</span>
             );
           })}
@@ -536,14 +539,15 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
       const chips: { label: string; type: string }[] = [];
       if (pq.file_type_filter) chips.push({ label: pq.file_type_filter, type: 'type' });
       if (pq.size_filter) {
-        if (pq.size_filter.min_bytes && pq.size_filter.min_bytes >= 1024 * 1024 * 1024)
+        if (pq.size_filter.min_bytes && pq.size_filter.min_bytes >= 1024 * 1024 * 1024) {
           chips.push({ label: '>1GB', type: 'size' });
-        else if (pq.size_filter.min_bytes && pq.size_filter.min_bytes >= 100 * 1024 * 1024)
+        } else if (pq.size_filter.min_bytes && pq.size_filter.min_bytes >= 100 * 1024 * 1024) {
           chips.push({ label: '>100MB', type: 'size' });
-        else if (pq.size_filter.max_bytes && pq.size_filter.max_bytes <= 100 * 1024)
+        } else if (pq.size_filter.max_bytes && pq.size_filter.max_bytes <= 100 * 1024) {
           chips.push({ label: '<100KB', type: 'size' });
-        else if (pq.size_filter.max_bytes && pq.size_filter.max_bytes <= 1024 * 1024)
+        } else if (pq.size_filter.max_bytes && pq.size_filter.max_bytes <= 1024 * 1024) {
           chips.push({ label: '<1MB', type: 'size' });
+        }
       }
       if (pq.date_filter) {
         if (pq.date_filter.after) {
@@ -554,11 +558,13 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
           else if (daysAgo <= 30) chips.push({ label: 'Last Month', type: 'date' });
           else if (daysAgo <= 365) chips.push({ label: 'This Year', type: 'date' });
         }
-        if (pq.date_filter.before && !pq.date_filter.after)
+        if (pq.date_filter.before && !pq.date_filter.after) {
           chips.push({ label: 'Old', type: 'date' });
+        }
       }
-      if (pq.extension_filter.length > 0)
+      if (pq.extension_filter.length > 0) {
         chips.push({ label: `.${pq.extension_filter.join(', .')}`, type: 'ext' });
+      }
       return chips;
     };
 
@@ -578,15 +584,15 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
             onFocus={handleFocus}
             onBlur={handleBlur}
             placeholder={placeholder}
-            className="w-full px-4 py-2 pl-10 pr-28 bg-xp-bg border border-xp-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-xp-blue focus:border-transparent"
+            className="bg-xp-bg border-xp-border focus:ring-xp-blue w-full rounded-lg border px-4 py-2 pl-10 pr-28 text-sm focus:border-transparent focus:outline-none focus:ring-2"
           />
 
           {/* Search Icon */}
-          <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 transform">
             {isSearching ? (
-              <div className="w-4 h-4 animate-spin rounded-full border-2 border-xp-blue border-t-transparent"></div>
+              <div className="border-xp-blue h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
             ) : (
-              <svg className="w-4 h-4 text-xp-text-muted" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="text-xp-text-muted h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fillRule="evenodd"
                   d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
@@ -598,16 +604,16 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
 
           {/* Right side controls — preventDefault on mouseDown keeps input focused */}
           <div
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-1"
+            className="absolute right-2 top-1/2 flex -translate-y-1/2 transform items-center gap-1"
             onMouseDown={(e) => e.preventDefault()}
           >
             {/* Provider selector */}
             <div className="relative" ref={providerMenuRef}>
               <button
                 onClick={() => setShowProviderMenu(!showProviderMenu)}
-                className={`text-xs px-1.5 py-0.5 rounded transition-colors flex items-center gap-0.5 ${
+                className={`flex items-center gap-0.5 rounded px-1.5 py-0.5 text-xs transition-colors ${
                   searchProvider !== 'local'
-                    ? 'bg-purple-500 bg-opacity-20 text-purple-400 border border-purple-500 border-opacity-30'
+                    ? 'border border-purple-500 border-opacity-30 bg-purple-500 bg-opacity-20 text-purple-400'
                     : 'text-xp-text-muted hover:text-xp-text'
                 }`}
                 title={`Search provider: ${PROVIDER_LABELS[searchProvider]}`}
@@ -619,7 +625,7 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
               {showProviderMenu && (
                 <>
                   <div
-                    className="absolute right-0 top-full mt-1 bg-xp-popover border border-xp-border rounded shadow-xl z-50 min-w-[120px]"
+                    className="bg-xp-popover border-xp-border absolute right-0 top-full z-50 mt-1 min-w-[120px] rounded border shadow-xl"
                     onMouseDown={(e) => e.preventDefault()}
                   >
                     {(Object.keys(PROVIDER_LABELS) as SearchProvider[]).map((p) => (
@@ -629,8 +635,8 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
                           setSearchProvider(p);
                           setShowProviderMenu(false);
                         }}
-                        className={`w-full px-3 py-1.5 text-left text-xs hover:bg-xp-surface-light transition-colors ${
-                          searchProvider === p ? 'bg-xp-blue bg-opacity-20 text-xp-blue' : ''
+                        className={`hover:bg-xp-surface-light w-full px-3 py-1.5 text-left text-xs transition-colors ${
+                          searchProvider === p ? 'bg-xp-blue text-xp-blue bg-opacity-20' : ''
                         }`}
                       >
                         {PROVIDER_LABELS[p]}
@@ -648,9 +654,9 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
                 setSearchContent((v) => !v);
                 if (query.trim()) debouncedSearch(query);
               }}
-              className={`text-xs px-1.5 py-0.5 rounded transition-colors ${
+              className={`rounded px-1.5 py-0.5 text-xs transition-colors ${
                 searchContent
-                  ? 'bg-blue-500 bg-opacity-20 text-blue-400 border border-blue-500 border-opacity-30'
+                  ? 'border border-blue-500 border-opacity-30 bg-blue-500 bg-opacity-20 text-blue-400'
                   : 'text-xp-text-muted hover:text-xp-text'
               }`}
               title={
@@ -662,7 +668,7 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
 
             {/* Index Stats */}
             {indexedFileCount > 0 && (
-              <span className="text-xs text-xp-text-muted">
+              <span className="text-xp-text-muted text-xs">
                 {indexedFileCount.toLocaleString()}
               </span>
             )}
@@ -671,7 +677,7 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
             {query.trim() && (
               <button
                 onClick={handleSaveSearch}
-                className="text-xp-text-muted hover:text-yellow-400 transition-colors"
+                className="text-xp-text-muted transition-colors hover:text-yellow-400"
                 title="Save this search"
               >
                 <Star size={14} />
@@ -707,7 +713,7 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
                 }}
                 className="text-xp-text-muted hover:text-xp-text"
               >
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                   <path
                     fillRule="evenodd"
                     d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
@@ -725,25 +731,23 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
           (() => {
             const chips = getFilterChips(parsedQuery);
             return chips.length > 0 ? (
-              <div className="flex flex-wrap gap-1 mt-1 px-1">
+              <div className="mt-1 flex flex-wrap gap-1 px-1">
                 {chips.map((chip) => (
                   <span
                     key={`${chip.type}-${chip.label}`}
-                    className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                      chip.type === 'type'
-                        ? 'bg-blue-500 bg-opacity-20 text-blue-400'
-                        : chip.type === 'size'
-                          ? 'bg-green-500 bg-opacity-20 text-green-400'
-                          : chip.type === 'date'
-                            ? 'bg-orange-500 bg-opacity-20 text-orange-400'
-                            : 'bg-purple-500 bg-opacity-20 text-purple-400'
-                    }`}
+                    className={`rounded-full px-2 py-0.5 text-xs font-medium ${(() => {
+                      if (chip.type === 'type') return 'bg-blue-500 bg-opacity-20 text-blue-400';
+                      if (chip.type === 'size') return 'bg-green-500 bg-opacity-20 text-green-400';
+                      if (chip.type === 'date')
+                        {return 'bg-orange-500 bg-opacity-20 text-orange-400';}
+                      return 'bg-purple-500 bg-opacity-20 text-purple-400';
+                    })()}`}
                   >
                     {chip.label}
                   </span>
                 ))}
                 {parsedQuery.keywords.length > 0 && (
-                  <span className="text-xs text-xp-text-muted px-1">
+                  <span className="text-xp-text-muted px-1 text-xs">
                     + "{parsedQuery.keywords.join(' ')}"
                   </span>
                 )}
@@ -755,54 +759,54 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
         {showResults && results.length > 0 && (
           <div
             ref={resultsRef}
-            className="absolute top-full left-0 right-0 mt-1 bg-xp-popover border border-xp-border rounded-lg shadow-xl backdrop-blur-xl z-50 max-h-96 overflow-y-auto"
+            className="bg-xp-popover border-xp-border absolute left-0 right-0 top-full z-50 mt-1 max-h-96 overflow-y-auto rounded-lg border shadow-xl backdrop-blur-xl"
             style={{
               marginTop: parsedQuery && getFilterChips(parsedQuery).length > 0 ? '28px' : '4px',
             }}
           >
             {results.map((result, index) => (
               <button
-                key={`${result.path}-${index}`}
+                key={result.path}
                 onClick={() => handleFileSelect(result)}
-                className={`w-full p-3 text-left hover:bg-xp-surface-light transition-colors border-b border-xp-border last:border-b-0 ${
+                className={`hover:bg-xp-surface-light border-xp-border w-full border-b p-3 text-left transition-colors last:border-b-0 ${
                   index === selectedIndex ? 'bg-xp-surface-light' : ''
                 }`}
               >
                 <div className="flex items-start space-x-3">
                   <div className="flex-shrink-0 text-lg">{getFileIcon(result.filename)}</div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between mb-1">
-                      <h4 className="text-sm font-medium truncate">
+                  <div className="min-w-0 flex-1">
+                    <div className="mb-1 flex items-center justify-between">
+                      <h4 className="truncate text-sm font-medium">
                         {highlightMatches(result.filename, result.matches)}
                       </h4>
-                      <div className="flex items-center space-x-1 ml-2 flex-shrink-0">
+                      <div className="ml-2 flex flex-shrink-0 items-center space-x-1">
                         {(() => {
                           const badge = getRelevanceBadge(result.relevance_type);
                           return (
                             <span
-                              className={`text-xs ${badge.color} bg-opacity-20 text-white px-1.5 py-0.5 rounded`}
+                              className={`text-xs ${badge.color} rounded bg-opacity-20 px-1.5 py-0.5 text-white`}
                             >
                               {badge.label}
                             </span>
                           );
                         })()}
-                        <span className="text-xs bg-xp-blue bg-opacity-20 text-xp-blue px-1.5 py-0.5 rounded">
+                        <span className="bg-xp-blue text-xp-blue rounded bg-opacity-20 px-1.5 py-0.5 text-xs">
                           {result.score.toFixed(1)}
                         </span>
                       </div>
                     </div>
-                    <div className="text-xs text-xp-text-muted mb-1 truncate">{result.path}</div>
+                    <div className="text-xp-text-muted mb-1 truncate text-xs">{result.path}</div>
                     {result.snippet && (
-                      <div className="text-xs text-xp-text-secondary mb-1.5 line-clamp-2 italic opacity-80">
+                      <div className="text-xp-text-secondary mb-1.5 line-clamp-2 text-xs italic opacity-80">
                         &ldquo;{result.snippet}&rdquo;
                       </div>
                     )}
                     {result.matches.length > 0 && (
                       <div className="space-y-1">
-                        {result.matches.slice(0, 2).map((match, matchIndex) => (
-                          <div key={matchIndex} className="text-xs">
+                        {result.matches.slice(0, 2).map((match) => (
+                          <div key={match.token} className="text-xs">
                             <span className="text-xp-text-muted">Match: </span>
-                            <span className="bg-yellow-300 bg-opacity-20 px-1 rounded">
+                            <span className="rounded bg-yellow-300 bg-opacity-20 px-1">
                               {match.token}
                             </span>
                             {match.context && (
@@ -811,7 +815,7 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
                           </div>
                         ))}
                         {result.matches.length > 2 && (
-                          <div className="text-xs text-xp-text-muted">
+                          <div className="text-xp-text-muted text-xs">
                             +{result.matches.length - 2} more
                           </div>
                         )}
@@ -819,7 +823,7 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
                     )}
                     <button
                       onClick={(e) => handleFindSimilar(e, result.path)}
-                      className="mt-1 text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
+                      className="mt-1 text-xs text-indigo-400 transition-colors hover:text-indigo-300"
                       title="Find semantically similar files"
                     >
                       Find Similar
@@ -829,7 +833,7 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
               </button>
             ))}
 
-            <div className="p-3 bg-xp-bg border-t border-xp-border text-xs text-xp-text-muted text-center">
+            <div className="bg-xp-bg border-xp-border text-xp-text-muted border-t p-3 text-center text-xs">
               Found {results.length} results
               {results.length >= maxResults && ` (showing first ${maxResults})`}
               {searchProvider !== 'local' && ` via ${PROVIDER_LABELS[searchProvider]}`}
@@ -843,17 +847,21 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
 
         {/* No Results */}
         {showResults && !isSearching && query.trim() && results.length === 0 && (
-          <div className="absolute top-full left-0 right-0 mt-1 bg-xp-popover border border-xp-border rounded-lg shadow-xl backdrop-blur-xl z-50 p-4 text-center">
+          <div className="bg-xp-popover border-xp-border absolute left-0 right-0 top-full z-50 mt-1 rounded-lg border p-4 text-center shadow-xl backdrop-blur-xl">
             <div className="text-xp-text-secondary">
-              <svg className="w-8 h-8 mx-auto mb-2 text-xp-text-muted" fill="currentColor" viewBox="0 0 20 20">
+              <svg
+                className="text-xp-text-muted mx-auto mb-2 h-8 w-8"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
                 <path
                   fillRule="evenodd"
                   d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
                   clipRule="evenodd"
                 />
               </svg>
-              <p className="text-sm text-xp-text">No results found for "{query}"</p>
-              <p className="text-xs mt-1 text-xp-text-muted">
+              <p className="text-xp-text text-sm">No results found for "{query}"</p>
+              <p className="text-xp-text-muted mt-1 text-xs">
                 Try different keywords or navigate to the target folder first
               </p>
               {searchProvider === 'local' && (

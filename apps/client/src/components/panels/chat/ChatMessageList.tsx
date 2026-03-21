@@ -40,7 +40,7 @@ const ChatMessageList = ({
     <div
       ref={messagesContainerRef}
       style={{ flex: '1 1 0%', minHeight: 0, minWidth: 0, overflowY: 'auto', overflowX: 'hidden' }}
-      className="px-3 py-3 space-y-3"
+      className="space-y-3 px-3 py-3"
       aria-live="polite"
       aria-label="Chat messages"
       role="log"
@@ -81,13 +81,13 @@ const ChatMessageList = ({
         <div className="flex justify-start">
           <details
             open
-            className="max-w-[85%] min-w-0 rounded-lg overflow-hidden bg-xp-bg border border-xp-border"
+            className="bg-xp-bg border-xp-border min-w-0 max-w-[85%] overflow-hidden rounded-lg border"
           >
-            <summary className="px-3 py-1.5 text-xs text-xp-text-muted cursor-pointer hover:bg-xp-bg-hover select-none flex items-center gap-1.5">
-              <div className="w-1.5 h-1.5 bg-xp-cyan rounded-full animate-pulse" />
+            <summary className="text-xp-text-muted hover:bg-xp-bg-hover flex cursor-pointer select-none items-center gap-1.5 px-3 py-1.5 text-xs">
+              <div className="bg-xp-cyan h-1.5 w-1.5 animate-pulse rounded-full" />
               <span>Thinking...</span>
             </summary>
-            <div className="px-3 py-2 text-xs text-xp-text-muted border-t border-xp-border whitespace-pre-wrap max-h-48 overflow-y-auto">
+            <div className="text-xp-text-muted border-xp-border max-h-48 overflow-y-auto whitespace-pre-wrap border-t px-3 py-2 text-xs">
               {state.streamingThinking}
             </div>
           </details>
@@ -107,6 +107,6 @@ const ChatMessageList = ({
       </div>
     </div>
   );
-}
+};
 
 export default ChatMessageList;

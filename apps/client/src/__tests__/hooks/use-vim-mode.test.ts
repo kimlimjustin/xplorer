@@ -12,7 +12,14 @@ import {
 import type { FileEntry } from '@/lib/tauri-api';
 
 const makeFile = (name: string, path: string, is_dir = false): FileEntry => {
-  return { name, path, is_dir, size: 100, modified: Date.now(), file_type: is_dir ? 'dir' : 'file' };
+  return {
+    name,
+    path,
+    is_dir,
+    size: 100,
+    modified: Date.now(),
+    file_type: is_dir ? 'dir' : 'file',
+  };
 };
 
 const makeActions = (): VimModeActions => {
@@ -149,7 +156,9 @@ describe('useVimMode hook', () => {
       });
       renderHook(() => useVimMode(opts));
 
-      act(() => { pressKey('j'); });
+      act(() => {
+        pressKey('j');
+      });
 
       expect(actions.setSelectedFiles).toHaveBeenCalled();
       expect(actions.setSelectedFile).toHaveBeenCalled();
@@ -163,7 +172,9 @@ describe('useVimMode hook', () => {
       });
       renderHook(() => useVimMode(opts));
 
-      act(() => { pressKey('k'); });
+      act(() => {
+        pressKey('k');
+      });
 
       expect(actions.setSelectedFiles).toHaveBeenCalled();
       expect(actions.setSelectedFile).toHaveBeenCalled();
@@ -176,7 +187,9 @@ describe('useVimMode hook', () => {
       const opts = makeOptions({ actions });
       renderHook(() => useVimMode(opts));
 
-      act(() => { pressKey('h'); });
+      act(() => {
+        pressKey('h');
+      });
 
       expect(actions.navigateUp).toHaveBeenCalled();
     });
@@ -190,7 +203,9 @@ describe('useVimMode hook', () => {
       });
       renderHook(() => useVimMode(opts));
 
-      act(() => { pressKey('l'); });
+      act(() => {
+        pressKey('l');
+      });
 
       expect(actions.navigateToPath).toHaveBeenCalledWith('/folder');
     });
@@ -202,7 +217,9 @@ describe('useVimMode hook', () => {
       const opts = makeOptions({ actions });
       renderHook(() => useVimMode(opts));
 
-      act(() => { pressKey('G'); });
+      act(() => {
+        pressKey('G');
+      });
 
       // Last file index is 3 (files has 4 entries)
       expect(actions.setSelectedFiles).toHaveBeenCalled();
@@ -271,7 +288,9 @@ describe('useVimMode hook', () => {
       const opts = makeOptions({ actions });
       renderHook(() => useVimMode(opts));
 
-      act(() => { pressKey('p'); });
+      act(() => {
+        pressKey('p');
+      });
 
       expect(actions.pasteFiles).toHaveBeenCalled();
     });
@@ -283,7 +302,9 @@ describe('useVimMode hook', () => {
       const opts = makeOptions({ actions });
       renderHook(() => useVimMode(opts));
 
-      act(() => { pressKey('/'); });
+      act(() => {
+        pressKey('/');
+      });
 
       expect(actions.focusSearch).toHaveBeenCalled();
     });
@@ -298,7 +319,9 @@ describe('useVimMode hook', () => {
       });
       renderHook(() => useVimMode(opts));
 
-      act(() => { pressKey('r'); });
+      act(() => {
+        pressKey('r');
+      });
 
       expect(actions.renameFile).toHaveBeenCalled();
     });
@@ -313,7 +336,9 @@ describe('useVimMode hook', () => {
       });
       renderHook(() => useVimMode(opts));
 
-      act(() => { pressKey('m'); });
+      act(() => {
+        pressKey('m');
+      });
 
       expect(actions.addBookmark).toHaveBeenCalledWith('/home/user/docs');
     });
@@ -328,7 +353,9 @@ describe('useVimMode hook', () => {
       });
       const { result } = renderHook(() => useVimMode(opts));
 
-      act(() => { pressKey('v'); });
+      act(() => {
+        pressKey('v');
+      });
 
       expect(result.current.mode).toBe('visual');
     });
@@ -341,10 +368,14 @@ describe('useVimMode hook', () => {
       });
       const { result } = renderHook(() => useVimMode(opts));
 
-      act(() => { pressKey('v'); });
+      act(() => {
+        pressKey('v');
+      });
       expect(result.current.mode).toBe('visual');
 
-      act(() => { pressKey('v'); });
+      act(() => {
+        pressKey('v');
+      });
       expect(result.current.mode).toBe('normal');
     });
   });
@@ -354,7 +385,9 @@ describe('useVimMode hook', () => {
       const opts = makeOptions();
       const { result } = renderHook(() => useVimMode(opts));
 
-      act(() => { pressKey('i'); });
+      act(() => {
+        pressKey('i');
+      });
 
       expect(result.current.mode).toBe('insert');
     });
@@ -363,10 +396,14 @@ describe('useVimMode hook', () => {
       const opts = makeOptions();
       const { result } = renderHook(() => useVimMode(opts));
 
-      act(() => { pressKey('i'); });
+      act(() => {
+        pressKey('i');
+      });
       expect(result.current.mode).toBe('insert');
 
-      act(() => { pressKey('Escape'); });
+      act(() => {
+        pressKey('Escape');
+      });
       expect(result.current.mode).toBe('normal');
     });
   });
@@ -377,7 +414,9 @@ describe('useVimMode hook', () => {
       const opts = makeOptions({ actions });
       renderHook(() => useVimMode(opts));
 
-      act(() => { pressKey('Escape'); });
+      act(() => {
+        pressKey('Escape');
+      });
 
       expect(actions.setSelectedFiles).toHaveBeenCalledWith(new Set());
       expect(actions.setSelectedFile).toHaveBeenCalledWith(null);
@@ -391,7 +430,9 @@ describe('useVimMode hook', () => {
       const eventSpy = vi.fn();
       window.addEventListener('vim-command-mode', eventSpy);
 
-      act(() => { pressKey(':'); });
+      act(() => {
+        pressKey(':');
+      });
 
       expect(eventSpy).toHaveBeenCalled();
       window.removeEventListener('vim-command-mode', eventSpy);
@@ -404,7 +445,9 @@ describe('useVimMode hook', () => {
       const opts = makeOptions({ enabled: false, actions });
       renderHook(() => useVimMode(opts));
 
-      act(() => { pressKey('j'); });
+      act(() => {
+        pressKey('j');
+      });
 
       expect(actions.setSelectedFiles).not.toHaveBeenCalled();
     });
@@ -438,7 +481,9 @@ describe('useVimMode hook', () => {
       const opts = makeOptions({ actions });
       renderHook(() => useVimMode(opts));
 
-      act(() => { pressKey('j', { ctrlKey: true }); });
+      act(() => {
+        pressKey('j', { ctrlKey: true });
+      });
 
       expect(actions.setSelectedFiles).not.toHaveBeenCalled();
     });
@@ -450,10 +495,14 @@ describe('useVimMode hook', () => {
       const opts = makeOptions({ actions });
       const { result } = renderHook(() => useVimMode(opts));
 
-      act(() => { pressKey('g'); });
+      act(() => {
+        pressKey('g');
+      });
       expect(result.current.pendingKeys).toBe('g');
 
-      act(() => { vi.advanceTimersByTime(600); });
+      act(() => {
+        vi.advanceTimersByTime(600);
+      });
       expect(result.current.pendingKeys).toBe('');
     });
   });
@@ -464,10 +513,14 @@ describe('useVimMode hook', () => {
       const opts = makeOptions({ actions });
       renderHook(() => useVimMode(opts));
 
-      act(() => { pressKey('p'); });
+      act(() => {
+        pressKey('p');
+      });
       expect(actions.pasteFiles).toHaveBeenCalledTimes(1);
 
-      act(() => { pressKey('.'); });
+      act(() => {
+        pressKey('.');
+      });
       expect(actions.pasteFiles).toHaveBeenCalledTimes(2);
     });
   });

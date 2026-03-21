@@ -15,7 +15,13 @@ const Settings = React.lazy(() => import('@/pages/settings'));
 
 const Router = () => {
   return (
-    <React.Suspense fallback={<div className="flex items-center justify-center h-screen bg-xp-bg text-xp-text text-sm">Loading...</div>}>
+    <React.Suspense
+      fallback={
+        <div className="bg-xp-bg text-xp-text flex h-screen items-center justify-center text-sm">
+          Loading...
+        </div>
+      }
+    >
       <Switch>
         <Route path="/" component={ExplorerUnified} />
         <Route path="/explorer" component={ExplorerUnified} />
@@ -24,7 +30,7 @@ const Router = () => {
       </Switch>
     </React.Suspense>
   );
-}
+};
 
 const XtensionFileHandler = () => {
   const { toast } = useToast();
@@ -95,7 +101,7 @@ const XtensionFileHandler = () => {
       onInstall={handleInstall}
     />
   );
-}
+};
 
 const App = () => {
   return (
@@ -104,6 +110,6 @@ const App = () => {
       <XtensionFileHandler />
     </QueryClientProvider>
   );
-}
+};
 
 export default App;

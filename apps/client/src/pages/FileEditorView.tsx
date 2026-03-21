@@ -103,7 +103,7 @@ const FileEditorView = ({ filePath }: FileEditorViewProps) => {
         if (!textarea) return;
         const start = textarea.selectionStart;
         const end = textarea.selectionEnd;
-        const newContent = content.substring(0, start) + '  ' + content.substring(end);
+        const newContent = `${content.substring(0, start)}  ${content.substring(end)}`;
         setContent(newContent);
         requestAnimationFrame(() => {
           textarea.selectionStart = textarea.selectionEnd = start + 2;
@@ -158,7 +158,7 @@ const FileEditorView = ({ filePath }: FileEditorViewProps) => {
 
   if (loading) {
     return (
-      <div className="h-full flex items-center justify-center text-xp-text-muted text-sm">
+      <div className="text-xp-text-muted flex h-full items-center justify-center text-sm">
         Loading...
       </div>
     );
@@ -166,38 +166,38 @@ const FileEditorView = ({ filePath }: FileEditorViewProps) => {
 
   if (error && !content) {
     return (
-      <div className="h-full flex items-center justify-center text-xp-text-muted text-sm px-4 text-center">
+      <div className="text-xp-text-muted flex h-full items-center justify-center px-4 text-center text-sm">
         {error}
       </div>
     );
   }
 
   return (
-    <div className="h-full flex flex-col bg-xp-bg">
+    <div className="bg-xp-bg flex h-full flex-col">
       {/* Toolbar */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-xp-border flex-shrink-0 bg-xp-surface">
-        <div className="flex items-center gap-2 min-w-0">
-          <span className="text-sm text-xp-text font-medium truncate" title={filePath}>
+      <div className="border-xp-border bg-xp-surface flex flex-shrink-0 items-center justify-between border-b px-4 py-2">
+        <div className="flex min-w-0 items-center gap-2">
+          <span className="text-xp-text truncate text-sm font-medium" title={filePath}>
             {fileName}
           </span>
           {isDirty && (
-            <span className="text-xs text-xp-orange font-medium px-1.5 py-0.5 bg-xp-orange/10 rounded">
+            <span className="text-xp-orange bg-xp-orange/10 rounded px-1.5 py-0.5 text-xs font-medium">
               Modified
             </span>
           )}
-          {saving && <span className="text-xs text-xp-text-muted">Saving...</span>}
+          {saving && <span className="text-xp-text-muted text-xs">Saving...</span>}
         </div>
         <div className="flex items-center gap-1">
           <button
             onClick={handleCopy}
-            className="p-1.5 hover:bg-xp-surface-light rounded text-xp-text-muted hover:text-xp-text transition-colors"
+            className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text rounded p-1.5 transition-colors"
             title="Copy contents"
           >
             {copied ? <Check size={15} className="text-xp-green" /> : <Copy size={15} />}
           </button>
           <button
             onClick={() => setWordWrap(!wordWrap)}
-            className={`p-1.5 hover:bg-xp-surface-light rounded transition-colors ${
+            className={`hover:bg-xp-surface-light rounded p-1.5 transition-colors ${
               wordWrap ? 'text-xp-blue' : 'text-xp-text-muted hover:text-xp-text'
             }`}
             title="Toggle word wrap"
@@ -207,7 +207,7 @@ const FileEditorView = ({ filePath }: FileEditorViewProps) => {
           <button
             onClick={handleRevert}
             disabled={!isDirty}
-            className="p-1.5 hover:bg-xp-surface-light rounded text-xp-text-muted hover:text-xp-text disabled:opacity-30 transition-colors"
+            className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text rounded p-1.5 transition-colors disabled:opacity-30"
             title="Revert changes"
           >
             <RotateCcw size={15} />
@@ -215,7 +215,7 @@ const FileEditorView = ({ filePath }: FileEditorViewProps) => {
           <button
             onClick={handleSave}
             disabled={!isDirty || saving}
-            className="p-1.5 hover:bg-xp-surface-light rounded text-xp-text-muted hover:text-xp-blue disabled:opacity-30 transition-colors"
+            className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-blue rounded p-1.5 transition-colors disabled:opacity-30"
             title="Save (Ctrl+S)"
           >
             <Save size={15} />
@@ -224,17 +224,17 @@ const FileEditorView = ({ filePath }: FileEditorViewProps) => {
       </div>
 
       {error && (
-        <div className="px-4 py-1.5 bg-xp-red/10 text-xp-red text-xs flex-shrink-0">{error}</div>
+        <div className="bg-xp-red/10 text-xp-red flex-shrink-0 px-4 py-1.5 text-xs">{error}</div>
       )}
 
       {/* Editor area */}
-      <div className="flex-1 overflow-hidden flex min-h-0">
+      <div className="flex min-h-0 flex-1 overflow-hidden">
         {/* Line numbers */}
         <div
           ref={lineNumbersRef}
-          className="flex-shrink-0 bg-xp-surface/50 border-r border-xp-border px-3 py-3 overflow-hidden select-none"
+          className="bg-xp-surface/50 border-xp-border flex-shrink-0 select-none overflow-hidden border-r px-3 py-3"
         >
-          <div className="font-mono text-sm leading-[1.5rem] text-xp-text-muted text-right">
+          <div className="text-xp-text-muted text-right font-mono text-sm leading-[1.5rem]">
             {Array.from({ length: lineCount }, (_, i) => (
               <div key={i}>{i + 1}</div>
             ))}
@@ -255,20 +255,20 @@ const FileEditorView = ({ filePath }: FileEditorViewProps) => {
           onSelect={emitCursorPosition}
           onScroll={handleScroll}
           spellCheck={false}
-          className={`flex-1 bg-transparent text-xp-text font-mono text-sm leading-[1.5rem] p-3 resize-none outline-none ${
-            wordWrap ? 'whitespace-pre-wrap break-words' : 'whitespace-pre overflow-x-auto'
+          className={`text-xp-text flex-1 resize-none bg-transparent p-3 font-mono text-sm leading-[1.5rem] outline-none ${
+            wordWrap ? 'whitespace-pre-wrap break-words' : 'overflow-x-auto whitespace-pre'
           }`}
           style={{ tabSize: 2 }}
         />
       </div>
 
       {/* Status bar */}
-      <div className="flex items-center justify-between px-4 py-1.5 border-t border-xp-border text-xs text-xp-text-muted flex-shrink-0 bg-xp-surface">
+      <div className="border-xp-border text-xp-text-muted bg-xp-surface flex flex-shrink-0 items-center justify-between border-t px-4 py-1.5 text-xs">
         <span>{lineCount} lines</span>
         <span>{ext}</span>
       </div>
     </div>
   );
-}
+};
 
 export default FileEditorView;

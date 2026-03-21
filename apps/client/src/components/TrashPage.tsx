@@ -210,16 +210,16 @@ export default function RecycleBin({ onClose }: RecycleBinProps) {
   };
 
   return (
-    <div className="h-full flex flex-col bg-xp-bg text-xp-text">
+    <div className="bg-xp-bg text-xp-text flex h-full flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-xp-border">
-        <h2 className="text-xl font-semibold text-xp-text flex items-center gap-2">
+      <div className="border-xp-border flex items-center justify-between border-b p-4">
+        <h2 className="text-xp-text flex items-center gap-2 text-xl font-semibold">
           <Trash2 size={20} /> Recycle Bin
         </h2>
         <div className="flex items-center space-x-2">
           <button
             onClick={handleSelectAll}
-            className="px-3 py-1 text-sm bg-xp-surface hover:bg-xp-surface-light border border-xp-border rounded"
+            className="bg-xp-surface hover:bg-xp-surface-light border-xp-border rounded border px-3 py-1 text-sm"
             aria-label={
               selectedItems.size === trashItems.length ? 'Deselect all items' : 'Select all items'
             }
@@ -229,7 +229,7 @@ export default function RecycleBin({ onClose }: RecycleBinProps) {
           <button
             onClick={() => handleRestore()}
             disabled={selectedItems.size === 0}
-            className="px-3 py-1 text-sm bg-xp-blue hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded"
+            className="bg-xp-blue rounded px-3 py-1 text-sm text-white hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50"
             aria-label={`Restore ${selectedItems.size} selected items`}
           >
             Restore ({selectedItems.size})
@@ -237,7 +237,7 @@ export default function RecycleBin({ onClose }: RecycleBinProps) {
           <button
             onClick={() => handlePermanentDelete()}
             disabled={selectedItems.size === 0}
-            className="px-3 py-1 text-sm bg-xp-red hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded"
+            className="bg-xp-red rounded px-3 py-1 text-sm text-white hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50"
             aria-label={`Permanently delete ${selectedItems.size} selected items`}
           >
             Delete Permanently ({selectedItems.size})
@@ -245,7 +245,7 @@ export default function RecycleBin({ onClose }: RecycleBinProps) {
           <button
             onClick={handleEmptyTrash}
             disabled={trashItems.length === 0}
-            className="px-3 py-1 text-sm bg-xp-red hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded"
+            className="bg-xp-red rounded px-3 py-1 text-sm text-white hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-50"
             aria-label="Empty recycle bin"
           >
             Empty Recycle Bin
@@ -253,7 +253,7 @@ export default function RecycleBin({ onClose }: RecycleBinProps) {
           {onClose && (
             <button
               onClick={onClose}
-              className="px-3 py-1 text-sm bg-xp-surface hover:bg-xp-surface-light border border-xp-border rounded"
+              className="bg-xp-surface hover:bg-xp-surface-light border-xp-border rounded border px-3 py-1 text-sm"
               aria-label="Back to home"
             >
               Back to Home
@@ -264,82 +264,92 @@ export default function RecycleBin({ onClose }: RecycleBinProps) {
 
       {/* Content */}
       <div className="flex-1 overflow-auto p-4">
-        {isLoading ? (
-          <div className="flex items-center justify-center h-full">
-            <div className="text-xp-text-muted">Loading recycle bin items...</div>
-          </div>
-        ) : trashItems.length === 0 ? (
-          <div className="flex items-center justify-center h-full">
-            <div className="text-center text-xp-text-muted">
-              <div className="text-4xl mb-4">
-                <Trash2 size="1em" className="inline-block text-xp-text-muted" />
+        {(() => {
+          if (isLoading) {
+            return (
+              <div className="flex h-full items-center justify-center">
+                <div className="text-xp-text-muted">Loading recycle bin items...</div>
               </div>
-              <div className="text-lg">Recycle Bin is empty</div>
-              <div className="text-sm mt-2">Deleted files will appear here</div>
-            </div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-2">
-            {trashItems.map((item) => (
-              <div
-                key={item.original_path}
-                onClick={(e) => handleSelectItem(item.original_path, e)}
-                className={`flex items-center p-3 rounded cursor-pointer hover:bg-xp-surface ${
-                  selectedItems.has(item.original_path) ? 'bg-xp-accent bg-opacity-20' : ''
-                }`}
-              >
-                <div className="flex items-center flex-1 min-w-0">
-                  <div className="text-xl mr-3">
-                    {getFileIcon({
-                      name: item.name,
-                      is_dir: item.is_dir,
-                      path: item.original_path,
-                      size: item.size,
-                      modified: item.deletion_date,
-                      file_type: item.name.split('.').pop() || '',
-                    })}
+            );
+          }
+          if (trashItems.length === 0) {
+            return (
+              <div className="flex h-full items-center justify-center">
+                <div className="text-xp-text-muted text-center">
+                  <div className="mb-4 text-4xl">
+                    <Trash2 size="1em" className="text-xp-text-muted inline-block" />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-medium text-xp-text truncate">{item.name}</div>
-                    <div className="text-sm text-xp-text-muted truncate">{item.original_path}</div>
-                  </div>
-                  <div className="text-sm text-xp-text-muted ml-4">
-                    {!item.is_dir && formatFileSize(item.size)}
-                  </div>
-                  <div className="text-sm text-xp-text-muted ml-4">
-                    {formatDate(item.deletion_date * 1000)}
-                  </div>
-                  <div className="ml-4 flex space-x-2">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRestore(item.original_path);
-                      }}
-                      className="px-2 py-1 text-xs bg-xp-blue hover:opacity-80 text-white rounded"
-                      aria-label={`Restore ${item.name}`}
-                    >
-                      Restore
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handlePermanentDelete(item.original_path);
-                      }}
-                      className="px-2 py-1 text-xs bg-xp-red hover:opacity-80 text-white rounded"
-                      aria-label={`Permanently delete ${item.name}`}
-                    >
-                      Delete
-                    </button>
-                  </div>
+                  <div className="text-lg">Recycle Bin is empty</div>
+                  <div className="mt-2 text-sm">Deleted files will appear here</div>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
+            );
+          }
+          return (
+            <div className="grid grid-cols-1 gap-2">
+              {trashItems.map((item) => (
+                <div
+                  key={item.original_path}
+                  onClick={(e) => handleSelectItem(item.original_path, e)}
+                  className={`hover:bg-xp-surface flex cursor-pointer items-center rounded p-3 ${
+                    selectedItems.has(item.original_path) ? 'bg-xp-accent bg-opacity-20' : ''
+                  }`}
+                >
+                  <div className="flex min-w-0 flex-1 items-center">
+                    <div className="mr-3 text-xl">
+                      {getFileIcon({
+                        name: item.name,
+                        is_dir: item.is_dir,
+                        path: item.original_path,
+                        size: item.size,
+                        modified: item.deletion_date,
+                        file_type: item.name.split('.').pop() || '',
+                      })}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-xp-text truncate font-medium">{item.name}</div>
+                      <div className="text-xp-text-muted truncate text-sm">
+                        {item.original_path}
+                      </div>
+                    </div>
+                    <div className="text-xp-text-muted ml-4 text-sm">
+                      {!item.is_dir && formatFileSize(item.size)}
+                    </div>
+                    <div className="text-xp-text-muted ml-4 text-sm">
+                      {formatDate(item.deletion_date * 1000)}
+                    </div>
+                    <div className="ml-4 flex space-x-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRestore(item.original_path);
+                        }}
+                        className="bg-xp-blue rounded px-2 py-1 text-xs text-white hover:opacity-80"
+                        aria-label={`Restore ${item.name}`}
+                      >
+                        Restore
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handlePermanentDelete(item.original_path);
+                        }}
+                        className="bg-xp-red rounded px-2 py-1 text-xs text-white hover:opacity-80"
+                        aria-label={`Permanently delete ${item.name}`}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          );
+        })()}
       </div>
 
       {/* Footer */}
-      <div className="p-4 border-t border-xp-border text-sm text-xp-text-muted">
+      <div className="border-xp-border text-xp-text-muted border-t p-4 text-sm">
         {trashItems.length} item{trashItems.length !== 1 ? 's' : ''} in recycle bin
         {selectedItems.size > 0 && ` • ${selectedItems.size} selected`}
       </div>

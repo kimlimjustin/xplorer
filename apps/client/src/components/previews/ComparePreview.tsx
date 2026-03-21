@@ -72,17 +72,17 @@ const IMAGE_EXTENSIONS = new Set([
   'tiff',
 ]);
 
-const getExt = (name: string) : string => {
+const getExt = (name: string): string => {
   return name.split('.').pop()?.toLowerCase() || '';
-}
+};
 
-const isTextFile = (file: FileEntry) : boolean => {
+const isTextFile = (file: FileEntry): boolean => {
   return TEXT_EXTENSIONS.has(getExt(file.name));
-}
+};
 
-const isImageFile = (file: FileEntry) : boolean => {
+const isImageFile = (file: FileEntry): boolean => {
   return IMAGE_EXTENSIONS.has(getExt(file.name));
-}
+};
 
 // ── Sub-components ───────────────────────────────────────────────────────────
 
@@ -204,7 +204,10 @@ const CompareHeader = React.memo(function CompareHeader({
 });
 
 /** File name label for each side */
-const FileLabel: React.FC<{ file: FileEntry; side: 'left' | 'right' }> = ({ file, side: _side }) => (
+const FileLabel: React.FC<{ file: FileEntry; side: 'left' | 'right' }> = ({
+  file,
+  side: _side,
+}) => (
   <div
     style={{
       padding: '6px 10px',
@@ -252,8 +255,9 @@ const TextCompare = React.memo(function TextCompare({
     const load = async () => {
       try {
         if (leftFile.size > MAX_TEXT_SIZE || rightFile.size > MAX_TEXT_SIZE) {
-          if (!cancelled)
+          if (!cancelled) {
             setError('One or both files exceed the 2 MB size limit for text comparison.');
+          }
           return;
         }
         const [left, right] = await Promise.all([
@@ -292,8 +296,9 @@ const TextCompare = React.memo(function TextCompare({
 
   // Compute diff
   const { diff, stats } = useMemo(() => {
-    if (leftContent === null || rightContent === null)
+    if (leftContent === null || rightContent === null) {
       return { diff: [] as DiffLine[], stats: { additions: 0, removals: 0, unchanged: 0 } };
+    }
     const d = computeLineDiff(leftContent, rightContent);
     return { diff: d, stats: getDiffStats(d) };
   }, [leftContent, rightContent]);
@@ -390,6 +395,7 @@ const TextCompare = React.memo(function TextCompare({
             }}
           >
             {diff.map((line, idx) => (
+              // eslint-disable-next-line react/no-array-index-key
               <DiffLineRow key={idx} line={line} side="left" />
             ))}
           </div>
@@ -410,6 +416,7 @@ const TextCompare = React.memo(function TextCompare({
             }}
           >
             {diff.map((line, idx) => (
+              // eslint-disable-next-line react/no-array-index-key
               <DiffLineRow key={idx} line={line} side="right" />
             ))}
           </div>
@@ -910,15 +917,13 @@ const ComparePreview = ({
         onDismiss={onDismiss}
       />
 
-      {bothText ? (
-        <TextCompare leftFile={leftFile} rightFile={rightFile} />
-      ) : bothImages ? (
-        <ImageCompare leftFile={leftFile} rightFile={rightFile} />
-      ) : (
-        <MetadataCompare leftFile={leftFile} rightFile={rightFile} />
-      )}
+      {(() => {
+        if (bothText) return <TextCompare leftFile={leftFile} rightFile={rightFile} />;
+        if (bothImages) return <ImageCompare leftFile={leftFile} rightFile={rightFile} />;
+        return <MetadataCompare leftFile={leftFile} rightFile={rightFile} />;
+      })()}
     </div>
   );
-}
+};
 
 export default React.memo(ComparePreview);

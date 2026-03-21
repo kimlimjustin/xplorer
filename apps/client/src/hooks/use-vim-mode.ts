@@ -72,37 +72,41 @@ const VIM_LEARNING_MODE_KEY = 'xplorer-vim-learning-mode';
 
 // ─── Helper: read vim mode setting from localStorage ──────────────────────────
 
-export const isVimModeEnabled = () : boolean => {
+export const isVimModeEnabled = (): boolean => {
   try {
     return localStorage.getItem(VIM_MODE_STORAGE_KEY) === 'true';
   } catch {
     return false;
   }
-}
+};
 
-export const setVimModeSetting = (enabled: boolean) : void => {
+export const setVimModeSetting = (enabled: boolean): void => {
   try {
     localStorage.setItem(VIM_MODE_STORAGE_KEY, String(enabled));
-  } catch { /* ignore localStorage errors */ }
-}
+  } catch {
+    /* ignore localStorage errors */
+  }
+};
 
-export const isVimLearningModeEnabled = () : boolean => {
+export const isVimLearningModeEnabled = (): boolean => {
   try {
     return localStorage.getItem(VIM_LEARNING_MODE_KEY) === 'true';
   } catch {
     return false;
   }
-}
+};
 
-export const setVimLearningModeSetting = (enabled: boolean) : void => {
+export const setVimLearningModeSetting = (enabled: boolean): void => {
   try {
     localStorage.setItem(VIM_LEARNING_MODE_KEY, String(enabled));
-  } catch { /* ignore localStorage errors */ }
-}
+  } catch {
+    /* ignore localStorage errors */
+  }
+};
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
-export const useVimMode = (options: UseVimModeOptions) : VimModeState => {
+export const useVimMode = (options: UseVimModeOptions): VimModeState => {
   const { enabled, files, selectedFiles, currentPath, clipboard, actions } = options;
 
   const [mode, setMode] = useState<VimMode>('normal');
@@ -576,4 +580,4 @@ export const useVimMode = (options: UseVimModeOptions) : VimModeState => {
     pendingKeys,
     learningMode,
   };
-}
+};

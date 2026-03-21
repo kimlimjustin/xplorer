@@ -1,8 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { usePerformanceStats } from '@/hooks/use-performance-stats';
-import { TauriAPI } from '@/lib/tauri-api';
-import type { FileEntry } from '@/lib/tauri-api';
+import { TauriAPI, type FileEntry } from '@/lib/tauri-api';
 
 const makeFile = (name: string, size = 1024, isDir = false): FileEntry => {
   return {

@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 
 vi.mock('@/i18n', () => ({
   default: {
-    t: (key: string) => key.includes('.') ? key.split('.').pop()! : key,
+    t: (key: string) => (key.includes('.') ? key.split('.').pop()! : key),
   },
 }));
 

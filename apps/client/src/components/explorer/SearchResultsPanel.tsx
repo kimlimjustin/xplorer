@@ -38,7 +38,7 @@ const FILTERS: { key: SearchFilterType; label: string }[] = [
 
 // ── Highlight helper ─────────────────────────────────────────────────────────
 
-const highlightMatch = (text: string, query: string) : React.ReactNode => {
+const highlightMatch = (text: string, query: string): React.ReactNode => {
   if (!query.trim()) return text;
 
   const parts = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
@@ -55,14 +55,16 @@ const highlightMatch = (text: string, query: string) : React.ReactNode => {
     const isMatch = parts.some((p) => seg.toLowerCase() === p);
     if (isMatch) {
       return (
+        // eslint-disable-next-line react/no-array-index-key
         <span key={i} style={{ fontWeight: 700, color: 'var(--xp-blue)' }}>
           {seg}
         </span>
       );
     }
+    // eslint-disable-next-line react/no-array-index-key
     return <span key={i}>{seg}</span>;
   });
-}
+};
 
 // ── Result row component (local mode) ────────────────────────────────────────
 
@@ -145,11 +147,7 @@ interface AIResultRowProps {
   onSelect: (result: SearchResult) => void;
 }
 
-const AIResultRow = React.memo(function AIResultRow({
-  result,
-  query,
-  onSelect,
-}: AIResultRowProps) {
+const AIResultRow = React.memo(function AIResultRow({ result, query, onSelect }: AIResultRowProps) {
   const relevanceBadge = (() => {
     switch (result.relevance_type) {
       case 'exact':
@@ -260,9 +258,9 @@ const AIResultRow = React.memo(function AIResultRow({
       )}
       {result.matches.length > 0 && (
         <div style={{ marginTop: '2px', display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-          {result.matches.slice(0, 3).map((match, mi) => (
+          {result.matches.slice(0, 3).map((match) => (
             <span
-              key={mi}
+              key={match.token}
               style={{
                 fontSize: '9px',
                 padding: '0 4px',
@@ -342,38 +340,69 @@ const GroupHeader = React.memo(function GroupHeader({ parentDir, basePath }: Gro
 // ── Filter words that trigger enhanced NL search ─────────────────────────────
 
 const FILTER_INDICATORS = [
-  'large', 'largest', 'big', 'biggest', 'huge',
-  'small', 'smallest', 'tiny', 'heavy', 'heaviest',
-  'light', 'lightest', 'today', 'yesterday', 'recent',
-  'recently', 'newest', 'latest', 'oldest', 'new',
-  'last week', 'last month', 'this week', 'this month', 'this year',
-  'old', 'videos', 'video', 'movies', 'images', 'image',
-  'photos', 'photo', 'picture', 'pictures', 'documents',
-  'document', 'docs', 'pdfs', 'spreadsheets', 'presentations',
-  'code', 'scripts', 'source code', 'audio', 'music', 'songs',
-  'archives', 'compressed', 'zips',
+  'large',
+  'largest',
+  'big',
+  'biggest',
+  'huge',
+  'small',
+  'smallest',
+  'tiny',
+  'heavy',
+  'heaviest',
+  'light',
+  'lightest',
+  'today',
+  'yesterday',
+  'recent',
+  'recently',
+  'newest',
+  'latest',
+  'oldest',
+  'new',
+  'last week',
+  'last month',
+  'this week',
+  'this month',
+  'this year',
+  'old',
+  'videos',
+  'video',
+  'movies',
+  'images',
+  'image',
+  'photos',
+  'photo',
+  'picture',
+  'pictures',
+  'documents',
+  'document',
+  'docs',
+  'pdfs',
+  'spreadsheets',
+  'presentations',
+  'code',
+  'scripts',
+  'source code',
+  'audio',
+  'music',
+  'songs',
+  'archives',
+  'compressed',
+  'zips',
 ];
 
-const shouldUseEnhancedSearch = (query: string) : boolean => {
+const shouldUseEnhancedSearch = (query: string): boolean => {
   const words = query.trim().split(/\s+/);
   if (words.length >= 3) return true;
   const lower = query.toLowerCase();
   return FILTER_INDICATORS.some((indicator) => lower.includes(indicator));
-}
+};
 
 // ── Main component ───────────────────────────────────────────────────────────
 
 const SearchResultsPanel = React.forwardRef<SearchResultsPanelHandle, SearchResultsPanelProps>(
-  function SearchResultsPanel(
-    {
-      basePath,
-      navigateToPath,
-      onFileSelect,
-      onFileOpen,
-      width,
-    },
-    ref,
-  ) {
+  function SearchResultsPanel({ basePath, navigateToPath, onFileSelect, onFileOpen, width }, ref) {
     const [searchMode, setSearchMode] = useState<SearchMode>('local');
 
     // ── Local search ────────────────────────────────────────────────────────
@@ -674,7 +703,16 @@ const SearchResultsPanel = React.forwardRef<SearchResultsPanelHandle, SearchResu
             title="Search files by name in the current directory tree"
           >
             {/* Folder icon */}
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
             </svg>
             Local
@@ -701,7 +739,16 @@ const SearchResultsPanel = React.forwardRef<SearchResultsPanelHandle, SearchResu
             title="AI-powered search: natural language queries, content search, semantic matching"
           >
             {/* Sparkles icon */}
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
               <path d="M5 3v4" />
               <path d="M19 17v4" />
@@ -782,9 +829,7 @@ const SearchResultsPanel = React.forwardRef<SearchResultsPanelHandle, SearchResu
             />
 
             {/* Searching spinner */}
-            {isSearching && (
-              <Spinner />
-            )}
+            {isSearching && <Spinner />}
 
             {/* Clear button */}
             {query && (
@@ -874,23 +919,30 @@ const SearchResultsPanel = React.forwardRef<SearchResultsPanelHandle, SearchResu
               gap: '6px',
             }}
           >
-            {isAiSearching ? (
-              <>
-                <Spinner />
-                <span>Searching with AI...</span>
-              </>
-            ) : noResults ? (
-              <span>No results for &apos;{query}&apos;</span>
-            ) : aiResults.length > 0 ? (
-              <span>
-                {aiResults.length} result{aiResults.length !== 1 ? 's' : ''}
-                {aiParsedInfo && (
-                  <span style={{ marginLeft: '4px', opacity: 0.7 }}>
-                    ({aiParsedInfo})
+            {(() => {
+              if (isAiSearching) {
+                return (
+                  <>
+                    <Spinner />
+                    <span>Searching with AI...</span>
+                  </>
+                );
+              }
+              if (noResults) {
+                return <span>No results for &apos;{query}&apos;</span>;
+              }
+              if (aiResults.length > 0) {
+                return (
+                  <span>
+                    {aiResults.length} result{aiResults.length !== 1 ? 's' : ''}
+                    {aiParsedInfo && (
+                      <span style={{ marginLeft: '4px', opacity: 0.7 }}>({aiParsedInfo})</span>
+                    )}
                   </span>
-                )}
-              </span>
-            ) : null}
+                );
+              }
+              return null;
+            })()}
           </div>
         )}
 
@@ -907,23 +959,29 @@ const SearchResultsPanel = React.forwardRef<SearchResultsPanelHandle, SearchResu
               gap: '6px',
             }}
           >
-            {isLocalSearching ? (
-              <>
-                <Spinner />
-                <span>Searching...</span>
-              </>
-            ) : noResults ? (
-              <span>No files matching &apos;{query}&apos;</span>
-            ) : (
-              <span>
-                Found {localResultCount} file{localResultCount !== 1 ? 's' : ''} in {folderCount}{' '}
-                folder
-                {folderCount !== 1 ? 's' : ''}
-                {localTotalResultCount > localResultCount && (
-                  <> ({localTotalResultCount} total)</>
-                )}
-              </span>
-            )}
+            {(() => {
+              if (isLocalSearching) {
+                return (
+                  <>
+                    <Spinner />
+                    <span>Searching...</span>
+                  </>
+                );
+              }
+              if (noResults) {
+                return <span>No files matching &apos;{query}&apos;</span>;
+              }
+              return (
+                <span>
+                  Found {localResultCount} file{localResultCount !== 1 ? 's' : ''} in {folderCount}{' '}
+                  folder
+                  {folderCount !== 1 ? 's' : ''}
+                  {localTotalResultCount > localResultCount && (
+                    <> ({localTotalResultCount} total)</>
+                  )}
+                </span>
+              );
+            })()}
           </div>
         )}
 
@@ -938,24 +996,118 @@ const SearchResultsPanel = React.forwardRef<SearchResultsPanelHandle, SearchResu
           role="listbox"
           aria-label="Search results"
         >
-          {noQuery ? (
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '32px 16px',
-                gap: '12px',
-                color: 'var(--xp-text-muted)',
-              }}
-            >
-              {searchMode === 'local' ? (
-                <>
-                  {/* Large search icon */}
+          {(() => {
+            if (noQuery) {
+              return (
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '32px 16px',
+                    gap: '12px',
+                    color: 'var(--xp-text-muted)',
+                  }}
+                >
+                  {searchMode === 'local' ? (
+                    <>
+                      {/* Large search icon */}
+                      <svg
+                        width="40"
+                        height="40"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        style={{ opacity: 0.4 }}
+                      >
+                        <circle cx="11" cy="11" r="8" />
+                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                      </svg>
+                      <span style={{ fontSize: '12px', textAlign: 'center' }}>
+                        Type to search files and folders
+                      </span>
+                      <span style={{ fontSize: '10px', opacity: 0.7, textAlign: 'center' }}>
+                        Ctrl+Shift+F to toggle this panel
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      {/* AI sparkles icon */}
+                      <svg
+                        width="40"
+                        height="40"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        style={{ opacity: 0.4 }}
+                      >
+                        <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                        <path d="M5 3v4" />
+                        <path d="M19 17v4" />
+                        <path d="M3 5h4" />
+                        <path d="M17 19h4" />
+                      </svg>
+                      <span style={{ fontSize: '12px', textAlign: 'center' }}>
+                        AI-powered search
+                      </span>
+                      <span
+                        style={{
+                          fontSize: '10px',
+                          opacity: 0.7,
+                          textAlign: 'center',
+                          maxWidth: '200px',
+                        }}
+                      >
+                        Try natural language like &quot;large images from last week&quot; or
+                        &quot;recently modified code files&quot;
+                      </span>
+                    </>
+                  )}
+                </div>
+              );
+            }
+            if (isSearching && resultCount === 0) {
+              return (
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '32px 16px',
+                    gap: '8px',
+                    color: 'var(--xp-text-muted)',
+                  }}
+                >
+                  <Spinner />
+                  <span style={{ fontSize: '12px' }}>
+                    {searchMode === 'ai' ? 'Searching with AI...' : 'Searching...'}
+                  </span>
+                </div>
+              );
+            }
+            if (noResults) {
+              return (
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '32px 16px',
+                    gap: '8px',
+                    color: 'var(--xp-text-muted)',
+                  }}
+                >
                   <svg
-                    width="40"
-                    height="40"
+                    width="32"
+                    height="32"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -966,213 +1118,141 @@ const SearchResultsPanel = React.forwardRef<SearchResultsPanelHandle, SearchResu
                   >
                     <circle cx="11" cy="11" r="8" />
                     <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    <line x1="8" y1="11" x2="14" y2="11" />
                   </svg>
                   <span style={{ fontSize: '12px', textAlign: 'center' }}>
-                    Type to search files and folders
+                    No files matching &apos;{query}&apos;
                   </span>
-                  <span style={{ fontSize: '10px', opacity: 0.7, textAlign: 'center' }}>
-                    Ctrl+Shift+F to toggle this panel
-                  </span>
-                </>
-              ) : (
-                <>
-                  {/* AI sparkles icon */}
-                  <svg
-                    width="40"
-                    height="40"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    style={{ opacity: 0.4 }}
-                  >
-                    <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
-                    <path d="M5 3v4" />
-                    <path d="M19 17v4" />
-                    <path d="M3 5h4" />
-                    <path d="M17 19h4" />
-                  </svg>
-                  <span style={{ fontSize: '12px', textAlign: 'center' }}>
-                    AI-powered search
-                  </span>
-                  <span style={{ fontSize: '10px', opacity: 0.7, textAlign: 'center', maxWidth: '200px' }}>
-                    Try natural language like &quot;large images from last week&quot; or &quot;recently modified code files&quot;
-                  </span>
-                </>
-              )}
-            </div>
-          ) : isSearching && resultCount === 0 ? (
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '32px 16px',
-                gap: '8px',
-                color: 'var(--xp-text-muted)',
-              }}
-            >
-              <Spinner />
-              <span style={{ fontSize: '12px' }}>
-                {searchMode === 'ai' ? 'Searching with AI...' : 'Searching...'}
-              </span>
-            </div>
-          ) : noResults ? (
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '32px 16px',
-                gap: '8px',
-                color: 'var(--xp-text-muted)',
-              }}
-            >
-              <svg
-                width="32"
-                height="32"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                style={{ opacity: 0.4 }}
-              >
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-                <line x1="8" y1="11" x2="14" y2="11" />
-              </svg>
-              <span style={{ fontSize: '12px', textAlign: 'center' }}>
-                No files matching &apos;{query}&apos;
-              </span>
-              {searchMode === 'local' && (
-                <button
-                  onClick={() => {
-                    setSearchMode('ai');
-                    setAiQuery(localQuery);
-                  }}
-                  style={{
-                    marginTop: '4px',
-                    fontSize: '11px',
-                    color: '#a855f7',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    transition: 'opacity 0.15s',
-                  }}
-                >
-                  Try AI search instead
-                </button>
-              )}
-            </div>
-          ) : searchMode === 'ai' ? (
-            /* AI results list */
-            <div>
-              {aiResults.map((result, index) => (
-                <AIResultRow
-                  key={`${result.path}-${index}`}
-                  result={result}
-                  query={aiQuery}
-                  onSelect={handleAiResultSelect}
-                />
-              ))}
-            </div>
-          ) : (
-            /* Local results list (virtualized) */
-            <div
-              style={{
-                height: `${virtualizer.getTotalSize()}px`,
-                width: '100%',
-                position: 'relative',
-              }}
-            >
-              {virtualizer.getVirtualItems().map((virtualRow) => {
-                const index = virtualRow.index;
-
-                // "Show more" button at the end
-                if (index >= flatItems.length) {
-                  return (
-                    <div
-                      key="show-more"
+                  {searchMode === 'local' && (
+                    <button
+                      onClick={() => {
+                        setSearchMode('ai');
+                        setAiQuery(localQuery);
+                      }}
                       style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: `${virtualRow.size}px`,
-                        transform: `translateY(${virtualRow.start}px)`,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
+                        marginTop: '4px',
+                        fontSize: '11px',
+                        color: '#a855f7',
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        transition: 'opacity 0.15s',
                       }}
                     >
-                      <button
-                        onClick={showMore}
-                        style={{
-                          background: 'none',
-                          border: '1px solid var(--xp-border)',
-                          borderRadius: '4px',
-                          padding: '4px 12px',
-                          fontSize: '11px',
-                          color: 'var(--xp-blue)',
-                          cursor: 'pointer',
-                          transition: 'background 0.15s',
-                        }}
-                        className="hover:bg-xp-surface-light"
-                      >
-                        Show more... ({localTotalResultCount - localResultCount} remaining)
-                      </button>
-                    </div>
-                  );
-                }
-
-                const flatItem = flatItems[index];
-
-                if (flatItem.type === 'group-header') {
-                  return (
-                    <div
-                      key={`header-${flatItem.parentDir}`}
-                      style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        width: '100%',
-                        height: `${virtualRow.size}px`,
-                        transform: `translateY(${virtualRow.start}px)`,
-                      }}
-                    >
-                      <GroupHeader parentDir={flatItem.parentDir} basePath={basePath} />
-                    </div>
-                  );
-                }
-
-                return (
-                  <div
-                    key={flatItem.item.file.path}
-                    style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      width: '100%',
-                      height: `${virtualRow.size}px`,
-                      transform: `translateY(${virtualRow.start}px)`,
-                    }}
-                  >
-                    <ResultRow
-                      item={flatItem.item}
-                      query={localQuery}
-                      onNavigate={handleNavigateToResult}
-                      onDoubleClick={handleDoubleClickResult}
+                      Try AI search instead
+                    </button>
+                  )}
+                </div>
+              );
+            }
+            if (searchMode === 'ai') {
+              return (
+                /* AI results list */
+                <div>
+                  {aiResults.map((result) => (
+                    <AIResultRow
+                      key={result.path}
+                      result={result}
+                      query={aiQuery}
+                      onSelect={handleAiResultSelect}
                     />
-                  </div>
-                );
-              })}
-            </div>
-          )}
+                  ))}
+                </div>
+              );
+            }
+            return (
+              /* Local results list (virtualized) */
+              <div
+                style={{
+                  height: `${virtualizer.getTotalSize()}px`,
+                  width: '100%',
+                  position: 'relative',
+                }}
+              >
+                {virtualizer.getVirtualItems().map((virtualRow) => {
+                  const index = virtualRow.index;
+
+                  // "Show more" button at the end
+                  if (index >= flatItems.length) {
+                    return (
+                      <div
+                        key="show-more"
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          height: `${virtualRow.size}px`,
+                          transform: `translateY(${virtualRow.start}px)`,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <button
+                          onClick={showMore}
+                          style={{
+                            background: 'none',
+                            border: '1px solid var(--xp-border)',
+                            borderRadius: '4px',
+                            padding: '4px 12px',
+                            fontSize: '11px',
+                            color: 'var(--xp-blue)',
+                            cursor: 'pointer',
+                            transition: 'background 0.15s',
+                          }}
+                          className="hover:bg-xp-surface-light"
+                        >
+                          Show more... ({localTotalResultCount - localResultCount} remaining)
+                        </button>
+                      </div>
+                    );
+                  }
+
+                  const flatItem = flatItems[index];
+
+                  if (flatItem.type === 'group-header') {
+                    return (
+                      <div
+                        key={`header-${flatItem.parentDir}`}
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          height: `${virtualRow.size}px`,
+                          transform: `translateY(${virtualRow.start}px)`,
+                        }}
+                      >
+                        <GroupHeader parentDir={flatItem.parentDir} basePath={basePath} />
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div
+                      key={flatItem.item.file.path}
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: `${virtualRow.size}px`,
+                        transform: `translateY(${virtualRow.start}px)`,
+                      }}
+                    >
+                      <ResultRow
+                        item={flatItem.item}
+                        query={localQuery}
+                        onNavigate={handleNavigateToResult}
+                        onDoubleClick={handleDoubleClickResult}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })()}
         </div>
       </div>
     );
@@ -1200,6 +1280,6 @@ const Spinner = () => {
       <path d="M21 12a9 9 0 1 1-6.219-8.56" />
     </svg>
   );
-}
+};
 
 export default React.memo(SearchResultsPanel);

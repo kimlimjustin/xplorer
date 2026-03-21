@@ -29,4 +29,4 @@ export const useClipboard = () => {
     clearClipboard,
     hasClipboard: clipboard !== null,
   };
-}
+};

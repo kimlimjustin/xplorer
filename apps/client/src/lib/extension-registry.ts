@@ -299,7 +299,10 @@ export class ExtensionRegistry {
     }
 
     // Register sidebar tabs from renderSidebarTab + getSidebarTabConfig
-    if (typeof ext.renderSidebarTab === 'function' && typeof ext.getSidebarTabConfig === 'function') {
+    if (
+      typeof ext.renderSidebarTab === 'function' &&
+      typeof ext.getSidebarTabConfig === 'function'
+    ) {
       const stConfig = (
         ext.getSidebarTabConfig as () => { id: string; title: string; icon?: string }
       )();

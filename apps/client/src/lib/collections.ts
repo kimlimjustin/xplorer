@@ -44,7 +44,7 @@ export interface FileCollection {
 
 const STORAGE_KEY = 'xplorer:collections';
 
-const readAll = () : FileCollection[] => {
+const readAll = (): FileCollection[] => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
@@ -54,24 +54,24 @@ const readAll = () : FileCollection[] => {
   } catch {
     return [];
   }
-}
+};
 
-const writeAll = (collections: FileCollection[]) : void => {
+const writeAll = (collections: FileCollection[]): void => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(collections));
-}
+};
 
 // ── CRUD ─────────────────────────────────────────────────────────────────────
 
-export const getCollections = () : FileCollection[] => {
+export const getCollections = (): FileCollection[] => {
   return readAll();
-}
+};
 
-export const getCollection = (id: string) : FileCollection | null => {
+export const getCollection = (id: string): FileCollection | null => {
   // Check built-ins first
   const builtin = BUILTIN_COLLECTIONS.find((c) => c.id === id);
   if (builtin) return builtin;
   return readAll().find((c) => c.id === id) ?? null;
-}
+};
 
 export const createCollection = (
   name: string,
@@ -79,7 +79,7 @@ export const createCollection = (
   icon: string = 'Folder',
   basePath: string = '',
   color: string = '#3b82f6',
-) : FileCollection => {
+): FileCollection => {
   const collections = readAll();
   const now = Date.now();
   const collection: FileCollection = {
@@ -96,36 +96,36 @@ export const createCollection = (
   writeAll(collections);
   window.dispatchEvent(new CustomEvent('collections-changed'));
   return collection;
-}
+};
 
 export const updateCollection = (
   id: string,
   updates: Partial<Omit<FileCollection, 'id' | 'createdAt'>>,
-) : void => {
+): void => {
   const collections = readAll();
   const idx = collections.findIndex((c) => c.id === id);
   if (idx === -1) return;
   collections[idx] = { ...collections[idx], ...updates, updatedAt: Date.now() };
   writeAll(collections);
   window.dispatchEvent(new CustomEvent('collections-changed'));
-}
+};
 
-export const deleteCollection = (id: string) : void => {
+export const deleteCollection = (id: string): void => {
   const collections = readAll().filter((c) => c.id !== id);
   writeAll(collections);
   window.dispatchEvent(new CustomEvent('collections-changed'));
-}
+};
 
 // ── Filter matching ──────────────────────────────────────────────────────────
 
 /**
  * Returns true when `file` satisfies **all** filters in `collection` (AND logic).
  */
-export const matchesCollection = (file: FileEntry, collection: FileCollection) : boolean => {
+export const matchesCollection = (file: FileEntry, collection: FileCollection): boolean => {
   return collection.filters.every((f) => matchesFilter(file, f));
-}
+};
 
-export const matchesFilter = (file: FileEntry, filter: CollectionFilter) : boolean => {
+export const matchesFilter = (file: FileEntry, filter: CollectionFilter): boolean => {
   switch (filter.type) {
     case 'extension': {
       const extensions = filter.value
@@ -179,12 +179,12 @@ export const matchesFilter = (file: FileEntry, filter: CollectionFilter) : boole
     default:
       return true;
   }
-}
+};
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 /** Human-readable label for a filter type. */
-export const filterTypeLabel = (type: CollectionFilter['type']) : string => {
+export const filterTypeLabel = (type: CollectionFilter['type']): string => {
   switch (type) {
     case 'extension':
       return 'File Extension';
@@ -209,9 +209,9 @@ export const filterTypeLabel = (type: CollectionFilter['type']) : string => {
     default:
       return String(type);
   }
-}
+};
 
-export const filterValuePlaceholder = (type: CollectionFilter['type']) : string => {
+export const filterValuePlaceholder = (type: CollectionFilter['type']): string => {
   switch (type) {
     case 'extension':
       return '.pdf,.docx,.txt';
@@ -236,7 +236,7 @@ export const filterValuePlaceholder = (type: CollectionFilter['type']) : string 
     default:
       return '';
   }
-}
+};
 
 export const FILTER_TYPES: CollectionFilter['type'][] = [
   'extension',
@@ -341,25 +341,28 @@ export const BUILTIN_COLLECTIONS: FileCollection[] = [
  * Returns all collections (built-in + user-created).
  * Built-in collections appear first.
  */
-export const getAllCollections = () : FileCollection[] => {
+export const getAllCollections = (): FileCollection[] => {
   return [...BUILTIN_COLLECTIONS, ...readAll()];
-}
+};
 
 /**
  * Applies a collection's filters to a list of files (synchronous, excluding tag filters).
  * Useful when the collection is applied as a filter to the current directory.
  */
-export const applyCollectionToFiles = (files: FileEntry[], collection: FileCollection) : FileEntry[] => {
+export const applyCollectionToFiles = (
+  files: FileEntry[],
+  collection: FileCollection,
+): FileEntry[] => {
   if (!collection.filters.length) return files;
   return files.filter((file) => matchesCollection(file, collection));
-}
+};
 
 /** Returns true if a collection acts as a directory-scoped filter (has a basePath). */
-export const isSmartFolder = (collection: FileCollection) : boolean => {
+export const isSmartFolder = (collection: FileCollection): boolean => {
   return collection.basePath.length > 0;
-}
+};
 
 /** Returns true if a collection acts as a current-directory filter (no basePath). */
-export const isQuickFilter = (collection: FileCollection) : boolean => {
+export const isQuickFilter = (collection: FileCollection): boolean => {
   return collection.basePath.length === 0;
-}
+};

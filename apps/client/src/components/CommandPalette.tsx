@@ -14,7 +14,6 @@ import {
   HighlightedText,
   StarIcon,
   ClockIcon,
-  highlightStyle,
   sectionHeaderStyle,
   itemBaseStyle,
   itemSelectedStyle,
@@ -42,13 +41,11 @@ import {
   FILE_ROW_HEIGHT,
   SECTION_HEADER_HEIGHT,
   LOADING_ROW_HEIGHT,
-} from './command-palette-helpers';
-import type {
-  Command,
-  CommandPaletteProps,
-  HistoryEntry,
-  PaletteItem,
-  VirtualRow,
+  type Command,
+  type CommandPaletteProps,
+  type HistoryEntry,
+  type PaletteItem,
+  type VirtualRow,
 } from './command-palette-helpers';
 
 export type { Command } from './command-palette-helpers';
@@ -140,7 +137,8 @@ const CommandPaletteInner = ({
           command: cmd,
           matchIndices: titleMatch,
           score:
-            fuzzyScore(effectiveQuery, cmd.title, titleMatch) + (favoriteSet.has(cmd.id) ? -100 : 0),
+            fuzzyScore(effectiveQuery, cmd.title, titleMatch) +
+            (favoriteSet.has(cmd.id) ? -100 : 0),
         });
         continue;
       }
@@ -231,11 +229,17 @@ const CommandPaletteInner = ({
         const cat = item.command.category || '';
         const newCat = cat !== lastCategory;
         if (newCat) lastCategory = cat;
+        let sectionLabel: string | undefined;
+        if (i === 0 && !cat) {
+          sectionLabel = t('commandPalette.allCommands');
+        } else if (newCat) {
+          sectionLabel = cat;
+        }
         items.push({
           type: 'command',
           command: item.command,
           matchIndices: item.matchIndices,
-          sectionLabel: i === 0 && !cat ? t('commandPalette.allCommands') : newCat ? cat : undefined,
+          sectionLabel,
         });
       });
     } else if (isCommandMode && isEmptyQuery) {
@@ -261,7 +265,18 @@ const CommandPaletteInner = ({
     }
 
     return items;
-  }, [effectiveQuery, isCommandMode, commands, favorites, history, recentFiles, filteredCommands, commandMap, favoriteSet, t]);
+  }, [
+    effectiveQuery,
+    isCommandMode,
+    commands,
+    favorites,
+    history,
+    recentFiles,
+    filteredCommands,
+    commandMap,
+    favoriteSet,
+    t,
+  ]);
 
   // History timestamps lookup for display
   const historyTimestamps = useMemo(() => {
@@ -507,6 +522,24 @@ const CommandPaletteInner = ({
         const isSelected = row.itemIndex === selectedIndex;
         const isFav = favoriteSet.has(row.command.id);
         const ts = historyTimestamps.get(row.command.id);
+        let iconContent: React.ReactNode = null;
+        if (row.command.icon) {
+          iconContent = <span style={iconWrapStyle}>{row.command.icon}</span>;
+        } else if (ts !== undefined) {
+          iconContent = (
+            <span style={iconWrapStyle}>
+              <ClockIcon size={14} />
+            </span>
+          );
+        }
+        let starOpacity: number;
+        if (isFav) {
+          starOpacity = 1;
+        } else if (isSelected) {
+          starOpacity = 0.6;
+        } else {
+          starOpacity = 0.4;
+        }
         return (
           <button
             data-index={row.itemIndex}
@@ -514,13 +547,7 @@ const CommandPaletteInner = ({
             onClick={() => executeItem(row.itemIndex)}
             onMouseEnter={() => setSelectedIndex(row.itemIndex)}
           >
-            {row.command.icon ? (
-              <span style={iconWrapStyle}>{row.command.icon}</span>
-            ) : ts !== undefined ? (
-              <span style={iconWrapStyle}>
-                <ClockIcon size={14} />
-              </span>
-            ) : null}
+            {iconContent}
             <span style={textEllipsisStyle}>
               <HighlightedText text={row.command.title} matchIndices={row.matchIndices} />
             </span>
@@ -534,10 +561,12 @@ const CommandPaletteInner = ({
             <button
               style={{
                 ...starBtnBaseStyle,
-                opacity: isFav ? 1 : isSelected ? 0.6 : 0.4,
+                opacity: starOpacity,
               }}
               onClick={(e) => toggleFavorite(row.command.id, e)}
-              title={isFav ? t('commandPalette.removeFromFavorites') : t('commandPalette.addToFavorites')}
+              title={
+                isFav ? t('commandPalette.removeFromFavorites') : t('commandPalette.addToFavorites')
+              }
             >
               <StarIcon filled={isFav} size={13} />
             </button>
@@ -691,6 +720,6 @@ const CommandPaletteInner = ({
       </div>
     </div>
   );
-}
+};
 
 export default React.memo(CommandPaletteInner);

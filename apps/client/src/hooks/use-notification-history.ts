@@ -12,7 +12,7 @@ export interface AppNotification {
 const MAX_NOTIFICATIONS = 100;
 const STORAGE_KEY = 'xplorer-notification-history';
 
-const loadFromSession = () : AppNotification[] => {
+const loadFromSession = (): AppNotification[] => {
   try {
     const raw = sessionStorage.getItem(STORAGE_KEY);
     if (raw) {
@@ -23,7 +23,7 @@ const loadFromSession = () : AppNotification[] => {
     // ignore
   }
   return [];
-}
+};
 
 const saveToSession = (notifications: AppNotification[]) => {
   try {
@@ -31,7 +31,7 @@ const saveToSession = (notifications: AppNotification[]) => {
   } catch {
     // ignore
   }
-}
+};
 
 // Global state so multiple hook consumers stay in sync
 let globalNotifications: AppNotification[] = loadFromSession();
@@ -41,7 +41,7 @@ const notify = (notifications: AppNotification[]) => {
   globalNotifications = notifications;
   saveToSession(notifications);
   listeners.forEach((fn) => fn(notifications));
-}
+};
 
 let idCounter = 0;
 
@@ -49,7 +49,7 @@ export const addNotification = (
   type: AppNotification['type'],
   title: string,
   description?: string,
-) : AppNotification => {
+): AppNotification => {
   const notification: AppNotification = {
     id: `notif-${Date.now()}-${++idCounter}`,
     type,
@@ -62,20 +62,20 @@ export const addNotification = (
   const next = [notification, ...globalNotifications].slice(0, MAX_NOTIFICATIONS);
   notify(next);
   return notification;
-}
+};
 
 export const clearAllNotifications = () => {
   notify([]);
-}
+};
 
 export const clearNotificationById = (id: string) => {
   notify(globalNotifications.filter((n) => n.id !== id));
-}
+};
 
 export const markAllAsRead = () => {
   if (globalNotifications.every((n) => n.read)) return;
   notify(globalNotifications.map((n) => (n.read ? n : { ...n, read: true })));
-}
+};
 
 export const useNotificationHistory = () => {
   const [notifications, setNotifications] = useState<AppNotification[]>(globalNotifications);
@@ -99,4 +99,4 @@ export const useNotificationHistory = () => {
     markAllAsRead,
     unreadCount,
   };
-}
+};

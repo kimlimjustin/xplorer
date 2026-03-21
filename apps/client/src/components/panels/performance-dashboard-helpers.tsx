@@ -260,12 +260,11 @@ export const OrganizerSuggestionItem = ({
   selected: boolean;
   onToggle: () => void;
 }) => {
-  const categoryTag =
-    suggestion.category === 'type'
-      ? <FolderOpen size={12} className="inline-block" />
-      : suggestion.category === 'date'
-        ? <CalendarDays size={12} className="inline-block" />
-        : <Tag size={12} className="inline-block" />;
+  const categoryTag = (() => {
+    if (suggestion.category === 'type') return <FolderOpen size={12} className="inline-block" />;
+    if (suggestion.category === 'date') return <CalendarDays size={12} className="inline-block" />;
+    return <Tag size={12} className="inline-block" />;
+  })();
   return (
     <div
       onClick={onToggle}
@@ -301,9 +300,7 @@ export const OrganizerSuggestionItem = ({
             >
               {suggestion.suggested_name}/
             </span>
-            <span
-              style={{ fontSize: 11, color: 'var(--xp-text-secondary)', flexShrink: 0 }}
-            >
+            <span style={{ fontSize: 11, color: 'var(--xp-text-secondary)', flexShrink: 0 }}>
               ({suggestion.files_to_move.length} files)
             </span>
           </div>

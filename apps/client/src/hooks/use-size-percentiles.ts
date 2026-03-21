@@ -18,7 +18,7 @@ export interface SizePercentileInfo {
  *   Bottom 50%                  -> green (#22c55e) "Small"
  *   Directories without size    -> gray (#6b7280) (no label)
  */
-export const useSizePercentiles = (files: FileEntry[]) : Map<string, SizePercentileInfo> => {
+export const useSizePercentiles = (files: FileEntry[]): Map<string, SizePercentileInfo> => {
   // Memoize keyed on file count + total size to avoid recalculating
   // when nothing meaningful changed
   const fileCount = files.length;
@@ -85,4 +85,4 @@ export const useSizePercentiles = (files: FileEntry[]) : Map<string, SizePercent
     return result;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fileCount, totalSize, files]);
-}
+};

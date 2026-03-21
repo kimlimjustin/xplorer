@@ -2,13 +2,13 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { PreviewProps } from '@/lib/preview-factory';
 import { convertAssetUrl } from '@/lib/transport';
 
-const formatTime = (seconds: number) : string => {
+const formatTime = (seconds: number): string => {
   if (isNaN(seconds) || !isFinite(seconds)) return '0:00';
   const totalSeconds = Math.floor(seconds);
   const mins = Math.floor(totalSeconds / 60);
   const secs = totalSeconds % 60;
   return `${mins}:${secs.toString().padStart(2, '0')}`;
-}
+};
 
 const VideoPreview = ({ file, onError, onLoad }: PreviewProps) => {
   const [videoError, setVideoError] = useState(false);
@@ -96,12 +96,12 @@ const VideoPreview = ({ file, onError, onLoad }: PreviewProps) => {
   const progressPercent = safeDuration > 0 ? (currentTime / safeDuration) * 100 : 0;
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="flex h-full flex-col">
       {loading && (
-        <div className="flex-1 flex items-center justify-center bg-xp-surface border border-xp-border rounded">
-          <div className="text-center text-xp-text-muted">
+        <div className="bg-xp-surface border-xp-border flex flex-1 items-center justify-center rounded border">
+          <div className="text-xp-text-muted text-center">
             <div className="animate-pulse">
-              <div className="w-16 h-16 bg-xp-bg rounded mb-2 mx-auto"></div>
+              <div className="bg-xp-bg mx-auto mb-2 h-16 w-16 rounded" />
               <p className="text-xs">Loading video...</p>
             </div>
           </div>
@@ -110,13 +110,13 @@ const VideoPreview = ({ file, onError, onLoad }: PreviewProps) => {
       {!videoError && (
         <>
           <div
-            className={`flex-1 flex items-center justify-center bg-black overflow-hidden ${loading ? 'hidden' : ''}`}
+            className={`flex flex-1 items-center justify-center overflow-hidden bg-black ${loading ? 'hidden' : ''}`}
           >
             <video
               ref={videoRef}
               src={videoSrc}
               preload="metadata"
-              className="max-w-full max-h-full object-contain"
+              className="max-h-full max-w-full object-contain"
               onLoadedData={handleLoadedData}
               onError={handleError}
               onTimeUpdate={handleTimeUpdate}
@@ -125,9 +125,9 @@ const VideoPreview = ({ file, onError, onLoad }: PreviewProps) => {
           </div>
           {/* Custom Controls */}
           {!loading && (
-            <div className="bg-xp-surface border-t border-xp-border px-3 py-2 space-y-2">
+            <div className="bg-xp-surface border-xp-border space-y-2 border-t px-3 py-2">
               {/* Progress bar */}
-              <div className="flex items-center space-x-2 text-xs text-xp-text">
+              <div className="text-xp-text flex items-center space-x-2 text-xs">
                 <span>{formatTime(currentTime)}</span>
                 <input
                   type="range"
@@ -136,7 +136,7 @@ const VideoPreview = ({ file, onError, onLoad }: PreviewProps) => {
                   step="0.1"
                   value={currentTime}
                   onChange={handleProgressChange}
-                  className="flex-1 h-1 rounded-full appearance-none cursor-pointer"
+                  className="h-1 flex-1 cursor-pointer appearance-none rounded-full"
                   style={{
                     background: `linear-gradient(to right, #7aa2f7 0%, #7aa2f7 ${progressPercent}%, #1a1b26 ${progressPercent}%, #1a1b26 100%)`,
                   }}
@@ -148,10 +148,10 @@ const VideoPreview = ({ file, onError, onLoad }: PreviewProps) => {
                 <button
                   onClick={togglePlay}
                   title={isPlaying ? 'Pause' : 'Play'}
-                  className="p-1.5 rounded hover:bg-xp-surface-light text-xp-text"
+                  className="hover:bg-xp-surface-light text-xp-text rounded p-1.5"
                 >
                   {isPlaying ? (
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                       <path
                         fillRule="evenodd"
                         d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z"
@@ -159,7 +159,7 @@ const VideoPreview = ({ file, onError, onLoad }: PreviewProps) => {
                       />
                     </svg>
                   ) : (
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                       <path
                         fillRule="evenodd"
                         d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
@@ -169,7 +169,7 @@ const VideoPreview = ({ file, onError, onLoad }: PreviewProps) => {
                   )}
                 </button>
                 <div className="flex items-center space-x-1">
-                  <svg className="w-4 h-4 text-xp-text" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="text-xp-text h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                     <path
                       fillRule="evenodd"
                       d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217z"
@@ -189,7 +189,7 @@ const VideoPreview = ({ file, onError, onLoad }: PreviewProps) => {
                     step="0.1"
                     value={volume}
                     onChange={handleVolumeChange}
-                    className="w-20 h-1 rounded-full appearance-none cursor-pointer"
+                    className="h-1 w-20 cursor-pointer appearance-none rounded-full"
                     style={{
                       background: `linear-gradient(to right, #7aa2f7 0%, #7aa2f7 ${volume * 100}%, #1a1b26 ${volume * 100}%, #1a1b26 100%)`,
                     }}
@@ -201,9 +201,9 @@ const VideoPreview = ({ file, onError, onLoad }: PreviewProps) => {
         </>
       )}
       {videoError && (
-        <div className="flex-1 flex items-center justify-center bg-xp-surface border border-xp-border rounded">
-          <div className="text-center text-xp-text-muted">
-            <svg className="w-12 h-12 mx-auto mb-2" fill="currentColor" viewBox="0 0 20 20">
+        <div className="bg-xp-surface border-xp-border flex flex-1 items-center justify-center rounded border">
+          <div className="text-xp-text-muted text-center">
+            <svg className="mx-auto mb-2 h-12 w-12" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fillRule="evenodd"
                 d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
@@ -211,12 +211,12 @@ const VideoPreview = ({ file, onError, onLoad }: PreviewProps) => {
               />
             </svg>
             <p className="text-sm">Cannot preview video</p>
-            <p className="text-xs mt-1 opacity-70">The video format may not be supported</p>
+            <p className="mt-1 text-xs opacity-70">The video format may not be supported</p>
           </div>
         </div>
       )}
     </div>
   );
-}
+};
 
 export default React.memo(VideoPreview);

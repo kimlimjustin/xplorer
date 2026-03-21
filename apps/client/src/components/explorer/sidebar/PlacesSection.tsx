@@ -17,22 +17,27 @@ interface PlacesSectionProps {
   navigateToPath: (path: string) => void;
 }
 
-const PlacesSection = ({
-  userDirectories,
-  currentPath,
-  navigateToPath,
-}: PlacesSectionProps) => {
+const PlacesSection = ({ userDirectories, currentPath, navigateToPath }: PlacesSectionProps) => {
   const { t } = useTranslation();
   return (
-    <div className="px-3 py-2 border-b border-xp-border" role="region" aria-label={t('sidebar.quickAccess')}>
-      <h4 className="text-[10px] font-semibold text-xp-text-muted uppercase tracking-widest mb-1.5">
+    <div
+      className="border-xp-border border-b px-3 py-2"
+      role="region"
+      aria-label={t('sidebar.quickAccess')}
+    >
+      <h4 className="text-xp-text-muted mb-1.5 text-[10px] font-semibold uppercase tracking-widest">
         {t('sidebar.quickAccess')}
       </h4>
       <div className="space-y-0.5">
         {userDirectories &&
           (
             [
-              { path: userDirectories.home, Icon: Home, color: 'text-xp-blue', labelKey: 'sidebar.home' },
+              {
+                path: userDirectories.home,
+                Icon: Home,
+                color: 'text-xp-blue',
+                labelKey: 'sidebar.home',
+              },
               {
                 path: userDirectories.documents,
                 Icon: FileText,
@@ -65,7 +70,7 @@ const PlacesSection = ({
               <button
                 key={labelKey}
                 onClick={() => navigateToPath(path)}
-                className={`flex items-center w-full px-2 py-1.5 text-xs rounded transition-colors ${
+                className={`flex w-full items-center rounded px-2 py-1.5 text-xs transition-colors ${
                   isActive ? 'bg-xp-blue/15 text-xp-blue' : 'hover:bg-xp-surface-light text-xp-text'
                 }`}
                 aria-label={t('sidebar.navigateTo', { label })}
@@ -82,7 +87,7 @@ const PlacesSection = ({
       </div>
     </div>
   );
-}
+};
 
 export type { UserDirectories };
 

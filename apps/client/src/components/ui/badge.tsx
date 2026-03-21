@@ -22,4 +22,4 @@ export const Badge = ({ variant = 'default', className = '', children }: BadgePr
   return (
     <span className={`${baseClasses} ${variantClasses[variant]} ${className}`}>{children}</span>
   );
-}
+};

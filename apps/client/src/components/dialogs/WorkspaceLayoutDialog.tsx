@@ -233,7 +233,7 @@ const IconX = ({ size = 16 }: { size?: number }) => {
       <line x1="6" y1="6" x2="18" y2="18" />
     </svg>
   );
-}
+};
 
 const IconSave = ({ size = 14 }: { size?: number }) => {
   return (
@@ -252,7 +252,7 @@ const IconSave = ({ size = 14 }: { size?: number }) => {
       <polyline points="7 3 7 8 15 8" />
     </svg>
   );
-}
+};
 
 const IconReset = ({ size = 14 }: { size?: number }) => {
   return (
@@ -270,7 +270,7 @@ const IconReset = ({ size = 14 }: { size?: number }) => {
       <path d="M3.51 15a9 9 0 102.13-9.36L1 10" />
     </svg>
   );
-}
+};
 
 const IconPlay = ({ size = 14 }: { size?: number }) => {
   return (
@@ -287,7 +287,7 @@ const IconPlay = ({ size = 14 }: { size?: number }) => {
       <polygon points="5 3 19 12 5 21 5 3" />
     </svg>
   );
-}
+};
 
 const IconEdit = ({ size = 14 }: { size?: number }) => {
   return (
@@ -305,7 +305,7 @@ const IconEdit = ({ size = 14 }: { size?: number }) => {
       <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
     </svg>
   );
-}
+};
 
 const IconTrash = ({ size = 14 }: { size?: number }) => {
   return (
@@ -323,7 +323,7 @@ const IconTrash = ({ size = 14 }: { size?: number }) => {
       <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
     </svg>
   );
-}
+};
 
 const IconLayout = ({ size = 18 }: { size?: number }) => {
   return (
@@ -342,11 +342,11 @@ const IconLayout = ({ size = 18 }: { size?: number }) => {
       <line x1="9" y1="21" x2="9" y2="9" />
     </svg>
   );
-}
+};
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-const formatDate = (ts: number) : string => {
+const formatDate = (ts: number): string => {
   const d = new Date(ts);
   const now = new Date();
   const diffMs = now.getTime() - d.getTime();
@@ -362,11 +362,11 @@ const formatDate = (ts: number) : string => {
     day: 'numeric',
     year: d.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
   });
-}
+};
 
-const countPanes = (layout: SplitLayoutState) : number => {
+const countPanes = (layout: SplitLayoutState): number => {
   return Object.keys(layout.groups).length;
-}
+};
 
 // ── Component ────────────────────────────────────────────────────────────────
 
@@ -737,6 +737,6 @@ const WorkspaceLayoutDialog = ({
       </div>
     </div>
   );
-}
+};
 
 export default WorkspaceLayoutDialog;

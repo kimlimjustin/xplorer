@@ -20,12 +20,12 @@ const listeners: Array<(state: TourState) => void> = [];
 
 const notify = () => {
   listeners.forEach((fn) => fn({ ...tourState }));
-}
+};
 
 export const startTour = () => {
   tourState = { isActive: true, currentStep: 0, steps: getTourSteps() };
   notify();
-}
+};
 
 export const endTour = (markCompleted = true) => {
   tourState = { ...tourState, isActive: false, currentStep: 0 };
@@ -33,7 +33,7 @@ export const endTour = (markCompleted = true) => {
     localStorage.setItem(TOUR_COMPLETED_KEY, 'true');
   }
   notify();
-}
+};
 
 export const nextStep = () => {
   if (tourState.currentStep < tourState.steps.length - 1) {
@@ -42,29 +42,29 @@ export const nextStep = () => {
   } else {
     endTour(true);
   }
-}
+};
 
 export const prevStep = () => {
   if (tourState.currentStep > 0) {
     tourState = { ...tourState, currentStep: tourState.currentStep - 1 };
     notify();
   }
-}
+};
 
 export const goToStep = (index: number) => {
   if (index >= 0 && index < tourState.steps.length) {
     tourState = { ...tourState, currentStep: index };
     notify();
   }
-}
+};
 
-export const isTourCompleted = () : boolean => {
+export const isTourCompleted = (): boolean => {
   return localStorage.getItem(TOUR_COMPLETED_KEY) === 'true';
-}
+};
 
 export const resetTourCompleted = () => {
   localStorage.removeItem(TOUR_COMPLETED_KEY);
-}
+};
 
 export const useTour = () => {
   const [state, setState] = useState<TourState>(tourState);
@@ -86,4 +86,4 @@ export const useTour = () => {
     goToStep,
     isTourCompleted,
   };
-}
+};

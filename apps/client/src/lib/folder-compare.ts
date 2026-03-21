@@ -52,13 +52,13 @@ export interface FolderCompareResult {
 
 // ── Implementation ───────────────────────────────────────────────────────────
 
-const toMap = (entries: FileEntry[]) : Map<string, FileEntry> => {
+const toMap = (entries: FileEntry[]): Map<string, FileEntry> => {
   const m = new Map<string, FileEntry>();
   for (const e of entries) {
     m.set(e.name, e);
   }
   return m;
-}
+};
 
 /**
  * Compare the immediate children of two folders.

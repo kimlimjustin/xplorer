@@ -17,14 +17,14 @@ const IMAGE_EXTS = new Set([
   'tiff',
   'tif',
 ]);
-const isImage = (file: FileEntry) : boolean => {
+const isImage = (file: FileEntry): boolean => {
   if (file.is_dir) return false;
   const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
   return IMAGE_EXTS.has(ext);
-}
-const getExt = (name: string) : string => {
+};
+const getExt = (name: string): string => {
   return name.split('.').pop()?.toUpperCase() ?? '';
-}
+};
 
 // ─── Styles ──────────────────────────────────────────────────────────────────
 
@@ -325,8 +325,9 @@ const PreviewNavigationBar = ({
           title="Previous file (Left arrow)"
           aria-label="Previous file"
           onMouseEnter={(e) => {
-            if (canPrev)
+            if (canPrev) {
               e.currentTarget.style.background = 'var(--xp-surface-light, rgba(255,255,255,0.06))';
+            }
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = 'transparent';
@@ -346,8 +347,9 @@ const PreviewNavigationBar = ({
           title="Next file (Right arrow)"
           aria-label="Next file"
           onMouseEnter={(e) => {
-            if (canNext)
+            if (canNext) {
               e.currentTarget.style.background = 'var(--xp-surface-light, rgba(255,255,255,0.06))';
+            }
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = 'transparent';
@@ -364,9 +366,10 @@ const PreviewNavigationBar = ({
             title="Compare with previous file"
             aria-label="Compare with previous file"
             onMouseEnter={(e) => {
-              if (!compareMode)
+              if (!compareMode) {
                 e.currentTarget.style.background =
                   'var(--xp-surface-light, rgba(255,255,255,0.06))';
+              }
             }}
             onMouseLeave={(e) => {
               if (!compareMode) e.currentTarget.style.background = 'transparent';
@@ -510,6 +513,6 @@ const PreviewNavigationBar = ({
       </div>
     </div>
   );
-}
+};
 
 export default React.memo(PreviewNavigationBar);

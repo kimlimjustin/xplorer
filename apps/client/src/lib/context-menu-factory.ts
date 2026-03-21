@@ -129,12 +129,12 @@ export interface ContextMenuConfig {
 }
 
 /** Build a minimal FileEntry from a path string (for multi-select operations). */
-const entryFromPath = (path: string) : FileEntry => {
+const entryFromPath = (path: string): FileEntry => {
   const name = path.split(/[/\\]/).pop() || path;
   const dotIdx = name.lastIndexOf('.');
   const extension = dotIdx > 0 ? name.slice(dotIdx + 1) : '';
   return { path, name, size: 0, modified: 0, is_dir: !extension, file_type: extension || 'folder' };
-}
+};
 
 export class ContextMenuFactory {
   private actions: ContextMenuAction;
@@ -261,7 +261,9 @@ export class ContextMenuFactory {
     // Edit actions
     items.push({
       id: 'cut',
-      label: isMultiSelect ? i18n.t('contextMenu.cutItems', { count: selectedFiles.size }) : i18n.t('contextMenu.cut'),
+      label: isMultiSelect
+        ? i18n.t('contextMenu.cutItems', { count: selectedFiles.size })
+        : i18n.t('contextMenu.cut'),
       icon: mi(Scissors),
       shortcut: 'Ctrl+X',
       action: () => {
@@ -273,7 +275,9 @@ export class ContextMenuFactory {
 
     items.push({
       id: 'copy',
-      label: isMultiSelect ? i18n.t('contextMenu.copyItems', { count: selectedFiles.size }) : i18n.t('contextMenu.copy'),
+      label: isMultiSelect
+        ? i18n.t('contextMenu.copyItems', { count: selectedFiles.size })
+        : i18n.t('contextMenu.copy'),
       icon: mi(Copy),
       shortcut: 'Ctrl+C',
       action: () => {
@@ -292,10 +296,7 @@ export class ContextMenuFactory {
       action: () => {
         const targetPath = file.is_dir
           ? file.path
-          : file.path
-              .split(/[\\/]/)
-              .slice(0, -1)
-              .join(PATH_SEPARATOR);
+          : file.path.split(/[\\/]/).slice(0, -1).join(PATH_SEPARATOR);
         this.actions.paste(targetPath);
       },
     });
@@ -304,10 +305,7 @@ export class ContextMenuFactory {
     {
       const pasteTarget = file.is_dir
         ? file.path
-        : file.path
-            .split(/[\\/]/)
-            .slice(0, -1)
-            .join(PATH_SEPARATOR);
+        : file.path.split(/[\\/]/).slice(0, -1).join(PATH_SEPARATOR);
       const pasteRecentItem = this.buildPasteRecentSubmenu(pasteTarget);
       if (pasteRecentItem) items.push(pasteRecentItem);
     }
@@ -315,7 +313,9 @@ export class ContextMenuFactory {
     // Duplicate
     items.push({
       id: 'duplicate',
-      label: isMultiSelect ? i18n.t('contextMenu.duplicateItems', { count: selectedFiles.size }) : i18n.t('contextMenu.duplicate'),
+      label: isMultiSelect
+        ? i18n.t('contextMenu.duplicateItems', { count: selectedFiles.size })
+        : i18n.t('contextMenu.duplicate'),
       icon: mi(CopyPlus),
       shortcut: 'Ctrl+D',
       action: () => {
@@ -361,7 +361,9 @@ export class ContextMenuFactory {
 
     items.push({
       id: 'delete',
-      label: isMultiSelect ? i18n.t('contextMenu.deleteItems', { count: selectedFiles.size }) : i18n.t('contextMenu.delete'),
+      label: isMultiSelect
+        ? i18n.t('contextMenu.deleteItems', { count: selectedFiles.size })
+        : i18n.t('contextMenu.delete'),
       icon: mi(Trash2),
       shortcut: 'Delete',
       action: () => {
@@ -436,7 +438,9 @@ export class ContextMenuFactory {
     // Secure Delete
     moreItems.push({
       id: 'secure-delete',
-      label: isMultiSelect ? i18n.t('contextMenu.secureDeleteItems', { count: selectedFiles.size }) : i18n.t('contextMenu.secureDelete'),
+      label: isMultiSelect
+        ? i18n.t('contextMenu.secureDeleteItems', { count: selectedFiles.size })
+        : i18n.t('contextMenu.secureDelete'),
       icon: mi(ShieldAlert),
       action: () => {
         const filesToSecureDelete = isMultiSelect ? selectedFilesList.map(entryFromPath) : [file];
@@ -652,10 +656,7 @@ export class ContextMenuFactory {
           label: i18n.t('contextMenu.openInTerminal'),
           icon: mi(Terminal),
           action: () => {
-            const parentDir = file.path
-              .split(/[\\/]/)
-              .slice(0, -1)
-              .join(PATH_SEPARATOR);
+            const parentDir = file.path.split(/[\\/]/).slice(0, -1).join(PATH_SEPARATOR);
             this.actions.openInTerminal(parentDir);
           },
         });
@@ -1009,11 +1010,7 @@ export class ContextMenuFactory {
       icon: mi(Bookmark),
       action: async () => {
         try {
-          const folderName =
-            currentPath
-              .split(/[\\/]/)
-              .filter(Boolean)
-              .pop() || currentPath;
+          const folderName = currentPath.split(/[\\/]/).filter(Boolean).pop() || currentPath;
           await TauriAPI.addBookmark(currentPath, folderName);
           window.dispatchEvent(new CustomEvent('bookmarks-changed'));
         } catch (error) {

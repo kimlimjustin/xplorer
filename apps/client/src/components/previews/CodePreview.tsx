@@ -70,7 +70,7 @@ const CodePreview = ({ file, onError, onLoad }: PreviewProps) => {
         // Limit content for preview (first 2000 characters)
         const truncatedContent =
           file.size > 100000
-            ? fileContent.slice(0, 2000) + '\n... (file truncated for preview)'
+            ? `${fileContent.slice(0, 2000)}\n... (file truncated for preview)`
             : fileContent;
 
         setContent(truncatedContent);
@@ -89,13 +89,13 @@ const CodePreview = ({ file, onError, onLoad }: PreviewProps) => {
   }, [file.path, file.name, file.size]);
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="flex h-full flex-col">
       {loading && <PreviewSkeleton />}
 
       {error ? (
-        <div className="flex-1 flex items-center justify-center bg-xp-surface border border-xp-border rounded">
-          <div className="text-center text-xp-text-muted">
-            <svg className="w-12 h-12 mx-auto mb-2" fill="currentColor" viewBox="0 0 20 20">
+        <div className="bg-xp-surface border-xp-border flex flex-1 items-center justify-center rounded border">
+          <div className="text-xp-text-muted text-center">
+            <svg className="mx-auto mb-2 h-12 w-12" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fillRule="evenodd"
                 d="M12.316 3.051a1 1 0 01.633 1.265L11.83 8.843l.007.001c.378.114.688.459.736.847l.007.143v3.166c0 .414-.336.75-.75.75h-3.166c-.414 0-.75-.336-.75-.75V9.834a.75.75 0 01.743-.75h.007l-1.119-4.527a1 1 0 111.949-.482L9.25 7.334h1.5l.633-2.549a1 1 0 011.265-.633z"
@@ -103,17 +103,18 @@ const CodePreview = ({ file, onError, onLoad }: PreviewProps) => {
               />
             </svg>
             <p className="text-sm">Cannot preview code</p>
-            <p className="text-xs mt-1 opacity-70">{error}</p>
+            <p className="mt-1 text-xs opacity-70">{error}</p>
           </div>
         </div>
-      ) : content ? (
-        <div className="flex-1 flex flex-col">
-          <div className="flex justify-between items-center mb-2 px-2">
-            <span className="text-xs text-xp-text-muted bg-xp-bg px-2 py-1 rounded">
+      ) : null}
+      {!error && content && (
+        <div className="flex flex-1 flex-col">
+          <div className="mb-2 flex items-center justify-between px-2">
+            <span className="text-xp-text-muted bg-xp-bg rounded px-2 py-1 text-xs">
               {language}
             </span>
           </div>
-          <div className="flex-1 bg-xp-surface border border-xp-border rounded overflow-hidden">
+          <div className="bg-xp-surface border-xp-border flex-1 overflow-hidden rounded border">
             <RSH
               language={language}
               style={oneDark}
@@ -134,9 +135,9 @@ const CodePreview = ({ file, onError, onLoad }: PreviewProps) => {
             </RSH>
           </div>
         </div>
-      ) : null}
+      )}
     </div>
   );
-}
+};
 
 export default CodePreview;

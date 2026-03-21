@@ -22,7 +22,7 @@ interface VersionHistoryDialogProps {
   onRefetch?: () => void;
 }
 
-const formatTimestamp = (ts: string) : string => {
+const formatTimestamp = (ts: string): string => {
   if (!ts || ts.length < 15) return ts;
   const year = ts.slice(0, 4);
   const month = ts.slice(4, 6);
@@ -31,7 +31,7 @@ const formatTimestamp = (ts: string) : string => {
   const min = ts.slice(11, 13);
   const sec = ts.slice(13, 15);
   return `${year}-${month}-${day} ${hour}:${min}:${sec}`;
-}
+};
 
 const VersionHistoryDialog = ({
   isOpen,
@@ -159,17 +159,17 @@ const VersionHistoryDialog = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-2xl max-h-[85vh] bg-xp-bg border border-xp-border rounded-xl shadow-2xl flex flex-col overflow-hidden">
+      <div className="bg-xp-bg border-xp-border relative flex max-h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-xl border shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-xp-border/50">
+        <div className="border-xp-border/50 flex items-center justify-between border-b px-5 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center w-9 h-9 rounded-lg bg-xp-accent/10">
+            <div className="bg-xp-accent/10 flex h-9 w-9 items-center justify-center rounded-lg">
               <History size={18} className="text-xp-accent" />
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-xp-text">Version History</h2>
+              <h2 className="text-xp-text text-sm font-semibold">Version History</h2>
               <p
-                className="text-xs text-xp-text-secondary mt-0.5 truncate max-w-[360px]"
+                className="text-xp-text-secondary mt-0.5 max-w-[360px] truncate text-xs"
                 title={filePath}
               >
                 {fileName}
@@ -178,18 +178,18 @@ const VersionHistoryDialog = ({
           </div>
           <button
             onClick={onClose}
-            className="flex items-center justify-center w-8 h-8 rounded-md text-xp-text-secondary hover:bg-xp-surface hover:text-xp-text transition-colors"
+            className="text-xp-text-secondary hover:bg-xp-surface hover:text-xp-text flex h-8 w-8 items-center justify-center rounded-md transition-colors"
           >
             <X size={16} />
           </button>
         </div>
 
         {/* Actions bar */}
-        <div className="flex items-center gap-2 px-5 py-3 border-b border-xp-border/30">
+        <div className="border-xp-border/30 flex items-center gap-2 border-b px-5 py-3">
           <button
             onClick={handleCreateVersion}
             disabled={!!actionInProgress}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-xp-accent/10 text-xp-accent hover:bg-xp-accent/20 transition-colors disabled:opacity-50"
+            className="bg-xp-accent/10 text-xp-accent hover:bg-xp-accent/20 flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors disabled:opacity-50"
           >
             <Plus size={14} />
             Create Snapshot
@@ -198,81 +198,83 @@ const VersionHistoryDialog = ({
             <button
               onClick={handleDeleteAll}
               disabled={!!actionInProgress}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors disabled:opacity-50"
+              className="flex items-center gap-1.5 rounded-md bg-red-500/10 px-3 py-1.5 text-xs font-medium text-red-400 transition-colors hover:bg-red-500/20 disabled:opacity-50"
             >
               <Trash size={14} />
               Delete All
             </button>
           )}
-          <div className="ml-auto text-xs text-xp-text-secondary">
+          <div className="text-xp-text-secondary ml-auto text-xs">
             {versions.length} version{versions.length !== 1 ? 's' : ''}
           </div>
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto min-h-0">
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          {/* eslint-disable-next-line no-nested-ternary */}
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <div className="w-5 h-5 border-2 border-xp-accent border-t-transparent rounded-full animate-spin" />
-              <span className="ml-3 text-sm text-xp-text-secondary">Loading versions...</span>
+              <div className="border-xp-accent h-5 w-5 animate-spin rounded-full border-2 border-t-transparent" />
+              <span className="text-xp-text-secondary ml-3 text-sm">Loading versions...</span>
             </div>
-          ) : error ? (
-            <div className="flex flex-col items-center justify-center py-12 px-6 text-center">
-              <AlertTriangle size={24} className="text-red-400 mb-2" />
+          ) : // eslint-disable-next-line no-nested-ternary
+          error ? (
+            <div className="flex flex-col items-center justify-center px-6 py-12 text-center">
+              <AlertTriangle size={24} className="mb-2 text-red-400" />
               <p className="text-sm text-red-400">{error}</p>
               <button
                 onClick={loadVersions}
-                className="mt-3 text-xs text-xp-accent hover:underline"
+                className="text-xp-accent mt-3 text-xs hover:underline"
               >
                 Try again
               </button>
             </div>
           ) : versions.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 px-6 text-center">
+            <div className="flex flex-col items-center justify-center px-6 py-12 text-center">
               <History size={32} className="text-xp-text-secondary/40 mb-3" />
-              <p className="text-sm text-xp-text-secondary">No versions saved yet</p>
-              <p className="text-xs text-xp-text-secondary/60 mt-1">
+              <p className="text-xp-text-secondary text-sm">No versions saved yet</p>
+              <p className="text-xp-text-secondary/60 mt-1 text-xs">
                 Click "Create Snapshot" to save the current state of this file
               </p>
             </div>
           ) : (
-            <div className="divide-y divide-xp-border/30">
+            <div className="divide-xp-border/30 divide-y">
               {versions.map((version) => (
                 <div
                   key={version.version_number}
-                  className="group px-5 py-3 hover:bg-xp-surface-light/30 transition-colors"
+                  className="hover:bg-xp-surface-light/30 group px-5 py-3 transition-colors"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="flex items-center justify-center w-8 h-8 rounded-md bg-xp-surface shrink-0">
-                        <span className="text-xs font-bold text-xp-text-secondary">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div className="bg-xp-surface flex h-8 w-8 shrink-0 items-center justify-center rounded-md">
+                        <span className="text-xp-text-secondary text-xs font-bold">
                           v{version.version_number}
                         </span>
                       </div>
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-xp-text">
+                          <span className="text-xp-text text-sm font-medium">
                             Version {version.version_number}
                           </span>
                         </div>
-                        <div className="flex items-center gap-3 mt-0.5">
-                          <span className="flex items-center gap-1 text-xs text-xp-text-secondary">
+                        <div className="mt-0.5 flex items-center gap-3">
+                          <span className="text-xp-text-secondary flex items-center gap-1 text-xs">
                             <Clock size={11} />
                             {formatTimestamp(version.timestamp)}
                           </span>
-                          <span className="flex items-center gap-1 text-xs text-xp-text-secondary">
+                          <span className="text-xp-text-secondary flex items-center gap-1 text-xs">
                             <HardDrive size={11} />
                             {formatFileSize(version.size)}
                           </span>
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                    <div className="flex shrink-0 items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                       <button
                         onClick={() => handlePreview(version.version_number)}
                         disabled={!!actionInProgress}
                         title="Preview"
-                        className={`flex items-center justify-center w-7 h-7 rounded-md transition-colors disabled:opacity-50 ${
+                        className={`flex h-7 w-7 items-center justify-center rounded-md transition-colors disabled:opacity-50 ${
                           previewVersion === version.version_number
                             ? 'bg-xp-accent/20 text-xp-accent'
                             : 'text-xp-text-secondary hover:bg-xp-surface hover:text-xp-text'
@@ -284,7 +286,7 @@ const VersionHistoryDialog = ({
                         onClick={() => handleRestore(version.version_number)}
                         disabled={!!actionInProgress}
                         title="Restore this version"
-                        className="flex items-center justify-center w-7 h-7 rounded-md text-xp-text-secondary hover:bg-emerald-500/10 hover:text-emerald-400 transition-colors disabled:opacity-50"
+                        className="text-xp-text-secondary flex h-7 w-7 items-center justify-center rounded-md transition-colors hover:bg-emerald-500/10 hover:text-emerald-400 disabled:opacity-50"
                       >
                         <RotateCcw size={14} />
                       </button>
@@ -292,7 +294,7 @@ const VersionHistoryDialog = ({
                         onClick={() => handleDelete(version.version_number)}
                         disabled={!!actionInProgress}
                         title="Delete this version"
-                        className="flex items-center justify-center w-7 h-7 rounded-md text-xp-text-secondary hover:bg-red-500/10 hover:text-red-400 transition-colors disabled:opacity-50"
+                        className="text-xp-text-secondary flex h-7 w-7 items-center justify-center rounded-md transition-colors hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50"
                       >
                         <Trash2 size={14} />
                       </button>
@@ -301,9 +303,9 @@ const VersionHistoryDialog = ({
 
                   {/* Inline preview */}
                   {previewVersion === version.version_number && previewContent !== null && (
-                    <div className="mt-3 rounded-md border border-xp-border/50 bg-xp-bg overflow-hidden">
-                      <div className="flex items-center justify-between px-3 py-1.5 border-b border-xp-border/30 bg-xp-surface/50">
-                        <span className="text-[10px] font-medium text-xp-text-secondary uppercase tracking-wider">
+                    <div className="border-xp-border/50 bg-xp-bg mt-3 overflow-hidden rounded-md border">
+                      <div className="border-xp-border/30 bg-xp-surface/50 flex items-center justify-between border-b px-3 py-1.5">
+                        <span className="text-xp-text-secondary text-[10px] font-medium uppercase tracking-wider">
                           Preview - v{version.version_number}
                         </span>
                         <button
@@ -316,9 +318,9 @@ const VersionHistoryDialog = ({
                           <X size={12} />
                         </button>
                       </div>
-                      <pre className="px-3 py-2 text-xs text-xp-text font-mono overflow-x-auto max-h-[200px] overflow-y-auto whitespace-pre-wrap break-words">
+                      <pre className="text-xp-text max-h-[200px] overflow-x-auto overflow-y-auto whitespace-pre-wrap break-words px-3 py-2 font-mono text-xs">
                         {previewContent.length > 10000
-                          ? previewContent.slice(0, 10000) + '\n\n... (truncated)'
+                          ? `${previewContent.slice(0, 10000)}\n\n... (truncated)`
                           : previewContent}
                       </pre>
                     </div>
@@ -330,10 +332,10 @@ const VersionHistoryDialog = ({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-2 px-5 py-3 border-t border-xp-border/50">
+        <div className="border-xp-border/50 flex items-center justify-end gap-2 border-t px-5 py-3">
           <button
             onClick={onClose}
-            className="px-4 py-1.5 rounded-md text-xs font-medium text-xp-text-secondary hover:bg-xp-surface transition-colors"
+            className="text-xp-text-secondary hover:bg-xp-surface rounded-md px-4 py-1.5 text-xs font-medium transition-colors"
           >
             Close
           </button>

@@ -200,19 +200,159 @@ const GoogleDriveAccountsPage = (props: GoogleDriveAccountsPageProps) => {
     }
   };
 
+  let accountsSection: React.ReactNode;
+  if (!credentialsConfigured) {
+    accountsSection = (
+      <div className="flex min-h-[300px] flex-1 items-center justify-center">
+        <div className="text-xp-text-muted max-w-md py-8 text-center">
+          <div className="bg-xp-surface-light mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+            <Cloud className="h-8 w-8" />
+          </div>
+          <h3 className="text-xp-text mb-2 text-lg font-medium">Configure API credentials first</h3>
+          <p className="text-xp-text-muted">
+            Set up your Google Cloud OAuth credentials above to start connecting Google Drive
+            accounts.
+          </p>
+        </div>
+      </div>
+    );
+  } else if (accounts.length === 0) {
+    accountsSection = (
+      <div className="flex min-h-[300px] flex-1 items-center justify-center">
+        <div className="text-xp-text-muted max-w-md py-8 text-center">
+          <div className="bg-xp-surface-light mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+            <Cloud className="h-8 w-8" />
+          </div>
+          <h3 className="text-xp-text mb-2 text-lg font-medium">Connect your Google Drive</h3>
+          <p className="text-xp-text-muted mb-4">
+            Sign in with your Google account to browse and manage your Drive files directly from
+            Xplorer.
+          </p>
+
+          <button
+            onClick={handleAddAccount}
+            disabled={isAuthenticating}
+            className="bg-xp-blue hover:bg-xp-blue-dark focus:ring-xp-blue rounded-md px-6 py-2 text-white transition-colors focus:outline-none focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50"
+            aria-label="Sign in with Google"
+          >
+            {isAuthenticating ? (
+              <span className="flex items-center space-x-2">
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                <span>Connecting...</span>
+              </span>
+            ) : (
+              'Sign in with Google'
+            )}
+          </button>
+        </div>
+      </div>
+    );
+  } else {
+    accountsSection = (
+      <div className="p-6">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {accounts.map((account) => (
+            <div
+              key={account.id}
+              className="bg-xp-surface border-xp-border rounded-lg border p-4 transition-all hover:shadow-md"
+            >
+              {/* Account Header */}
+              <div className="mb-3 flex items-center justify-between">
+                <div className="flex min-w-0 items-center space-x-2">
+                  <Cloud className="text-xp-blue h-5 w-5 flex-shrink-0" />
+                  <h3 className="text-xp-text truncate font-medium">{account.email}</h3>
+                </div>
+
+                <div className="flex flex-shrink-0 items-center space-x-1">
+                  <button
+                    onClick={() => handleRemoveAccount(account)}
+                    className="text-xp-text-muted hover:text-xp-red focus:ring-xp-blue p-1 transition-colors focus:outline-none focus:ring-1"
+                    title="Remove Account"
+                    aria-label={`Remove account ${account.email}`}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Account Details */}
+              <div className="text-xp-text-muted mb-4 space-y-2 text-sm">
+                {account.displayName && (
+                  <div className="flex items-center space-x-2">
+                    <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        fillRule="evenodd"
+                        d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <span className="truncate">{account.displayName}</span>
+                  </div>
+                )}
+
+                <div className="flex items-center space-x-2">
+                  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                  </svg>
+                  <span className="truncate">{account.email}</span>
+                </div>
+
+                {account.lastSynced && (
+                  <div className="flex items-center space-x-2">
+                    <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <span className="text-xs">
+                      Last synced: {new Date(account.lastSynced).toLocaleString()}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => openAccountInExplorer(account)}
+                  className="bg-xp-blue hover:bg-xp-blue-dark focus:ring-xp-blue flex flex-1 items-center justify-center space-x-2 rounded px-3 py-2 text-sm font-medium text-white transition-colors focus:outline-none focus:ring-1"
+                  aria-label={`Open Google Drive for ${account.email}`}
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  <span>Open</span>
+                </button>
+
+                <button
+                  onClick={() => handleDisconnect(account)}
+                  className="bg-xp-red hover:bg-xp-red/80 focus:ring-xp-blue rounded px-3 py-2 text-sm font-medium text-white transition-colors focus:outline-none focus:ring-1"
+                  aria-label={`Disconnect ${account.email}`}
+                >
+                  Disconnect
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className={`flex flex-col h-full bg-xp-bg ${className || ''}`}>
+    <div className={`bg-xp-bg flex h-full flex-col ${className || ''}`}>
       {/* Header */}
-      <div className="flex items-center justify-between p-6 border-b border-xp-border bg-xp-surface">
+      <div className="border-xp-border bg-xp-surface flex items-center justify-between border-b p-6">
         <div className="flex items-center space-x-3">
           {!isEmbed && (
             <button
               onClick={() => setLocation('/explorer')}
-              className="p-2 hover:bg-xp-surface-light rounded-md transition-colors focus:outline-none focus:ring-1 focus:ring-xp-blue"
+              className="hover:bg-xp-surface-light focus:ring-xp-blue rounded-md p-2 transition-colors focus:outline-none focus:ring-1"
               title="Back to Explorer"
               aria-label="Back to Explorer"
             >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fillRule="evenodd"
                   d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
@@ -222,8 +362,8 @@ const GoogleDriveAccountsPage = (props: GoogleDriveAccountsPageProps) => {
             </button>
           )}
           <div>
-            <h1 className="text-xl font-semibold text-xp-text">Google Drive</h1>
-            <p className="text-sm text-xp-text-muted">
+            <h1 className="text-xp-text text-xl font-semibold">Google Drive</h1>
+            <p className="text-xp-text-muted text-sm">
               Configure API credentials and manage connected accounts
             </p>
           </div>
@@ -233,17 +373,17 @@ const GoogleDriveAccountsPage = (props: GoogleDriveAccountsPageProps) => {
           <button
             onClick={handleAddAccount}
             disabled={isAuthenticating || !credentialsConfigured}
-            className="flex items-center space-x-2 px-4 py-2 bg-xp-blue text-white rounded-md hover:bg-xp-blue-dark disabled:opacity-50 disabled:cursor-not-allowed transition-colors focus:outline-none focus:ring-1 focus:ring-xp-blue"
+            className="bg-xp-blue hover:bg-xp-blue-dark focus:ring-xp-blue flex items-center space-x-2 rounded-md px-4 py-2 text-white transition-colors focus:outline-none focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50"
             aria-label="Add Google account"
           >
             {isAuthenticating ? (
               <>
-                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                 <span>Connecting...</span>
               </>
             ) : (
               <>
-                <Plus className="w-4 h-4" />
+                <Plus className="h-4 w-4" />
                 <span>Add Google Account</span>
               </>
             )}
@@ -254,26 +394,26 @@ const GoogleDriveAccountsPage = (props: GoogleDriveAccountsPageProps) => {
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
         {/* API Credentials Section */}
-        <div className="p-6 border-b border-xp-border">
+        <div className="border-xp-border border-b p-6">
           <button
             onClick={() => setShowSetup(!showSetup)}
-            className="flex items-center space-x-2 w-full text-left mb-2 focus:outline-none focus:ring-1 focus:ring-xp-blue"
+            className="focus:ring-xp-blue mb-2 flex w-full items-center space-x-2 text-left focus:outline-none focus:ring-1"
             aria-label="Toggle API credentials section"
           >
             {showSetup ? (
-              <ChevronDown className="w-4 h-4 text-xp-text-muted" />
+              <ChevronDown className="text-xp-text-muted h-4 w-4" />
             ) : (
-              <ChevronRight className="w-4 h-4 text-xp-text-muted" />
+              <ChevronRight className="text-xp-text-muted h-4 w-4" />
             )}
-            <h2 className="text-sm font-semibold text-xp-text">API Credentials</h2>
+            <h2 className="text-xp-text text-sm font-semibold">API Credentials</h2>
             {credentialsConfigured ? (
-              <span className="flex items-center space-x-1 text-xs text-xp-green">
-                <CheckCircle className="w-3 h-3" />
+              <span className="text-xp-green flex items-center space-x-1 text-xs">
+                <CheckCircle className="h-3 w-3" />
                 <span>Configured</span>
               </span>
             ) : (
-              <span className="flex items-center space-x-1 text-xs text-xp-yellow">
-                <AlertCircle className="w-3 h-3" />
+              <span className="text-xp-yellow flex items-center space-x-1 text-xs">
+                <AlertCircle className="h-3 w-3" />
                 <span>Not configured</span>
               </span>
             )}
@@ -282,9 +422,9 @@ const GoogleDriveAccountsPage = (props: GoogleDriveAccountsPageProps) => {
           {showSetup && (
             <div className="mt-4 space-y-4">
               {/* Setup Guide */}
-              <div className="bg-xp-surface rounded-lg p-4 border border-xp-border">
-                <h3 className="text-sm font-medium text-xp-text mb-3">Setup Guide</h3>
-                <ol className="text-sm text-xp-text-muted space-y-2 list-decimal list-inside">
+              <div className="bg-xp-surface border-xp-border rounded-lg border p-4">
+                <h3 className="text-xp-text mb-3 text-sm font-medium">Setup Guide</h3>
+                <ol className="text-xp-text-muted list-inside list-decimal space-y-2 text-sm">
                   <li>
                     Go to the{' '}
                     <a
@@ -321,7 +461,7 @@ const GoogleDriveAccountsPage = (props: GoogleDriveAccountsPageProps) => {
                 <div>
                   <label
                     htmlFor="gdrive-client-id"
-                    className="block text-sm font-medium text-xp-text mb-1"
+                    className="text-xp-text mb-1 block text-sm font-medium"
                   >
                     Client ID
                   </label>
@@ -331,14 +471,14 @@ const GoogleDriveAccountsPage = (props: GoogleDriveAccountsPageProps) => {
                     value={clientId}
                     onChange={(e) => setClientId(e.target.value)}
                     placeholder="xxxxxxxxxxxx.apps.googleusercontent.com"
-                    className="w-full px-3 py-2 bg-xp-bg border border-xp-border rounded-md text-sm text-xp-text placeholder-xp-text-muted focus:outline-none focus:ring-1 focus:ring-xp-blue focus:border-xp-blue"
+                    className="bg-xp-bg border-xp-border text-xp-text placeholder-xp-text-muted focus:ring-xp-blue focus:border-xp-blue w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-1"
                   />
                 </div>
 
                 <div>
                   <label
                     htmlFor="gdrive-client-secret"
-                    className="block text-sm font-medium text-xp-text mb-1"
+                    className="text-xp-text mb-1 block text-sm font-medium"
                   >
                     Client Secret
                   </label>
@@ -349,12 +489,12 @@ const GoogleDriveAccountsPage = (props: GoogleDriveAccountsPageProps) => {
                       value={clientSecret}
                       onChange={(e) => setClientSecret(e.target.value)}
                       placeholder="GOCSPX-..."
-                      className="w-full px-3 py-2 pr-20 bg-xp-bg border border-xp-border rounded-md text-sm text-xp-text placeholder-xp-text-muted focus:outline-none focus:ring-1 focus:ring-xp-blue focus:border-xp-blue"
+                      className="bg-xp-bg border-xp-border text-xp-text placeholder-xp-text-muted focus:ring-xp-blue focus:border-xp-blue w-full rounded-md border px-3 py-2 pr-20 text-sm focus:outline-none focus:ring-1"
                     />
                     <button
                       type="button"
                       onClick={() => setShowSecret(!showSecret)}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1 rounded px-2 py-1 text-xs text-xp-text-muted transition-colors hover:text-xp-text hover:bg-xp-surface-light focus:outline-none focus:ring-1 focus:ring-xp-blue"
+                      className="text-xp-text-muted hover:text-xp-text hover:bg-xp-surface-light focus:ring-xp-blue absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1 rounded px-2 py-1 text-xs transition-colors focus:outline-none focus:ring-1"
                       aria-label={showSecret ? 'Hide secret' : 'Show secret'}
                     >
                       {showSecret ? <EyeOff size={14} /> : <Eye size={14} />}
@@ -366,7 +506,7 @@ const GoogleDriveAccountsPage = (props: GoogleDriveAccountsPageProps) => {
                 <button
                   onClick={handleSaveCredentials}
                   disabled={credentialsSaving || !clientId.trim() || !clientSecret.trim()}
-                  className="px-4 py-2 bg-xp-blue text-white text-sm rounded-md hover:bg-xp-blue-dark disabled:opacity-50 disabled:cursor-not-allowed transition-colors focus:outline-none focus:ring-1 focus:ring-xp-blue"
+                  className="bg-xp-blue hover:bg-xp-blue-dark focus:ring-xp-blue rounded-md px-4 py-2 text-sm text-white transition-colors focus:outline-none focus:ring-1 disabled:cursor-not-allowed disabled:opacity-50"
                   aria-label="Save API credentials"
                 >
                   {credentialsSaving ? 'Saving...' : 'Save Credentials'}
@@ -377,143 +517,10 @@ const GoogleDriveAccountsPage = (props: GoogleDriveAccountsPageProps) => {
         </div>
 
         {/* Accounts Section */}
-        {!credentialsConfigured ? (
-          <div className="flex items-center justify-center flex-1 min-h-[300px]">
-            <div className="text-center py-8 text-xp-text-muted max-w-md">
-              <div className="w-16 h-16 mx-auto mb-4 bg-xp-surface-light rounded-full flex items-center justify-center">
-                <Cloud className="w-8 h-8" />
-              </div>
-              <h3 className="text-lg font-medium text-xp-text mb-2">
-                Configure API credentials first
-              </h3>
-              <p className="text-xp-text-muted">
-                Set up your Google Cloud OAuth credentials above to start connecting Google Drive
-                accounts.
-              </p>
-            </div>
-          </div>
-        ) : accounts.length === 0 ? (
-          <div className="flex items-center justify-center flex-1 min-h-[300px]">
-            <div className="text-center py-8 text-xp-text-muted max-w-md">
-              <div className="w-16 h-16 mx-auto mb-4 bg-xp-surface-light rounded-full flex items-center justify-center">
-                <Cloud className="w-8 h-8" />
-              </div>
-              <h3 className="text-lg font-medium text-xp-text mb-2">Connect your Google Drive</h3>
-              <p className="text-xp-text-muted mb-4">
-                Sign in with your Google account to browse and manage your Drive files directly from
-                Xplorer.
-              </p>
-
-              <button
-                onClick={handleAddAccount}
-                disabled={isAuthenticating}
-                className="px-6 py-2 bg-xp-blue text-white rounded-md hover:bg-xp-blue-dark disabled:opacity-50 disabled:cursor-not-allowed transition-colors focus:outline-none focus:ring-1 focus:ring-xp-blue"
-                aria-label="Sign in with Google"
-              >
-                {isAuthenticating ? (
-                  <span className="flex items-center space-x-2">
-                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
-                    <span>Connecting...</span>
-                  </span>
-                ) : (
-                  'Sign in with Google'
-                )}
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {accounts.map((account) => (
-                <div
-                  key={account.id}
-                  className="bg-xp-surface border border-xp-border rounded-lg p-4 transition-all hover:shadow-md"
-                >
-                  {/* Account Header */}
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center space-x-2 min-w-0">
-                      <Cloud className="w-5 h-5 text-xp-blue flex-shrink-0" />
-                      <h3 className="font-medium text-xp-text truncate">{account.email}</h3>
-                    </div>
-
-                    <div className="flex items-center space-x-1 flex-shrink-0">
-                      <button
-                        onClick={() => handleRemoveAccount(account)}
-                        className="p-1 text-xp-text-muted hover:text-xp-red transition-colors focus:outline-none focus:ring-1 focus:ring-xp-blue"
-                        title="Remove Account"
-                        aria-label={`Remove account ${account.email}`}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Account Details */}
-                  <div className="space-y-2 mb-4 text-sm text-xp-text-muted">
-                    {account.displayName && (
-                      <div className="flex items-center space-x-2">
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                          <path
-                            fillRule="evenodd"
-                            d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                        <span className="truncate">{account.displayName}</span>
-                      </div>
-                    )}
-
-                    <div className="flex items-center space-x-2">
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-                      </svg>
-                      <span className="truncate">{account.email}</span>
-                    </div>
-
-                    {account.lastSynced && (
-                      <div className="flex items-center space-x-2">
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                          <path
-                            fillRule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                        <span className="text-xs">
-                          Last synced: {new Date(account.lastSynced).toLocaleString()}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => openAccountInExplorer(account)}
-                      className="flex-1 flex items-center justify-center space-x-2 px-3 py-2 bg-xp-blue text-white rounded hover:bg-xp-blue-dark transition-colors text-sm font-medium focus:outline-none focus:ring-1 focus:ring-xp-blue"
-                      aria-label={`Open Google Drive for ${account.email}`}
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                      <span>Open</span>
-                    </button>
-
-                    <button
-                      onClick={() => handleDisconnect(account)}
-                      className="px-3 py-2 bg-xp-red text-white rounded hover:bg-xp-red/80 transition-colors text-sm font-medium focus:outline-none focus:ring-1 focus:ring-xp-blue"
-                      aria-label={`Disconnect ${account.email}`}
-                    >
-                      Disconnect
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        {accountsSection}
       </div>
     </div>
   );
-}
+};
 
 export default GoogleDriveAccountsPage;

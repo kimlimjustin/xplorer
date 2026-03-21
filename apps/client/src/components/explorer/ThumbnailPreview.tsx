@@ -55,7 +55,10 @@ const ThumbnailPreview = React.memo(
       zIndex: 9999,
       pointerEvents: 'none',
       opacity: visible ? 1 : 0,
-      transform: visible ? 'translateY(0)' : showAbove ? 'translateY(6px)' : 'translateY(-6px)',
+      transform: (() => {
+        if (visible) return 'translateY(0)';
+        return showAbove ? 'translateY(6px)' : 'translateY(-6px)';
+      })(),
       transition: 'opacity 0.15s ease, transform 0.15s ease',
     };
 

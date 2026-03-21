@@ -226,9 +226,7 @@ describe('useCrossTabSelection', () => {
       };
 
       act(() => {
-        window.dispatchEvent(
-          new CustomEvent(CROSS_TAB_SELECTION_EVENT, { detail }),
-        );
+        window.dispatchEvent(new CustomEvent(CROSS_TAB_SELECTION_EVENT, { detail }));
       });
 
       expect(result.current.selections.has('tab-ext')).toBe(true);

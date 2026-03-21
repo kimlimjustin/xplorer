@@ -228,6 +228,7 @@ const KeyBadge = ({ combo }: { combo: string }) => {
   return (
     <span style={styles.keysContainer}>
       {parts.map((part, i) => (
+        // eslint-disable-next-line react/no-array-index-key
         <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
           {i > 0 && <span style={styles.kbdPlus}>+</span>}
           <span style={styles.kbd}>{part}</span>
@@ -235,7 +236,7 @@ const KeyBadge = ({ combo }: { combo: string }) => {
       ))}
     </span>
   );
-}
+};
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
@@ -458,6 +459,7 @@ const KeyboardShortcutsDialog = ({
 
         {/* Body */}
         <div style={styles.body}>
+          {/* eslint-disable-next-line no-nested-ternary */}
           {isLoading ? (
             <div style={styles.emptyState}>Loading shortcuts...</div>
           ) : filtered.length === 0 ? (
@@ -541,6 +543,6 @@ const KeyboardShortcutsDialog = ({
       </div>
     </div>
   );
-}
+};
 
 export default KeyboardShortcutsDialog;

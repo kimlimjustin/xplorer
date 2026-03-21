@@ -10,7 +10,14 @@ interface ToastProps {
   onClose?: () => void;
 }
 
-const Toast = ({ id: _id, title, description, variant = 'default', open = true, onClose }: ToastProps) => {
+const Toast = ({
+  id: _id,
+  title,
+  description,
+  variant = 'default',
+  open = true,
+  onClose,
+}: ToastProps) => {
   const baseClasses =
     'relative flex w-full overflow-hidden rounded-lg border shadow-lg transition-all duration-200 ease-in-out transform';
   const variantClasses =
@@ -28,16 +35,16 @@ const Toast = ({ id: _id, title, description, variant = 'default', open = true, 
       aria-live={variant === 'destructive' ? 'assertive' : 'polite'}
     >
       <div className="flex-1 p-4">
-        {title && <div className="font-semibold text-sm mb-1">{title}</div>}
+        {title && <div className="mb-1 text-sm font-semibold">{title}</div>}
         {description && <div className="text-xs opacity-90">{description}</div>}
       </div>
 
       <button
         onClick={onClose}
-        className="flex-shrink-0 p-4 hover:bg-black hover:bg-opacity-10 transition-colors"
+        className="flex-shrink-0 p-4 transition-colors hover:bg-black hover:bg-opacity-10"
         aria-label="Dismiss notification"
       >
-        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+        <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
           <path
             fillRule="evenodd"
             d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
@@ -47,13 +54,13 @@ const Toast = ({ id: _id, title, description, variant = 'default', open = true, 
       </button>
     </div>
   );
-}
+};
 
 export const Toaster = () => {
   const { toasts, dismiss, remove } = useToast();
 
   return (
-    <div className="fixed top-4 right-4 z-50 space-y-2 max-w-sm w-full">
+    <div className="fixed right-4 top-4 z-50 w-full max-w-sm space-y-2">
       {toasts.map((toast) => (
         <div key={toast.id} className="relative">
           <Toast
@@ -73,7 +80,7 @@ export const Toaster = () => {
       ))}
     </div>
   );
-}
+};
 
 // Extended toast components for confirmation and input
 interface ConfirmationToastProps {
@@ -94,20 +101,20 @@ const ConfirmationToast = ({
   cancelText = 'Cancel',
 }: ConfirmationToastProps) => {
   return (
-    <div className="relative flex w-full overflow-hidden rounded-lg border shadow-lg bg-xp-surface border-xp-border text-xp-text">
+    <div className="bg-xp-surface border-xp-border text-xp-text relative flex w-full overflow-hidden rounded-lg border shadow-lg">
       <div className="flex-1 p-4">
-        <div className="font-semibold text-sm mb-1">{title}</div>
-        {description && <div className="text-xs opacity-90 mb-3">{description}</div>}
+        <div className="mb-1 text-sm font-semibold">{title}</div>
+        {description && <div className="mb-3 text-xs opacity-90">{description}</div>}
         <div className="flex space-x-2">
           <button
             onClick={onConfirm}
-            className="px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition-colors"
+            className="rounded bg-red-600 px-3 py-1 text-xs text-white transition-colors hover:bg-red-700"
           >
             {confirmText}
           </button>
           <button
             onClick={onCancel}
-            className="px-3 py-1 bg-xp-bg text-xp-text text-xs rounded hover:bg-xp-surface-light transition-colors border border-xp-border"
+            className="bg-xp-bg text-xp-text hover:bg-xp-surface-light border-xp-border rounded border px-3 py-1 text-xs transition-colors"
           >
             {cancelText}
           </button>
@@ -115,7 +122,7 @@ const ConfirmationToast = ({
       </div>
     </div>
   );
-}
+};
 
 interface InputToastProps {
   title: string;
@@ -153,30 +160,30 @@ const InputToast = ({
   };
 
   return (
-    <div className="relative flex w-full overflow-hidden rounded-lg border shadow-lg bg-xp-surface border-xp-border text-xp-text">
+    <div className="bg-xp-surface border-xp-border text-xp-text relative flex w-full overflow-hidden rounded-lg border shadow-lg">
       <div className="flex-1 p-4">
-        <div className="font-semibold text-sm mb-1">{title}</div>
-        {description && <div className="text-xs opacity-90 mb-3">{description}</div>}
+        <div className="mb-1 text-sm font-semibold">{title}</div>
+        {description && <div className="mb-3 text-xs opacity-90">{description}</div>}
         <input
           type="text"
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={handleKeyPress}
           placeholder={placeholder}
-          className="w-full px-3 py-2 bg-xp-bg border border-xp-border rounded text-sm mb-3 focus:outline-none focus:ring-2 focus:ring-xp-blue"
+          className="bg-xp-bg border-xp-border focus:ring-xp-blue mb-3 w-full rounded border px-3 py-2 text-sm focus:outline-none focus:ring-2"
           autoFocus
         />
         <div className="flex space-x-2">
           <button
             onClick={handleSubmit}
             disabled={!value.trim()}
-            className="px-3 py-1 bg-xp-blue text-white text-xs rounded hover:bg-opacity-80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-xp-blue rounded px-3 py-1 text-xs text-white transition-colors hover:bg-opacity-80 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {submitText}
           </button>
           <button
             onClick={onCancel}
-            className="px-3 py-1 bg-xp-bg text-xp-text text-xs rounded hover:bg-xp-surface-light transition-colors border border-xp-border"
+            className="bg-xp-bg text-xp-text hover:bg-xp-surface-light border-xp-border rounded border px-3 py-1 text-xs transition-colors"
           >
             {cancelText}
           </button>
@@ -184,12 +191,12 @@ const InputToast = ({
       </div>
     </div>
   );
-}
+};
 
 // Helper functions to show confirmation and input toasts
 export const showConfirmationToast = (
   options: Omit<ConfirmationToastProps, 'onConfirm' | 'onCancel'>,
-) : Promise<boolean> => {
+): Promise<boolean> => {
   return new Promise((resolve) => {
     const { id: _confirmId, dismiss } = toast({
       title: options.title,
@@ -202,7 +209,7 @@ export const showConfirmationToast = (
                 resolve(true);
                 dismiss();
               }}
-              className="px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition-colors"
+              className="rounded bg-red-600 px-3 py-1 text-xs text-white transition-colors hover:bg-red-700"
             >
               {options.confirmText || 'Confirm'}
             </button>
@@ -211,7 +218,7 @@ export const showConfirmationToast = (
                 resolve(false);
                 dismiss();
               }}
-              className="px-3 py-1 bg-xp-bg text-xp-text text-xs rounded hover:bg-xp-surface-light transition-colors border border-xp-border"
+              className="bg-xp-bg text-xp-text hover:bg-xp-surface-light border-xp-border rounded border px-3 py-1 text-xs transition-colors"
             >
               {options.cancelText || 'Cancel'}
             </button>
@@ -220,11 +227,11 @@ export const showConfirmationToast = (
       ),
     });
   });
-}
+};
 
 export const showInputToast = (
   options: Omit<InputToastProps, 'onSubmit' | 'onCancel'>,
-) : Promise<string | null> => {
+): Promise<string | null> => {
   return new Promise((resolve) => {
     let inputValue = '';
 
@@ -248,7 +255,7 @@ export const showInputToast = (
               }
             }}
             placeholder={options.placeholder || ''}
-            className="w-full px-3 py-2 bg-xp-bg border border-xp-border rounded text-sm focus:outline-none focus:ring-2 focus:ring-xp-blue"
+            className="bg-xp-bg border-xp-border focus:ring-xp-blue w-full rounded border px-3 py-2 text-sm focus:outline-none focus:ring-2"
             autoFocus
           />
           <div className="flex space-x-2">
@@ -259,7 +266,7 @@ export const showInputToast = (
                   dismiss();
                 }
               }}
-              className="px-3 py-1 bg-xp-blue text-white text-xs rounded hover:bg-opacity-80 transition-colors"
+              className="bg-xp-blue rounded px-3 py-1 text-xs text-white transition-colors hover:bg-opacity-80"
             >
               {options.submitText || 'Create'}
             </button>
@@ -268,7 +275,7 @@ export const showInputToast = (
                 resolve(null);
                 dismiss();
               }}
-              className="px-3 py-1 bg-xp-bg text-xp-text text-xs rounded hover:bg-xp-surface-light transition-colors border border-xp-border"
+              className="bg-xp-bg text-xp-text hover:bg-xp-surface-light border-xp-border rounded border px-3 py-1 text-xs transition-colors"
             >
               {options.cancelText || 'Cancel'}
             </button>
@@ -277,6 +284,6 @@ export const showInputToast = (
       ),
     });
   });
-}
+};
 
 export { Toast, ConfirmationToast, InputToast };

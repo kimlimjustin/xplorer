@@ -181,7 +181,7 @@ export interface PasswordPromptData {
   onSuccess?: (password: string) => void;
 }
 
-export const useDialogs = () : DialogState => {
+export const useDialogs = (): DialogState => {
   // Properties
   const [propertiesDialogOpen, setPropertiesDialogOpen] = useState(false);
   const [propertiesDialogFile, setPropertiesDialogFile] = useState('');
@@ -409,8 +409,11 @@ export const useDialogs = () : DialogState => {
 
   // Expose dialog state setters on window for E2E testing
   // This is a no-op in production (no overhead beyond the property assignment)
-  if (typeof window !== 'undefined' && (window as any).__XPLORER_E2E__) {
-    (window as any).__dialogStates__ = {
+  if (
+    typeof window !== 'undefined' &&
+    (window as unknown as Record<string, unknown>).__XPLORER_E2E__
+  ) {
+    (window as unknown as Record<string, unknown>).__dialogStates__ = {
       setCommandPaletteOpen,
       setWorkspaceLayoutDialogOpen,
       setPathBookmarksDialogOpen,
@@ -524,4 +527,4 @@ export const useDialogs = () : DialogState => {
     showChangeSummaryToast,
     setShowChangeSummaryToast,
   };
-}
+};

@@ -3,10 +3,9 @@ import { TauriAPI, type RecentFile } from '@/lib/tauri-api';
 import { AgentService, type AgentEvent, type AgentToolCall } from '@/lib/agent-service';
 import MarkdownRenderer from '@/components/ui/MarkdownRenderer';
 import { formatFileSize, applyTheme } from '@/lib/utils';
-import { isWindows, ROOT_PATH, PATH_SEPARATOR } from '@/lib/constants';
+import { isWindows, ROOT_PATH, PATH_SEPARATOR, CLOCK_UPDATE_INTERVAL_MS } from '@/lib/constants';
 import { useAllThemes } from '@/lib/theme-registry';
 import { useToast } from '@/hooks/use-toast';
-import { CLOCK_UPDATE_INTERVAL_MS } from '@/lib/constants';
 
 interface QuickStats {
   totalFiles: number;
@@ -188,7 +187,7 @@ const _CheckCircleIcon = ({ className = 'w-4 h-4' }: { className?: string }) => 
 );
 
 /** Returns a human-readable relative time string. */
-const relativeTime = (timestampMs: number) : string => {
+const relativeTime = (timestampMs: number): string => {
   const now = Date.now();
   const diff = now - timestampMs;
   const seconds = Math.floor(diff / 1000);
@@ -202,19 +201,22 @@ const relativeTime = (timestampMs: number) : string => {
   if (days === 1) return 'Yesterday';
   if (days < 7) return `${days}d ago`;
   return `${Math.floor(days / 7)}w ago`;
-}
+};
 
 /** Icon gradient based on file type. */
-const recentFileGradient = (fileType: string) : string => {
+const recentFileGradient = (fileType: string): string => {
   const t = fileType.toLowerCase();
   if (t === 'folder') return 'from-amber-500 to-amber-600';
-  if (['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp', 'bmp', 'ico'].includes(t))
+  if (['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp', 'bmp', 'ico'].includes(t)) {
     return 'from-pink-500 to-pink-600';
-  if (['mp4', 'mkv', 'avi', 'mov', 'wmv', 'webm'].includes(t))
+  }
+  if (['mp4', 'mkv', 'avi', 'mov', 'wmv', 'webm'].includes(t)) {
     return 'from-orange-500 to-orange-600';
+  }
   if (['mp3', 'wav', 'ogg', 'flac', 'aac', 'wma'].includes(t)) return 'from-cyan-500 to-cyan-600';
-  if (['zip', 'rar', '7z', 'tar', 'gz', 'bz2', 'xz'].includes(t))
+  if (['zip', 'rar', '7z', 'tar', 'gz', 'bz2', 'xz'].includes(t)) {
     return 'from-yellow-500 to-yellow-600';
+  }
   if (
     [
       'js',
@@ -234,12 +236,14 @@ const recentFileGradient = (fileType: string) : string => {
       'toml',
       'xml',
     ].includes(t)
-  )
+  ) {
     return 'from-emerald-500 to-emerald-600';
-  if (['txt', 'md', 'rtf', 'doc', 'docx', 'pdf', 'csv', 'log'].includes(t))
+  }
+  if (['txt', 'md', 'rtf', 'doc', 'docx', 'pdf', 'csv', 'log'].includes(t)) {
     return 'from-blue-500 to-blue-600';
+  }
   return 'from-slate-500 to-slate-600';
-}
+};
 
 /** Simple SVG icon for recent files based on type. */
 const RecentFileTypeIcon = ({
@@ -252,7 +256,7 @@ const RecentFileTypeIcon = ({
   const t = fileType.toLowerCase();
   if (t === 'folder') return <FolderIcon className={className} />;
   return <DocumentIcon className={className} />;
-}
+};
 
 const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
   const themes = useAllThemes();
@@ -482,12 +486,12 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
       const home = isWindows ? 'C:\\Users\\Public' : '/home/user';
       setUserDirectories({
         home,
-        documents: home + PATH_SEPARATOR + 'Documents',
-        downloads: home + PATH_SEPARATOR + 'Downloads',
-        desktop: home + PATH_SEPARATOR + 'Desktop',
-        pictures: home + PATH_SEPARATOR + 'Pictures',
-        videos: home + PATH_SEPARATOR + 'Videos',
-        music: home + PATH_SEPARATOR + 'Music',
+        documents: `${home + PATH_SEPARATOR}Documents`,
+        downloads: `${home + PATH_SEPARATOR}Downloads`,
+        desktop: `${home + PATH_SEPARATOR}Desktop`,
+        pictures: `${home + PATH_SEPARATOR}Pictures`,
+        videos: `${home + PATH_SEPARATOR}Videos`,
+        music: `${home + PATH_SEPARATOR}Music`,
       });
     }
   };
@@ -565,13 +569,13 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
     : [];
 
   return (
-    <div className="h-full bg-xp-bg text-xp-text overflow-auto flex flex-col">
-      <div className="max-w-5xl mx-auto px-6 py-8 w-full flex flex-col flex-1 min-h-0">
+    <div className="bg-xp-bg text-xp-text flex h-full flex-col overflow-auto">
+      <div className="mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col px-6 py-8">
         {/* Hero / Greeting */}
         <div className="mb-6">
           <div className="flex items-end justify-between">
             <div>
-              <p className="text-sm text-xp-text-muted mb-1 flex items-center gap-1.5">
+              <p className="text-xp-text-muted mb-1 flex items-center gap-1.5 text-sm">
                 <ClockIcon />
                 {currentTime.toLocaleDateString('en-US', {
                   weekday: 'long',
@@ -579,9 +583,9 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
                   day: 'numeric',
                 })}
               </p>
-              <h1 className="text-3xl font-bold text-xp-text">{getGreeting()}</h1>
+              <h1 className="text-xp-text text-3xl font-bold">{getGreeting()}</h1>
             </div>
-            <p className="text-2xl font-light text-xp-text-muted tabular-nums">
+            <p className="text-xp-text-muted text-2xl font-light tabular-nums">
               {currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
             </p>
           </div>
@@ -596,34 +600,34 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
                 <button
                   key={folder.name}
                   onClick={() => handleNavigate(folder.path)}
-                  className="group flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg bg-xp-surface/50 border border-xp-border hover:border-xp-text-muted hover:bg-xp-surface transition-all duration-150"
+                  className="bg-xp-surface/50 border-xp-border hover:border-xp-text-muted hover:bg-xp-surface group flex items-center gap-2.5 rounded-lg border px-3.5 py-2.5 transition-all duration-150"
                 >
                   <div
-                    className={`w-7 h-7 rounded-md bg-gradient-to-br ${folder.gradient} flex items-center justify-center flex-shrink-0`}
+                    className={`h-7 w-7 rounded-md bg-gradient-to-br ${folder.gradient} flex flex-shrink-0 items-center justify-center`}
                   >
-                    <Icon className="w-3.5 h-3.5 text-white" />
+                    <Icon className="h-3.5 w-3.5 text-white" />
                   </div>
-                  <span className="text-sm font-medium text-xp-text">{folder.name}</span>
+                  <span className="text-xp-text text-sm font-medium">{folder.name}</span>
                 </button>
               );
             })}
             <button
               onClick={() => handleNavigate('xplorer://trash')}
-              className="group flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg bg-xp-surface/50 border border-xp-border hover:border-xp-text-muted hover:bg-xp-surface transition-all duration-150"
+              className="bg-xp-surface/50 border-xp-border hover:border-xp-text-muted hover:bg-xp-surface group flex items-center gap-2.5 rounded-lg border px-3.5 py-2.5 transition-all duration-150"
             >
-              <div className="w-7 h-7 rounded-md bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center flex-shrink-0">
-                <TrashIcon className="w-3.5 h-3.5 text-white" />
+              <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-red-500 to-red-600">
+                <TrashIcon className="h-3.5 w-3.5 text-white" />
               </div>
-              <span className="text-sm font-medium text-xp-text">Trash</span>
+              <span className="text-xp-text text-sm font-medium">Trash</span>
             </button>
             <button
               onClick={() => handleNavigate(ROOT_PATH)}
-              className="group flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg bg-xp-surface/50 border border-xp-border hover:border-xp-text-muted hover:bg-xp-surface transition-all duration-150"
+              className="bg-xp-surface/50 border-xp-border hover:border-xp-text-muted hover:bg-xp-surface group flex items-center gap-2.5 rounded-lg border px-3.5 py-2.5 transition-all duration-150"
             >
-              <div className="w-7 h-7 rounded-md bg-gradient-to-br from-slate-500 to-slate-600 flex items-center justify-center flex-shrink-0">
-                <DriveIcon className="w-3.5 h-3.5 text-white" />
+              <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-slate-500 to-slate-600">
+                <DriveIcon className="h-3.5 w-3.5 text-white" />
               </div>
-              <span className="text-sm font-medium text-xp-text">
+              <span className="text-xp-text text-sm font-medium">
                 {isWindows ? 'C:' : 'Macintosh HD'}
               </span>
             </button>
@@ -631,18 +635,18 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
 
           {/* Recent folders inline */}
           {recommendedFolders.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-2">
-              {recommendedFolders.map((path, index) => {
+            <div className="mt-2 flex flex-wrap gap-2">
+              {recommendedFolders.map((path) => {
                 const name = path.split(/[\\/]/).pop() || path;
                 return (
                   <button
-                    key={index}
+                    key={path}
                     onClick={() => handleNavigate(path)}
-                    className="group flex items-center gap-2 px-3 py-1.5 rounded-md bg-xp-bg/40 border border-xp-border hover:border-xp-text-muted transition-colors text-xs"
+                    className="bg-xp-bg/40 border-xp-border hover:border-xp-text-muted group flex items-center gap-2 rounded-md border px-3 py-1.5 text-xs transition-colors"
                     title={path}
                   >
-                    <FolderIcon className="w-3 h-3 text-xp-blue flex-shrink-0" />
-                    <span className="text-xp-text-muted group-hover:text-xp-text truncate max-w-[140px]">
+                    <FolderIcon className="text-xp-blue h-3 w-3 flex-shrink-0" />
+                    <span className="text-xp-text-muted group-hover:text-xp-text max-w-[140px] truncate">
                       {name}
                     </span>
                   </button>
@@ -655,53 +659,58 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
         {/* Recent Files */}
         {!recentFilesLoading && recentFiles.length > 0 && (
           <div className="mb-6">
-            <div className="flex items-center justify-between mb-2">
+            <div className="mb-2 flex items-center justify-between">
               <div className="flex items-center gap-1.5">
                 <ClockIcon />
-                <span className="text-sm font-medium text-xp-text">Recent Files</span>
+                <span className="text-xp-text text-sm font-medium">Recent Files</span>
               </div>
               <button
                 onClick={handleClearRecentFiles}
-                className="text-[11px] text-xp-text-muted hover:text-xp-error transition-colors"
+                className="text-xp-text-muted hover:text-xp-error text-[11px] transition-colors"
               >
                 Clear all
               </button>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
               {recentFiles.map((file) => {
                 const gradient = recentFileGradient(file.file_type);
                 return (
                   <div
                     key={`${file.path}-${file.accessed_at}`}
                     onClick={() => handleRecentFileClick(file)}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleRecentFileClick(file); } }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleRecentFileClick(file);
+                      }
+                    }}
                     role="button"
                     tabIndex={0}
-                    className="group relative flex items-center gap-2.5 px-3 py-2.5 rounded-lg bg-xp-surface/50 border border-xp-border hover:border-xp-text-muted hover:bg-xp-surface transition-all duration-150 text-left cursor-pointer"
+                    className="bg-xp-surface/50 border-xp-border hover:border-xp-text-muted hover:bg-xp-surface group relative flex cursor-pointer items-center gap-2.5 rounded-lg border px-3 py-2.5 text-left transition-all duration-150"
                     title={file.path}
                   >
                     <div
-                      className={`w-7 h-7 rounded-md bg-gradient-to-br ${gradient} flex items-center justify-center flex-shrink-0`}
+                      className={`h-7 w-7 rounded-md bg-gradient-to-br ${gradient} flex flex-shrink-0 items-center justify-center`}
                     >
                       <RecentFileTypeIcon
                         fileType={file.file_type}
-                        className="w-3.5 h-3.5 text-white"
+                        className="h-3.5 w-3.5 text-white"
                       />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-xp-text truncate">{file.name}</p>
-                      <p className="text-[10px] text-xp-text-muted">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xp-text truncate text-sm font-medium">{file.name}</p>
+                      <p className="text-xp-text-muted text-[10px]">
                         {relativeTime(file.accessed_at)}
                       </p>
                     </div>
                     {/* Remove button on hover */}
                     <button
                       onClick={(e) => handleRemoveRecentFile(e, file.path)}
-                      className="absolute top-1 right-1 p-0.5 rounded opacity-0 group-hover:opacity-100 hover:bg-xp-error/20 text-xp-text-muted hover:text-xp-error transition-all"
+                      className="hover:bg-xp-error/20 text-xp-text-muted hover:text-xp-error absolute right-1 top-1 rounded p-0.5 opacity-0 transition-all group-hover:opacity-100"
                       title="Remove from recent"
                     >
                       <svg
-                        className="w-3 h-3"
+                        className="h-3 w-3"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -721,17 +730,17 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
         )}
 
         {/* AI Assistant - takes remaining space */}
-        <div className="flex-1 min-h-0 flex flex-col">
-          <div className="bg-xp-surface/50 border border-xp-border rounded-xl overflow-hidden flex flex-col flex-1 min-h-0">
+        <div className="flex min-h-0 flex-1 flex-col">
+          <div className="bg-xp-surface/50 border-xp-border flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border">
             {/* Chat messages area */}
-            <div ref={aiScrollRef} className="flex-1 overflow-y-auto px-5 pt-4 pb-2 min-h-0">
+            <div ref={aiScrollRef} className="min-h-0 flex-1 overflow-y-auto px-5 pb-2 pt-4">
               {aiMessages.length === 0 && !aiStreaming && (
-                <div className="h-full flex flex-col items-center justify-center text-center py-12">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center mb-4">
-                    <SparklesIcon className="w-6 h-6 text-white" />
+                <div className="flex h-full flex-col items-center justify-center py-12 text-center">
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-purple-600">
+                    <SparklesIcon className="h-6 w-6 text-white" />
                   </div>
-                  <p className="text-sm text-xp-text mb-1">Xplorer Agent</p>
-                  <p className="text-xs text-xp-text-muted max-w-xs">
+                  <p className="text-xp-text mb-1 text-sm">Xplorer Agent</p>
+                  <p className="text-xp-text-muted max-w-xs text-xs">
                     Ask me to organize files, find documents, run commands, or manage your
                     workspace.
                   </p>
@@ -741,6 +750,7 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
               <div className="space-y-3">
                 {aiMessages.map((msg, i) => (
                   <div
+                    // eslint-disable-next-line react/no-array-index-key
                     key={i}
                     className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                   >
@@ -763,7 +773,7 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
                 {/* Streaming response */}
                 {aiStreaming && (
                   <div className="flex justify-start">
-                    <div className="max-w-[85%] rounded-lg px-3.5 py-2.5 text-sm bg-xp-bg/60 text-xp-text">
+                    <div className="bg-xp-bg/60 text-xp-text max-w-[85%] rounded-lg px-3.5 py-2.5 text-sm">
                       <MarkdownRenderer content={aiStreaming} />
                     </div>
                   </div>
@@ -772,69 +782,77 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
                 {/* Tool calls */}
                 {aiToolCalls.length > 0 && (
                   <div className="flex flex-wrap gap-1.5">
-                    {aiToolCalls.map((tc) => (
-                      <span
-                        key={tc.id}
-                        className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-md bg-xp-bg/60 border border-xp-border text-xp-text-muted"
-                      >
+                    {aiToolCalls.map((tc) => {
+                      let dotClass = 'animate-pulse bg-blue-400';
+                      if (tc.status === 'completed') {
+                        dotClass = 'bg-green-400';
+                      } else if (tc.status === 'error' || tc.status === 'denied') {
+                        dotClass = 'bg-red-400';
+                      }
+                      return (
                         <span
-                          className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
-                            tc.status === 'completed'
-                              ? 'bg-green-400'
-                              : tc.status === 'error' || tc.status === 'denied'
-                                ? 'bg-red-400'
-                                : 'bg-blue-400 animate-pulse'
-                          }`}
-                        />
-                        {tc.name}
-                      </span>
-                    ))}
+                          key={tc.id}
+                          className="bg-xp-bg/60 border-xp-border text-xp-text-muted inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs"
+                        >
+                          <span className={`h-1.5 w-1.5 flex-shrink-0 rounded-full ${dotClass}`} />
+                          {tc.name}
+                        </span>
+                      );
+                    })}
                   </div>
                 )}
 
                 {/* Approval requests */}
-                {aiPendingApprovals.map((tc) => (
-                  <div
-                    key={tc.id}
-                    className="p-3 rounded-lg border border-yellow-500/40 bg-yellow-500/5"
-                  >
-                    <p className="text-xs text-yellow-400 font-medium mb-1.5">Approve: {tc.name}</p>
-                    <p className="text-xs text-xp-text-muted mb-2 font-mono truncate">
-                      {tc.name === 'execute_command'
-                        ? String((tc.input as Record<string, unknown>)?.command || '')
-                        : tc.name === 'write_file' || tc.name === 'delete'
-                          ? String((tc.input as Record<string, unknown>)?.path || '')
-                          : JSON.stringify(tc.input).slice(0, 80)}
-                    </p>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleApproval(tc.id, 'allow_once')}
-                        className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-500 transition-colors"
-                      >
-                        This Time
-                      </button>
-                      <button
-                        onClick={() => handleApproval(tc.id, 'allow_always')}
-                        className="px-3 py-1 text-xs bg-xp-blue text-white rounded hover:opacity-80 transition-colors"
-                      >
-                        Always
-                      </button>
-                      <button
-                        onClick={() => handleApproval(tc.id, 'deny_always')}
-                        className="px-3 py-1 text-xs bg-xp-surface border border-xp-border text-xp-text rounded hover:bg-xp-bg transition-colors"
-                      >
-                        Never
-                      </button>
+                {aiPendingApprovals.map((tc) => {
+                  let approvalDetail: string;
+                  if (tc.name === 'execute_command') {
+                    approvalDetail = String((tc.input as Record<string, unknown>)?.command || '');
+                  } else if (tc.name === 'write_file' || tc.name === 'delete') {
+                    approvalDetail = String((tc.input as Record<string, unknown>)?.path || '');
+                  } else {
+                    approvalDetail = JSON.stringify(tc.input).slice(0, 80);
+                  }
+                  return (
+                    <div
+                      key={tc.id}
+                      className="rounded-lg border border-yellow-500/40 bg-yellow-500/5 p-3"
+                    >
+                      <p className="mb-1.5 text-xs font-medium text-yellow-400">
+                        Approve: {tc.name}
+                      </p>
+                      <p className="text-xp-text-muted mb-2 truncate font-mono text-xs">
+                        {approvalDetail}
+                      </p>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleApproval(tc.id, 'allow_once')}
+                          className="rounded bg-green-600 px-3 py-1 text-xs text-white transition-colors hover:bg-green-500"
+                        >
+                          This Time
+                        </button>
+                        <button
+                          onClick={() => handleApproval(tc.id, 'allow_always')}
+                          className="bg-xp-blue rounded px-3 py-1 text-xs text-white transition-colors hover:opacity-80"
+                        >
+                          Always
+                        </button>
+                        <button
+                          onClick={() => handleApproval(tc.id, 'deny_always')}
+                          className="bg-xp-surface border-xp-border text-xp-text hover:bg-xp-bg rounded border px-3 py-1 text-xs transition-colors"
+                        >
+                          Never
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
             {/* Input area - pinned at bottom */}
-            <div className="border-t border-xp-border p-4 flex-shrink-0">
+            <div className="border-xp-border flex-shrink-0 border-t p-4">
               <div className="flex items-center gap-3">
-                <div className="flex-1 relative">
+                <div className="relative flex-1">
                   <input
                     type="text"
                     value={aiInput}
@@ -847,13 +865,13 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
                     }}
                     placeholder="Ask anything..."
                     disabled={aiRunning}
-                    className="w-full bg-xp-bg/60 border border-xp-border rounded-lg pl-4 pr-20 py-2.5 text-sm text-xp-text placeholder-xp-text-muted focus:outline-none focus:border-xp-blue/50 focus:ring-1 focus:ring-xp-blue/30 disabled:opacity-50 transition-colors"
+                    className="bg-xp-bg/60 border-xp-border text-xp-text placeholder-xp-text-muted focus:border-xp-blue/50 focus:ring-xp-blue/30 w-full rounded-lg border py-2.5 pl-4 pr-20 text-sm transition-colors focus:outline-none focus:ring-1 disabled:opacity-50"
                   />
-                  <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                  <div className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1">
                     {aiRunning ? (
                       <button
                         onClick={() => AgentService.cancelSession()}
-                        className="px-2.5 py-1 text-xs bg-xp-error/20 text-xp-error rounded-md hover:bg-xp-error/30 transition-colors"
+                        className="bg-xp-error/20 text-xp-error hover:bg-xp-error/30 rounded-md px-2.5 py-1 text-xs transition-colors"
                       >
                         Stop
                       </button>
@@ -861,7 +879,7 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
                       <button
                         onClick={handleAiSend}
                         disabled={!aiInput.trim()}
-                        className="px-2.5 py-1 text-xs bg-xp-blue/20 text-xp-blue rounded-md hover:bg-xp-blue/30 disabled:opacity-30 transition-colors"
+                        className="bg-xp-blue/20 text-xp-blue hover:bg-xp-blue/30 rounded-md px-2.5 py-1 text-xs transition-colors disabled:opacity-30"
                       >
                         Send
                       </button>
@@ -870,7 +888,7 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
                 </div>
               </div>
               {aiMessages.length === 0 && (
-                <div className="flex gap-2 mt-2.5">
+                <div className="mt-2.5 flex gap-2">
                   {[
                     'List my recent files',
                     'Organize my Downloads',
@@ -881,7 +899,7 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
                       onClick={() => {
                         setAiInput(suggestion);
                       }}
-                      className="px-2.5 py-1 text-xs rounded-md bg-xp-bg/40 border border-xp-border text-xp-text-muted hover:text-xp-text hover:border-xp-text-muted transition-colors"
+                      className="bg-xp-bg/40 border-xp-border text-xp-text-muted hover:text-xp-text hover:border-xp-text-muted rounded-md border px-2.5 py-1 text-xs transition-colors"
                     >
                       {suggestion}
                     </button>
@@ -894,6 +912,6 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
       </div>
     </div>
   );
-}
+};
 
 export default HomePage;

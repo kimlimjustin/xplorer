@@ -38,44 +38,44 @@ const ExtensionDetailDialog = ({
 
   return (
     <div
-      className="fixed inset-0 bg-black/60 flex items-center justify-center z-50"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="bg-xp-surface border border-xp-border rounded-lg w-[480px] max-w-[90vw] max-h-[80vh] flex flex-col shadow-xl">
+      <div className="bg-xp-surface border-xp-border flex max-h-[80vh] w-[480px] max-w-[90vw] flex-col rounded-lg border shadow-xl">
         {/* Header */}
-        <div className="flex items-start justify-between p-5 border-b border-xp-border">
-          <div className="flex items-start gap-3 min-w-0">
+        <div className="border-xp-border flex items-start justify-between border-b p-5">
+          <div className="flex min-w-0 items-start gap-3">
             {/* Icon */}
-            <div className="flex-shrink-0 h-12 w-12 rounded-lg bg-xp-bg border border-xp-border flex items-center justify-center text-lg">
+            <div className="bg-xp-bg border-xp-border flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg border text-lg">
               {extension.icon ? (
                 <span>{extension.icon}</span>
               ) : (
-                <span className="text-xp-blue font-bold text-xl">
+                <span className="text-xp-blue text-xl font-bold">
                   {extension.displayName.charAt(0).toUpperCase()}
                 </span>
               )}
             </div>
 
             <div className="min-w-0">
-              <h2 className="text-lg font-semibold text-xp-text truncate">
+              <h2 className="text-xp-text truncate text-lg font-semibold">
                 {extension.displayName}
               </h2>
-              <div className="flex items-center gap-2 mt-0.5">
-                <span className="flex items-center gap-1 text-xs text-xp-text-muted">
+              <div className="mt-0.5 flex items-center gap-2">
+                <span className="text-xp-text-muted flex items-center gap-1 text-xs">
                   <User className="h-3 w-3" />
                   {extension.author.name || extension.author.username}
                 </span>
-                <span className="text-xs text-xp-text-muted">&middot;</span>
-                <span className="text-xs text-xp-text-muted">v{extension.version}</span>
+                <span className="text-xp-text-muted text-xs">&middot;</span>
+                <span className="text-xp-text-muted text-xs">v{extension.version}</span>
               </div>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1 rounded hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text transition-colors flex-shrink-0"
+            className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text flex-shrink-0 rounded p-1 transition-colors"
             aria-label="Close"
           >
             <X className="h-5 w-5" />
@@ -83,19 +83,19 @@ const ExtensionDetailDialog = ({
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto p-5 space-y-4">
+        <div className="flex-1 space-y-4 overflow-y-auto p-5">
           {/* Stats row */}
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1">
               {renderStars(extension.averageRating)}
-              <span className="text-sm text-xp-text ml-1">
+              <span className="text-xp-text ml-1 text-sm">
                 {extension.averageRating.toFixed(1)}
               </span>
-              <span className="text-xs text-xp-text-muted">
+              <span className="text-xp-text-muted text-xs">
                 ({extension.reviewCount} review{extension.reviewCount !== 1 ? 's' : ''})
               </span>
             </div>
-            <span className="flex items-center gap-1 text-sm text-xp-text-muted">
+            <span className="text-xp-text-muted flex items-center gap-1 text-sm">
               <Download className="h-4 w-4" />
               {extension.downloadCount.toLocaleString()} downloads
             </span>
@@ -103,14 +103,14 @@ const ExtensionDetailDialog = ({
 
           {/* Description */}
           <div>
-            <h3 className="text-sm font-medium text-xp-text mb-1.5">Description</h3>
-            <p className="text-sm text-xp-text-muted leading-relaxed">{extension.description}</p>
+            <h3 className="text-xp-text mb-1.5 text-sm font-medium">Description</h3>
+            <p className="text-xp-text-muted text-sm leading-relaxed">{extension.description}</p>
           </div>
 
           {/* Categories */}
           {extension.categories && extension.categories.length > 0 && (
             <div>
-              <h3 className="text-sm font-medium text-xp-text mb-1.5 flex items-center gap-1">
+              <h3 className="text-xp-text mb-1.5 flex items-center gap-1 text-sm font-medium">
                 <Tag className="h-3.5 w-3.5" />
                 Categories
               </h3>
@@ -118,7 +118,7 @@ const ExtensionDetailDialog = ({
                 {extension.categories.map((cat) => (
                   <span
                     key={cat.slug}
-                    className="px-2 py-0.5 text-xs rounded-full bg-xp-blue/10 text-xp-blue border border-xp-blue/20"
+                    className="bg-xp-blue/10 text-xp-blue border-xp-blue/20 rounded-full border px-2 py-0.5 text-xs"
                   >
                     {cat.name}
                   </span>
@@ -130,7 +130,7 @@ const ExtensionDetailDialog = ({
           {/* Permissions */}
           {extension.permissions && extension.permissions.length > 0 && (
             <div>
-              <h3 className="text-sm font-medium text-xp-text mb-1.5 flex items-center gap-1">
+              <h3 className="text-xp-text mb-1.5 flex items-center gap-1 text-sm font-medium">
                 <Shield className="h-3.5 w-3.5" />
                 Permissions
               </h3>
@@ -138,9 +138,9 @@ const ExtensionDetailDialog = ({
                 {extension.permissions.map((perm) => (
                   <div
                     key={perm}
-                    className="flex items-center gap-2 px-2.5 py-1.5 bg-xp-bg rounded border border-xp-border text-xs text-xp-text-muted"
+                    className="bg-xp-bg border-xp-border text-xp-text-muted flex items-center gap-2 rounded border px-2.5 py-1.5 text-xs"
                   >
-                    <Shield className="h-3 w-3 text-xp-yellow flex-shrink-0" />
+                    <Shield className="text-xp-yellow h-3 w-3 flex-shrink-0" />
                     {perm}
                   </div>
                 ))}
@@ -150,7 +150,7 @@ const ExtensionDetailDialog = ({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between p-4 border-t border-xp-border">
+        <div className="border-xp-border flex items-center justify-between border-t p-4">
           <button
             onClick={() => {
               const baseUrl = (
@@ -158,21 +158,21 @@ const ExtensionDetailDialog = ({
               ).replace(/\/api$/, '');
               window.open(`${baseUrl}/extensions/${extension.slug || extension.id}`, '_blank');
             }}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-xp-text-muted hover:text-xp-text rounded border border-xp-border hover:bg-xp-surface-light transition-colors"
+            className="text-xp-text-muted hover:text-xp-text border-xp-border hover:bg-xp-surface-light flex items-center gap-1.5 rounded border px-3 py-1.5 text-sm transition-colors"
           >
             <ExternalLink className="h-3.5 w-3.5" />
             View on Web
           </button>
 
           {isInstalled ? (
-            <span className="px-4 py-1.5 text-sm bg-xp-green/20 text-xp-green border border-xp-green/30 rounded-md">
+            <span className="bg-xp-green/20 text-xp-green border-xp-green/30 rounded-md border px-4 py-1.5 text-sm">
               Installed
             </span>
           ) : (
             <button
               onClick={() => onInstall(extension)}
               disabled={isInstalling}
-              className="flex items-center gap-1.5 px-4 py-1.5 text-sm bg-xp-blue hover:bg-xp-blue/80 text-white rounded-md disabled:opacity-50 transition-colors"
+              className="bg-xp-blue hover:bg-xp-blue/80 flex items-center gap-1.5 rounded-md px-4 py-1.5 text-sm text-white transition-colors disabled:opacity-50"
             >
               {isInstalling ? (
                 <>
@@ -191,6 +191,6 @@ const ExtensionDetailDialog = ({
       </div>
     </div>
   );
-}
+};
 
 export default ExtensionDetailDialog;

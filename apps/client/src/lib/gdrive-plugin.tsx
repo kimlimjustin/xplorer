@@ -240,12 +240,12 @@ export class GoogleDriveManager {
 
 let _gdriveManager: GoogleDriveManager | null = null;
 
-const getInstance = () : GoogleDriveManager => {
+const getInstance = (): GoogleDriveManager => {
   if (!_gdriveManager) {
     _gdriveManager = new GoogleDriveManager();
   }
   return _gdriveManager;
-}
+};
 
 export const gdriveManager = {
   authenticate() {

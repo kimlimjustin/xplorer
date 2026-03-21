@@ -19,12 +19,7 @@ interface FileTagsDialogProps {
   onSaved?: (tags: FileTag[]) => void;
 }
 
-const FileTagsDialog = ({
-  isOpen,
-  onClose,
-  filePath,
-  onSaved,
-}: FileTagsDialogProps) => {
+const FileTagsDialog = ({ isOpen, onClose, filePath, onSaved }: FileTagsDialogProps) => {
   const [tags, setTags] = useState<FileTag[]>([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -110,77 +105,81 @@ const FileTagsDialog = ({
       }}
     >
       {/* Dialog */}
-      <div className="bg-xp-surface border border-xp-border rounded-lg shadow-2xl w-full max-w-md mx-4 flex flex-col overflow-hidden">
+      <div className="bg-xp-surface border-xp-border mx-4 flex w-full max-w-md flex-col overflow-hidden rounded-lg border shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-xp-border">
+        <div className="border-xp-border flex items-center justify-between border-b px-4 py-3">
           <div className="flex items-center space-x-2">
-            <Tag className="w-4 h-4 text-xp-text-muted" />
+            <Tag className="text-xp-text-muted h-4 w-4" />
             <div>
-              <h2 className="text-sm font-semibold text-xp-text">Manage Tags</h2>
-              <p className="text-xs text-xp-text-muted truncate max-w-xs" title={filePath}>
+              <h2 className="text-xp-text text-sm font-semibold">Manage Tags</h2>
+              <p className="text-xp-text-muted max-w-xs truncate text-xs" title={filePath}>
                 {fileName}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text transition-colors"
+            className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text rounded p-1 transition-colors"
             aria-label="Close tags dialog"
           >
-            <X className="w-4 h-4" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Body */}
-        <div className="px-4 py-3 space-y-4">
+        <div className="space-y-4 px-4 py-3">
           {/* Current tags */}
           <div>
-            <p className="text-xs font-medium text-xp-text-muted mb-2 uppercase tracking-wide">
+            <p className="text-xp-text-muted mb-2 text-xs font-medium uppercase tracking-wide">
               Current Tags
             </p>
-            {loading ? (
-              <p className="text-sm text-xp-text-muted">Loading...</p>
-            ) : tags.length === 0 ? (
-              <p className="text-sm text-xp-text-muted italic">No tags — add one below.</p>
-            ) : (
-              <div className="flex flex-wrap gap-1.5">
-                {tags.map((tag, idx) => (
-                  <span
-                    key={idx}
-                    className="inline-flex items-center space-x-1 pl-2 pr-1 py-0.5 rounded-full text-xs font-medium text-white"
-                    style={{ backgroundColor: tag.color }}
-                  >
-                    <span>{tag.name}</span>
-                    <button
-                      onClick={() => handleRemoveTag(idx)}
-                      className="ml-0.5 rounded-full p-0.5 hover:bg-black hover:bg-opacity-20 transition-colors"
-                      title={`Remove "${tag.name}"`}
-                      aria-label={`Remove tag "${tag.name}"`}
+            {(() => {
+              if (loading) return <p className="text-xp-text-muted text-sm">Loading...</p>;
+              if (tags.length === 0)
+                {return (
+                  <p className="text-xp-text-muted text-sm italic">No tags — add one below.</p>
+                );}
+              return (
+                <div className="flex flex-wrap gap-1.5">
+                  {tags.map((tag, idx) => (
+                    <span
+                      // eslint-disable-next-line react/no-array-index-key
+                      key={idx}
+                      className="inline-flex items-center space-x-1 rounded-full py-0.5 pl-2 pr-1 text-xs font-medium text-white"
+                      style={{ backgroundColor: tag.color }}
                     >
-                      <X className="w-2.5 h-2.5" />
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )}
+                      <span>{tag.name}</span>
+                      <button
+                        onClick={() => handleRemoveTag(idx)}
+                        className="ml-0.5 rounded-full p-0.5 transition-colors hover:bg-black hover:bg-opacity-20"
+                        title={`Remove "${tag.name}"`}
+                        aria-label={`Remove tag "${tag.name}"`}
+                      >
+                        <X className="h-2.5 w-2.5" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              );
+            })()}
           </div>
 
           {/* Divider */}
-          <div className="border-t border-xp-border" />
+          <div className="border-xp-border border-t" />
 
           {/* Add new tag */}
           <div>
-            <p className="text-xs font-medium text-xp-text-muted mb-2 uppercase tracking-wide">
+            <p className="text-xp-text-muted mb-2 text-xs font-medium uppercase tracking-wide">
               Add Tag
             </p>
 
             {/* Color picker */}
-            <div className="flex items-center space-x-1.5 mb-2">
+            <div className="mb-2 flex items-center space-x-1.5">
               {PRESET_COLORS.map((c) => (
                 <button
                   key={c.value}
                   onClick={() => setSelectedColor(c.value)}
-                  className="w-5 h-5 rounded-full border-2 transition-all flex items-center justify-center"
+                  className="flex h-5 w-5 items-center justify-center rounded-full border-2 transition-all"
                   style={{
                     backgroundColor: c.value,
                     borderColor: selectedColor === c.value ? 'white' : 'transparent',
@@ -190,7 +189,7 @@ const FileTagsDialog = ({
                   aria-label={`Select ${c.label} color`}
                 >
                   {selectedColor === c.value && (
-                    <Check className="w-2.5 h-2.5 text-white drop-shadow" />
+                    <Check className="h-2.5 w-2.5 text-white drop-shadow" />
                   )}
                 </button>
               ))}
@@ -200,7 +199,7 @@ const FileTagsDialog = ({
             <div className="flex items-center space-x-2">
               <div className="relative flex-1">
                 <span
-                  className="absolute left-2 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full"
+                  className="absolute left-2 top-1/2 h-2.5 w-2.5 -translate-y-1/2 rounded-full"
                   style={{ backgroundColor: selectedColor }}
                 />
                 <input
@@ -214,16 +213,16 @@ const FileTagsDialog = ({
                   onKeyDown={handleKeyDown}
                   placeholder="Tag name..."
                   maxLength={32}
-                  className="w-full bg-xp-bg border border-xp-border rounded pl-7 pr-3 py-1.5 text-sm text-xp-text placeholder-xp-text-muted focus:outline-none focus:ring-2 focus:ring-xp-blue focus:border-xp-blue transition-colors"
+                  className="bg-xp-bg border-xp-border text-xp-text placeholder-xp-text-muted focus:ring-xp-blue focus:border-xp-blue w-full rounded border py-1.5 pl-7 pr-3 text-sm transition-colors focus:outline-none focus:ring-2"
                 />
               </div>
               <button
                 onClick={handleAddTag}
                 disabled={!newTagName.trim()}
-                className="flex items-center space-x-1 px-2.5 py-1.5 bg-xp-blue text-white rounded text-sm font-medium hover:bg-opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="bg-xp-blue flex items-center space-x-1 rounded px-2.5 py-1.5 text-sm font-medium text-white transition-colors hover:bg-opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
                 aria-label="Add tag"
               >
-                <Plus className="w-3.5 h-3.5" />
+                <Plus className="h-3.5 w-3.5" />
                 <span>Add</span>
               </button>
             </div>
@@ -231,17 +230,17 @@ const FileTagsDialog = ({
 
           {/* Error */}
           {error && (
-            <p className="text-xs text-red-400 bg-red-400 bg-opacity-10 border border-red-400 border-opacity-30 rounded px-2 py-1">
+            <p className="rounded border border-red-400 border-opacity-30 bg-red-400 bg-opacity-10 px-2 py-1 text-xs text-red-400">
               {error}
             </p>
           )}
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end space-x-2 px-4 py-3 border-t border-xp-border">
+        <div className="border-xp-border flex items-center justify-end space-x-2 border-t px-4 py-3">
           <button
             onClick={onClose}
-            className="px-3 py-1.5 text-sm text-xp-text-muted hover:text-xp-text hover:bg-xp-surface-light rounded transition-colors"
+            className="text-xp-text-muted hover:text-xp-text hover:bg-xp-surface-light rounded px-3 py-1.5 text-sm transition-colors"
             aria-label="Cancel tag changes"
           >
             Cancel
@@ -249,17 +248,17 @@ const FileTagsDialog = ({
           <button
             onClick={handleSave}
             disabled={saving || loading}
-            className="flex items-center space-x-1.5 px-3 py-1.5 bg-xp-blue text-white rounded text-sm font-medium hover:bg-opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="bg-xp-blue flex items-center space-x-1.5 rounded px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
             aria-label="Save tags"
           >
             {saving ? (
               <>
-                <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
                 <span>Saving...</span>
               </>
             ) : (
               <>
-                <Check className="w-3.5 h-3.5" />
+                <Check className="h-3.5 w-3.5" />
                 <span>Save Tags</span>
               </>
             )}

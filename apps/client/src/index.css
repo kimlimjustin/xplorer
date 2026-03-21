@@ -1,4 +1,4 @@
-@import './styles/tokyo-night.css';
+@import "./styles/tokyo-night.css";
 
 @tailwind base;
 @tailwind components;
@@ -38,7 +38,14 @@ body {
 
   /* Glass theme — gradient bg, solid surfaces */
   --xp-bg: transparent;
-  --xp-bg-gradient: linear-gradient(135deg, #0a0a1a 0%, #0f0f2e 25%, #1a0a2e 50%, #0a1a2e 75%, #0a0a1a 100%);
+  --xp-bg-gradient: linear-gradient(
+    135deg,
+    #0a0a1a 0%,
+    #0f0f2e 25%,
+    #1a0a2e 50%,
+    #0a1a2e 75%,
+    #0a0a1a 100%
+  );
   --xp-surface: #111122;
   --xp-surface-light: #161630;
   --xp-blue: #6366f1;
@@ -89,7 +96,14 @@ body {
   --ring: #6366f1;
 
   --xp-bg: transparent;
-  --xp-bg-gradient: linear-gradient(135deg, #0a0a1a 0%, #0f0f2e 25%, #1a0a2e 50%, #0a1a2e 75%, #0a0a1a 100%);
+  --xp-bg-gradient: linear-gradient(
+    135deg,
+    #0a0a1a 0%,
+    #0f0f2e 25%,
+    #1a0a2e 50%,
+    #0a1a2e 75%,
+    #0a0a1a 100%
+  );
   --xp-surface: #111122;
   --xp-surface-light: #161630;
   --xp-blue: #6366f1;
@@ -408,7 +422,7 @@ html.theme-glass {
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply bg-background font-sans text-foreground antialiased;
   }
 
   /* Tokyo Night Custom Styles */
@@ -807,7 +821,7 @@ html.theme-glass {
    ═══════════════════════════════════════════════════════════════════ */
 
 /* Valid drop target highlight — set by DragDropContext via elementFromPoint */
-[data-drop-hover='true'] {
+[data-drop-hover="true"] {
   outline: 2px solid rgba(122, 162, 247, 0.6) !important;
   outline-offset: -2px;
   background-color: rgba(122, 162, 247, 0.1) !important;
@@ -815,7 +829,7 @@ html.theme-glass {
 }
 
 /* Invalid drop target highlight */
-[data-drop-invalid='true'] {
+[data-drop-invalid="true"] {
   outline: 2px solid rgba(239, 68, 68, 0.4) !important;
   outline-offset: -2px;
   background-color: rgba(239, 68, 68, 0.05) !important;

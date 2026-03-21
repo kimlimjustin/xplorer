@@ -243,7 +243,9 @@ export default function EditorGroupPane({
         const parsed = JSON.parse(raw);
         if (parsed.lastRealPath) return parsed.lastRealPath as string;
       }
-    } catch { /* ignore localStorage/parse errors */ }
+    } catch {
+      /* ignore localStorage/parse errors */
+    }
     return '';
   }, [collectionId]);
 
@@ -284,7 +286,9 @@ export default function EditorGroupPane({
           calculateMissingSizes();
         }
       }
-    } catch { /* ignore localStorage/parse errors */ }
+    } catch {
+      /* ignore localStorage/parse errors */
+    }
   }, [files, calculateMissingSizes]);
 
   // Listen for files-changed events (from drag-drop operations) to refetch
@@ -318,7 +322,9 @@ export default function EditorGroupPane({
   // Apply filter preset if one is active
   const sortedFiles = useMemo(
     () =>
-      activeCollectionFilter ? applyCollectionToFiles(sortedFilesRaw, activeCollectionFilter) : sortedFilesRaw,
+      activeCollectionFilter
+        ? applyCollectionToFiles(sortedFilesRaw, activeCollectionFilter)
+        : sortedFilesRaw,
     [sortedFilesRaw, activeCollectionFilter],
   );
 
@@ -522,7 +528,7 @@ export default function EditorGroupPane({
       (activeTab?.type === 'gdrive' && activeTab.gdriveData)
     ) {
       return (
-        <div className="flex-1 overflow-auto flex items-center justify-center text-xp-text-muted text-sm">
+        <div className="text-xp-text-muted flex flex-1 items-center justify-center overflow-auto text-sm">
           Install the Google Drive extension
         </div>
       );
@@ -544,7 +550,7 @@ export default function EditorGroupPane({
         <div className="flex-1 overflow-auto">
           <React.Suspense
             fallback={
-              <div className="flex items-center justify-center h-full text-xp-text-muted">
+              <div className="text-xp-text-muted flex h-full items-center justify-center">
                 Loading chat...
               </div>
             }
@@ -560,16 +566,16 @@ export default function EditorGroupPane({
       const extEditor = extensionHost.getEditorForFile(activeTab.path);
       if (extEditor) {
         return (
-          <div className="flex-1 overflow-hidden flex flex-col">
+          <div className="flex flex-1 flex-col overflow-hidden">
             {extEditor.render({ filePath: activeTab.path })}
           </div>
         );
       }
       return (
-        <div className="flex-1 overflow-hidden flex flex-col">
+        <div className="flex flex-1 flex-col overflow-hidden">
           <React.Suspense
             fallback={
-              <div className="flex items-center justify-center h-full text-xp-text-muted">
+              <div className="text-xp-text-muted flex h-full items-center justify-center">
                 Loading editor...
               </div>
             }
@@ -631,7 +637,7 @@ export default function EditorGroupPane({
 
   return (
     <div
-      className={`flex flex-col h-full overflow-hidden ${isActive ? 'ring-1 ring-xp-blue/30' : ''}`}
+      className={`flex h-full flex-col overflow-hidden ${isActive ? 'ring-xp-blue/30 ring-1' : ''}`}
       data-drop-target={isDroppablePath ? currentPath : undefined}
       onMouseDown={() => {
         if (!isActive) onSetActiveGroup(group.id);
@@ -684,7 +690,7 @@ export default function EditorGroupPane({
         />
       )}
 
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex flex-1 flex-col overflow-hidden">
         <ErrorBoundary>{renderContent()}</ErrorBoundary>
       </div>
     </div>

@@ -10,12 +10,12 @@ const filterTabs: { key: FilterTab; label: string }[] = [
   { key: 'success', label: 'Success' },
 ];
 
-const typeToFilterKey = (type: AppNotification['type']) : FilterTab | null => {
+const typeToFilterKey = (type: AppNotification['type']): FilterTab | null => {
   if (type === 'error') return 'error';
   if (type === 'warning') return 'warning';
   if (type === 'success') return 'success';
   return null; // 'info' only shows under 'all'
-}
+};
 
 const TypeIcon = ({ type }: { type: AppNotification['type'] }) => {
   const size = '14';
@@ -84,9 +84,9 @@ const TypeIcon = ({ type }: { type: AppNotification['type'] }) => {
         </svg>
       );
   }
-}
+};
 
-const relativeTime = (timestamp: number) : string => {
+const relativeTime = (timestamp: number): string => {
   const diff = Date.now() - timestamp;
   const seconds = Math.floor(diff / 1000);
   if (seconds < 5) return 'just now';
@@ -97,7 +97,7 @@ const relativeTime = (timestamp: number) : string => {
   if (hours < 24) return `${hours}h ago`;
   const days = Math.floor(hours / 24);
   return `${days}d ago`;
-}
+};
 
 export default function NotificationCenter() {
   const { notifications, clearAll, clearById, markAllAsRead } = useNotificationHistory();

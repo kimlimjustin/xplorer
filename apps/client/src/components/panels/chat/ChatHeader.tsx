@@ -53,23 +53,23 @@ const ChatHeader = ({
   filteredContextFiles,
 }: ChatHeaderProps) => {
   return (
-    <div className="px-3 py-3 border-b border-xp-border flex-shrink-0">
-      <div className="flex items-center justify-between gap-2 mb-2">
-        <h3 className="text-sm font-medium truncate">
+    <div className="border-xp-border flex-shrink-0 border-b px-3 py-3">
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <h3 className="truncate text-sm font-medium">
           {state.agentEnabled ? 'Xplorer Agent' : 'Copilot Assistant'}
         </h3>
-        <div className="flex items-center gap-1.5 flex-shrink-0">
+        <div className="flex flex-shrink-0 items-center gap-1.5">
           {onNewSession && (
             <button
               onClick={() => {
                 onNewSession();
               }}
-              className="p-1 text-xs hover:bg-xp-surface-light rounded transition-colors"
+              className="hover:bg-xp-surface-light rounded p-1 text-xs transition-colors"
               title="New chat"
               aria-label="Start new chat session"
             >
               <svg
-                className="w-3.5 h-3.5"
+                className="h-3.5 w-3.5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -82,12 +82,12 @@ const ChatHeader = ({
           {sessionsCount > 0 && (
             <button
               onClick={onToggleHistory}
-              className={`p-1 text-xs rounded transition-colors ${showHistory ? 'bg-xp-blue text-white' : 'hover:bg-xp-surface-light'}`}
+              className={`rounded p-1 text-xs transition-colors ${showHistory ? 'bg-xp-blue text-white' : 'hover:bg-xp-surface-light'}`}
               title="Chat history"
               aria-label="Toggle chat history"
             >
               <svg
-                className="w-3.5 h-3.5"
+                className="h-3.5 w-3.5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -103,7 +103,7 @@ const ChatHeader = ({
           )}
           <button
             onClick={() => setIsSettingsMinimized(!state.isSettingsMinimized)}
-            className="p-1 text-xs hover:bg-xp-surface-light rounded transition-colors"
+            className="hover:bg-xp-surface-light rounded p-1 text-xs transition-colors"
             title={state.isSettingsMinimized ? 'Expand settings' : 'Minimize settings'}
             aria-label={
               state.isSettingsMinimized ? 'Expand chat settings' : 'Minimize chat settings'
@@ -112,11 +112,18 @@ const ChatHeader = ({
           >
             {state.isSettingsMinimized ? '\u2699\uFE0F' : '\u25BC'}
           </button>
-          <div
-            className={`w-2 h-2 rounded-full flex-shrink-0 ${state.agentEnabled ? 'bg-xp-purple' : state.ollamaStatus ? 'bg-xp-green' : 'bg-xp-red'}`}
-          ></div>
-          <span className="text-xs text-xp-text-muted whitespace-nowrap">
-            {state.agentEnabled ? 'Agent Mode' : state.ollamaStatus ? 'AI Connected' : 'Limited AI'}
+          {(() => {
+            let dotClass = 'bg-xp-red';
+            if (state.agentEnabled) dotClass = 'bg-xp-purple';
+            else if (state.ollamaStatus) dotClass = 'bg-xp-green';
+            return <div className={`h-2 w-2 flex-shrink-0 rounded-full ${dotClass}`} />;
+          })()}
+          <span className="text-xp-text-muted whitespace-nowrap text-xs">
+            {(() => {
+              if (state.agentEnabled) return 'Agent Mode';
+              if (state.ollamaStatus) return 'AI Connected';
+              return 'Limited AI';
+            })()}
           </span>
         </div>
       </div>
@@ -128,13 +135,13 @@ const ChatHeader = ({
           <div className="relative">
             <button
               onClick={() => setIsModelDropdownOpen(!state.isModelDropdownOpen)}
-              className="flex items-center justify-between w-full px-3 py-2 text-xs bg-xp-bg border border-xp-border rounded hover:bg-xp-bg-hover gap-2 transition-colors"
+              className="bg-xp-bg border-xp-border hover:bg-xp-bg-hover flex w-full items-center justify-between gap-2 rounded border px-3 py-2 text-xs transition-colors"
               aria-label={`Select AI model, current: ${state.selectedModel}`}
               aria-expanded={state.isModelDropdownOpen}
               aria-haspopup="listbox"
             >
               <span className="truncate">{state.selectedModel}</span>
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fillRule="evenodd"
                   d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
@@ -144,7 +151,7 @@ const ChatHeader = ({
             </button>
             {state.isModelDropdownOpen && (
               <div
-                className="absolute top-full left-0 right-0 mt-1 bg-xp-popover border border-xp-border rounded shadow-xl backdrop-blur-xl z-50"
+                className="bg-xp-popover border-xp-border absolute left-0 right-0 top-full z-50 mt-1 rounded border shadow-xl backdrop-blur-xl"
                 role="listbox"
                 aria-label="AI models"
               >
@@ -180,9 +187,9 @@ const ChatHeader = ({
                           console.warn('Failed to persist model selection:', err);
                         });
                     }}
-                    className={`w-full px-3 py-2 text-xs text-left hover:bg-xp-bg-hover transition-colors ${
+                    className={`hover:bg-xp-bg-hover w-full px-3 py-2 text-left text-xs transition-colors ${
                       state.selectedModel === model.id
-                        ? 'bg-xp-blue bg-opacity-25 text-xp-blue'
+                        ? 'bg-xp-blue text-xp-blue bg-opacity-25'
                         : ''
                     }`}
                   >
@@ -195,10 +202,10 @@ const ChatHeader = ({
 
           {/* Agent Mode Toggle */}
           <div className="flex items-center justify-between">
-            <span className="text-xs text-xp-text-muted">Agent Mode:</span>
+            <span className="text-xp-text-muted text-xs">Agent Mode:</span>
             <button
               onClick={() => setAgentEnabled(!state.agentEnabled)}
-              className={`px-3 py-1 text-xs rounded transition-colors ${
+              className={`rounded px-3 py-1 text-xs transition-colors ${
                 state.agentEnabled
                   ? 'bg-xp-purple text-white hover:opacity-80'
                   : 'bg-xp-border text-xp-text hover:bg-xp-surface-light'
@@ -214,8 +221,8 @@ const ChatHeader = ({
           {state.agentEnabled && (
             <div className="flex items-center justify-between gap-2">
               <div className="min-w-0">
-                <span className="text-xs text-xp-text-muted">Auto-Approve</span>
-                <p className="text-[10px] text-xp-text-muted truncate">
+                <span className="text-xp-text-muted text-xs">Auto-Approve</span>
+                <p className="text-xp-text-muted truncate text-[10px]">
                   {state.autoApprove
                     ? 'All actions run automatically'
                     : 'Asks before writes/deletes'}
@@ -233,7 +240,7 @@ const ChatHeader = ({
                       console.warn('Failed to persist auto-approve setting:', err);
                     });
                 }}
-                className={`px-3 py-1 text-xs rounded transition-colors ${
+                className={`rounded px-3 py-1 text-xs transition-colors ${
                   state.autoApprove
                     ? 'bg-xp-orange text-white hover:opacity-80'
                     : 'bg-xp-border text-xp-text hover:bg-xp-surface-light'
@@ -250,8 +257,8 @@ const ChatHeader = ({
           {state.agentEnabled && (
             <div className="flex items-center justify-between gap-2">
               <div className="min-w-0">
-                <span className="text-xs text-xp-text-muted">Thinking</span>
-                <p className="text-[10px] text-xp-text-muted truncate">
+                <span className="text-xp-text-muted text-xs">Thinking</span>
+                <p className="text-xp-text-muted truncate text-[10px]">
                   {state.thinkingEnabled ? 'Extended reasoning enabled' : 'Standard responses'}
                 </p>
               </div>
@@ -267,7 +274,7 @@ const ChatHeader = ({
                       console.warn('Failed to persist thinking setting:', err);
                     });
                 }}
-                className={`px-3 py-1 text-xs rounded transition-colors ${
+                className={`rounded px-3 py-1 text-xs transition-colors ${
                   state.thinkingEnabled
                     ? 'bg-xp-cyan text-white hover:opacity-80'
                     : 'bg-xp-border text-xp-text hover:bg-xp-surface-light'
@@ -289,17 +296,17 @@ const ChatHeader = ({
             Model: {state.selectedModel.replace('claude-', '').substring(0, 14)}
           </span>
           {state.agentEnabled && (
-            <div className="flex items-center gap-1 flex-shrink-0">
-              <span className="px-1.5 py-0.5 bg-xp-purple text-white rounded text-[11px]">
+            <div className="flex flex-shrink-0 items-center gap-1">
+              <span className="bg-xp-purple rounded px-1.5 py-0.5 text-[11px] text-white">
                 Agent
               </span>
               {state.autoApprove && (
-                <span className="px-1.5 py-0.5 bg-xp-orange text-white rounded text-[11px]">
+                <span className="bg-xp-orange rounded px-1.5 py-0.5 text-[11px] text-white">
                   Auto
                 </span>
               )}
               {state.thinkingEnabled && (
-                <span className="px-1.5 py-0.5 bg-xp-cyan text-white rounded text-[11px]">
+                <span className="bg-xp-cyan rounded px-1.5 py-0.5 text-[11px] text-white">
                   Think
                 </span>
               )}
@@ -310,39 +317,40 @@ const ChatHeader = ({
 
       {/* Context */}
       <div className="mt-2">
-        <div className="flex items-center justify-between mb-1">
-          <span className="text-xs text-xp-text-muted">
+        <div className="mb-1 flex items-center justify-between">
+          <span className="text-xp-text-muted text-xs">
             Context
-            {state.contextFiles.length > 0
-              ? ` (${state.contextFiles.length + (state.includeCurrentFolder ? 1 : 0)})`
-              : state.includeCurrentFolder
-                ? ' (1)'
-                : ''}
+            {(() => {
+              if (state.contextFiles.length > 0)
+                {return ` (${state.contextFiles.length + (state.includeCurrentFolder ? 1 : 0)})`;}
+              if (state.includeCurrentFolder) return ' (1)';
+              return '';
+            })()}
             :
           </span>
           {(state.contextFiles.length > 0 || !state.includeCurrentFolder) && (
             <button
               onClick={resetContext}
-              className="text-xs text-xp-text-muted hover:text-xp-text transition-colors"
+              className="text-xp-text-muted hover:text-xp-text text-xs transition-colors"
             >
               Reset
             </button>
           )}
         </div>
-        <div className="space-y-1 max-h-24 overflow-y-auto">
+        <div className="max-h-24 space-y-1 overflow-y-auto">
           {/* Current folder -- always shown, removable */}
           {state.includeCurrentFolder ? (
-            <div className="flex items-center justify-between p-1.5 bg-xp-blue bg-opacity-10 border border-xp-blue border-opacity-20 rounded text-xs">
-              <span className="flex items-center gap-1.5 truncate flex-1">
+            <div className="bg-xp-blue border-xp-blue flex items-center justify-between rounded border border-opacity-20 bg-opacity-10 p-1.5 text-xs">
+              <span className="flex flex-1 items-center gap-1.5 truncate">
                 <FolderOpen size={14} className="text-xp-blue flex-shrink-0" />
-                <span className="truncate text-xp-text">
+                <span className="text-xp-text truncate">
                   {currentPath.split(/[/\\]/).pop() || currentPath}
                 </span>
-                <span className="text-xp-text-muted text-[10px] shrink-0">current folder</span>
+                <span className="text-xp-text-muted shrink-0 text-[10px]">current folder</span>
               </span>
               <button
                 onClick={() => setIncludeCurrentFolder(false)}
-                className="ml-1.5 text-xp-text-muted hover:text-xp-text transition-colors shrink-0"
+                className="text-xp-text-muted hover:text-xp-text ml-1.5 shrink-0 transition-colors"
                 title="Remove current folder from context"
               >
                 {'\u00D7'}
@@ -351,7 +359,7 @@ const ChatHeader = ({
           ) : (
             <button
               onClick={() => setIncludeCurrentFolder(true)}
-              className="flex items-center gap-1.5 p-1.5 w-full text-xs text-xp-text-muted hover:text-xp-text hover:bg-xp-surface-light rounded transition-colors"
+              className="text-xp-text-muted hover:text-xp-text hover:bg-xp-surface-light flex w-full items-center gap-1.5 rounded p-1.5 text-xs transition-colors"
             >
               <span>+</span>
               <span>Re-add current folder</span>
@@ -361,12 +369,12 @@ const ChatHeader = ({
           {state.contextFiles.map((file) => (
             <div
               key={file.path}
-              className="flex items-center justify-between p-1.5 bg-xp-bg rounded text-xs"
+              className="bg-xp-bg flex items-center justify-between rounded p-1.5 text-xs"
             >
-              <span className="truncate flex-1">{file.name}</span>
+              <span className="flex-1 truncate">{file.name}</span>
               <button
                 onClick={() => removeContextFile(file.path)}
-                className="ml-1.5 text-xp-text-muted hover:text-xp-text transition-colors"
+                className="text-xp-text-muted hover:text-xp-text ml-1.5 transition-colors"
               >
                 {'\u00D7'}
               </button>
@@ -374,24 +382,24 @@ const ChatHeader = ({
           ))}
         </div>
         {/* Add more context files */}
-        <div className="mt-1.5 relative">
+        <div className="relative mt-1.5">
           <button
             onClick={() => setIsContextDropdownOpen(!state.isContextDropdownOpen)}
-            className="flex items-center gap-2 px-3 py-1.5 text-xs bg-xp-bg border border-xp-border rounded hover:bg-xp-surface-light transition-colors w-full"
+            className="bg-xp-bg border-xp-border hover:bg-xp-surface-light flex w-full items-center gap-2 rounded border px-3 py-1.5 text-xs transition-colors"
             aria-label="Add context files"
             aria-expanded={state.isContextDropdownOpen}
           >
             <span>+ Add context files</span>
           </button>
           {state.isContextDropdownOpen && (
-            <div className="absolute top-full left-0 right-0 mt-1 bg-xp-popover border border-xp-border rounded shadow-xl backdrop-blur-xl z-50 max-h-60">
-              <div className="p-2 border-b border-xp-border">
+            <div className="bg-xp-popover border-xp-border absolute left-0 right-0 top-full z-50 mt-1 max-h-60 rounded border shadow-xl backdrop-blur-xl">
+              <div className="border-xp-border border-b p-2">
                 <input
                   type="text"
                   placeholder="Search files..."
                   value={state.contextSearchQuery}
                   onChange={(e) => setContextSearchQuery(e.target.value)}
-                  className="w-full px-2 py-1 text-xs bg-xp-bg border border-xp-border rounded"
+                  className="bg-xp-bg border-xp-border w-full rounded border px-2 py-1 text-xs"
                   aria-label="Search context files"
                 />
               </div>
@@ -401,12 +409,14 @@ const ChatHeader = ({
                     <button
                       key={file.path}
                       onClick={() => addContextFileFromList(file)}
-                      className="w-full px-3 py-2 text-left text-xs hover:bg-xp-surface-light transition-colors flex items-center"
+                      className="hover:bg-xp-surface-light flex w-full items-center px-3 py-2 text-left text-xs transition-colors"
                       disabled={state.contextFiles.some((f) => f.path === file.path)}
                     >
-                      <span className="mr-2 inline-flex">{file.is_dir ? <FolderClosed size={14} /> : <FileText size={14} />}</span>
-                      <div className="flex-1 min-w-0">
-                        <div className="font-medium truncate">{file.name}</div>
+                      <span className="mr-2 inline-flex">
+                        {file.is_dir ? <FolderClosed size={14} /> : <FileText size={14} />}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="truncate font-medium">{file.name}</div>
                       </div>
                       {state.contextFiles.some((f) => f.path === file.path) && (
                         <span className="text-xp-green ml-1">{'\u2713'}</span>
@@ -414,7 +424,7 @@ const ChatHeader = ({
                     </button>
                   ))
                 ) : (
-                  <div className="px-3 py-2 text-xs text-xp-text-muted">No files available</div>
+                  <div className="text-xp-text-muted px-3 py-2 text-xs">No files available</div>
                 )}
               </div>
             </div>
@@ -423,6 +433,6 @@ const ChatHeader = ({
       </div>
     </div>
   );
-}
+};
 
 export default ChatHeader;

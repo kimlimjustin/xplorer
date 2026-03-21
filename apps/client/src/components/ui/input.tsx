@@ -9,4 +9,4 @@ export const Input = ({ className = '', ...props }: InputProps) => {
       {...props}
     />
   );
-}
+};

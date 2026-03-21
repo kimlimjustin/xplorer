@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
-import { renderHook } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act, renderHook } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import React from 'react';
 
@@ -111,8 +110,7 @@ vi.mock('@/lib/path-bookmarks', () => ({
 import { useNavigation } from '@/hooks/use-navigation';
 import NavigationBar from '@/components/explorer/NavigationBar';
 import LeftSidebar from '@/components/explorer/LeftSidebar';
-import type { FileEntry } from '@/lib/tauri-api';
-import { TauriAPI } from '@/lib/tauri-api';
+import { TauriAPI, type FileEntry } from '@/lib/tauri-api';
 
 describe('Navigation Integration', () => {
   beforeEach(() => {

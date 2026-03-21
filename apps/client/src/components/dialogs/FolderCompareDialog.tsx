@@ -2,10 +2,7 @@ import React, { useState, useCallback, useMemo } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { TauriAPI } from '@/lib/tauri-api';
 import { formatFileSize, formatDate } from '@/lib/utils';
-import {
-  compareFolders,
-  type FolderCompareResult,
-} from '@/lib/folder-compare';
+import { compareFolders, type FolderCompareResult } from '@/lib/folder-compare';
 import { FolderOpen, ArrowRight, ArrowLeft, Search, X } from 'lucide-react';
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -188,7 +185,7 @@ const tdStyle: React.CSSProperties = {
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-const statusBadge = (status: ResultRow['status']) : React.ReactNode => {
+const statusBadge = (status: ResultRow['status']): React.ReactNode => {
   const map: Record<string, { label: string; bg: string; fg: string }> = {
     'only-left': { label: 'Left Only', bg: 'rgba(239,68,68,0.15)', fg: '#f87171' },
     'only-right': { label: 'Right Only', bg: 'rgba(239,68,68,0.15)', fg: '#f87171' },
@@ -211,9 +208,9 @@ const statusBadge = (status: ResultRow['status']) : React.ReactNode => {
       {s.label}
     </span>
   );
-}
+};
 
-const rowBg = (status: ResultRow['status']) : string => {
+const rowBg = (status: ResultRow['status']): string => {
   switch (status) {
     case 'only-left':
     case 'only-right':
@@ -223,7 +220,7 @@ const rowBg = (status: ResultRow['status']) : string => {
     case 'identical':
       return 'rgba(34,197,94,0.04)';
   }
-}
+};
 
 // ── Component ────────────────────────────────────────────────────────────────
 
@@ -856,6 +853,6 @@ const FolderCompareDialog = ({
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
-}
+};
 
 export default React.memo(FolderCompareDialog);

@@ -51,7 +51,7 @@ const ensurePulseStyle = () => {
   const style = document.createElement('style');
   style.textContent = PULSE_KEYFRAMES;
   document.head.appendChild(style);
-}
+};
 
 // ── Component ────────────────────────────────────────────────────────────────
 
@@ -96,9 +96,9 @@ const VimModeIndicator = React.memo(function VimModeIndicator({
     gap: '4px',
     padding: '1px 8px',
     borderRadius: '3px',
-    background: color + '22',
+    background: `${color}22`,
     border: `1px solid ${color}66`,
-    color: color,
+    color,
     fontSize: '11px',
     fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace',
     fontWeight: 700,
@@ -109,7 +109,7 @@ const VimModeIndicator = React.memo(function VimModeIndicator({
     transition: 'background 0.15s ease, border-color 0.15s ease, color 0.15s ease',
     animation: isPulsing ? 'vim-mode-pulse 0.3s ease-out' : 'none',
     // CSS variable for the pulse keyframe
-    ['--vim-pulse-color' as string]: color + '44',
+    ['--vim-pulse-color' as string]: `${color}44`,
   };
 
   // Pending keys display

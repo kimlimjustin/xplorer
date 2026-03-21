@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { TauriAPI, type FileEntry, type DuplicateFinderResult } from '@/lib/tauri-api';
-import { getFileIcon } from '@/lib/utils';
+import { getFileIcon, cn } from '@/lib/utils';
 import { listenToEvent } from '@/lib/transport';
-import { cn } from '@/lib/utils';
 import {
   Copy,
   Trash2,
@@ -40,21 +39,21 @@ interface ScanProgress {
   totalWastedSpace: number;
 }
 
-const formatSize = (bytes: number) : string => {
+const formatSize = (bytes: number): string => {
   if (bytes === 0) return '0 B';
   const k = 1024;
   const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
-}
+};
 
-const sizeBadgeColor = (bytes: number) : string => {
+const sizeBadgeColor = (bytes: number): string => {
   if (bytes >= 1024 * 1024 * 100) return 'bg-xp-red/20 text-xp-red border-xp-red/30';
   if (bytes >= 1024 * 1024 * 10) return 'bg-xp-orange/20 text-xp-orange border-xp-orange/30';
   if (bytes >= 1024 * 1024) return 'bg-xp-yellow/20 text-xp-yellow border-xp-yellow/30';
   if (bytes >= 1024 * 100) return 'bg-xp-blue/20 text-xp-blue border-xp-blue/30';
   return 'bg-xp-surface text-xp-text-muted border-xp-border';
-}
+};
 
 // ── Similar Files Tab ───────────────────────────────────────────────────────
 
@@ -104,9 +103,9 @@ const SimilarFilesTab = ({
 
   if (!selectedFile || selectedFile.is_dir) {
     return (
-      <div className="flex-1 flex items-center justify-center text-xp-text-muted text-sm">
-        <div className="text-center px-4">
-          <Search className="w-10 h-10 mx-auto mb-2 opacity-40" />
+      <div className="text-xp-text-muted flex flex-1 items-center justify-center text-sm">
+        <div className="px-4 text-center">
+          <Search className="mx-auto mb-2 h-10 w-10 opacity-40" />
           <p>Select a file to see similar files</p>
         </div>
       </div>
@@ -115,9 +114,9 @@ const SimilarFilesTab = ({
 
   if (isLoading) {
     return (
-      <div className="flex-1 flex items-center justify-center text-xp-text-muted">
+      <div className="text-xp-text-muted flex flex-1 items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-8 h-8 mx-auto mb-2 animate-spin text-xp-blue" />
+          <Loader2 className="text-xp-blue mx-auto mb-2 h-8 w-8 animate-spin" />
           <p className="text-sm">Finding similar files...</p>
         </div>
       </div>
@@ -126,11 +125,11 @@ const SimilarFilesTab = ({
 
   if (error) {
     return (
-      <div className="flex-1 flex items-center justify-center text-xp-red text-sm p-4">
+      <div className="text-xp-red flex flex-1 items-center justify-center p-4 text-sm">
         <div className="text-center">
-          <X className="w-8 h-8 mx-auto mb-2" />
+          <X className="mx-auto mb-2 h-8 w-8" />
           <p>Failed to load recommendations</p>
-          <p className="text-xs mt-1 text-xp-text-muted">{error}</p>
+          <p className="text-xp-text-muted mt-1 text-xs">{error}</p>
         </div>
       </div>
     );
@@ -138,20 +137,20 @@ const SimilarFilesTab = ({
 
   if (recommendations.length === 0) {
     return (
-      <div className="flex-1 flex items-center justify-center text-xp-text-muted text-sm">
-        <div className="text-center px-4">
-          <Search className="w-10 h-10 mx-auto mb-2 opacity-40" />
+      <div className="text-xp-text-muted flex flex-1 items-center justify-center text-sm">
+        <div className="px-4 text-center">
+          <Search className="mx-auto mb-2 h-10 w-10 opacity-40" />
           <p>No similar files found</p>
-          <p className="text-xs mt-1">Try indexing more directories</p>
+          <p className="mt-1 text-xs">Try indexing more directories</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden">
-      <div className="px-4 py-2 border-b border-xp-border bg-xp-surface/30">
-        <p className="text-xs text-xp-text-muted">
+    <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="border-xp-border bg-xp-surface/30 border-b px-4 py-2">
+        <p className="text-xp-text-muted text-xs">
           Similar to <span className="text-xp-blue">{selectedFile.name}</span>
         </p>
       </div>
@@ -161,36 +160,36 @@ const SimilarFilesTab = ({
           <div
             key={rec.path}
             onClick={() => onFileClick?.(rec.path)}
-            className="px-4 py-2.5 hover:bg-xp-surface cursor-pointer border-b border-xp-border/30 transition-colors"
+            className="hover:bg-xp-surface border-xp-border/30 cursor-pointer border-b px-4 py-2.5 transition-colors"
           >
             <div className="flex items-start gap-2">
-              <div className="flex-shrink-0 mt-0.5">
+              <div className="mt-0.5 flex-shrink-0">
                 {getFileIcon({ path: rec.path, name: rec.name, is_dir: false } as FileEntry)}
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-0.5">
-                  <span className="text-xs text-xp-text truncate">{rec.name}</span>
-                  <span className="flex-shrink-0 text-[10px] px-1.5 py-0.5 rounded bg-xp-blue/20 text-xp-blue border border-xp-blue/30">
+              <div className="min-w-0 flex-1">
+                <div className="mb-0.5 flex items-center gap-2">
+                  <span className="text-xp-text truncate text-xs">{rec.name}</span>
+                  <span className="bg-xp-blue/20 text-xp-blue border-xp-blue/30 flex-shrink-0 rounded border px-1.5 py-0.5 text-[10px]">
                     {Math.round(rec.score * 100)}%
                   </span>
                 </div>
-                <p className="text-[10px] text-xp-text-muted truncate" title={rec.path}>
+                <p className="text-xp-text-muted truncate text-[10px]" title={rec.path}>
                   {rec.path}
                 </p>
                 {rec.snippet && (
-                  <p className="text-[10px] text-xp-text-muted line-clamp-2 bg-xp-surface px-2 py-1 rounded mt-1">
+                  <p className="text-xp-text-muted bg-xp-surface mt-1 line-clamp-2 rounded px-2 py-1 text-[10px]">
                     {rec.snippet}
                   </p>
                 )}
               </div>
-              <div className="flex-shrink-0 text-[10px] text-xp-text-muted">#{index + 1}</div>
+              <div className="text-xp-text-muted flex-shrink-0 text-[10px]">#{index + 1}</div>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="px-4 py-1.5 border-t border-xp-border bg-xp-surface/30">
-        <p className="text-[10px] text-xp-text-muted">
+      <div className="border-xp-border bg-xp-surface/30 border-t px-4 py-1.5">
+        <p className="text-xp-text-muted text-[10px]">
           {recommendations.length} similar file{recommendations.length !== 1 ? 's' : ''}
         </p>
       </div>
@@ -332,25 +331,25 @@ const DuplicatesTab = ({ currentPath }: { currentPath: string }) => {
   }, []);
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden">
+    <div className="flex flex-1 flex-col overflow-hidden">
       {/* Controls */}
-      <div className="px-3 py-2 border-b border-xp-border space-y-1.5">
+      <div className="border-xp-border space-y-1.5 border-b px-3 py-2">
         <input
           type="text"
           value={scanPath}
           onChange={(e) => setScanPath(e.target.value)}
           placeholder="Path to scan..."
-          className="w-full px-2 py-1 text-xs bg-xp-surface border border-xp-border rounded focus:border-xp-blue focus:outline-none transition-colors"
+          className="bg-xp-surface border-xp-border focus:border-xp-blue w-full rounded border px-2 py-1 text-xs transition-colors focus:outline-none"
           disabled={isScanning}
         />
         <div className="flex items-center gap-2">
-          <label className="flex items-center gap-1 text-[10px] text-xp-text-muted">
+          <label className="text-xp-text-muted flex items-center gap-1 text-[10px]">
             <span>Min:</span>
             <input
               type="number"
               value={minFileSize}
               onChange={(e) => setMinFileSize(parseInt(e.target.value) || 0)}
-              className="w-16 px-1 py-0.5 bg-xp-surface border border-xp-border rounded text-[10px] focus:border-xp-blue focus:outline-none"
+              className="bg-xp-surface border-xp-border focus:border-xp-blue w-16 rounded border px-1 py-0.5 text-[10px] focus:outline-none"
               disabled={isScanning}
             />
             <span>B</span>
@@ -359,17 +358,17 @@ const DuplicatesTab = ({ currentPath }: { currentPath: string }) => {
           {isScanning ? (
             <button
               onClick={handleCancelScan}
-              className="flex items-center gap-1 px-2 py-1 text-[10px] font-medium rounded bg-xp-red/10 text-xp-red border border-xp-red/20 hover:bg-xp-red/20 transition-colors"
+              className="bg-xp-red/10 text-xp-red border-xp-red/20 hover:bg-xp-red/20 flex items-center gap-1 rounded border px-2 py-1 text-[10px] font-medium transition-colors"
             >
-              <X className="w-3 h-3" />
+              <X className="h-3 w-3" />
               Cancel
             </button>
           ) : (
             <button
               onClick={handleStartScan}
-              className="flex items-center gap-1 px-2 py-1 text-[10px] font-medium rounded bg-xp-blue text-white hover:bg-xp-blue/80 transition-colors"
+              className="bg-xp-blue hover:bg-xp-blue/80 flex items-center gap-1 rounded px-2 py-1 text-[10px] font-medium text-white transition-colors"
             >
-              <Search className="w-3 h-3" />
+              <Search className="h-3 w-3" />
               Scan
             </button>
           )}
@@ -378,15 +377,15 @@ const DuplicatesTab = ({ currentPath }: { currentPath: string }) => {
 
       {/* Progress */}
       {isScanning && progress && (
-        <div className="px-3 py-1.5 border-b border-xp-border bg-xp-surface/50">
-          <div className="flex items-center justify-between text-[10px] text-xp-text-muted mb-1">
+        <div className="border-xp-border bg-xp-surface/50 border-b px-3 py-1.5">
+          <div className="text-xp-text-muted mb-1 flex items-center justify-between text-[10px]">
             <span className="capitalize">{progress.currentPhase}</span>
             <span>
               {progress.processedFiles}
               {progress.totalFiles > 0 ? ` / ${progress.totalFiles}` : ''} files
             </span>
           </div>
-          <div className="w-full bg-xp-surface rounded-full h-1">
+          <div className="bg-xp-surface h-1 w-full rounded-full">
             <div
               className="bg-xp-blue h-1 rounded-full transition-all duration-300"
               style={{
@@ -406,8 +405,8 @@ const DuplicatesTab = ({ currentPath }: { currentPath: string }) => {
 
       {/* Summary */}
       {results && results.duplicate_groups.length > 0 && (
-        <div className="px-3 py-1.5 border-b border-xp-border bg-xp-surface/30">
-          <div className="flex items-center gap-2 text-[10px] flex-wrap">
+        <div className="border-xp-border bg-xp-surface/30 border-b px-3 py-1.5">
+          <div className="flex flex-wrap items-center gap-2 text-[10px]">
             <span className="text-xp-text-muted">
               <span className="text-xp-text font-medium">{results.duplicate_groups.length}</span>{' '}
               groups
@@ -434,33 +433,33 @@ const DuplicatesTab = ({ currentPath }: { currentPath: string }) => {
               const allDupsSelected = group.files.slice(1).every((f) => selectedFiles.has(f.path));
 
               return (
-                <div key={group.hash} className="border-b border-xp-border/50">
+                <div key={group.hash} className="border-xp-border/50 border-b">
                   <div
-                    className="flex items-center gap-1.5 px-3 py-1.5 hover:bg-xp-surface/50 cursor-pointer transition-colors"
+                    className="hover:bg-xp-surface/50 flex cursor-pointer items-center gap-1.5 px-3 py-1.5 transition-colors"
                     onClick={() => toggleGroupExpansion(group.hash)}
                   >
                     {isExpanded ? (
-                      <ChevronDown className="w-3 h-3 text-xp-text-muted flex-shrink-0" />
+                      <ChevronDown className="text-xp-text-muted h-3 w-3 flex-shrink-0" />
                     ) : (
-                      <ChevronRight className="w-3 h-3 text-xp-text-muted flex-shrink-0" />
+                      <ChevronRight className="text-xp-text-muted h-3 w-3 flex-shrink-0" />
                     )}
                     <span
                       className={cn(
-                        'px-1 py-0.5 text-[10px] font-mono rounded border',
+                        'rounded border px-1 py-0.5 font-mono text-[10px]',
                         sizeBadgeColor(group.size),
                       )}
                     >
                       {formatSize(group.size)}
                     </span>
                     <span
-                      className="text-[10px] text-xp-text-muted font-mono truncate max-w-[60px]"
+                      className="text-xp-text-muted max-w-[60px] truncate font-mono text-[10px]"
                       title={group.hash}
                     >
                       {group.hash.slice(0, 8)}
                     </span>
-                    <span className="text-[10px] text-xp-text-muted">{fileCount}x</span>
+                    <span className="text-xp-text-muted text-[10px]">{fileCount}x</span>
                     <span className="flex-1" />
-                    <span className="text-[10px] text-xp-red font-medium">
+                    <span className="text-xp-red text-[10px] font-medium">
                       -{formatSize(group.total_wasted_space)}
                     </span>
                     <button
@@ -469,7 +468,7 @@ const DuplicatesTab = ({ currentPath }: { currentPath: string }) => {
                         selectAllDuplicatesInGroup(group);
                       }}
                       className={cn(
-                        'px-1 py-0.5 text-[10px] rounded border transition-colors',
+                        'rounded border px-1 py-0.5 text-[10px] transition-colors',
                         allDupsSelected
                           ? 'bg-xp-blue/20 text-xp-blue border-xp-blue/30'
                           : 'bg-xp-surface border-xp-border text-xp-text-muted hover:border-xp-blue/50',
@@ -480,16 +479,16 @@ const DuplicatesTab = ({ currentPath }: { currentPath: string }) => {
                   </div>
 
                   {isExpanded && (
-                    <div className="pl-5 pr-3 pb-1.5 space-y-0.5">
+                    <div className="space-y-0.5 pb-1.5 pl-5 pr-3">
                       {group.files.map((file, index) => {
                         const isKeep = index === 0;
                         return (
                           <div
                             key={file.path}
                             className={cn(
-                              'flex items-center gap-1.5 px-1.5 py-1 rounded text-[11px] transition-colors',
+                              'flex items-center gap-1.5 rounded px-1.5 py-1 text-[11px] transition-colors',
                               selectedFiles.has(file.path)
-                                ? 'bg-xp-blue/10 border border-xp-blue/20'
+                                ? 'bg-xp-blue/10 border-xp-blue/20 border'
                                 : 'hover:bg-xp-surface/50',
                             )}
                           >
@@ -497,30 +496,30 @@ const DuplicatesTab = ({ currentPath }: { currentPath: string }) => {
                               type="checkbox"
                               checked={selectedFiles.has(file.path)}
                               onChange={() => toggleFile(file.path)}
-                              className="w-3 h-3 accent-xp-blue flex-shrink-0"
+                              className="accent-xp-blue h-3 w-3 flex-shrink-0"
                             />
                             {isKeep ? (
-                              <Check className="w-3 h-3 text-xp-green flex-shrink-0" />
+                              <Check className="text-xp-green h-3 w-3 flex-shrink-0" />
                             ) : (
-                              <Copy className="w-3 h-3 text-xp-text-muted flex-shrink-0" />
+                              <Copy className="text-xp-text-muted h-3 w-3 flex-shrink-0" />
                             )}
-                            <div className="flex-1 min-w-0">
-                              <div className="truncate text-xp-text">
+                            <div className="min-w-0 flex-1">
+                              <div className="text-xp-text truncate">
                                 {file.name}
                                 {isKeep && (
                                   <span className="text-xp-green ml-1 text-[10px]">(keep)</span>
                                 )}
                               </div>
-                              <div className="truncate text-[10px] text-xp-text-muted">
+                              <div className="text-xp-text-muted truncate text-[10px]">
                                 {file.path}
                               </div>
                             </div>
                             <button
                               onClick={() => handleOpenFolder(file.path)}
-                              className="p-0.5 rounded hover:bg-xp-surface transition-colors flex-shrink-0"
+                              className="hover:bg-xp-surface flex-shrink-0 rounded p-0.5 transition-colors"
                               title="Open folder"
                             >
-                              <FolderOpen className="w-3 h-3 text-xp-text-muted" />
+                              <FolderOpen className="text-xp-text-muted h-3 w-3" />
                             </button>
                           </div>
                         );
@@ -534,15 +533,15 @@ const DuplicatesTab = ({ currentPath }: { currentPath: string }) => {
         )}
 
         {results && results.duplicate_groups.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-10 text-xp-text-muted">
-            <Check className="w-8 h-8 mb-2 text-xp-green" />
+          <div className="text-xp-text-muted flex flex-col items-center justify-center py-10">
+            <Check className="text-xp-green mb-2 h-8 w-8" />
             <div className="text-xs font-medium">No duplicates found</div>
           </div>
         )}
 
         {!isScanning && !results && (
-          <div className="flex flex-col items-center justify-center py-10 text-xp-text-muted">
-            <Search className="w-8 h-8 mb-2 opacity-40" />
+          <div className="text-xp-text-muted flex flex-col items-center justify-center py-10">
+            <Search className="mb-2 h-8 w-8 opacity-40" />
             <div className="text-xs">Set path and click Scan</div>
           </div>
         )}
@@ -550,13 +549,13 @@ const DuplicatesTab = ({ currentPath }: { currentPath: string }) => {
 
       {/* Actions */}
       {results && results.duplicate_groups.length > 0 && selectedFiles.size > 0 && (
-        <div className="px-3 py-1.5 border-t border-xp-border bg-xp-surface/30 flex items-center gap-2">
-          <span className="text-[10px] text-xp-text-muted">{selectedFiles.size} selected</span>
+        <div className="border-xp-border bg-xp-surface/30 flex items-center gap-2 border-t px-3 py-1.5">
+          <span className="text-xp-text-muted text-[10px]">{selectedFiles.size} selected</span>
           <button
             onClick={handleMoveToTrash}
-            className="flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium rounded bg-xp-red/10 text-xp-red border border-xp-red/20 hover:bg-xp-red/20 transition-colors"
+            className="bg-xp-red/10 text-xp-red border-xp-red/20 hover:bg-xp-red/20 flex items-center gap-1 rounded border px-2 py-0.5 text-[10px] font-medium transition-colors"
           >
-            <Trash2 className="w-3 h-3" />
+            <Trash2 className="h-3 w-3" />
             Delete
           </button>
           <span className="flex-1" />
@@ -570,16 +569,16 @@ const DuplicatesTab = ({ currentPath }: { currentPath: string }) => {
               ]);
               navigator.clipboard.writeText(lines.join('\n'));
             }}
-            className="p-1 rounded hover:bg-xp-surface transition-colors"
+            className="hover:bg-xp-surface rounded p-1 transition-colors"
             title="Copy report"
           >
-            <ClipboardCopy className="w-3 h-3 text-xp-text-muted" />
+            <ClipboardCopy className="text-xp-text-muted h-3 w-3" />
           </button>
         </div>
       )}
     </div>
   );
-}
+};
 
 // ── Main Panel ──────────────────────────────────────────────────────────────
 
@@ -593,15 +592,15 @@ const RecommendationsPanel = ({
   const [activeTab, setActiveTab] = useState<TabMode>('similar');
 
   return (
-    <div className="h-full flex flex-col text-xp-text">
+    <div className="text-xp-text flex h-full flex-col">
       {/* Tab switcher */}
-      <div className="flex border-b border-xp-border flex-shrink-0">
+      <div className="border-xp-border flex flex-shrink-0 border-b">
         <button
           onClick={() => setActiveTab('similar')}
           className={cn(
             'flex-1 px-3 py-2 text-xs font-medium transition-colors',
             activeTab === 'similar'
-              ? 'text-xp-blue border-b-2 border-xp-blue bg-xp-surface/50'
+              ? 'text-xp-blue border-xp-blue bg-xp-surface/50 border-b-2'
               : 'text-xp-text-muted hover:text-xp-text hover:bg-xp-surface/30',
           )}
         >
@@ -612,7 +611,7 @@ const RecommendationsPanel = ({
           className={cn(
             'flex-1 px-3 py-2 text-xs font-medium transition-colors',
             activeTab === 'duplicates'
-              ? 'text-xp-blue border-b-2 border-xp-blue bg-xp-surface/50'
+              ? 'text-xp-blue border-xp-blue bg-xp-surface/50 border-b-2'
               : 'text-xp-text-muted hover:text-xp-text hover:bg-xp-surface/30',
           )}
         >
@@ -628,6 +627,6 @@ const RecommendationsPanel = ({
       )}
     </div>
   );
-}
+};
 
 export default RecommendationsPanel;

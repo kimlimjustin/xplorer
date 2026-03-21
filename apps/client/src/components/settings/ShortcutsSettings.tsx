@@ -23,58 +23,58 @@ const ShortcutsSettingsPanel = () => {
         <Toggle id="vimMode" checked={vimModeEnabled} onChange={handleVimModeToggle} />
       </SettingRow>
       {vimModeEnabled && (
-        <div className="mx-4 mb-2 rounded-md bg-xp-surface-light/50 p-3 text-xs text-xp-text-secondary leading-relaxed space-y-1">
-          <div className="font-medium text-xp-text text-sm mb-1.5">Vim Key Bindings</div>
+        <div className="bg-xp-surface-light/50 text-xp-text-secondary mx-4 mb-2 space-y-1 rounded-md p-3 text-xs leading-relaxed">
+          <div className="text-xp-text mb-1.5 text-sm font-medium">Vim Key Bindings</div>
           <div className="grid grid-cols-2 gap-x-6 gap-y-0.5">
             <span>
-              <kbd className="font-mono bg-xp-bg px-1 rounded">j</kbd> /{' '}
-              <kbd className="font-mono bg-xp-bg px-1 rounded">k</kbd> Move down / up
+              <kbd className="bg-xp-bg rounded px-1 font-mono">j</kbd> /{' '}
+              <kbd className="bg-xp-bg rounded px-1 font-mono">k</kbd> Move down / up
             </span>
             <span>
-              <kbd className="font-mono bg-xp-bg px-1 rounded">h</kbd> Go to parent
+              <kbd className="bg-xp-bg rounded px-1 font-mono">h</kbd> Go to parent
             </span>
             <span>
-              <kbd className="font-mono bg-xp-bg px-1 rounded">l</kbd> /{' '}
-              <kbd className="font-mono bg-xp-bg px-1 rounded">Enter</kbd> Open / enter
+              <kbd className="bg-xp-bg rounded px-1 font-mono">l</kbd> /{' '}
+              <kbd className="bg-xp-bg rounded px-1 font-mono">Enter</kbd> Open / enter
             </span>
             <span>
-              <kbd className="font-mono bg-xp-bg px-1 rounded">gg</kbd> First file
+              <kbd className="bg-xp-bg rounded px-1 font-mono">gg</kbd> First file
             </span>
             <span>
-              <kbd className="font-mono bg-xp-bg px-1 rounded">G</kbd> Last file
+              <kbd className="bg-xp-bg rounded px-1 font-mono">G</kbd> Last file
             </span>
             <span>
-              <kbd className="font-mono bg-xp-bg px-1 rounded">/</kbd> Focus search
+              <kbd className="bg-xp-bg rounded px-1 font-mono">/</kbd> Focus search
             </span>
             <span>
-              <kbd className="font-mono bg-xp-bg px-1 rounded">dd</kbd> Delete
+              <kbd className="bg-xp-bg rounded px-1 font-mono">dd</kbd> Delete
             </span>
             <span>
-              <kbd className="font-mono bg-xp-bg px-1 rounded">yy</kbd> Copy (yank)
+              <kbd className="bg-xp-bg rounded px-1 font-mono">yy</kbd> Copy (yank)
             </span>
             <span>
-              <kbd className="font-mono bg-xp-bg px-1 rounded">p</kbd> Paste
+              <kbd className="bg-xp-bg rounded px-1 font-mono">p</kbd> Paste
             </span>
             <span>
-              <kbd className="font-mono bg-xp-bg px-1 rounded">v</kbd> Visual mode
+              <kbd className="bg-xp-bg rounded px-1 font-mono">v</kbd> Visual mode
             </span>
             <span>
-              <kbd className="font-mono bg-xp-bg px-1 rounded">V</kbd> Select range
+              <kbd className="bg-xp-bg rounded px-1 font-mono">V</kbd> Select range
             </span>
             <span>
-              <kbd className="font-mono bg-xp-bg px-1 rounded">o</kbd> Open with default
+              <kbd className="bg-xp-bg rounded px-1 font-mono">o</kbd> Open with default
             </span>
             <span>
-              <kbd className="font-mono bg-xp-bg px-1 rounded">r</kbd> Rename
+              <kbd className="bg-xp-bg rounded px-1 font-mono">r</kbd> Rename
             </span>
             <span>
-              <kbd className="font-mono bg-xp-bg px-1 rounded">m</kbd> Bookmark dir
+              <kbd className="bg-xp-bg rounded px-1 font-mono">m</kbd> Bookmark dir
             </span>
             <span>
-              <kbd className="font-mono bg-xp-bg px-1 rounded">.</kbd> Repeat last
+              <kbd className="bg-xp-bg rounded px-1 font-mono">.</kbd> Repeat last
             </span>
             <span>
-              <kbd className="font-mono bg-xp-bg px-1 rounded">Esc</kbd> Clear / exit
+              <kbd className="bg-xp-bg rounded px-1 font-mono">Esc</kbd> Clear / exit
             </span>
           </div>
         </div>
@@ -86,6 +86,6 @@ const ShortcutsSettingsPanel = () => {
       </div>
     </div>
   );
-}
+};
 
 export default ShortcutsSettingsPanel;

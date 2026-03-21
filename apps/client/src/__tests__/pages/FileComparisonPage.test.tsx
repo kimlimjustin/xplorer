@@ -105,12 +105,7 @@ describe('FileComparisonPage', () => {
     it('shows loading spinner while comparing', () => {
       mockCompareFiles.mockReturnValue(new Promise(() => {}));
 
-      render(
-        <FileComparisonPage
-          file1Path="C:\test\file1.txt"
-          file2Path="C:\test\file2.txt"
-        />,
-      );
+      render(<FileComparisonPage file1Path="C:\test\file1.txt" file2Path="C:\test\file2.txt" />);
 
       expect(screen.getByText('Comparing files...')).toBeInTheDocument();
     });
@@ -120,12 +115,7 @@ describe('FileComparisonPage', () => {
     it('shows error UI when comparison fails', async () => {
       mockCompareFiles.mockRejectedValue(new Error('Read error'));
 
-      render(
-        <FileComparisonPage
-          file1Path="C:\test\file1.txt"
-          file2Path="C:\test\file2.txt"
-        />,
-      );
+      render(<FileComparisonPage file1Path="C:\test\file1.txt" file2Path="C:\test\file2.txt" />);
 
       await waitFor(() => {
         expect(screen.getByText('Comparison failed')).toBeInTheDocument();
@@ -152,12 +142,7 @@ describe('FileComparisonPage', () => {
     it('provides a Try Again button on error', async () => {
       mockCompareFiles.mockRejectedValueOnce(new Error('Read error'));
 
-      render(
-        <FileComparisonPage
-          file1Path="C:\test\file1.txt"
-          file2Path="C:\test\file2.txt"
-        />,
-      );
+      render(<FileComparisonPage file1Path="C:\test\file1.txt" file2Path="C:\test\file2.txt" />);
 
       await waitFor(() => {
         expect(screen.getByText('Try Again')).toBeInTheDocument();
@@ -167,12 +152,7 @@ describe('FileComparisonPage', () => {
 
   describe('Successful Comparison - Side by Side View', () => {
     it('shows file names in the file name bar', async () => {
-      render(
-        <FileComparisonPage
-          file1Path="C:\test\file1.txt"
-          file2Path="C:\test\file2.txt"
-        />,
-      );
+      render(<FileComparisonPage file1Path="C:\test\file1.txt" file2Path="C:\test\file2.txt" />);
 
       await waitFor(() => {
         expect(screen.getByText('file1.txt')).toBeInTheDocument();
@@ -181,12 +161,7 @@ describe('FileComparisonPage', () => {
     });
 
     it('displays similarity percentage in the stats header', async () => {
-      render(
-        <FileComparisonPage
-          file1Path="C:\test\file1.txt"
-          file2Path="C:\test\file2.txt"
-        />,
-      );
+      render(<FileComparisonPage file1Path="C:\test\file1.txt" file2Path="C:\test\file2.txt" />);
 
       await waitFor(() => {
         expect(screen.getByText('75.0%')).toBeInTheDocument();
@@ -194,12 +169,7 @@ describe('FileComparisonPage', () => {
     });
 
     it('displays addition and deletion counts', async () => {
-      render(
-        <FileComparisonPage
-          file1Path="C:\test\file1.txt"
-          file2Path="C:\test\file2.txt"
-        />,
-      );
+      render(<FileComparisonPage file1Path="C:\test\file1.txt" file2Path="C:\test\file2.txt" />);
 
       await waitFor(() => {
         expect(screen.getByText('+1 addition')).toBeInTheDocument();
@@ -208,12 +178,7 @@ describe('FileComparisonPage', () => {
     });
 
     it('shows the algorithm used', async () => {
-      render(
-        <FileComparisonPage
-          file1Path="C:\test\file1.txt"
-          file2Path="C:\test\file2.txt"
-        />,
-      );
+      render(<FileComparisonPage file1Path="C:\test\file1.txt" file2Path="C:\test\file2.txt" />);
 
       await waitFor(() => {
         expect(screen.getByText('myers')).toBeInTheDocument();
@@ -221,12 +186,7 @@ describe('FileComparisonPage', () => {
     });
 
     it('shows the Side by Side view toggle as active by default', async () => {
-      render(
-        <FileComparisonPage
-          file1Path="C:\test\file1.txt"
-          file2Path="C:\test\file2.txt"
-        />,
-      );
+      render(<FileComparisonPage file1Path="C:\test\file1.txt" file2Path="C:\test\file2.txt" />);
 
       await waitFor(() => {
         const sideBySideBtn = screen.getByTitle('Side-by-side view');
@@ -235,12 +195,7 @@ describe('FileComparisonPage', () => {
     });
 
     it('shows diff line counts in the footer', async () => {
-      render(
-        <FileComparisonPage
-          file1Path="C:\test\file1.txt"
-          file2Path="C:\test\file2.txt"
-        />,
-      );
+      render(<FileComparisonPage file1Path="C:\test\file1.txt" file2Path="C:\test\file2.txt" />);
 
       await waitFor(() => {
         // Footer shows "3 / 4 lines"
@@ -249,12 +204,7 @@ describe('FileComparisonPage', () => {
     });
 
     it('shows processing time in the footer', async () => {
-      render(
-        <FileComparisonPage
-          file1Path="C:\test\file1.txt"
-          file2Path="C:\test\file2.txt"
-        />,
-      );
+      render(<FileComparisonPage file1Path="C:\test\file1.txt" file2Path="C:\test\file2.txt" />);
 
       await waitFor(() => {
         expect(screen.getByText('12ms')).toBeInTheDocument();
@@ -264,12 +214,7 @@ describe('FileComparisonPage', () => {
 
   describe('View Mode Toggle', () => {
     it('can switch to Unified view mode', async () => {
-      render(
-        <FileComparisonPage
-          file1Path="C:\test\file1.txt"
-          file2Path="C:\test\file2.txt"
-        />,
-      );
+      render(<FileComparisonPage file1Path="C:\test\file1.txt" file2Path="C:\test\file2.txt" />);
 
       await waitFor(() => {
         expect(screen.getByTitle('Unified view')).toBeInTheDocument();
@@ -283,12 +228,7 @@ describe('FileComparisonPage', () => {
     });
 
     it('can switch back to Side by Side view', async () => {
-      render(
-        <FileComparisonPage
-          file1Path="C:\test\file1.txt"
-          file2Path="C:\test\file2.txt"
-        />,
-      );
+      render(<FileComparisonPage file1Path="C:\test\file1.txt" file2Path="C:\test\file2.txt" />);
 
       await waitFor(() => {
         expect(screen.getByTitle('Unified view')).toBeInTheDocument();
@@ -304,12 +244,7 @@ describe('FileComparisonPage', () => {
 
   describe('Hunk Navigation', () => {
     it('shows hunk navigation when there are changes', async () => {
-      render(
-        <FileComparisonPage
-          file1Path="C:\test\file1.txt"
-          file2Path="C:\test\file2.txt"
-        />,
-      );
+      render(<FileComparisonPage file1Path="C:\test\file1.txt" file2Path="C:\test\file2.txt" />);
 
       await waitFor(() => {
         expect(screen.getByTitle('Previous change (Ctrl+Up)')).toBeInTheDocument();
@@ -318,12 +253,7 @@ describe('FileComparisonPage', () => {
     });
 
     it('displays the current change index', async () => {
-      render(
-        <FileComparisonPage
-          file1Path="C:\test\file1.txt"
-          file2Path="C:\test\file2.txt"
-        />,
-      );
+      render(<FileComparisonPage file1Path="C:\test\file1.txt" file2Path="C:\test\file2.txt" />);
 
       await waitFor(() => {
         // The first hunk should be selected by default
@@ -334,12 +264,7 @@ describe('FileComparisonPage', () => {
 
   describe('Refresh', () => {
     it('provides a refresh button in the toolbar', async () => {
-      render(
-        <FileComparisonPage
-          file1Path="C:\test\file1.txt"
-          file2Path="C:\test\file2.txt"
-        />,
-      );
+      render(<FileComparisonPage file1Path="C:\test\file1.txt" file2Path="C:\test\file2.txt" />);
 
       await waitFor(() => {
         expect(screen.getByTitle('Refresh comparison')).toBeInTheDocument();
@@ -347,12 +272,7 @@ describe('FileComparisonPage', () => {
     });
 
     it('re-runs comparison when refresh is clicked', async () => {
-      render(
-        <FileComparisonPage
-          file1Path="C:\test\file1.txt"
-          file2Path="C:\test\file2.txt"
-        />,
-      );
+      render(<FileComparisonPage file1Path="C:\test\file1.txt" file2Path="C:\test\file2.txt" />);
 
       await waitFor(() => {
         expect(screen.getByTitle('Refresh comparison')).toBeInTheDocument();
@@ -399,12 +319,7 @@ describe('FileComparisonPage', () => {
         }),
       );
 
-      render(
-        <FileComparisonPage
-          file1Path="C:\test\same.txt"
-          file2Path="C:\test\same_copy.txt"
-        />,
-      );
+      render(<FileComparisonPage file1Path="C:\test\same.txt" file2Path="C:\test\same_copy.txt" />);
 
       await waitFor(() => {
         expect(screen.getByText('100.0%')).toBeInTheDocument();
@@ -421,12 +336,7 @@ describe('FileComparisonPage', () => {
         }),
       );
 
-      render(
-        <FileComparisonPage
-          file1Path="C:\test\photo1.png"
-          file2Path="C:\test\photo2.png"
-        />,
-      );
+      render(<FileComparisonPage file1Path="C:\test\photo1.png" file2Path="C:\test\photo2.png" />);
 
       await waitFor(() => {
         const images = screen.getAllByRole('img');

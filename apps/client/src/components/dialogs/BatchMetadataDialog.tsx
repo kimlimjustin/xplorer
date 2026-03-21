@@ -6,8 +6,9 @@ import {
   PRESET_COLORS,
   TagsPanel,
   NotesPanel,
+  type BatchMetadataDialogProps,
+  type ActiveTab,
 } from './batch-metadata-helpers';
-import type { BatchMetadataDialogProps, ActiveTab } from './batch-metadata-helpers';
 
 // ── Component ────────────────────────────────────────────────────────────────
 
@@ -248,6 +249,41 @@ const BatchMetadataDialog = React.memo(function BatchMetadataDialog({
 
   if (!isOpen) return null;
 
+  const tabContent =
+    activeTab === 'tags' ? (
+      <TagsPanel
+        pendingTagsToAdd={pendingTagsToAdd}
+        pendingTagsToRemove={pendingTagsToRemove}
+        commonTags={commonTags}
+        removableTags={removableTags}
+        availableSystemTags={availableSystemTags}
+        newTagName={newTagName}
+        setNewTagName={setNewTagName}
+        selectedColor={selectedColor}
+        setSelectedColor={setSelectedColor}
+        handleAddNewTag={handleAddNewTag}
+        handleRemoveFromPendingAdd={handleRemoveFromPendingAdd}
+        handleAddToRemoveList={handleAddToRemoveList}
+        handleUndoRemove={handleUndoRemove}
+        handleQuickAddSystemTag={handleQuickAddSystemTag}
+        handleTagInputKeyDown={handleTagInputKeyDown}
+        tagInputRef={tagInputRef}
+        error={error}
+        setError={setError}
+      />
+    ) : (
+      <NotesPanel
+        fileNotes={fileNotes}
+        files={files}
+        noteTitle={noteTitle}
+        setNoteTitle={setNoteTitle}
+        noteContent={noteContent}
+        setNoteContent={setNoteContent}
+        noteMode={noteMode}
+        setNoteMode={setNoteMode}
+      />
+    );
+
   return (
     <div
       style={{
@@ -452,38 +488,8 @@ const BatchMetadataDialog = React.memo(function BatchMetadataDialog({
                   />
                   Loading metadata...
                 </div>
-              ) : activeTab === 'tags' ? (
-                <TagsPanel
-                  pendingTagsToAdd={pendingTagsToAdd}
-                  pendingTagsToRemove={pendingTagsToRemove}
-                  commonTags={commonTags}
-                  removableTags={removableTags}
-                  availableSystemTags={availableSystemTags}
-                  newTagName={newTagName}
-                  setNewTagName={setNewTagName}
-                  selectedColor={selectedColor}
-                  setSelectedColor={setSelectedColor}
-                  handleAddNewTag={handleAddNewTag}
-                  handleRemoveFromPendingAdd={handleRemoveFromPendingAdd}
-                  handleAddToRemoveList={handleAddToRemoveList}
-                  handleUndoRemove={handleUndoRemove}
-                  handleQuickAddSystemTag={handleQuickAddSystemTag}
-                  handleTagInputKeyDown={handleTagInputKeyDown}
-                  tagInputRef={tagInputRef}
-                  error={error}
-                  setError={setError}
-                />
               ) : (
-                <NotesPanel
-                  fileNotes={fileNotes}
-                  files={files}
-                  noteTitle={noteTitle}
-                  setNoteTitle={setNoteTitle}
-                  noteContent={noteContent}
-                  setNoteContent={setNoteContent}
-                  noteMode={noteMode}
-                  setNoteMode={setNoteMode}
-                />
+                tabContent
               )}
             </div>
           </div>

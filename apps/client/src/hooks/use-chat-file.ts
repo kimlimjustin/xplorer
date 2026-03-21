@@ -79,8 +79,9 @@ export const useChatFile = ({ filePath }: UseChatFileOptions) => {
 
         if (data) {
           if (data.model) chatState.setSelectedModel(data.model);
-          if (data.thinking_enabled !== undefined)
+          if (data.thinking_enabled !== undefined) {
             chatState.setThinkingEnabled(data.thinking_enabled);
+          }
           if (data.context && data.context.length > 0) {
             chatState.setContextFiles(
               data.context.map((c) => ({ path: c.path, name: c.name, file_type: '' })),
@@ -404,4 +405,4 @@ export const useChatFile = ({ filePath }: UseChatFileOptions) => {
     activePlan: state.activePlan,
     toggleToolCallExpand: chatState.toggleToolCallExpand,
   };
-}
+};

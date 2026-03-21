@@ -18,13 +18,11 @@ import type {
   AISearchResult,
   AIIndexStatus,
   AIIndexEntry,
-  TokenizerSettings as TokenizerSettingsType,
   TokenIndex,
   ChatFileData,
   ChatFileSummary,
   ChatSession,
   ChatSessionSummary,
-  ChatHistoryMessage,
   BookmarkEntry,
   FileTag,
   FileNote,
@@ -43,25 +41,18 @@ import type {
   FileVersion,
   VersioningConfig,
   RecentFile,
-  CompressionProgress,
-  IndexingProgress,
   FileOperationProgress,
   OrganizationAnalysis,
   OrganizationPlan,
   StorageAnalytics,
-  StorageAnalysisProgress,
-  DirectoryProblem,
   DiagnosisResult,
   SqliteTableInfo,
   SqliteColumnInfo,
   SqliteQueryResult,
   ImageOperations,
   ImageInfo,
-  BatchImageProgress,
   BatchImageResult,
   BackupManifest,
-  BackupProgress,
-  AuditEntry,
   AuditLogQuery,
   DockerContainerInfo,
   DockerImageInfo,
@@ -78,7 +69,6 @@ import type {
 
 // Re-export all types so consumers can import from either location
 export * from './tauri-api-types';
-
 
 export class TauriAPI {
   // File operations
@@ -1772,7 +1762,10 @@ export class TauriAPI {
     return await transport('remove_context_menu_entry', {});
   }
 
-  static async getShellIntegrationStatus(): Promise<{ is_default_handler: boolean; context_menu_installed: boolean }> {
+  static async getShellIntegrationStatus(): Promise<{
+    is_default_handler: boolean;
+    context_menu_installed: boolean;
+  }> {
     return await transport('get_shell_integration_status', {});
   }
 }

@@ -18,12 +18,8 @@ import { Toaster } from '@/components/ui/Toast';
 import ChangeSummaryToast from '@/components/ui/ChangeSummaryToast';
 
 // Lazy-loaded dialogs and overlays -- only loaded when opened
-const TemplatePickerDialog = React.lazy(
-  () => import('@/components/dialogs/TemplatePickerDialog'),
-);
-const PathBookmarksDialog = React.lazy(
-  () => import('@/components/dialogs/PathBookmarksDialog'),
-);
+const TemplatePickerDialog = React.lazy(() => import('@/components/dialogs/TemplatePickerDialog'));
+const PathBookmarksDialog = React.lazy(() => import('@/components/dialogs/PathBookmarksDialog'));
 const CrossTabOperationsDialog = React.lazy(
   () => import('@/components/dialogs/CrossTabOperationsDialog'),
 );
@@ -33,21 +29,13 @@ const ExtensionPermissionDialog = React.lazy(
 const WorkspaceLayoutDialog = React.lazy(
   () => import('@/components/dialogs/WorkspaceLayoutDialog'),
 );
-const BetaWarningDialog = React.lazy(
-  () => import('@/components/dialogs/BetaWarningDialog'),
-);
-const CommandPalette = React.lazy(
-  () => import('@/components/CommandPalette'),
-);
-const TourOverlay = React.lazy(
-  () => import('@/components/tour/TourOverlay'),
-);
+const BetaWarningDialog = React.lazy(() => import('@/components/dialogs/BetaWarningDialog'));
+const CommandPalette = React.lazy(() => import('@/components/CommandPalette'));
+const TourOverlay = React.lazy(() => import('@/components/tour/TourOverlay'));
 const FileOperationProgressDialog = React.lazy(
   () => import('@/components/dialogs/FileOperationProgressDialog'),
 );
-const QuickLookOverlay = React.lazy(
-  () => import('@/components/QuickLookOverlay'),
-);
+const QuickLookOverlay = React.lazy(() => import('@/components/QuickLookOverlay'));
 const CollectionEditorDialog = React.lazy(
   () => import('@/components/dialogs/CollectionEditorDialog'),
 );
@@ -399,6 +387,6 @@ const DialogsOverlay = ({
       )}
     </>
   );
-}
+};
 
 export default DialogsOverlay;

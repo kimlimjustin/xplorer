@@ -3,7 +3,7 @@ import { getHistory, clearHistory, type ClipboardEntry } from '@/hooks/use-clipb
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-const formatTimestamp = (ts: number) : string => {
+const formatTimestamp = (ts: number): string => {
   const diff = Date.now() - ts;
   if (diff < 60_000) return 'just now';
   if (diff < 3_600_000) return `${Math.floor(diff / 60_000)}m ago`;
@@ -14,7 +14,7 @@ const formatTimestamp = (ts: number) : string => {
     hour: '2-digit',
     minute: '2-digit',
   });
-}
+};
 
 // ── Icons (inline SVG) ──────────────────────────────────────────────────────
 
@@ -34,7 +34,7 @@ const CopyIcon = () => {
       <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
     </svg>
   );
-}
+};
 
 const ScissorsIcon = () => {
   return (
@@ -55,7 +55,7 @@ const ScissorsIcon = () => {
       <line x1="8.12" y1="8.12" x2="12" y2="12" />
     </svg>
   );
-}
+};
 
 const TrashIcon = () => {
   return (
@@ -76,7 +76,7 @@ const TrashIcon = () => {
       <path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2" />
     </svg>
   );
-}
+};
 
 const ClipboardIcon = () => {
   return (
@@ -94,7 +94,7 @@ const ClipboardIcon = () => {
       <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
     </svg>
   );
-}
+};
 
 const FolderIcon = () => {
   return (
@@ -102,7 +102,7 @@ const FolderIcon = () => {
       <path d="M2 6a2 2 0 012-2h5l2 2h9a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
     </svg>
   );
-}
+};
 
 const FileIcon = () => {
   return (
@@ -120,7 +120,7 @@ const FileIcon = () => {
       <polyline points="14 2 14 8 20 8" />
     </svg>
   );
-}
+};
 
 // ── Props ────────────────────────────────────────────────────────────────────
 
@@ -264,6 +264,7 @@ const ClipboardHistoryPanel = ({ onPaste }: ClipboardHistoryPanelProps) => {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                 {entry.files.slice(0, 3).map((f, i) => (
                   <div
+                    // eslint-disable-next-line react/no-array-index-key
                     key={i}
                     style={{
                       display: 'flex',
@@ -339,6 +340,6 @@ const ClipboardHistoryPanel = ({ onPaste }: ClipboardHistoryPanelProps) => {
       </div>
     </div>
   );
-}
+};
 
 export default ClipboardHistoryPanel;

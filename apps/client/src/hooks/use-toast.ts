@@ -26,7 +26,7 @@ let count = 0;
 const genId = () => {
   count = (count + 1) % Number.MAX_SAFE_INTEGER;
   return count.toString();
-}
+};
 
 type ActionType = {
   readonly ADD_TOAST: 'ADD_TOAST';
@@ -68,7 +68,7 @@ const addToRemoveQueue = (toastId: string) => {
     toastTimeouts.delete(toastId);
     dispatch({
       type: 'REMOVE_TOAST',
-      toastId: toastId,
+      toastId,
     });
   }, TOAST_REMOVE_DELAY);
 
@@ -146,7 +146,7 @@ const dispatch = (action: Action) => {
   listeners.forEach((listener) => {
     listener(memoryState);
   });
-}
+};
 
 export type Toast = Omit<ToasterToast, 'id'>;
 
@@ -174,8 +174,14 @@ const toast = ({ ...props }: Toast) => {
 
   // Capture toast into notification history
   {
-    const titleStr =
-      typeof props.title === 'string' ? props.title : props.title ? String(props.title) : '';
+    let titleStr: string;
+    if (typeof props.title === 'string') {
+      titleStr = props.title;
+    } else if (props.title) {
+      titleStr = String(props.title);
+    } else {
+      titleStr = '';
+    }
     if (titleStr) {
       const descStr = typeof props.description === 'string' ? props.description : undefined;
       const type = props.variant === 'destructive' ? ('error' as const) : ('success' as const);
@@ -187,11 +193,11 @@ const toast = ({ ...props }: Toast) => {
   setTimeout(dismiss, TOAST_AUTO_DISMISS_DELAY);
 
   return {
-    id: id,
+    id,
     dismiss,
     update,
   };
-}
+};
 
 const useToast = () => {
   const [state, setState] = React.useState<State>(memoryState);
@@ -220,6 +226,6 @@ const useToast = () => {
     dismiss: dismissToast,
     remove: removeToast,
   };
-}
+};
 
 export { useToast, toast };

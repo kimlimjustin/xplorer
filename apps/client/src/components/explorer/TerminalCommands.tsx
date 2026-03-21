@@ -218,7 +218,7 @@ async function handleChangeDirectory(
       const parts = terminalCwd.split(/[\\/]/).filter(Boolean);
       if (parts.length > 1) {
         parts.pop();
-        resolvedPath = isWindows ? parts.join(PATH_SEPARATOR) : '/' + parts.join('/');
+        resolvedPath = isWindows ? parts.join(PATH_SEPARATOR) : `/${parts.join('/')}`;
       } else {
         resolvedPath = isWindows ? parts[0] + PATH_SEPARATOR : '/';
       }
@@ -365,12 +365,14 @@ async function handleSizeCommand(
   setTerminalHistory: React.Dispatch<React.SetStateAction<string[]>>,
 ) {
   const pathToCheck = args.length > 0 ? args[0] : '.';
-  const fullPath =
-    pathToCheck === '.'
-      ? terminalCwd
-      : pathToCheck.includes(PATH_SEPARATOR) || pathToCheck.includes('/')
-        ? pathToCheck
-        : joinPath(terminalCwd, pathToCheck);
+  let fullPath: string;
+  if (pathToCheck === '.') {
+    fullPath = terminalCwd;
+  } else if (pathToCheck.includes(PATH_SEPARATOR) || pathToCheck.includes('/')) {
+    fullPath = pathToCheck;
+  } else {
+    fullPath = joinPath(terminalCwd, pathToCheck);
+  }
 
   try {
     const dirSize = await TauriAPI.getDirSize(fullPath);
@@ -387,10 +389,10 @@ async function handleSizeCommand(
   }
 }
 
-const formatFileSize = (bytes: number) : string => {
+const formatFileSize = (bytes: number): string => {
   if (bytes === 0) return '0 B';
   const k = 1024;
   const sizes = ['B', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-}
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
+};

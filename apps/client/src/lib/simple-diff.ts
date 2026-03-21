@@ -13,7 +13,7 @@ export interface DiffLine {
  * Compute the LCS table for two arrays of strings.
  * Returns a 2D array where lcs[i][j] = length of LCS of left[0..i-1] and right[0..j-1].
  */
-const buildLcsTable = (left: string[], right: string[]) : number[][] => {
+const buildLcsTable = (left: string[], right: string[]): number[][] => {
   const m = left.length;
   const n = right.length;
 
@@ -37,12 +37,12 @@ const buildLcsTable = (left: string[], right: string[]) : number[][] => {
   }
 
   return table;
-}
+};
 
 /**
  * Backtrack through the LCS table to produce a diff.
  */
-const backtrackDiff = (table: number[][], left: string[], right: string[]) : DiffLine[] => {
+const backtrackDiff = (table: number[][], left: string[], right: string[]): DiffLine[] => {
   const result: DiffLine[] = [];
   let i = left.length;
   let j = right.length;
@@ -74,12 +74,12 @@ const backtrackDiff = (table: number[][], left: string[], right: string[]) : Dif
   }
 
   return result.reverse();
-}
+};
 
 /**
  * Simple fallback diff for very large files: marks every line as removed then added.
  */
-const simpleFallbackDiff = (left: string[], right: string[]) : DiffLine[] => {
+const simpleFallbackDiff = (left: string[], right: string[]): DiffLine[] => {
   const result: DiffLine[] = [];
   const maxLen = Math.max(left.length, right.length);
 
@@ -112,7 +112,7 @@ const simpleFallbackDiff = (left: string[], right: string[]) : DiffLine[] => {
   }
 
   return result;
-}
+};
 
 /**
  * Compute a line-by-line diff between two text strings.
@@ -121,7 +121,7 @@ const simpleFallbackDiff = (left: string[], right: string[]) : DiffLine[] => {
  * @param rightText - Content of the "right" (modified) file
  * @returns Array of DiffLine objects describing the diff
  */
-export const computeLineDiff = (leftText: string, rightText: string) : DiffLine[] => {
+export const computeLineDiff = (leftText: string, rightText: string): DiffLine[] => {
   const leftLines = leftText.split('\n');
   const rightLines = rightText.split('\n');
 
@@ -134,12 +134,14 @@ export const computeLineDiff = (leftText: string, rightText: string) : DiffLine[
   }
 
   return backtrackDiff(table, leftLines, rightLines);
-}
+};
 
 /**
  * Compute diff statistics from a diff result.
  */
-export const getDiffStats = (diff: DiffLine[]): {
+export const getDiffStats = (
+  diff: DiffLine[],
+): {
   additions: number;
   removals: number;
   unchanged: number;
@@ -163,4 +165,4 @@ export const getDiffStats = (diff: DiffLine[]): {
   }
 
   return { additions, removals, unchanged };
-}
+};

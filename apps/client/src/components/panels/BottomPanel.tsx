@@ -127,11 +127,11 @@ const BottomPanel = ({
 
   return (
     <div
-      className="bg-xp-surface border-t border-xp-border flex flex-col flex-shrink-0"
+      className="bg-xp-surface border-xp-border flex flex-shrink-0 flex-col border-t"
       style={{ height: height ?? 192 }}
     >
       {/* Bottom Panel Tabs */}
-      <div className="flex border-b border-xp-border" role="tablist" aria-label="Bottom panel tabs">
+      <div className="border-xp-border flex border-b" role="tablist" aria-label="Bottom panel tabs">
         {/* Core tabs */}
         {CORE_TABS.map((tab) => (
           <button
@@ -141,20 +141,20 @@ const BottomPanel = ({
             aria-controls={`bottom-panel-${tab}`}
             id={`bottom-tab-${tab}`}
             onClick={() => setBottomPanelTab(tab)}
-            className={`py-1.5 px-3 text-xs font-medium capitalize flex items-center gap-1.5 ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium capitalize ${
               bottomPanelTab === tab
-                ? 'bg-xp-bg border-b-2 border-xp-blue text-xp-blue'
+                ? 'bg-xp-bg border-xp-blue text-xp-blue border-b-2'
                 : 'hover:bg-xp-surface-light'
             }`}
           >
             {getTabLabel(tab)}
             {tab === 'changes' && fileChanges && fileChanges.totalCount > 0 && (
-              <span className="bg-yellow-500/20 text-yellow-400 px-1 rounded text-[10px] font-bold ml-0.5">
+              <span className="ml-0.5 rounded bg-yellow-500/20 px-1 text-[10px] font-bold text-yellow-400">
                 {fileChanges.totalCount}
               </span>
             )}
             {tab === 'notifications' && unreadCount > 0 && (
-              <span className="bg-xp-blue/20 text-xp-blue px-1 rounded text-[10px] font-bold ml-0.5">
+              <span className="bg-xp-blue/20 text-xp-blue ml-0.5 rounded px-1 text-[10px] font-bold">
                 {unreadCount}
               </span>
             )}
@@ -170,24 +170,24 @@ const BottomPanel = ({
             aria-controls={`bottom-panel-${extTab.id}`}
             id={`bottom-tab-${extTab.id}`}
             onClick={() => setBottomPanelTab(extTab.id as BottomPanelTab)}
-            className={`py-1.5 px-3 text-xs font-medium flex items-center gap-1.5 ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium ${
               bottomPanelTab === extTab.id
-                ? 'bg-xp-bg border-b-2 border-xp-blue text-xp-blue'
+                ? 'bg-xp-bg border-xp-blue text-xp-blue border-b-2'
                 : 'hover:bg-xp-surface-light'
             }`}
           >
-            {extTab.icon && <span className="w-3.5 h-3.5">{extTab.icon}</span>}
+            {extTab.icon && <span className="h-3.5 w-3.5">{extTab.icon}</span>}
             {extTab.title}
           </button>
         ))}
 
         <button
           onClick={() => setBottomPanelCollapsed(true)}
-          className="ml-auto px-2 hover:bg-xp-surface-light"
+          className="hover:bg-xp-surface-light ml-auto px-2"
           title="Close (Ctrl+J)"
           aria-label="Close bottom panel"
         >
-          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
             <path
               fillRule="evenodd"
               d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
@@ -207,7 +207,7 @@ const BottomPanel = ({
         <ErrorBoundary>
           <React.Suspense
             fallback={
-              <div className="flex items-center justify-center h-full text-xs text-xp-text-muted">
+              <div className="text-xp-text-muted flex h-full items-center justify-center text-xs">
                 Loading...
               </div>
             }
@@ -254,9 +254,9 @@ const BottomPanel = ({
                   onNavigate={onNavigate}
                 />
               ) : (
-                <div className="flex items-center justify-center h-full text-xs text-xp-text-muted">
+                <div className="text-xp-text-muted flex h-full items-center justify-center text-xs">
                   <svg
-                    className="w-4 h-4 mr-2 text-green-400"
+                    className="mr-2 h-4 w-4 text-green-400"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -286,7 +286,7 @@ const BottomPanel = ({
       </div>
     </div>
   );
-}
+};
 
 // ── Merged Activity Log content ─────────────────────────────────────────────
 
@@ -325,14 +325,14 @@ const ActivityLogContent = ({
   onNavigate,
 }: ActivityLogContentProps) => {
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex h-full flex-col">
       {/* Sub-filter toolbar */}
-      <div className="flex items-center gap-1 px-3 py-1.5 border-b border-xp-border bg-xp-surface-light/30 flex-shrink-0">
+      <div className="border-xp-border bg-xp-surface-light/30 flex flex-shrink-0 items-center gap-1 border-b px-3 py-1.5">
         {ACTIVITY_LOG_FILTERS.map((f) => (
           <button
             key={f.value}
             onClick={() => setActivityLogFilter(f.value)}
-            className={`px-2 py-0.5 text-[10px] rounded font-medium ${
+            className={`rounded px-2 py-0.5 text-[10px] font-medium ${
               activityLogFilter === f.value
                 ? 'bg-xp-blue/20 text-xp-blue'
                 : 'text-xp-text-muted hover:bg-xp-surface-light'
@@ -349,12 +349,13 @@ const ActivityLogContent = ({
         {(activityLogFilter === 'all' || activityLogFilter === 'output') && (
           <div>
             {activityLogFilter === 'all' && (
-              <div className="px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-xp-text-muted bg-xp-surface-light/20 border-b border-xp-border/50 sticky top-0 z-[1]">
+              <div className="text-xp-text-muted bg-xp-surface-light/20 border-xp-border/50 sticky top-0 z-[1] border-b px-3 py-1 text-[10px] font-semibold uppercase tracking-wider">
                 Output
               </div>
             )}
-            <div className="text-xs space-y-1 p-3">
+            <div className="space-y-1 p-3 text-xs">
               {outputMessages.map((message, index) => (
+                // eslint-disable-next-line react/no-array-index-key
                 <div key={`${index}-${message.slice(0, 32)}`} className="text-xp-text-muted">
                   {message}
                 </div>
@@ -362,16 +363,12 @@ const ActivityLogContent = ({
               <div className="text-xp-text-muted">
                 [INFO] Loaded {files.length} files from {currentPath}
               </div>
-              <div className="text-xp-text-muted">
-                [INFO] Theme applied: {themes[theme]?.name}
-              </div>
+              <div className="text-xp-text-muted">[INFO] Theme applied: {themes[theme]?.name}</div>
               <div className="text-xp-text-muted">
                 [INFO] Terminal working directory: {terminalCwd}
               </div>
               {selectedFiles.size > 0 && (
-                <div className="text-xp-blue">
-                  [INFO] {selectedFiles.size} file(s) selected
-                </div>
+                <div className="text-xp-blue">[INFO] {selectedFiles.size} file(s) selected</div>
               )}
               {selectedFile && (
                 <div className="text-xp-green">[INFO] Active file: {selectedFile.name}</div>
@@ -384,13 +381,13 @@ const ActivityLogContent = ({
         {(activityLogFilter === 'all' || activityLogFilter === 'activity') && (
           <div>
             {activityLogFilter === 'all' && (
-              <div className="px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-xp-text-muted bg-xp-surface-light/20 border-b border-xp-border/50 sticky top-0 z-[1]">
+              <div className="text-xp-text-muted bg-xp-surface-light/20 border-xp-border/50 sticky top-0 z-[1] border-b px-3 py-1 text-[10px] font-semibold uppercase tracking-wider">
                 Activity
               </div>
             )}
             <React.Suspense
               fallback={
-                <div className="flex items-center justify-center h-16 text-xs text-xp-text-muted">
+                <div className="text-xp-text-muted flex h-16 items-center justify-center text-xs">
                   Loading...
                 </div>
               }
@@ -404,13 +401,13 @@ const ActivityLogContent = ({
         {(activityLogFilter === 'all' || activityLogFilter === 'history') && (
           <div>
             {activityLogFilter === 'all' && (
-              <div className="px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-xp-text-muted bg-xp-surface-light/20 border-b border-xp-border/50 sticky top-0 z-[1]">
+              <div className="text-xp-text-muted bg-xp-surface-light/20 border-xp-border/50 sticky top-0 z-[1] border-b px-3 py-1 text-[10px] font-semibold uppercase tracking-wider">
                 History
               </div>
             )}
             <React.Suspense
               fallback={
-                <div className="flex items-center justify-center h-16 text-xs text-xp-text-muted">
+                <div className="text-xp-text-muted flex h-16 items-center justify-center text-xs">
                   Loading...
                 </div>
               }
@@ -422,6 +419,6 @@ const ActivityLogContent = ({
       </div>
     </div>
   );
-}
+};
 
 export default BottomPanel;

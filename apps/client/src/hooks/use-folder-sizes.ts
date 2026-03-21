@@ -153,4 +153,4 @@ export const useFolderSizes = (files: FileEntry[]) => {
     getFolderError,
     hasAnyCalculating: state.isCalculating.size > 0,
   };
-}
+};
