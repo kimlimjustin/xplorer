@@ -242,12 +242,23 @@ const RightSidebar = ({
   const showScrubber = isPreviewTab && multiSelected && !showCompare;
 
   // Props bag passed to extension panels (for any extension that uses PanelRenderProps)
+  // Convert selectedFiles Set<string> to the array format extensions expect
+  const extensionSelectedFiles = selectedFiles
+    ? allFiles
+        .filter((f) => selectedFiles.has(f.path))
+        .map((f) => ({
+          name: f.name,
+          path: f.path,
+          is_dir: f.is_dir,
+        }))
+    : undefined;
+
   const extensionProps = {
     selectedFile: showScrubber ? effectivePreviewFile : selectedFile,
     formatFileSize,
     formatDate,
     allFiles,
-    selectedFiles,
+    selectedFiles: extensionSelectedFiles,
     getFolderSize,
     isCalculatingSize,
     currentPath,

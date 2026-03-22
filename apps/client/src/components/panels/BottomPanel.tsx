@@ -88,14 +88,23 @@ const BottomPanel = ({
   const { unreadCount } = useNotificationHistory();
   const [activityLogFilter, setActivityLogFilter] = useState<ActivityLogFilter>('all');
 
-  // Collect extension-registered bottom tabs
+  // Collect extension-registered bottom tabs, re-evaluate when extensions change
+  const [extRefreshKey, setExtRefreshKey] = useState(0);
+  useEffect(() => {
+    const unsubscribe = extensionHost.onChange(() => {
+      setExtRefreshKey((k) => k + 1);
+    });
+    return () => unsubscribe();
+  }, []);
+
   const extensionBottomTabs = useMemo(() => {
     try {
       return extensionHost.getBottomTabs();
     } catch {
       return [];
     }
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [extRefreshKey]);
 
   // Listen for xplorer-set-bottom-tab events (dispatched by extensions/commands)
   useEffect(() => {

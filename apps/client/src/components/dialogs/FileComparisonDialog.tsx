@@ -286,7 +286,7 @@ const FileComparisonDialog = ({
     if (comparisonType === 'image') {
       return (
         <div className="grid h-96 grid-cols-2 gap-4">
-          {[file1, file2].map((file) => (
+          {[file1, file2].map((file, i) => (
             <div key={file.path} className="flex flex-col overflow-hidden rounded-lg border">
               <div className="shrink-0 border-b bg-gray-50 p-2">
                 <h3
@@ -315,7 +315,7 @@ const FileComparisonDialog = ({
     if (comparisonType === 'video') {
       return (
         <div className="grid h-96 grid-cols-2 gap-4">
-          {[file1, file2].map((file) => (
+          {[file1, file2].map((file, i) => (
             <div key={file.path} className="flex flex-col overflow-hidden rounded-lg border">
               <div className="shrink-0 border-b bg-gray-50 p-2">
                 <h3
