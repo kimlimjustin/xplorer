@@ -156,6 +156,7 @@ class ExtensionHost {
       id: manifest.id,
       manifest,
       isActive: false,
+      isBuiltin: false,
       instance,
     });
 
@@ -167,6 +168,7 @@ class ExtensionHost {
           title: panel.title,
           icon: resolveIcon(panel.icon),
           location: (panel.location as 'sidebar' | 'bottom' | 'right') || 'right',
+          isBuiltin: false,
           render: (props: PanelRenderProps) => {
             try {
               if (typeof ext.render === 'function') {
@@ -368,6 +370,7 @@ class ExtensionHost {
       id: pkg.manifest.id,
       manifest: pkg.manifest,
       isActive: false,
+      isBuiltin: false,
     });
 
     // Register declared panels from manifest
@@ -379,6 +382,7 @@ class ExtensionHost {
           title: panel.title,
           icon: resolveIcon(panel.icon),
           location: (panel.location as 'sidebar' | 'bottom' | 'right') || 'right',
+          isBuiltin: false,
           render: () =>
             React.createElement(
               'div',
@@ -439,12 +443,13 @@ class ExtensionHost {
     // No preprocessing needed — extensions are built as IIFE bundles.
     // The IIFE uses require() for externals, which we provide in the sandbox.
 
-    // Temporarily override __xplorer_register__ to capture this extension's registration
-    let captured: unknown = null;
+    // Temporarily override __xplorer_register__ to capture ALL registrations
+    // (extensions can call register() multiple times, e.g. BottomTab + Command)
+    const capturedAll: unknown[] = [];
     const prevRegister = window.__xplorer_register__;
     this.expectedExtensionId = pkg.manifest.id;
     window.__xplorer_register__ = (ext: unknown) => {
-      captured = ext;
+      capturedAll.push(ext);
     };
 
     try {
@@ -652,167 +657,254 @@ class ExtensionHost {
     this.expectedExtensionId = null;
     window.__xplorer_register__ = prevRegister;
 
-    if (!captured) return;
+    if (capturedAll.length === 0) return;
 
     const ext = this.extensions.get(pkg.manifest.id);
     if (!ext) return;
 
     const api = this.createExtensionApi(pkg.manifest);
 
-    if (typeof captured === 'function') {
-      // Factory pattern: (api) => ({ activate, deactivate })
-      try {
-        ext.instance = (captured as (api: unknown) => unknown)(api);
-      } catch (err) {
-        console.error(`[ExtensionHost] Factory call failed for ${pkg.manifest.id}:`, err);
-      }
-    } else {
-      // Object pattern: { activate, deactivate, render, _setContext }
-      const obj = captured as Record<string, unknown>;
-      ext.instance = obj;
-
-      // Provide the API via _setContext if the extension supports it
-      if (typeof obj._setContext === 'function') {
-        const context = {
-          extensionPath: pkg.path,
-          globalState: {
-            get: (key: string) =>
-              this.executeCommand(`state:${pkg.manifest.id}:get`, key).catch(() => undefined),
-            set: (key: string, value: unknown) =>
-              this.registerCommand(`state:${pkg.manifest.id}:set:${key}`, () => value),
-            delete: (_key: string) => {},
-          },
-          workspaceState: {
-            get: (key: string) =>
-              this.executeCommand(`workspace:${pkg.manifest.id}:get`, key).catch(() => undefined),
-            set: (key: string, value: unknown) =>
-              this.registerCommand(`workspace:${pkg.manifest.id}:set:${key}`, () => value),
-            delete: (_key: string) => {},
-          },
-          subscriptions: [] as Array<{ dispose(): void }>,
-          asAbsolutePath: (relativePath: string) => {
-            if (relativePath.includes('..')) throw new Error('Path traversal not allowed');
-            return `${pkg.path}/${relativePath}`;
-          },
-        };
+    // Process all captured registrations (BottomTab, Sidebar, Command, etc.)
+    // The first one with activate/deactivate becomes the primary instance
+    for (const captured of capturedAll) {
+      if (typeof captured === 'function') {
+        // Factory pattern: (api) => ({ activate, deactivate })
         try {
-          (obj._setContext as (ctx: unknown, api: unknown) => void)(context, api);
-        } catch (err) {
-          console.error(`[ExtensionHost] _setContext failed for ${pkg.manifest.id}:`, err);
-        }
-      }
-
-      // Register panels declared by the captured object (from SDK Sidebar.register())
-      // that aren't already in the panelRegistry (i.e. not in the backend manifest)
-      const capturedManifest = (obj as Record<string, unknown>).manifest as
-        | {
-            contributes?: {
-              panels?: Array<{ id: string; title: string; icon?: string; location?: string }>;
-            };
+          if (!ext.instance) {
+            ext.instance = (captured as (api: unknown) => unknown)(api);
           }
-        | undefined;
-      if (capturedManifest?.contributes?.panels) {
-        for (const panel of capturedManifest.contributes.panels) {
-          if (!this.panelRegistry.has(panel.id)) {
-            this.panelRegistry.set(panel.id, {
-              id: panel.id,
+        } catch (err) {
+          console.error(`[ExtensionHost] Factory call failed for ${pkg.manifest.id}:`, err);
+        }
+      } else {
+        // Object pattern: { activate, deactivate, render, _setContext }
+        const obj = captured as Record<string, unknown>;
+        if (!ext.instance) {
+          ext.instance = obj;
+        }
+
+        // Provide the API via _setContext if the extension supports it
+        if (typeof obj._setContext === 'function') {
+          const context = {
+            extensionPath: pkg.path,
+            globalState: {
+              get: (key: string) =>
+                this.executeCommand(`state:${pkg.manifest.id}:get`, key).catch(() => undefined),
+              set: (key: string, value: unknown) =>
+                this.registerCommand(`state:${pkg.manifest.id}:set:${key}`, () => value),
+              delete: (_key: string) => {},
+            },
+            workspaceState: {
+              get: (key: string) =>
+                this.executeCommand(`workspace:${pkg.manifest.id}:get`, key).catch(() => undefined),
+              set: (key: string, value: unknown) =>
+                this.registerCommand(`workspace:${pkg.manifest.id}:set:${key}`, () => value),
+              delete: (_key: string) => {},
+            },
+            subscriptions: [] as Array<{ dispose(): void }>,
+            asAbsolutePath: (relativePath: string) => {
+              if (relativePath.includes('..')) throw new Error('Path traversal not allowed');
+              return `${pkg.path}/${relativePath}`;
+            },
+          };
+          try {
+            (obj._setContext as (ctx: unknown, api: unknown) => void)(context, api);
+          } catch (err) {
+            console.error(`[ExtensionHost] _setContext failed for ${pkg.manifest.id}:`, err);
+          }
+        }
+
+        // Register panels declared by the captured object (from SDK Sidebar.register())
+        // that aren't already in the panelRegistry (i.e. not in the backend manifest)
+        const capturedManifest = (obj as Record<string, unknown>).manifest as
+          | {
+              contributes?: {
+                panels?: Array<{ id: string; title: string; icon?: string; location?: string }>;
+              };
+            }
+          | undefined;
+        if (capturedManifest?.contributes?.panels) {
+          for (const panel of capturedManifest.contributes.panels) {
+            if (!this.panelRegistry.has(panel.id)) {
+              this.panelRegistry.set(panel.id, {
+                id: panel.id,
+                extensionId: pkg.manifest.id,
+                title: panel.title,
+                icon: resolveIcon(panel.icon),
+                location: (panel.location as 'sidebar' | 'bottom' | 'right') || 'right',
+                isBuiltin: false,
+                render: () =>
+                  React.createElement(
+                    'div',
+                    { className: 'p-4 text-sm text-xp-text-muted' },
+                    `Panel: ${panel.title}`,
+                  ),
+              });
+            }
+          }
+        }
+
+        // If the instance has a render() function, update panel registrations to use it
+        if (typeof obj.render === 'function') {
+          for (const [panelId, panel] of this.panelRegistry) {
+            if (panel.extensionId === pkg.manifest.id) {
+              panel.render = (props: PanelRenderProps) => {
+                try {
+                  return (obj.render as (props: PanelRenderProps) => React.ReactElement)(props);
+                } catch (err) {
+                  console.error(`[ExtensionHost] Panel render failed for "${panelId}":`, err);
+                  return React.createElement(
+                    'div',
+                    { className: 'p-4 text-sm text-red-400' },
+                    `Panel "${panel.title}" failed to render.`,
+                  );
+                }
+              };
+            }
+          }
+        }
+
+        // If the instance has a renderEditor() function, register editors from manifest
+        if (typeof obj.renderEditor === 'function' && pkg.manifest.contributes?.editors) {
+          for (const editor of pkg.manifest.contributes.editors) {
+            this.editorRegistry.set(editor.id, {
+              id: editor.id,
               extensionId: pkg.manifest.id,
-              title: panel.title,
-              icon: resolveIcon(panel.icon),
-              location: (panel.location as 'sidebar' | 'bottom' | 'right') || 'right',
-              render: () =>
-                React.createElement(
-                  'div',
-                  { className: 'p-4 text-sm text-xp-text-muted' },
-                  `Panel: ${panel.title}`,
-                ),
+              extensions: editor.extensions,
+              priority: editor.priority ?? 10,
+              render: (props: { filePath: string }) => {
+                try {
+                  return (obj.renderEditor as (props: { filePath: string }) => React.ReactElement)(
+                    props,
+                  );
+                } catch (err) {
+                  console.error(`[ExtensionHost] Editor render failed for "${editor.id}":`, err);
+                  return React.createElement(
+                    'div',
+                    { className: 'p-4 text-sm text-red-400' },
+                    `Editor "${editor.id}" failed to render.`,
+                  );
+                }
+              },
             });
           }
         }
-      }
 
-      // If the instance has a render() function, update panel registrations to use it
-      if (typeof obj.render === 'function') {
-        for (const [panelId, panel] of this.panelRegistry) {
-          if (panel.extensionId === pkg.manifest.id) {
-            panel.render = (props: PanelRenderProps) => {
-              try {
-                return (obj.render as (props: PanelRenderProps) => React.ReactElement)(props);
-              } catch (err) {
-                console.error(`[ExtensionHost] Panel render failed for "${panelId}":`, err);
-                return React.createElement(
-                  'div',
-                  { className: 'p-4 text-sm text-red-400' },
-                  `Panel "${panel.title}" failed to render.`,
-                );
-              }
-            };
-          }
-        }
-      }
-
-      // If the instance has a renderEditor() function, register editors from manifest
-      if (typeof obj.renderEditor === 'function' && pkg.manifest.contributes?.editors) {
-        for (const editor of pkg.manifest.contributes.editors) {
-          this.editorRegistry.set(editor.id, {
-            id: editor.id,
+        // Register sidebar tabs from marketplace extensions (renderSidebarTab + getSidebarTabConfig)
+        if (
+          typeof obj.renderSidebarTab === 'function' &&
+          typeof obj.getSidebarTabConfig === 'function'
+        ) {
+          const stConfig = (
+            obj.getSidebarTabConfig as () => { id: string; title: string; icon?: string }
+          )();
+          this.sidebarTabRegistry.set(stConfig.id, {
+            id: stConfig.id,
             extensionId: pkg.manifest.id,
-            extensions: editor.extensions,
-            priority: editor.priority ?? 10,
-            render: (props: { filePath: string }) => {
+            title: stConfig.title,
+            icon: resolveIcon(stConfig.icon),
+            render: (props: { currentPath?: string; isActive?: boolean }) => {
               try {
-                return (obj.renderEditor as (props: { filePath: string }) => React.ReactElement)(
-                  props,
-                );
+                return (
+                  obj.renderSidebarTab as (props: {
+                    currentPath?: string;
+                    isActive?: boolean;
+                  }) => React.ReactElement
+                )(props);
               } catch (err) {
-                console.error(`[ExtensionHost] Editor render failed for "${editor.id}":`, err);
+                console.error(
+                  `[ExtensionHost] Sidebar tab render failed for "${stConfig.id}":`,
+                  err,
+                );
                 return React.createElement(
                   'div',
                   { className: 'p-4 text-sm text-red-400' },
-                  `Editor "${editor.id}" failed to render.`,
+                  `Tab "${stConfig.title}" failed to render.`,
                 );
               }
             },
           });
         }
-      }
 
-      // Register preview providers (category: 'preview' with canPreview + render)
-      if (
-        pkg.manifest.category === 'preview' &&
-        typeof obj.canPreview === 'function' &&
-        typeof obj.render === 'function'
-      ) {
-        const priority =
-          typeof obj.getPriority === 'function' ? (obj.getPriority as () => number)() : 10;
-        this.previewRegistry.set(pkg.manifest.id, {
-          id: pkg.manifest.id,
-          extensionId: pkg.manifest.id,
-          priority,
-          canPreview: (file) => {
-            try {
-              return (obj.canPreview as (file: unknown) => boolean)(file);
-            } catch (err) {
-              console.error(
-                `[ExtensionHost] Preview canPreview failed for "${pkg.manifest.id}":`,
-                err,
-              );
-              return false;
-            }
-          },
-          render: (props) => {
-            try {
-              return (obj.render as (props: unknown) => React.ReactElement)(props);
-            } catch (err) {
-              console.error(`[ExtensionHost] Preview render failed for "${pkg.manifest.id}":`, err);
-              return React.createElement(
-                'div',
-                { className: 'p-4 text-sm text-red-400' },
-                `Preview "${pkg.manifest.id}" failed to render.`,
-              );
-            }
-          },
-        });
+        // Register bottom tabs from marketplace extensions (renderBottomTab + getBottomTabConfig)
+        if (
+          typeof obj.renderBottomTab === 'function' &&
+          typeof obj.getBottomTabConfig === 'function'
+        ) {
+          const btConfig = (
+            obj.getBottomTabConfig as () => { id: string; title: string; icon?: string }
+          )();
+          console.warn(
+            `[ExtensionHost] Registering bottom tab: ${btConfig.id} for ${pkg.manifest.id}`,
+          );
+          this.bottomTabRegistry.set(btConfig.id, {
+            id: btConfig.id,
+            extensionId: pkg.manifest.id,
+            title: btConfig.title,
+            icon: resolveIcon(btConfig.icon),
+            render: (props: { currentPath?: string; isActive?: boolean }) => {
+              try {
+                return (
+                  obj.renderBottomTab as (props: {
+                    currentPath?: string;
+                    isActive?: boolean;
+                  }) => React.ReactElement
+                )(props);
+              } catch (err) {
+                console.error(
+                  `[ExtensionHost] Bottom tab render failed for "${btConfig.id}":`,
+                  err,
+                );
+                return React.createElement(
+                  'div',
+                  { className: 'p-4 text-sm text-red-400' },
+                  `Tab "${btConfig.title}" failed to render.`,
+                );
+              }
+            },
+          });
+        }
+
+        // Register preview providers (category: 'preview' with canPreview + render)
+        if (
+          pkg.manifest.category === 'preview' &&
+          typeof obj.canPreview === 'function' &&
+          typeof obj.render === 'function'
+        ) {
+          const priority =
+            typeof obj.getPriority === 'function' ? (obj.getPriority as () => number)() : 10;
+          this.previewRegistry.set(pkg.manifest.id, {
+            id: pkg.manifest.id,
+            extensionId: pkg.manifest.id,
+            priority,
+            canPreview: (file) => {
+              try {
+                return (obj.canPreview as (file: unknown) => boolean)(file);
+              } catch (err) {
+                console.error(
+                  `[ExtensionHost] Preview canPreview failed for "${pkg.manifest.id}":`,
+                  err,
+                );
+                return false;
+              }
+            },
+            render: (props) => {
+              try {
+                return (obj.render as (props: unknown) => React.ReactElement)(props);
+              } catch (err) {
+                console.error(
+                  `[ExtensionHost] Preview render failed for "${pkg.manifest.id}":`,
+                  err,
+                );
+                return React.createElement(
+                  'div',
+                  { className: 'p-4 text-sm text-red-400' },
+                  `Preview "${pkg.manifest.id}" failed to render.`,
+                );
+              }
+            },
+          });
+        }
       }
     }
   }
@@ -831,7 +923,8 @@ class ExtensionHost {
           await this.activateExtension(pkg.manifest.id);
         }
       }
-      // Extension loading complete
+      // Notify UI that extensions have been loaded
+      this.notifyChange();
     } catch (err) {
       console.error('[ExtensionHost] Failed to load installed extensions:', err);
     }
@@ -909,6 +1002,15 @@ class ExtensionHost {
       await TauriAPI.activateExtension(id);
     } catch (err) {
       console.error(`[ExtensionHost] Failed to persist activation for ${id}:`, err);
+    }
+
+    // Auto-load WASM backend if the extension has one
+    if (ext.manifest.backend || ext.manifest.has_wasm_backend) {
+      try {
+        await TauriAPI.extensionBackendCall(id, '__init__', {});
+      } catch {
+        // WASM backend may not exist or init may not be implemented — that's OK
+      }
     }
 
     // Register keybindings from manifest
@@ -1364,8 +1466,12 @@ class ExtensionHost {
     }> = [];
     for (const [, bt] of this.bottomTabRegistry) {
       const ext = this.extensions.get(bt.extensionId);
+      console.warn(
+        `[ExtensionHost] getBottomTabs: ${bt.id} (ext=${bt.extensionId}, active=${ext?.isActive})`,
+      );
       if (ext?.isActive) tabs.push(bt);
     }
+    console.warn(`[ExtensionHost] getBottomTabs returning ${tabs.length} tabs`);
     return tabs;
   }
 

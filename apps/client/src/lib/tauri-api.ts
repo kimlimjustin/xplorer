@@ -58,6 +58,12 @@ import type {
   DockerImageInfo,
   SyncResult,
   AgentProgress,
+  AgentSettings,
+  ConflictInfo,
+  DirectorySize,
+  FileToken,
+  StructuredQuery,
+  TokenizerSettings,
   GitCommit,
   GitFileHistory,
   GitFileBlame,
@@ -1365,6 +1371,22 @@ export class TauriAPI {
     args: Record<string, unknown>,
   ): Promise<unknown> {
     return await transport('native_plugin_invoke', { pluginId, command, args });
+  }
+
+  static async extensionBackendCall(
+    extensionId: string,
+    method: string,
+    args: Record<string, unknown>,
+  ): Promise<unknown> {
+    return await transport('extension_backend_call', {
+      extensionId,
+      method,
+      args: JSON.stringify(args),
+    });
+  }
+
+  static async extensionBackendStatus(extensionId: string): Promise<{ loaded: boolean }> {
+    return await transport('extension_backend_status', { extensionId });
   }
 
   static async checkForExtensionUpdates(

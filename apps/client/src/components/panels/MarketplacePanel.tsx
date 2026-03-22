@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TauriAPI } from '@/lib/tauri-api';
 import { extensionHost } from '@/lib/extension-host';
 import { useToast } from '@/hooks/use-toast';
+import {
+  requiresConsentDialog,
+  requestPermissionConsent,
+} from '@/components/dialogs/ExtensionPermissionDialog';
 import {
   Search,
   ExternalLink,
@@ -166,7 +171,10 @@ const ExtensionsContent = ({
         <ExtensionCard
           key={extension.id}
           extension={extension}
-          isInstalled={installedExtensions.includes(extension.id)}
+          isInstalled={
+            installedExtensions.includes(extension.id) ||
+            installedExtensions.includes(extension.slug)
+          }
           isInstalling={installingId === extension.id}
           onInstall={handleInstall}
           onUninstall={handleUninstall}
@@ -181,6 +189,7 @@ const ExtensionsContent = ({
 };
 
 const MarketplacePanel = () => {
+  const { t } = useTranslation();
   const { toast } = useToast();
 
   // Data state
@@ -294,6 +303,28 @@ const MarketplacePanel = () => {
   );
 
   const handleInstall = async (extension: MarketplaceExtension) => {
+    const perms = extension.permissions ?? [];
+
+    if (requiresConsentDialog(perms)) {
+      const granted = await requestPermissionConsent({
+        extensionId: extension.id,
+        extensionName: extension.name,
+        displayName: extension.displayName,
+        version: extension.version,
+        author: extension.author.name ?? extension.author.username,
+        permissions: perms,
+      });
+
+      if (!granted) {
+        toast({
+          title: t('permissions.cancelledTitle'),
+          description: t('permissions.cancelledDesc'),
+          variant: 'destructive',
+        });
+        return;
+      }
+    }
+
     setInstallingId(extension.id);
     try {
       const downloadUrl = `${getMarketplaceApi()}/extensions/${extension.id}/download`;
@@ -304,12 +335,14 @@ const MarketplacePanel = () => {
       );
       await extensionHost.loadExtension(pkg);
       await extensionHost.activateExtension(pkg.manifest.id);
-      setInstalledExtensions((prev) => [...prev, extension.id]);
+      // Track by manifest ID (matches slug and what loadInstalledExtensions uses)
+      setInstalledExtensions((prev) => [...prev, pkg.manifest.id]);
       toast({
         title: 'Installed',
         description: `${extension.displayName} installed successfully`,
       });
     } catch (err) {
+      console.error('[Marketplace] Install failed:', extension.id, err);
       toast({
         title: 'Install Failed',
         description: String(err),
@@ -359,8 +392,11 @@ const MarketplacePanel = () => {
   const handleUninstall = async (extension: MarketplaceExtension) => {
     setInstallingId(extension.id);
     try {
-      await extensionHost.uninstallExtension(extension.id);
-      setInstalledExtensions((prev) => prev.filter((id) => id !== extension.id));
+      // Use slug (matches manifest ID on disk) rather than marketplace CUID
+      await extensionHost.uninstallExtension(extension.slug || extension.id);
+      setInstalledExtensions((prev) =>
+        prev.filter((id) => id !== extension.id && id !== extension.slug),
+      );
       toast({
         title: 'Uninstalled',
         description: `${extension.displayName} removed successfully`,
@@ -377,6 +413,34 @@ const MarketplacePanel = () => {
   };
 
   const handleInstallPack = async (pack: ExtensionPack) => {
+    // Collect permissions from any pack extensions already known from the marketplace listing
+    const toInstall = pack.extensions.filter((id) => !installedExtensions.includes(id));
+    const packPerms = toInstall.flatMap((extId) => {
+      const known = extensions.find((e) => e.id === extId || e.slug === extId);
+      return known?.permissions ?? [];
+    });
+    const uniquePackPerms = [...new Set(packPerms)];
+
+    if (requiresConsentDialog(uniquePackPerms)) {
+      const granted = await requestPermissionConsent({
+        extensionId: pack.id,
+        extensionName: pack.id,
+        displayName: pack.name,
+        version: '1.0.0',
+        author: 'Xplorer',
+        permissions: uniquePackPerms,
+      });
+
+      if (!granted) {
+        toast({
+          title: t('permissions.cancelledTitle'),
+          description: t('permissions.cancelledDesc'),
+          variant: 'destructive',
+        });
+        return;
+      }
+    }
+
     setInstallingPackId(pack.id);
     let installed = 0;
     const failedIds: string[] = [];

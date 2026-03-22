@@ -49,6 +49,10 @@ export interface ExtensionManifest {
   publicKey?: string;
   /** Whether this extension is verified by the Xplorer team */
   verified?: boolean;
+  /** Path or identifier of a WASM backend module for this extension */
+  backend?: string;
+  /** Whether this extension has a WASM backend */
+  has_wasm_backend?: boolean;
   /** Extension IDs this extension depends on */
   dependencies?: string[];
   contributes?: {

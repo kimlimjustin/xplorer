@@ -107,6 +107,33 @@ export const createExtensionApi = (manifest: ExtensionManifest, deps: ExtensionA
         TauriAPI.setExtensionStorage(manifest.id, key, value),
       delete: async (key: string) => TauriAPI.deleteExtensionStorage(manifest.id, key),
     },
+    storage: {
+      get: async <T = unknown>(key: string, defaultValue?: T): Promise<T | undefined> => {
+        const value = await TauriAPI.getExtensionStorage(manifest.id, key);
+        return (value as T) ?? defaultValue;
+      },
+      set: async (key: string, value: unknown) =>
+        TauriAPI.setExtensionStorage(manifest.id, key, value),
+      delete: async (key: string) => TauriAPI.deleteExtensionStorage(manifest.id, key),
+    },
+    git: {
+      findRepository: async (path: string) => TauriAPI.findGitRepository(path),
+      getRepositoryInfo: async (repoPath: string) => TauriAPI.getRepositoryInfo(repoPath),
+      getAllCommits: async (repoPath: string, limit?: number, branch?: string) =>
+        TauriAPI.getAllCommits(repoPath, limit, branch),
+      getBranches: async (repoPath: string) => TauriAPI.getBranches(repoPath),
+      getFileHistory: async (repoPath: string, filePath: string, limit?: number) =>
+        TauriAPI.getFileHistory(repoPath, filePath, limit),
+      getFileBlame: async (repoPath: string, filePath: string) =>
+        TauriAPI.getFileBlame(repoPath, filePath),
+      getFileStatus: async (repoPath: string) => TauriAPI.getFileStatus(repoPath),
+      switchBranch: async (repoPath: string, branchName: string) =>
+        TauriAPI.switchBranch(repoPath, branchName),
+      createBranch: async (repoPath: string, branchName: string, fromCommit?: string) =>
+        TauriAPI.createBranch(repoPath, branchName, fromCommit),
+      deleteBranch: async (repoPath: string, branchName: string, force?: boolean) =>
+        TauriAPI.deleteBranch(repoPath, branchName, force ?? false),
+    },
     commands: {
       register: (
         command: string,
@@ -474,6 +501,15 @@ export const createExtensionApi = (manifest: ExtensionManifest, deps: ExtensionA
           throw new Error(`Extension "${manifest.id}" missing permission: file:read`);
         }
         return TauriAPI.isVersioningEnabled(filePath);
+      },
+    },
+    backend: {
+      call: async (method: string, args?: Record<string, unknown>) => {
+        return TauriAPI.extensionBackendCall(manifest.id, method, args ?? {});
+      },
+      isLoaded: async () => {
+        const status = await TauriAPI.extensionBackendStatus(manifest.id);
+        return status.loaded;
       },
     },
   };

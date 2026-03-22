@@ -901,14 +901,12 @@ const BulkRenameDialog = ({ isOpen, onClose, files, onComplete }: BulkRenameDial
                             ? diffStrings(item.original_name, item.new_name)
                             : null;
 
-                          const rowBg = {
-                             
-                          };
-                          isResult && item.success === false
-                            ? 'rgba(239, 68, 68, 0.08)'
-                            : isConflict
-                              ? 'rgba(245, 158, 11, 0.06)'
-                              : 'transparent';
+                          const rowBg =
+                            isResult && item.success === false
+                              ? 'rgba(239, 68, 68, 0.08)'
+                              : isConflict
+                                ? 'rgba(245, 158, 11, 0.06)'
+                                : 'transparent';
 
                           let statusCell: React.ReactNode;
                           if (isResult) {
