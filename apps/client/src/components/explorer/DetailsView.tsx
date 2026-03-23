@@ -11,81 +11,83 @@ interface DetailsViewProps extends ViewComponentProps {
 const DETAILS_ROW_HEIGHT = 40;
 const DETAILS_VIRTUALIZATION_THRESHOLD = 200;
 
-const FileRow = ({
-  file,
-  selectedFiles,
-  getFileIcon,
-  formatFileSize,
-  formatFolderSize,
-  formatDate,
-  handleFileClick,
-  handleFileDoubleClick,
-  handleFileRightClick,
-  getFolderSize,
-  isCalculatingSize,
-  calculateFolderSize,
-}: ViewComponentProps & { file: FileEntry }) => {
-  return (
-    <div
-      role="row"
-      aria-selected={selectedFiles.has(file.path)}
-      aria-label={file.name}
-      tabIndex={0}
-      data-file-path={file.path}
-      data-drop-target={file.is_dir ? file.path : undefined}
-      className={`hover:bg-xp-surface-light grid cursor-pointer grid-cols-12 items-center gap-3 px-3 py-2.5 transition-colors ${
-        selectedFiles.has(file.path)
-          ? 'bg-xp-purple/20 border-xp-purple/40 border'
-          : 'text-xp-text border border-transparent'
-      } `}
-      onClick={(e) => handleFileClick(file, e)}
-      onDoubleClick={() => handleFileDoubleClick(file)}
-      onContextMenu={(e) => handleFileRightClick(file, e)}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter') handleFileDoubleClick(file);
-        if (e.key === ' ') {
-          e.preventDefault();
-          handleFileClick(file, e as unknown as React.MouseEvent);
-        }
-      }}
-    >
-      <div className="col-span-1 flex justify-center">
-        <span className="text-lg">{getFileIcon(file)}</span>
-      </div>
-      <div className="col-span-5 min-w-0">
-        <div className="truncate font-medium">{file.name}</div>
-      </div>
-      <div className="text-xp-text-muted col-span-2 text-right text-xs">
-        {(() => {
-          if (!file.is_dir) return formatFileSize(file.size);
-          if (getFolderSize(file.path) || isCalculatingSize(file.path)) {
-            return formatFolderSize(getFolderSize(file.path), isCalculatingSize(file.path));
+const FileRow = React.memo(
+  ({
+    file,
+    selectedFiles,
+    getFileIcon,
+    formatFileSize,
+    formatFolderSize,
+    formatDate,
+    handleFileClick,
+    handleFileDoubleClick,
+    handleFileRightClick,
+    getFolderSize,
+    isCalculatingSize,
+    calculateFolderSize,
+  }: ViewComponentProps & { file: FileEntry }) => {
+    return (
+      <div
+        role="row"
+        aria-selected={selectedFiles.has(file.path)}
+        aria-label={file.name}
+        tabIndex={0}
+        data-file-path={file.path}
+        data-drop-target={file.is_dir ? file.path : undefined}
+        className={`hover:bg-xp-surface-light grid cursor-pointer grid-cols-12 items-center gap-3 px-3 py-2.5 transition-colors ${
+          selectedFiles.has(file.path)
+            ? 'bg-xp-purple/20 border-xp-purple/40 border'
+            : 'text-xp-text border border-transparent'
+        } `}
+        onClick={(e) => handleFileClick(file, e)}
+        onDoubleClick={() => handleFileDoubleClick(file)}
+        onContextMenu={(e) => handleFileRightClick(file, e)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') handleFileDoubleClick(file);
+          if (e.key === ' ') {
+            e.preventDefault();
+            handleFileClick(file, e as unknown as React.MouseEvent);
           }
-          return (
-            <button
-              className="text-xp-text-muted hover:text-xp-accent underline decoration-dotted transition-colors"
-              onClick={(e) => {
-                e.stopPropagation();
-                calculateFolderSize?.(file.path);
-              }}
-              title="Click to calculate folder size"
-            >
-              Calculate
-            </button>
-          );
-        })()}
+        }}
+      >
+        <div className="col-span-1 flex justify-center">
+          <span className="text-lg">{getFileIcon(file)}</span>
+        </div>
+        <div className="col-span-5 min-w-0">
+          <div className="truncate font-medium">{file.name}</div>
+        </div>
+        <div className="text-xp-text-muted col-span-2 text-right text-xs">
+          {(() => {
+            if (!file.is_dir) return formatFileSize(file.size);
+            if (getFolderSize(file.path) || isCalculatingSize(file.path)) {
+              return formatFolderSize(getFolderSize(file.path), isCalculatingSize(file.path));
+            }
+            return (
+              <button
+                className="text-xp-text-muted hover:text-xp-accent underline decoration-dotted transition-colors"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  calculateFolderSize?.(file.path);
+                }}
+                title="Click to calculate folder size"
+              >
+                Calculate
+              </button>
+            );
+          })()}
+        </div>
+        <div className="text-xp-text-muted col-span-2 text-center text-xs">
+          <span className="bg-xp-surface inline-block rounded px-2 py-1 font-mono text-xs capitalize">
+            {file.is_dir ? 'Folder' : file.file_type}
+          </span>
+        </div>
+        <div className="text-xp-text-muted col-span-2 text-right font-mono text-xs">
+          {formatDate(file.modified)}
+        </div>
       </div>
-      <div className="text-xp-text-muted col-span-2 text-center text-xs">
-        <span className="bg-xp-surface inline-block rounded px-2 py-1 font-mono text-xs capitalize">
-          {file.is_dir ? 'Folder' : file.file_type}
-        </span>
-      </div>
-      <div className="text-xp-text-muted col-span-2 text-right font-mono text-xs">
-        {formatDate(file.modified)}
-      </div>
-    </div>
-  );
-};
+    );
+  },
+);
 
 const DetailsView = (props: DetailsViewProps) => {
   const { files, handleBackgroundRightClick, fileGroups } = props;

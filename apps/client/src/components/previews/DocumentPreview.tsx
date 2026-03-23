@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import mammoth from 'mammoth';
 import DOMPurify from 'dompurify';
 import { PreviewProps } from '@/lib/preview-factory';
 import { TauriAPI } from '@/lib/tauri-api';
+
+type MammothModule = typeof import('mammoth');
 
 const DocumentPreview = ({ file, onError, onLoad }: PreviewProps) => {
   const [htmlContent, setHtmlContent] = useState<string>('');
@@ -18,6 +19,9 @@ const DocumentPreview = ({ file, onError, onLoad }: PreviewProps) => {
         // Read the file as binary data using Tauri's fs plugin
         const uint8Array = await TauriAPI.readBinaryFile(file.path);
         const arrayBuffer = uint8Array.buffer.slice(0) as ArrayBuffer;
+
+        // Dynamically import mammoth to avoid synchronous ~200KB bundle cost
+        const mammoth: MammothModule = await import('mammoth');
 
         // Convert DOCX to HTML using mammoth
         const result = await mammoth.convertToHtml({ arrayBuffer });

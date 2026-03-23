@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { FileEntry, TauriAPI } from '@/lib/tauri-api';
 import { useDraggable } from '@/hooks/use-draggable';
 import { useDroppable } from '@/hooks/use-droppable';
@@ -121,6 +122,16 @@ const GalleryView = ({
   const [indexingStatus, setIndexingStatus] = useState<'idle' | 'indexing' | 'done'>('idle');
   const stripRef = useRef<HTMLDivElement>(null);
   const { getThumbnailUrl, preloadThumbnails } = useThumbnailCache(100);
+
+  // Filmstrip virtualizer — each thumbnail is 64px wide + 4px gap = 68px per item
+  const THUMB_SIZE = 68;
+  const filmstripVirtualizer = useVirtualizer({
+    count: files.length,
+    getScrollElement: () => stripRef.current,
+    estimateSize: () => THUMB_SIZE,
+    horizontal: true,
+    overscan: 5,
+  });
 
   // Preload thumbnails for all image files in this folder
   useEffect(() => {
@@ -252,14 +263,14 @@ const GalleryView = ({
     return () => document.removeEventListener('keydown', handleKey);
   }, [files, displayFile, handleFileClick]);
 
-  // Scroll the active thumbnail into view
+  // Scroll the active thumbnail into view via virtualizer
   useEffect(() => {
-    if (!displayFile || !stripRef.current) return;
-    const el = stripRef.current.querySelector(
-      `[data-gallery-path="${CSS.escape(displayFile.path)}"]`,
-    );
-    el?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-  }, [displayFile]);
+    if (!displayFile) return;
+    const idx = files.indexOf(displayFile);
+    if (idx !== -1) {
+      filmstripVirtualizer.scrollToIndex(idx, { align: 'center', behavior: 'smooth' });
+    }
+  }, [displayFile, files, filmstripVirtualizer]);
 
   return (
     <div
@@ -357,27 +368,53 @@ const GalleryView = ({
         )}
       </div>
 
-      {/* -- Horizontal filmstrip -- */}
+      {/* -- Horizontal filmstrip (virtualized) -- */}
       <div className="border-xp-border bg-xp-surface flex-shrink-0 border-t">
-        <div ref={stripRef} className="gallery-filmstrip flex gap-1 overflow-x-auto p-2">
-          {files.map((file) => (
-            <GalleryStripThumb
-              key={file.path}
-              file={file}
-              isFocused={displayFile?.path === file.path}
-              isSelected={selectedFiles.has(file.path)}
-              selectedFiles={selectedFiles}
-              allFiles={files}
-              getFileIcon={getFileIcon}
-              thumbnailUrl={isImageFile(file) ? getThumbnailUrl(file.path) : undefined}
-              onClick={(e) => {
-                setFocusedFile(file);
-                handleFileClick(file, e);
-              }}
-              onDoubleClick={() => handleFileDoubleClick(file)}
-              onRightClick={(e) => handleFileRightClick(file, e)}
-            />
-          ))}
+        <div
+          ref={stripRef}
+          className="gallery-filmstrip overflow-x-auto p-2"
+          style={{ position: 'relative', height: '72px' }}
+        >
+          <div
+            style={{
+              width: `${filmstripVirtualizer.getTotalSize()}px`,
+              height: '100%',
+              position: 'relative',
+            }}
+          >
+            {filmstripVirtualizer.getVirtualItems().map((virtualItem) => {
+              const file = files[virtualItem.index];
+              return (
+                <div
+                  key={virtualItem.key}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: `${virtualItem.size - 4}px`,
+                    height: '64px',
+                    transform: `translateX(${virtualItem.start}px)`,
+                  }}
+                >
+                  <GalleryStripThumb
+                    file={file}
+                    isFocused={displayFile?.path === file.path}
+                    isSelected={selectedFiles.has(file.path)}
+                    selectedFiles={selectedFiles}
+                    allFiles={files}
+                    getFileIcon={getFileIcon}
+                    thumbnailUrl={isImageFile(file) ? getThumbnailUrl(file.path) : undefined}
+                    onClick={(e) => {
+                      setFocusedFile(file);
+                      handleFileClick(file, e);
+                    }}
+                    onDoubleClick={() => handleFileDoubleClick(file)}
+                    onRightClick={(e) => handleFileRightClick(file, e)}
+                  />
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>

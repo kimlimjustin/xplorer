@@ -1,15 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Document, Page, pdfjs } from 'react-pdf';
-import 'react-pdf/dist/Page/AnnotationLayer.css';
-import 'react-pdf/dist/Page/TextLayer.css';
 import { PreviewProps } from '@/lib/preview-factory';
 import { convertAssetUrl } from '@/lib/transport';
 
-// Set up PDF.js worker — use the bundled mjs worker from pdfjs-dist
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.mjs',
-  import.meta.url,
-).toString();
+type ReactPdfModule = typeof import('react-pdf');
 
 const PdfPreview = ({ file, onError, onLoad }: PreviewProps) => {
   const [numPages, setNumPages] = useState<number>(0);
@@ -17,6 +10,19 @@ const PdfPreview = ({ file, onError, onLoad }: PreviewProps) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pdfSrc, setPdfSrc] = useState<string>('');
+  const [pdfLib, setPdfLib] = useState<ReactPdfModule | null>(null);
+
+  // Dynamically import react-pdf (and pdfjs-dist ~1.3MB) on first render
+  useEffect(() => {
+    import('react-pdf').then((mod) => {
+      // Set up PDF.js worker — use the bundled mjs worker from pdfjs-dist
+      mod.pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+        'pdfjs-dist/build/pdf.worker.min.mjs',
+        import.meta.url,
+      ).toString();
+      setPdfLib(mod);
+    });
+  }, []);
 
   useEffect(() => {
     // Reset states when file changes
@@ -30,16 +36,16 @@ const PdfPreview = ({ file, onError, onLoad }: PreviewProps) => {
     setPdfSrc(assetUrl);
   }, [file.path]);
 
-  const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
-    setNumPages(numPages);
+  const onDocumentLoadSuccess = ({ numPages: pages }: { numPages: number }) => {
+    setNumPages(pages);
     setLoading(false);
     onLoad?.();
   };
 
-  const onDocumentLoadError = (error: Error) => {
-    setError(error.message);
+  const onDocumentLoadError = (err: Error) => {
+    setError(err.message);
     setLoading(false);
-    onError?.(error);
+    onError?.(err);
   };
 
   const goToPrevPage = () => {
@@ -50,9 +56,11 @@ const PdfPreview = ({ file, onError, onLoad }: PreviewProps) => {
     setPageNumber((prev) => Math.min(numPages, prev + 1));
   };
 
+  const { Document, Page } = pdfLib ?? {};
+
   return (
     <div className="flex h-full flex-col">
-      {loading && (
+      {(loading || !pdfLib) && (
         <div className="bg-xp-surface border-xp-border flex flex-1 items-center justify-center rounded border">
           <div className="text-xp-text-muted text-center">
             <div className="animate-pulse">
@@ -77,7 +85,9 @@ const PdfPreview = ({ file, onError, onLoad }: PreviewProps) => {
             <p className="mt-1 text-xs opacity-70">{error}</p>
           </div>
         </div>
-      ) : (
+      ) : null}
+
+      {!error && pdfLib && Document && Page && (
         <div className="flex flex-1 flex-col">
           <div className="bg-xp-surface border-xp-border flex flex-1 items-center justify-center overflow-hidden rounded border">
             <Document

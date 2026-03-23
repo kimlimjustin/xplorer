@@ -137,7 +137,7 @@ interface MessageBubbleProps {
   message: ChatMessageType;
 }
 
-export const MessageBubble = ({ message }: MessageBubbleProps) => {
+export const MessageBubble = React.memo(({ message }: MessageBubbleProps) => {
   const modelLabel = message.model
     ? message.model.replace('claude-', '').replace('deepseek-', 'ds-').substring(0, 20)
     : null;
@@ -163,7 +163,9 @@ export const MessageBubble = ({ message }: MessageBubbleProps) => {
       </div>
     </div>
   );
-};
+});
+
+MessageBubble.displayName = 'MessageBubble';
 
 // ── ToolCallItem ────────────────────────────────────────────────────────────
 
@@ -172,7 +174,7 @@ interface ToolCallItemProps {
   onToggleExpand: (id: string) => void;
 }
 
-export const ToolCallItem = ({ toolCall: tc, onToggleExpand }: ToolCallItemProps) => {
+export const ToolCallItem = React.memo(({ toolCall: tc, onToggleExpand }: ToolCallItemProps) => {
   return (
     <div className="bg-xp-bg border-xp-border overflow-hidden rounded-lg border">
       <button
@@ -220,7 +222,9 @@ export const ToolCallItem = ({ toolCall: tc, onToggleExpand }: ToolCallItemProps
       )}
     </div>
   );
-};
+});
+
+ToolCallItem.displayName = 'ToolCallItem';
 
 // ── ToolCallsList ───────────────────────────────────────────────────────────
 
@@ -229,7 +233,7 @@ interface ToolCallsListProps {
   onToggleExpand: (id: string) => void;
 }
 
-export const ToolCallsList = ({ toolCalls, onToggleExpand }: ToolCallsListProps) => {
+export const ToolCallsList = React.memo(({ toolCalls, onToggleExpand }: ToolCallsListProps) => {
   if (toolCalls.length === 0) return null;
 
   return (
@@ -239,7 +243,9 @@ export const ToolCallsList = ({ toolCalls, onToggleExpand }: ToolCallsListProps)
       ))}
     </div>
   );
-};
+});
+
+ToolCallsList.displayName = 'ToolCallsList';
 
 // ── ActivePlanDisplay ───────────────────────────────────────────────────────
 

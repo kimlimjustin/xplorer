@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import {
   TauriAPI,
   type FileEntry,
@@ -67,7 +67,7 @@ export const usePerformanceStats = (
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Compute directory stats synchronously from the files array
-  const directoryStats: DirectoryStats = (() => {
+  const directoryStats = useMemo<DirectoryStats>(() => {
     let fileCount = 0;
     let folderCount = 0;
     let totalSize = 0;
@@ -80,7 +80,7 @@ export const usePerformanceStats = (
       }
     }
     return { fileCount, folderCount, totalSize, cachedFolderCount: folderCount };
-  })();
+  }, [files]);
 
   const fetchStats = useCallback(async () => {
     if (!visible) return;

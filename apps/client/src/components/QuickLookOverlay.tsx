@@ -1,10 +1,75 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, Suspense, lazy } from 'react';
 import { TauriAPI, type FileEntry } from '@/lib/tauri-api';
 import { convertAssetUrl } from '@/lib/transport';
 import { getFileIcon, formatFileSize, formatDate } from '@/lib/utils';
 import { defaultPreviewFactory, type PreviewType } from '@/lib/preview-factory';
-import { Prism as SyntaxHighlighter, type SyntaxHighlighterProps } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+
+const SyntaxHighlighter = lazy(() =>
+  import('react-syntax-highlighter/dist/esm/prism-light').then(async (m) => {
+    const [
+      typescript,
+      javascript,
+      jsx,
+      tsx,
+      python,
+      rust,
+      go,
+      java,
+      c,
+      cpp,
+      json,
+      yaml,
+      toml,
+      bash,
+      css,
+      markup,
+      sql,
+      markdown,
+    ] = await Promise.all([
+      import('react-syntax-highlighter/dist/esm/languages/prism/typescript'),
+      import('react-syntax-highlighter/dist/esm/languages/prism/javascript'),
+      import('react-syntax-highlighter/dist/esm/languages/prism/jsx'),
+      import('react-syntax-highlighter/dist/esm/languages/prism/tsx'),
+      import('react-syntax-highlighter/dist/esm/languages/prism/python'),
+      import('react-syntax-highlighter/dist/esm/languages/prism/rust'),
+      import('react-syntax-highlighter/dist/esm/languages/prism/go'),
+      import('react-syntax-highlighter/dist/esm/languages/prism/java'),
+      import('react-syntax-highlighter/dist/esm/languages/prism/c'),
+      import('react-syntax-highlighter/dist/esm/languages/prism/cpp'),
+      import('react-syntax-highlighter/dist/esm/languages/prism/json'),
+      import('react-syntax-highlighter/dist/esm/languages/prism/yaml'),
+      import('react-syntax-highlighter/dist/esm/languages/prism/toml'),
+      import('react-syntax-highlighter/dist/esm/languages/prism/bash'),
+      import('react-syntax-highlighter/dist/esm/languages/prism/css'),
+      import('react-syntax-highlighter/dist/esm/languages/prism/markup'),
+      import('react-syntax-highlighter/dist/esm/languages/prism/sql'),
+      import('react-syntax-highlighter/dist/esm/languages/prism/markdown'),
+    ]);
+
+    const HL = m.default;
+    HL.registerLanguage('typescript', typescript.default);
+    HL.registerLanguage('javascript', javascript.default);
+    HL.registerLanguage('jsx', jsx.default);
+    HL.registerLanguage('tsx', tsx.default);
+    HL.registerLanguage('python', python.default);
+    HL.registerLanguage('rust', rust.default);
+    HL.registerLanguage('go', go.default);
+    HL.registerLanguage('java', java.default);
+    HL.registerLanguage('c', c.default);
+    HL.registerLanguage('cpp', cpp.default);
+    HL.registerLanguage('json', json.default);
+    HL.registerLanguage('yaml', yaml.default);
+    HL.registerLanguage('toml', toml.default);
+    HL.registerLanguage('bash', bash.default);
+    HL.registerLanguage('css', css.default);
+    HL.registerLanguage('html', markup.default);
+    HL.registerLanguage('sql', sql.default);
+    HL.registerLanguage('markdown', markdown.default);
+
+    return { default: HL };
+  }),
+);
 
 // ── Language detection (borrowed from CodePreview) ──────────────────────────
 
@@ -19,30 +84,32 @@ const getLanguageFromExtension = (filename: string): string => {
     java: 'java',
     cpp: 'cpp',
     c: 'c',
-    cs: 'csharp',
-    php: 'php',
-    rb: 'ruby',
+    cs: 'text',
+    php: 'text',
+    rb: 'text',
     go: 'go',
     rs: 'rust',
     html: 'html',
     css: 'css',
-    scss: 'scss',
-    less: 'less',
+    scss: 'css',
+    less: 'css',
+    vue: 'html',
+    svelte: 'html',
     json: 'json',
-    xml: 'xml',
+    xml: 'html',
     yaml: 'yaml',
     yml: 'yaml',
     sql: 'sql',
     sh: 'bash',
     bash: 'bash',
-    ps1: 'powershell',
+    ps1: 'text',
     toml: 'toml',
-    ini: 'ini',
-    cfg: 'ini',
-    conf: 'ini',
+    ini: 'text',
+    cfg: 'text',
+    conf: 'text',
     md: 'markdown',
-    dockerfile: 'dockerfile',
-    makefile: 'makefile',
+    dockerfile: 'text',
+    makefile: 'text',
   };
   return map[ext] || 'text';
 };
@@ -168,7 +235,6 @@ const ImageQuickPreview: React.FC<{ file: FileEntry }> = ({ file }) => {
 };
 
 const TextQuickPreview: React.FC<{ file: FileEntry }> = ({ file }) => {
-  const RSH = SyntaxHighlighter as unknown as React.FC<SyntaxHighlighterProps>;
   const [content, setContent] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const language = getLanguageFromExtension(file.name);
@@ -237,24 +303,32 @@ const TextQuickPreview: React.FC<{ file: FileEntry }> = ({ file }) => {
 
   return (
     <div style={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
-      <RSH
-        language={language}
-        style={oneDark}
-        customStyle={{
-          margin: 0,
-          padding: '12px',
-          fontSize: '11px',
-          lineHeight: '1.5',
-          height: '100%',
-          backgroundColor: 'var(--xp-surface)',
-          color: 'var(--xp-text)',
-        }}
-        showLineNumbers
-        wrapLines
-        wrapLongLines
+      <Suspense
+        fallback={
+          <div style={{ color: 'var(--xp-text-secondary)', fontSize: 12, padding: 12 }}>
+            Loading...
+          </div>
+        }
       >
-        {content}
-      </RSH>
+        <SyntaxHighlighter
+          language={language}
+          style={oneDark}
+          customStyle={{
+            margin: 0,
+            padding: '12px',
+            fontSize: '11px',
+            lineHeight: '1.5',
+            height: '100%',
+            backgroundColor: 'var(--xp-surface)',
+            color: 'var(--xp-text)',
+          }}
+          showLineNumbers
+          wrapLines
+          wrapLongLines
+        >
+          {content}
+        </SyntaxHighlighter>
+      </Suspense>
     </div>
   );
 };

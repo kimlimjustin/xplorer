@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import * as XLSX from 'xlsx';
 import { PreviewProps } from '@/lib/preview-factory';
 import { TauriAPI } from '@/lib/tauri-api';
+
+type XLSXModule = typeof import('xlsx');
 
 const SpreadsheetPreview = ({ file, onError, onLoad }: PreviewProps) => {
   const [sheets, setSheets] = useState<
@@ -19,6 +20,9 @@ const SpreadsheetPreview = ({ file, onError, onLoad }: PreviewProps) => {
 
         // Read the file as binary data using TauriAPI
         const binaryData = await TauriAPI.readBinaryFile(file.path);
+
+        // Dynamically import xlsx to avoid synchronous ~700KB bundle cost
+        const XLSX: XLSXModule = await import('xlsx');
 
         // Parse the spreadsheet
         const workbook = XLSX.read(binaryData, { type: 'array' });

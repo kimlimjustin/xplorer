@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { TauriAPI } from '@/lib/tauri-api';
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -164,11 +164,16 @@ export const useActivityFeed = () => {
   }, [addEntry]);
 
   // Compute filtered entries
-  const filteredEntries =
-    activeFilter === 'all' ? entries : entries.filter((e) => e.type === activeFilter);
+  const filteredEntries = useMemo(
+    () => (activeFilter === 'all' ? entries : entries.filter((e) => e.type === activeFilter)),
+    [entries, activeFilter],
+  );
 
   // Count of entries in last 5 minutes (for badge)
-  const recentCount = entries.filter((e) => Date.now() - e.timestamp < 5 * 60 * 1000).length;
+  const recentCount = useMemo(
+    () => entries.filter((e) => Date.now() - e.timestamp < 5 * 60 * 1000).length,
+    [entries],
+  );
 
   return {
     entries,
