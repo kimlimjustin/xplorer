@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { applyTheme } from '@/lib/utils';
 import { useAllThemes, installThemeEventBridge } from '@/lib/theme-registry';
+import { STORAGE_KEYS } from '@/lib/storage-keys';
 
 // Install the event bridge once (listens for extension theme register/unregister)
 installThemeEventBridge();
@@ -9,7 +10,7 @@ installThemeEventBridge();
 
 const loadUiTheme = (): string => {
   try {
-    const raw = localStorage.getItem('xplorer:ui-state');
+    const raw = localStorage.getItem(STORAGE_KEYS.UI_STATE);
     if (raw) {
       const parsed = JSON.parse(raw);
       if (typeof parsed === 'object' && parsed !== null && 'theme' in parsed) {

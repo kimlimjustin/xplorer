@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { AlertTriangle, Heart, X, ExternalLink } from 'lucide-react';
+import { STORAGE_KEYS } from '@/lib/storage-keys';
 
-const BETA_DISMISSED_KEY = 'xplorer:beta-warning-dismissed';
+const BETA_DISMISSED_KEY = STORAGE_KEYS.BETA_WARNING_DISMISSED;
 const SPONSOR_URL = 'https://github.com/sponsors/kimlimjustin';
 
 export const isBetaWarningDismissed = (): boolean => {

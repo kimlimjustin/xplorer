@@ -6,8 +6,9 @@ import en from './locales/en.json';
 import zh from './locales/zh.json';
 import ja from './locales/ja.json';
 import id from './locales/id.json';
+import { STORAGE_KEYS } from './lib/storage-keys';
 
-const SETTINGS_KEY = 'xplorer:settings';
+const SETTINGS_KEY = STORAGE_KEYS.SETTINGS;
 
 const xplorerSettingsDetector = {
   name: 'xplorerSettings',

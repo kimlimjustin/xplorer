@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useRef } from 'react';
 import { TauriAPI, type FileEntry, type ConflictFileInfo } from '@/lib/tauri-api';
+import { STORAGE_KEYS } from '@/lib/storage-keys';
 import { PATH_SEPARATOR, detectSep } from '@/lib/constants';
 import { isEditableFile } from '@/lib/editable-files';
 import { showConfirmationToast, showInputToast } from '@/components/ui/Toast';
@@ -217,7 +218,7 @@ export const useXplorerActions = (deps: XplorerActionsDeps) => {
         TauriAPI.setSearchContext(newPath).catch((err) =>
           console.error('Failed to set search context:', err),
         );
-        if (localStorage.getItem('xplorer:auto-whitelist-visited') !== 'false') {
+        if (localStorage.getItem(STORAGE_KEYS.AUTO_WHITELIST_VISITED) !== 'false') {
           TauriAPI.addWhitelistedPath(newPath).catch((err) =>
             console.error('Failed to whitelist path:', err),
           );

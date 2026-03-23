@@ -1,6 +1,7 @@
 import React from 'react';
 import { X, Download, Star, ExternalLink, Shield, Loader2, User, Tag } from 'lucide-react';
 import type { MarketplaceExtension } from './MarketplacePanel';
+import { STORAGE_KEYS } from '@/lib/storage-keys';
 
 interface ExtensionDetailDialogProps {
   isOpen: boolean;
@@ -154,7 +155,7 @@ const ExtensionDetailDialog = ({
           <button
             onClick={() => {
               const baseUrl = (
-                localStorage.getItem('xplorer:marketplace-url') || 'http://localhost:3000/api'
+                localStorage.getItem(STORAGE_KEYS.MARKETPLACE_URL) || 'http://localhost:3000/api'
               ).replace(/\/api$/, '');
               window.open(`${baseUrl}/extensions/${extension.slug || extension.id}`, '_blank');
             }}

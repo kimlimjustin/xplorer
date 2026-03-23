@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { STORAGE_KEYS } from '@/lib/storage-keys';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -29,8 +30,8 @@ export interface PaneSyncNavigateDetail {
 
 // ── localStorage key ──────────────────────────────────────────────────────────
 
-const LS_KEY_ENABLED = 'xplorer:pane-sync-enabled';
-const LS_KEY_MODE = 'xplorer:pane-sync-mode';
+const LS_KEY_ENABLED = STORAGE_KEYS.PANE_SYNC_ENABLED;
+const LS_KEY_MODE = STORAGE_KEYS.PANE_SYNC_MODE;
 
 // ── Hook ──────────────────────────────────────────────────────────────────────
 

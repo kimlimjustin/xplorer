@@ -1,4 +1,6 @@
-const STORAGE_KEY = 'xplorer:saved-searches';
+import { STORAGE_KEYS } from '@/lib/storage-keys';
+
+const STORAGE_KEY = STORAGE_KEYS.SAVED_SEARCHES;
 const MAX_SAVED = 20;
 
 export interface SavedSearch {

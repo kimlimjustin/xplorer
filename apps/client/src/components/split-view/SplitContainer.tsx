@@ -1,9 +1,8 @@
 import React, { useCallback } from 'react';
 import type { SplitNode, SplitNodeBranch, EditorGroup } from '@/types/split-view';
-import EditorGroupPane, { type SharedPaneActions } from './EditorGroupPane';
+import EditorGroupPane from './EditorGroupPane';
 import ResizeHandle from '@/components/ui/ResizeHandle';
-import type { FileCollection } from '@/lib/collections';
-import type { PaneSyncMode } from '@/hooks/use-pane-sync';
+import { useExplorerContext } from '@/contexts/ExplorerContext';
 
 interface SplitContainerProps {
   node: SplitNode;
@@ -11,48 +10,6 @@ interface SplitContainerProps {
   activeGroupId: string;
   /** Path of indices from root to this node (for resize dispatch) */
   path: number[];
-  sharedActions: SharedPaneActions;
-  /** Shared selection state from the parent (xplorer.tsx). */
-  selectedFiles: Set<string>;
-  setSelectedFiles: React.Dispatch<React.SetStateAction<Set<string>>>;
-  /** Shared single-file selection from parent (for preview). */
-  selectedFile: import('@/lib/tauri-api').FileEntry | null;
-  setSelectedFile: React.Dispatch<React.SetStateAction<import('@/lib/tauri-api').FileEntry | null>>;
-  /** Controlled view/sort state from parent. */
-  viewMode: string;
-  setViewMode: React.Dispatch<React.SetStateAction<string>>;
-  sortBy: string;
-  setSortBy: React.Dispatch<React.SetStateAction<string>>;
-  sortOrder: 'asc' | 'desc';
-  setSortOrder: React.Dispatch<React.SetStateAction<'asc' | 'desc'>>;
-  // Layout actions
-  onSwitchTab: (groupId: string, tabId: string) => void;
-  onCloseTab: (groupId: string, tabId: string) => void;
-  onAddTab: (groupId: string) => void;
-  onSplitHorizontal: (groupId: string) => void;
-  onSplitVertical: (groupId: string) => void;
-  onCloseGroup: (groupId: string) => void;
-  onSetActiveGroup: (groupId: string) => void;
-  onNavigate: (groupId: string, path: string, name: string) => void;
-  onResizeSplit: (path: number[], sizes: number[]) => void;
-  /** When set, only this group is rendered at 100% (siblings hidden). */
-  maximizedGroupId?: string | null;
-  onMaximizePane?: (groupId: string) => void;
-  onRestorePane?: () => void;
-  // Tab management actions
-  onTogglePin?: (groupId: string, tabId: string) => void;
-  onDuplicateTab?: (groupId: string, tabId: string) => void;
-  onCloseOtherTabs?: (groupId: string, tabId: string) => void;
-  onCloseTabsToRight?: (groupId: string, tabId: string) => void;
-  onCloseAllTabs?: (groupId: string) => void;
-  onReorderTab?: (groupId: string, fromIndex: number, toIndex: number) => void;
-  // Filter presets
-  activeCollectionFilter?: FileCollection | null;
-  // Pane sync navigation
-  paneSyncEnabled?: boolean;
-  paneSyncMode?: PaneSyncMode;
-  onTogglePaneSync?: () => void;
-  onSwitchPaneSyncMode?: (mode: PaneSyncMode) => void;
 }
 
 /** Collect all group IDs from a node */
@@ -67,46 +24,10 @@ const nodeContainsGroup = (node: SplitNode, groupId: string): boolean => {
   return node.children.some((child) => nodeContainsGroup(child, groupId));
 };
 
-const SplitContainer = ({
-  node,
-  groups,
-  activeGroupId,
-  path,
-  sharedActions,
-  selectedFiles,
-  setSelectedFiles,
-  selectedFile,
-  setSelectedFile,
-  viewMode,
-  setViewMode,
-  sortBy,
-  setSortBy,
-  sortOrder,
-  setSortOrder,
-  onSwitchTab,
-  onCloseTab,
-  onAddTab,
-  onSplitHorizontal,
-  onSplitVertical,
-  onCloseGroup,
-  onSetActiveGroup,
-  onNavigate,
-  onResizeSplit,
-  maximizedGroupId,
-  onMaximizePane,
-  onRestorePane,
-  onTogglePin,
-  onDuplicateTab,
-  onCloseOtherTabs,
-  onCloseTabsToRight,
-  onCloseAllTabs,
-  onReorderTab,
-  activeCollectionFilter,
-  paneSyncEnabled,
-  paneSyncMode,
-  onTogglePaneSync,
-  onSwitchPaneSyncMode,
-}: SplitContainerProps) => {
+const SplitContainer = ({ node, groups, activeGroupId, path }: SplitContainerProps) => {
+  const { selection, viewSort, splitActions, paneSync, activeCollectionFilter } =
+    useExplorerContext();
+
   const totalGroups = Object.keys(groups).length;
 
   if (node.type === 'leaf') {
@@ -119,39 +40,39 @@ const SplitContainer = ({
         isActive={activeGroupId === group.id}
         canClose={totalGroups > 1}
         totalGroups={totalGroups}
-        sharedActions={sharedActions}
-        selectedFiles={selectedFiles}
-        setSelectedFiles={setSelectedFiles}
-        selectedFile={selectedFile}
-        setSelectedFile={setSelectedFile}
-        viewMode={viewMode}
-        setViewMode={setViewMode}
-        sortBy={sortBy}
-        setSortBy={setSortBy}
-        sortOrder={sortOrder}
-        setSortOrder={setSortOrder}
-        onSwitchTab={onSwitchTab}
-        onCloseTab={onCloseTab}
-        onAddTab={onAddTab}
-        onSplitHorizontal={onSplitHorizontal}
-        onSplitVertical={onSplitVertical}
-        onCloseGroup={onCloseGroup}
-        onSetActiveGroup={onSetActiveGroup}
-        onNavigate={onNavigate}
-        isMaximized={maximizedGroupId === group.id}
-        onMaximizePane={onMaximizePane}
-        onRestorePane={onRestorePane}
-        onTogglePin={onTogglePin}
-        onDuplicateTab={onDuplicateTab}
-        onCloseOtherTabs={onCloseOtherTabs}
-        onCloseTabsToRight={onCloseTabsToRight}
-        onCloseAllTabs={onCloseAllTabs}
-        onReorderTab={onReorderTab}
+        sharedActions={splitActions.sharedActions}
+        selectedFiles={selection.selectedFiles}
+        setSelectedFiles={selection.setSelectedFiles}
+        selectedFile={selection.selectedFile}
+        setSelectedFile={selection.setSelectedFile}
+        viewMode={viewSort.viewMode}
+        setViewMode={viewSort.setViewMode}
+        sortBy={viewSort.sortBy}
+        setSortBy={viewSort.setSortBy}
+        sortOrder={viewSort.sortOrder}
+        setSortOrder={viewSort.setSortOrder}
+        onSwitchTab={splitActions.onSwitchTab}
+        onCloseTab={splitActions.onCloseTab}
+        onAddTab={splitActions.onAddTab}
+        onSplitHorizontal={splitActions.onSplitHorizontal}
+        onSplitVertical={splitActions.onSplitVertical}
+        onCloseGroup={splitActions.onCloseGroup}
+        onSetActiveGroup={splitActions.onSetActiveGroup}
+        onNavigate={splitActions.onNavigate}
+        isMaximized={splitActions.maximizedGroupId === group.id}
+        onMaximizePane={splitActions.onMaximizePane}
+        onRestorePane={splitActions.onRestorePane}
+        onTogglePin={splitActions.onTogglePin}
+        onDuplicateTab={splitActions.onDuplicateTab}
+        onCloseOtherTabs={splitActions.onCloseOtherTabs}
+        onCloseTabsToRight={splitActions.onCloseTabsToRight}
+        onCloseAllTabs={splitActions.onCloseAllTabs}
+        onReorderTab={splitActions.onReorderTab}
         activeCollectionFilter={activeCollectionFilter}
-        paneSyncEnabled={paneSyncEnabled}
-        paneSyncMode={paneSyncMode}
-        onTogglePaneSync={onTogglePaneSync}
-        onSwitchPaneSyncMode={onSwitchPaneSyncMode}
+        paneSyncEnabled={paneSync.paneSyncEnabled}
+        paneSyncMode={paneSync.paneSyncMode}
+        onTogglePaneSync={paneSync.onTogglePaneSync}
+        onSwitchPaneSyncMode={paneSync.onSwitchPaneSyncMode}
       />
     );
   }
@@ -161,9 +82,9 @@ const SplitContainer = ({
   const isHorizontal = splitNode.direction === 'horizontal';
 
   // When a pane is maximized, find the child subtree that contains it and render only that child
-  if (maximizedGroupId) {
+  if (splitActions.maximizedGroupId) {
     const maxChildIndex = splitNode.children.findIndex((child) =>
-      nodeContainsGroup(child, maximizedGroupId),
+      nodeContainsGroup(child, splitActions.maximizedGroupId!),
     );
     if (maxChildIndex >= 0) {
       const maxChild = splitNode.children[maxChildIndex];
@@ -181,40 +102,6 @@ const SplitContainer = ({
               groups={groups}
               activeGroupId={activeGroupId}
               path={[...path, maxChildIndex]}
-              sharedActions={sharedActions}
-              selectedFiles={selectedFiles}
-              setSelectedFiles={setSelectedFiles}
-              selectedFile={selectedFile}
-              setSelectedFile={setSelectedFile}
-              viewMode={viewMode}
-              setViewMode={setViewMode}
-              sortBy={sortBy}
-              setSortBy={setSortBy}
-              sortOrder={sortOrder}
-              setSortOrder={setSortOrder}
-              onSwitchTab={onSwitchTab}
-              onCloseTab={onCloseTab}
-              onAddTab={onAddTab}
-              onSplitHorizontal={onSplitHorizontal}
-              onSplitVertical={onSplitVertical}
-              onCloseGroup={onCloseGroup}
-              onSetActiveGroup={onSetActiveGroup}
-              onNavigate={onNavigate}
-              onResizeSplit={onResizeSplit}
-              maximizedGroupId={maximizedGroupId}
-              onMaximizePane={onMaximizePane}
-              onRestorePane={onRestorePane}
-              onTogglePin={onTogglePin}
-              onDuplicateTab={onDuplicateTab}
-              onCloseOtherTabs={onCloseOtherTabs}
-              onCloseTabsToRight={onCloseTabsToRight}
-              onCloseAllTabs={onCloseAllTabs}
-              onReorderTab={onReorderTab}
-              activeCollectionFilter={activeCollectionFilter}
-              paneSyncEnabled={paneSyncEnabled}
-              paneSyncMode={paneSyncMode}
-              onTogglePaneSync={onTogglePaneSync}
-              onSwitchPaneSyncMode={onSwitchPaneSyncMode}
             />
           </div>
         </div>
@@ -246,40 +133,6 @@ const SplitContainer = ({
                 groups={groups}
                 activeGroupId={activeGroupId}
                 path={[...path, i]}
-                sharedActions={sharedActions}
-                selectedFiles={selectedFiles}
-                setSelectedFiles={setSelectedFiles}
-                selectedFile={selectedFile}
-                setSelectedFile={setSelectedFile}
-                viewMode={viewMode}
-                setViewMode={setViewMode}
-                sortBy={sortBy}
-                setSortBy={setSortBy}
-                sortOrder={sortOrder}
-                setSortOrder={setSortOrder}
-                onSwitchTab={onSwitchTab}
-                onCloseTab={onCloseTab}
-                onAddTab={onAddTab}
-                onSplitHorizontal={onSplitHorizontal}
-                onSplitVertical={onSplitVertical}
-                onCloseGroup={onCloseGroup}
-                onSetActiveGroup={onSetActiveGroup}
-                onNavigate={onNavigate}
-                onResizeSplit={onResizeSplit}
-                maximizedGroupId={maximizedGroupId}
-                onMaximizePane={onMaximizePane}
-                onRestorePane={onRestorePane}
-                onTogglePin={onTogglePin}
-                onDuplicateTab={onDuplicateTab}
-                onCloseOtherTabs={onCloseOtherTabs}
-                onCloseTabsToRight={onCloseTabsToRight}
-                onCloseAllTabs={onCloseAllTabs}
-                onReorderTab={onReorderTab}
-                activeCollectionFilter={activeCollectionFilter}
-                paneSyncEnabled={paneSyncEnabled}
-                paneSyncMode={paneSyncMode}
-                onTogglePaneSync={onTogglePaneSync}
-                onSwitchPaneSyncMode={onSwitchPaneSyncMode}
               />
             </div>
             {i < splitNode.children.length - 1 && (
@@ -288,7 +141,7 @@ const SplitContainer = ({
                 splitNode={splitNode}
                 index={i}
                 parentPath={path}
-                onResizeSplit={onResizeSplit}
+                onResizeSplit={splitActions.onResizeSplit}
               />
             )}
           </React.Fragment>

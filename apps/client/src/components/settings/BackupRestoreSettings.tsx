@@ -1,30 +1,31 @@
 import { useState, useRef } from 'react';
 import { Download, Upload, Clock, CheckCircle, AlertTriangle, FileJson } from 'lucide-react';
 import { SectionTitle, SettingRow, Divider } from './shared';
+import { STORAGE_KEYS } from '@/lib/storage-keys';
 
 const EXPORT_VERSION = '0.4.0';
-const LAST_EXPORT_KEY = 'xplorer:last-export-date';
+const LAST_EXPORT_KEY = STORAGE_KEYS.LAST_EXPORT_DATE;
 
 const KNOWN_KEYS = [
-  'xplorer:settings',
-  'xplorer:ui-state',
-  'xplorer:font-size',
-  'xplorer:marketplace-url',
-  'xplorer:auto-whitelist-visited',
-  'xplorer:split-layout',
-  'xplorer:tour-completed',
-  'xplorer:beta-warning-dismissed',
-  'xplorer:custom-themes',
-  'xplorer:last-export-date',
-  'xplorer_openai_key',
-  'xplorer_ollama_url',
-  'xplorer-vim-mode',
-  'xplorer-installed-extensions',
-  'xplorer-search-history',
-  'xplorer-permission-violations',
-  'xplorer-sync-api-url',
-  'xplorer-sync-token',
-  'xplorer-auto-sync-enabled',
+  STORAGE_KEYS.SETTINGS,
+  STORAGE_KEYS.UI_STATE,
+  STORAGE_KEYS.FONT_SIZE,
+  STORAGE_KEYS.MARKETPLACE_URL,
+  STORAGE_KEYS.AUTO_WHITELIST_VISITED,
+  STORAGE_KEYS.SPLIT_LAYOUT,
+  STORAGE_KEYS.TOUR_COMPLETED,
+  STORAGE_KEYS.BETA_WARNING_DISMISSED,
+  STORAGE_KEYS.CUSTOM_THEMES,
+  STORAGE_KEYS.LAST_EXPORT_DATE,
+  STORAGE_KEYS.OPENAI_KEY,
+  STORAGE_KEYS.OLLAMA_URL,
+  STORAGE_KEYS.VIM_MODE,
+  STORAGE_KEYS.INSTALLED_EXTENSIONS,
+  STORAGE_KEYS.SEARCH_HISTORY,
+  STORAGE_KEYS.PERMISSION_VIOLATIONS,
+  STORAGE_KEYS.SYNC_API_URL,
+  STORAGE_KEYS.SYNC_TOKEN,
+  STORAGE_KEYS.AUTO_SYNC_ENABLED,
   'gdrive-plugin-settings',
   'gdrive-file-cache',
 ];
@@ -73,10 +74,10 @@ const categorizeKeys = (keys: string[]): ImportCategory[] => {
 
   for (const key of keys) {
     if (
-      key === 'xplorer:settings' ||
-      key === 'xplorer:ui-state' ||
-      key === 'xplorer:font-size' ||
-      key === 'xplorer:split-layout'
+      key === STORAGE_KEYS.SETTINGS ||
+      key === STORAGE_KEYS.UI_STATE ||
+      key === STORAGE_KEYS.FONT_SIZE ||
+      key === STORAGE_KEYS.SPLIT_LAYOUT
     ) {
       buckets['App Settings'].push(key);
     } else if (key.includes('theme') || key.includes('custom-themes')) {

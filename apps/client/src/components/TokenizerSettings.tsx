@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { TauriAPI, TokenizerSettings, TokenIndex, IndexingProgress } from '@/lib/tauri-api';
 import { useToast } from '@/hooks/use-toast';
+import { STORAGE_KEYS } from '@/lib/storage-keys';
 
 interface TokenizerSettingsProps {
   className?: string;
@@ -24,7 +25,7 @@ export default function TokenizerSettingsComponent({ className }: TokenizerSetti
   const [newBlacklistPath, setNewBlacklistPath] = useState('');
   const [newExtension, setNewExtension] = useState('');
   const [autoWhitelist, setAutoWhitelist] = useState(() => {
-    const saved = localStorage.getItem('xplorer:auto-whitelist-visited');
+    const saved = localStorage.getItem(STORAGE_KEYS.AUTO_WHITELIST_VISITED);
     return saved !== null ? saved === 'true' : true; // default ON
   });
   const [isLoading, setIsLoading] = useState(true);
@@ -163,7 +164,7 @@ export default function TokenizerSettingsComponent({ className }: TokenizerSetti
 
   const toggleAutoWhitelist = (value: boolean) => {
     setAutoWhitelist(value);
-    localStorage.setItem('xplorer:auto-whitelist-visited', String(value));
+    localStorage.setItem(STORAGE_KEYS.AUTO_WHITELIST_VISITED, String(value));
   };
 
   const handleRebuildIndex = async () => {

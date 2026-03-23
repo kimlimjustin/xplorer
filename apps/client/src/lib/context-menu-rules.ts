@@ -6,6 +6,7 @@
  */
 
 import type { FileEntry } from '@/lib/tauri-api';
+import { STORAGE_KEYS } from '@/lib/storage-keys';
 
 // ── Types ──────────────────────────────────────────────────────────
 
@@ -26,7 +27,7 @@ export interface ContextMenuRule {
 
 // ── Storage key ────────────────────────────────────────────────────
 
-const STORAGE_KEY = 'xplorer:context-menu-rules';
+const STORAGE_KEY = STORAGE_KEYS.CONTEXT_MENU_RULES;
 
 // ── Known menu items (for the rule editor dropdown) ────────────────
 

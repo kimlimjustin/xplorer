@@ -10,10 +10,11 @@ import {
   type EditorGroup,
   type TabItem,
 } from '@/types/split-view';
+import { STORAGE_KEYS } from '@/lib/storage-keys';
 
 // ── Persistence ──────────────────────────────────────────────────────────────
 
-const STORAGE_KEY = 'xplorer:split-layout';
+const STORAGE_KEY = STORAGE_KEYS.SPLIT_LAYOUT;
 const MAX_PATH_HISTORY = 200;
 
 const loadLayout = (): SplitLayoutState => {

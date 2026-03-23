@@ -6,6 +6,7 @@
  */
 
 import type { FileEntry } from '@/lib/tauri-api';
+import { STORAGE_KEYS } from '@/lib/storage-keys';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -42,7 +43,7 @@ export interface FileCollection {
 
 // ── Storage key ──────────────────────────────────────────────────────────────
 
-const STORAGE_KEY = 'xplorer:collections';
+const STORAGE_KEY = STORAGE_KEYS.COLLECTIONS;
 
 const readAll = (): FileCollection[] => {
   try {
