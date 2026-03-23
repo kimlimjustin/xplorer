@@ -130,81 +130,84 @@ interface TreeNodeRowProps {
   onFocus: () => void;
 }
 
-const TreeNodeRow = React.memo(function TreeNodeRow({
-  node,
-  depth,
-  isExpanded,
-  onToggle,
-  renderRightContent,
-  renderIcon,
-  getNodeStyle,
-  onNodeClick,
-  isFocused,
-  onFocus,
-}: TreeNodeRowProps) {
-  const [hovered, setHovered] = useState(false);
+const TreeNodeRow = React.memo(
+  ({
+    node,
+    depth,
+    isExpanded,
+    onToggle,
+    renderRightContent,
+    renderIcon,
+    getNodeStyle,
+    onNodeClick,
+    isFocused,
+    onFocus,
+  }: TreeNodeRowProps) => {
+    const [hovered, setHovered] = useState(false);
 
-  const handleClick = useCallback(() => {
-    onFocus();
-    if (node.isDir) {
-      onToggle();
-    }
-    onNodeClick?.(node);
-  }, [node, onToggle, onNodeClick, onFocus]);
+    const handleClick = useCallback(() => {
+      onFocus();
+      if (node.isDir) {
+        onToggle();
+      }
+      onNodeClick?.(node);
+    }, [node, onToggle, onNodeClick, onFocus]);
 
-  const customStyle = getNodeStyle?.(node) ?? {};
+    const customStyle = getNodeStyle?.(node) ?? {};
 
-  const rowStyle: React.CSSProperties = {
-    ...styles.row,
-    ...(hovered ? styles.rowHover : {}),
-    ...(isFocused ? styles.rowFocused : {}),
-    ...customStyle,
-  };
+    const rowStyle: React.CSSProperties = {
+      ...styles.row,
+      ...(hovered ? styles.rowHover : {}),
+      ...(isFocused ? styles.rowFocused : {}),
+      ...customStyle,
+    };
 
-  const defaultIcon = (() => {
-    if (!node.isDir) return <FileIcon size={16} style={{ color: 'var(--xp-text-secondary)' }} />;
-    if (isExpanded) return <FolderOpen size={16} style={{ color: 'var(--xp-blue)' }} />;
-    return <FolderClosed size={16} style={{ color: 'var(--xp-blue)' }} />;
-  })();
+    const defaultIcon = (() => {
+      if (!node.isDir) return <FileIcon size={16} style={{ color: 'var(--xp-text-secondary)' }} />;
+      if (isExpanded) return <FolderOpen size={16} style={{ color: 'var(--xp-blue)' }} />;
+      return <FolderClosed size={16} style={{ color: 'var(--xp-blue)' }} />;
+    })();
 
-  return (
-    <div
-      style={rowStyle}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onClick={handleClick}
-      role="treeitem"
-      aria-expanded={node.isDir ? isExpanded : undefined}
-      aria-level={depth + 1}
-      tabIndex={-1}
-    >
-      {/* Indent guides */}
-      {Array.from({ length: depth }, (_, i) => (
-        <div key={i} style={styles.indentGuide} />
-      ))}
+    return (
+      <div
+        style={rowStyle}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        onClick={handleClick}
+        role="treeitem"
+        aria-expanded={node.isDir ? isExpanded : undefined}
+        aria-level={depth + 1}
+        tabIndex={-1}
+      >
+        {/* Indent guides */}
+        {Array.from({ length: depth }, (_, i) => (
+          <div key={i} style={styles.indentGuide} />
+        ))}
 
-      {/* Expand/collapse chevron */}
-      {node.isDir ? (
-        <div style={styles.chevron}>
-          {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+        {/* Expand/collapse chevron */}
+        {node.isDir ? (
+          <div style={styles.chevron}>
+            {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+          </div>
+        ) : (
+          <div style={styles.chevronPlaceholder} />
+        )}
+
+        {/* Icon */}
+        <div style={styles.icon}>{renderIcon ? renderIcon(node) : defaultIcon}</div>
+
+        {/* Name */}
+        <div style={styles.name} title={node.name}>
+          {node.name}
         </div>
-      ) : (
-        <div style={styles.chevronPlaceholder} />
-      )}
 
-      {/* Icon */}
-      <div style={styles.icon}>{renderIcon ? renderIcon(node) : defaultIcon}</div>
-
-      {/* Name */}
-      <div style={styles.name} title={node.name}>
-        {node.name}
+        {/* Right-side content (size, status badge, conflict resolution, etc.) */}
+        {renderRightContent && <div style={styles.rightContent}>{renderRightContent(node)}</div>}
       </div>
-
-      {/* Right-side content (size, status badge, conflict resolution, etc.) */}
-      {renderRightContent && <div style={styles.rightContent}>{renderRightContent(node)}</div>}
-    </div>
-  );
-});
+    );
+  },
+);
+TreeNodeRow.displayName = 'TreeNodeRow';
 
 // ── FileTree (recursive) ─────────────────────────────────────────────────────
 

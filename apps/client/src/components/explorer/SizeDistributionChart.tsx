@@ -10,9 +10,7 @@ interface SizeDistributionChartProps {
  * Shows 4 colored segments proportional to the number of files in each
  * size percentile bucket: Largest (red), Large (orange), Medium (yellow), Small (green).
  */
-export const SizeDistributionChart = React.memo(function SizeDistributionChart({
-  files,
-}: SizeDistributionChartProps) {
+export const SizeDistributionChart = React.memo(({ files }: SizeDistributionChartProps) => {
   const distribution = useMemo(() => {
     // Only consider non-directory files with size > 0
     const fileSizes = files
@@ -96,3 +94,4 @@ export const SizeDistributionChart = React.memo(function SizeDistributionChart({
     </div>
   );
 });
+SizeDistributionChart.displayName = 'SizeDistributionChart';

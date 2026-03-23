@@ -1,5 +1,6 @@
 import { TauriAPI } from './tauri-api';
 import { transport } from './transport';
+import { STORAGE_KEYS } from './storage-keys';
 import {
   Duplicates,
   Organizer,
@@ -41,10 +42,10 @@ export const logPermissionViolation = (
 
   // Store in a ring buffer for debugging (keep last 100 entries)
   try {
-    const violations = JSON.parse(localStorage.getItem('xplorer-permission-violations') || '[]');
+    const violations = JSON.parse(localStorage.getItem(STORAGE_KEYS.PERMISSION_VIOLATIONS) || '[]');
     violations.push(entry);
     if (violations.length > 100) violations.shift();
-    localStorage.setItem('xplorer-permission-violations', JSON.stringify(violations));
+    localStorage.setItem(STORAGE_KEYS.PERMISSION_VIOLATIONS, JSON.stringify(violations));
   } catch {
     // localStorage may be unavailable in some contexts -- silently ignore
   }
@@ -101,6 +102,17 @@ export const requestPermissionApproval = (
     }, 30000);
   });
 };
+
+// ─── Blocked Tauri Commands ──────────────────────────────────────────────────
+// These Tauri backend commands must NEVER be callable from extension contexts.
+// Even though the sandbox blocks direct access to __TAURI__ globals, we
+// enforce a deny-list as defense-in-depth so that no extension API surface
+// (nativeInvoke, future wrappers, etc.) can proxy these commands through.
+
+export const BLOCKED_TAURI_COMMANDS: ReadonlySet<string> = new Set([
+  'execute_command',
+  'execute_command_stream',
+]);
 
 // ─── Preprocessor ─────────────────────────────────────────────────────────────
 
@@ -207,6 +219,11 @@ export const executeSandboxed = (
   // Create a proxy for document that blocks escape routes to window and script injection
   const safeDocument = new Proxy(document, {
     get(target, prop) {
+      // Respect Proxy invariant: non-configurable non-writable props must return real value
+      const desc = Object.getOwnPropertyDescriptor(target, prop);
+      if (desc && !desc.configurable && !desc.writable && desc.value !== undefined) {
+        return desc.value;
+      }
       // Block escape to window via document.defaultView / document.parentWindow
       if (prop === 'defaultView' || prop === 'parentWindow') {
         return null;
@@ -245,9 +262,26 @@ export const executeSandboxed = (
     },
   });
 
+  // Create a sandboxed Object that blocks prototype introspection escape routes
+  const sandboxedObject = Object.create(Object);
+  sandboxedObject.getPrototypeOf = (_target: unknown) => null;
+  sandboxedObject.getOwnPropertyDescriptor = (target: unknown, prop: PropertyKey) => {
+    // Block reading descriptors from the window proxy (could expose unproxied values)
+    if (target === sandboxedWindow || target === window) {
+      return undefined;
+    }
+    return Object.getOwnPropertyDescriptor(target as object, prop);
+  };
+  Object.freeze(sandboxedObject);
+
   // Create a sandboxed Reflect proxy that blocks prototype manipulation
   const sandboxedReflect = new Proxy(Reflect, {
     get(target, reflectProp) {
+      // Respect Proxy invariant: non-configurable non-writable props must return real value
+      const desc = Object.getOwnPropertyDescriptor(target, reflectProp);
+      if (desc && !desc.configurable && !desc.writable && desc.value !== undefined) {
+        return desc.value;
+      }
       if (reflectProp === 'getPrototypeOf' || reflectProp === 'setPrototypeOf') {
         return undefined;
       }
@@ -257,6 +291,12 @@ export const executeSandboxed = (
 
   const sandboxedWindow = new Proxy(window, {
     get(target, prop, _receiver) {
+      // Respect Proxy invariant: non-configurable non-writable props must return real value
+      const desc = Object.getOwnPropertyDescriptor(target, prop);
+      if (desc && !desc.configurable && !desc.writable && desc.value !== undefined) {
+        return desc.value;
+      }
+
       if (blockedSet.has(prop as string)) {
         console.warn(`[Sandbox] Extension "${extId}" tried to access blocked API: ${String(prop)}`);
         return undefined;
@@ -273,6 +313,11 @@ export const executeSandboxed = (
       // Block constructor access that could escape sandbox
       if (prop === 'constructor') {
         return undefined;
+      }
+
+      // Intercept Object to block prototype introspection escape
+      if (prop === 'Object') {
+        return sandboxedObject;
       }
 
       // Intercept Reflect to block prototype manipulation
@@ -333,6 +378,9 @@ export const executeSandboxed = (
     'setTimeout',
     'setInterval',
     'document',
+    'Object',
+    'Reflect',
+    '__proto__',
     ...BLOCKED_GLOBALS,
   ];
   const paramValues: unknown[] = [
@@ -342,6 +390,9 @@ export const executeSandboxed = (
     safeSetTimeout,
     safeSetInterval,
     safeDocument,
+    sandboxedObject,
+    sandboxedReflect,
+    null,
     ...BLOCKED_GLOBALS.map(() => undefined),
   ];
 
@@ -478,7 +529,7 @@ export const createExtensionApi = (
           .then((id) => {
             wId = id;
           })
-          .catch(() => {});
+          .catch((err: unknown) => console.warn('Failed to watch directory:', err));
         TauriAPI.listenToEvent<{
           watcher_id: string;
           path: string;
@@ -492,12 +543,14 @@ export const createExtensionApi = (
           .then((fn) => {
             unlisten = fn;
           })
-          .catch(() => {});
+          .catch((err: unknown) => console.warn('Failed to listen to fs-change event:', err));
         return {
           dispose: () => {
             unlisten?.();
             if (wId) {
-              TauriAPI.unwatchDirectory(wId).catch(() => {});
+              TauriAPI.unwatchDirectory(wId).catch((err: unknown) =>
+                console.warn('Failed to unwatch directory:', err),
+              );
             }
           },
         };
@@ -622,6 +675,11 @@ export const createExtensionApi = (
       },
     },
     nativeInvoke: async (command: string, args?: Record<string, unknown>) => {
+      if (BLOCKED_TAURI_COMMANDS.has(command)) {
+        throw new Error(
+          `Extension "${manifest.id}" blocked from invoking restricted command: ${command}`,
+        );
+      }
       if (!hasPermission(manifest, 'native:invoke')) {
         throw new Error(`Extension "${manifest.id}" missing permission: native:invoke`);
       }

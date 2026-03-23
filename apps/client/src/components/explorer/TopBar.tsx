@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect, forwardRef } from 'react';
+import { useWindowEvent } from '@/hooks/use-window-event';
 import { isTauri } from '@/lib/transport';
 import {
   Minus,
@@ -116,11 +117,9 @@ const TopBar = forwardRef<TopBarHandle, TopBarProps>(
     const filterDropdownRef = useRef<HTMLDivElement>(null);
 
     // Load quick-filter collections and sync
-    useEffect(() => {
-      const handler = () => setQuickFilters(getAllCollections().filter(isQuickFilter));
-      window.addEventListener('collections-changed', handler);
-      return () => window.removeEventListener('collections-changed', handler);
-    }, []);
+    useWindowEvent('collections-changed', () =>
+      setQuickFilters(getAllCollections().filter(isQuickFilter)),
+    );
 
     // Close dropdown on outside click
     useEffect(() => {
@@ -148,11 +147,17 @@ const TopBar = forwardRef<TopBarHandle, TopBarProps>(
         const win = getCurrentWindow();
         if (cancelled) return;
         appWindowRef.current = win;
-        win.isMaximized().then(setIsMaximized);
+        win
+          .isMaximized()
+          .then(setIsMaximized)
+          .catch((err: unknown) => console.warn('Failed to check maximized state:', err));
         const unlisten = win.onResized(() => {
           if (debounceTimer) clearTimeout(debounceTimer);
           debounceTimer = setTimeout(() => {
-            win.isMaximized().then(setIsMaximized);
+            win
+              .isMaximized()
+              .then(setIsMaximized)
+              .catch((err: unknown) => console.warn('Failed to check maximized state:', err));
           }, 150);
         });
         // Store unlisten for cleanup

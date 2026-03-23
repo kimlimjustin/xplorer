@@ -103,13 +103,13 @@ export const useChatFile = ({ filePath }: UseChatFileOptions) => {
       .then((models) => {
         if (!cancelled) chatState.setAvailableModels(models);
       })
-      .catch(() => {});
+      .catch((err: unknown) => console.warn('Failed to get available models:', err));
 
     AIService.checkOllamaStatus()
       .then((status) => {
         if (!cancelled) chatState.setOllamaStatus(status);
       })
-      .catch(() => {});
+      .catch((err: unknown) => console.warn('Failed to check Ollama status:', err));
 
     return () => {
       cancelled = true;

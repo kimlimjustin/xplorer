@@ -234,403 +234,403 @@ interface PathBookmarksDialogProps {
   onNavigate: (path: string) => void;
 }
 
-const PathBookmarksDialog = React.memo(function PathBookmarksDialog({
-  isOpen,
-  onClose,
-  currentPath,
-  onNavigate,
-}: PathBookmarksDialogProps) {
-  const [bookmarks, setBookmarks] = useState<PathBookmark[]>([]);
-  const [hoveredSlot, setHoveredSlot] = useState<number | null>(null);
-  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; slot: number } | null>(
-    null,
-  );
-  const [editingSlot, setEditingSlot] = useState<number | null>(null);
-  const [editLabel, setEditLabel] = useState('');
-  const overlayRef = useRef<HTMLDivElement>(null);
-  const editInputRef = useRef<HTMLInputElement>(null);
+const PathBookmarksDialog = React.memo(
+  ({ isOpen, onClose, currentPath, onNavigate }: PathBookmarksDialogProps) => {
+    const [bookmarks, setBookmarks] = useState<PathBookmark[]>([]);
+    const [hoveredSlot, setHoveredSlot] = useState<number | null>(null);
+    const [contextMenu, setContextMenu] = useState<{ x: number; y: number; slot: number } | null>(
+      null,
+    );
+    const [editingSlot, setEditingSlot] = useState<number | null>(null);
+    const [editLabel, setEditLabel] = useState('');
+    const overlayRef = useRef<HTMLDivElement>(null);
+    const editInputRef = useRef<HTMLInputElement>(null);
 
-  // Load bookmarks when dialog opens and listen for changes
-  useEffect(() => {
-    if (!isOpen) return;
-    setBookmarks(getPathBookmarks());
-    setContextMenu(null);
-    setEditingSlot(null);
+    // Load bookmarks when dialog opens and listen for changes
+    useEffect(() => {
+      if (!isOpen) return;
+      setBookmarks(getPathBookmarks());
+      setContextMenu(null);
+      setEditingSlot(null);
 
-    const handler = () => setBookmarks(getPathBookmarks());
-    window.addEventListener('path-bookmarks-changed', handler);
-    return () => window.removeEventListener('path-bookmarks-changed', handler);
-  }, [isOpen]);
+      const handler = () => setBookmarks(getPathBookmarks());
+      window.addEventListener('path-bookmarks-changed', handler);
+      return () => window.removeEventListener('path-bookmarks-changed', handler);
+    }, [isOpen]);
 
-  // Focus edit input when editing
-  useEffect(() => {
-    if (editingSlot !== null) {
-      const timer = setTimeout(() => editInputRef.current?.focus(), 50);
-      return () => clearTimeout(timer);
-    }
-  }, [editingSlot]);
-
-  // Close on Escape
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        e.stopPropagation();
-        if (editingSlot !== null) {
-          setEditingSlot(null);
-        } else if (contextMenu) {
-          setContextMenu(null);
-        } else {
-          onClose();
-        }
+    // Focus edit input when editing
+    useEffect(() => {
+      if (editingSlot !== null) {
+        const timer = setTimeout(() => editInputRef.current?.focus(), 50);
+        return () => clearTimeout(timer);
       }
-    };
-    document.addEventListener('keydown', handleKeyDown, true);
-    return () => document.removeEventListener('keydown', handleKeyDown, true);
-  }, [isOpen, onClose, editingSlot, contextMenu]);
+    }, [editingSlot]);
 
-  // Close context menu on click elsewhere
-  useEffect(() => {
-    if (!contextMenu) return;
-    const close = () => setContextMenu(null);
-    document.addEventListener('click', close, { once: true });
-    return () => document.removeEventListener('click', close);
-  }, [contextMenu]);
+    // Close on Escape
+    useEffect(() => {
+      if (!isOpen) return;
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') {
+          e.preventDefault();
+          e.stopPropagation();
+          if (editingSlot !== null) {
+            setEditingSlot(null);
+          } else if (contextMenu) {
+            setContextMenu(null);
+          } else {
+            onClose();
+          }
+        }
+      };
+      document.addEventListener('keydown', handleKeyDown, true);
+      return () => document.removeEventListener('keydown', handleKeyDown, true);
+    }, [isOpen, onClose, editingSlot, contextMenu]);
 
-  const handleOverlayClick = useCallback(
-    (e: React.MouseEvent) => {
-      if (e.target === overlayRef.current) onClose();
-    },
-    [onClose],
-  );
+    // Close context menu on click elsewhere
+    useEffect(() => {
+      if (!contextMenu) return;
+      const close = () => setContextMenu(null);
+      document.addEventListener('click', close, { once: true });
+      return () => document.removeEventListener('click', close);
+    }, [contextMenu]);
 
-  const handleSlotClick = useCallback(
-    (slot: number) => {
-      const bm = bookmarks.find((b) => b.slot === slot);
-      if (bm) {
-        onNavigate(bm.path);
-        onClose();
-      } else {
-        // Assign current path to this slot
+    const handleOverlayClick = useCallback(
+      (e: React.MouseEvent) => {
+        if (e.target === overlayRef.current) onClose();
+      },
+      [onClose],
+    );
+
+    const handleSlotClick = useCallback(
+      (slot: number) => {
+        const bm = bookmarks.find((b) => b.slot === slot);
+        if (bm) {
+          onNavigate(bm.path);
+          onClose();
+        } else {
+          // Assign current path to this slot
+          if (currentPath && !currentPath.startsWith('xplorer://')) {
+            setPathBookmark(slot, currentPath);
+          }
+        }
+      },
+      [bookmarks, currentPath, onNavigate, onClose],
+    );
+
+    const handleSlotRightClick = useCallback((e: React.MouseEvent, slot: number) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setContextMenu({ x: e.clientX, y: e.clientY, slot });
+    }, []);
+
+    const handleAssignCurrent = useCallback(
+      (slot: number) => {
         if (currentPath && !currentPath.startsWith('xplorer://')) {
           setPathBookmark(slot, currentPath);
         }
+        setContextMenu(null);
+      },
+      [currentPath],
+    );
+
+    const handleEditLabel = useCallback(
+      (slot: number) => {
+        const bm = bookmarks.find((b) => b.slot === slot);
+        setEditLabel(bm?.label || getFolderName(bm?.path || ''));
+        setEditingSlot(slot);
+        setContextMenu(null);
+      },
+      [bookmarks],
+    );
+
+    const handleSaveLabel = useCallback(() => {
+      if (editingSlot === null) return;
+      const bm = bookmarks.find((b) => b.slot === editingSlot);
+      if (bm) {
+        setPathBookmark(editingSlot, bm.path, editLabel.trim() || undefined, bm.icon);
       }
-    },
-    [bookmarks, currentPath, onNavigate, onClose],
-  );
+      setEditingSlot(null);
+    }, [editingSlot, editLabel, bookmarks]);
 
-  const handleSlotRightClick = useCallback((e: React.MouseEvent, slot: number) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setContextMenu({ x: e.clientX, y: e.clientY, slot });
-  }, []);
-
-  const handleAssignCurrent = useCallback(
-    (slot: number) => {
-      if (currentPath && !currentPath.startsWith('xplorer://')) {
-        setPathBookmark(slot, currentPath);
-      }
+    const handleClearSlot = useCallback((slot: number) => {
+      removePathBookmark(slot);
       setContextMenu(null);
-    },
-    [currentPath],
-  );
+    }, []);
 
-  const handleEditLabel = useCallback(
-    (slot: number) => {
-      const bm = bookmarks.find((b) => b.slot === slot);
-      setEditLabel(bm?.label || getFolderName(bm?.path || ''));
-      setEditingSlot(slot);
-      setContextMenu(null);
-    },
-    [bookmarks],
-  );
+    if (!isOpen) return null;
 
-  const handleSaveLabel = useCallback(() => {
-    if (editingSlot === null) return;
-    const bm = bookmarks.find((b) => b.slot === editingSlot);
-    if (bm) {
-      setPathBookmark(editingSlot, bm.path, editLabel.trim() || undefined, bm.icon);
-    }
-    setEditingSlot(null);
-  }, [editingSlot, editLabel, bookmarks]);
+    const bookmarkMap = new Map(bookmarks.map((b) => [b.slot, b]));
 
-  const handleClearSlot = useCallback((slot: number) => {
-    removePathBookmark(slot);
-    setContextMenu(null);
-  }, []);
-
-  if (!isOpen) return null;
-
-  const bookmarkMap = new Map(bookmarks.map((b) => [b.slot, b]));
-
-  return (
-    <div
-      ref={overlayRef}
-      style={styles.overlay}
-      onClick={handleOverlayClick}
-      role="dialog"
-      aria-modal="true"
-      aria-label="Path Bookmarks"
-    >
-      <div style={styles.dialog}>
-        {/* Header */}
-        <div style={styles.header}>
-          <div style={styles.titleRow}>
-            {/* Bookmark icon */}
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="var(--xp-text-secondary)"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+    return (
+      <div
+        ref={overlayRef}
+        style={styles.overlay}
+        onClick={handleOverlayClick}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Path Bookmarks"
+      >
+        <div style={styles.dialog}>
+          {/* Header */}
+          <div style={styles.header}>
+            <div style={styles.titleRow}>
+              {/* Bookmark icon */}
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="var(--xp-text-secondary)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
+              </svg>
+              <h2 style={styles.title}>Path Bookmarks</h2>
+            </div>
+            <button
+              onClick={onClose}
+              style={styles.closeButton}
+              aria-label="Close"
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'var(--xp-surface-light)';
+                e.currentTarget.style.color = 'var(--xp-text)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.color = 'var(--xp-text-secondary)';
+              }}
             >
-              <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
-            </svg>
-            <h2 style={styles.title}>Path Bookmarks</h2>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
           </div>
-          <button
-            onClick={onClose}
-            style={styles.closeButton}
-            aria-label="Close"
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'var(--xp-surface-light)';
-              e.currentTarget.style.color = 'var(--xp-text)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
-              e.currentTarget.style.color = 'var(--xp-text-secondary)';
-            }}
-          >
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
-            </svg>
-          </button>
-        </div>
 
-        {/* Body — 3x3 grid of slots */}
-        <div style={styles.body}>
-          <div style={styles.grid}>
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((slot) => {
-              const bm = bookmarkMap.get(slot);
-              const isHovered = hoveredSlot === slot;
-              const isCurrentPath = bm ? bm.path === currentPath : false;
-              const displayLabel = bm?.label || (bm ? getFolderName(bm.path) : null);
+          {/* Body — 3x3 grid of slots */}
+          <div style={styles.body}>
+            <div style={styles.grid}>
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((slot) => {
+                const bm = bookmarkMap.get(slot);
+                const isHovered = hoveredSlot === slot;
+                const isCurrentPath = bm ? bm.path === currentPath : false;
+                const displayLabel = bm?.label || (bm ? getFolderName(bm.path) : null);
 
-              return (
-                <div
-                  key={slot}
-                  style={{
-                    ...styles.slot,
-                    ...(isHovered ? styles.slotHover : {}),
-                    ...(isCurrentPath ? styles.slotActive : {}),
-                  }}
-                  onClick={() => handleSlotClick(slot)}
-                  onContextMenu={(e) => handleSlotRightClick(e, slot)}
-                  onMouseEnter={() => setHoveredSlot(slot)}
-                  onMouseLeave={() => setHoveredSlot(null)}
-                  title={
-                    bm ? `Ctrl+${slot}: ${bm.path}` : `Slot ${slot} — click to assign current path`
-                  }
-                >
-                  {/* Number badge */}
-                  <span
+                return (
+                  <div
+                    key={slot}
                     style={{
-                      ...styles.numberBadge,
-                      ...(bm ? styles.numberBadgeActive : {}),
+                      ...styles.slot,
+                      ...(isHovered ? styles.slotHover : {}),
+                      ...(isCurrentPath ? styles.slotActive : {}),
                     }}
+                    onClick={() => handleSlotClick(slot)}
+                    onContextMenu={(e) => handleSlotRightClick(e, slot)}
+                    onMouseEnter={() => setHoveredSlot(slot)}
+                    onMouseLeave={() => setHoveredSlot(null)}
+                    title={
+                      bm
+                        ? `Ctrl+${slot}: ${bm.path}`
+                        : `Slot ${slot} — click to assign current path`
+                    }
                   >
-                    {slot}
-                  </span>
+                    {/* Number badge */}
+                    <span
+                      style={{
+                        ...styles.numberBadge,
+                        ...(bm ? styles.numberBadgeActive : {}),
+                      }}
+                    >
+                      {slot}
+                    </span>
 
-                  {/* Current path indicator */}
-                  {isCurrentPath && <span style={styles.currentIndicator} />}
+                    {/* Current path indicator */}
+                    {isCurrentPath && <span style={styles.currentIndicator} />}
 
-                  {bm ? (
-                    <>
-                      {/* Icon or folder icon */}
-                      <span style={styles.slotIcon}>
-                        {bm.icon || (
-                          <svg
-                            width="20"
-                            height="20"
-                            viewBox="0 0 24 24"
-                            fill="var(--xp-blue)"
-                            stroke="none"
-                          >
-                            <path d="M2 6a2 2 0 0 1 2-2h5l2 2h9a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6z" />
-                          </svg>
+                    {bm ? (
+                      <>
+                        {/* Icon or folder icon */}
+                        <span style={styles.slotIcon}>
+                          {bm.icon || (
+                            <svg
+                              width="20"
+                              height="20"
+                              viewBox="0 0 24 24"
+                              fill="var(--xp-blue)"
+                              stroke="none"
+                            >
+                              <path d="M2 6a2 2 0 0 1 2-2h5l2 2h9a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6z" />
+                            </svg>
+                          )}
+                        </span>
+
+                        {/* Label / path */}
+                        {editingSlot === slot ? (
+                          <input
+                            ref={editInputRef}
+                            type="text"
+                            value={editLabel}
+                            onChange={(e) => setEditLabel(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') handleSaveLabel();
+                              if (e.key === 'Escape') setEditingSlot(null);
+                              e.stopPropagation();
+                            }}
+                            onBlur={handleSaveLabel}
+                            onClick={(e) => e.stopPropagation()}
+                            style={styles.editInput}
+                            placeholder="Label..."
+                          />
+                        ) : (
+                          <>
+                            <span style={styles.slotLabel}>{displayLabel}</span>
+                            <span style={styles.slotPath}>{bm.path}</span>
+                          </>
                         )}
-                      </span>
+                      </>
+                    ) : (
+                      <span style={styles.slotEmpty}>Empty</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
 
-                      {/* Label / path */}
-                      {editingSlot === slot ? (
-                        <input
-                          ref={editInputRef}
-                          type="text"
-                          value={editLabel}
-                          onChange={(e) => setEditLabel(e.target.value)}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') handleSaveLabel();
-                            if (e.key === 'Escape') setEditingSlot(null);
-                            e.stopPropagation();
-                          }}
-                          onBlur={handleSaveLabel}
-                          onClick={(e) => e.stopPropagation()}
-                          style={styles.editInput}
-                          placeholder="Label..."
-                        />
-                      ) : (
-                        <>
-                          <span style={styles.slotLabel}>{displayLabel}</span>
-                          <span style={styles.slotPath}>{bm.path}</span>
-                        </>
-                      )}
-                    </>
-                  ) : (
-                    <span style={styles.slotEmpty}>Empty</span>
-                  )}
-                </div>
-              );
-            })}
+          {/* Footer */}
+          <div style={styles.footer}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
+              <span style={styles.kbd}>Ctrl</span>
+              <span>+</span>
+              <span style={styles.kbd}>1-9</span>
+              <span>navigate</span>
+              <span style={{ margin: '0 4px', opacity: 0.4 }}>|</span>
+              <span style={styles.kbd}>Ctrl</span>
+              <span>+</span>
+              <span style={styles.kbd}>Shift</span>
+              <span>+</span>
+              <span style={styles.kbd}>1-9</span>
+              <span>assign</span>
+            </span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              Press <span style={styles.kbd}>Esc</span> to close
+            </span>
           </div>
         </div>
 
-        {/* Footer */}
-        <div style={styles.footer}>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '4px', flexWrap: 'wrap' }}>
-            <span style={styles.kbd}>Ctrl</span>
-            <span>+</span>
-            <span style={styles.kbd}>1-9</span>
-            <span>navigate</span>
-            <span style={{ margin: '0 4px', opacity: 0.4 }}>|</span>
-            <span style={styles.kbd}>Ctrl</span>
-            <span>+</span>
-            <span style={styles.kbd}>Shift</span>
-            <span>+</span>
-            <span style={styles.kbd}>1-9</span>
-            <span>assign</span>
-          </span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-            Press <span style={styles.kbd}>Esc</span> to close
-          </span>
-        </div>
-      </div>
-
-      {/* Context menu */}
-      {contextMenu && (
-        <div
-          style={{
-            ...styles.contextMenu,
-            left: contextMenu.x,
-            top: contextMenu.y,
-          }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <button
-            style={styles.contextMenuItem}
-            onClick={() => handleAssignCurrent(contextMenu.slot)}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'var(--xp-surface-light)';
+        {/* Context menu */}
+        {contextMenu && (
+          <div
+            style={{
+              ...styles.contextMenu,
+              left: contextMenu.x,
+              top: contextMenu.y,
             }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
-            }}
+            onClick={(e) => e.stopPropagation()}
           >
-            {/* Pin icon */}
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+            <button
+              style={styles.contextMenuItem}
+              onClick={() => handleAssignCurrent(contextMenu.slot)}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'var(--xp-surface-light)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+              }}
             >
-              <line x1="12" y1="17" x2="12" y2="22" />
-              <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V17z" />
-            </svg>
-            Assign Current Path
-          </button>
-          {bookmarkMap.has(contextMenu.slot) && (
-            <>
-              <button
-                style={styles.contextMenuItem}
-                onClick={() => handleEditLabel(contextMenu.slot)}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--xp-surface-light)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                }}
+              {/* Pin icon */}
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
-                {/* Pencil icon */}
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+                <line x1="12" y1="17" x2="12" y2="22" />
+                <path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V17z" />
+              </svg>
+              Assign Current Path
+            </button>
+            {bookmarkMap.has(contextMenu.slot) && (
+              <>
+                <button
+                  style={styles.contextMenuItem}
+                  onClick={() => handleEditLabel(contextMenu.slot)}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--xp-surface-light)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }}
                 >
-                  <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-                  <path d="m15 5 4 4" />
-                </svg>
-                Edit Label
-              </button>
-              <button
-                style={{
-                  ...styles.contextMenuItem,
-                  color: 'var(--xp-red, #f87171)',
-                }}
-                onClick={() => handleClearSlot(contextMenu.slot)}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--xp-surface-light)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                }}
-              >
-                {/* Trash icon */}
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+                  {/* Pencil icon */}
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                    <path d="m15 5 4 4" />
+                  </svg>
+                  Edit Label
+                </button>
+                <button
+                  style={{
+                    ...styles.contextMenuItem,
+                    color: 'var(--xp-red, #f87171)',
+                  }}
+                  onClick={() => handleClearSlot(contextMenu.slot)}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'var(--xp-surface-light)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }}
                 >
-                  <path d="M3 6h18" />
-                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                </svg>
-                Clear
-              </button>
-            </>
-          )}
-        </div>
-      )}
-    </div>
-  );
-});
+                  {/* Trash icon */}
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M3 6h18" />
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                  </svg>
+                  Clear
+                </button>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  },
+);
+PathBookmarksDialog.displayName = 'PathBookmarksDialog';
 
 export default PathBookmarksDialog;

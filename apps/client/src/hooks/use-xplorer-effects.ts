@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useWindowEvent } from '@/hooks/use-window-event';
 import { TauriAPI, type FileEntry } from '@/lib/tauri-api';
+import { STORAGE_KEYS } from '@/lib/storage-keys';
 import { PATH_SEPARATOR } from '@/lib/constants';
 import { showInputToast } from '@/components/ui/Toast';
 import { invertSelection } from '@/extensions/advanced-selection/selection-utils';
@@ -37,7 +39,7 @@ interface WindowWithXplorer {
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-const UI_STATE_KEY = 'xplorer:ui-state';
+const UI_STATE_KEY = STORAGE_KEYS.UI_STATE;
 
 const saveUiState = (patch: Record<string, unknown>) => {
   try {
@@ -118,6 +120,9 @@ export interface XplorerEffectsDeps {
   sortBy: string;
   sortOrder: 'asc' | 'desc';
   theme: string;
+
+  // Architecture mode
+  setArchitectMode: React.Dispatch<React.SetStateAction<boolean>>;
 
   // Dialog state setters
   setCommandPaletteOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -203,6 +208,7 @@ export const useXplorerEffects = (deps: XplorerEffectsDeps) => {
     sortBy,
     sortOrder,
     theme,
+    setArchitectMode,
     setCommandPaletteOpen,
     commandPaletteOpen,
     setWorkspaceLayoutDialogOpen,
@@ -458,6 +464,11 @@ export const useXplorerEffects = (deps: XplorerEffectsDeps) => {
         setWorkspaceLayoutDialogOpen((prev) => !prev);
         return;
       }
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'a') {
+        e.preventDefault();
+        setArchitectMode((prev) => !prev);
+        return;
+      }
       if ((e.ctrlKey || e.metaKey) && e.key === '/') {
         e.preventDefault();
         setShortcutsDialogOpen((prev) => !prev);
@@ -526,6 +537,7 @@ export const useXplorerEffects = (deps: XplorerEffectsDeps) => {
     setShortcutsDialogOpen,
     setRightSidebarCollapsed,
     setRightPanelTab,
+    setArchitectMode,
   ]);
 
   // ── Path Bookmarks keyboard shortcuts ─────────────────────────────────────
@@ -678,18 +690,10 @@ export const useXplorerEffects = (deps: XplorerEffectsDeps) => {
 
   // ── Vim mode ──────────────────────────────────────────────────────────────
   const [vimEnabled, setVimEnabled] = useState(() => isVimModeEnabled());
-  useEffect(() => {
-    const onFocus = () => setVimEnabled(isVimModeEnabled());
-    window.addEventListener('focus', onFocus);
-    return () => window.removeEventListener('focus', onFocus);
-  }, []);
-  useEffect(() => {
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === 'xplorer-vim-mode') setVimEnabled(e.newValue === 'true');
-    };
-    window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
-  }, []);
+  useWindowEvent('focus', () => setVimEnabled(isVimModeEnabled()));
+  useWindowEvent('storage', (e: StorageEvent) => {
+    if (e.key === STORAGE_KEYS.VIM_MODE) setVimEnabled(e.newValue === 'true');
+  });
 
   const vimState = useVimMode({
     enabled: vimEnabled,
@@ -701,23 +705,18 @@ export const useXplorerEffects = (deps: XplorerEffectsDeps) => {
   });
 
   // ── GDrive event listeners ────────────────────────────────────────────────
-  useEffect(() => {
-    const handleOpenGDriveTab = (e: Event) => {
+  useWindowEvent(
+    'open-gdrive-tab',
+    (e: Event) => {
       const detail = (e as CustomEvent).detail;
       if (detail?.accountId) {
         openGDriveTab(detail.accountId, detail.accountName || detail.accountId);
       }
-    };
-    const handleOpenGDriveManager = () => openGDriveManager();
-    window.addEventListener('open-gdrive-tab', handleOpenGDriveTab);
-    window.addEventListener('open-gdrive-setup', handleOpenGDriveManager);
-    window.addEventListener('open-gdrive-management', handleOpenGDriveManager);
-    return () => {
-      window.removeEventListener('open-gdrive-tab', handleOpenGDriveTab);
-      window.removeEventListener('open-gdrive-setup', handleOpenGDriveManager);
-      window.removeEventListener('open-gdrive-management', handleOpenGDriveManager);
-    };
-  }, [openGDriveManager, openGDriveTab]);
+    },
+    [openGDriveTab],
+  );
+  useWindowEvent('open-gdrive-setup', () => openGDriveManager(), [openGDriveManager]);
+  useWindowEvent('open-gdrive-management', () => openGDriveManager(), [openGDriveManager]);
 
   // ── Listen for folder-opened event (from shell integration / "Open with Xplorer") ──
   useEffect(() => {
@@ -733,7 +732,7 @@ export const useXplorerEffects = (deps: XplorerEffectsDeps) => {
           unlisten = fn;
         });
       })
-      .catch(() => {});
+      .catch((err: unknown) => console.warn('Failed to listen for open-path event:', err));
 
     return () => {
       unlisten?.();
@@ -790,8 +789,9 @@ export const useXplorerEffects = (deps: XplorerEffectsDeps) => {
   ]);
 
   // ── Extension: openInEditor event ─────────────────────────────────────────
-  useEffect(() => {
-    const handler = (e: Event) => {
+  useWindowEvent(
+    'xplorer-open-in-editor',
+    (e: Event) => {
       const { path } = (e as CustomEvent).detail;
       if (!path) return;
       const name = path.split(/[/\\]/).pop() || path;
@@ -804,10 +804,21 @@ export const useXplorerEffects = (deps: XplorerEffectsDeps) => {
       }
       const tab: TabItem = { id: `editor-${path}-${Date.now()}`, name, path, type: 'editor' };
       sl.addTab(sl.state.activeGroupId, tab, true);
-    };
-    window.addEventListener('xplorer-open-in-editor', handler);
-    return () => window.removeEventListener('xplorer-open-in-editor', handler);
-  }, [splitLayoutRef]);
+    },
+    [splitLayoutRef],
+  );
+
+  // ── Spring-loaded folder navigation ──────────────────────────────────────
+  // When DragDropContext fires 'spring-load-folder' (a folder hovered for
+  // 500ms while dragging), navigate into that folder automatically.
+  useWindowEvent(
+    'spring-load-folder',
+    (e: Event) => {
+      const { path } = (e as CustomEvent<{ path: string }>).detail;
+      if (path) navigateWithHistory(path);
+    },
+    [navigateWithHistory],
+  );
 
   // ── Command Palette commands ──────────────────────────────────────────────
   const builtinCommands = useCommandPaletteCommands({

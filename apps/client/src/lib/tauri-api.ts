@@ -58,7 +58,9 @@ import type {
   DockerImageInfo,
   SyncResult,
   AgentProgress,
-  AgentSettings,
+  SafeAgentSettings,
+  UpdateAgentSettingsPayload,
+  UpdateAgentApiKeysPayload,
   ConflictInfo,
   DirectorySize,
   FileToken,
@@ -450,6 +452,10 @@ export class TauriAPI {
     return await transport('list_drives');
   }
 
+  static async ejectVolume(path: string): Promise<void> {
+    return await transport('eject_volume', { path });
+  }
+
   // AI operations
   static async getAiModels(): Promise<
     {
@@ -570,12 +576,16 @@ export class TauriAPI {
     return await transport('agent_cancel_session', { sessionId });
   }
 
-  static async getAgentSettings(): Promise<AgentSettings> {
+  static async getAgentSettings(): Promise<SafeAgentSettings> {
     return await transport('get_agent_settings');
   }
 
-  static async updateAgentSettings(settings: AgentSettings): Promise<void> {
+  static async updateAgentSettings(settings: UpdateAgentSettingsPayload): Promise<void> {
     return await transport('update_agent_settings', { settings });
+  }
+
+  static async updateAgentApiKeys(payload: UpdateAgentApiKeysPayload): Promise<void> {
+    return await transport('update_agent_api_keys', { payload });
   }
 
   // ═══════════════════════════════════════════
@@ -966,8 +976,7 @@ export class TauriAPI {
       name: string;
       is_current: boolean;
       is_remote: boolean;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- consumers define incompatible GitBranch types
-      last_commit?: any;
+      last_commit?: unknown;
       upstream?: string;
       ahead: number;
       behind: number;

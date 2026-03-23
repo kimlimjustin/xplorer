@@ -1,66 +1,42 @@
 import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import { STORAGE_KEYS } from '@/lib/storage-keys';
 import { useLocation } from 'wouter';
 import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from '@/components/ui/select';
-import TokenizerSettings from '@/components/TokenizerSettings';
-import KeyboardShortcutsSettings from '@/components/KeyboardShortcutsSettings';
-import { startTour, resetTourCompleted } from '@/hooks/use-tour';
-import { resetBetaWarning } from '@/components/dialogs/BetaWarningDialog';
-import {
-  isVimModeEnabled,
-  setVimModeSetting,
-  isVimLearningModeEnabled,
-  setVimLearningModeSetting,
-} from '@/hooks/use-vim-mode';
-import { AgentService, type AgentSettings, type AgentPermissions } from '@/lib/agent-service';
-import { applyFontSize, loadFontSize } from '@/lib/utils';
-import { useAllThemes } from '@/lib/theme-registry';
-import {
   ArrowLeft,
-  Palette,
   FolderOpen,
   Bot,
-  Brain,
   Search,
   Accessibility,
-  Monitor,
-  Type,
-  PanelLeft,
-  Sparkles,
-  Eye,
-  EyeOff,
-  FileText,
-  LayoutGrid,
-  Bell,
-  Save,
   Shield,
-  Key,
-  Cpu,
-  RotateCcw,
-  ChevronRight,
-  Settings2,
-  SlidersHorizontal,
   Keyboard,
-  HelpCircle,
-  AlertTriangle,
   Store,
-  Globe,
   HardDrive,
   ClipboardList,
   History,
   MousePointerClick,
+  Settings2,
+  ChevronRight,
+  Globe,
 } from 'lucide-react';
+import {
+  AgentService,
+  type SafeAgentSettings,
+  type UpdateAgentSettingsPayload,
+  type AgentPermissions,
+} from '@/lib/agent-service';
+import TokenizerSettings from '@/components/TokenizerSettings';
 import BackupRestoreSettings from '@/components/settings/BackupRestoreSettings';
 import AuditLogSettings from '@/components/settings/AuditLogSettings';
 import VersioningSettings from '@/components/settings/VersioningSettings';
 import ContextMenuRulesCard from '@/components/settings/ContextMenuRulesCard';
-import { TauriAPI } from '@/lib/tauri-api';
+import ShortcutsSettingsPanel from '@/components/settings/ShortcutsSettings';
+import GeneralSettings from '@/components/settings/GeneralSettings';
+import ExplorerSettings from '@/components/settings/ExplorerSettings';
+import AISettings from '@/components/settings/AISettings';
+import PermissionsSettings from '@/components/settings/PermissionsSettings';
+import AccessibilitySettings from '@/components/settings/AccessibilitySettings';
+import { loadFontSize } from '@/lib/utils';
+import { AppSettings, DEFAULT_SETTINGS, SETTINGS_KEY } from '@/components/settings/shared';
 
 type SettingsTab =
   | 'general'
@@ -116,60 +92,80 @@ const tabs: { id: SettingsTab; label: string; icon: React.ElementType; descripti
   { id: 'versioning', label: 'Versioning', icon: History, description: 'File version history' },
 ];
 
+const MARKETPLACE_KEY = STORAGE_KEYS.MARKETPLACE_URL;
+const DEFAULT_MARKETPLACE_URL = 'http://localhost:3000/api';
+
+const MarketplaceSettings = ({
+  marketplaceUrl,
+  setMarketplaceUrl,
+}: {
+  marketplaceUrl: string;
+  setMarketplaceUrl: (v: string) => void;
+}) => (
+  <div className="space-y-1">
+    <div className="mb-1 px-4 pb-1 pt-2">
+      <h3 className="text-xp-text-secondary text-xs font-semibold uppercase tracking-wider">
+        Connection
+      </h3>
+      <p className="text-xp-text-secondary/70 mt-0.5 text-xs">
+        Configure the marketplace server endpoint
+      </p>
+    </div>
+    <div className="hover:bg-xp-surface-light/50 rounded-lg px-4 py-3 transition-colors">
+      <div className="mb-2 flex items-center gap-3">
+        <Globe size={18} className="text-xp-text-secondary shrink-0" />
+        <div>
+          <div className="text-xp-text text-sm font-medium">Marketplace API URL</div>
+          <div className="text-xp-text-secondary mt-0.5 text-xs">
+            Base URL for the extension marketplace server
+          </div>
+        </div>
+      </div>
+      <div className="ml-[30px]">
+        <input
+          type="text"
+          value={marketplaceUrl}
+          onChange={(e) => setMarketplaceUrl(e.target.value)}
+          placeholder="http://localhost:3000/api"
+          className="border-xp-border bg-xp-bg text-xp-text hover:border-xp-text-secondary focus:border-xp-accent focus:ring-xp-accent h-9 w-full rounded-md border px-3 font-mono text-sm transition-colors focus:outline-none focus:ring-1"
+        />
+        <div className="mt-2 flex items-center justify-between">
+          <span className="text-xp-text-secondary/60 text-[10px]">
+            Default: {DEFAULT_MARKETPLACE_URL}
+          </span>
+          {marketplaceUrl !== DEFAULT_MARKETPLACE_URL && (
+            <button
+              onClick={() => setMarketplaceUrl(DEFAULT_MARKETPLACE_URL)}
+              className="text-xp-text-secondary hover:text-xp-text flex items-center gap-1 text-xs transition-colors"
+            >
+              Reset
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
 export default function Settings() {
   const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState<SettingsTab>('general');
-  const allThemes = useAllThemes();
 
-  // Vim mode toggle (stored in its own localStorage key)
-  const [vimModeEnabled, setVimModeEnabledState] = useState(() => isVimModeEnabled());
-  const handleVimModeToggle = (v: boolean) => {
-    setVimModeEnabledState(v);
-    setVimModeSetting(v);
-  };
-  const [vimLearningMode, setVimLearningModeState] = useState(() => isVimLearningModeEnabled());
-  const handleVimLearningModeToggle = (v: boolean) => {
-    setVimLearningModeState(v);
-    setVimLearningModeSetting(v);
-  };
-
-  const { t, i18n } = useTranslation();
-
-  const SETTINGS_KEY = 'xplorer:settings';
-  const defaultSettings = {
-    theme: 'glass',
-    language: '',
-    showHiddenFiles: false,
-    enableMarkdownPreview: true,
-    defaultView: 'grid',
-    enableAnimations: true,
-    showFileExtensions: true,
-    enableNotifications: true,
-    autoSave: true,
-    fontSize: 'medium',
-    sidebarWidth: 'medium',
-    reducedMotion: false,
-    enhancedFocus: false,
-    autoCalculateFolderSizes: false,
-  };
-
-  const [settings, setSettings] = useState<typeof defaultSettings>(() => {
+  const [settings, setSettings] = useState<AppSettings>(() => {
     try {
       const saved = localStorage.getItem(SETTINGS_KEY);
-      if (saved) return { ...defaultSettings, ...JSON.parse(saved) };
+      if (saved) return { ...DEFAULT_SETTINGS, ...JSON.parse(saved) };
     } catch {
       /* ignore localStorage/parse errors */
     }
-    return defaultSettings;
+    return DEFAULT_SETTINGS;
   });
 
-  const MARKETPLACE_KEY = 'xplorer:marketplace-url';
-  const defaultMarketplaceUrl = 'http://localhost:3000/api';
   const [marketplaceUrl, setMarketplaceUrl] = useState(() => {
     try {
-      return localStorage.getItem(MARKETPLACE_KEY) || defaultMarketplaceUrl;
+      return localStorage.getItem(MARKETPLACE_KEY) || DEFAULT_MARKETPLACE_URL;
     } catch {
-      return defaultMarketplaceUrl;
+      return DEFAULT_MARKETPLACE_URL;
     }
   });
 
@@ -177,18 +173,18 @@ export default function Settings() {
     localStorage.setItem(MARKETPLACE_KEY, marketplaceUrl);
   }, [marketplaceUrl]);
 
-  const [agentSettings, setAgentSettings] = useState<AgentSettings>({
+  const [agentSettings, setAgentSettings] = useState<SafeAgentSettings>({
     enabled: true,
-    api_key: '',
-    openai_api_key: '',
+    has_api_key: false,
+    has_openai_api_key: false,
     model: 'claude-sonnet-4-6',
     max_turns: 25,
     auto_approve: false,
     thinking_enabled: false,
     thinking_budget: 10000,
   });
-  const [showApiKey, setShowApiKey] = useState(false);
-  const [showOpenaiKey, setShowOpenaiKey] = useState(false);
+  const [apiKeyInput, setApiKeyInput] = useState('');
+  const [openaiKeyInput, setOpenaiKeyInput] = useState('');
   const [agentSettingsLoaded, setAgentSettingsLoaded] = useState(false);
 
   const [permissions, setPermissions] = useState<AgentPermissions>({
@@ -212,15 +208,48 @@ export default function Settings() {
       });
   }, []);
 
+  // Persist non-secret agent settings on change (debounced)
   useEffect(() => {
     if (!agentSettingsLoaded) return;
+    const payload: UpdateAgentSettingsPayload = {
+      enabled: agentSettings.enabled,
+      model: agentSettings.model,
+      max_turns: agentSettings.max_turns,
+      auto_approve: agentSettings.auto_approve,
+      thinking_enabled: agentSettings.thinking_enabled,
+      thinking_budget: agentSettings.thinking_budget,
+    };
     const timer = setTimeout(() => {
-      AgentService.updateSettings(agentSettings).catch(console.error);
+      AgentService.updateSettings(payload).catch(console.error);
     }, 500);
     return () => clearTimeout(timer);
   }, [agentSettings, agentSettingsLoaded]);
 
-  const updateAgentSetting = <K extends keyof AgentSettings>(key: K, value: AgentSettings[K]) => {
+  // Persist API keys on change (debounced, separate command)
+  useEffect(() => {
+    if (!agentSettingsLoaded) return;
+    if (apiKeyInput === '' && openaiKeyInput === '') return;
+    const timer = setTimeout(() => {
+      const payload: { api_key?: string; openai_api_key?: string } = {};
+      if (apiKeyInput !== '') payload.api_key = apiKeyInput;
+      if (openaiKeyInput !== '') payload.openai_api_key = openaiKeyInput;
+      AgentService.updateApiKeys(payload)
+        .then(() => {
+          setAgentSettings((prev) => ({
+            ...prev,
+            has_api_key: apiKeyInput !== '' ? true : prev.has_api_key,
+            has_openai_api_key: openaiKeyInput !== '' ? true : prev.has_openai_api_key,
+          }));
+        })
+        .catch(console.error);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [apiKeyInput, openaiKeyInput, agentSettingsLoaded]);
+
+  const updateAgentSetting = <K extends keyof SafeAgentSettings>(
+    key: K,
+    value: SafeAgentSettings[K],
+  ) => {
     setAgentSettings((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -249,6 +278,7 @@ export default function Settings() {
     loadFontSize();
     if (settings.reducedMotion) document.documentElement.classList.add('reduce-motion');
     if (settings.enhancedFocus) document.documentElement.classList.add('enhanced-focus');
+    if (settings.highContrast) document.documentElement.classList.add('high-contrast');
     // Mount-only: apply persisted accessibility settings on init
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -257,1274 +287,69 @@ export default function Settings() {
     setSettings((prev) => ({ ...prev, [key]: value }));
   };
 
-  const themes = Object.entries(allThemes).map(([key, th]) => ({
-    value: key,
-    label: th.name,
-  }));
-
-  const languageOptions = [
-    { value: 'en', label: 'English' },
-    { value: 'zh', label: '中文' },
-    { value: 'ja', label: '日本語' },
-    { value: 'id', label: 'Bahasa Indonesia' },
-  ];
-
-  const viewModes = [
-    { value: 'grid', label: 'Grid' },
-    { value: 'list', label: 'List' },
-    { value: 'details', label: 'Details' },
-  ];
-
-  const fontSizes = [
-    { value: 'small', label: 'Small' },
-    { value: 'medium', label: 'Medium' },
-    { value: 'large', label: 'Large' },
-    { value: 'xl', label: 'Extra Large' },
-  ];
-
-  const sidebarWidths = [
-    { value: 'narrow', label: 'Narrow' },
-    { value: 'medium', label: 'Medium' },
-    { value: 'wide', label: 'Wide' },
-  ];
-
-  // ── Reusable sub-components ──────────────────────────────────────
-
-  const Toggle = ({
-    checked,
-    onChange,
-    id,
-    label,
-  }: {
-    checked: boolean;
-    onChange: (v: boolean) => void;
-    id: string;
-    label?: string;
-  }) => (
-    <button
-      id={id}
-      type="button"
-      role="switch"
-      aria-checked={checked}
-      aria-label={label}
-      className={`focus-visible:ring-xp-accent focus-visible:ring-offset-xp-bg relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
-        checked ? 'bg-xp-accent' : 'bg-xp-border'
-      }`}
-      onClick={() => onChange(!checked)}
-    >
-      <span
-        className={`pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow-sm ring-0 transition-transform ${
-          checked ? 'translate-x-5' : 'translate-x-0.5'
-        }`}
-      />
-    </button>
-  );
-
-  const SelectField = ({
-    value,
-    onChange,
-    options,
-    label,
-  }: {
-    value: string;
-    onChange: (v: string) => void;
-    options: { value: string; label: string }[];
-    label?: string;
-  }) => (
-    <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className="h-9 min-w-[140px]" aria-label={label}>
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
-        {options.map((o) => (
-          <SelectItem key={o.value} value={o.value}>
-            {o.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  );
-
-  /** A single setting row: icon + label/desc on the left, control on the right */
-  const SettingRow = ({
-    icon: Icon,
-    label,
-    description,
-    children,
-  }: {
-    icon?: React.ElementType;
-    label: string;
-    description?: string;
-    children: React.ReactNode;
-  }) => (
-    <div className="hover:bg-xp-surface-light/50 group flex items-center justify-between gap-4 rounded-lg px-4 py-3 transition-colors">
-      <div className="flex min-w-0 items-center gap-3">
-        {Icon && <Icon size={18} className="text-xp-text-secondary shrink-0" />}
-        <div className="min-w-0">
-          <div className="text-xp-text text-sm font-medium">{label}</div>
-          {description && (
-            <div className="text-xp-text-secondary mt-0.5 text-xs leading-relaxed">
-              {description}
-            </div>
-          )}
-        </div>
-      </div>
-      <div className="shrink-0">{children}</div>
-    </div>
-  );
-
-  const SectionTitle = ({ title, description }: { title: string; description?: string }) => (
-    <div className="mb-1 px-4 pb-1 pt-2">
-      <h3 className="text-xp-text-secondary text-xs font-semibold uppercase tracking-wider">
-        {title}
-      </h3>
-      {description && <p className="text-xp-text-secondary/70 mt-0.5 text-xs">{description}</p>}
-    </div>
-  );
-
-  const Divider = () => <div className="bg-xp-border/50 mx-4 my-2 h-px" />;
-
-  const SystemIntegrationSettings = () => {
-    const [isDefaultHandler, setIsDefaultHandler] = useState(false);
-    const [contextMenuInstalled, setContextMenuInstalled] = useState(false);
-    const [loading, setLoading] = useState(true);
-    const [isWindows] = useState(() => navigator.userAgent.includes('Windows'));
-
-    useEffect(() => {
-      if (!isWindows) {
-        setLoading(false);
-        return;
-      }
-      TauriAPI.getShellIntegrationStatus()
-        .then((status) => {
-          setIsDefaultHandler(status.is_default_handler);
-          setContextMenuInstalled(status.context_menu_installed);
-        })
-        .catch(() => {})
-        .finally(() => setLoading(false));
-    }, [isWindows]);
-
-    if (!isWindows) return null;
-    if (loading) return <div className="text-xp-text-muted px-4 py-2 text-sm">Loading...</div>;
-
-    return (
-      <>
-        <SettingRow
-          icon={Monitor}
-          label="Default File Explorer"
-          description="Double-clicking folders opens Xplorer instead of Windows Explorer"
-        >
-          <Toggle
-            id="defaultExplorer"
-            label="Default Explorer"
-            checked={isDefaultHandler}
-            onChange={async (v) => {
-              try {
-                await TauriAPI.setDefaultFolderHandler(v);
-                setIsDefaultHandler(v);
-                if (v && !contextMenuInstalled) {
-                  setContextMenuInstalled(true);
-                }
-              } catch (err) {
-                console.error('Failed to set default handler:', err);
-              }
-            }}
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'general':
+        return (
+          <GeneralSettings
+            settings={settings}
+            updateSetting={updateSetting}
+            setSettings={setSettings}
           />
-        </SettingRow>
-        <SettingRow
-          icon={FolderOpen}
-          label="Folder Context Menu"
-          description="Add 'Open with Xplorer' to folder right-click menu"
-        >
-          <Toggle
-            id="contextMenu"
-            label="Context Menu"
-            checked={contextMenuInstalled}
-            onChange={async (v) => {
-              try {
-                if (v) {
-                  await TauriAPI.addContextMenuEntry();
-                } else {
-                  await TauriAPI.removeContextMenuEntry();
-                  if (isDefaultHandler) {
-                    await TauriAPI.setDefaultFolderHandler(false);
-                    setIsDefaultHandler(false);
-                  }
-                }
-                setContextMenuInstalled(v);
-              } catch (err) {
-                console.error('Failed to toggle context menu:', err);
-              }
-            }}
+        );
+      case 'explorer':
+        return <ExplorerSettings settings={settings} updateSetting={updateSetting} />;
+      case 'context-menu':
+        return <ContextMenuRulesCard />;
+      case 'ai':
+        return (
+          <AISettings
+            agentSettings={agentSettings}
+            updateAgentSetting={updateAgentSetting}
+            setAgentSettings={setAgentSettings}
+            apiKeyInput={apiKeyInput}
+            setApiKeyInput={setApiKeyInput}
+            openaiKeyInput={openaiKeyInput}
+            setOpenaiKeyInput={setOpenaiKeyInput}
           />
-        </SettingRow>
-        {isDefaultHandler && (
-          <div className="flex items-center gap-2 px-4 py-2 text-xs text-amber-400">
-            <AlertTriangle size={12} />
-            Folders will open in Xplorer. Disable to restore Windows Explorer.
-          </div>
-        )}
-      </>
-    );
-  };
-
-  // ── Tab Content Renderers ────────────────────────────────────────
-
-  const renderGeneral = () => (
-    <div className="space-y-1">
-      <SectionTitle title="Appearance" />
-      <SettingRow icon={Palette} label="Theme" description="Color scheme for the application">
-        <SelectField
-          label="Theme"
-          value={settings.theme}
-          onChange={(v) => updateSetting('theme', v)}
-          options={themes}
-        />
-      </SettingRow>
-      <SettingRow
-        icon={Globe}
-        label={t('settings.general.language')}
-        description={t('settings.general.languageDesc')}
-      >
-        <SelectField
-          label="Language"
-          value={settings.language || i18n.language?.split('-')[0] || 'en'}
-          onChange={(v) => {
-            updateSetting('language', v);
-            i18n.changeLanguage(v);
-          }}
-          options={languageOptions}
-        />
-      </SettingRow>
-      <SettingRow icon={Type} label="Font Size" description="Base font size across the UI">
-        <SelectField
-          label="Font Size"
-          value={settings.fontSize}
-          onChange={(v) => {
-            updateSetting('fontSize', v);
-            applyFontSize(v as 'small' | 'medium' | 'large' | 'xl');
-          }}
-          options={fontSizes}
-        />
-      </SettingRow>
-      <SettingRow
-        icon={Sparkles}
-        label="Animations"
-        description="Enable smooth transitions and effects"
-      >
-        <Toggle
-          id="animations"
-          label="Animations"
-          checked={settings.enableAnimations}
-          onChange={(v) => updateSetting('enableAnimations', v)}
-        />
-      </SettingRow>
-
-      <Divider />
-      <SectionTitle title="Layout" />
-      <SettingRow
-        icon={PanelLeft}
-        label="Sidebar Width"
-        description="Width of the navigation sidebar"
-      >
-        <SelectField
-          label="Sidebar Width"
-          value={settings.sidebarWidth}
-          onChange={(v) => updateSetting('sidebarWidth', v)}
-          options={sidebarWidths}
-        />
-      </SettingRow>
-
-      <Divider />
-      <SectionTitle title="System" />
-      <SettingRow
-        icon={Bell}
-        label="Notifications"
-        description="Show desktop notifications for events"
-      >
-        <Toggle
-          id="notifications"
-          label="Notifications"
-          checked={settings.enableNotifications}
-          onChange={(v) => updateSetting('enableNotifications', v)}
-        />
-      </SettingRow>
-      <SettingRow icon={Save} label="Auto Save" description="Automatically save changes to files">
-        <Toggle
-          id="autoSave"
-          label="Auto Save"
-          checked={settings.autoSave}
-          onChange={(v) => updateSetting('autoSave', v)}
-        />
-      </SettingRow>
-
-      <Divider />
-      <SectionTitle title="System Integration" />
-      <SystemIntegrationSettings />
-
-      <Divider />
-      <SectionTitle title="Help" />
-      <SettingRow
-        icon={HelpCircle}
-        label="Onboarding Tour"
-        description="Replay the interactive guided tour of the app"
-      >
-        <button
-          onClick={() => {
-            resetTourCompleted();
-            setLocation('/');
-            setTimeout(() => startTour(), 300);
-          }}
-          className="bg-xp-blue flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
-        >
-          Replay Tour
-        </button>
-      </SettingRow>
-      <SettingRow
-        icon={AlertTriangle}
-        label="Beta Warning"
-        description="Show the early beta warning dialog again"
-      >
-        <button
-          onClick={() => {
-            resetBetaWarning();
-            setLocation('/');
-          }}
-          className="flex items-center gap-2 rounded-md bg-amber-500 px-3 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
-        >
-          Show Warning
-        </button>
-      </SettingRow>
-
-      <Divider />
-      <div className="px-4 pt-4">
-        <button
-          onClick={() => setSettings(defaultSettings)}
-          className="text-xp-red hover:bg-xp-red/10 flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors"
-        >
-          <RotateCcw size={14} />
-          Reset all settings to defaults
-        </button>
-      </div>
-    </div>
-  );
-
-  const renderExplorer = () => (
-    <div className="space-y-1">
-      <SectionTitle title="Display" />
-      <SettingRow
-        icon={LayoutGrid}
-        label="Default View"
-        description="How files are displayed by default"
-      >
-        <SelectField
-          label="Default View"
-          value={settings.defaultView}
-          onChange={(v) => updateSetting('defaultView', v)}
-          options={viewModes}
-        />
-      </SettingRow>
-      <SettingRow
-        icon={Eye}
-        label="Show Hidden Files"
-        description="Display files starting with a dot"
-      >
-        <Toggle
-          id="hiddenFiles"
-          label="Show Hidden Files"
-          checked={settings.showHiddenFiles}
-          onChange={(v) => updateSetting('showHiddenFiles', v)}
-        />
-      </SettingRow>
-      <SettingRow
-        icon={FileText}
-        label="File Extensions"
-        description="Show file type extensions in names"
-      >
-        <Toggle
-          id="fileExtensions"
-          label="File Extensions"
-          checked={settings.showFileExtensions}
-          onChange={(v) => updateSetting('showFileExtensions', v)}
-        />
-      </SettingRow>
-      <SettingRow
-        icon={FolderOpen}
-        label="Auto-Calculate Folder Sizes"
-        description="Automatically calculate and display folder sizes in details view"
-      >
-        <Toggle
-          id="autoFolderSizes"
-          label="Auto-Calculate Folder Sizes"
-          checked={settings.autoCalculateFolderSizes}
-          onChange={(v) => updateSetting('autoCalculateFolderSizes', v)}
-        />
-      </SettingRow>
-
-      <Divider />
-      <SectionTitle title="Preview" />
-      <SettingRow
-        icon={FileText}
-        label="Markdown Preview"
-        description="Render markdown files instead of showing raw text"
-      >
-        <Toggle
-          id="markdownPreview"
-          label="Markdown Preview"
-          checked={settings.enableMarkdownPreview}
-          onChange={(v) => updateSetting('enableMarkdownPreview', v)}
-        />
-      </SettingRow>
-    </div>
-  );
-
-  const renderContextMenu = () => <ContextMenuRulesCard />;
-
-  const renderAI = () => (
-    <div className="space-y-1">
-      <SectionTitle title="Agent" />
-      <SettingRow
-        icon={Bot}
-        label="Enable Agent"
-        description="Activate AI-powered file management assistant"
-      >
-        <Toggle
-          id="agentEnabled"
-          label="Enable Agent"
-          checked={agentSettings.enabled}
-          onChange={(v) => updateAgentSetting('enabled', v)}
-        />
-      </SettingRow>
-      <SettingRow
-        icon={Shield}
-        label="Auto-Approve Actions"
-        description={
-          agentSettings.auto_approve
-            ? 'Writes, deletes, and commands run without asking'
-            : 'Destructive actions require your approval'
-        }
-      >
-        <Toggle
-          id="autoApprove"
-          label="Auto-Approve Agent Actions"
-          checked={agentSettings.auto_approve}
-          onChange={(v) => updateAgentSetting('auto_approve', v)}
-        />
-      </SettingRow>
-
-      <Divider />
-      <SectionTitle title="Configuration" />
-
-      {/* API Key — special layout */}
-      <div className="hover:bg-xp-surface-light/50 rounded-lg px-4 py-3 transition-colors">
-        <div className="mb-2 flex items-center gap-3">
-          <Key size={18} className="text-xp-text-secondary shrink-0" />
-          <div>
-            <div className="text-xp-text text-sm font-medium">API Key</div>
-            <div className="text-xp-text-secondary mt-0.5 text-xs">
-              Your Anthropic Claude API key
-            </div>
-          </div>
-        </div>
-        <div className="relative ml-[30px]">
-          <input
-            id="apiKey"
-            type={showApiKey ? 'text' : 'password'}
-            value={agentSettings.api_key}
-            onChange={(e) => updateAgentSetting('api_key', e.target.value)}
-            placeholder="sk-ant-..."
-            className="border-xp-border bg-xp-bg text-xp-text hover:border-xp-text-secondary focus:border-xp-accent focus:ring-xp-accent h-9 w-full rounded-md border px-3 pr-16 font-mono text-sm transition-colors focus:outline-none focus:ring-1"
+        );
+      case 'permissions':
+        return (
+          <PermissionsSettings
+            permissions={permissions}
+            setPermissions={setPermissions}
+            agentSettings={agentSettings}
           />
-          <button
-            type="button"
-            onClick={() => setShowApiKey(!showApiKey)}
-            className="text-xp-text-secondary hover:text-xp-text hover:bg-xp-surface-light absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1 rounded px-2 py-1 text-xs transition-colors"
-          >
-            {showApiKey ? <EyeOff size={14} /> : <Eye size={14} />}
-            {showApiKey ? 'Hide' : 'Show'}
-          </button>
-        </div>
-      </div>
-
-      <SettingRow icon={Cpu} label="Model" description="Which AI model to use for the agent">
-        <SelectField
-          label="AI Model"
-          value={agentSettings.model}
-          onChange={(v) => updateAgentSetting('model', v)}
-          options={[
-            { value: 'claude-sonnet-4-6', label: 'Claude Sonnet 4.6' },
-            { value: 'claude-opus-4-6', label: 'Claude Opus 4.6' },
-            { value: 'gpt-4o', label: 'GPT-4o' },
-            { value: 'gpt-4o-mini', label: 'GPT-4o Mini' },
-            { value: 'gpt-4.1', label: 'GPT-4.1' },
-            { value: 'gpt-4.1-mini', label: 'GPT-4.1 Mini' },
-            { value: 'o3-mini', label: 'o3-mini' },
-          ]}
-        />
-      </SettingRow>
-
-      {/* OpenAI API Key — shows when an OpenAI model is selected */}
-      {(agentSettings.model.startsWith('gpt-') ||
-        agentSettings.model.startsWith('o1') ||
-        agentSettings.model.startsWith('o3') ||
-        agentSettings.model.startsWith('o4') ||
-        agentSettings.model.startsWith('chatgpt-')) && (
-        <div className="hover:bg-xp-surface-light/50 rounded-lg px-4 py-3 transition-colors">
-          <div className="mb-2 flex items-center gap-3">
-            <Key size={18} className="text-xp-text-secondary shrink-0" />
-            <div>
-              <div className="text-xp-text text-sm font-medium">OpenAI API Key</div>
-              <div className="text-xp-text-secondary mt-0.5 text-xs">
-                Required for GPT / OpenAI models
-              </div>
-            </div>
+        );
+      case 'indexing':
+        return (
+          <div className="px-4 py-2">
+            <TokenizerSettings />
           </div>
-          <div className="relative ml-[30px]">
-            <input
-              type={showOpenaiKey ? 'text' : 'password'}
-              value={agentSettings.openai_api_key}
-              onChange={(e) => updateAgentSetting('openai_api_key', e.target.value)}
-              placeholder="sk-..."
-              className="border-xp-border bg-xp-bg text-xp-text hover:border-xp-text-secondary focus:border-xp-accent focus:ring-xp-accent h-9 w-full rounded-md border px-3 pr-16 font-mono text-sm transition-colors focus:outline-none focus:ring-1"
-            />
-            <button
-              type="button"
-              onClick={() => setShowOpenaiKey(!showOpenaiKey)}
-              className="text-xp-text-secondary hover:text-xp-text hover:bg-xp-surface-light absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-1 rounded px-2 py-1 text-xs transition-colors"
-            >
-              {showOpenaiKey ? <EyeOff size={14} /> : <Eye size={14} />}
-              {showOpenaiKey ? 'Hide' : 'Show'}
-            </button>
-          </div>
-        </div>
-      )}
-
-      <Divider />
-      <SectionTitle title="AI Search" />
-
-      {/* OpenAI API Key for search */}
-      <div className="hover:bg-xp-surface-light/50 rounded-lg px-4 py-3 transition-colors">
-        <div className="mb-2 flex items-center gap-3">
-          <Key size={18} className="text-xp-text-secondary shrink-0" />
-          <div>
-            <div className="text-xp-text text-sm font-medium">OpenAI API Key</div>
-            <div className="text-xp-text-secondary mt-0.5 text-xs">
-              For GPT-powered search (optional)
-            </div>
-          </div>
-        </div>
-        <div className="ml-[30px]">
-          <input
-            type="password"
-            defaultValue={localStorage.getItem('xplorer_openai_key') || ''}
-            onChange={(e) => localStorage.setItem('xplorer_openai_key', e.target.value)}
-            placeholder="sk-..."
-            className="border-xp-border bg-xp-bg text-xp-text hover:border-xp-text-secondary focus:border-xp-accent focus:ring-xp-accent h-9 w-full rounded-md border px-3 font-mono text-sm transition-colors focus:outline-none focus:ring-1"
+        );
+      case 'shortcuts':
+        return <ShortcutsSettingsPanel />;
+      case 'marketplace':
+        return (
+          <MarketplaceSettings
+            marketplaceUrl={marketplaceUrl}
+            setMarketplaceUrl={setMarketplaceUrl}
           />
-        </div>
-      </div>
-
-      {/* Ollama URL */}
-      <div className="hover:bg-xp-surface-light/50 rounded-lg px-4 py-3 transition-colors">
-        <div className="mb-2 flex items-center gap-3">
-          <Cpu size={18} className="text-xp-text-secondary shrink-0" />
-          <div>
-            <div className="text-xp-text text-sm font-medium">Ollama Endpoint</div>
-            <div className="text-xp-text-secondary mt-0.5 text-xs">
-              Local Ollama server URL for AI search
-            </div>
-          </div>
-        </div>
-        <div className="ml-[30px]">
-          <input
-            type="text"
-            defaultValue={localStorage.getItem('xplorer_ollama_url') || 'http://localhost:11434'}
-            onChange={(e) => localStorage.setItem('xplorer_ollama_url', e.target.value)}
-            placeholder="http://localhost:11434"
-            className="border-xp-border bg-xp-bg text-xp-text hover:border-xp-text-secondary focus:border-xp-accent focus:ring-xp-accent h-9 w-full rounded-md border px-3 font-mono text-sm transition-colors focus:outline-none focus:ring-1"
-          />
-        </div>
-      </div>
-
-      <Divider />
-      <SectionTitle title="Agent" />
-
-      {/* Max Turns — special layout */}
-      <div className="hover:bg-xp-surface-light/50 rounded-lg px-4 py-3 transition-colors">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <SlidersHorizontal size={18} className="text-xp-text-secondary shrink-0" />
-            <div>
-              <div className="text-xp-text text-sm font-medium">Max Turns</div>
-              <div className="text-xp-text-secondary mt-0.5 text-xs">
-                Maximum conversation turns per task
-              </div>
-            </div>
-          </div>
-          <span className="text-xp-accent text-sm font-medium tabular-nums">
-            {agentSettings.max_turns}
-          </span>
-        </div>
-        <div className="ml-[30px] mt-2">
-          <input
-            id="maxTurns"
-            type="range"
-            min={5}
-            max={50}
-            value={agentSettings.max_turns}
-            onChange={(e) => updateAgentSetting('max_turns', Number(e.target.value))}
-            className="bg-xp-border accent-xp-accent [&::-webkit-slider-thumb]:bg-xp-accent h-1.5 w-full cursor-pointer appearance-none rounded-full [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-md"
-          />
-          <div className="text-xp-text-secondary/60 mt-1 flex justify-between text-[10px]">
-            <span>5</span>
-            <span>50</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Thinking Mode */}
-      <SettingRow
-        icon={Brain}
-        label="Extended Thinking"
-        description="Enable deeper reasoning for complex tasks (Claude only)"
-      >
-        <Toggle
-          id="thinkingEnabled"
-          label="Extended Thinking"
-          checked={agentSettings.thinking_enabled}
-          onChange={(v) => updateAgentSetting('thinking_enabled', v)}
-        />
-      </SettingRow>
-
-      {/* Thinking Budget — conditional */}
-      {agentSettings.thinking_enabled && (
-        <div className="hover:bg-xp-surface-light/50 rounded-lg px-4 py-3 transition-colors">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <SlidersHorizontal size={18} className="text-xp-text-secondary shrink-0" />
-              <div>
-                <div className="text-xp-text text-sm font-medium">Thinking Budget</div>
-                <div className="text-xp-text-secondary mt-0.5 text-xs">
-                  Max tokens for reasoning
-                </div>
-              </div>
-            </div>
-            <span className="text-xp-accent text-sm font-medium tabular-nums">
-              {agentSettings.thinking_budget.toLocaleString()}
-            </span>
-          </div>
-          <div className="ml-[30px] mt-2">
-            <input
-              type="range"
-              min={5000}
-              max={50000}
-              step={5000}
-              value={agentSettings.thinking_budget}
-              onChange={(e) => updateAgentSetting('thinking_budget', Number(e.target.value))}
-              className="bg-xp-border accent-xp-accent [&::-webkit-slider-thumb]:bg-xp-accent h-1.5 w-full cursor-pointer appearance-none rounded-full [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-md"
-            />
-            <div className="text-xp-text-secondary/60 mt-1 flex justify-between text-[10px]">
-              <span>5K</span>
-              <span>50K</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <Divider />
-      <div className="px-4 pt-2">
-        <button
-          onClick={() => {
-            setAgentSettings({
-              enabled: true,
-              api_key: agentSettings.api_key,
-              openai_api_key: agentSettings.openai_api_key,
-              model: 'claude-sonnet-4-6',
-              max_turns: 25,
-              auto_approve: false,
-              thinking_enabled: false,
-              thinking_budget: 10000,
-            });
-          }}
-          className="text-xp-text-secondary hover:text-xp-text hover:bg-xp-surface-light flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors"
-        >
-          <RotateCcw size={14} />
-          Reset agent settings
-        </button>
-      </div>
-    </div>
-  );
-
-  const ALL_TOOLS = {
-    read: [
-      { name: 'read_file', label: 'Read File', desc: 'Read file contents' },
-      { name: 'list_directory', label: 'List Directory', desc: 'List files in a directory' },
-      { name: 'search_files', label: 'Search Files', desc: 'Glob pattern file search' },
-      { name: 'search_content', label: 'Search Content', desc: 'Regex search in file contents' },
-      { name: 'get_system_info', label: 'System Info', desc: 'OS and system details' },
-      { name: 'search_indexed', label: 'Search Index', desc: 'Search pre-built file index' },
-      { name: 'extract_document_text', label: 'Extract Text', desc: 'Extract text from documents' },
-      { name: 'recall', label: 'Recall Memory', desc: 'Retrieve stored memories' },
-    ],
-    write: [
-      { name: 'write_file', label: 'Write File', desc: 'Create or overwrite files' },
-      { name: 'create_directory', label: 'Create Directory', desc: 'Create directories' },
-      { name: 'rename', label: 'Rename', desc: 'Rename files or directories' },
-      { name: 'delete', label: 'Delete', desc: 'Move to trash' },
-      { name: 'move_file', label: 'Move File', desc: 'Move files or directories' },
-      { name: 'copy_file', label: 'Copy File', desc: 'Copy files or directories' },
-      { name: 'execute_command', label: 'Execute Command', desc: 'Run shell commands' },
-      { name: 'execute_plan', label: 'Execute Plan', desc: 'Execute approved plans' },
-    ],
-  };
-
-  const toggleTool = (toolName: string) => {
-    setPermissions((prev) => {
-      const disabled = prev.disabled_tools.includes(toolName)
-        ? prev.disabled_tools.filter((t) => t !== toolName)
-        : [...prev.disabled_tools, toolName];
-      return { ...prev, disabled_tools: disabled };
-    });
-  };
-
-  const toggleAutoApprove = (toolName: string) => {
-    setPermissions((prev) => {
-      const list = prev.auto_approve_tools.includes(toolName)
-        ? prev.auto_approve_tools.filter((t) => t !== toolName)
-        : [...prev.auto_approve_tools, toolName];
-      return { ...prev, auto_approve_tools: list };
-    });
-  };
-
-  const addToList = (
-    field: 'allowed_paths' | 'blocked_paths' | 'custom_blocked_commands',
-    value: string,
-  ) => {
-    const trimmed = value.trim();
-    if (!trimmed) return;
-    setPermissions((prev) => {
-      if (prev[field].includes(trimmed)) return prev;
-      return { ...prev, [field]: [...prev[field], trimmed] };
-    });
-  };
-
-  const removeFromList = (
-    field: 'allowed_paths' | 'blocked_paths' | 'custom_blocked_commands',
-    index: number,
-  ) => {
-    setPermissions((prev) => ({
-      ...prev,
-      [field]: prev[field].filter((_, i) => i !== index),
-    }));
-  };
-
-  const PermToggle = ({ enabled, onChange }: { enabled: boolean; onChange: () => void }) => (
-    <button
-      type="button"
-      onClick={onChange}
-      className={`rounded-md px-3 py-1 text-xs font-semibold tracking-wide transition-all ${
-        enabled
-          ? 'border border-emerald-500/40 bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30'
-          : 'border border-red-500/20 bg-red-500/10 text-red-400/70 hover:bg-red-500/20'
-      }`}
-    >
-      {enabled ? 'ON' : 'OFF'}
-    </button>
-  );
-
-  const renderPermissions = () => (
-    <div className="space-y-1">
-      {/* Internet Sandbox */}
-      <SectionTitle title="Network" />
-      <div className="hover:bg-xp-surface-light/50 flex items-center justify-between gap-4 rounded-lg px-4 py-3 transition-colors">
-        <div className="flex min-w-0 items-center gap-3">
-          <Globe size={18} className="text-xp-text-secondary shrink-0" />
-          <div className="min-w-0">
-            <div className="text-xp-text text-sm font-medium">Block Internet Access</div>
-            <div className="text-xp-text-secondary mt-0.5 text-xs leading-relaxed">
-              Prevent the agent from running commands that access the network (ping, ftp, telnet,
-              nslookup, URLs in arguments, etc.). Core network tools (curl, wget, ssh, nc) are
-              always blocked regardless of this setting.
-            </div>
-          </div>
-        </div>
-        <PermToggle
-          enabled={permissions.block_internet}
-          onChange={() =>
-            setPermissions((prev) => ({ ...prev, block_internet: !prev.block_internet }))
-          }
-        />
-      </div>
-
-      <Divider />
-
-      {/* Tool Access */}
-      <SectionTitle title="Read Tools" description="Tools that run without approval" />
-      <div className="grid grid-cols-1 gap-0.5">
-        {ALL_TOOLS.read.map((tool) => {
-          const enabled = !permissions.disabled_tools.includes(tool.name);
-          return (
-            <div
-              key={tool.name}
-              className={`hover:bg-xp-surface-light/50 flex items-center justify-between gap-4 rounded-lg px-4 py-2.5 transition-colors ${!enabled ? 'opacity-50' : ''}`}
-            >
-              <div className="min-w-0">
-                <div className="text-xp-text flex items-center gap-2 text-sm font-medium">
-                  <code className="bg-xp-surface text-xp-accent/80 rounded px-1.5 py-0.5 font-mono text-[11px]">
-                    {tool.name}
-                  </code>
-                  {tool.label}
-                </div>
-                <div className="text-xp-text-secondary mt-0.5 text-xs">{tool.desc}</div>
-              </div>
-              <PermToggle enabled={enabled} onChange={() => toggleTool(tool.name)} />
-            </div>
-          );
-        })}
-      </div>
-
-      <Divider />
-      <SectionTitle
-        title="Write Tools"
-        description="Tools that modify files (require approval by default)"
-      />
-      <div className="grid grid-cols-1 gap-0.5">
-        {ALL_TOOLS.write.map((tool) => {
-          const enabled = !permissions.disabled_tools.includes(tool.name);
-          return (
-            <div
-              key={tool.name}
-              className={`hover:bg-xp-surface-light/50 flex items-center justify-between gap-4 rounded-lg px-4 py-2.5 transition-colors ${!enabled ? 'opacity-50' : ''}`}
-            >
-              <div className="min-w-0">
-                <div className="text-xp-text flex items-center gap-2 text-sm font-medium">
-                  <code className="bg-xp-surface text-xp-accent/80 rounded px-1.5 py-0.5 font-mono text-[11px]">
-                    {tool.name}
-                  </code>
-                  {tool.label}
-                </div>
-                <div className="text-xp-text-secondary mt-0.5 text-xs">{tool.desc}</div>
-              </div>
-              <PermToggle enabled={enabled} onChange={() => toggleTool(tool.name)} />
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Per-tool auto-approve */}
-      <Divider />
-      <SectionTitle
-        title="Auto-Approve Rules"
-        description={
-          agentSettings.auto_approve
-            ? 'Global auto-approve is ON — all write tools skip approval'
-            : 'Skip the approval prompt for specific write tools'
-        }
-      />
-      {agentSettings.auto_approve ? (
-        <div className="text-xp-text-secondary px-4 py-2 text-xs italic">
-          Global auto-approve is enabled. Disable it in AI Agent settings to use per-tool rules.
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 gap-0.5">
-          {ALL_TOOLS.write.map((tool) => {
-            const isDisabled = permissions.disabled_tools.includes(tool.name);
-            if (isDisabled) return null;
-            const autoApproved = permissions.auto_approve_tools.includes(tool.name);
-            return (
-              <div
-                key={tool.name}
-                className="hover:bg-xp-surface-light/50 flex items-center justify-between gap-4 rounded-lg px-4 py-2 transition-colors"
-              >
-                <div className="text-xp-text text-sm">{tool.label}</div>
-                <PermToggle enabled={autoApproved} onChange={() => toggleAutoApprove(tool.name)} />
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Path Restrictions */}
-      <Divider />
-      <SectionTitle
-        title="Allowed Paths"
-        description="If set, the agent can ONLY access these directories"
-      />
-      <div className="space-y-2 px-4">
-        <div className="flex gap-2">
-          <input
-            type="text"
-            placeholder="e.g. D:\Projects"
-            className="border-xp-border bg-xp-bg text-xp-text focus:border-xp-accent focus:ring-xp-accent h-8 flex-1 rounded-md border px-3 font-mono text-sm focus:outline-none focus:ring-1"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                addToList('allowed_paths', e.currentTarget.value);
-                e.currentTarget.value = '';
-              }
-            }}
-          />
-          <button
-            onClick={(e) => {
-              const input = e.currentTarget.previousElementSibling as HTMLInputElement;
-              addToList('allowed_paths', input.value);
-              input.value = '';
-            }}
-            className="bg-xp-accent h-8 rounded-md px-3 text-xs font-medium text-white transition-opacity hover:opacity-90"
-          >
-            Add
-          </button>
-        </div>
-        {permissions.allowed_paths.length > 0 && (
-          <div className="space-y-1">
-            {permissions.allowed_paths.map((p, i) => (
-              <div
-                key={p}
-                className="bg-xp-surface text-xp-text flex items-center justify-between gap-2 rounded-md px-3 py-1.5 font-mono text-sm"
-              >
-                <span className="truncate">{p}</span>
-                <button
-                  onClick={() => removeFromList('allowed_paths', i)}
-                  className="text-xp-text-secondary shrink-0 text-xs hover:text-red-400"
-                >
-                  Remove
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <Divider />
-      <SectionTitle
-        title="Blocked Paths"
-        description="Additional paths blocked beyond system defaults"
-      />
-      <div className="space-y-2 px-4">
-        <div className="flex gap-2">
-          <input
-            type="text"
-            placeholder="e.g. D:\Secrets"
-            className="border-xp-border bg-xp-bg text-xp-text focus:border-xp-accent focus:ring-xp-accent h-8 flex-1 rounded-md border px-3 font-mono text-sm focus:outline-none focus:ring-1"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                addToList('blocked_paths', e.currentTarget.value);
-                e.currentTarget.value = '';
-              }
-            }}
-          />
-          <button
-            onClick={(e) => {
-              const input = e.currentTarget.previousElementSibling as HTMLInputElement;
-              addToList('blocked_paths', input.value);
-              input.value = '';
-            }}
-            className="bg-xp-accent h-8 rounded-md px-3 text-xs font-medium text-white transition-opacity hover:opacity-90"
-          >
-            Add
-          </button>
-        </div>
-        {permissions.blocked_paths.length > 0 && (
-          <div className="space-y-1">
-            {permissions.blocked_paths.map((p, i) => (
-              <div
-                key={p}
-                className="bg-xp-surface text-xp-text flex items-center justify-between gap-2 rounded-md px-3 py-1.5 font-mono text-sm"
-              >
-                <span className="truncate">{p}</span>
-                <button
-                  onClick={() => removeFromList('blocked_paths', i)}
-                  className="text-xp-text-secondary shrink-0 text-xs hover:text-red-400"
-                >
-                  Remove
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Blocked Commands */}
-      <Divider />
-      <SectionTitle
-        title="Custom Blocked Commands"
-        description="Added on top of 60+ built-in blocked commands"
-      />
-      <div className="space-y-2 px-4">
-        <div className="flex gap-2">
-          <input
-            type="text"
-            placeholder="e.g. npm"
-            className="border-xp-border bg-xp-bg text-xp-text focus:border-xp-accent focus:ring-xp-accent h-8 flex-1 rounded-md border px-3 font-mono text-sm focus:outline-none focus:ring-1"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                addToList('custom_blocked_commands', e.currentTarget.value);
-                e.currentTarget.value = '';
-              }
-            }}
-          />
-          <button
-            onClick={(e) => {
-              const input = e.currentTarget.previousElementSibling as HTMLInputElement;
-              addToList('custom_blocked_commands', input.value);
-              input.value = '';
-            }}
-            className="bg-xp-accent h-8 rounded-md px-3 text-xs font-medium text-white transition-opacity hover:opacity-90"
-          >
-            Add
-          </button>
-        </div>
-        {permissions.custom_blocked_commands.length > 0 && (
-          <div className="space-y-1">
-            {permissions.custom_blocked_commands.map((c, i) => (
-              <div
-                key={c}
-                className="bg-xp-surface text-xp-text flex items-center justify-between gap-2 rounded-md px-3 py-1.5 font-mono text-sm"
-              >
-                <span className="truncate">{c}</span>
-                <button
-                  onClick={() => removeFromList('custom_blocked_commands', i)}
-                  className="text-xp-text-secondary shrink-0 text-xs hover:text-red-400"
-                >
-                  Remove
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Reset */}
-      <Divider />
-      <div className="px-4 pt-2">
-        <button
-          onClick={() => {
-            setPermissions({
-              disabled_tools: [],
-              auto_approve_tools: [],
-              allowed_paths: [],
-              blocked_paths: [],
-              custom_blocked_commands: [],
-              block_internet: true,
-            });
-          }}
-          className="text-xp-text-secondary hover:text-xp-text hover:bg-xp-surface-light flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors"
-        >
-          <RotateCcw size={14} />
-          Reset to defaults
-        </button>
-      </div>
-    </div>
-  );
-
-  const renderIndexing = () => (
-    <div className="px-4 py-2">
-      <TokenizerSettings />
-    </div>
-  );
-
-  const renderAccessibility = () => (
-    <div className="space-y-1">
-      <SectionTitle title="Motion" />
-      <SettingRow
-        icon={Sparkles}
-        label="Reduce Motion"
-        description="Disable animations and transitions for comfort"
-      >
-        <Toggle
-          id="reducedMotion"
-          label="Reduce Motion"
-          checked={settings.reducedMotion}
-          onChange={(v) => {
-            updateSetting('reducedMotion', v);
-            document.documentElement.classList.toggle('reduce-motion', v);
-          }}
-        />
-      </SettingRow>
-
-      <Divider />
-      <SectionTitle title="Focus" />
-      <SettingRow
-        icon={Monitor}
-        label="Enhanced Focus Indicators"
-        description="Show strong outlines for keyboard navigation"
-      >
-        <Toggle
-          id="enhancedFocus"
-          label="Enhanced Focus Indicators"
-          checked={settings.enhancedFocus}
-          onChange={(v) => {
-            updateSetting('enhancedFocus', v);
-            document.documentElement.classList.toggle('enhanced-focus', v);
-          }}
-        />
-      </SettingRow>
-    </div>
-  );
-
-  const renderShortcuts = () => (
-    <div className="space-y-1">
-      <SectionTitle title="Input Mode" />
-      <SettingRow
-        icon={Keyboard}
-        label="Vim Mode"
-        description="Navigate files with vim-like keys (j/k/h/l, gg, G, dd, yy, p, v)"
-      >
-        <Toggle
-          id="vimMode"
-          label="Vim Mode"
-          checked={vimModeEnabled}
-          onChange={handleVimModeToggle}
-        />
-      </SettingRow>
-      {vimModeEnabled && (
-        <>
-          <SettingRow
-            icon={Keyboard}
-            label="Vim Learning Mode"
-            description="Show key binding hints in the status bar when Vim mode is active"
-          >
-            <Toggle
-              id="vimLearningMode"
-              label="Vim Learning Mode"
-              checked={vimLearningMode}
-              onChange={handleVimLearningModeToggle}
-            />
-          </SettingRow>
-          <div className="bg-xp-surface-light/50 text-xp-text-secondary mx-4 mb-2 space-y-1 rounded-md p-3 text-xs leading-relaxed">
-            <div className="text-xp-text mb-1.5 text-sm font-medium">Vim Key Bindings</div>
-            <div className="grid grid-cols-2 gap-x-6 gap-y-0.5">
-              <span>
-                <kbd className="bg-xp-bg rounded px-1 font-mono">j</kbd> /{' '}
-                <kbd className="bg-xp-bg rounded px-1 font-mono">k</kbd> Move down / up
-              </span>
-              <span>
-                <kbd className="bg-xp-bg rounded px-1 font-mono">h</kbd> Go to parent
-              </span>
-              <span>
-                <kbd className="bg-xp-bg rounded px-1 font-mono">l</kbd> /{' '}
-                <kbd className="bg-xp-bg rounded px-1 font-mono">Enter</kbd> Open / enter
-              </span>
-              <span>
-                <kbd className="bg-xp-bg rounded px-1 font-mono">gg</kbd> First file
-              </span>
-              <span>
-                <kbd className="bg-xp-bg rounded px-1 font-mono">G</kbd> Last file
-              </span>
-              <span>
-                <kbd className="bg-xp-bg rounded px-1 font-mono">/</kbd> Focus search
-              </span>
-              <span>
-                <kbd className="bg-xp-bg rounded px-1 font-mono">:</kbd> Command palette
-              </span>
-              <span>
-                <kbd className="bg-xp-bg rounded px-1 font-mono">i</kbd> Insert mode
-              </span>
-              <span>
-                <kbd className="bg-xp-bg rounded px-1 font-mono">dd</kbd> Delete
-              </span>
-              <span>
-                <kbd className="bg-xp-bg rounded px-1 font-mono">yy</kbd> Copy (yank)
-              </span>
-              <span>
-                <kbd className="bg-xp-bg rounded px-1 font-mono">p</kbd> Paste
-              </span>
-              <span>
-                <kbd className="bg-xp-bg rounded px-1 font-mono">v</kbd> Visual mode
-              </span>
-              <span>
-                <kbd className="bg-xp-bg rounded px-1 font-mono">V</kbd> Select range
-              </span>
-              <span>
-                <kbd className="bg-xp-bg rounded px-1 font-mono">o</kbd> Open with default
-              </span>
-              <span>
-                <kbd className="bg-xp-bg rounded px-1 font-mono">r</kbd> Rename
-              </span>
-              <span>
-                <kbd className="bg-xp-bg rounded px-1 font-mono">m</kbd> Bookmark dir
-              </span>
-              <span>
-                <kbd className="bg-xp-bg rounded px-1 font-mono">.</kbd> Repeat last
-              </span>
-              <span>
-                <kbd className="bg-xp-bg rounded px-1 font-mono">Esc</kbd> Clear / exit
-              </span>
-            </div>
-          </div>
-        </>
-      )}
-      <Divider />
-      <SectionTitle title="Key Bindings" />
-      <div className="px-4 py-2">
-        <KeyboardShortcutsSettings />
-      </div>
-    </div>
-  );
-
-  const renderMarketplace = () => (
-    <div className="space-y-1">
-      <SectionTitle title="Connection" description="Configure the marketplace server endpoint" />
-      <div className="hover:bg-xp-surface-light/50 rounded-lg px-4 py-3 transition-colors">
-        <div className="mb-2 flex items-center gap-3">
-          <Globe size={18} className="text-xp-text-secondary shrink-0" />
-          <div>
-            <div className="text-xp-text text-sm font-medium">Marketplace API URL</div>
-            <div className="text-xp-text-secondary mt-0.5 text-xs">
-              Base URL for the extension marketplace server
-            </div>
-          </div>
-        </div>
-        <div className="ml-[30px]">
-          <input
-            type="text"
-            value={marketplaceUrl}
-            onChange={(e) => setMarketplaceUrl(e.target.value)}
-            placeholder="http://localhost:3000/api"
-            className="border-xp-border bg-xp-bg text-xp-text hover:border-xp-text-secondary focus:border-xp-accent focus:ring-xp-accent h-9 w-full rounded-md border px-3 font-mono text-sm transition-colors focus:outline-none focus:ring-1"
-          />
-          <div className="mt-2 flex items-center justify-between">
-            <span className="text-xp-text-secondary/60 text-[10px]">
-              Default: {defaultMarketplaceUrl}
-            </span>
-            {marketplaceUrl !== defaultMarketplaceUrl && (
-              <button
-                onClick={() => setMarketplaceUrl(defaultMarketplaceUrl)}
-                className="text-xp-text-secondary hover:text-xp-text flex items-center gap-1 text-xs transition-colors"
-              >
-                <RotateCcw size={12} />
-                Reset
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderBackup = () => <BackupRestoreSettings />;
-
-  const renderAudit = () => <AuditLogSettings />;
-
-  const renderVersioning = () => <VersioningSettings />;
-
-  const tabContent: Record<SettingsTab, () => React.ReactNode> = {
-    general: renderGeneral,
-    explorer: renderExplorer,
-    'context-menu': renderContextMenu,
-    ai: renderAI,
-    permissions: renderPermissions,
-    indexing: renderIndexing,
-    shortcuts: renderShortcuts,
-    marketplace: renderMarketplace,
-    accessibility: renderAccessibility,
-    backup: renderBackup,
-    audit: renderAudit,
-    versioning: renderVersioning,
+        );
+      case 'accessibility':
+        return <AccessibilitySettings settings={settings} updateSetting={updateSetting} />;
+      case 'backup':
+        return <BackupRestoreSettings />;
+      case 'audit':
+        return <AuditLogSettings />;
+      case 'versioning':
+        return <VersioningSettings />;
+    }
   };
 
   return (
     <div className="bg-xp-bg text-xp-text flex min-h-screen flex-col">
-      {/* ── Header ──────────────────────────────────────────────── */}
+      {/* Header */}
       <div className="border-xp-border/50 bg-xp-bg/80 shrink-0 border-b backdrop-blur-sm">
         <div className="mx-auto flex max-w-6xl items-center gap-3 px-6 py-4">
           <button
@@ -1541,7 +366,7 @@ export default function Settings() {
         </div>
       </div>
 
-      {/* ── Body: Sidebar + Content ─────────────────────────────── */}
+      {/* Body: Sidebar + Content */}
       <div className="flex-1 overflow-hidden">
         <div className="mx-auto flex h-full max-w-6xl">
           {/* Sidebar */}
@@ -1592,7 +417,7 @@ export default function Settings() {
               </div>
 
               {/* Settings content */}
-              {tabContent[activeTab]()}
+              {renderTabContent()}
             </div>
           </main>
         </div>

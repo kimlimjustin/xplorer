@@ -1,5 +1,6 @@
 import React from 'react';
 import type { SearchResult, RecentFile } from '@/lib/tauri-api';
+import { STORAGE_KEYS } from '@/lib/storage-keys';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -39,8 +40,8 @@ export type VirtualRow =
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
-export const HISTORY_KEY = 'xplorer:command-history';
-export const FAVORITES_KEY = 'xplorer:command-favorites';
+export const HISTORY_KEY = STORAGE_KEYS.COMMAND_HISTORY;
+export const FAVORITES_KEY = STORAGE_KEYS.COMMAND_FAVORITES;
 export const MAX_HISTORY = 20;
 
 export const COMMAND_ROW_HEIGHT = 40;
@@ -356,30 +357,40 @@ export const footerStyle: React.CSSProperties = {
 // ── Sub-components ──────────────────────────────────────────────────────────
 
 /** Renders text with matched characters highlighted */
-export const HighlightedText = React.memo(function HighlightedText({
-  text,
-  matchIndices,
-}: {
-  text: string;
-  matchIndices: number[];
-}) {
-  if (matchIndices.length === 0) {
-    return <span>{text}</span>;
-  }
+export const HighlightedText = React.memo(
+  ({ text, matchIndices }: { text: string; matchIndices: number[] }) => {
+    if (matchIndices.length === 0) {
+      return <span>{text}</span>;
+    }
 
-  const matchSet = new Set(matchIndices);
-  const parts: React.ReactNode[] = [];
-  let currentRun = '';
-  let currentIsMatch = false;
+    const matchSet = new Set(matchIndices);
+    const parts: React.ReactNode[] = [];
+    let currentRun = '';
+    let currentIsMatch = false;
 
-  for (let i = 0; i < text.length; i++) {
-    const isMatch = matchSet.has(i);
-    if (i === 0) {
-      currentIsMatch = isMatch;
-      currentRun = text[i];
-    } else if (isMatch === currentIsMatch) {
-      currentRun += text[i];
-    } else {
+    for (let i = 0; i < text.length; i++) {
+      const isMatch = matchSet.has(i);
+      if (i === 0) {
+        currentIsMatch = isMatch;
+        currentRun = text[i];
+      } else if (isMatch === currentIsMatch) {
+        currentRun += text[i];
+      } else {
+        parts.push(
+          currentIsMatch ? (
+            <span key={parts.length} style={highlightStyle}>
+              {currentRun}
+            </span>
+          ) : (
+            <span key={parts.length}>{currentRun}</span>
+          ),
+        );
+        currentRun = text[i];
+        currentIsMatch = isMatch;
+      }
+    }
+
+    if (currentRun) {
       parts.push(
         currentIsMatch ? (
           <span key={parts.length} style={highlightStyle}>
@@ -389,33 +400,14 @@ export const HighlightedText = React.memo(function HighlightedText({
           <span key={parts.length}>{currentRun}</span>
         ),
       );
-      currentRun = text[i];
-      currentIsMatch = isMatch;
     }
-  }
 
-  if (currentRun) {
-    parts.push(
-      currentIsMatch ? (
-        <span key={parts.length} style={highlightStyle}>
-          {currentRun}
-        </span>
-      ) : (
-        <span key={parts.length}>{currentRun}</span>
-      ),
-    );
-  }
+    return <>{parts}</>;
+  },
+);
+HighlightedText.displayName = 'HighlightedText';
 
-  return <>{parts}</>;
-});
-
-export const StarIcon = React.memo(function StarIcon({
-  filled,
-  size = 14,
-}: {
-  filled: boolean;
-  size?: number;
-}) {
+export const StarIcon = React.memo(({ filled, size = 14 }: { filled: boolean; size?: number }) => {
   return (
     <svg
       width={size}
@@ -431,8 +423,9 @@ export const StarIcon = React.memo(function StarIcon({
     </svg>
   );
 });
+StarIcon.displayName = 'StarIcon';
 
-export const ClockIcon = React.memo(function ClockIcon({ size = 14 }: { size?: number }) {
+export const ClockIcon = React.memo(({ size = 14 }: { size?: number }) => {
   return (
     <svg
       width={size}
@@ -449,3 +442,4 @@ export const ClockIcon = React.memo(function ClockIcon({ size = 14 }: { size?: n
     </svg>
   );
 });
+ClockIcon.displayName = 'ClockIcon';
