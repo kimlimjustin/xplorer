@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { FolderOpen, FolderClosed, FileText } from 'lucide-react';
 import { AIService, type ChatMessage, type FileContext } from '@/lib/ai-service';
 import { AgentService, type AgentEvent } from '@/lib/agent-service';
 import { useChatState } from '@/hooks/use-chat-state';
+import { useArchitectContext } from '@/hooks/use-architect-context';
 import {
   MessageBubble,
   ToolCallsList,
@@ -13,6 +14,7 @@ import {
   EmptyState,
 } from '@/components/panels/ChatMessage';
 import ChatInput from '@/components/panels/ChatInput';
+import ArchitectContextBar from '@/components/panels/ArchitectContextBar';
 
 interface ChatSessionSummaryItem {
   id: string;
@@ -65,7 +67,7 @@ const ChatPanel = ({
     setAvailableModels,
     setSelectedModel,
     setOllamaStatus,
-    setIsModelDropdownOpen,
+    setIsModelDropdownOpen: _setIsModelDropdownOpen,
     setIsContextDropdownOpen,
     setIsSettingsMinimized,
     setContextSearchQuery,
@@ -95,6 +97,7 @@ const ChatPanel = ({
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const chatPanelRef = useRef<HTMLDivElement>(null);
   const [showHistory, setShowHistory] = useState(false);
+  const architectContextPrefixRef = useRef<() => string>(() => '');
 
   useEffect(() => {
     if (!state.isModelDropdownOpen && !state.isContextDropdownOpen) return;
@@ -107,11 +110,18 @@ const ChatPanel = ({
     return () => document.removeEventListener('mousedown', onMouseDown);
   }, [state.isModelDropdownOpen, state.isContextDropdownOpen, closeAllDropdowns]);
 
-  const contextableFiles = allFiles.filter((file) => !file.name.startsWith('.'));
-  const filteredContextFiles = contextableFiles.filter(
-    (file) =>
-      file.name.toLowerCase().includes(state.contextSearchQuery.toLowerCase()) ||
-      file.path.toLowerCase().includes(state.contextSearchQuery.toLowerCase()),
+  const contextableFiles = useMemo(
+    () => allFiles.filter((file) => !file.name.startsWith('.')),
+    [allFiles],
+  );
+  const filteredContextFiles = useMemo(
+    () =>
+      contextableFiles.filter(
+        (file) =>
+          file.name.toLowerCase().includes(state.contextSearchQuery.toLowerCase()) ||
+          file.path.toLowerCase().includes(state.contextSearchQuery.toLowerCase()),
+      ),
+    [contextableFiles, state.contextSearchQuery],
   );
 
   // Re-include current folder when path changes
@@ -181,12 +191,17 @@ const ChatPanel = ({
     );
   }, [selectedFilePaths, allFiles, setContextFiles]);
 
-  const handleSendMessage = async () => {
-    if (!chatInput.trim() || isAiLoading || state.isAgentRunning) return;
+  const handleSendMessage = async (overrideText?: string) => {
+    const text = overrideText ?? chatInput.trim();
+    if (!text || isAiLoading || state.isAgentRunning) return;
 
     if (state.agentEnabled) {
-      await handleAgentSend();
+      await handleAgentSend(text);
     } else {
+      // If using overrideText, set it as chatInput so sendChatMessage picks it up
+      if (overrideText) {
+        setChatInput(overrideText);
+      }
       // Fallback to simple chat mode
       let combinedContext = selectedFile;
       if (state.contextFiles.length > 0) {
@@ -218,11 +233,15 @@ const ChatPanel = ({
     }
   };
 
-  const handleAgentSend = async () => {
-    const userText = chatInput.trim();
+  const handleAgentSend = async (text?: string) => {
+    const userText = text ?? chatInput.trim();
     if (!userText) return;
 
-    // Add user message
+    // Prepend architect context if available (uses ref to avoid declaration-order issues)
+    const contextPrefix = architectContextPrefixRef.current();
+    const fullMessage = contextPrefix + userText;
+
+    // Add user message (show the original text in the UI, not the context prefix)
     const userMsg: ChatMessage = {
       role: 'user',
       content: userText,
@@ -233,11 +252,14 @@ const ChatPanel = ({
 
     agentSendStart();
 
-    // Build conversation history for the API
-    const conversationMessages = [...chatMessages, userMsg].map((m) => ({
-      role: m.role as string,
-      content: m.content,
-    }));
+    // Build conversation history for the API — use full message with context for the latest message
+    const conversationMessages = [
+      ...chatMessages.map((m) => ({
+        role: m.role as string,
+        content: m.content,
+      })),
+      { role: 'user', content: fullMessage },
+    ];
 
     let accumulatedText = '';
     let accumulatedThinking = '';
@@ -397,6 +419,15 @@ const ChatPanel = ({
     }
   };
 
+  // Architect view integration — context, event listeners, quick actions
+  const {
+    architectContext,
+    clearArchitectContext,
+    handleQuickAction: handleArchitectQuickAction,
+    buildContextPrefix,
+  } = useArchitectContext(handleSendMessage, isAiLoading || state.isAgentRunning);
+  architectContextPrefixRef.current = buildContextPrefix;
+
   return (
     <div
       ref={chatPanelRef}
@@ -490,74 +521,12 @@ const ChatPanel = ({
         {/* Expanded Settings */}
         {!state.isSettingsMinimized && (
           <div className="space-y-3">
-            {/* Model Selection */}
-            <div className="relative">
-              <button
-                onClick={() => setIsModelDropdownOpen(!state.isModelDropdownOpen)}
-                className="bg-xp-bg border-xp-border hover:bg-xp-bg-hover flex w-full items-center justify-between gap-2 rounded border px-3 py-2 text-xs transition-colors"
-                aria-label={`Select AI model, current: ${state.selectedModel}`}
-                aria-expanded={state.isModelDropdownOpen}
-                aria-haspopup="listbox"
-              >
-                <span className="truncate">{state.selectedModel}</span>
-                <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fillRule="evenodd"
-                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </button>
-              {state.isModelDropdownOpen && (
-                <div
-                  className="bg-xp-popover border-xp-border absolute left-0 right-0 top-full z-50 mt-1 rounded border shadow-xl backdrop-blur-xl"
-                  role="listbox"
-                  aria-label="AI models"
-                >
-                  {[
-                    { id: 'claude-sonnet-4-6', name: 'Claude Sonnet 4.6' },
-                    { id: 'claude-opus-4-6', name: 'Claude Opus 4.6' },
-                    { id: 'gpt-4o', name: 'GPT-4o' },
-                    { id: 'gpt-4o-mini', name: 'GPT-4o Mini' },
-                    { id: 'gpt-4.1', name: 'GPT-4.1' },
-                    { id: 'gpt-4.1-mini', name: 'GPT-4.1 Mini' },
-                    { id: 'o3-mini', name: 'o3-mini' },
-                    ...state.availableModels
-                      .filter(
-                        (m) =>
-                          !m.id.startsWith('claude-') &&
-                          !m.id.startsWith('gpt-') &&
-                          !m.id.startsWith('o3'),
-                      )
-                      .map((m) => ({ id: m.id, name: m.name })),
-                  ].map((model) => (
-                    <button
-                      key={model.id}
-                      role="option"
-                      aria-selected={state.selectedModel === model.id}
-                      onClick={() => {
-                        setSelectedModel(model.id);
-                        setIsModelDropdownOpen(false);
-                        AgentService.getSettings()
-                          .then((s) => {
-                            AgentService.updateSettings({ ...s, model: model.id });
-                          })
-                          .catch((err) => {
-                            console.warn('Failed to persist model selection:', err);
-                          });
-                      }}
-                      className={`hover:bg-xp-bg-hover w-full px-3 py-2 text-left text-xs transition-colors ${
-                        state.selectedModel === model.id
-                          ? 'bg-xp-blue text-xp-blue bg-opacity-25'
-                          : ''
-                      }`}
-                    >
-                      {model.name}
-                    </button>
-                  ))}
-                </div>
-              )}
+            {/* Model Display (configured in Settings > AI) */}
+            <div className="bg-xp-bg border-xp-border flex items-center justify-between rounded border px-3 py-2 text-xs">
+              <span className="text-xp-text-muted">Model:</span>
+              <span className="truncate">{state.selectedModel}</span>
             </div>
+            <p className="text-xp-text-muted text-[10px]">Change model in Settings &gt; AI</p>
 
             {/* Agent Mode Toggle */}
             <div className="flex items-center justify-between">
@@ -680,8 +649,9 @@ const ChatPanel = ({
             <span className="text-xp-text-muted text-xs">
               Context
               {(() => {
-                if (state.contextFiles.length > 0)
-                  {return ` (${state.contextFiles.length + (state.includeCurrentFolder ? 1 : 0)})`;}
+                if (state.contextFiles.length > 0) {
+                  return ` (${state.contextFiles.length + (state.includeCurrentFolder ? 1 : 0)})`;
+                }
                 if (state.includeCurrentFolder) return ' (1)';
                 return '';
               })()}
@@ -935,6 +905,16 @@ const ChatPanel = ({
             {isAiLoading && !state.isAgentRunning && 'AI is generating a response'}
           </div>
         </div>
+      )}
+
+      {/* Architect Context Indicator */}
+      {architectContext && (
+        <ArchitectContextBar
+          context={architectContext}
+          onClear={clearArchitectContext}
+          onQuickAction={handleArchitectQuickAction}
+          disabled={isAiLoading || state.isAgentRunning}
+        />
       )}
 
       {/* Input Area */}

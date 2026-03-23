@@ -41,18 +41,6 @@ const deriveTitleFromPath = (filePath: string): string => {
   return name || 'Chat';
 };
 
-// ── Model list ────────────────────────────────────────────────────────────────
-
-const BUILT_IN_MODELS = [
-  { id: 'claude-sonnet-4-6', name: 'Claude Sonnet 4.6' },
-  { id: 'claude-opus-4-6', name: 'Claude Opus 4.6' },
-  { id: 'gpt-4o', name: 'GPT-4o' },
-  { id: 'gpt-4o-mini', name: 'GPT-4o Mini' },
-  { id: 'gpt-4.1', name: 'GPT-4.1' },
-  { id: 'gpt-4.1-mini', name: 'GPT-4.1 Mini' },
-  { id: 'o3-mini', name: 'o3-mini' },
-];
-
 // ── Component ─────────────────────────────────────────────────────────────────
 
 const ChatFileView = ({ filePath }: ChatFileViewProps) => {
@@ -65,8 +53,8 @@ const ChatFileView = ({ filePath }: ChatFileViewProps) => {
     handleCancel,
     handleApproval,
     model,
-    setModel,
-    availableModels,
+    setModel: _setModel,
+    availableModels: _availableModels,
     thinkingEnabled,
     setThinkingEnabled,
     contextFiles,
@@ -84,16 +72,6 @@ const ChatFileView = ({ filePath }: ChatFileViewProps) => {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   const title = useMemo(() => deriveTitleFromPath(filePath), [filePath]);
-
-  // Build merged model list: built-in + Ollama models that aren't duplicates
-  const allModels = useMemo(() => {
-    const ollamaModels = availableModels
-      .filter(
-        (m) => !m.id.startsWith('claude-') && !m.id.startsWith('gpt-') && !m.id.startsWith('o3'),
-      )
-      .map((m) => ({ id: m.id, name: m.name }));
-    return [...BUILT_IN_MODELS, ...ollamaModels];
-  }, [availableModels]);
 
   // Auto-scroll to bottom on new messages / streaming
   useEffect(() => {
@@ -126,32 +104,10 @@ const ChatFileView = ({ filePath }: ChatFileViewProps) => {
             {/* Title */}
             <h2 className="text-xp-text mr-auto truncate text-base font-semibold">{title}</h2>
 
-            {/* Model selector */}
-            <div className="relative">
-              <select
-                value={model}
-                onChange={(e) => setModel(e.target.value)}
-                className="bg-xp-bg border-xp-border hover:bg-xp-bg-hover focus:ring-xp-blue cursor-pointer appearance-none rounded border px-3 py-1.5 pr-7 text-xs transition-colors focus:outline-none focus:ring-1"
-                aria-label="Select AI model"
-              >
-                {allModels.map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {m.name}
-                  </option>
-                ))}
-              </select>
-              <svg
-                className="text-xp-text-muted pointer-events-none absolute right-2 top-1/2 h-3 w-3 -translate-y-1/2"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
+            {/* Model display (configured in Settings > AI) */}
+            <span className="bg-xp-bg border-xp-border text-xp-text-muted rounded border px-3 py-1.5 text-xs">
+              {model}
+            </span>
 
             {/* Thinking toggle */}
             <button

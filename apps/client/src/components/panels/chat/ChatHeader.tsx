@@ -39,8 +39,8 @@ const ChatHeader = ({
   showHistory,
   sessionsCount,
   setIsSettingsMinimized,
-  setIsModelDropdownOpen,
-  setSelectedModel,
+  setIsModelDropdownOpen: _setIsModelDropdownOpen,
+  setSelectedModel: _setSelectedModel,
   setAgentEnabled,
   setAutoApprove,
   setThinkingEnabled,
@@ -131,74 +131,12 @@ const ChatHeader = ({
       {/* Expanded Settings */}
       {!state.isSettingsMinimized && (
         <div className="space-y-3">
-          {/* Model Selection */}
-          <div className="relative">
-            <button
-              onClick={() => setIsModelDropdownOpen(!state.isModelDropdownOpen)}
-              className="bg-xp-bg border-xp-border hover:bg-xp-bg-hover flex w-full items-center justify-between gap-2 rounded border px-3 py-2 text-xs transition-colors"
-              aria-label={`Select AI model, current: ${state.selectedModel}`}
-              aria-expanded={state.isModelDropdownOpen}
-              aria-haspopup="listbox"
-            >
-              <span className="truncate">{state.selectedModel}</span>
-              <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </button>
-            {state.isModelDropdownOpen && (
-              <div
-                className="bg-xp-popover border-xp-border absolute left-0 right-0 top-full z-50 mt-1 rounded border shadow-xl backdrop-blur-xl"
-                role="listbox"
-                aria-label="AI models"
-              >
-                {[
-                  { id: 'claude-sonnet-4-6', name: 'Claude Sonnet 4.6' },
-                  { id: 'claude-opus-4-6', name: 'Claude Opus 4.6' },
-                  { id: 'gpt-4o', name: 'GPT-4o' },
-                  { id: 'gpt-4o-mini', name: 'GPT-4o Mini' },
-                  { id: 'gpt-4.1', name: 'GPT-4.1' },
-                  { id: 'gpt-4.1-mini', name: 'GPT-4.1 Mini' },
-                  { id: 'o3-mini', name: 'o3-mini' },
-                  ...state.availableModels
-                    .filter(
-                      (m) =>
-                        !m.id.startsWith('claude-') &&
-                        !m.id.startsWith('gpt-') &&
-                        !m.id.startsWith('o3'),
-                    )
-                    .map((m) => ({ id: m.id, name: m.name })),
-                ].map((model) => (
-                  <button
-                    key={model.id}
-                    role="option"
-                    aria-selected={state.selectedModel === model.id}
-                    onClick={() => {
-                      setSelectedModel(model.id);
-                      setIsModelDropdownOpen(false);
-                      AgentService.getSettings()
-                        .then((s) => {
-                          AgentService.updateSettings({ ...s, model: model.id });
-                        })
-                        .catch((err) => {
-                          console.warn('Failed to persist model selection:', err);
-                        });
-                    }}
-                    className={`hover:bg-xp-bg-hover w-full px-3 py-2 text-left text-xs transition-colors ${
-                      state.selectedModel === model.id
-                        ? 'bg-xp-blue text-xp-blue bg-opacity-25'
-                        : ''
-                    }`}
-                  >
-                    {model.name}
-                  </button>
-                ))}
-              </div>
-            )}
+          {/* Model Display (configured in Settings > AI) */}
+          <div className="bg-xp-bg border-xp-border flex items-center justify-between rounded border px-3 py-2 text-xs">
+            <span className="text-xp-text-muted">Model:</span>
+            <span className="truncate">{state.selectedModel}</span>
           </div>
+          <p className="text-xp-text-muted text-[10px]">Change model in Settings &gt; AI</p>
 
           {/* Agent Mode Toggle */}
           <div className="flex items-center justify-between">
@@ -321,8 +259,9 @@ const ChatHeader = ({
           <span className="text-xp-text-muted text-xs">
             Context
             {(() => {
-              if (state.contextFiles.length > 0)
-                {return ` (${state.contextFiles.length + (state.includeCurrentFolder ? 1 : 0)})`;}
+              if (state.contextFiles.length > 0) {
+                return ` (${state.contextFiles.length + (state.includeCurrentFolder ? 1 : 0)})`;
+              }
               if (state.includeCurrentFolder) return ' (1)';
               return '';
             })()}
