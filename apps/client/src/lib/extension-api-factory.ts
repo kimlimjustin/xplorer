@@ -3,6 +3,7 @@
  * Extracted from ExtensionHost.createExtensionApi to reduce file size.
  */
 import { TauriAPI } from './tauri-api';
+import { transport } from './transport';
 import type { ImageOperations } from './tauri-api-types';
 import {
   isPathAllowed,
@@ -11,6 +12,9 @@ import {
   type EventBus,
   type CommandHandler,
 } from './extension-host-types';
+import { BLOCKED_TAURI_COMMANDS } from './extension-sandbox';
+import { AIService } from './ai-service';
+import { AgentService } from './agent-service';
 
 /** Dependencies injected by the ExtensionHost instance */
 export interface ExtensionApiDeps {
@@ -88,6 +92,14 @@ export const createExtensionApi = (manifest: ExtensionManifest, deps: ExtensionA
           console.warn(`[${manifest.name}] ${message}`);
         }
       },
+      showInputBox: async (options?: {
+        prompt?: string;
+        placeholder?: string;
+        value?: string;
+      }): Promise<string | null> => {
+        const result = window.prompt(options?.prompt ?? '', options?.value ?? '');
+        return result;
+      },
     },
     navigation: {
       getCurrentPath: () => window.__xplorer_state__?.currentPath || '',
@@ -96,6 +108,14 @@ export const createExtensionApi = (manifest: ExtensionManifest, deps: ExtensionA
       },
       openInEditor: (path: string) => {
         window.dispatchEvent(new CustomEvent('xplorer-open-in-editor', { detail: { path } }));
+      },
+      openTab: (options: {
+        type: string;
+        name: string;
+        path: string;
+        data?: Record<string, unknown>;
+      }) => {
+        window.dispatchEvent(new CustomEvent('xplorer-open-tab', { detail: options }));
       },
     },
     settings: {
@@ -126,6 +146,10 @@ export const createExtensionApi = (manifest: ExtensionManifest, deps: ExtensionA
         TauriAPI.getFileHistory(repoPath, filePath, limit),
       getFileBlame: async (repoPath: string, filePath: string) =>
         TauriAPI.getFileBlame(repoPath, filePath),
+      getFileDiff: async (repoPath: string, filePath: string, commitHash?: string) =>
+        TauriAPI.getFileDiff(repoPath, filePath, commitHash),
+      getCommitDiff: async (repoPath: string, commitHash: string) =>
+        TauriAPI.getCommitDiff(repoPath, commitHash),
       getFileStatus: async (repoPath: string) => TauriAPI.getFileStatus(repoPath),
       switchBranch: async (repoPath: string, branchName: string) =>
         TauriAPI.switchBranch(repoPath, branchName),
@@ -133,6 +157,16 @@ export const createExtensionApi = (manifest: ExtensionManifest, deps: ExtensionA
         TauriAPI.createBranch(repoPath, branchName, fromCommit),
       deleteBranch: async (repoPath: string, branchName: string, force?: boolean) =>
         TauriAPI.deleteBranch(repoPath, branchName, force ?? false),
+      stageFile: async (repoPath: string, filePath: string) =>
+        TauriAPI.stageFile(repoPath, filePath),
+      unstageFile: async (repoPath: string, filePath: string) =>
+        TauriAPI.unstageFile(repoPath, filePath),
+      commitChanges: async (repoPath: string, message: string, amend?: boolean) =>
+        TauriAPI.commitChanges(repoPath, message, amend ?? false),
+      pull: async (repoPath: string) => transport('git_pull', { directory: repoPath }),
+      push: async (repoPath: string, force?: boolean) =>
+        transport('git_push', { directory: repoPath, force: force ?? false }),
+      fetch: async (repoPath: string) => transport('git_fetch', { directory: repoPath }),
     },
     commands: {
       register: (
@@ -155,8 +189,16 @@ export const createExtensionApi = (manifest: ExtensionManifest, deps: ExtensionA
         const isOwn = allowedPrefixes.some((p) => command.startsWith(p));
         // Also allow if the command already has a namespace (contains a dot)
         if (!isOwn && !command.includes('.') && !command.includes(':')) {
-          // Try the namespaced version first
+          // No namespace provided — rewrite to caller's own namespace
           command = `${manifest.id}.${command}`;
+        } else if (!isOwn) {
+          // Command is explicitly targeting another extension's namespace;
+          // require the extensions:invoke permission for cross-extension calls.
+          if (!hasPermission(manifest, 'extensions:invoke')) {
+            throw new Error(
+              `Extension "${manifest.id}" missing permission: extensions:invoke (required to execute cross-extension command "${command}")`,
+            );
+          }
         }
         return executeCommand(command, ...args);
       },
@@ -184,6 +226,11 @@ export const createExtensionApi = (manifest: ExtensionManifest, deps: ExtensionA
       },
     },
     nativeInvoke: async (command: string, args?: Record<string, unknown>) => {
+      if (BLOCKED_TAURI_COMMANDS.has(command)) {
+        throw new Error(
+          `Extension "${manifest.id}" blocked from invoking restricted command: ${command}`,
+        );
+      }
       if (!hasPermission(manifest, 'native:invoke')) {
         throw new Error(`Extension "${manifest.id}" missing permission: native:invoke`);
       }
@@ -331,11 +378,17 @@ export const createExtensionApi = (manifest: ExtensionManifest, deps: ExtensionA
         if (!hasPermission(manifest, 'file:read') && !hasPermission(manifest, 'files:read')) {
           throw new Error(`Extension "${manifest.id}" missing permission: file:read`);
         }
+        if (!isPathAllowed(path, '')) {
+          throw new Error(`Extension "${manifest.id}" blocked from accessing path: ${path}`);
+        }
         return TauriAPI.listSqliteTables(path);
       },
       getTableColumns: async (path: string, table: string) => {
         if (!hasPermission(manifest, 'file:read') && !hasPermission(manifest, 'files:read')) {
           throw new Error(`Extension "${manifest.id}" missing permission: file:read`);
+        }
+        if (!isPathAllowed(path, '')) {
+          throw new Error(`Extension "${manifest.id}" blocked from accessing path: ${path}`);
         }
         return TauriAPI.getSqliteTableColumns(path, table);
       },
@@ -343,11 +396,17 @@ export const createExtensionApi = (manifest: ExtensionManifest, deps: ExtensionA
         if (!hasPermission(manifest, 'file:read') && !hasPermission(manifest, 'files:read')) {
           throw new Error(`Extension "${manifest.id}" missing permission: file:read`);
         }
+        if (!isPathAllowed(path, '')) {
+          throw new Error(`Extension "${manifest.id}" blocked from accessing path: ${path}`);
+        }
         return TauriAPI.querySqliteTable(path, table, limit, offset);
       },
       executeQuery: async (path: string, query: string) => {
         if (!hasPermission(manifest, 'file:read') && !hasPermission(manifest, 'files:read')) {
           throw new Error(`Extension "${manifest.id}" missing permission: file:read`);
+        }
+        if (!isPathAllowed(path, '')) {
+          throw new Error(`Extension "${manifest.id}" blocked from accessing path: ${path}`);
         }
         return TauriAPI.executeSqliteQuery(path, query);
       },
@@ -510,6 +569,210 @@ export const createExtensionApi = (manifest: ExtensionManifest, deps: ExtensionA
       isLoaded: async () => {
         const status = await TauriAPI.extensionBackendStatus(manifest.id);
         return status.loaded;
+      },
+    },
+    ai: {
+      chat: async (messages: Array<{ role: string; content: string }>): Promise<string> => {
+        if (!hasPermission(manifest, 'ai:chat')) {
+          throw new Error(`Extension "${manifest.id}" missing permission: ai:chat`);
+        }
+        const settings = await AgentService.getSettings();
+        const chatMessages = messages.map((m) => ({
+          role: m.role as 'user' | 'assistant' | 'system',
+          content: m.content,
+        }));
+        return AIService.chatWithAI(settings.model, chatMessages);
+      },
+      getProvider: async (): Promise<{ model: string; provider: string }> => {
+        if (!hasPermission(manifest, 'ai:read')) {
+          throw new Error(`Extension "${manifest.id}" missing permission: ai:read`);
+        }
+        const settings = await AgentService.getSettings();
+        const m = settings.model;
+        const provider = m.startsWith('claude')
+          ? 'anthropic'
+          : m.startsWith('gpt') ||
+              m.startsWith('o3') ||
+              m.startsWith('o4') ||
+              m.startsWith('chatgpt')
+            ? 'openai'
+            : m.startsWith('gemini')
+              ? 'google'
+              : m.startsWith('deepseek')
+                ? 'deepseek'
+                : m.startsWith('mistral') || m.startsWith('codestral')
+                  ? 'mistral'
+                  : m.startsWith('llama')
+                    ? 'meta'
+                    : 'ollama';
+        return { model: settings.model, provider };
+      },
+      startAgent: async (
+        messages: Array<{ role: string; content: string }>,
+        currentPath: string,
+        onEvent: (event: unknown) => void,
+      ): Promise<string> => {
+        if (!hasPermission(manifest, 'ai:chat')) {
+          throw new Error(`Extension "${manifest.id}" missing permission: ai:chat`);
+        }
+        return AgentService.startAgentChat(messages, currentPath, onEvent);
+      },
+      respondToApproval: async (toolCallId: string, response: string): Promise<void> => {
+        if (!hasPermission(manifest, 'ai:chat')) {
+          throw new Error(`Extension "${manifest.id}" missing permission: ai:chat`);
+        }
+        return AgentService.respondToApproval(toolCallId, response);
+      },
+      cancelAgent: async (): Promise<void> => {
+        if (!hasPermission(manifest, 'ai:chat')) {
+          throw new Error(`Extension "${manifest.id}" missing permission: ai:chat`);
+        }
+        return AgentService.cancelSession();
+      },
+    },
+    analytics: {
+      analyzeStorage: async (path: string) => {
+        if (!hasPermission(manifest, 'file:read') && !hasPermission(manifest, 'files:read')) {
+          throw new Error(`Extension "${manifest.id}" missing permission: file:read`);
+        }
+        return TauriAPI.analyzeStorage(path);
+      },
+    },
+    search: {
+      findDuplicates: async (
+        rootPath: string,
+        options?: {
+          minFileSize?: number;
+          maxFileSize?: number;
+          includeHidden?: boolean;
+          fileExtensions?: string[];
+          excludePaths?: string[];
+        },
+      ) => {
+        if (!hasPermission(manifest, 'file:read') && !hasPermission(manifest, 'files:read')) {
+          throw new Error(`Extension "${manifest.id}" missing permission: file:read`);
+        }
+        return TauriAPI.findDuplicates(
+          rootPath,
+          options?.minFileSize,
+          options?.maxFileSize,
+          options?.includeHidden,
+          options?.fileExtensions,
+          options?.excludePaths,
+        );
+      },
+      semantic: async (query: string, limit?: number) => {
+        if (!hasPermission(manifest, 'file:read') && !hasPermission(manifest, 'files:read')) {
+          throw new Error(`Extension "${manifest.id}" missing permission: file:read`);
+        }
+        return TauriAPI.semanticSearch(query, limit);
+      },
+    },
+    dialog: {
+      pickFile: async (options?: {
+        multiple?: boolean;
+        directory?: boolean;
+        filters?: Array<{ name: string; extensions: string[] }>;
+      }) => {
+        return TauriAPI.showOpenDialog({
+          multiple: options?.multiple ?? false,
+          directory: options?.directory ?? false,
+          filters: options?.filters,
+        });
+      },
+      pickSaveFile: async (defaultName?: string) => {
+        try {
+          const { save } = await import('@tauri-apps/plugin-dialog');
+          const result = await save({
+            defaultPath: defaultName,
+          });
+          return result ?? null;
+        } catch (error) {
+          console.error(`[${manifest.name}] Error opening save dialog:`, error);
+          return null;
+        }
+      },
+      confirm: async (message: string, _title?: string): Promise<boolean> => {
+        try {
+          const { confirm } = await import('@tauri-apps/plugin-dialog');
+          return await confirm(message);
+        } catch {
+          return window.confirm(message);
+        }
+      },
+    },
+    gdrive: {
+      authenticate: async () => {
+        if (!hasPermission(manifest, 'network:access')) {
+          throw new Error(`Extension "${manifest.id}" missing permission: network:access`);
+        }
+        return TauriAPI.gdriveAuthenticate();
+      },
+      disconnect: async (accountId: string) => {
+        if (!hasPermission(manifest, 'network:access')) {
+          throw new Error(`Extension "${manifest.id}" missing permission: network:access`);
+        }
+        return TauriAPI.gdriveDisconnect(accountId);
+      },
+      listAccounts: async () => {
+        if (!hasPermission(manifest, 'network:access')) {
+          throw new Error(`Extension "${manifest.id}" missing permission: network:access`);
+        }
+        return TauriAPI.gdriveListAccounts();
+      },
+      listFiles: async (accountId: string, folderId: string) => {
+        if (!hasPermission(manifest, 'network:access')) {
+          throw new Error(`Extension "${manifest.id}" missing permission: network:access`);
+        }
+        return TauriAPI.gdriveListFiles(accountId, folderId);
+      },
+      downloadFile: async (accountId: string, fileId: string, localPath: string) => {
+        if (!hasPermission(manifest, 'network:access')) {
+          throw new Error(`Extension "${manifest.id}" missing permission: network:access`);
+        }
+        if (!hasPermission(manifest, 'file:write') && !hasPermission(manifest, 'files:write')) {
+          throw new Error(`Extension "${manifest.id}" missing permission: file:write`);
+        }
+        return TauriAPI.gdriveDownloadFile(accountId, fileId, localPath);
+      },
+      uploadFile: async (accountId: string, localPath: string, parentFolderId: string) => {
+        if (!hasPermission(manifest, 'network:access')) {
+          throw new Error(`Extension "${manifest.id}" missing permission: network:access`);
+        }
+        if (!hasPermission(manifest, 'file:read') && !hasPermission(manifest, 'files:read')) {
+          throw new Error(`Extension "${manifest.id}" missing permission: file:read`);
+        }
+        return TauriAPI.gdriveUploadFile(accountId, localPath, parentFolderId);
+      },
+      deleteFile: async (accountId: string, fileId: string) => {
+        if (!hasPermission(manifest, 'network:access')) {
+          throw new Error(`Extension "${manifest.id}" missing permission: network:access`);
+        }
+        return TauriAPI.gdriveDeleteFile(accountId, fileId);
+      },
+      renameFile: async (accountId: string, fileId: string, newName: string) => {
+        if (!hasPermission(manifest, 'network:access')) {
+          throw new Error(`Extension "${manifest.id}" missing permission: network:access`);
+        }
+        return TauriAPI.gdriveRenameFile(accountId, fileId, newName);
+      },
+      createFolder: async (accountId: string, name: string, parentFolderId: string) => {
+        if (!hasPermission(manifest, 'network:access')) {
+          throw new Error(`Extension "${manifest.id}" missing permission: network:access`);
+        }
+        return TauriAPI.gdriveCreateFolder(accountId, name, parentFolderId);
+      },
+      getSettings: async () => {
+        if (!hasPermission(manifest, 'network:access')) {
+          throw new Error(`Extension "${manifest.id}" missing permission: network:access`);
+        }
+        return TauriAPI.getGdriveSettings();
+      },
+      updateSettings: async (clientId: string, clientSecret: string) => {
+        if (!hasPermission(manifest, 'network:access')) {
+          throw new Error(`Extension "${manifest.id}" missing permission: network:access`);
+        }
+        return TauriAPI.updateGdriveSettings(clientId, clientSecret);
       },
     },
   };
