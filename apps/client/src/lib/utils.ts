@@ -2,6 +2,7 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { FileEntry, FolderSizeInfo } from '@/lib/tauri-api';
 import React from 'react';
+import { STORAGE_KEYS } from '@/lib/storage-keys';
 import {
   FolderClosed,
   FolderOpen,
@@ -575,11 +576,11 @@ export const applyFontSize = (size: 'small' | 'medium' | 'large' | 'xl') => {
   const root = document.documentElement;
   root.classList.remove('font-small', 'font-medium', 'font-large', 'font-xl');
   root.classList.add(`font-${size}`);
-  localStorage.setItem('xplorer:font-size', size);
+  localStorage.setItem(STORAGE_KEYS.FONT_SIZE, size);
 };
 
 export const loadFontSize = () => {
-  const saved = localStorage.getItem('xplorer:font-size') as
+  const saved = localStorage.getItem(STORAGE_KEYS.FONT_SIZE) as
     | 'small'
     | 'medium'
     | 'large'
@@ -607,7 +608,7 @@ export interface CustomThemeColors {
   error: string;
 }
 
-const CUSTOM_THEMES_KEY = 'xplorer:custom-themes';
+const CUSTOM_THEMES_KEY = STORAGE_KEYS.CUSTOM_THEMES;
 
 export const loadCustomThemes = (): Record<string, CustomThemeColors> => {
   try {
@@ -670,5 +671,12 @@ export const applyTheme = (themeKey: string) => {
     root.style.setProperty('--xp-surface', themeData.surface);
     root.style.setProperty('--xp-text', themeData.text);
     root.style.setProperty('--xp-blue', themeData.primary);
+  } else {
+    // Extension theme — clear inline overrides so CSS class variables take effect
+    root.style.removeProperty('--xp-bg');
+    root.style.removeProperty('--xp-bg-gradient');
+    root.style.removeProperty('--xp-surface');
+    root.style.removeProperty('--xp-text');
+    root.style.removeProperty('--xp-blue');
   }
 };
