@@ -53,6 +53,7 @@
     "downloads": "Unduhan",
     "desktop": "Desktop",
     "pictures": "Gambar",
+    "icloudDrive": "iCloud Drive",
     "recent": "TERBARU",
     "favorites": "FAVORIT",
     "noBookmarks": "Belum ada bookmark",
@@ -189,7 +190,15 @@
     "selectBy": "Pilih Berdasarkan...",
     "openRecycleBin": "Buka Tempat Sampah",
     "bookmarkFolder": "Bookmark folder ini",
-    "pinToSidebar": "Sematkan ke Sidebar"
+    "pinToSidebar": "Sematkan ke Sidebar",
+    "lockFile": "Kunci File",
+    "unlockFile": "Buka Kunci File"
+  },
+
+  "drives": {
+    "eject": "Keluarkan",
+    "ejectSuccess": "Volume berhasil dikeluarkan",
+    "ejectFailed": "Gagal mengeluarkan volume"
   },
 
   "settings": {
@@ -365,7 +374,10 @@
       "reduceMotionDesc": "Nonaktifkan animasi dan transisi untuk kenyamanan",
       "focus": "Fokus",
       "enhancedFocus": "Indikator Fokus yang Diperkuat",
-      "enhancedFocusDesc": "Tampilkan garis tepi yang jelas untuk navigasi keyboard"
+      "enhancedFocusDesc": "Tampilkan garis tepi yang jelas untuk navigasi keyboard",
+      "contrast": "Kontras",
+      "highContrast": "Mode Kontras Tinggi",
+      "highContrastDesc": "Tingkatkan kontras batas, teks, dan tombol untuk visibilitas lebih baik"
     },
     "shortcuts": {
       "inputMode": "Mode Input",
@@ -476,7 +488,60 @@
     "openTerminal": "Buka terminal",
     "selectionOptions": "Opsi pilihan",
     "sortBy": "Urutkan: {{name}}, {{order}}",
-    "viewMode": "Mode tampilan: {{name}}"
+    "viewMode": "Mode tampilan: {{name}}",
+    "auto": "Otomatis",
+    "autoDetected": "Mode tampilan terdeteksi otomatis berdasarkan isi folder. Klik untuk mengatur ulang.",
+    "actions": "Tindakan",
+    "actionsMenu": "Menu tindakan file",
+    "newFolder": "Folder Baru",
+    "newFile": "File Baru",
+    "compress": "Kompres",
+    "extract": "Ekstrak",
+    "properties": "Properti",
+    "openInTerminal": "Buka di Terminal",
+    "copyPath": "Salin Path",
+    "iconSize": "Ukuran ikon",
+    "iconSizeLabel": "Sesuaikan ukuran ikon ({{size}}px)"
+  },
+
+  "architectView": {
+    "title": "Tampilan Arsitektur",
+    "analyzing": "Menganalisis {{path}}...",
+    "backToFiles": "Kembali ke File",
+    "toggle": "Aktifkan Mode Arsitektur",
+    "label": "Arsitek",
+    "analysis": {
+      "title": "Analisis: {{name}}",
+      "analyze": "Analisis",
+      "loading": "AI sedang menganalisis {{name}}...",
+      "retry": "Coba lagi",
+      "askMore": "Tanyakan lebih lanjut ke AI",
+      "aiError": "Analisis AI gagal",
+      "aiNotConfigured": "AI belum dikonfigurasi",
+      "aiNotConfiguredHint": "Silakan konfigurasi model AI di pengaturan (Ollama atau kunci API) untuk menggunakan analisis mendalam."
+    },
+    "canvas": {
+      "zoomIn": "Perbesar",
+      "zoomOut": "Perkecil",
+      "fitView": "Sesuaikan Tampilan",
+      "nodeCount": "{{count}} node",
+      "noNodes": "File sumber tidak ditemukan",
+      "expandAll": "Buka Semua",
+      "collapseAll": "Tutup Semua"
+    },
+    "sidebar": {
+      "scanning": "Memindai struktur proyek...",
+      "error": "Pemindaian gagal",
+      "retry": "Coba lagi",
+      "empty": "Buka folder proyek untuk melihat arsitekturnya",
+      "kinds": {
+        "project": "Proyek",
+        "area": "Area",
+        "module": "Modul",
+        "directory": "Direktori",
+        "file": "File"
+      }
+    }
   },
 
   "navigation": {
@@ -522,6 +587,51 @@
     "advancedSelection": "Pilihan Lanjutan"
   },
 
+  "permissions": {
+    "title": "Izin Ekstensi",
+    "subtitle": "Tinjau sebelum menginstal",
+    "by": "oleh {{author}}",
+    "dangerWarning": "Meminta {{count}} izin sensitif. Izinkan hanya jika Anda mempercayai ekstensi ini.",
+    "none": "Ekstensi ini tidak memerlukan izin khusus.",
+    "remember": "Ingat untuk ekstensi ini",
+    "accept": "Terima",
+    "deny": "Tolak",
+    "denyClose": "Tolak dan tutup",
+    "cancelledTitle": "Instalasi dibatalkan",
+    "cancelledDesc": "Instalasi telah dibatalkan.",
+    "bulk": {
+      "subtitle": "{{count}} ekstensi meminta izin",
+      "acceptAll": "Terima Semua",
+      "dangerWarning": "{{count}} izin sensitif diminta di seluruh paket ini. Izinkan hanya jika Anda mempercayai semua ekstensi.",
+      "dangerous": "berbahaya"
+    },
+    "group": {
+      "safe": "Aman",
+      "moderate": "Sedang",
+      "dangerous": "Berbahaya"
+    },
+    "desc": {
+      "uiPanels": "Daftarkan panel dan tab",
+      "uiNotifications": "Tampilkan notifikasi",
+      "uiClipboard": "Salin ke clipboard",
+      "storageRead": "Baca data ekstensi",
+      "storageWrite": "Tulis data ekstensi",
+      "storage": "Baca dan tulis data ekstensi",
+      "searchRead": "Cari dan indeks file",
+      "searchDuplicates": "Temukan file duplikat",
+      "fsRead": "Baca file di komputer Anda",
+      "directoryList": "Tampilkan isi folder",
+      "gitRead": "Baca informasi repositori git",
+      "fsWrite": "Tulis atau hapus file",
+      "gitWrite": "Modifikasi repositori git (commit, branch)",
+      "network": "Buat permintaan jaringan",
+      "systemExec": "Jalankan perintah sistem",
+      "nativeInvoke": "Panggil API sistem native",
+      "fileExecute": "Jalankan file di sistem Anda",
+      "unknown": "Izin tidak diketahui"
+    }
+  },
+
   "commands": {
     "goHome": "Ke Beranda",
     "goUp": "Naik",
@@ -551,5 +661,12 @@
       "selection": "Pilihan",
       "other": "Lainnya"
     }
+  },
+
+  "smartSearch": {
+    "scopeFolder": "Folder Ini",
+    "scopeEverywhere": "Di Mana Saja",
+    "scopeFolderTitle": "Cari hanya dalam folder saat ini",
+    "scopeEverywhereTitle": "Cari seluruh sistem"
   }
 }

@@ -53,6 +53,7 @@
     "downloads": "Downloads",
     "desktop": "Desktop",
     "pictures": "Pictures",
+    "icloudDrive": "iCloud Drive",
     "recent": "RECENT",
     "favorites": "FAVORITES",
     "noBookmarks": "No bookmarks yet",
@@ -189,7 +190,15 @@
     "selectBy": "Select By...",
     "openRecycleBin": "Open Recycle Bin",
     "bookmarkFolder": "Bookmark this folder",
-    "pinToSidebar": "Pin to Sidebar"
+    "pinToSidebar": "Pin to Sidebar",
+    "lockFile": "Lock File",
+    "unlockFile": "Unlock File"
+  },
+
+  "drives": {
+    "eject": "Eject",
+    "ejectSuccess": "Volume ejected",
+    "ejectFailed": "Failed to eject volume"
   },
 
   "settings": {
@@ -365,7 +374,10 @@
       "reduceMotionDesc": "Disable animations and transitions for comfort",
       "focus": "Focus",
       "enhancedFocus": "Enhanced Focus Indicators",
-      "enhancedFocusDesc": "Show strong outlines for keyboard navigation"
+      "enhancedFocusDesc": "Show strong outlines for keyboard navigation",
+      "contrast": "Contrast",
+      "highContrast": "High Contrast Mode",
+      "highContrastDesc": "Increase border, text and button contrast for better visibility"
     },
     "shortcuts": {
       "inputMode": "Input Mode",
@@ -483,7 +495,60 @@
     "openTerminal": "Open terminal",
     "selectionOptions": "Selection options",
     "sortBy": "Sort by {{name}}, {{order}}",
-    "viewMode": "View mode: {{name}}"
+    "viewMode": "View mode: {{name}}",
+    "auto": "Auto",
+    "autoDetected": "View mode auto-detected based on folder contents. Click to reset.",
+    "actions": "Actions",
+    "actionsMenu": "File actions menu",
+    "newFolder": "New Folder",
+    "newFile": "New File",
+    "compress": "Compress",
+    "extract": "Extract",
+    "properties": "Properties",
+    "openInTerminal": "Open in Terminal",
+    "copyPath": "Copy Path",
+    "iconSize": "Icon size",
+    "iconSizeLabel": "Adjust icon size ({{size}}px)"
+  },
+
+  "architectView": {
+    "title": "Architecture View",
+    "analyzing": "Analyzing {{path}}...",
+    "backToFiles": "Back to Files",
+    "toggle": "Toggle Architecture Mode",
+    "label": "Architect",
+    "analysis": {
+      "title": "Analysis: {{name}}",
+      "analyze": "Analyze",
+      "loading": "AI is analyzing {{name}}...",
+      "retry": "Retry",
+      "askMore": "Ask AI more about this",
+      "aiError": "AI analysis failed",
+      "aiNotConfigured": "AI is not configured",
+      "aiNotConfiguredHint": "Please configure an AI model in settings (Ollama or API key) to use deep analysis."
+    },
+    "canvas": {
+      "zoomIn": "Zoom In",
+      "zoomOut": "Zoom Out",
+      "fitView": "Fit to View",
+      "nodeCount": "{{count}} nodes",
+      "noNodes": "No source files found",
+      "expandAll": "Expand All",
+      "collapseAll": "Collapse All"
+    },
+    "sidebar": {
+      "scanning": "Scanning project structure...",
+      "error": "Scan failed",
+      "retry": "Retry",
+      "empty": "Open a project folder to see its architecture",
+      "kinds": {
+        "project": "Project",
+        "area": "Area",
+        "module": "Module",
+        "directory": "Directory",
+        "file": "File"
+      }
+    }
   },
 
   "navigation": {
@@ -529,6 +594,51 @@
     "advancedSelection": "Advanced Selection"
   },
 
+  "permissions": {
+    "title": "Extension Permissions",
+    "subtitle": "Review before installing",
+    "by": "by {{author}}",
+    "dangerWarning": "Requests {{count}} sensitive permission(s). Only allow if you trust this extension.",
+    "none": "This extension requires no special permissions.",
+    "remember": "Remember for this extension",
+    "accept": "Accept",
+    "deny": "Deny",
+    "denyClose": "Deny and close",
+    "cancelledTitle": "Installation cancelled",
+    "cancelledDesc": "Installation was cancelled.",
+    "bulk": {
+      "subtitle": "{{count}} extensions request permissions",
+      "acceptAll": "Accept All",
+      "dangerWarning": "{{count}} sensitive permission(s) are requested across this pack. Only allow if you trust all extensions.",
+      "dangerous": "dangerous"
+    },
+    "group": {
+      "safe": "Safe",
+      "moderate": "Moderate",
+      "dangerous": "Dangerous"
+    },
+    "desc": {
+      "uiPanels": "Register panels and tabs",
+      "uiNotifications": "Show notifications",
+      "uiClipboard": "Copy to clipboard",
+      "storageRead": "Read extension data",
+      "storageWrite": "Write extension data",
+      "storage": "Read and write extension data",
+      "searchRead": "Search and index files",
+      "searchDuplicates": "Find duplicate files",
+      "fsRead": "Read files on your computer",
+      "directoryList": "List folder contents",
+      "gitRead": "Read git repository information",
+      "fsWrite": "Write or delete files",
+      "gitWrite": "Modify git repositories (commit, branch)",
+      "network": "Make network requests",
+      "systemExec": "Execute system commands",
+      "nativeInvoke": "Call native system APIs",
+      "fileExecute": "Execute files on your system",
+      "unknown": "Unknown permission"
+    }
+  },
+
   "commands": {
     "goHome": "Go Home",
     "goUp": "Go Up",
@@ -558,5 +668,12 @@
       "selection": "Selection",
       "other": "Other"
     }
+  },
+
+  "smartSearch": {
+    "scopeFolder": "This Folder",
+    "scopeEverywhere": "Everywhere",
+    "scopeFolderTitle": "Search only within the current folder",
+    "scopeEverywhereTitle": "Search the entire system"
   }
 }

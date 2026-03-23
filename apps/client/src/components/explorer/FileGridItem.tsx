@@ -2,7 +2,7 @@ import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useDraggable } from '@/hooks/use-draggable';
 import { useDroppable } from '@/hooks/use-droppable';
-import { TagDots, GitStatusDot, isImageFile } from './FileGridHelpers';
+import { TagDots, GitStatusDot, LockBadge, isImageFile } from './FileGridHelpers';
 import { FileGridItemProps, SizeBadgeInfo } from './FileGridTypes';
 import { formatFileSize } from '@/lib/utils';
 import { getFolderColorHex } from '@/lib/folder-colors';
@@ -340,7 +340,8 @@ const FileGridItem = React.memo(
 
     // Folders are drop targets via data-drop-target attribute
     // Visual feedback is applied by DragDropContext setting data-drop-hover / data-drop-invalid
-    const dropRef = useDroppable(file.path, !file.is_dir);
+    // Pass isFolder=true so DragDropContext can start the spring-load timer.
+    const dropRef = useDroppable(file.path, !file.is_dir, file.is_dir);
 
     // Folder color coding
     const folderColorHex = file.is_dir ? getFolderColorHex(file.path) : null;
@@ -394,6 +395,7 @@ const FileGridItem = React.memo(
           <span className="min-w-0 truncate">
             {file.name.endsWith('.chat') ? getChatDisplayName(file.name) : file.name}
           </span>
+          <LockBadge isReadonly={file.is_readonly} />
           <GitStatusDot status={gitStatus} />
         </>
       );
@@ -416,8 +418,9 @@ const FileGridItem = React.memo(
             : 'hover:bg-xp-surface-light border border-transparent'
         } ${(() => {
           if (isGridView) return 'min-w-0 overflow-hidden p-3 text-center';
-          if (isListView)
-            {return 'flex min-w-0 items-center space-x-2 overflow-hidden p-2 text-left';}
+          if (isListView) {
+            return 'flex min-w-0 items-center space-x-2 overflow-hidden p-2 text-left';
+          }
           return 'flex items-center space-x-3 overflow-hidden p-2';
         })()} `}
         style={{ position: 'relative' }}

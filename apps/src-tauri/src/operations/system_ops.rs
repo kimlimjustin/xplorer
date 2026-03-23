@@ -97,6 +97,132 @@ pub async fn list_drives() -> Result<Vec<DriveInfo>, String> {
     }
 }
 
+/// Eject / unmount a volume by its mount path.
+///
+/// - macOS: `diskutil unmount <path>`
+/// - Linux: `umount <path>`
+/// - Windows: Uses the DeviceIoControl IOCTL_STORAGE_EJECT_MEDIA API
+#[command]
+pub async fn eject_volume(path: String) -> Result<(), String> {
+    #[cfg(target_os = "macos")]
+    {
+        let output = std::process::Command::new("diskutil")
+            .arg("unmount")
+            .arg(&path)
+            .output()
+            .map_err(|e| format!("Failed to run diskutil: {}", e))?;
+        if output.status.success() {
+            Ok(())
+        } else {
+            let stderr = String::from_utf8_lossy(&output.stderr).to_string();
+            Err(format!("diskutil unmount failed: {}", stderr.trim()))
+        }
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        let output = std::process::Command::new("umount")
+            .arg(&path)
+            .output()
+            .map_err(|e| format!("Failed to run umount: {}", e))?;
+        if output.status.success() {
+            Ok(())
+        } else {
+            let stderr = String::from_utf8_lossy(&output.stderr).to_string();
+            Err(format!("umount failed: {}", stderr.trim()))
+        }
+    }
+
+    #[cfg(windows)]
+    {
+        use std::ffi::OsStr;
+        use std::os::windows::ffi::OsStrExt;
+        use std::iter::once;
+
+        // Derive the drive letter root (e.g. "D:\") from the path
+        let root = if path.len() >= 2 && path.as_bytes()[1] == b':' {
+            format!("{}:\\", &path[..1])
+        } else {
+            path.clone()
+        };
+
+        // Open the volume with GENERIC_READ | GENERIC_WRITE access
+        let volume_path = format!("\\\\.\\{}", root.trim_end_matches('\\'));
+        let wide: Vec<u16> = OsStr::new(&volume_path).encode_wide().chain(once(0)).collect();
+
+        #[link(name = "kernel32")]
+        extern "system" {
+            fn CreateFileW(
+                lpFileName: *const u16,
+                dwDesiredAccess: u32,
+                dwShareMode: u32,
+                lpSecurityAttributes: *mut std::ffi::c_void,
+                dwCreationDisposition: u32,
+                dwFlagsAndAttributes: u32,
+                hTemplateFile: *mut std::ffi::c_void,
+            ) -> *mut std::ffi::c_void;
+
+            fn DeviceIoControl(
+                hDevice: *mut std::ffi::c_void,
+                dwIoControlCode: u32,
+                lpInBuffer: *mut std::ffi::c_void,
+                nInBufferSize: u32,
+                lpOutBuffer: *mut std::ffi::c_void,
+                nOutBufferSize: u32,
+                lpBytesReturned: *mut u32,
+                lpOverlapped: *mut std::ffi::c_void,
+            ) -> i32;
+
+            fn CloseHandle(hObject: *mut std::ffi::c_void) -> i32;
+        }
+
+        const GENERIC_READ: u32 = 0x80000000;
+        const GENERIC_WRITE: u32 = 0x40000000;
+        const FILE_SHARE_READ: u32 = 0x00000001;
+        const FILE_SHARE_WRITE: u32 = 0x00000002;
+        const OPEN_EXISTING: u32 = 3;
+        const IOCTL_STORAGE_EJECT_MEDIA: u32 = 0x2D4808;
+        const INVALID_HANDLE_VALUE: *mut std::ffi::c_void = usize::MAX as *mut std::ffi::c_void;
+
+        let handle = unsafe {
+            CreateFileW(
+                wide.as_ptr(),
+                GENERIC_READ | GENERIC_WRITE,
+                FILE_SHARE_READ | FILE_SHARE_WRITE,
+                std::ptr::null_mut(),
+                OPEN_EXISTING,
+                0,
+                std::ptr::null_mut(),
+            )
+        };
+
+        if handle == INVALID_HANDLE_VALUE {
+            return Err(format!("Failed to open volume handle for '{}'", root));
+        }
+
+        let mut bytes_returned: u32 = 0;
+        let ok = unsafe {
+            DeviceIoControl(
+                handle,
+                IOCTL_STORAGE_EJECT_MEDIA,
+                std::ptr::null_mut(),
+                0,
+                std::ptr::null_mut(),
+                0,
+                &mut bytes_returned,
+                std::ptr::null_mut(),
+            )
+        };
+        unsafe { CloseHandle(handle) };
+
+        if ok != 0 {
+            Ok(())
+        } else {
+            Err(format!("Failed to eject volume '{}'", root))
+        }
+    }
+}
+
 #[cfg(windows)]
 unsafe fn windows_drives_bitmask() -> u32 {
     #[link(name = "kernel32")]

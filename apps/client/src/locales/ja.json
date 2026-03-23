@@ -53,6 +53,7 @@
     "downloads": "ダウンロード",
     "desktop": "デスクトップ",
     "pictures": "ピクチャ",
+    "icloudDrive": "iCloud Drive",
     "recent": "最近",
     "favorites": "お気に入り",
     "noBookmarks": "ブックマークはありません",
@@ -189,7 +190,15 @@
     "selectBy": "条件で選択...",
     "openRecycleBin": "ごみ箱を開く",
     "bookmarkFolder": "このフォルダをブックマーク",
-    "pinToSidebar": "サイドバーにピン留め"
+    "pinToSidebar": "サイドバーにピン留め",
+    "lockFile": "ファイルをロック",
+    "unlockFile": "ファイルのロックを解除"
+  },
+
+  "drives": {
+    "eject": "取り出し",
+    "ejectSuccess": "ボリュームを取り出しました",
+    "ejectFailed": "ボリュームの取り出しに失敗しました"
   },
 
   "settings": {
@@ -365,7 +374,10 @@
       "reduceMotionDesc": "アニメーションと遷移を無効にして快適に",
       "focus": "フォーカス",
       "enhancedFocus": "強化フォーカスインジケーター",
-      "enhancedFocusDesc": "キーボードナビゲーション用の目立つ枠線を表示"
+      "enhancedFocusDesc": "キーボードナビゲーション用の目立つ枠線を表示",
+      "contrast": "コントラスト",
+      "highContrast": "ハイコントラストモード",
+      "highContrastDesc": "視認性向上のためボーダー・テキスト・ボタンのコントラストを強化"
     },
     "shortcuts": {
       "inputMode": "入力モード",
@@ -476,7 +488,60 @@
     "openTerminal": "ターミナルを開く",
     "selectionOptions": "選択オプション",
     "sortBy": "並べ替え: {{name}}、{{order}}",
-    "viewMode": "表示モード: {{name}}"
+    "viewMode": "表示モード: {{name}}",
+    "auto": "自動",
+    "autoDetected": "フォルダの内容に基づいて表示モードを自動検出しました。クリックでリセット。",
+    "actions": "操作",
+    "actionsMenu": "ファイル操作メニュー",
+    "newFolder": "新しいフォルダ",
+    "newFile": "新しいファイル",
+    "compress": "圧縮",
+    "extract": "解凍",
+    "properties": "プロパティ",
+    "openInTerminal": "ターミナルで開く",
+    "copyPath": "パスをコピー",
+    "iconSize": "アイコンサイズ",
+    "iconSizeLabel": "アイコンサイズを調整 ({{size}}px)"
+  },
+
+  "architectView": {
+    "title": "アーキテクチャビュー",
+    "analyzing": "{{path}} を分析中...",
+    "backToFiles": "ファイルに戻る",
+    "toggle": "アーキテクチャモードの切り替え",
+    "label": "アーキテクト",
+    "analysis": {
+      "title": "分析: {{name}}",
+      "analyze": "分析する",
+      "loading": "AI が {{name}} を分析中...",
+      "retry": "再試行",
+      "askMore": "AI にもっと聞く",
+      "aiError": "AI 分析に失敗しました",
+      "aiNotConfigured": "AI が設定されていません",
+      "aiNotConfiguredHint": "ディープ分析を使用するには、設定で AI モデル（Ollama または API キー）を設定してください。"
+    },
+    "canvas": {
+      "zoomIn": "ズームイン",
+      "zoomOut": "ズームアウト",
+      "fitView": "ビューに合わせる",
+      "nodeCount": "{{count}} ノード",
+      "noNodes": "ソースファイルが見つかりません",
+      "expandAll": "すべて展開",
+      "collapseAll": "すべて折りたたむ"
+    },
+    "sidebar": {
+      "scanning": "プロジェクト構造をスキャン中...",
+      "error": "スキャンに失敗しました",
+      "retry": "再試行",
+      "empty": "プロジェクトフォルダを開いてアーキテクチャを表示",
+      "kinds": {
+        "project": "プロジェクト",
+        "area": "エリア",
+        "module": "モジュール",
+        "directory": "ディレクトリ",
+        "file": "ファイル"
+      }
+    }
   },
 
   "navigation": {
@@ -522,6 +587,51 @@
     "advancedSelection": "高度な選択"
   },
 
+  "permissions": {
+    "title": "拡張機能の権限",
+    "subtitle": "インストール前に確認してください",
+    "by": "作成者：{{author}}",
+    "dangerWarning": "{{count}} 件の重要な権限を要求しています。信頼できる拡張機能の場合のみ許可してください。",
+    "none": "この拡張機能は特別な権限を必要としません。",
+    "remember": "この拡張機能の設定を記憶する",
+    "accept": "許可",
+    "deny": "拒否",
+    "denyClose": "拒否して閉じる",
+    "cancelledTitle": "インストールをキャンセルしました",
+    "cancelledDesc": "インストールがキャンセルされました。",
+    "bulk": {
+      "subtitle": "{{count}} 件の拡張機能が権限を要求しています",
+      "acceptAll": "すべて許可",
+      "dangerWarning": "このパック全体で {{count}} 件の重要な権限が要求されています。すべての拡張機能を信頼する場合のみ許可してください。",
+      "dangerous": "危険"
+    },
+    "group": {
+      "safe": "安全",
+      "moderate": "中程度",
+      "dangerous": "危険"
+    },
+    "desc": {
+      "uiPanels": "パネルとタブを登録する",
+      "uiNotifications": "通知を表示する",
+      "uiClipboard": "クリップボードにコピーする",
+      "storageRead": "拡張機能データを読み取る",
+      "storageWrite": "拡張機能データを書き込む",
+      "storage": "拡張機能データを読み書きする",
+      "searchRead": "ファイルを検索してインデックス化する",
+      "searchDuplicates": "重複ファイルを検索する",
+      "fsRead": "コンピュータ上のファイルを読み取る",
+      "directoryList": "フォルダの内容を一覧表示する",
+      "gitRead": "Gitリポジトリ情報を読み取る",
+      "fsWrite": "ファイルの書き込みまたは削除",
+      "gitWrite": "Gitリポジトリを変更する（コミット、ブランチ）",
+      "network": "ネットワークリクエストを送信する",
+      "systemExec": "システムコマンドを実行する",
+      "nativeInvoke": "ネイティブシステムAPIを呼び出す",
+      "fileExecute": "システム上のファイルを実行する",
+      "unknown": "不明な権限"
+    }
+  },
+
   "commands": {
     "goHome": "ホームに移動",
     "goUp": "上に移動",
@@ -551,5 +661,12 @@
       "selection": "選択",
       "other": "その他"
     }
+  },
+
+  "smartSearch": {
+    "scopeFolder": "このフォルダ",
+    "scopeEverywhere": "すべて",
+    "scopeFolderTitle": "現在のフォルダのみ検索",
+    "scopeEverywhereTitle": "システム全体を検索"
   }
 }

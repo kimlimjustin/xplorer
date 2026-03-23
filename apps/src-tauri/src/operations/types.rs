@@ -10,6 +10,8 @@ pub struct FileEntry {
     pub modified: u64,
     pub file_type: String,
     pub mime_type: Option<String>,
+    /// Whether the file/directory is read-only (permissions).
+    pub is_readonly: bool,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -185,6 +187,7 @@ mod tests {
             modified: 1_700_000_000,
             file_type: "file".to_string(),
             mime_type: Some("text/plain".to_string()),
+            is_readonly: false,
         };
         let json = serde_json::to_string(&entry).unwrap();
         let deserialized: FileEntry = serde_json::from_str(&json).unwrap();
@@ -207,6 +210,7 @@ mod tests {
             modified: 0,
             file_type: "file".to_string(),
             mime_type: None,
+            is_readonly: false,
         };
         let json = serde_json::to_string(&entry).unwrap();
         let deserialized: FileEntry = serde_json::from_str(&json).unwrap();
@@ -223,6 +227,7 @@ mod tests {
             modified: 1_700_000_000,
             file_type: "directory".to_string(),
             mime_type: None,
+            is_readonly: false,
         };
         assert!(entry.is_dir);
         assert_eq!(entry.file_type, "directory");

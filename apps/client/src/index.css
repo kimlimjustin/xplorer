@@ -889,6 +889,52 @@ html.theme-glass {
 }
 
 /* ═══════════════════════════════════════════════════════════════════
+   HIGH CONTRAST ACCESSIBILITY MODE
+   Applied to html element via .high-contrast class.
+   Also activated automatically via prefers-contrast: more media query.
+   ═══════════════════════════════════════════════════════════════════ */
+
+html.high-contrast {
+  --xp-border: rgba(255, 255, 255, 0.3);
+  --xp-border-light: rgba(255, 255, 255, 0.4);
+  --xp-text-muted: rgba(255, 255, 255, 0.7);
+  --xp-text-secondary: rgba(255, 255, 255, 0.85);
+}
+
+html.high-contrast .border-xp-border {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+html.high-contrast .text-xp-text-muted {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+html.high-contrast .text-xp-text-secondary {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+html.high-contrast button,
+html.high-contrast a,
+html.high-contrast [role="button"] {
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+html.high-contrast *:focus-visible {
+  outline: 2px solid var(--xp-blue) !important;
+  outline-offset: 2px !important;
+}
+
+/* Honour system preference automatically (without explicit toggle) */
+@media (prefers-contrast: more) {
+  :root {
+    --xp-border: rgba(255, 255, 255, 0.3);
+    --xp-border-light: rgba(255, 255, 255, 0.4);
+    --xp-text-muted: rgba(255, 255, 255, 0.7);
+    --xp-text-secondary: rgba(255, 255, 255, 0.85);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
    WINDOW DRAG REGION
    Dragging is handled via appWindow.startDragging() in TopBar.tsx.
    ═══════════════════════════════════════════════════════════════════ */

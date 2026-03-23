@@ -3,12 +3,19 @@ import {
   ArrowUp,
   ArrowDown,
   ChevronDown,
-  CheckSquare,
-  Square,
-  RotateCcw,
-  Sparkles,
   Rows3,
   BarChart3,
+  Settings,
+  FolderPlus,
+  FilePlus,
+  Package,
+  PackageOpen,
+  Info,
+  Terminal,
+  Copy,
+  Scissors,
+  Clipboard,
+  Trash2,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -48,6 +55,23 @@ interface OperationBarProps {
   showSizeBadges?: boolean;
   /** Toggle size heatmap badges */
   onToggleSizeBadges?: () => void;
+  /** Whether the current view mode was auto-detected */
+  isAutoDetected?: boolean;
+  /** Callback to clear the auto-detected view and re-trigger detection */
+  onClearAutoDetect?: () => void;
+  /** Optional action callbacks for the gear menu */
+  onCreateFile?: () => void;
+  onCompress?: () => void;
+  onExtract?: () => void;
+  onProperties?: () => void;
+  onCopyPath?: () => void;
+  /** Current directory path (used for Open in Terminal fallback) */
+  currentPath?: string;
+  /** Clipboard actions */
+  onCopy?: () => void;
+  onCut?: () => void;
+  onPaste?: () => void;
+  hasClipboard?: boolean;
 }
 
 const OperationBar = ({
@@ -66,31 +90,51 @@ const OperationBar = ({
   selectedFiles,
   setBottomPanelCollapsed,
   setBottomPanelTab,
-  onSelectAll,
-  onSelectNone,
-  onInvertSelection,
-  onAdvancedSelection,
+  onSelectAll: _onSelectAll,
+  onSelectNone: _onSelectNone,
+  onInvertSelection: _onInvertSelection,
+  onAdvancedSelection: _onAdvancedSelection,
   showSizeBadges,
   onToggleSizeBadges,
+  isAutoDetected: _isAutoDetected,
+  onClearAutoDetect: _onClearAutoDetect,
+  onCreateFile,
+  onCompress,
+  onExtract,
+  onProperties,
+  onCopyPath,
+  currentPath: _currentPath,
+  onCopy,
+  onCut,
+  onPaste,
+  hasClipboard,
 }: OperationBarProps) => {
   const { t } = useTranslation();
   const [isViewDropdownOpen, setIsViewDropdownOpen] = useState(false);
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
-  const [isSelectionDropdownOpen, setIsSelectionDropdownOpen] = useState(false);
+  const [isActionsDropdownOpen, setIsActionsDropdownOpen] = useState(false);
   const barRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!isViewDropdownOpen && !isSortDropdownOpen && !isSelectionDropdownOpen) return;
+    const anyOpen = isViewDropdownOpen || isSortDropdownOpen || isActionsDropdownOpen;
+    if (!anyOpen) return;
     const onMouseDown = (e: MouseEvent) => {
       if (barRef.current && !barRef.current.contains(e.target as Node)) {
         setIsViewDropdownOpen(false);
         setIsSortDropdownOpen(false);
         setIsSelectionDropdownOpen(false);
+        setIsActionsDropdownOpen(false);
       }
     };
     document.addEventListener('mousedown', onMouseDown);
     return () => document.removeEventListener('mousedown', onMouseDown);
-  }, [isViewDropdownOpen, isSortDropdownOpen, isSelectionDropdownOpen]);
+  }, [isViewDropdownOpen, isSortDropdownOpen, isActionsDropdownOpen]);
+
+  const handleOpenTerminal = () => {
+    setBottomPanelCollapsed(false);
+    setBottomPanelTab('terminal');
+    setIsActionsDropdownOpen(false);
+  };
 
   return (
     <div ref={barRef} className="bg-xp-surface border-xp-border border-b px-3 py-1.5">
@@ -169,6 +213,49 @@ const OperationBar = ({
           {/* Separator */}
           <div className="bg-xp-border h-4 w-px" />
 
+          {/* Copy / Cut / Paste / Delete — icon-only, Finder-style */}
+          {onCopy && (
+            <button
+              onClick={onCopy}
+              disabled={selectedFiles.size === 0}
+              className="text-xp-text-muted hover:text-xp-text hover:bg-xp-surface-light rounded p-1 transition-colors disabled:pointer-events-none disabled:opacity-30"
+              title={t('contextMenu.copy')}
+            >
+              <Copy size={15} />
+            </button>
+          )}
+          {onCut && (
+            <button
+              onClick={onCut}
+              disabled={selectedFiles.size === 0}
+              className="text-xp-text-muted hover:text-xp-text hover:bg-xp-surface-light rounded p-1 transition-colors disabled:pointer-events-none disabled:opacity-30"
+              title={t('contextMenu.cut')}
+            >
+              <Scissors size={15} />
+            </button>
+          )}
+          {onPaste && (
+            <button
+              onClick={onPaste}
+              disabled={!hasClipboard}
+              className="text-xp-text-muted hover:text-xp-text hover:bg-xp-surface-light rounded p-1 transition-colors disabled:pointer-events-none disabled:opacity-30"
+              title={t('contextMenu.paste')}
+            >
+              <Clipboard size={15} />
+            </button>
+          )}
+          <button
+            onClick={handleDelete}
+            disabled={selectedFiles.size === 0}
+            className="text-xp-text-muted hover:text-xp-red hover:bg-xp-red/10 rounded p-1 transition-colors disabled:pointer-events-none disabled:opacity-30"
+            title={t('contextMenu.delete')}
+          >
+            <Trash2 size={15} />
+          </button>
+
+          {/* Separator */}
+          <div className="bg-xp-border h-4 w-px" />
+
           {/* Size Map toggle */}
           {onToggleSizeBadges && (
             <button
@@ -199,7 +286,7 @@ const OperationBar = ({
           <div className="bg-xp-border h-4 w-px" />
 
           {/* View Mode Dropdown */}
-          <div className="relative">
+          <div className="relative flex items-center gap-1">
             <button
               onClick={() => setIsViewDropdownOpen(!isViewDropdownOpen)}
               className="text-xp-text-muted hover:text-xp-text hover:bg-xp-surface-light flex items-center gap-1 rounded px-2 py-1 text-xs transition-colors"
@@ -235,93 +322,6 @@ const OperationBar = ({
         </div>
 
         <div className="flex items-center space-x-1">
-          {/* Selection Dropdown */}
-          {(onSelectAll || onSelectNone || onInvertSelection || onAdvancedSelection) && (
-            <div className="relative">
-              <button
-                onClick={() => setIsSelectionDropdownOpen(!isSelectionDropdownOpen)}
-                className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text flex items-center gap-1 rounded px-1.5 py-1 transition-colors"
-                title={t('operationBar.selectionOptions')}
-                aria-label={t('operationBar.selectionOptions')}
-              >
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
-                  />
-                </svg>
-                <span className="text-sm">{t('operationBar.select')}</span>
-              </button>
-
-              {isSelectionDropdownOpen && (
-                <div className="bg-xp-popover border-xp-border absolute right-0 top-full z-50 mt-1 min-w-[200px] rounded border shadow-xl backdrop-blur-xl">
-                  {onSelectAll && (
-                    <button
-                      onClick={() => {
-                        onSelectAll();
-                        setIsSelectionDropdownOpen(false);
-                      }}
-                      className="hover:bg-xp-surface-light flex w-full items-center justify-between px-4 py-2 text-left transition-colors"
-                    >
-                      <div className="flex items-center space-x-3">
-                        <CheckSquare size={14} />
-                        <span className="text-sm">{t('operationBar.selectAll')}</span>
-                      </div>
-                      <span className="text-xp-text-muted text-xs">Ctrl+A</span>
-                    </button>
-                  )}
-                  {onSelectNone && (
-                    <button
-                      onClick={() => {
-                        onSelectNone();
-                        setIsSelectionDropdownOpen(false);
-                      }}
-                      className="hover:bg-xp-surface-light flex w-full items-center space-x-3 px-4 py-2 text-left transition-colors"
-                    >
-                      <Square size={14} />
-                      <span className="text-sm">{t('operationBar.selectNone')}</span>
-                    </button>
-                  )}
-                  {onInvertSelection && (
-                    <button
-                      onClick={() => {
-                        onInvertSelection();
-                        setIsSelectionDropdownOpen(false);
-                      }}
-                      className="hover:bg-xp-surface-light flex w-full items-center justify-between px-4 py-2 text-left transition-colors"
-                    >
-                      <div className="flex items-center space-x-3">
-                        <RotateCcw size={14} />
-                        <span className="text-sm">{t('operationBar.invertSelection')}</span>
-                      </div>
-                      <span className="text-xp-text-muted text-xs">Ctrl+Shift+A</span>
-                    </button>
-                  )}
-                  {onAdvancedSelection && (
-                    <>
-                      <div className="border-xp-border my-1 border-t" />
-                      <button
-                        onClick={() => {
-                          onAdvancedSelection();
-                          setIsSelectionDropdownOpen(false);
-                        }}
-                        className="hover:bg-xp-surface-light flex w-full items-center justify-between px-4 py-2 text-left transition-colors"
-                      >
-                        <div className="flex items-center space-x-3">
-                          <Sparkles size={14} />
-                          <span className="text-sm">{t('operationBar.advancedSelection')}</span>
-                        </div>
-                        <span className="text-xp-text-muted text-xs">Ctrl+Shift+S</span>
-                      </button>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-
           {/* Action Buttons */}
           <button
             onClick={handleCreateFolder}
@@ -373,6 +373,121 @@ const OperationBar = ({
               />
             </svg>
           </button>
+
+          {/* Gear / Actions dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setIsActionsDropdownOpen(!isActionsDropdownOpen)}
+              className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text rounded p-1.5 transition-colors"
+              title={t('operationBar.actionsMenu')}
+              aria-label={t('operationBar.actionsMenu')}
+              aria-haspopup="menu"
+              aria-expanded={isActionsDropdownOpen}
+            >
+              <Settings size={16} />
+            </button>
+
+            {isActionsDropdownOpen && (
+              <div className="bg-xp-popover border-xp-border absolute right-0 top-full z-50 mt-1 min-w-[180px] rounded-lg border py-1 shadow-xl backdrop-blur-xl">
+                {/* New Folder */}
+                <button
+                  onClick={() => {
+                    handleCreateFolder();
+                    setIsActionsDropdownOpen(false);
+                  }}
+                  className="hover:bg-xp-surface-light flex w-full items-center gap-2.5 px-3 py-1.5 text-left text-sm transition-colors"
+                >
+                  <FolderPlus size={14} className="text-xp-text-muted shrink-0" />
+                  <span>{t('operationBar.newFolder')}</span>
+                </button>
+
+                {/* New File */}
+                {onCreateFile && (
+                  <button
+                    onClick={() => {
+                      onCreateFile();
+                      setIsActionsDropdownOpen(false);
+                    }}
+                    className="hover:bg-xp-surface-light flex w-full items-center gap-2.5 px-3 py-1.5 text-left text-sm transition-colors"
+                  >
+                    <FilePlus size={14} className="text-xp-text-muted shrink-0" />
+                    <span>{t('operationBar.newFile')}</span>
+                  </button>
+                )}
+
+                <div className="border-xp-border my-1 border-t" />
+
+                {/* Compress */}
+                {onCompress && (
+                  <button
+                    onClick={() => {
+                      onCompress();
+                      setIsActionsDropdownOpen(false);
+                    }}
+                    className="hover:bg-xp-surface-light flex w-full items-center gap-2.5 px-3 py-1.5 text-left text-sm transition-colors"
+                  >
+                    <Package size={14} className="text-xp-text-muted shrink-0" />
+                    <span>{t('operationBar.compress')}</span>
+                  </button>
+                )}
+
+                {/* Extract */}
+                {onExtract && (
+                  <button
+                    onClick={() => {
+                      onExtract();
+                      setIsActionsDropdownOpen(false);
+                    }}
+                    className="hover:bg-xp-surface-light flex w-full items-center gap-2.5 px-3 py-1.5 text-left text-sm transition-colors"
+                  >
+                    <PackageOpen size={14} className="text-xp-text-muted shrink-0" />
+                    <span>{t('operationBar.extract')}</span>
+                  </button>
+                )}
+
+                <div className="border-xp-border my-1 border-t" />
+
+                {/* Open in Terminal */}
+                <button
+                  onClick={handleOpenTerminal}
+                  className="hover:bg-xp-surface-light flex w-full items-center gap-2.5 px-3 py-1.5 text-left text-sm transition-colors"
+                >
+                  <Terminal size={14} className="text-xp-text-muted shrink-0" />
+                  <span>{t('operationBar.openInTerminal')}</span>
+                </button>
+
+                {/* Copy Path */}
+                {onCopyPath && (
+                  <button
+                    onClick={() => {
+                      onCopyPath();
+                      setIsActionsDropdownOpen(false);
+                    }}
+                    className="hover:bg-xp-surface-light flex w-full items-center gap-2.5 px-3 py-1.5 text-left text-sm transition-colors"
+                  >
+                    <Copy size={14} className="text-xp-text-muted shrink-0" />
+                    <span>{t('operationBar.copyPath')}</span>
+                  </button>
+                )}
+
+                <div className="border-xp-border my-1 border-t" />
+
+                {/* Properties */}
+                {onProperties && (
+                  <button
+                    onClick={() => {
+                      onProperties();
+                      setIsActionsDropdownOpen(false);
+                    }}
+                    className="hover:bg-xp-surface-light flex w-full items-center gap-2.5 px-3 py-1.5 text-left text-sm transition-colors"
+                  >
+                    <Info size={14} className="text-xp-text-muted shrink-0" />
+                    <span>{t('operationBar.properties')}</span>
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -304,6 +304,7 @@ export default function RecycleBin({ onClose }: RecycleBinProps) {
                         size: item.size,
                         modified: item.deletion_date,
                         file_type: item.name.split('.').pop() || '',
+                        is_readonly: false,
                       })}
                     </div>
                     <div className="min-w-0 flex-1">
