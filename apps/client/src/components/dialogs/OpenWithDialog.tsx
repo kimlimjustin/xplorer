@@ -171,6 +171,7 @@ const OpenWithDialog = ({ isOpen, onClose, filePath }: OpenWithDialogProps) => {
                     size: 0,
                     modified: 0,
                     file_type: fileAssociation?.extension || '',
+                    is_readonly: false,
                   })}
                 </div>
                 <div>

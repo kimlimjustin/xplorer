@@ -81,6 +81,8 @@ export const DragDropProvider = ({ children }: { children: React.ReactNode }) =>
   const highlightedRef = useRef<HTMLElement | null>(null);
   // Track the last hovered target path to avoid redundant DOM updates
   const lastHoverPathRef = useRef<string | null>(null);
+  // Spring-loaded folder timer: fires navigation if hovering a folder for 500ms
+  const springTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Cursor position stored in a ref (not state) — only the overlay reads it
   // via requestAnimationFrame, avoiding React re-renders on every mouse move.
@@ -96,6 +98,11 @@ export const DragDropProvider = ({ children }: { children: React.ReactNode }) =>
       highlightedRef.current = null;
     }
     lastHoverPathRef.current = null;
+    // Cancel any pending spring-load navigation
+    if (springTimerRef.current !== null) {
+      clearTimeout(springTimerRef.current);
+      springTimerRef.current = null;
+    }
   }, []);
 
   const findDropTarget = useCallback(
@@ -165,6 +172,22 @@ export const DragDropProvider = ({ children }: { children: React.ReactNode }) =>
                   if (valid) {
                     target.element.setAttribute('data-drop-hover', 'true');
                     target.element.classList.add('xp-drop-folder-highlight');
+
+                    // Spring-loaded folder: if hovering a valid folder drop
+                    // target for 500ms, navigate into it automatically.
+                    const isFolder =
+                      target.element.getAttribute('data-is-folder') === 'true' ||
+                      target.element.closest('[data-is-folder="true"]') !== null;
+                    if (isFolder) {
+                      springTimerRef.current = setTimeout(() => {
+                        springTimerRef.current = null;
+                        window.dispatchEvent(
+                          new CustomEvent('spring-load-folder', {
+                            detail: { path: target.path },
+                          }),
+                        );
+                      }, 500);
+                    }
                   } else {
                     target.element.setAttribute('data-drop-invalid', 'true');
                   }

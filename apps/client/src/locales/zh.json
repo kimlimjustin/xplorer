@@ -53,6 +53,7 @@
     "downloads": "下载",
     "desktop": "桌面",
     "pictures": "图片",
+    "icloudDrive": "iCloud 云盘",
     "recent": "最近",
     "favorites": "收藏夹",
     "noBookmarks": "暂无书签",
@@ -189,7 +190,15 @@
     "selectBy": "按条件选择...",
     "openRecycleBin": "打开回收站",
     "bookmarkFolder": "收藏此文件夹",
-    "pinToSidebar": "固定到侧边栏"
+    "pinToSidebar": "固定到侧边栏",
+    "lockFile": "锁定文件",
+    "unlockFile": "解锁文件"
+  },
+
+  "drives": {
+    "eject": "弹出",
+    "ejectSuccess": "卷已弹出",
+    "ejectFailed": "弹出卷失败"
   },
 
   "settings": {
@@ -365,7 +374,10 @@
       "reduceMotionDesc": "禁用动画和过渡以提升舒适度",
       "focus": "焦点",
       "enhancedFocus": "增强焦点指示器",
-      "enhancedFocusDesc": "为键盘导航显示清晰的轮廓"
+      "enhancedFocusDesc": "为键盘导航显示清晰的轮廓",
+      "contrast": "对比度",
+      "highContrast": "高对比度模式",
+      "highContrastDesc": "提升边框、文字和按钮的对比度以提高可视性"
     },
     "shortcuts": {
       "inputMode": "输入模式",
@@ -476,7 +488,60 @@
     "openTerminal": "打开终端",
     "selectionOptions": "选择选项",
     "sortBy": "排序: {{name}}, {{order}}",
-    "viewMode": "视图模式: {{name}}"
+    "viewMode": "视图模式: {{name}}",
+    "auto": "自动",
+    "autoDetected": "根据文件夹内容自动检测视图模式。点击重置。",
+    "actions": "操作",
+    "actionsMenu": "文件操作菜单",
+    "newFolder": "新建文件夹",
+    "newFile": "新建文件",
+    "compress": "压缩",
+    "extract": "解压",
+    "properties": "属性",
+    "openInTerminal": "在终端中打开",
+    "copyPath": "复制路径",
+    "iconSize": "图标大小",
+    "iconSizeLabel": "调整图标大小 ({{size}}px)"
+  },
+
+  "architectView": {
+    "title": "架构视图",
+    "analyzing": "正在分析 {{path}}...",
+    "backToFiles": "返回文件",
+    "toggle": "切换架构模式",
+    "label": "架构",
+    "analysis": {
+      "title": "分析: {{name}}",
+      "analyze": "分析",
+      "loading": "AI 正在分析 {{name}}...",
+      "retry": "重试",
+      "askMore": "向 AI 询问更多",
+      "aiError": "AI 分析失败",
+      "aiNotConfigured": "AI 未配置",
+      "aiNotConfiguredHint": "请在设置中配置 AI 模型（Ollama 或 API 密钥）以使用深度分析。"
+    },
+    "canvas": {
+      "zoomIn": "放大",
+      "zoomOut": "缩小",
+      "fitView": "适应视图",
+      "nodeCount": "{{count}} 个节点",
+      "noNodes": "未找到源文件",
+      "expandAll": "全部展开",
+      "collapseAll": "全部折叠"
+    },
+    "sidebar": {
+      "scanning": "正在扫描项目结构...",
+      "error": "扫描失败",
+      "retry": "重试",
+      "empty": "打开项目文件夹以查看其架构",
+      "kinds": {
+        "project": "项目",
+        "area": "区域",
+        "module": "模块",
+        "directory": "目录",
+        "file": "文件"
+      }
+    }
   },
 
   "navigation": {
@@ -522,6 +587,51 @@
     "advancedSelection": "高级选择"
   },
 
+  "permissions": {
+    "title": "扩展权限",
+    "subtitle": "安装前请审查",
+    "by": "作者：{{author}}",
+    "dangerWarning": "请求了 {{count}} 个敏感权限。请仅在信任该扩展时允许。",
+    "none": "此扩展无需特殊权限。",
+    "remember": "为此扩展记住选择",
+    "accept": "接受",
+    "deny": "拒绝",
+    "denyClose": "拒绝并关闭",
+    "cancelledTitle": "安装已取消",
+    "cancelledDesc": "安装已被取消。",
+    "bulk": {
+      "subtitle": "{{count}} 个扩展请求权限",
+      "acceptAll": "全部接受",
+      "dangerWarning": "此扩展包中共请求了 {{count}} 个敏感权限。请仅在信任所有扩展时允许。",
+      "dangerous": "危险"
+    },
+    "group": {
+      "safe": "安全",
+      "moderate": "中等",
+      "dangerous": "危险"
+    },
+    "desc": {
+      "uiPanels": "注册面板和标签页",
+      "uiNotifications": "显示通知",
+      "uiClipboard": "复制到剪贴板",
+      "storageRead": "读取扩展数据",
+      "storageWrite": "写入扩展数据",
+      "storage": "读取和写入扩展数据",
+      "searchRead": "搜索并索引文件",
+      "searchDuplicates": "查找重复文件",
+      "fsRead": "读取计算机上的文件",
+      "directoryList": "列出文件夹内容",
+      "gitRead": "读取 Git 仓库信息",
+      "fsWrite": "写入或删除文件",
+      "gitWrite": "修改 Git 仓库（提交、分支）",
+      "network": "发出网络请求",
+      "systemExec": "执行系统命令",
+      "nativeInvoke": "调用原生系统 API",
+      "fileExecute": "在您的系统上执行文件",
+      "unknown": "未知权限"
+    }
+  },
+
   "commands": {
     "goHome": "前往主页",
     "goUp": "返回上级",
@@ -551,5 +661,12 @@
       "selection": "选择",
       "other": "其他"
     }
+  },
+
+  "smartSearch": {
+    "scopeFolder": "此文件夹",
+    "scopeEverywhere": "全局",
+    "scopeFolderTitle": "仅在当前文件夹中搜索",
+    "scopeEverywhereTitle": "搜索整个系统"
   }
 }

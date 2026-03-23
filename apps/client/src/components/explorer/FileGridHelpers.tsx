@@ -1,5 +1,6 @@
 import React from 'react';
 import { FileEntry, FileTag } from '@/lib/tauri-api';
+import { Lock } from 'lucide-react';
 
 export const IMAGE_EXTENSIONS = new Set([
   'jpg',
@@ -64,5 +65,21 @@ export const GitStatusDot = ({ status }: { status: string | null }) => {
       style={{ backgroundColor: color }}
       title={`Git: ${label}`}
     />
+  );
+};
+
+// ─── Lock badge displayed on read-only files ──────────────────────────────────
+
+export const LockBadge = ({ isReadonly }: { isReadonly: boolean }) => {
+  if (!isReadonly) return null;
+
+  return (
+    <span
+      className="ml-1 inline-flex flex-shrink-0 items-center"
+      title="Read-only"
+      aria-label="Read-only"
+    >
+      <Lock size={10} className="text-xp-text-muted opacity-70" />
+    </span>
   );
 };

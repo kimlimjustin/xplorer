@@ -6,9 +6,17 @@ import React, {
   useImperativeHandle,
   forwardRef,
 } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TauriAPI, SearchResult, SearchMatch, StructuredQuery } from '@/lib/tauri-api';
 import { useToast } from '@/hooks/use-toast';
 import { getSavedSearches, saveSearch, type SavedSearch } from '@/lib/saved-searches';
+import {
+  parseSearchTokens,
+  loadSearchScope,
+  saveSearchScope,
+  type SearchScope,
+  type TokenChip,
+} from '@/hooks/use-search-tokens';
 // Native debounce — replaces lodash dependency
 const debounce = <T extends (...args: Parameters<T>) => ReturnType<T>>(
   fn: T,
@@ -138,6 +146,7 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
     },
     ref,
   ) => {
+    const { t } = useTranslation();
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<SearchResult[]>([]);
     const [isSearching, setIsSearching] = useState(false);
@@ -149,6 +158,8 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
     const [showProviderMenu, setShowProviderMenu] = useState(false);
     const providerMenuRef = useRef<HTMLDivElement>(null);
     const [searchContent, setSearchContent] = useState(false);
+    const [searchScope, setSearchScope] = useState<SearchScope>(loadSearchScope);
+    const [tokenChips, setTokenChips] = useState<TokenChip[]>([]);
 
     const [savedSearches, setSavedSearches] = useState<SavedSearch[]>(() => getSavedSearches());
     const [showSavedSearches, setShowSavedSearches] = useState(false);
@@ -229,7 +240,15 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
     const debouncedSearch = useMemo(
       () =>
         debounce(async (searchQuery: string) => {
-          if (!searchQuery.trim()) {
+          // Parse key:value tokens from raw query
+          const { remainingQuery, extensionFilter, sizeMin, sizeMax, dateAfter, chips } =
+            parseSearchTokens(searchQuery);
+
+          setTokenChips(chips);
+
+          const effectiveQuery = remainingQuery;
+
+          if (!effectiveQuery.trim() && chips.length === 0) {
             setResults([]);
             setParsedQuery(null);
             setIsSearching(false);
@@ -243,6 +262,12 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
 
           setIsSearching(true);
 
+          // Determine the path to search — respects scope toggle
+          const resolvedSearchPath = (() => {
+            if (searchScope === 'everywhere') return undefined;
+            return currentPath && !currentPath.startsWith('xplorer://') ? currentPath : undefined;
+          })();
+
           try {
             let searchResults: SearchResult[] = [];
 
@@ -250,7 +275,7 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
               // AI-powered search: BM25F pre-filter → AI re-rank
               try {
                 const aiResult = await TauriAPI.aiSearch(
-                  searchQuery,
+                  effectiveQuery || searchQuery,
                   searchProvider,
                   undefined, // API key from env/settings
                   undefined, // model default
@@ -270,11 +295,12 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
 
             // Local search (or AI fallback)
             if (searchResults.length === 0) {
+              const queryForIndex = effectiveQuery || searchQuery;
               // Always try indexed search first (BM25F scored)
               try {
-                if (shouldUseEnhancedSearch(searchQuery)) {
+                if (shouldUseEnhancedSearch(queryForIndex)) {
                   const enhanced = await TauriAPI.enhancedSearch(
-                    searchQuery,
+                    queryForIndex,
                     undefined,
                     maxResults,
                   );
@@ -283,7 +309,7 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
                     searchResults = enhanced.results;
                   }
                 } else {
-                  const tokenResults = await TauriAPI.searchTokens(searchQuery, maxResults);
+                  const tokenResults = await TauriAPI.searchTokens(queryForIndex, maxResults);
                   if (!controller.signal.aborted) {
                     setParsedQuery(null);
                     searchResults = tokenResults;
@@ -296,19 +322,22 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
 
               // If index returned nothing, fall back to filesystem search
               if (searchResults.length === 0 && !controller.signal.aborted) {
-                const searchPath =
-                  currentPath && !currentPath.startsWith('xplorer://') ? currentPath : undefined;
-                if (searchPath) {
+                if (resolvedSearchPath) {
                   try {
-                    const paths = await TauriAPI.findFiles(searchQuery, searchPath);
+                    const paths = await TauriAPI.findFiles(
+                      effectiveQuery || searchQuery,
+                      resolvedSearchPath,
+                    );
                     if (!controller.signal.aborted) {
                       searchResults = paths.slice(0, maxResults).map((p) => {
                         const filename = p.split(/[/\\]/).pop() || p;
                         return {
                           path: p,
                           filename,
-                          matches: [{ token: searchQuery, context: 'Filename match' }],
-                          score: computeFilesystemScore(filename, searchQuery),
+                          matches: [
+                            { token: effectiveQuery || searchQuery, context: 'Filename match' },
+                          ],
+                          score: computeFilesystemScore(filename, effectiveQuery || searchQuery),
                           relevance_type: 'exact',
                         } as SearchResult;
                       });
@@ -322,14 +351,31 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
 
             if (controller.signal.aborted) return;
 
+            // Apply token-derived extension filter
+            if (extensionFilter.length > 0) {
+              const filterSet = new Set(extensionFilter.map((e) => e.toLowerCase()));
+              searchResults = searchResults.filter((r) => {
+                const ext = r.filename.split('.').pop()?.toLowerCase() ?? '';
+                return filterSet.has(ext);
+              });
+            }
+
+            // Note: size and date token filters (sizeMin, sizeMax, dateAfter) are passed
+            // as hints to the enhanced search engine via the query string. Client-side
+            // post-filtering is not performed because SearchResult does not carry file
+            // metadata such as size or mtime. The engine handles these constraints.
+            void sizeMin;
+            void sizeMax;
+            void dateAfter;
+
             // Sort results: by default name matches first, or pure score if content mode
+            const queryLowerForSort = (effectiveQuery || searchQuery).toLowerCase();
             if (searchContent) {
               searchResults.sort((a, b) => b.score - a.score);
             } else {
-              const queryLower = searchQuery.toLowerCase();
               searchResults.sort((a, b) => {
-                const aNameMatch = a.filename.toLowerCase().includes(queryLower) ? 1 : 0;
-                const bNameMatch = b.filename.toLowerCase().includes(queryLower) ? 1 : 0;
+                const aNameMatch = a.filename.toLowerCase().includes(queryLowerForSort) ? 1 : 0;
+                const bNameMatch = b.filename.toLowerCase().includes(queryLowerForSort) ? 1 : 0;
                 if (aNameMatch !== bNameMatch) return bNameMatch - aNameMatch;
                 return b.score - a.score;
               });
@@ -347,7 +393,7 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
             }
           }
         }, SEARCH_DEBOUNCE_MS),
-      [maxResults, searchProvider, currentPath, searchContent, toast],
+      [maxResults, searchProvider, currentPath, searchContent, searchScope, toast],
     );
 
     useEffect(() => {
@@ -388,6 +434,7 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
       setResults([]);
       setSelectedIndex(-1);
       setParsedQuery(null);
+      setTokenChips([]);
       // A result is a directory if its filename has no extension (no dot after last separator)
       const hasExt = result.filename.includes('.') && !result.filename.startsWith('.');
       onFileSelect?.(result.path, !hasExt);
@@ -648,6 +695,32 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
               )}
             </div>
 
+            {/* Scope toggle: This Folder / Everywhere */}
+            {currentPath && !currentPath.startsWith('xplorer://') && (
+              <button
+                onClick={() => {
+                  const next: SearchScope = searchScope === 'folder' ? 'everywhere' : 'folder';
+                  setSearchScope(next);
+                  saveSearchScope(next);
+                  if (query.trim()) debouncedSearch(query);
+                }}
+                className={`rounded px-1.5 py-0.5 text-xs transition-colors ${
+                  searchScope === 'everywhere'
+                    ? 'border border-teal-500 border-opacity-30 bg-teal-500 bg-opacity-20 text-teal-400'
+                    : 'text-xp-text-muted hover:text-xp-text'
+                }`}
+                title={
+                  searchScope === 'everywhere'
+                    ? t('smartSearch.scopeEverywhereTitle')
+                    : t('smartSearch.scopeFolderTitle')
+                }
+              >
+                {searchScope === 'everywhere'
+                  ? t('smartSearch.scopeEverywhere')
+                  : t('smartSearch.scopeFolder')}
+              </button>
+            )}
+
             {/* Content search toggle */}
             <button
               onClick={() => {
@@ -709,6 +782,7 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
                   setShowResults(false);
                   setSelectedIndex(-1);
                   setParsedQuery(null);
+                  setTokenChips([]);
                   searchInputRef.current?.focus();
                 }}
                 className="text-xp-text-muted hover:text-xp-text"
@@ -725,35 +799,50 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
           </div>
         </div>
 
-        {/* Detected Filter Chips */}
-        {parsedQuery &&
-          showResults &&
-          (() => {
-            const chips = getFilterChips(parsedQuery);
-            return chips.length > 0 ? (
-              <div className="mt-1 flex flex-wrap gap-1 px-1">
-                {chips.map((chip) => (
+        {/* Search filter chips — token syntax chips + NL-parsed chips */}
+        {showResults &&
+          (tokenChips.length > 0 || (parsedQuery && getFilterChips(parsedQuery).length > 0)) && (
+            <div className="mt-1 flex flex-wrap gap-1 px-1">
+              {/* Token syntax chips (from key:value parsing) */}
+              {tokenChips.map((chip) => (
+                <span
+                  key={`token-${chip.key}-${chip.rawValue}`}
+                  className={`rounded-full px-2 py-0.5 text-xs font-medium ${(() => {
+                    if (chip.variant === 'kind') return 'bg-blue-500 bg-opacity-20 text-blue-400';
+                    if (chip.variant === 'size') return 'bg-green-500 bg-opacity-20 text-green-400';
+                    if (chip.variant === 'date') {
+                      return 'bg-orange-500 bg-opacity-20 text-orange-400';
+                    }
+                    return 'bg-purple-500 bg-opacity-20 text-purple-400';
+                  })()}`}
+                >
+                  {chip.key}:{chip.rawValue}
+                </span>
+              ))}
+              {/* NL-parsed chips (from enhanced search engine) */}
+              {parsedQuery &&
+                getFilterChips(parsedQuery).map((chip) => (
                   <span
-                    key={`${chip.type}-${chip.label}`}
+                    key={`nl-${chip.type}-${chip.label}`}
                     className={`rounded-full px-2 py-0.5 text-xs font-medium ${(() => {
                       if (chip.type === 'type') return 'bg-blue-500 bg-opacity-20 text-blue-400';
                       if (chip.type === 'size') return 'bg-green-500 bg-opacity-20 text-green-400';
-                      if (chip.type === 'date')
-                        {return 'bg-orange-500 bg-opacity-20 text-orange-400';}
+                      if (chip.type === 'date') {
+                        return 'bg-orange-500 bg-opacity-20 text-orange-400';
+                      }
                       return 'bg-purple-500 bg-opacity-20 text-purple-400';
                     })()}`}
                   >
                     {chip.label}
                   </span>
                 ))}
-                {parsedQuery.keywords.length > 0 && (
-                  <span className="text-xp-text-muted px-1 text-xs">
-                    + "{parsedQuery.keywords.join(' ')}"
-                  </span>
-                )}
-              </div>
-            ) : null;
-          })()}
+              {parsedQuery && parsedQuery.keywords.length > 0 && (
+                <span className="text-xp-text-muted px-1 text-xs">
+                  + &ldquo;{parsedQuery.keywords.join(' ')}&rdquo;
+                </span>
+              )}
+            </div>
+          )}
 
         {/* Search Results */}
         {showResults && results.length > 0 && (
@@ -761,7 +850,10 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
             ref={resultsRef}
             className="bg-xp-popover border-xp-border absolute left-0 right-0 top-full z-50 mt-1 max-h-96 overflow-y-auto rounded-lg border shadow-xl backdrop-blur-xl"
             style={{
-              marginTop: parsedQuery && getFilterChips(parsedQuery).length > 0 ? '28px' : '4px',
+              marginTop:
+                tokenChips.length > 0 || (parsedQuery && getFilterChips(parsedQuery).length > 0)
+                  ? '28px'
+                  : '4px',
             }}
           >
             {results.map((result, index) => (

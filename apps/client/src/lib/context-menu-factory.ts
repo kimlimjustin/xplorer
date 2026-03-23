@@ -119,6 +119,8 @@ export interface ContextMenuAction {
   setViewMode: (mode: string) => void;
   setSortBy: (field: string) => void;
   setSortOrder: (order: 'asc' | 'desc') => void;
+  lockFile?: (file: FileEntry) => void;
+  unlockFile?: (file: FileEntry) => void;
 }
 
 export interface ContextMenuConfig {
@@ -133,7 +135,15 @@ const entryFromPath = (path: string): FileEntry => {
   const name = path.split(/[/\\]/).pop() || path;
   const dotIdx = name.lastIndexOf('.');
   const extension = dotIdx > 0 ? name.slice(dotIdx + 1) : '';
-  return { path, name, size: 0, modified: 0, is_dir: !extension, file_type: extension || 'folder' };
+  return {
+    path,
+    name,
+    size: 0,
+    modified: 0,
+    is_dir: !extension,
+    file_type: extension || 'folder',
+    is_readonly: false,
+  };
 };
 
 export class ContextMenuFactory {
@@ -465,6 +475,29 @@ export class ContextMenuFactory {
           icon: mi(Lock),
           action: () => this.actions.encryptFile(file),
         });
+      }
+    }
+
+    // Lock / Unlock (single select only — sets read-only attribute)
+    if (!isMultiSelect && (this.actions.lockFile || this.actions.unlockFile)) {
+      if (file.is_readonly) {
+        if (this.actions.unlockFile) {
+          moreItems.push({
+            id: 'unlock-file',
+            label: i18n.t('contextMenu.unlockFile'),
+            icon: mi(Unlock),
+            action: () => this.actions.unlockFile!(file),
+          });
+        }
+      } else {
+        if (this.actions.lockFile) {
+          moreItems.push({
+            id: 'lock-file',
+            label: i18n.t('contextMenu.lockFile'),
+            icon: mi(Lock),
+            action: () => this.actions.lockFile!(file),
+          });
+        }
       }
     }
 

@@ -624,6 +624,7 @@ export const useFileOperations = (deps: UseFileOperationsDeps) => {
           modified: 0,
           is_dir: f.isDir,
           file_type: f.isDir ? 'folder' : f.name.split('.').pop() || '',
+          is_readonly: false,
         }));
         setClipboardBothRef.current({ files: fileEntries, operation: entry.operation });
         contextMenuFactoryRef.current.updateClipboard(fileEntries, entry.operation);
@@ -651,6 +652,42 @@ export const useFileOperations = (deps: UseFileOperationsDeps) => {
       },
       setSortOrder: (order: 'asc' | 'desc') => {
         setSortOrderRef.current(order);
+      },
+      lockFile: async (file: FileEntry) => {
+        try {
+          // Unix: 444 (read-only for owner/group/others), Windows: 'readonly'
+          const permissions = /^[a-zA-Z]:\\/.test(file.path) ? 'readonly' : '444';
+          await TauriAPI.setFilePermissions(file.path, permissions);
+          emitFilesChangedRef.current();
+          toastRef.current({
+            title: 'File locked',
+            description: `"${file.name}" is now read-only`,
+          });
+        } catch (error) {
+          toastRef.current({
+            title: 'Lock failed',
+            description: `Failed to lock "${file.name}": ${formatError(error)}`,
+            variant: 'destructive',
+          });
+        }
+      },
+      unlockFile: async (file: FileEntry) => {
+        try {
+          // Unix: 644 (owner can write, group/others read), Windows: 'writable'
+          const permissions = /^[a-zA-Z]:\\/.test(file.path) ? 'writable' : '644';
+          await TauriAPI.setFilePermissions(file.path, permissions);
+          emitFilesChangedRef.current();
+          toastRef.current({
+            title: 'File unlocked',
+            description: `"${file.name}" is now writable`,
+          });
+        } catch (error) {
+          toastRef.current({
+            title: 'Unlock failed',
+            description: `Failed to unlock "${file.name}": ${formatError(error)}`,
+            variant: 'destructive',
+          });
+        }
       },
     }),
     [],

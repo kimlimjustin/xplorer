@@ -75,12 +75,7 @@ interface ResultRowProps {
   onDoubleClick: (file: FileEntry) => void;
 }
 
-const ResultRow = React.memo(function ResultRow({
-  item,
-  query,
-  onNavigate,
-  onDoubleClick,
-}: ResultRowProps) {
+const ResultRow = React.memo(({ item, query, onNavigate, onDoubleClick }: ResultRowProps) => {
   const { file } = item;
 
   return (
@@ -138,6 +133,7 @@ const ResultRow = React.memo(function ResultRow({
     </div>
   );
 });
+ResultRow.displayName = 'ResultRow';
 
 // ── AI result row component ──────────────────────────────────────────────────
 
@@ -147,7 +143,7 @@ interface AIResultRowProps {
   onSelect: (result: SearchResult) => void;
 }
 
-const AIResultRow = React.memo(function AIResultRow({ result, query, onSelect }: AIResultRowProps) {
+const AIResultRow = React.memo(({ result, query, onSelect }: AIResultRowProps) => {
   const relevanceBadge = (() => {
     switch (result.relevance_type) {
       case 'exact':
@@ -283,6 +279,7 @@ const AIResultRow = React.memo(function AIResultRow({ result, query, onSelect }:
     </div>
   );
 });
+AIResultRow.displayName = 'AIResultRow';
 
 // ── Group header component ───────────────────────────────────────────────────
 
@@ -291,7 +288,7 @@ interface GroupHeaderProps {
   basePath: string;
 }
 
-const GroupHeader = React.memo(function GroupHeader({ parentDir, basePath }: GroupHeaderProps) {
+const GroupHeader = React.memo(({ parentDir, basePath }: GroupHeaderProps) => {
   // Show relative path from basePath
   let display = parentDir;
   if (display.startsWith(basePath)) {
@@ -336,6 +333,7 @@ const GroupHeader = React.memo(function GroupHeader({ parentDir, basePath }: Gro
     </div>
   );
 });
+GroupHeader.displayName = 'GroupHeader';
 
 // ── Filter words that trigger enhanced NL search ─────────────────────────────
 
@@ -608,6 +606,7 @@ const SearchResultsPanel = React.forwardRef<SearchResultsPanelHandle, SearchResu
           modified: 0,
           is_dir: !hasExt,
           file_type: hasExt ? result.filename.split('.').pop() || '' : 'folder',
+          is_readonly: false,
         };
         onFileSelect(syntheticFile);
       },
