@@ -306,7 +306,7 @@ interface SourceNodeProps {
   file: FileEntry;
 }
 
-const SourceTreeNode = React.memo(function SourceTreeNode({ file }: SourceNodeProps) {
+const SourceTreeNode = React.memo(({ file }: SourceNodeProps) => {
   const parentPath = useMemo(() => {
     const sep = detectSep(file.path);
     const parts = file.path.split(sep);
@@ -346,6 +346,7 @@ const SourceTreeNode = React.memo(function SourceTreeNode({ file }: SourceNodePr
     </div>
   );
 });
+SourceTreeNode.displayName = 'SourceTreeNode';
 
 // ── DestTreeNode (memoized) ──────────────────────────────────────────────────
 
@@ -357,128 +358,125 @@ interface DestNodeProps {
   onResolutionChange: (path: string, resolution: ConflictResolutionType) => void;
 }
 
-const DestTreeNode = React.memo(function DestTreeNode({
-  node,
-  depth,
-  expanded,
-  onToggle,
-  onResolutionChange,
-}: DestNodeProps) {
-  const [hovered, setHovered] = useState(false);
-  const isExpanded = expanded.has(node.path);
-  const statusColor = getStatusColor(node.status);
-  const statusBg = getStatusBg(node.status);
+const DestTreeNode = React.memo(
+  ({ node, depth, expanded, onToggle, onResolutionChange }: DestNodeProps) => {
+    const [hovered, setHovered] = useState(false);
+    const isExpanded = expanded.has(node.path);
+    const statusColor = getStatusColor(node.status);
+    const statusBg = getStatusBg(node.status);
 
-  const rowStyle: React.CSSProperties = {
-    ...S.treeRow,
-    backgroundColor: hovered ? 'var(--xp-surface-light)' : statusBg,
-  };
+    const rowStyle: React.CSSProperties = {
+      ...S.treeRow,
+      backgroundColor: hovered ? 'var(--xp-surface-light)' : statusBg,
+    };
 
-  return (
-    <>
-      <div
-        style={rowStyle}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-      >
-        {/* Indent guides */}
-        {Array.from({ length: depth }, (_, i) => (
-          <div key={i} style={S.indentGuide} />
-        ))}
+    return (
+      <>
+        <div
+          style={rowStyle}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+        >
+          {/* Indent guides */}
+          {Array.from({ length: depth }, (_, i) => (
+            <div key={i} style={S.indentGuide} />
+          ))}
 
-        {/* Chevron */}
-        {node.isDir && node.children.length > 0 ? (
-          <div style={S.chevron} onClick={() => onToggle(node.path)}>
-            {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-          </div>
-        ) : (
-          <div style={S.chevronPlaceholder} />
-        )}
-
-        {/* Icon */}
-        <div style={S.iconWrap}>
-          {/* eslint-disable-next-line no-nested-ternary */}
-          {node.isDir ? (
-            isExpanded ? (
-              <FolderOpen size={15} style={{ color: 'var(--xp-blue)' }} />
-            ) : (
-              <FolderClosed size={15} style={{ color: 'var(--xp-blue)' }} />
-            )
+          {/* Chevron */}
+          {node.isDir && node.children.length > 0 ? (
+            <div style={S.chevron} onClick={() => onToggle(node.path)}>
+              {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+            </div>
           ) : (
-            <FileIcon size={15} style={{ color: statusColor }} />
+            <div style={S.chevronPlaceholder} />
           )}
-        </div>
 
-        {/* Name */}
-        <div style={{ ...S.nodeName, color: statusColor }} title={node.name}>
-          {node.name}
-        </div>
+          {/* Icon */}
+          <div style={S.iconWrap}>
+            {/* eslint-disable-next-line no-nested-ternary */}
+            {node.isDir ? (
+              isExpanded ? (
+                <FolderOpen size={15} style={{ color: 'var(--xp-blue)' }} />
+              ) : (
+                <FolderClosed size={15} style={{ color: 'var(--xp-blue)' }} />
+              )
+            ) : (
+              <FileIcon size={15} style={{ color: statusColor }} />
+            )}
+          </div>
 
-        {/* Right slot */}
-        <div style={S.rightSlot}>
-          {/* Status badge */}
-          {node.status === 'incoming' && (
-            <span
-              style={{
-                ...S.conflictBadge,
-                color: 'var(--xp-green)',
-                backgroundColor: 'rgba(34, 197, 94, 0.12)',
-              }}
-            >
-              NEW
-            </span>
-          )}
-          {node.status === 'conflict' && (
-            <>
+          {/* Name */}
+          <div style={{ ...S.nodeName, color: statusColor }} title={node.name}>
+            {node.name}
+          </div>
+
+          {/* Right slot */}
+          <div style={S.rightSlot}>
+            {/* Status badge */}
+            {node.status === 'incoming' && (
               <span
                 style={{
                   ...S.conflictBadge,
-                  color: 'var(--xp-red)',
-                  backgroundColor: 'rgba(239, 68, 68, 0.12)',
+                  color: 'var(--xp-green)',
+                  backgroundColor: 'rgba(34, 197, 94, 0.12)',
                 }}
               >
-                <AlertTriangle size={10} />
-                CONFLICT
+                NEW
               </span>
-              {/* Resolution dropdown */}
-              <select
-                style={S.resolutionSelect}
-                value={node.conflictResolution ?? ''}
-                onChange={(e) => {
-                  e.stopPropagation();
-                  onResolutionChange(node.path, e.target.value as ConflictResolutionType);
-                }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <option value="">Resolve...</option>
-                <option value="skip">Skip</option>
-                <option value="overwrite">Overwrite</option>
-                <option value="rename">Rename</option>
-              </select>
-            </>
-          )}
+            )}
+            {node.status === 'conflict' && (
+              <>
+                <span
+                  style={{
+                    ...S.conflictBadge,
+                    color: 'var(--xp-red)',
+                    backgroundColor: 'rgba(239, 68, 68, 0.12)',
+                  }}
+                >
+                  <AlertTriangle size={10} />
+                  CONFLICT
+                </span>
+                {/* Resolution dropdown */}
+                <select
+                  style={S.resolutionSelect}
+                  value={node.conflictResolution ?? ''}
+                  onChange={(e) => {
+                    e.stopPropagation();
+                    onResolutionChange(node.path, e.target.value as ConflictResolutionType);
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <option value="">Resolve...</option>
+                  <option value="skip">Skip</option>
+                  <option value="overwrite">Overwrite</option>
+                  <option value="rename">Rename</option>
+                </select>
+              </>
+            )}
 
-          {/* Size */}
-          <span style={S.sizeLabel}>{node.isDir ? '' : formatFileSize(node.size)}</span>
+            {/* Size */}
+            <span style={S.sizeLabel}>{node.isDir ? '' : formatFileSize(node.size)}</span>
+          </div>
         </div>
-      </div>
 
-      {/* Children */}
-      {node.isDir &&
-        isExpanded &&
-        node.children.map((child) => (
-          <DestTreeNode
-            key={child.path}
-            node={child}
-            depth={depth + 1}
-            expanded={expanded}
-            onToggle={onToggle}
-            onResolutionChange={onResolutionChange}
-          />
-        ))}
-    </>
-  );
-});
+        {/* Children */}
+        {node.isDir &&
+          isExpanded &&
+          node.children.map((child) => (
+            <DestTreeNode
+              key={child.path}
+              node={child}
+              depth={depth + 1}
+              expanded={expanded}
+              onToggle={onToggle}
+              onResolutionChange={onResolutionChange}
+            />
+          ))}
+      </>
+    );
+  },
+);
+DestTreeNode.displayName = 'DestTreeNode';
 
 // ── Main Dialog Component ────────────────────────────────────────────────────
 

@@ -108,13 +108,7 @@ export const sectionHeaderStyle: React.CSSProperties = {
 
 // ── Sub-components ──────────────────────────────────────────────────────────
 
-export const StatRow = React.memo(function StatRow({
-  label,
-  value,
-}: {
-  label: string;
-  value: string | number;
-}) {
+export const StatRow = React.memo(({ label, value }: { label: string; value: string | number }) => {
   return (
     <div style={statRowStyle}>
       <span style={statLabelStyle}>{label}</span>
@@ -122,31 +116,27 @@ export const StatRow = React.memo(function StatRow({
     </div>
   );
 });
+StatRow.displayName = 'StatRow';
 
-export const ProgressBar = React.memo(function ProgressBar({
-  value,
-  max,
-  color,
-}: {
-  value: number;
-  max: number;
-  color: string;
-}) {
-  const pct = max > 0 ? Math.min((value / max) * 100, 100) : 0;
-  return (
-    <div style={progressBarContainer}>
-      <div
-        style={{
-          width: `${pct}%`,
-          height: '100%',
-          borderRadius: 2,
-          background: color,
-          transition: 'width 0.3s ease',
-        }}
-      />
-    </div>
-  );
-});
+export const ProgressBar = React.memo(
+  ({ value, max, color }: { value: number; max: number; color: string }) => {
+    const pct = max > 0 ? Math.min((value / max) * 100, 100) : 0;
+    return (
+      <div style={progressBarContainer}>
+        <div
+          style={{
+            width: `${pct}%`,
+            height: '100%',
+            borderRadius: 2,
+            background: color,
+            transition: 'width 0.3s ease',
+          }}
+        />
+      </div>
+    );
+  },
+);
+ProgressBar.displayName = 'ProgressBar';
 
 // ── Operation color mapping ─────────────────────────────────────────────────
 

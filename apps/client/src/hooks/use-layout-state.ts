@@ -1,7 +1,8 @@
 import { useState, useCallback } from 'react';
+import { STORAGE_KEYS } from '@/lib/storage-keys';
 
 // ── Helpers for persisting UI state to localStorage ──────────────────────────
-const UI_STATE_KEY = 'xplorer:ui-state';
+const UI_STATE_KEY = STORAGE_KEYS.UI_STATE;
 
 const loadUiState = <T>(key: string, fallback: T): T => {
   try {
@@ -68,6 +69,10 @@ export interface LayoutState {
   setSortBy: React.Dispatch<React.SetStateAction<string>>;
   sortOrder: 'asc' | 'desc';
   setSortOrder: React.Dispatch<React.SetStateAction<'asc' | 'desc'>>;
+
+  // Architecture mode
+  architectMode: boolean;
+  setArchitectMode: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 // ── Hook ─────────────────────────────────────────────────────────────────────
@@ -139,6 +144,9 @@ export const useLayoutState = (): LayoutState => {
   const [sortBy, setSortBy] = useState<string>(() => loadUiState('sortBy', 'name'));
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>(() => loadUiState('sortOrder', 'asc'));
 
+  // Architecture mode
+  const [architectMode, setArchitectMode] = useState(false);
+
   return {
     leftSidebarCollapsed,
     setLeftSidebarCollapsed,
@@ -167,5 +175,7 @@ export const useLayoutState = (): LayoutState => {
     setSortBy,
     sortOrder,
     setSortOrder,
+    architectMode,
+    setArchitectMode,
   };
 };

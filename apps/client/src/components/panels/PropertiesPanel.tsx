@@ -66,7 +66,9 @@ const PropertiesPanel = ({ filePath }: PropertiesPanelProps) => {
 
       const parentDir = filePath.replace(/[\\/][^\\/]+$/, '');
       if (parentDir) {
-        TauriAPI.addPathToTokenizer(parentDir).catch(() => {});
+        TauriAPI.addPathToTokenizer(parentDir).catch((err: unknown) =>
+          console.warn('Failed to add path to tokenizer:', err),
+        );
       }
     } catch (err) {
       setError((err as Error).message);
@@ -193,6 +195,7 @@ const PropertiesPanel = ({ filePath }: PropertiesPanelProps) => {
                   size: properties.size,
                   modified: properties.modified,
                   file_type: properties.file_type,
+                  is_readonly: properties.is_readonly,
                 })}
               </span>
               <div className="min-w-0">

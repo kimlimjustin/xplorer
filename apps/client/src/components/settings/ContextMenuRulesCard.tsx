@@ -73,181 +73,189 @@ const INITIAL_FORM: RuleFormData = {
   matcherValue: '',
 };
 
-const RuleForm = React.memo(function RuleForm({
-  initial,
-  onSave,
-  onCancel,
-}: {
-  initial?: RuleFormData;
-  onSave: (data: RuleFormData) => void;
-  onCancel: () => void;
-}) {
-  const [form, setForm] = useState<RuleFormData>(initial || INITIAL_FORM);
-  const menuItems = getAvailableMenuItems();
+const RuleForm = React.memo(
+  ({
+    initial,
+    onSave,
+    onCancel,
+  }: {
+    initial?: RuleFormData;
+    onSave: (data: RuleFormData) => void;
+    onCancel: () => void;
+  }) => {
+    const [form, setForm] = useState<RuleFormData>(initial || INITIAL_FORM);
+    const menuItems = getAvailableMenuItems();
 
-  const handleSave = () => {
-    if (!form.matcherValue.trim() && form.matcherType !== 'is_directory') return;
-    onSave(form);
-  };
+    const handleSave = () => {
+      if (!form.matcherValue.trim() && form.matcherType !== 'is_directory') return;
+      onSave(form);
+    };
 
-  const placeholders: Record<RuleMatcher['type'], string> = {
-    extension: '.jpg,.png,.gif',
-    file_type: 'image/*',
-    name_pattern: 'readme*',
-    is_directory: 'true',
-  };
+    const placeholders: Record<RuleMatcher['type'], string> = {
+      extension: '.jpg,.png,.gif',
+      file_type: 'image/*',
+      name_pattern: 'readme*',
+      is_directory: 'true',
+    };
 
-  return (
-    <div className="border-xp-border bg-xp-surface/50 space-y-3 rounded-lg border p-3">
-      {/* Menu item selector */}
-      <div>
-        <label className="text-xp-text-secondary mb-1 block text-xs font-medium">Menu Item</label>
-        <select
-          value={form.menuItemId}
-          onChange={(e) => setForm((f) => ({ ...f, menuItemId: e.target.value }))}
-          className="border-xp-border bg-xp-bg text-xp-text focus:border-xp-accent h-8 w-full rounded border px-2 text-sm focus:outline-none"
-        >
-          {menuItems.map((item) => (
-            <option key={item.id} value={item.id}>
-              {item.label}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Condition */}
-      <div>
-        <label className="text-xp-text-secondary mb-1 block text-xs font-medium">Condition</label>
-        <div className="flex gap-3">
-          {(['show_only_for', 'hide_for'] as const).map((cond) => (
-            <label
-              key={cond}
-              className="text-xp-text flex cursor-pointer items-center gap-1.5 text-sm"
-            >
-              <input
-                type="radio"
-                name="condition"
-                checked={form.condition === cond}
-                onChange={() => setForm((f) => ({ ...f, condition: cond }))}
-                className="accent-xp-accent"
-              />
-              {conditionLabel(cond)}
-            </label>
-          ))}
-        </div>
-      </div>
-
-      {/* Matcher type + value */}
-      <div className="flex gap-2">
-        <div className="w-1/3">
-          <label className="text-xp-text-secondary mb-1 block text-xs font-medium">Match By</label>
+    return (
+      <div className="border-xp-border bg-xp-surface/50 space-y-3 rounded-lg border p-3">
+        {/* Menu item selector */}
+        <div>
+          <label className="text-xp-text-secondary mb-1 block text-xs font-medium">Menu Item</label>
           <select
-            value={form.matcherType}
-            onChange={(e) => {
-              const type = e.target.value as RuleMatcher['type'];
-              setForm((f) => ({
-                ...f,
-                matcherType: type,
-                matcherValue: type === 'is_directory' ? 'true' : f.matcherValue,
-              }));
-            }}
+            value={form.menuItemId}
+            onChange={(e) => setForm((f) => ({ ...f, menuItemId: e.target.value }))}
             className="border-xp-border bg-xp-bg text-xp-text focus:border-xp-accent h-8 w-full rounded border px-2 text-sm focus:outline-none"
           >
-            <option value="extension">Extension</option>
-            <option value="file_type">File Type</option>
-            <option value="name_pattern">Name Pattern</option>
-            <option value="is_directory">Is Directory</option>
+            {menuItems.map((item) => (
+              <option key={item.id} value={item.id}>
+                {item.label}
+              </option>
+            ))}
           </select>
         </div>
-        <div className="flex-1">
-          <label className="text-xp-text-secondary mb-1 block text-xs font-medium">Value</label>
-          {form.matcherType === 'is_directory' ? (
+
+        {/* Condition */}
+        <div>
+          <label className="text-xp-text-secondary mb-1 block text-xs font-medium">Condition</label>
+          <div className="flex gap-3">
+            {(['show_only_for', 'hide_for'] as const).map((cond) => (
+              <label
+                key={cond}
+                className="text-xp-text flex cursor-pointer items-center gap-1.5 text-sm"
+              >
+                <input
+                  type="radio"
+                  name="condition"
+                  checked={form.condition === cond}
+                  onChange={() => setForm((f) => ({ ...f, condition: cond }))}
+                  className="accent-xp-accent"
+                />
+                {conditionLabel(cond)}
+              </label>
+            ))}
+          </div>
+        </div>
+
+        {/* Matcher type + value */}
+        <div className="flex gap-2">
+          <div className="w-1/3">
+            <label className="text-xp-text-secondary mb-1 block text-xs font-medium">
+              Match By
+            </label>
             <select
-              value={form.matcherValue || 'true'}
-              onChange={(e) => setForm((f) => ({ ...f, matcherValue: e.target.value }))}
+              value={form.matcherType}
+              onChange={(e) => {
+                const type = e.target.value as RuleMatcher['type'];
+                setForm((f) => ({
+                  ...f,
+                  matcherType: type,
+                  matcherValue: type === 'is_directory' ? 'true' : f.matcherValue,
+                }));
+              }}
               className="border-xp-border bg-xp-bg text-xp-text focus:border-xp-accent h-8 w-full rounded border px-2 text-sm focus:outline-none"
             >
-              <option value="true">Yes (directories)</option>
-              <option value="false">No (files only)</option>
+              <option value="extension">Extension</option>
+              <option value="file_type">File Type</option>
+              <option value="name_pattern">Name Pattern</option>
+              <option value="is_directory">Is Directory</option>
             </select>
-          ) : (
-            <input
-              type="text"
-              value={form.matcherValue}
-              onChange={(e) => setForm((f) => ({ ...f, matcherValue: e.target.value }))}
-              placeholder={placeholders[form.matcherType]}
-              className="border-xp-border bg-xp-bg text-xp-text focus:border-xp-accent h-8 w-full rounded border px-2 text-sm focus:outline-none"
-            />
-          )}
+          </div>
+          <div className="flex-1">
+            <label className="text-xp-text-secondary mb-1 block text-xs font-medium">Value</label>
+            {form.matcherType === 'is_directory' ? (
+              <select
+                value={form.matcherValue || 'true'}
+                onChange={(e) => setForm((f) => ({ ...f, matcherValue: e.target.value }))}
+                className="border-xp-border bg-xp-bg text-xp-text focus:border-xp-accent h-8 w-full rounded border px-2 text-sm focus:outline-none"
+              >
+                <option value="true">Yes (directories)</option>
+                <option value="false">No (files only)</option>
+              </select>
+            ) : (
+              <input
+                type="text"
+                value={form.matcherValue}
+                onChange={(e) => setForm((f) => ({ ...f, matcherValue: e.target.value }))}
+                placeholder={placeholders[form.matcherType]}
+                className="border-xp-border bg-xp-bg text-xp-text focus:border-xp-accent h-8 w-full rounded border px-2 text-sm focus:outline-none"
+              />
+            )}
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex justify-end gap-2 pt-1">
+          <button
+            onClick={onCancel}
+            className="text-xp-text-secondary hover:bg-xp-surface-light flex items-center gap-1 rounded px-3 py-1.5 text-xs font-medium transition-colors"
+          >
+            <X size={12} />
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={!form.matcherValue.trim() && form.matcherType !== 'is_directory'}
+            className="bg-xp-accent flex items-center gap-1 rounded px-3 py-1.5 text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <Check size={12} />
+            Save
+          </button>
         </div>
       </div>
-
-      {/* Actions */}
-      <div className="flex justify-end gap-2 pt-1">
-        <button
-          onClick={onCancel}
-          className="text-xp-text-secondary hover:bg-xp-surface-light flex items-center gap-1 rounded px-3 py-1.5 text-xs font-medium transition-colors"
-        >
-          <X size={12} />
-          Cancel
-        </button>
-        <button
-          onClick={handleSave}
-          disabled={!form.matcherValue.trim() && form.matcherType !== 'is_directory'}
-          className="bg-xp-accent flex items-center gap-1 rounded px-3 py-1.5 text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          <Check size={12} />
-          Save
-        </button>
-      </div>
-    </div>
-  );
-});
+    );
+  },
+);
+RuleForm.displayName = 'RuleForm';
 
 // ── Rule list item ─────────────────────────────────────────────────
 
-const RuleRow = React.memo(function RuleRow({
-  rule,
-  onToggle,
-  onEdit,
-  onDelete,
-}: {
-  rule: ContextMenuRule;
-  onToggle: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
-}) {
-  return (
-    <div className="hover:bg-xp-surface-light/50 group flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors">
-      <RuleToggle checked={rule.enabled} onChange={onToggle} />
-      <div className="min-w-0 flex-1">
-        <div className="text-xp-text truncate text-sm">
-          <span className="font-medium">{rule.menuItemLabel}</span>
-          <span className="text-xp-text-secondary mx-1.5">—</span>
-          <span className="text-xp-text-secondary">
-            {conditionLabel(rule.condition)} {matcherLabel(rule.matcher)}
-          </span>
+const RuleRow = React.memo(
+  ({
+    rule,
+    onToggle,
+    onEdit,
+    onDelete,
+  }: {
+    rule: ContextMenuRule;
+    onToggle: () => void;
+    onEdit: () => void;
+    onDelete: () => void;
+  }) => {
+    return (
+      <div className="hover:bg-xp-surface-light/50 group flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors">
+        <RuleToggle checked={rule.enabled} onChange={onToggle} />
+        <div className="min-w-0 flex-1">
+          <div className="text-xp-text truncate text-sm">
+            <span className="font-medium">{rule.menuItemLabel}</span>
+            <span className="text-xp-text-secondary mx-1.5">—</span>
+            <span className="text-xp-text-secondary">
+              {conditionLabel(rule.condition)} {matcherLabel(rule.matcher)}
+            </span>
+          </div>
+        </div>
+        <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+          <button
+            onClick={onEdit}
+            className="text-xp-text-secondary hover:text-xp-text hover:bg-xp-surface-light rounded p-1.5 transition-colors"
+            title="Edit rule"
+          >
+            <Pencil size={13} />
+          </button>
+          <button
+            onClick={onDelete}
+            className="text-xp-text-secondary hover:text-xp-red hover:bg-xp-red/10 rounded p-1.5 transition-colors"
+            title="Delete rule"
+          >
+            <Trash2 size={13} />
+          </button>
         </div>
       </div>
-      <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
-        <button
-          onClick={onEdit}
-          className="text-xp-text-secondary hover:text-xp-text hover:bg-xp-surface-light rounded p-1.5 transition-colors"
-          title="Edit rule"
-        >
-          <Pencil size={13} />
-        </button>
-        <button
-          onClick={onDelete}
-          className="text-xp-text-secondary hover:text-xp-red hover:bg-xp-red/10 rounded p-1.5 transition-colors"
-          title="Delete rule"
-        >
-          <Trash2 size={13} />
-        </button>
-      </div>
-    </div>
-  );
-});
+    );
+  },
+);
+RuleRow.displayName = 'RuleRow';
 
 // ── Main Component ─────────────────────────────────────────────────
 
