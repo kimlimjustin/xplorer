@@ -1231,6 +1231,8 @@ const GitPanel = ({ api, currentPath }: { api: XplorerAPI; currentPath?: string 
     try {
       await gitCall(api, 'switch_branch', { repo_path: repoPath, branch: name });
       setCurrentBranch(name);
+      // Notify status bar to refresh
+      window.dispatchEvent(new CustomEvent('git-branch-changed', { detail: { branch: name } }));
       // Refresh branch info
       const branchList = await gitCall(api, 'get_branches', { repo_path: repoPath }) as GitBranchInfo[];
       setBranches(branchList);

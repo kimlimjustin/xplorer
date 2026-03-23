@@ -185,37 +185,42 @@ const StatusBar = ({ files, selectedFiles, currentPath, activeTab, vimState }: S
     return total;
   }, [files, selectedFiles]);
 
-  // Fetch git info (branch + file status counts) when currentPath changes
+  // Fetch git info (branch + file status counts)
+  const refreshGitInfo = useCallback(async () => {
+    if (currentPath.startsWith('xplorer://')) return;
+    try {
+      const repoPath = await TauriAPI.findGitRepository(currentPath);
+      if (repoPath) {
+        const info = await TauriAPI.getRepositoryInfo(repoPath);
+        setGitInfo({
+          branch: info.current_branch,
+          modifiedCount: info.modified_files?.length ?? 0,
+          stagedCount: info.staged_files?.length ?? 0,
+          untrackedCount: info.untracked_files?.length ?? 0,
+        });
+      } else {
+        setGitInfo(null);
+      }
+    } catch {
+      setGitInfo(null);
+    }
+  }, [currentPath]);
+
+  // Refresh when path changes
   useEffect(() => {
     if (currentPath.startsWith('xplorer://') || currentPath === prevPathRef.current) return;
     prevPathRef.current = currentPath;
+    refreshGitInfo();
+  }, [currentPath, refreshGitInfo]);
 
-    let cancelled = false;
-    (async () => {
-      try {
-        const repoPath = await TauriAPI.findGitRepository(currentPath);
-        if (cancelled) return;
-        if (repoPath) {
-          const info = await TauriAPI.getRepositoryInfo(repoPath);
-          if (!cancelled) {
-            setGitInfo({
-              branch: info.current_branch,
-              modifiedCount: info.modified_files?.length ?? 0,
-              stagedCount: info.staged_files?.length ?? 0,
-              untrackedCount: info.untracked_files?.length ?? 0,
-            });
-          }
-        } else {
-          setGitInfo(null);
-        }
-      } catch {
-        if (!cancelled) setGitInfo(null);
-      }
-    })();
-    return () => {
-      cancelled = true;
+  // Re-fetch when extension switches branches
+  useEffect(() => {
+    const handler = () => {
+      refreshGitInfo();
     };
-  }, [currentPath]);
+    window.addEventListener('git-branch-changed', handler);
+    return () => window.removeEventListener('git-branch-changed', handler);
+  }, [refreshGitInfo]);
 
   // Fetch free disk space when currentPath changes
   useEffect(() => {
