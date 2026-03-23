@@ -500,6 +500,11 @@ class ExtensionHost {
       // Create a proxy for document that blocks escape routes to window and script injection
       const safeDocument = new Proxy(document, {
         get(target, prop) {
+          // Respect Proxy invariant: non-configurable non-writable props must return real value
+          const desc = Object.getOwnPropertyDescriptor(target, prop);
+          if (desc && !desc.configurable && !desc.writable && desc.value !== undefined) {
+            return desc.value;
+          }
           // Block escape to window via document.defaultView / document.parentWindow
           if (prop === 'defaultView' || prop === 'parentWindow') {
             return null;
@@ -533,14 +538,80 @@ class ExtensionHost {
         },
       });
 
+      // Prototype methods to block on all proxied objects (document + window)
+      const blockedPrototypeMethods = new Set([
+        '__proto__',
+        '__defineGetter__',
+        '__defineSetter__',
+        '__lookupGetter__',
+        '__lookupSetter__',
+      ]);
+
+      // Create a sandboxed Object that blocks prototype introspection escape routes
+      const sandboxedObject = Object.create(Object);
+      sandboxedObject.getPrototypeOf = (_target: unknown) => null;
+      sandboxedObject.getOwnPropertyDescriptor = (target: unknown, prop: PropertyKey) => {
+        // Block reading descriptors from the window proxy (could expose unproxied values)
+        if (target === sandboxedWindow || target === window) {
+          return undefined;
+        }
+        return Object.getOwnPropertyDescriptor(target as object, prop);
+      };
+      Object.freeze(sandboxedObject);
+
+      // Create a sandboxed Reflect proxy that blocks prototype manipulation
+      const sandboxedReflect = new Proxy(Reflect, {
+        get(target, reflectProp) {
+          // Respect Proxy invariant: non-configurable non-writable props must return real value
+          const desc = Object.getOwnPropertyDescriptor(target, reflectProp);
+          if (desc && !desc.configurable && !desc.writable && desc.value !== undefined) {
+            return desc.value;
+          }
+          if (reflectProp === 'getPrototypeOf' || reflectProp === 'setPrototypeOf') {
+            return undefined;
+          }
+          return (target as unknown as Record<string | symbol, unknown>)[reflectProp];
+        },
+      });
+
       const sandboxedWindow = new Proxy(window, {
         get(target, prop, _receiver) {
+          // Respect Proxy invariant: non-configurable non-writable props must return real value
+          const desc = Object.getOwnPropertyDescriptor(target, prop);
+          if (desc && !desc.configurable && !desc.writable && desc.value !== undefined) {
+            return desc.value;
+          }
+
           if (blockedSet.has(prop as string)) {
             console.warn(
               `[Sandbox] Extension "${extId}" tried to access blocked API: ${String(prop)}`,
             );
             return undefined;
           }
+
+          // Block prototype chain traversal methods
+          if (blockedPrototypeMethods.has(String(prop))) {
+            console.warn(
+              `[Sandbox] Extension "${extId}" tried to access blocked prototype method: ${String(prop)}`,
+            );
+            return undefined;
+          }
+
+          // Block constructor access that could escape sandbox
+          if (prop === 'constructor') {
+            return undefined;
+          }
+
+          // Intercept Object to block prototype introspection escape
+          if (prop === 'Object') {
+            return sandboxedObject;
+          }
+
+          // Intercept Reflect to block prototype manipulation
+          if (prop === 'Reflect') {
+            return sandboxedReflect;
+          }
+
           // Intercept setTimeout/setInterval with safe versions
           if (prop === 'setTimeout') return safeSetTimeout;
           if (prop === 'setInterval') return safeSetInterval;
@@ -609,6 +680,9 @@ class ExtensionHost {
         'setInterval',
         'document',
         'require',
+        'Object',
+        'Reflect',
+        '__proto__',
         ...BLOCKED_GLOBALS,
       ];
       const paramValues: unknown[] = [
@@ -619,6 +693,9 @@ class ExtensionHost {
         safeSetInterval,
         safeDocument,
         sandboxRequire,
+        sandboxedObject,
+        sandboxedReflect,
+        null,
         ...BLOCKED_GLOBALS.map(() => undefined),
       ];
 
