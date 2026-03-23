@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { FileEntry, TauriAPI } from '@/lib/tauri-api';
 import { ViewComponentProps } from './FileGridTypes';
 
@@ -43,11 +43,15 @@ const TreeView = ({
   };
 
   // Sort files: directories first, then by name
-  const sortedFiles = [...files].sort((a, b) => {
-    if (a.is_dir && !b.is_dir) return -1;
-    if (!a.is_dir && b.is_dir) return 1;
-    return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
-  });
+  const sortedFiles = useMemo(
+    () =>
+      [...files].sort((a, b) => {
+        if (a.is_dir && !b.is_dir) return -1;
+        if (!a.is_dir && b.is_dir) return 1;
+        return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+      }),
+    [files],
+  );
 
   const renderFileItem = (file: FileEntry, depth: number = 0) => (
     <div key={`${file.path}-${depth}`}>

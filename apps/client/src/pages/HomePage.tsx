@@ -258,12 +258,42 @@ const RecentFileTypeIcon = ({
   return <DocumentIcon className={className} />;
 };
 
+const Clock = () => {
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), CLOCK_UPDATE_INTERVAL_MS);
+    return () => clearInterval(timer);
+  }, []);
+
+  const hour = currentTime.getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+
+  return (
+    <div className="flex items-end justify-between">
+      <div>
+        <p className="text-xp-text-muted mb-1 flex items-center gap-1.5 text-sm">
+          <ClockIcon />
+          {currentTime.toLocaleDateString('en-US', {
+            weekday: 'long',
+            month: 'long',
+            day: 'numeric',
+          })}
+        </p>
+        <h1 className="text-xp-text text-3xl font-bold">{greeting}</h1>
+      </div>
+      <p className="text-xp-text-muted text-2xl font-light tabular-nums">
+        {currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+      </p>
+    </div>
+  );
+};
+
 const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
   const themes = useAllThemes();
   const { toast } = useToast();
   const [recommendedFolders, setRecommendedFolders] = useState<string[]>([]);
   const [userDirectories, setUserDirectories] = useState<UserDirectories | null>(null);
-  const [currentTime, setCurrentTime] = useState(new Date());
   const [_quickStats, setQuickStats] = useState<QuickStats>({
     totalFiles: 0,
     totalFolders: 0,
@@ -448,11 +478,6 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
   };
 
   useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), CLOCK_UPDATE_INTERVAL_MS);
-    return () => clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
     loadUserData();
     loadSystemStats();
     loadRecentFiles();
@@ -520,13 +545,6 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
     });
   };
 
-  const getGreeting = () => {
-    const hour = currentTime.getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
-  };
-
   const quickAccessFolders = userDirectories
     ? [
         {
@@ -573,22 +591,7 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
       <div className="mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col px-6 py-8">
         {/* Hero / Greeting */}
         <div className="mb-6">
-          <div className="flex items-end justify-between">
-            <div>
-              <p className="text-xp-text-muted mb-1 flex items-center gap-1.5 text-sm">
-                <ClockIcon />
-                {currentTime.toLocaleDateString('en-US', {
-                  weekday: 'long',
-                  month: 'long',
-                  day: 'numeric',
-                })}
-              </p>
-              <h1 className="text-xp-text text-3xl font-bold">{getGreeting()}</h1>
-            </div>
-            <p className="text-xp-text-muted text-2xl font-light tabular-nums">
-              {currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
-            </p>
-          </div>
+          <Clock />
         </div>
 
         {/* Quick Links */}

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import * as Papa from 'papaparse';
 import { PreviewProps } from '@/lib/preview-factory';
 import { TauriAPI } from '@/lib/tauri-api';
+
+type PapaModule = typeof import('papaparse');
 
 const CsvPreview = ({ file, onError, onLoad }: PreviewProps) => {
   const [data, setData] = useState<string[][]>([]);
@@ -24,6 +25,9 @@ const CsvPreview = ({ file, onError, onLoad }: PreviewProps) => {
 
         // Read file content
         const fileContent = await TauriAPI.readTextFile(file.path);
+
+        // Dynamically import papaparse to avoid synchronous ~50KB bundle cost
+        const Papa: PapaModule = await import('papaparse');
 
         // Parse CSV
         const parseResult = Papa.parse(fileContent, {

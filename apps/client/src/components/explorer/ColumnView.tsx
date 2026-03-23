@@ -12,110 +12,114 @@ interface ColumnData {
 const COLUMN_ROW_HEIGHT = 30;
 const COLUMN_VIRTUALIZATION_THRESHOLD = 200;
 
-const ColumnFileRow = ({
-  file,
-  isActive,
-  isSelected,
-  getFileIcon,
-  onClick,
-  onDoubleClick,
-  onRightClick,
-}: {
-  file: FileEntry;
-  isActive: boolean;
-  isSelected: boolean;
-  getFileIcon: (file: FileEntry) => React.ReactNode;
-  onClick: (e: React.MouseEvent) => void;
-  onDoubleClick: () => void;
-  onRightClick: (e: React.MouseEvent) => void;
-}) => {
-  return (
-    <div
-      role="option"
-      aria-selected={isActive || isSelected}
-      tabIndex={0}
-      onClick={onClick}
-      onDoubleClick={onDoubleClick}
-      onContextMenu={onRightClick}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter') onDoubleClick();
-      }}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px',
-        padding: '4px 12px',
-        cursor: 'pointer',
-        fontSize: '13px',
-        color: 'var(--xp-text)',
-        backgroundColor: (() => {
-          if (isActive) return 'var(--xp-accent)';
-          if (isSelected) return 'rgba(99, 102, 241, 0.2)';
-          return 'transparent';
-        })(),
-        borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-        outline: 'none',
-        height: `${COLUMN_ROW_HEIGHT}px`,
-        boxSizing: 'border-box',
-      }}
-      onMouseEnter={(e) => {
-        if (!isActive) {
-          (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(99, 102, 241, 0.1)';
-        }
-      }}
-      onMouseLeave={(e) => {
-        if (!isActive && !isSelected) {
-          (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
-        } else if (isSelected && !isActive) {
-          (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(99, 102, 241, 0.2)';
-        }
-      }}
-      onFocus={(e) => {
-        if (!isActive) {
-          (e.currentTarget as HTMLElement).style.boxShadow = 'inset 0 0 0 1px var(--xp-accent)';
-        }
-      }}
-      onBlur={(e) => {
-        (e.currentTarget as HTMLElement).style.boxShadow = 'none';
-      }}
-    >
-      <span
+const ColumnFileRow = React.memo(
+  ({
+    file,
+    isActive,
+    isSelected,
+    getFileIcon,
+    onClick,
+    onDoubleClick,
+    onRightClick,
+  }: {
+    file: FileEntry;
+    isActive: boolean;
+    isSelected: boolean;
+    getFileIcon: (file: FileEntry) => React.ReactNode;
+    onClick: (e: React.MouseEvent) => void;
+    onDoubleClick: () => void;
+    onRightClick: (e: React.MouseEvent) => void;
+  }) => {
+    return (
+      <div
+        role="option"
+        aria-selected={isActive || isSelected}
+        tabIndex={0}
+        onClick={onClick}
+        onDoubleClick={onDoubleClick}
+        onContextMenu={onRightClick}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') onDoubleClick();
+        }}
         style={{
-          flexShrink: 0,
-          width: '16px',
-          height: '16px',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center',
+          gap: '8px',
+          padding: '4px 12px',
+          cursor: 'pointer',
+          fontSize: '13px',
+          color: 'var(--xp-text)',
+          backgroundColor: (() => {
+            if (isActive) return 'var(--xp-accent)';
+            if (isSelected) return 'rgba(99, 102, 241, 0.2)';
+            return 'transparent';
+          })(),
+          borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+          outline: 'none',
+          height: `${COLUMN_ROW_HEIGHT}px`,
+          boxSizing: 'border-box',
+        }}
+        onMouseEnter={(e) => {
+          if (!isActive) {
+            (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(99, 102, 241, 0.1)';
+          }
+        }}
+        onMouseLeave={(e) => {
+          if (!isActive && !isSelected) {
+            (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
+          } else if (isSelected && !isActive) {
+            (e.currentTarget as HTMLElement).style.backgroundColor = 'rgba(99, 102, 241, 0.2)';
+          }
+        }}
+        onFocus={(e) => {
+          if (!isActive) {
+            (e.currentTarget as HTMLElement).style.boxShadow = 'inset 0 0 0 1px var(--xp-accent)';
+          }
+        }}
+        onBlur={(e) => {
+          (e.currentTarget as HTMLElement).style.boxShadow = 'none';
         }}
       >
-        {getFileIcon(file)}
-      </span>
-      <span
-        style={{
-          flex: 1,
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-        }}
-      >
-        {file.name}
-      </span>
-      {file.is_dir && (
         <span
           style={{
-            color: 'var(--xp-text-secondary)',
-            fontSize: '14px',
-            lineHeight: 1,
             flexShrink: 0,
+            width: '16px',
+            height: '16px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
-          ›
+          {getFileIcon(file)}
         </span>
-      )}
-    </div>
-  );
-};
+        <span
+          style={{
+            flex: 1,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {file.name}
+        </span>
+        {file.is_dir && (
+          <span
+            style={{
+              color: 'var(--xp-text-secondary)',
+              fontSize: '14px',
+              lineHeight: 1,
+              flexShrink: 0,
+            }}
+          >
+            ›
+          </span>
+        )}
+      </div>
+    );
+  },
+);
+
+ColumnFileRow.displayName = 'ColumnFileRow';
 
 const VirtualizedColumnPane = ({
   column,
