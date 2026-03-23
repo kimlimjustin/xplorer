@@ -122,7 +122,6 @@ const OperationBar = ({
       if (barRef.current && !barRef.current.contains(e.target as Node)) {
         setIsViewDropdownOpen(false);
         setIsSortDropdownOpen(false);
-        setIsSelectionDropdownOpen(false);
         setIsActionsDropdownOpen(false);
       }
     };
