@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { STORAGE_KEYS } from '@/lib/storage-keys';
 
 export interface AppNotification {
   id: string;
@@ -10,7 +11,7 @@ export interface AppNotification {
 }
 
 const MAX_NOTIFICATIONS = 100;
-const STORAGE_KEY = 'xplorer-notification-history';
+const STORAGE_KEY = STORAGE_KEYS.NOTIFICATION_HISTORY;
 
 const loadFromSession = (): AppNotification[] => {
   try {

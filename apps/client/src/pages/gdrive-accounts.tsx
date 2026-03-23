@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { gdriveManager, type GoogleDriveAccount } from '@/lib/gdrive-plugin';
 import { TauriAPI } from '@/lib/tauri-api';
+import { STORAGE_KEYS } from '@/lib/storage-keys';
 import {
   Cloud,
   Plus,
@@ -144,7 +145,7 @@ const GoogleDriveAccountsPage = (props: GoogleDriveAccountsPageProps) => {
   const openAccountInExplorer = (account: GoogleDriveAccount) => {
     try {
       sessionStorage.setItem(
-        'xplorer:pending-gdrive-tab',
+        STORAGE_KEYS.PENDING_GDRIVE_TAB,
         JSON.stringify({ accountId: account.id, accountName: account.email }),
       );
     } catch (err) {

@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { TauriAPI, type FileEntry } from '@/lib/tauri-api';
 import { sortFiles, groupFilesByDate, type FileGroup } from '@/lib/utils';
 import { useFolderSizes } from '@/hooks/use-folder-sizes';
+import { STORAGE_KEYS } from '@/lib/storage-keys';
 import { useCollectionFiles } from '@/hooks/use-collection-files';
 import type { EditorGroup } from '@/types/split-view';
 import { extensionHost } from '@/lib/extension-host';
@@ -238,7 +239,7 @@ export default function EditorGroupPane({
     // collectionId triggers re-read of localStorage when collection changes
     void collectionId;
     try {
-      const raw = localStorage.getItem('xplorer:ui-state');
+      const raw = localStorage.getItem(STORAGE_KEYS.UI_STATE);
       if (raw) {
         const parsed = JSON.parse(raw);
         if (parsed.lastRealPath) return parsed.lastRealPath as string;
@@ -279,7 +280,7 @@ export default function EditorGroupPane({
   // Auto-calculate folder sizes if the setting is enabled
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('xplorer:settings');
+      const saved = localStorage.getItem(STORAGE_KEYS.SETTINGS);
       if (saved) {
         const settings = JSON.parse(saved);
         if (settings.autoCalculateFolderSizes && files.some((f) => f.is_dir)) {

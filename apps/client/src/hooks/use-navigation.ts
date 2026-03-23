@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { TauriAPI } from '@/lib/tauri-api';
+import { STORAGE_KEYS } from '@/lib/storage-keys';
 import { extensionHost } from '@/lib/extension-host';
 import { PATH_SEPARATOR } from '@/lib/constants';
 import type { TabItem } from '@/types/split-view';
@@ -75,7 +76,7 @@ export const useNavigation = ({ currentPath, splitLayout, activeGroup }: UseNavi
         TauriAPI.startWatching(newPath).catch((err: unknown) =>
           console.warn('Failed to start search watcher:', err),
         );
-        if (localStorage.getItem('xplorer:auto-whitelist-visited') !== 'false') {
+        if (localStorage.getItem(STORAGE_KEYS.AUTO_WHITELIST_VISITED) !== 'false') {
           TauriAPI.addWhitelistedPath(newPath).catch((err) =>
             console.error('Failed to whitelist path:', err),
           );

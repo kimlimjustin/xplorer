@@ -7,7 +7,8 @@ import type {
   SearchResult,
   SearchMatch,
 } from '@/lib/tauri-api';
-const SEARCH_HISTORY_KEY = 'xplorer-search-history';
+import { STORAGE_KEYS } from '@/lib/storage-keys';
+const SEARCH_HISTORY_KEY = STORAGE_KEYS.SEARCH_HISTORY;
 const MAX_HISTORY = 10;
 
 export interface SearchFilters {

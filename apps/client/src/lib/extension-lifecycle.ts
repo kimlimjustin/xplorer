@@ -1,5 +1,6 @@
 import React from 'react';
 import { TauriAPI } from './tauri-api';
+import { STORAGE_KEYS } from './storage-keys';
 import { resolveIcon } from './extension-host-icon';
 import {
   verifyExtensionIntegrity,
@@ -991,7 +992,7 @@ export class ExtensionLifecycle {
 
       // Save to localStorage for persistence across sessions
       const installedExtensions = JSON.parse(
-        localStorage.getItem('xplorer-installed-extensions') || '{}',
+        localStorage.getItem(STORAGE_KEYS.INSTALLED_EXTENSIONS) || '{}',
       );
       installedExtensions[extensionId] = {
         manifest,
@@ -1000,7 +1001,7 @@ export class ExtensionLifecycle {
         enabled: true,
         bundleCache: jsContent,
       };
-      localStorage.setItem('xplorer-installed-extensions', JSON.stringify(installedExtensions));
+      localStorage.setItem(STORAGE_KEYS.INSTALLED_EXTENSIONS, JSON.stringify(installedExtensions));
 
       // Cache the JS content so loadExtensionScript picks it up
       this.urlBundleCache.set(extensionId, jsContent);
@@ -1038,10 +1039,10 @@ export class ExtensionLifecycle {
 
     // Remove from localStorage persistence
     const installedExtensions = JSON.parse(
-      localStorage.getItem('xplorer-installed-extensions') || '{}',
+      localStorage.getItem(STORAGE_KEYS.INSTALLED_EXTENSIONS) || '{}',
     );
     delete installedExtensions[extensionId];
-    localStorage.setItem('xplorer-installed-extensions', JSON.stringify(installedExtensions));
+    localStorage.setItem(STORAGE_KEYS.INSTALLED_EXTENSIONS, JSON.stringify(installedExtensions));
 
     // Also try to uninstall from backend (if it was also installed there)
     try {
@@ -1059,7 +1060,7 @@ export class ExtensionLifecycle {
    */
   isMarketplaceInstalled(extensionId: string): boolean {
     try {
-      const installed = JSON.parse(localStorage.getItem('xplorer-installed-extensions') || '{}');
+      const installed = JSON.parse(localStorage.getItem(STORAGE_KEYS.INSTALLED_EXTENSIONS) || '{}');
       return !!installed[extensionId];
     } catch {
       return false;
@@ -1080,7 +1081,7 @@ export class ExtensionLifecycle {
     }
   > {
     try {
-      return JSON.parse(localStorage.getItem('xplorer-installed-extensions') || '{}');
+      return JSON.parse(localStorage.getItem(STORAGE_KEYS.INSTALLED_EXTENSIONS) || '{}');
     } catch {
       return {};
     }
@@ -1108,11 +1109,11 @@ export class ExtensionLifecycle {
           jsContent = await response.text();
 
           const allInstalled = JSON.parse(
-            localStorage.getItem('xplorer-installed-extensions') || '{}',
+            localStorage.getItem(STORAGE_KEYS.INSTALLED_EXTENSIONS) || '{}',
           );
           if (allInstalled[id]) {
             allInstalled[id].bundleCache = jsContent;
-            localStorage.setItem('xplorer-installed-extensions', JSON.stringify(allInstalled));
+            localStorage.setItem(STORAGE_KEYS.INSTALLED_EXTENSIONS, JSON.stringify(allInstalled));
           }
         }
 

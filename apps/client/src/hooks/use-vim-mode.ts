@@ -1,5 +1,6 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import type { FileEntry } from '@/lib/tauri-api';
+import { STORAGE_KEYS } from '@/lib/storage-keys';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -67,8 +68,8 @@ interface LastAction {
   payload?: unknown;
 }
 
-const VIM_MODE_STORAGE_KEY = 'xplorer-vim-mode';
-const VIM_LEARNING_MODE_KEY = 'xplorer-vim-learning-mode';
+const VIM_MODE_STORAGE_KEY = STORAGE_KEYS.VIM_MODE;
+const VIM_LEARNING_MODE_KEY = STORAGE_KEYS.VIM_LEARNING_MODE;
 
 // ─── Helper: read vim mode setting from localStorage ──────────────────────────
 

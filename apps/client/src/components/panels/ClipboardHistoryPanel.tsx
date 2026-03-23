@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { getHistory, clearHistory, type ClipboardEntry } from '@/hooks/use-clipboard-history';
+import { useWindowEvent } from '@/hooks/use-window-event';
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -138,13 +139,12 @@ const ClipboardHistoryPanel = ({ onPaste }: ClipboardHistoryPanelProps) => {
     setEntries(getHistory());
   }, []);
 
-  // Initial load + listen for changes
+  // Initial load
   useEffect(() => {
     refresh();
-    const handler = () => refresh();
-    window.addEventListener('clipboard-history-changed', handler);
-    return () => window.removeEventListener('clipboard-history-changed', handler);
   }, [refresh]);
+  // Listen for changes
+  useWindowEvent('clipboard-history-changed', refresh);
 
   const handleClear = useCallback(() => {
     clearHistory();

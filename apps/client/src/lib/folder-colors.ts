@@ -37,7 +37,9 @@ const COLOR_HEX_MAP = new Map<string, string>(FOLDER_COLORS.map((c) => [c.id, c.
 
 // ── Storage key ──────────────────────────────────────────────────────────────
 
-const STORAGE_KEY = 'xplorer:folder-colors';
+import { STORAGE_KEYS } from '@/lib/storage-keys';
+
+const STORAGE_KEY = STORAGE_KEYS.FOLDER_COLORS;
 
 // ── Internal helpers ─────────────────────────────────────────────────────────
 

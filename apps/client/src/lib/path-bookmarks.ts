@@ -23,7 +23,9 @@ export interface PathBookmark {
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
-const STORAGE_KEY = 'xplorer:path-bookmarks';
+import { STORAGE_KEYS } from '@/lib/storage-keys';
+
+const STORAGE_KEY = STORAGE_KEYS.PATH_BOOKMARKS;
 const EVENT_NAME = 'path-bookmarks-changed';
 
 // ── Internal helpers ─────────────────────────────────────────────────────────

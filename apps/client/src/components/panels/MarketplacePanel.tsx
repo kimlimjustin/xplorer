@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TauriAPI } from '@/lib/tauri-api';
+import { STORAGE_KEYS } from '@/lib/storage-keys';
 import { extensionHost } from '@/lib/extension-host';
 import { useToast } from '@/hooks/use-toast';
 import {
   requiresConsentDialog,
   requestPermissionConsent,
+  requestBulkPermissionConsent,
+  type ExtensionPermissionRequestDetail,
 } from '@/components/dialogs/ExtensionPermissionDialog';
 import {
   Search,
@@ -30,7 +33,7 @@ const DEFAULT_MARKETPLACE_API = 'http://localhost:3000/api';
 
 const getMarketplaceApi = (): string => {
   try {
-    const saved = localStorage.getItem('xplorer:marketplace-url');
+    const saved = localStorage.getItem(STORAGE_KEYS.MARKETPLACE_URL);
     const url = saved || DEFAULT_MARKETPLACE_API;
     // CRIT-05: Enforce HTTPS for remote (non-localhost) marketplace URLs
     // to prevent man-in-the-middle attacks on extension downloads.
@@ -412,33 +415,40 @@ const MarketplacePanel = () => {
     }
   };
 
+  const requestBulkConsent = async (toInstall: string[]): Promise<boolean> => {
+    // Build per-extension detail objects for extensions that need consent
+    const extDetails: ExtensionPermissionRequestDetail[] = toInstall
+      .map((extId) => {
+        const known = extensions.find((e) => e.id === extId || e.slug === extId);
+        const perms = known?.permissions ?? [];
+        return {
+          extensionId: extId,
+          extensionName: known?.name ?? extId,
+          displayName: known?.displayName ?? known?.name ?? extId,
+          version: known?.version ?? '1.0.0',
+          author: known?.author.name ?? known?.author.username ?? 'Unknown',
+          permissions: perms,
+        };
+      })
+      .filter((detail) => requiresConsentDialog(detail.permissions));
+
+    if (extDetails.length === 0) return true;
+
+    return requestBulkPermissionConsent(extDetails);
+  };
+
   const handleInstallPack = async (pack: ExtensionPack) => {
-    // Collect permissions from any pack extensions already known from the marketplace listing
     const toInstall = pack.extensions.filter((id) => !installedExtensions.includes(id));
-    const packPerms = toInstall.flatMap((extId) => {
-      const known = extensions.find((e) => e.id === extId || e.slug === extId);
-      return known?.permissions ?? [];
-    });
-    const uniquePackPerms = [...new Set(packPerms)];
 
-    if (requiresConsentDialog(uniquePackPerms)) {
-      const granted = await requestPermissionConsent({
-        extensionId: pack.id,
-        extensionName: pack.id,
-        displayName: pack.name,
-        version: '1.0.0',
-        author: 'Xplorer',
-        permissions: uniquePackPerms,
+    const granted = await requestBulkConsent(toInstall);
+
+    if (!granted) {
+      toast({
+        title: t('permissions.cancelledTitle'),
+        description: t('permissions.cancelledDesc'),
+        variant: 'destructive',
       });
-
-      if (!granted) {
-        toast({
-          title: t('permissions.cancelledTitle'),
-          description: t('permissions.cancelledDesc'),
-          variant: 'destructive',
-        });
-        return;
-      }
+      return;
     }
 
     setInstallingPackId(pack.id);

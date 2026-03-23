@@ -6,6 +6,7 @@
  */
 
 import { createDefaultLayout, type SplitLayoutState } from '@/types/split-view';
+import { STORAGE_KEYS } from '@/lib/storage-keys';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -27,7 +28,7 @@ export interface WorkspaceLayout {
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
-const STORAGE_KEY = 'xplorer:workspace-layouts';
+const STORAGE_KEY = STORAGE_KEYS.WORKSPACE_LAYOUTS;
 const MAX_LAYOUTS = 10;
 
 // ── Helpers ──────────────────────────────────────────────────────────────────

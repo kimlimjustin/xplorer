@@ -1,5 +1,7 @@
 // ── File Template System ─────────────────────────────────────────────────────
 
+import { STORAGE_KEYS } from '@/lib/storage-keys';
+
 export interface FileTemplate {
   id: string;
   name: string;
@@ -224,7 +226,7 @@ SOFTWARE.
 
 // ── Storage Keys ────────────────────────────────────────────────────────────
 
-const CUSTOM_TEMPLATES_KEY = 'xplorer:custom-templates';
+const CUSTOM_TEMPLATES_KEY = STORAGE_KEYS.CUSTOM_TEMPLATES;
 
 // ── Public API ──────────────────────────────────────────────────────────────
 

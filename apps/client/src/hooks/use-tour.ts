@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { getTourSteps, type TourStep } from '@/lib/tour-steps';
+import { STORAGE_KEYS } from '@/lib/storage-keys';
 
-const TOUR_COMPLETED_KEY = 'xplorer:tour-completed';
+const TOUR_COMPLETED_KEY = STORAGE_KEYS.TOUR_COMPLETED;
 
 interface TourState {
   isActive: boolean;

@@ -1,3 +1,6 @@
+import { useState, useEffect } from 'react';
+import { STORAGE_KEYS } from '@/lib/storage-keys';
+import { Monitor, FolderOpen, AlertTriangle } from 'lucide-react';
 import {
   Select,
   SelectTrigger,
@@ -5,22 +8,26 @@ import {
   SelectContent,
   SelectItem,
 } from '@/components/ui/select';
+import { TauriAPI } from '@/lib/tauri-api';
 
 /** A toggle switch matching the original settings.tsx Toggle. */
 export const Toggle = ({
   checked,
   onChange,
   id,
+  label,
 }: {
   checked: boolean;
   onChange: (v: boolean) => void;
   id: string;
+  label?: string;
 }) => (
   <button
     id={id}
     type="button"
     role="switch"
     aria-checked={checked}
+    aria-label={label}
     className={`focus-visible:ring-xp-accent focus-visible:ring-offset-xp-bg relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
       checked ? 'bg-xp-accent' : 'bg-xp-border'
     }`}
@@ -39,13 +46,15 @@ export const SelectField = ({
   value,
   onChange,
   options,
+  label,
 }: {
   value: string;
   onChange: (v: string) => void;
   options: { value: string; label: string }[];
+  label?: string;
 }) => (
   <Select value={value} onValueChange={onChange}>
-    <SelectTrigger className="h-9 min-w-[140px]">
+    <SelectTrigger className="h-9 min-w-[140px]" aria-label={label}>
       <SelectValue />
     </SelectTrigger>
     <SelectContent>
@@ -143,10 +152,96 @@ export const PermToggle = ({ enabled, onChange }: { enabled: boolean; onChange: 
   </button>
 );
 
+/** Windows-only system integration settings (default/context-menu handler). */
+export const SystemIntegrationSettings = () => {
+  const [isDefaultHandler, setIsDefaultHandler] = useState(false);
+  const [contextMenuInstalled, setContextMenuInstalled] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [isWindows] = useState(() => navigator.userAgent.includes('Windows'));
+
+  useEffect(() => {
+    if (!isWindows) {
+      setLoading(false);
+      return;
+    }
+    TauriAPI.getShellIntegrationStatus()
+      .then((status) => {
+        setIsDefaultHandler(status.is_default_handler);
+        setContextMenuInstalled(status.context_menu_installed);
+      })
+      .catch((err: unknown) => console.warn('Failed to get shell integration status:', err))
+      .finally(() => setLoading(false));
+  }, [isWindows]);
+
+  if (!isWindows) return null;
+  if (loading) return <div className="text-xp-text-muted px-4 py-2 text-sm">Loading...</div>;
+
+  return (
+    <>
+      <SettingRow
+        icon={Monitor}
+        label="Default File Explorer"
+        description="Double-clicking folders opens Xplorer instead of Windows Explorer"
+      >
+        <Toggle
+          id="defaultExplorer"
+          label="Default Explorer"
+          checked={isDefaultHandler}
+          onChange={async (v) => {
+            try {
+              await TauriAPI.setDefaultFolderHandler(v);
+              setIsDefaultHandler(v);
+              if (v && !contextMenuInstalled) {
+                setContextMenuInstalled(true);
+              }
+            } catch (err) {
+              console.error('Failed to set default handler:', err);
+            }
+          }}
+        />
+      </SettingRow>
+      <SettingRow
+        icon={FolderOpen}
+        label="Folder Context Menu"
+        description="Add 'Open with Xplorer' to folder right-click menu"
+      >
+        <Toggle
+          id="contextMenu"
+          label="Context Menu"
+          checked={contextMenuInstalled}
+          onChange={async (v) => {
+            try {
+              if (v) {
+                await TauriAPI.addContextMenuEntry();
+              } else {
+                await TauriAPI.removeContextMenuEntry();
+                if (isDefaultHandler) {
+                  await TauriAPI.setDefaultFolderHandler(false);
+                  setIsDefaultHandler(false);
+                }
+              }
+              setContextMenuInstalled(v);
+            } catch (err) {
+              console.error('Failed to toggle context menu:', err);
+            }
+          }}
+        />
+      </SettingRow>
+      {isDefaultHandler && (
+        <div className="flex items-center gap-2 px-4 py-2 text-xs text-amber-400">
+          <AlertTriangle size={12} />
+          Folders will open in Xplorer. Disable to restore Windows Explorer.
+        </div>
+      )}
+    </>
+  );
+};
+
 // ── Shared types ──────────────────────────────────────────────────
 
 export interface AppSettings {
   theme: string;
+  language: string;
   showHiddenFiles: boolean;
   enableMarkdownPreview: boolean;
   defaultView: string;
@@ -158,12 +253,14 @@ export interface AppSettings {
   sidebarWidth: string;
   reducedMotion: boolean;
   enhancedFocus: boolean;
+  highContrast: boolean;
   autoCalculateFolderSizes: boolean;
   rememberViewPerFolder: boolean;
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
   theme: 'glass',
+  language: '',
   showHiddenFiles: false,
   enableMarkdownPreview: true,
   defaultView: 'grid',
@@ -175,8 +272,9 @@ export const DEFAULT_SETTINGS: AppSettings = {
   sidebarWidth: 'medium',
   reducedMotion: false,
   enhancedFocus: false,
+  highContrast: false,
   autoCalculateFolderSizes: false,
   rememberViewPerFolder: false,
 };
 
-export const SETTINGS_KEY = 'xplorer:settings';
+export const SETTINGS_KEY = STORAGE_KEYS.SETTINGS;

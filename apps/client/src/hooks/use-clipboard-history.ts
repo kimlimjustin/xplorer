@@ -2,7 +2,9 @@
 // Stores up to 15 clipboard entries in sessionStorage so history survives
 // soft reloads but is cleared when the browser / Tauri window session ends.
 
-const STORAGE_KEY = 'xplorer:clipboard-history';
+import { STORAGE_KEYS } from '@/lib/storage-keys';
+
+const STORAGE_KEY = STORAGE_KEYS.CLIPBOARD_HISTORY;
 const MAX_ENTRIES = 15;
 
 // ── Types ────────────────────────────────────────────────────────────────────
