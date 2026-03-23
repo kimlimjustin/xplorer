@@ -73,6 +73,58 @@ pub struct AgentSettings {
     pub thinking_budget: u32,
 }
 
+/// Redacted version of AgentSettings returned to the frontend.
+/// API keys are replaced with boolean flags indicating whether they are set.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SafeAgentSettings {
+    pub enabled: bool,
+    pub has_api_key: bool,
+    pub has_openai_api_key: bool,
+    pub model: String,
+    pub max_turns: u32,
+    pub auto_approve: bool,
+    pub thinking_enabled: bool,
+    pub thinking_budget: u32,
+}
+
+impl SafeAgentSettings {
+    pub fn from_settings(settings: &AgentSettings) -> Self {
+        Self {
+            enabled: settings.enabled,
+            has_api_key: !settings.api_key.is_empty(),
+            has_openai_api_key: !settings.openai_api_key.is_empty(),
+            model: settings.model.clone(),
+            max_turns: settings.max_turns,
+            auto_approve: settings.auto_approve,
+            thinking_enabled: settings.thinking_enabled,
+            thinking_budget: settings.thinking_budget,
+        }
+    }
+}
+
+/// Payload for updating non-secret agent settings.
+/// Does NOT include API key fields — use `update_agent_api_keys` for those.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct UpdateAgentSettingsPayload {
+    pub enabled: bool,
+    pub model: String,
+    pub max_turns: u32,
+    pub auto_approve: bool,
+    #[serde(default)]
+    pub thinking_enabled: bool,
+    #[serde(default = "default_thinking_budget")]
+    pub thinking_budget: u32,
+}
+
+/// Payload for updating API keys only.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct UpdateAgentApiKeysPayload {
+    #[serde(default)]
+    pub api_key: Option<String>,
+    #[serde(default)]
+    pub openai_api_key: Option<String>,
+}
+
 impl Default for AgentSettings {
     fn default() -> Self {
         Self {
@@ -870,13 +922,33 @@ pub async fn agent_cancel_session(session_id: String) -> Result<(), String> {
 }
 
 #[command]
-pub async fn get_agent_settings() -> Result<AgentSettings, String> {
-    Ok(load_settings())
+pub async fn get_agent_settings() -> Result<SafeAgentSettings, String> {
+    let settings = load_settings();
+    Ok(SafeAgentSettings::from_settings(&settings))
 }
 
 #[command]
-pub async fn update_agent_settings(settings: AgentSettings) -> Result<(), String> {
-    save_settings(&settings)
+pub async fn update_agent_settings(settings: UpdateAgentSettingsPayload) -> Result<(), String> {
+    let mut current = load_settings();
+    current.enabled = settings.enabled;
+    current.model = settings.model;
+    current.max_turns = settings.max_turns;
+    current.auto_approve = settings.auto_approve;
+    current.thinking_enabled = settings.thinking_enabled;
+    current.thinking_budget = settings.thinking_budget;
+    save_settings(&current)
+}
+
+#[command]
+pub async fn update_agent_api_keys(payload: UpdateAgentApiKeysPayload) -> Result<(), String> {
+    let mut current = load_settings();
+    if let Some(key) = payload.api_key {
+        current.api_key = key;
+    }
+    if let Some(key) = payload.openai_api_key {
+        current.openai_api_key = key;
+    }
+    save_settings(&current)
 }
 
 // ─── Plan Commands ──────────────────────────────────────────────────────────

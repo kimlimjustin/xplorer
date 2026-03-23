@@ -6,6 +6,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use tauri::command;
 use tauri::Emitter;
 use tracing::warn;
+use crate::operations::validate_file_path;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct FolderSizeInfo {
@@ -65,6 +66,7 @@ pub async fn calculate_folder_size(
     folder_path: String,
     app_handle: tauri::AppHandle,
 ) -> Result<FolderSizeInfo, String> {
+    validate_file_path(&folder_path)?;
     let path = Path::new(&folder_path);
     if !path.exists() || !path.is_dir() {
         return Err("Path does not exist or is not a directory".to_string());

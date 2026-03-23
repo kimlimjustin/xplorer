@@ -4,11 +4,13 @@ use std::time::SystemTime;
 use tauri::command;
 use trash;
 use crate::operations::types::*;
+use crate::operations::validate_file_path;
 
 #[command]
 pub async fn move_to_trash(path: String) -> Result<(), String> {
+    validate_file_path(&path)?;
     let path_obj = Path::new(&path);
-    
+
     if !path_obj.exists() {
         return Err("File or directory does not exist".to_string());
     }
@@ -127,6 +129,7 @@ pub async fn empty_recycle_bin() -> Result<usize, String> {
 
 #[command]
 pub async fn permanently_delete_trash_item(item_path: String) -> Result<(), String> {
+    validate_file_path(&item_path)?;
     // Permanently delete a file from the recycle bin
     let path = std::path::Path::new(&item_path);
     

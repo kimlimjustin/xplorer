@@ -2,6 +2,7 @@ use std::process::Command;
 use std::path::Path;
 use tauri::command;
 use serde::{Deserialize, Serialize};
+use crate::operations::validate_file_path;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Application {
@@ -47,9 +48,11 @@ pub async fn get_file_associations(file_path: String) -> Result<FileAssociation,
 
 #[command]
 pub async fn open_file_with_application(file_path: String, app_path: String) -> Result<(), String> {
+    validate_file_path(&file_path)?;
+    validate_file_path(&app_path)?;
     let file_path = Path::new(&file_path);
     let app_path = Path::new(&app_path);
-    
+
     if !file_path.exists() {
         return Err("File does not exist".to_string());
     }

@@ -9,6 +9,7 @@ import {
 import { AgentService } from '@/lib/agent-service';
 import { useToast } from '@/hooks/use-toast';
 import { TOKENIZER_PANEL_REFRESH_MS } from '@/lib/constants';
+import { STORAGE_KEYS } from '@/lib/storage-keys';
 
 const TokenizerStatusPanel = () => {
   const [stats, setStats] = useState<TokenIndex | null>(null);
@@ -22,17 +23,17 @@ const TokenizerStatusPanel = () => {
   const [aiProvider, setAiProvider] = useState<'ollama' | 'claude' | 'openai'>('ollama');
   const { toast } = useToast();
 
-  /** Read API key from settings (Claude from AgentService, OpenAI from localStorage). */
-  const getApiKey = async (provider: 'claude' | 'openai'): Promise<string | undefined> => {
+  /** Check whether an API key is configured (keys are stored in the backend keychain). */
+  const hasApiKey = async (provider: 'claude' | 'openai'): Promise<boolean> => {
     if (provider === 'claude') {
       try {
         const s = await AgentService.getSettings();
-        return s.api_key || undefined;
+        return s.has_api_key;
       } catch {
-        return undefined;
+        return false;
       }
     }
-    return localStorage.getItem('xplorer_openai_key') || undefined;
+    return Boolean(localStorage.getItem(STORAGE_KEYS.OPENAI_KEY));
   };
 
   const loadStats = async () => {
@@ -95,10 +96,9 @@ const TokenizerStatusPanel = () => {
       return;
     }
 
-    let apiKey: string | undefined;
     if (aiProvider !== 'ollama') {
-      apiKey = await getApiKey(aiProvider);
-      if (!apiKey) {
+      const keySet = await hasApiKey(aiProvider);
+      if (!keySet) {
         toast({
           title: 'API Key Not Set',
           description: `Set your ${aiProvider === 'claude' ? 'Claude' : 'OpenAI'} API key in Settings first.`,
@@ -109,7 +109,8 @@ const TokenizerStatusPanel = () => {
     }
 
     try {
-      await TauriAPI.triggerAIIndexing(settings.whitelisted_paths, aiProvider, apiKey);
+      // API keys are resolved from the backend keychain — no need to pass them from the frontend
+      await TauriAPI.triggerAIIndexing(settings.whitelisted_paths, aiProvider, undefined);
       const providerLabel = (() => {
         if (aiProvider === 'claude') return 'Claude';
         if (aiProvider === 'openai') return 'OpenAI';

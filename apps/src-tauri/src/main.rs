@@ -185,6 +185,7 @@ fn main() {
             operations::get_app_version,
             operations::show_in_folder,
             operations::list_drives,
+            operations::eject_volume,
             operations::get_dir_size,
             // AI operations
             ai::get_ai_models,
@@ -303,6 +304,9 @@ fn main() {
             extensions::pack_extension,
             extensions::install_xtension_file,
             extensions::inspect_xtension_file,
+            // WASM backend operations
+            extensions::extension_backend_call,
+            extensions::extension_backend_status,
             // Git history operations
             git_history::find_git_repository,
             git_history::get_repository_info,
@@ -349,6 +353,7 @@ fn main() {
             agent::agent_cancel_session,
             agent::get_agent_settings,
             agent::update_agent_settings,
+            agent::update_agent_api_keys,
             agent::agent_approve_plan,
             agent::agent_get_plan,
             agent::get_agent_memory,

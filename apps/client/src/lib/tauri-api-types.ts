@@ -8,6 +8,8 @@ export interface FileEntry {
   modified: number;
   file_type: string;
   mime_type?: string;
+  /** Whether the file/directory is read-only. */
+  is_readonly: boolean;
 }
 
 export interface ConflictFileInfo {
@@ -194,13 +196,30 @@ export interface AgentProgress {
   status: string;
 }
 
-// Claude Agent types
-export interface AgentSettings {
+// Claude Agent types — redacted settings (no plaintext keys)
+export interface SafeAgentSettings {
   enabled: boolean;
-  api_key: string;
+  has_api_key: boolean;
+  has_openai_api_key: boolean;
   model: string;
   max_turns: number;
   auto_approve: boolean;
+  thinking_enabled: boolean;
+  thinking_budget: number;
+}
+
+export interface UpdateAgentSettingsPayload {
+  enabled: boolean;
+  model: string;
+  max_turns: number;
+  auto_approve: boolean;
+  thinking_enabled: boolean;
+  thinking_budget: number;
+}
+
+export interface UpdateAgentApiKeysPayload {
+  api_key?: string;
+  openai_api_key?: string;
 }
 
 // ── Bulk rename types ────────────────────────────────────────────────────────

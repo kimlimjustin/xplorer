@@ -9,6 +9,7 @@ use memmap2::MmapOptions;
 use crossbeam::channel;
 use tauri::command;
 use crate::operations::progress::{ProgressManager, generate_operation_id};
+use crate::operations::validate_file_path;
 
 // Hardware detection and optimization constants
 const SIMD_THRESHOLD: u64 = 64 * 1024; // 64KB - use SIMD for larger files
@@ -124,6 +125,8 @@ pub async fn accelerated_copy_file(
     destination: String,
     progress_manager: tauri::State<'_, Arc<ProgressManager>>,
 ) -> Result<String, String> {
+    validate_file_path(&source)?;
+    validate_file_path(&destination)?;
     let operation_id = generate_operation_id();
     let src_path = Path::new(&source);
     
@@ -743,6 +746,8 @@ pub async fn accelerated_copy_directory(
     destination: String,
     progress_manager: tauri::State<'_, Arc<ProgressManager>>,
 ) -> Result<String, String> {
+    validate_file_path(&source)?;
+    validate_file_path(&destination)?;
     let operation_id = generate_operation_id();
     let src_path = Path::new(&source);
     
