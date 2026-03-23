@@ -613,7 +613,7 @@ mod tests {
             "Dll".to_string(),
             "so".to_string(),
         ]);
-        let guard = watcher.blacklisted_extensions.lock().unwrap();
+        let guard = watcher.blacklisted_extensions.lock().unwrap_or_else(|e| e.into_inner());
         assert!(guard.contains("exe"));
         assert!(guard.contains("dll"));
         assert!(guard.contains("so"));
