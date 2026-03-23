@@ -60,15 +60,32 @@ export interface AgentEvent {
   timestamp: number;
 }
 
-export interface AgentSettings {
+/** Redacted settings returned by the backend — no plaintext keys. */
+export interface SafeAgentSettings {
   enabled: boolean;
-  api_key: string;
-  openai_api_key: string;
+  has_api_key: boolean;
+  has_openai_api_key: boolean;
   model: string;
   max_turns: number;
   auto_approve: boolean;
   thinking_enabled: boolean;
   thinking_budget: number;
+}
+
+/** Payload for updating non-secret settings (no key fields). */
+export interface UpdateAgentSettingsPayload {
+  enabled: boolean;
+  model: string;
+  max_turns: number;
+  auto_approve: boolean;
+  thinking_enabled: boolean;
+  thinking_budget: number;
+}
+
+/** Payload for updating API keys separately. */
+export interface UpdateAgentApiKeysPayload {
+  api_key?: string;
+  openai_api_key?: string;
 }
 
 export interface AgentPermissions {
@@ -167,14 +184,14 @@ export class AgentService {
     }
   }
 
-  static async getSettings(): Promise<AgentSettings> {
+  static async getSettings(): Promise<SafeAgentSettings> {
     try {
       return await transport('get_agent_settings');
     } catch {
       return {
         enabled: false,
-        api_key: '',
-        openai_api_key: '',
+        has_api_key: false,
+        has_openai_api_key: false,
         model: 'llama3.2',
         max_turns: 10,
         auto_approve: false,
@@ -184,11 +201,30 @@ export class AgentService {
     }
   }
 
-  static async updateSettings(settings: AgentSettings): Promise<void> {
+  /** Accepts SafeAgentSettings or UpdateAgentSettingsPayload; strips extra fields before sending. */
+  static async updateSettings(
+    input: SafeAgentSettings | UpdateAgentSettingsPayload,
+  ): Promise<void> {
+    const settings: UpdateAgentSettingsPayload = {
+      enabled: input.enabled,
+      model: input.model,
+      max_turns: input.max_turns,
+      auto_approve: input.auto_approve,
+      thinking_enabled: input.thinking_enabled,
+      thinking_budget: input.thinking_budget,
+    };
     try {
       await transport('update_agent_settings', { settings });
     } catch {
       throw new Error('Failed to update AI settings');
+    }
+  }
+
+  static async updateApiKeys(payload: UpdateAgentApiKeysPayload): Promise<void> {
+    try {
+      await transport('update_agent_api_keys', { payload });
+    } catch {
+      throw new Error('Failed to update API keys');
     }
   }
 

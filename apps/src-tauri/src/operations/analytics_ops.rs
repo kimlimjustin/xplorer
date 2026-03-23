@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use std::path::Path;
 use tauri::{command, AppHandle, Emitter};
 use walkdir::WalkDir;
+use crate::operations::validate_file_path;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TypeDistribution {
@@ -129,6 +130,7 @@ pub async fn analyze_storage(
     app_handle: AppHandle,
     path: String,
 ) -> Result<StorageAnalytics, String> {
+    validate_file_path(&path)?;
     let root = Path::new(&path);
     if !root.exists() {
         return Err(format!("Path does not exist: {}", path));

@@ -3,6 +3,7 @@ use std::path::Path;
 use std::time::SystemTime;
 use tauri::command;
 use serde::{Deserialize, Serialize};
+use crate::operations::validate_file_path;
 
 #[cfg(windows)]
 use std::os::windows::fs::MetadataExt;
@@ -53,8 +54,9 @@ pub struct FileAttributes {
 
 #[command]
 pub async fn get_detailed_file_properties(file_path: String) -> Result<DetailedFileProperties, String> {
+    validate_file_path(&file_path)?;
     let path = Path::new(&file_path);
-    
+
     if !path.exists() {
         return Err("File or directory does not exist".to_string());
     }
@@ -143,8 +145,9 @@ pub async fn get_detailed_file_properties(file_path: String) -> Result<DetailedF
 
 #[command]
 pub async fn get_directory_size(dir_path: String) -> Result<u64, String> {
+    validate_file_path(&dir_path)?;
     let path = Path::new(&dir_path);
-    
+
     if !path.is_dir() {
         return Err("Path is not a directory".to_string());
     }
@@ -154,8 +157,9 @@ pub async fn get_directory_size(dir_path: String) -> Result<u64, String> {
 
 #[command]
 pub async fn get_directory_item_count(dir_path: String) -> Result<u64, String> {
+    validate_file_path(&dir_path)?;
     let path = Path::new(&dir_path);
-    
+
     if !path.is_dir() {
         return Err("Path is not a directory".to_string());
     }
@@ -165,8 +169,9 @@ pub async fn get_directory_item_count(dir_path: String) -> Result<u64, String> {
 
 #[command]
 pub async fn set_file_permissions(file_path: String, permissions: String) -> Result<(), String> {
+    validate_file_path(&file_path)?;
     let path = Path::new(&file_path);
-    
+
     if !path.exists() {
         return Err("File or directory does not exist".to_string());
     }

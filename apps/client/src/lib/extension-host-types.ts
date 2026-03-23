@@ -309,7 +309,7 @@ export const isPathAllowed = (path: string, _extensionPath: string): boolean => 
   // Also block paths containing '..'
   if (normalized.includes('..')) return false;
   for (const prefix of blockedPrefixes) {
-    if (normalized.includes(prefix)) return false;
+    if (normalized.startsWith(prefix)) return false;
   }
   return true;
 };

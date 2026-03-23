@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::operations::types::{FileOperationProgress, OperationStatus};
 use crate::operations::progress::generate_operation_id;
+use crate::operations::validate_file_path;
 use crate::audit_log::log_operation;
 
 // Import ZIP writer
@@ -81,6 +82,10 @@ pub async fn compress_files(
     output_path: String,
     options: CompressionOptions,
 ) -> Result<String, String> {
+    for path in &file_paths {
+        validate_file_path(path)?;
+    }
+    validate_file_path(&output_path)?;
     let output = Path::new(&output_path);
     let op_id = generate_operation_id();
     let out_name = output.file_name().unwrap_or_default().to_string_lossy().to_string();
@@ -217,6 +222,8 @@ pub async fn extract_archive(
     archive_path: String,
     options: ExtractionOptions,
 ) -> Result<String, String> {
+    validate_file_path(&archive_path)?;
+    validate_file_path(&options.output_directory)?;
     let arc_path = Path::new(&archive_path);
     let op_id = generate_operation_id();
     let arc_name = arc_path.file_name().unwrap_or_default().to_string_lossy().to_string();
@@ -322,6 +329,8 @@ pub async fn extract_selected_entries(
     output_dir: String,
     overwrite: bool,
 ) -> Result<String, String> {
+    validate_file_path(&archive_path)?;
+    validate_file_path(&output_dir)?;
     let arc_path = Path::new(&archive_path);
     let op_id = generate_operation_id();
     let arc_name = arc_path.file_name().unwrap_or_default().to_string_lossy().to_string();

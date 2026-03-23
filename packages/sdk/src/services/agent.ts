@@ -1,5 +1,11 @@
 import { transport } from '../transport';
-import type { FileSystemNode, AgentProgress, AgentSettings } from '../types';
+import type {
+  FileSystemNode,
+  AgentProgress,
+  SafeAgentSettings,
+  UpdateAgentSettingsPayload,
+  UpdateAgentApiKeysPayload,
+} from '../types';
 
 export const agentReadFileTree = async (
   rootPath: string,
@@ -39,10 +45,14 @@ export const agentCancelSession = async (sessionId: string): Promise<void> => {
   return await transport('agent_cancel_session', { sessionId });
 };
 
-export const getAgentSettings = async (): Promise<AgentSettings> => {
+export const getAgentSettings = async (): Promise<SafeAgentSettings> => {
   return await transport('get_agent_settings');
 };
 
-export const updateAgentSettings = async (settings: AgentSettings): Promise<void> => {
+export const updateAgentSettings = async (settings: UpdateAgentSettingsPayload): Promise<void> => {
   return await transport('update_agent_settings', { settings });
+};
+
+export const updateAgentApiKeys = async (payload: UpdateAgentApiKeysPayload): Promise<void> => {
+  return await transport('update_agent_api_keys', { payload });
 };

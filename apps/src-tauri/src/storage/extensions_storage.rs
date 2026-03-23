@@ -16,6 +16,29 @@ static EXTENSION_STORAGE_CACHE: LazyLock<Mutex<Option<HashMap<String, HashMap<St
 
 // ─────────────────────────────────────────────────────────────────────────────
 
+/// Validate that `extension_id` is a safe, non-empty identifier.
+/// Rejects empty strings, path separators (`/`, `\`), null bytes, and `..`
+/// so a malicious caller cannot traverse into another extension's storage
+/// bucket or inject unexpected characters into the JSON key space.
+fn validate_extension_id(extension_id: &str) -> Result<(), String> {
+    if extension_id.is_empty() {
+        return Err("extension_id must not be empty".to_string());
+    }
+    if extension_id.contains('/') || extension_id.contains('\\') {
+        return Err(format!(
+            "extension_id contains illegal path separator: {:?}",
+            extension_id
+        ));
+    }
+    if extension_id.contains('\0') {
+        return Err("extension_id contains null byte".to_string());
+    }
+    if extension_id.contains("..") {
+        return Err("extension_id contains path traversal sequence".to_string());
+    }
+    Ok(())
+}
+
 fn extension_storage_path(app_handle: &tauri::AppHandle) -> Result<std::path::PathBuf, String> {
     let dir = app_handle
         .path()
@@ -72,6 +95,7 @@ pub async fn get_extension_storage(
     key: String,
     app_handle: tauri::AppHandle,
 ) -> Result<Option<serde_json::Value>, String> {
+    validate_extension_id(&extension_id)?;
     let guard = ensure_extension_storage_cache(&app_handle)?;
     Ok(guard
         .as_ref()
@@ -88,6 +112,7 @@ pub async fn set_extension_storage(
     value: serde_json::Value,
     app_handle: tauri::AppHandle,
 ) -> Result<(), String> {
+    validate_extension_id(&extension_id)?;
     let mut guard = ensure_extension_storage_cache(&app_handle)?;
     let map = guard.as_mut().ok_or_else(|| "Storage cache not initialized".to_string())?;
     let ext_map = map.entry(extension_id).or_insert_with(HashMap::new);
@@ -102,6 +127,7 @@ pub async fn delete_extension_storage(
     key: String,
     app_handle: tauri::AppHandle,
 ) -> Result<(), String> {
+    validate_extension_id(&extension_id)?;
     let mut guard = ensure_extension_storage_cache(&app_handle)?;
     let map = guard.as_mut().ok_or_else(|| "Storage cache not initialized".to_string())?;
     if let Some(ext_map) = map.get_mut(&extension_id) {

@@ -2,6 +2,7 @@ use std::fs;
 use std::path::Path;
 use tauri::command;
 use crate::operations::types::*;
+use crate::operations::validate_file_path;
 
 #[command]
 pub async fn read_directory(path: String) -> Result<Vec<FileEntry>, String> {
@@ -33,6 +34,8 @@ pub async fn read_directory(path: String) -> Result<Vec<FileEntry>, String> {
         let file_type = crate::file_lib::get_file_type(&path);
         let mime_type = crate::file_lib::get_mime_type(&path);
         
+        let is_readonly = metadata.permissions().readonly();
+
         let file_entry = FileEntry {
             name,
             path: path.to_string_lossy().to_string(),
@@ -41,6 +44,7 @@ pub async fn read_directory(path: String) -> Result<Vec<FileEntry>, String> {
             modified: system_time_to_timestamp(metadata.modified().unwrap_or(std::time::SystemTime::UNIX_EPOCH)),
             file_type,
             mime_type,
+            is_readonly,
         };
         
         files.push(file_entry);
@@ -71,6 +75,7 @@ pub async fn get_files_in_directory(path: String) -> Result<Vec<FileEntry>, Stri
 
 #[command]
 pub async fn remove_dir(path: String) -> Result<(), String> {
+    validate_file_path(&path)?;
     let path = Path::new(&path);
     
     if !path.exists() {
@@ -89,6 +94,7 @@ pub async fn remove_dir(path: String) -> Result<(), String> {
 
 #[command]
 pub async fn create_dir_recursive(path: String) -> Result<(), String> {
+    validate_file_path(&path)?;
     let path = Path::new(&path);
     
     fs::create_dir_all(path)

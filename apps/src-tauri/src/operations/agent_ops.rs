@@ -3,6 +3,7 @@ use std::path::Path;
 use std::time::SystemTime;
 use tauri::command;
 use crate::operations::types::*;
+use crate::operations::validate_file_path;
 
 #[command]
 pub async fn agent_read_file_tree(
@@ -217,7 +218,9 @@ pub async fn agent_write_file_with_permission(
     if !permission_granted {
         return Err("Permission denied by user".to_string());
     }
-    
+
+    validate_file_path(&file_path)?;
+
     // Ensure the directory exists
     if let Some(parent) = Path::new(&file_path).parent() {
         fs::create_dir_all(parent).map_err(|e| format!("Failed to create directory: {}", e))?;

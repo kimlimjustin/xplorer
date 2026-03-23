@@ -3,6 +3,7 @@ use std::path::Path;
 use serde::{Deserialize, Serialize};
 use tauri::command;
 use sha2::{Sha256, Digest};
+use crate::operations::validate_file_path;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -68,6 +69,7 @@ pub struct ComparisonOptions {
 
 #[command]
 pub async fn compute_file_hash(path: String, algorithm: Option<String>) -> Result<String, String> {
+    validate_file_path(&path)?;
     let file_path = Path::new(&path);
     if !file_path.exists() {
         return Err(format!("File does not exist: {}", path));
@@ -100,8 +102,10 @@ pub async fn compare_files(
     file2_path: String,
     options: Option<ComparisonOptions>
 ) -> Result<FileComparisonResult, String> {
+    validate_file_path(&file1_path)?;
+    validate_file_path(&file2_path)?;
     let start_time = std::time::Instant::now();
-    
+
     let path1 = Path::new(&file1_path);
     let path2 = Path::new(&file2_path);
     
