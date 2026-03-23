@@ -29,8 +29,10 @@ import PanelToggleButtons from '@/components/explorer/PanelToggleButtons';
 import ResizeHandle from '@/components/ui/ResizeHandle';
 import StatusBar from '@/components/StatusBar';
 import SplitContainer from '@/components/split-view/SplitContainer';
+import ArchitectView from '@/components/explorer/ArchitectView';
 import { DragDropProvider } from '@/contexts/DragDropContext';
 import { CrossTabSelectionProvider } from '@/contexts/CrossTabSelectionContext';
+import { ExplorerProvider, type ExplorerContextValue } from '@/contexts/ExplorerContext';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -82,6 +84,10 @@ export interface MainLayoutProps {
   setSortBy: React.Dispatch<React.SetStateAction<string>>;
   sortOrder: 'asc' | 'desc';
   setSortOrder: React.Dispatch<React.SetStateAction<'asc' | 'desc'>>;
+
+  // Architecture mode
+  architectMode: boolean;
+  setArchitectMode: React.Dispatch<React.SetStateAction<boolean>>;
 
   // Navigation
   navigateWithHistory: (path: string) => void;
@@ -235,6 +241,8 @@ const MainLayout = (props: MainLayoutProps) => {
     setSortBy,
     sortOrder,
     setSortOrder,
+    architectMode,
+    setArchitectMode,
     navigateWithHistory,
     navigateUp,
     navigateToPath,
@@ -303,6 +311,92 @@ const MainLayout = (props: MainLayoutProps) => {
 
   const activeTabObj = activeGroup.tabs.find((t: TabItem) => t.id === activeGroup.activeTabId);
 
+  // ── Build ExplorerContext value ───────────────────────────────────────────
+  const explorerContextValue: ExplorerContextValue = React.useMemo(
+    () => ({
+      selection: {
+        selectedFiles,
+        setSelectedFiles,
+        selectedFile,
+        setSelectedFile,
+      },
+      viewSort: {
+        viewMode,
+        setViewMode,
+        sortBy,
+        setSortBy,
+        sortOrder,
+        setSortOrder,
+      },
+      splitActions: {
+        sharedActions,
+        onSwitchTab: splitLayout.switchTab,
+        onCloseTab: splitLayout.closeTab,
+        onAddTab: (groupId: string) => {
+          const newTab: TabItem = {
+            id: `tab-${Date.now()}`,
+            name: 'Home',
+            path: 'xplorer://home',
+            type: 'folder',
+          };
+          splitLayout.addTab(groupId, newTab, true);
+        },
+        onSplitHorizontal: (groupId: string) => splitLayout.splitGroup(groupId, 'horizontal'),
+        onSplitVertical: (groupId: string) => splitLayout.splitGroup(groupId, 'vertical'),
+        onCloseGroup: splitLayout.closeGroup,
+        onSetActiveGroup: splitLayout.setActiveGroup,
+        onNavigate: splitLayout.navigate,
+        onResizeSplit: splitLayout.resizeSplit,
+        maximizedGroupId: layoutState.maximizedGroupId,
+        onMaximizePane: splitLayout.maximizePane,
+        onRestorePane: splitLayout.restorePane,
+        onTogglePin: splitLayout.togglePinTab,
+        onDuplicateTab: splitLayout.duplicateTab,
+        onCloseOtherTabs: splitLayout.closeOtherTabs,
+        onCloseTabsToRight: splitLayout.closeTabsToRight,
+        onCloseAllTabs: splitLayout.closeAllTabs,
+        onReorderTab: splitLayout.reorderTab,
+      },
+      paneSync: {
+        paneSyncEnabled: paneSync.enabled,
+        paneSyncMode: paneSync.syncMode,
+        onTogglePaneSync: paneSync.toggle,
+        onSwitchPaneSyncMode: paneSync.setSyncMode,
+      },
+      clipboard: {
+        copySelectedFiles: fileOps.copySelectedFiles,
+        cutSelectedFiles: fileOps.cutSelectedFiles,
+        pasteFiles: fileOps.pasteFiles,
+        hasClipboard: fileOps.clipboard !== null,
+      },
+      activeCollectionFilter,
+    }),
+    [
+      selectedFiles,
+      setSelectedFiles,
+      selectedFile,
+      setSelectedFile,
+      viewMode,
+      setViewMode,
+      sortBy,
+      setSortBy,
+      sortOrder,
+      setSortOrder,
+      sharedActions,
+      splitLayout,
+      layoutState.maximizedGroupId,
+      paneSync.enabled,
+      paneSync.syncMode,
+      paneSync.toggle,
+      paneSync.setSyncMode,
+      fileOps.copySelectedFiles,
+      fileOps.cutSelectedFiles,
+      fileOps.pasteFiles,
+      fileOps.clipboard,
+      activeCollectionFilter,
+    ],
+  );
+
   return (
     <DragDropProvider>
       <CrossTabSelectionProvider value={crossTabSelection}>
@@ -317,8 +411,7 @@ const MainLayout = (props: MainLayoutProps) => {
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
-            background:
-              'var(--xp-bg-gradient, linear-gradient(135deg, #0a0a1a 0%, #0f0f2e 25%, #1a0a2e 50%, #0a1a2e 75%, #0a0a1a 100%))',
+            background: 'var(--xp-bg-gradient, var(--xp-bg, #1e1e2e))',
           }}
         >
           {/* Top Bar */}
@@ -390,84 +483,52 @@ const MainLayout = (props: MainLayoutProps) => {
                   onToggleCollectionFilter={(col) => {
                     setActiveCollectionFilter((prev) => (prev?.id === col.id ? null : col));
                   }}
+                  architectMode={architectMode}
+                  setArchitectMode={setArchitectMode}
                 />
                 <ResizeHandle direction="horizontal" onResize={handleLeftResize} />
               </>
             )}
 
-            {/* Center Content -- Split Panes */}
+            {/* Center Content -- Split Panes or Architecture View */}
             <div
               className="flex flex-1 flex-col overflow-hidden"
               style={{ minHeight: 0, position: 'relative' }}
               data-tour="file-grid"
             >
-              <ErrorBoundary>
-                <SplitContainer
-                  node={layoutState.rootNode}
-                  groups={layoutState.groups}
-                  activeGroupId={layoutState.activeGroupId}
-                  path={[]}
-                  sharedActions={sharedActions}
-                  selectedFiles={selectedFiles}
-                  setSelectedFiles={setSelectedFiles}
-                  selectedFile={selectedFile}
-                  setSelectedFile={setSelectedFile}
-                  viewMode={viewMode}
-                  setViewMode={setViewMode}
-                  sortBy={sortBy}
-                  setSortBy={setSortBy}
-                  sortOrder={sortOrder}
-                  setSortOrder={setSortOrder}
-                  onSwitchTab={splitLayout.switchTab}
-                  onCloseTab={splitLayout.closeTab}
-                  onAddTab={(groupId) => {
-                    const newTab: TabItem = {
-                      id: `tab-${Date.now()}`,
-                      name: 'Home',
-                      path: 'xplorer://home',
-                      type: 'folder',
-                    };
-                    splitLayout.addTab(groupId, newTab, true);
-                  }}
-                  onSplitHorizontal={(groupId) => splitLayout.splitGroup(groupId, 'horizontal')}
-                  onSplitVertical={(groupId) => splitLayout.splitGroup(groupId, 'vertical')}
-                  onCloseGroup={splitLayout.closeGroup}
-                  onSetActiveGroup={splitLayout.setActiveGroup}
-                  onNavigate={splitLayout.navigate}
-                  onResizeSplit={splitLayout.resizeSplit}
-                  maximizedGroupId={layoutState.maximizedGroupId}
-                  onMaximizePane={splitLayout.maximizePane}
-                  onRestorePane={splitLayout.restorePane}
-                  onTogglePin={splitLayout.togglePinTab}
-                  onDuplicateTab={splitLayout.duplicateTab}
-                  onCloseOtherTabs={splitLayout.closeOtherTabs}
-                  onCloseTabsToRight={splitLayout.closeTabsToRight}
-                  onCloseAllTabs={splitLayout.closeAllTabs}
-                  onReorderTab={splitLayout.reorderTab}
-                  activeCollectionFilter={activeCollectionFilter}
-                  paneSyncEnabled={paneSync.enabled}
-                  paneSyncMode={paneSync.syncMode}
-                  onTogglePaneSync={paneSync.toggle}
-                  onSwitchPaneSyncMode={paneSync.setSyncMode}
-                />
-              </ErrorBoundary>
+              {architectMode ? (
+                <ArchitectView currentPath={currentPath} onClose={() => setArchitectMode(false)} />
+              ) : (
+                <>
+                  <ErrorBoundary>
+                    <ExplorerProvider value={explorerContextValue}>
+                      <SplitContainer
+                        node={layoutState.rootNode}
+                        groups={layoutState.groups}
+                        activeGroupId={layoutState.activeGroupId}
+                        path={[]}
+                      />
+                    </ExplorerProvider>
+                  </ErrorBoundary>
 
-              {/* Pane sync visual connector line */}
-              {paneSync.enabled && Object.keys(layoutState.groups).length > 1 && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    pointerEvents: 'none',
-                    zIndex: 50,
-                    border: '2px solid var(--xp-blue)',
-                    opacity: 0.3,
-                    borderRadius: 4,
-                  }}
-                />
+                  {/* Pane sync visual connector line */}
+                  {paneSync.enabled && Object.keys(layoutState.groups).length > 1 && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        pointerEvents: 'none',
+                        zIndex: 50,
+                        border: '2px solid var(--xp-blue)',
+                        opacity: 0.3,
+                        borderRadius: 4,
+                      }}
+                    />
+                  )}
+                </>
               )}
             </div>
 
