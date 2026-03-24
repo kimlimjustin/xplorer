@@ -6,7 +6,7 @@ Thank you for your interest in contributing to Xplorer!
 
 ### Prerequisites
 
-- Node.js 22+
+- Node.js 20+
 - pnpm 10+
 - Rust (latest stable via `rustup`)
 - Git

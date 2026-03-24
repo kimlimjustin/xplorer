@@ -53,7 +53,7 @@ The desktop app is fully functional without premium components.
 
 ### Prerequisites
 
-- Node.js 22+
+- Node.js 20+
 - pnpm 10+
 - Rust (latest stable via rustup)
 
