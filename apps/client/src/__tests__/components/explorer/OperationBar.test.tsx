@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import OperationBar from '@/components/explorer/OperationBar';
+import type { SortField } from '@/lib/utils';
 
 describe('OperationBar', () => {
   const mockViewModes: Record<string, { id: string; name: string; icon: React.ReactNode }> = {
@@ -324,7 +325,7 @@ describe('OperationBar', () => {
 
   describe('Edge Cases', () => {
     it('handles missing sort option gracefully', () => {
-      const invalidProps = { ...mockProps, sortBy: 'nonexistent' };
+      const invalidProps = { ...mockProps, sortBy: 'nonexistent' as SortField };
       expect(() => render(<OperationBar {...invalidProps} />)).not.toThrow();
     });
 

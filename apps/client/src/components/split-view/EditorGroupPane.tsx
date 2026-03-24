@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { TauriAPI, type FileEntry } from '@/lib/tauri-api';
-import { sortFiles, groupFilesByDate, type FileGroup } from '@/lib/utils';
+import { sortFiles, groupFilesByDate, type FileGroup, type SortField } from '@/lib/utils';
 import { useFolderSizes } from '@/hooks/use-folder-sizes';
 import { STORAGE_KEYS } from '@/lib/storage-keys';
 import { useCollectionFiles } from '@/hooks/use-collection-files';
@@ -96,8 +96,8 @@ interface EditorGroupPaneProps {
   /** Controlled view/sort state from parent. */
   viewMode: string;
   setViewMode: React.Dispatch<React.SetStateAction<string>>;
-  sortBy: string;
-  setSortBy: React.Dispatch<React.SetStateAction<string>>;
+  sortBy: SortField;
+  setSortBy: React.Dispatch<React.SetStateAction<SortField>>;
   sortOrder: 'asc' | 'desc';
   setSortOrder: React.Dispatch<React.SetStateAction<'asc' | 'desc'>>;
   // Split layout actions

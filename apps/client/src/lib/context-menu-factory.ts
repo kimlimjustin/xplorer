@@ -6,6 +6,7 @@ import { PATH_SEPARATOR } from '@/lib/constants';
 import { isEditableFile } from '@/lib/editable-files';
 import { extensionHost } from '@/lib/extension-host';
 import { getRecentEntries, type ClipboardEntry } from '@/hooks/use-clipboard-history';
+import type { SortField } from '@/lib/utils';
 import { shouldShowMenuItem } from '@/lib/context-menu-rules';
 import {
   FolderOpen,
@@ -117,7 +118,7 @@ export interface ContextMenuAction {
   openBatchMetadata?: (files: FileEntry[]) => void;
   compareFolders?: (leftPath: string, rightPath: string) => void;
   setViewMode: (mode: string) => void;
-  setSortBy: (field: string) => void;
+  setSortBy: (field: SortField) => void;
   setSortOrder: (order: 'asc' | 'desc') => void;
   lockFile?: (file: FileEntry) => void;
   unlockFile?: (file: FileEntry) => void;

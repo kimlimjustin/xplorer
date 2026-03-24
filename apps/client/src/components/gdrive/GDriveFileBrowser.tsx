@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 // @tauri-apps/plugin-dialog save/open removed — not used directly here
-import { formatFileSize, formatDate, getFileIcon, sortFiles } from '@/lib/utils';
+import { formatFileSize, formatDate, getFileIcon, sortFiles, type SortField } from '@/lib/utils';
 import { GDriveDownloadDialog } from '@/components/gdrive/GDriveDownloadDialog';
 import { GDriveUploadDialog } from '@/components/gdrive/GDriveUploadDialog';
 
@@ -47,7 +47,7 @@ const GDriveFileBrowser = ({
     { id: 'root', name: 'My Drive' },
   ]);
   const [selectedFile, setSelectedFile] = useState<FileEntry | null>(null);
-  const [sortBy, setSortBy] = useState<string>('name');
+  const [sortBy, setSortBy] = useState<SortField>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; file: FileEntry } | null>(
     null,
@@ -187,7 +187,7 @@ const GDriveFileBrowser = ({
     }
   };
 
-  const handleSortChange = (newSortBy: string) => {
+  const handleSortChange = (newSortBy: SortField) => {
     if (newSortBy === sortBy) {
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     } else {
@@ -305,7 +305,14 @@ const GDriveFileBrowser = ({
     }
   };
 
-  const sortLabels: Record<string, string> = { name: 'Name', size: 'Size', modified: 'Modified' };
+  const sortLabels: Record<SortField, string> = {
+    name: 'Name',
+    size: 'Size',
+    dateModified: 'Modified',
+    dateCreated: 'Created',
+    type: 'Type',
+    extension: 'Extension',
+  };
 
   return (
     <div className="bg-xp-bg flex h-full flex-1 flex-col">
@@ -331,7 +338,7 @@ const GDriveFileBrowser = ({
               </button>
               {isSortDropdownOpen && (
                 <div className="bg-xp-popover border-xp-border absolute left-0 top-full z-50 mt-1 min-w-[160px] rounded border shadow-xl backdrop-blur-xl">
-                  {(['name', 'size', 'modified'] as const).map((key) => (
+                  {(['name', 'size', 'dateModified'] as const).map((key) => (
                     <button
                       key={key}
                       onClick={() => {

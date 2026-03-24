@@ -1,6 +1,12 @@
 import React from 'react';
 import type { FileEntry, FolderSizeInfo, ConflictFileInfo } from '@/lib/tauri-api';
-import { getFileIcon, formatFileSize, formatDate, type ThemeDef } from '@/lib/utils';
+import {
+  getFileIcon,
+  formatFileSize,
+  formatDate,
+  type ThemeDef,
+  type SortField,
+} from '@/lib/utils';
 import type { TabItem, SplitLayoutState } from '@/types/split-view';
 import type { FileCollection } from '@/lib/collections';
 import type { SharedPaneActions } from '@/components/split-view/EditorGroupPane';
@@ -80,8 +86,8 @@ export interface MainLayoutProps {
   setSearchPanelOpen: React.Dispatch<React.SetStateAction<boolean>>;
   viewMode: string;
   setViewMode: React.Dispatch<React.SetStateAction<string>>;
-  sortBy: string;
-  setSortBy: React.Dispatch<React.SetStateAction<string>>;
+  sortBy: SortField;
+  setSortBy: React.Dispatch<React.SetStateAction<SortField>>;
   sortOrder: 'asc' | 'desc';
   setSortOrder: React.Dispatch<React.SetStateAction<'asc' | 'desc'>>;
 
