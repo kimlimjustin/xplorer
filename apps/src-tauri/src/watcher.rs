@@ -1,93 +1,67 @@
-use notify::RecursiveMode;
-use notify_debouncer_full::{new_debouncer, DebouncedEvent, DebounceEventResult};
-use serde::Serialize;
-use std::path::Path;
-use std::sync::{Arc, LazyLock, Mutex};
-use std::time::Duration;
-use tauri::{command, AppHandle, Emitter};
-use tracing::error;
+// Unified watcher — delegates to file_watcher using a reserved watcher key.
+//
+// The original single-directory watcher is preserved as a thin facade so the
+// frontend API (`start_watching` / `stop_watching`) does not change, but under
+// the hood everything goes through the multi-directory `file_watcher` module.
 
-/// Payload emitted to the frontend on filesystem changes.
-#[derive(Debug, Clone, Serialize)]
-pub struct FsChangeEvent {
-    pub path: String,
-    pub kind: String,
+use std::sync::{LazyLock, Mutex};
+use tauri::{command, AppHandle};
+
+use crate::file_watcher;
+
+/// Stores the watcher id returned by `file_watcher::watch_directory` so we can
+/// tear it down later via `stop_watcher` / `stop_watching`.
+static PRIMARY_WATCHER_ID: LazyLock<Mutex<Option<String>>> =
+    LazyLock::new(|| Mutex::new(None));
+
+/// Take the current primary watcher id out of the static, if any.
+fn take_primary_id() -> Option<String> {
+    let mut guard = PRIMARY_WATCHER_ID.lock().unwrap_or_else(|e| e.into_inner());
+    guard.take()
 }
 
-/// Maps a `notify` event kind to one of the four canonical strings.
-fn event_kind_str(kind: &notify::EventKind) -> &'static str {
-    use notify::EventKind::*;
-    match kind {
-        Create(_) => "create",
-        Modify(_) => "modify",
-        Remove(_) => "remove",
-        _ => "modify", // Access, Other, Any → treat as modify
-    }
+/// Store a new primary watcher id.
+fn set_primary_id(id: String) {
+    let mut guard = PRIMARY_WATCHER_ID.lock().unwrap_or_else(|e| e.into_inner());
+    *guard = Some(id);
 }
 
-type WatcherHandle = notify_debouncer_full::Debouncer<notify::RecommendedWatcher, notify_debouncer_full::FileIdMap>;
-
-static WATCHER: LazyLock<Arc<Mutex<Option<WatcherHandle>>>> = LazyLock::new(|| Arc::new(Mutex::new(None)));
-
-/// Stop the current watcher (if any). Safe to call even if nothing is watching.
+/// Stop the current primary watcher (if any). Safe to call even if nothing is watching.
 pub fn stop_watcher() {
-    let mut guard = WATCHER.lock().unwrap_or_else(|e| e.into_inner());
-    if guard.is_some() {
-        // Dropping the debouncer stops the watcher and joins its thread.
-        *guard = None;
+    if let Some(id) = take_primary_id() {
+        // Use a blocking approach: spawn a temporary tokio runtime to call the
+        // async unwatch. This is used in the on_window_event close handler which
+        // is synchronous.
+        let _ = std::thread::spawn(move || {
+            let rt = tokio::runtime::Builder::new_current_thread()
+                .enable_all()
+                .build()
+                .expect("failed to build temp tokio runtime");
+            let _ = rt.block_on(file_watcher::unwatch_directory(id));
+        })
+        .join();
     }
 }
 
 #[command]
 pub async fn start_watching(path: String, app_handle: AppHandle) -> Result<(), String> {
-    // Stop any previous watcher first.
-    stop_watcher();
+    // Stop any previous primary watcher first.
+    if let Some(old_id) = take_primary_id() {
+        let _ = file_watcher::unwatch_directory(old_id).await;
+    }
 
-    let watched_path = path.clone();
-    let handle = app_handle.clone();
+    // Delegate to the multi-directory watcher (non-recursive, matching original behaviour).
+    let watcher_id = file_watcher::watch_directory(path, false, app_handle).await?;
 
-    let mut debouncer = new_debouncer(
-        Duration::from_millis(500),
-        None,
-        move |result: DebounceEventResult| {
-            match result {
-                Ok(events) => {
-                    for event in events {
-                        let DebouncedEvent { event: ev, .. } = &event;
-                        let kind_str = event_kind_str(&ev.kind);
-                        for p in &ev.paths {
-                            let payload = FsChangeEvent {
-                                path: p.to_string_lossy().to_string(),
-                                kind: kind_str.to_string(),
-                            };
-                            let _ = handle.emit("fs-change", &payload);
-                        }
-                    }
-                }
-                Err(errors) => {
-                    for err in errors {
-                        error!("[watcher] error: {err:?}");
-                    }
-                }
-            }
-        },
-    )
-    .map_err(|e| format!("Failed to create file watcher: {e}"))?;
-
-    // Watch the target directory non-recursively (only the directory the user is viewing).
-    debouncer
-        .watch(Path::new(&watched_path), RecursiveMode::NonRecursive)
-        .map_err(|e| format!("Failed to watch path {watched_path}: {e}"))?;
-
-    // Store the debouncer so it stays alive.
-    let mut guard = WATCHER.lock().unwrap_or_else(|e| e.into_inner());
-    *guard = Some(debouncer);
+    set_primary_id(watcher_id);
 
     Ok(())
 }
 
 #[command]
 pub async fn stop_watching() -> Result<(), String> {
-    stop_watcher();
+    if let Some(id) = take_primary_id() {
+        file_watcher::unwatch_directory(id).await?;
+    }
     Ok(())
 }

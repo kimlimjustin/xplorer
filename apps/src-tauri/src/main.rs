@@ -20,7 +20,7 @@ use xplorer::agent;
 use xplorer::google_drive;
 use xplorer::watcher;
 use xplorer::file_watcher;
-use xplorer::git_integration;
+// git_integration is consolidated into git_history
 use xplorer::audit_log;
 use xplorer::backup;
 use xplorer::file_versions;
@@ -468,9 +468,9 @@ fn main() {
             operations::database_ops::get_sqlite_table_columns,
             operations::database_ops::query_sqlite_table,
             operations::database_ops::execute_sqlite_query,
-            // Git integration
-            git_integration::get_git_status,
-            git_integration::get_git_repo_info,
+            // Git integration (consolidated into git_history)
+            git_history::get_git_status,
+            git_history::get_git_repo_info,
             // Audit log operations
             audit_log::get_audit_log,
             audit_log::clear_audit_log,
