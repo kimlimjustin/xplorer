@@ -9,6 +9,16 @@ import type {
   GitRepoInfo,
 } from '../types';
 
+export interface GitBranchInfo {
+  name: string;
+  is_current: boolean;
+  is_remote: boolean;
+  last_commit?: GitCommit;
+  upstream?: string;
+  ahead: number;
+  behind: number;
+}
+
 export const findGitRepository = async (path: string): Promise<string | null> => {
   return await transport('find_git_repository', { path });
 };
@@ -55,20 +65,7 @@ export const getFileStatus = async (
   return await transport('get_file_status', { repoPath });
 };
 
-export const getBranches = async (
-  repoPath: string,
-): Promise<
-  Array<{
-    name: string;
-    is_current: boolean;
-    is_remote: boolean;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    last_commit?: any;
-    upstream?: string;
-    ahead: number;
-    behind: number;
-  }>
-> => {
+export const getBranches = async (repoPath: string): Promise<GitBranchInfo[]> => {
   return await transport('get_branches', { repoPath });
 };
 

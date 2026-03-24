@@ -24,6 +24,7 @@ import {
   applyTheme,
   applyCustomThemeVars,
   type CustomThemeColors,
+  type SortField,
 } from '@/lib/utils';
 
 // ── localStorage + document mocks ─────────────────────────────────────────
@@ -321,7 +322,7 @@ describe('sortFiles', () => {
   });
 
   it('falls back to name sort for unknown sortBy', () => {
-    const sorted = sortFiles([fileC, fileB], 'unknown', 'asc');
+    const sorted = sortFiles([fileC, fileB], 'unknown' as SortField, 'asc');
     expect(sorted[0].name).toBe('beta.txt');
   });
 

@@ -372,10 +372,12 @@ export const formatDate = (timestamp: number): string => {
 // Natural-sort collator: "file2" before "file10", case-insensitive
 const naturalCollator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
 
+export type SortField = 'name' | 'dateModified' | 'size' | 'dateCreated' | 'type' | 'extension';
+
 // File sorting utility
 export const sortFiles = (
   files: FileEntry[],
-  sortBy: string,
+  sortBy: SortField,
   sortOrder: 'asc' | 'desc',
 ): FileEntry[] => {
   return [...files].sort((a, b) => {
@@ -548,7 +550,10 @@ const cfgIcon = (Icon: LucideIcon): React.ReactNode =>
   React.createElement(Icon, { size: '1em', className: 'inline-block' });
 
 // Sort options configuration
-export const sortOptions = {
+export const sortOptions: Record<
+  SortField,
+  { id: SortField; name: string; icon: React.ReactNode }
+> = {
   name: { id: 'name', name: 'Name', icon: cfgIcon(ArrowDownAZ) },
   dateModified: { id: 'dateModified', name: 'Date Modified', icon: cfgIcon(Calendar) },
   dateCreated: { id: 'dateCreated', name: 'Date Created', icon: cfgIcon(Calendar) },
