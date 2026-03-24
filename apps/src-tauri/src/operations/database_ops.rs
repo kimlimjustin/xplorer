@@ -26,10 +26,23 @@ pub struct QueryResult {
     pub total_rows: u64,
 }
 
+fn configure_connection(conn: &Connection) -> rusqlite::Result<()> {
+    conn.execute_batch("
+        PRAGMA journal_mode = WAL;
+        PRAGMA synchronous = normal;
+        PRAGMA temp_store = memory;
+        PRAGMA mmap_size = 268435456;
+        PRAGMA cache_size = -32000;
+        PRAGMA foreign_keys = ON;
+    ")
+}
+
 fn open_readonly(path: &str) -> Result<Connection, String> {
     validate_file_path(path)?;
-    Connection::open_with_flags(path, OpenFlags::SQLITE_OPEN_READ_ONLY | OpenFlags::SQLITE_OPEN_NO_MUTEX)
-        .map_err(|e| format!("Failed to open database: {}", e))
+    let conn = Connection::open_with_flags(path, OpenFlags::SQLITE_OPEN_READ_ONLY | OpenFlags::SQLITE_OPEN_NO_MUTEX)
+        .map_err(|e| format!("Failed to open database: {}", e))?;
+    configure_connection(&conn).map_err(|e| format!("Failed to configure database: {}", e))?;
+    Ok(conn)
 }
 
 fn is_read_only_query(sql: &str) -> bool {

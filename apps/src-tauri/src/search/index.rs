@@ -8,6 +8,8 @@ use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::OnceLock;
 
+use dashmap::DashMap;
+
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use tracing::{info, warn};
@@ -81,7 +83,7 @@ pub struct SearchIndex {
     next_id: DocId,
 
     // Inverted index: stemmed_term -> Vec<PostingEntry>
-    postings: HashMap<String, Vec<PostingEntry>>,
+    postings: DashMap<String, Vec<PostingEntry>>,
 
     // Positional index: stemmed_term -> { doc_id -> [positions] }
     // Used for phrase search — stores the word position (0-based index) of
@@ -285,7 +287,7 @@ impl SearchIndex {
             documents: HashMap::new(),
             path_to_id: HashMap::new(),
             next_id: 0,
-            postings: HashMap::new(),
+            postings: DashMap::new(),
             positions: HashMap::new(),
             fst_index: FstIndex::new(),
             bitmap_index: BitmapFilterIndex::new(),
@@ -311,7 +313,7 @@ impl SearchIndex {
 
         // Inverted index: term strings + posting entries (12 bytes each)
         let postings_bytes: usize = self.postings.iter()
-            .map(|(term, entries)| term.len() + entries.len() * 12)
+            .map(|r| r.key().len() + r.value().len() * 12)
             .sum();
 
         // Positional index: term + doc_id + position list
@@ -515,10 +517,10 @@ impl SearchIndex {
 
         // Remove all posting entries for this doc_id.
         let mut empty_terms: Vec<String> = Vec::new();
-        for (term, entries) in self.postings.iter_mut() {
-            entries.retain(|e| e.doc_id != doc_id);
-            if entries.is_empty() {
-                empty_terms.push(term.clone());
+        for mut r in self.postings.iter_mut() {
+            r.value_mut().retain(|e| e.doc_id != doc_id);
+            if r.value().is_empty() {
+                empty_terms.push(r.key().clone());
             }
         }
         for term in empty_terms {
@@ -549,9 +551,9 @@ impl SearchIndex {
     pub fn rebuild_fst(&mut self) {
         let mut terms: Vec<(String, u64)> = self
             .postings
-            .keys()
+            .iter()
             .enumerate()
-            .map(|(i, term)| (term.clone(), i as u64))
+            .map(|(i, r)| (r.key().clone(), i as u64))
             .collect();
         match FstIndex::build(&mut terms) {
             Ok(index) => self.fst_index = index,
@@ -601,12 +603,18 @@ impl SearchIndex {
             let _ = std::fs::create_dir_all(parent);
         }
 
+        let postings_snapshot: HashMap<String, Vec<PostingEntry>> = self
+            .postings
+            .iter()
+            .map(|r| (r.key().clone(), r.value().clone()))
+            .collect();
+
         let cache = IndexCache {
             version: INDEX_CACHE_VERSION,
             documents: self.documents.clone(),
             path_to_id: self.path_to_id.clone(),
             next_id: self.next_id,
-            postings: self.postings.clone(),
+            postings: postings_snapshot,
             positions: self.positions.clone(),
             doc_field_lengths: self.doc_field_lengths.clone(),
             doc_content: self.doc_content.clone(),
@@ -668,11 +676,14 @@ impl SearchIndex {
         let doc_count = cache.documents.len();
         let term_count = cache.postings.len();
 
+        let postings: DashMap<String, Vec<PostingEntry>> =
+            cache.postings.into_iter().collect();
+
         let mut index = Self {
             documents: cache.documents,
             path_to_id: cache.path_to_id,
             next_id: cache.next_id,
-            postings: cache.postings,
+            postings,
             positions: cache.positions,
             fst_index: FstIndex::new(),
             bitmap_index: BitmapFilterIndex::new(),
@@ -741,7 +752,7 @@ impl SearchIndex {
 
                 // Accumulate FieldTermFreqs per document for this term
                 let mut doc_ftfs: HashMap<DocId, FieldTermFreqs> = HashMap::new();
-                for entry in entries {
+                for entry in entries.value() {
                     let ftf = doc_ftfs.entry(entry.doc_id).or_insert_with(FieldTermFreqs::new);
                     let field_len = self
                         .doc_field_lengths
@@ -767,14 +778,14 @@ impl SearchIndex {
         for neg_term in &parsed.negations {
             let neg_stemmed = stemmer.stem_word(neg_term);
             if let Some(entries) = self.postings.get(&neg_stemmed) {
-                for entry in entries {
+                for entry in entries.value() {
                     doc_scores.remove(&entry.doc_id);
                     doc_matched_terms.remove(&entry.doc_id);
                 }
             }
             // Also check the unstemmed form
             if let Some(entries) = self.postings.get(neg_term) {
-                for entry in entries {
+                for entry in entries.value() {
                     doc_scores.remove(&entry.doc_id);
                     doc_matched_terms.remove(&entry.doc_id);
                 }
@@ -833,7 +844,7 @@ impl SearchIndex {
                     if let Some(entries) = self.postings.get(term) {
                         let df = self.document_frequency(term);
                         let mut doc_ftfs: HashMap<DocId, FieldTermFreqs> = HashMap::new();
-                        for entry in entries {
+                        for entry in entries.value() {
                             if !doc_scores.contains_key(&entry.doc_id) {
                                 continue;
                             }
@@ -918,7 +929,7 @@ impl SearchIndex {
                         let df = self.document_frequency(matched_term);
 
                         let mut doc_ftfs: HashMap<DocId, FieldTermFreqs> = HashMap::new();
-                        for entry in entries {
+                        for entry in entries.value() {
                             let ftf = doc_ftfs
                                 .entry(entry.doc_id)
                                 .or_insert_with(FieldTermFreqs::new);
@@ -1232,9 +1243,9 @@ impl SearchIndex {
     /// Collect all terms that appear in postings for a given doc_id.
     pub fn terms_for_doc(&self, doc_id: DocId) -> std::collections::HashSet<String> {
         let mut terms = std::collections::HashSet::new();
-        for (term, entries) in &self.postings {
-            if entries.iter().any(|e| e.doc_id == doc_id) {
-                terms.insert(term.clone());
+        for r in self.postings.iter() {
+            if r.value().iter().any(|e| e.doc_id == doc_id) {
+                terms.insert(r.key().clone());
             }
         }
         terms
@@ -1273,7 +1284,9 @@ impl SearchIndex {
         // Accumulate term frequencies across the top docs.
         let mut term_tf: HashMap<String, u32> = HashMap::new();
 
-        for (term, entries) in &self.postings {
+        for r in self.postings.iter() {
+            let term = r.key();
+            let entries = r.value();
             if exclude.contains(term) {
                 continue;
             }
@@ -1329,7 +1342,7 @@ impl SearchIndex {
             .get(term)
             .map(|entries| {
                 let mut seen = std::collections::HashSet::new();
-                for e in entries {
+                for e in entries.value() {
                     seen.insert(e.doc_id);
                 }
                 seen.len()

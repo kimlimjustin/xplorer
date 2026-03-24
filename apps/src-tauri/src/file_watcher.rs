@@ -82,7 +82,7 @@ pub async fn watch_directory(
     let handle = app_handle.clone();
 
     let mut debouncer = new_debouncer(
-        Duration::from_millis(500),
+        Duration::from_millis(200),
         None,
         move |result: DebounceEventResult| match result {
             Ok(events) => {
@@ -96,7 +96,6 @@ pub async fn watch_directory(
                             event_type: event_type.to_string(),
                             timestamp: now_millis(),
                         };
-                        let _ = handle.emit(event_type, &payload);
                         let _ = handle.emit("fs-change", &payload);
                     }
                 }

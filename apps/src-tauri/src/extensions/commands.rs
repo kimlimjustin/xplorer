@@ -445,13 +445,8 @@ pub async fn activate_extension(extension_id: String) -> Result<(), String> {
 pub async fn deactivate_extension(extension_id: String) -> Result<(), String> {
     validate_extension_id(&extension_id)?;
 
-    // Unload WASM instance if loaded (separate mutex — no deadlock risk).
-    {
-        let mut runtime = super::WASM_RUNTIME
-            .lock()
-            .unwrap_or_else(|e| e.into_inner());
-        runtime.unload(&extension_id);
-    }
+    // Unload WASM instance if loaded.
+    super::WASM_RUNTIME.unload(&extension_id);
 
     let mut manager_guard = EXTENSION_MANAGER.lock().map_err(|e| e.to_string())?;
     if let Some(manager) = manager_guard.as_mut() {
@@ -747,9 +742,7 @@ pub async fn extension_backend_call(
         };
         // Manager lock released here.
 
-        let mut runtime = super::WASM_RUNTIME
-            .lock()
-            .unwrap_or_else(|e| e.into_inner());
+        let runtime = &super::WASM_RUNTIME;
 
         // Load on demand if not already loaded.
         if !runtime.is_loaded(&extension_id) {
@@ -793,10 +786,7 @@ pub async fn extension_backend_status(
     };
 
     let loaded = {
-        let runtime = super::WASM_RUNTIME
-            .lock()
-            .unwrap_or_else(|e| e.into_inner());
-        runtime.is_loaded(&extension_id)
+        super::WASM_RUNTIME.is_loaded(&extension_id)
     };
 
     Ok(WasmBackendStatus {

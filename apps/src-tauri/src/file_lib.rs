@@ -1,8 +1,8 @@
 // File library utilities
 use std::path::Path;
 
-pub fn get_file_type(path: &Path) -> String {
-    if path.is_dir() {
+pub fn get_file_type(path: &Path, is_dir: bool) -> String {
+    if is_dir {
         "directory".to_string()
     } else {
         match path.extension() {

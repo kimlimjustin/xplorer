@@ -101,21 +101,20 @@ pub fn cosine_similarity(a: &[f32], b: &[f32]) -> f64 {
         return 0.0;
     }
 
-    let (dot, mag_a, mag_b) = a.iter().zip(b.iter()).fold(
-        (0.0_f64, 0.0_f64, 0.0_f64),
-        |(dot, ma, mb), (&x, &y)| {
-            let x = x as f64;
-            let y = y as f64;
-            (dot + x * y, ma + x * x, mb + y * y)
-        },
-    );
+    let mut dot: f32 = 0.0;
+    let mut mag_a: f32 = 0.0;
+    let mut mag_b: f32 = 0.0;
 
-    let denom = mag_a.sqrt() * mag_b.sqrt();
-    if denom == 0.0 {
-        0.0
-    } else {
-        dot / denom
+    for i in 0..a.len() {
+        let x = a[i];
+        let y = b[i];
+        dot += x * y;
+        mag_a += x * x;
+        mag_b += y * y;
     }
+
+    let denom = (mag_a.sqrt() * mag_b.sqrt()) as f64;
+    if denom == 0.0 { 0.0 } else { (dot as f64) / denom }
 }
 
 pub fn classify_extension(ext: &str) -> Option<FileTypeCategory> {

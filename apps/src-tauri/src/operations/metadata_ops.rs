@@ -20,7 +20,8 @@ pub async fn get_file_properties(path: String) -> Result<FileProperties, String>
             .unwrap_or("Unknown")
             .to_string();
 
-        let file_type = crate::file_lib::get_file_type(path);
+        let is_dir = metadata.is_dir();
+        let file_type = crate::file_lib::get_file_type(path, is_dir);
         let mime_type = crate::file_lib::get_mime_type(path);
 
         #[cfg(windows)]
@@ -44,7 +45,7 @@ pub async fn get_file_properties(path: String) -> Result<FileProperties, String>
             name,
             path: path.to_string_lossy().to_string(),
             size: metadata.len(),
-            is_dir: metadata.is_dir(),
+            is_dir,
             created: system_time_to_timestamp(metadata.created().unwrap_or(std::time::SystemTime::UNIX_EPOCH)),
             modified: system_time_to_timestamp(metadata.modified().unwrap_or(std::time::SystemTime::UNIX_EPOCH)),
             accessed: system_time_to_timestamp(metadata.accessed().unwrap_or(std::time::SystemTime::UNIX_EPOCH)),
