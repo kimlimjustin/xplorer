@@ -18,6 +18,7 @@ import {
   type LoadedExtension,
 } from './extension-host-types';
 import { createExtensionApi } from './extension-api-factory';
+import { createSandboxedEnvironment, BLOCKED_GLOBALS } from './extension-sandbox-env';
 
 // Re-export all types and helpers so consumers can import from either location
 export * from './extension-host-types';
@@ -453,210 +454,8 @@ class ExtensionHost {
     };
 
     try {
-      // Sandbox: block dangerous globals via Proxy + parameter shadowing
-      // NOTE: 'eval' and 'arguments' CANNOT be used as parameter names in strict mode
-      // (causes "SyntaxError: Unexpected eval or arguments in strict mode").
-      // They are still blocked via the Proxy on sandboxedWindow below.
-      const BLOCKED_GLOBALS = [
-        'fetch',
-        'XMLHttpRequest',
-        'WebSocket',
-        'localStorage',
-        'sessionStorage',
-        'indexedDB',
-        'Function',
-        '__TAURI__',
-        '__TAURI_INTERNALS__',
-        '__TAURI_IPC__',
-        '__TAURI_INVOKE_HANDLER__',
-        'parent',
-        'top',
-        'opener',
-        'frames',
-        'location',
-        'history',
-        'SharedArrayBuffer',
-        'Atomics',
-      ];
-      // These are blocked via the Proxy only (not as parameter names)
-      const PROXY_ONLY_BLOCKED = ['eval', 'arguments'];
-      const blockedSet = new Set([...BLOCKED_GLOBALS, ...PROXY_ONLY_BLOCKED]);
-
-      // Safe setTimeout/setInterval that reject string arguments (prevents eval-like behavior)
       const extId = pkg.manifest.id;
-      const safeSetTimeout = (fn: Function | string, ms?: number, ...args: unknown[]) => {
-        if (typeof fn === 'string') {
-          throw new Error('String argument to setTimeout is not allowed in extension sandbox');
-        }
-        return setTimeout(fn, ms, ...args);
-      };
-      const safeSetInterval = (fn: Function | string, ms?: number, ...args: unknown[]) => {
-        if (typeof fn === 'string') {
-          throw new Error('String argument to setInterval is not allowed in extension sandbox');
-        }
-        return setInterval(fn, ms, ...args);
-      };
-
-      // Create a proxy for document that blocks escape routes to window and script injection
-      const safeDocument = new Proxy(document, {
-        get(target, prop) {
-          // Respect Proxy invariant: non-configurable non-writable props must return real value
-          const desc = Object.getOwnPropertyDescriptor(target, prop);
-          if (desc && !desc.configurable && !desc.writable && desc.value !== undefined) {
-            return desc.value;
-          }
-          // Block escape to window via document.defaultView / document.parentWindow
-          if (prop === 'defaultView' || prop === 'parentWindow') {
-            return null;
-          }
-          const value = Reflect.get(target, prop);
-          if (typeof value === 'function') {
-            // Intercept createElement to block script/iframe/object/embed injection
-            if (prop === 'createElement' || prop === 'createElementNS') {
-              return (...args: unknown[]) => {
-                let rawTag = '';
-                if (typeof args[0] === 'string') {
-                  rawTag = args[0];
-                } else if (typeof args[1] === 'string') {
-                  rawTag = args[1];
-                }
-                const tagName = rawTag.toLowerCase();
-                if (['script', 'iframe', 'object', 'embed', 'frame', 'link'].includes(tagName)) {
-                  console.warn(
-                    `[Sandbox] Extension "${extId}" tried to create blocked element: <${tagName}>`,
-                  );
-                  throw new Error(
-                    `Creating <${tagName}> elements is not allowed in extension sandbox`,
-                  );
-                }
-                return (value as Function).apply(target, args);
-              };
-            }
-            return value.bind(target);
-          }
-          return value;
-        },
-      });
-
-      // Prototype methods to block on all proxied objects (document + window)
-      const blockedPrototypeMethods = new Set([
-        '__proto__',
-        '__defineGetter__',
-        '__defineSetter__',
-        '__lookupGetter__',
-        '__lookupSetter__',
-      ]);
-
-      // Create a sandboxed Object that blocks prototype introspection escape routes
-      const sandboxedObject = Object.create(Object);
-      sandboxedObject.getPrototypeOf = (_target: unknown) => null;
-      sandboxedObject.getOwnPropertyDescriptor = (target: unknown, prop: PropertyKey) => {
-        // Block reading descriptors from the window proxy (could expose unproxied values)
-        if (target === sandboxedWindow || target === window) {
-          return undefined;
-        }
-        return Object.getOwnPropertyDescriptor(target as object, prop);
-      };
-      Object.freeze(sandboxedObject);
-
-      // Create a sandboxed Reflect proxy that blocks prototype manipulation
-      const sandboxedReflect = new Proxy(Reflect, {
-        get(target, reflectProp) {
-          // Respect Proxy invariant: non-configurable non-writable props must return real value
-          const desc = Object.getOwnPropertyDescriptor(target, reflectProp);
-          if (desc && !desc.configurable && !desc.writable && desc.value !== undefined) {
-            return desc.value;
-          }
-          if (reflectProp === 'getPrototypeOf' || reflectProp === 'setPrototypeOf') {
-            return undefined;
-          }
-          return (target as unknown as Record<string | symbol, unknown>)[reflectProp];
-        },
-      });
-
-      const sandboxedWindow = new Proxy(window, {
-        get(target, prop, _receiver) {
-          // Respect Proxy invariant: non-configurable non-writable props must return real value
-          const desc = Object.getOwnPropertyDescriptor(target, prop);
-          if (desc && !desc.configurable && !desc.writable && desc.value !== undefined) {
-            return desc.value;
-          }
-
-          if (blockedSet.has(prop as string)) {
-            console.warn(
-              `[Sandbox] Extension "${extId}" tried to access blocked API: ${String(prop)}`,
-            );
-            return undefined;
-          }
-
-          // Block prototype chain traversal methods
-          if (blockedPrototypeMethods.has(String(prop))) {
-            console.warn(
-              `[Sandbox] Extension "${extId}" tried to access blocked prototype method: ${String(prop)}`,
-            );
-            return undefined;
-          }
-
-          // Block constructor access that could escape sandbox
-          if (prop === 'constructor') {
-            return undefined;
-          }
-
-          // Intercept Object to block prototype introspection escape
-          if (prop === 'Object') {
-            return sandboxedObject;
-          }
-
-          // Intercept Reflect to block prototype manipulation
-          if (prop === 'Reflect') {
-            return sandboxedReflect;
-          }
-
-          // Intercept setTimeout/setInterval with safe versions
-          if (prop === 'setTimeout') return safeSetTimeout;
-          if (prop === 'setInterval') return safeSetInterval;
-          // Intercept document with safe proxy
-          if (prop === 'document') return safeDocument;
-
-          const value = Reflect.get(target, prop, target);
-          // Bind native functions to their proper `this` to avoid "Illegal invocation"
-          if (typeof value === 'function' && typeof prop === 'string') {
-            // Don't bind constructors or user-defined functions
-            try {
-              return value.bind(target);
-            } catch {
-              return value;
-            }
-          }
-          return value;
-        },
-      });
-
-      // Defense-in-depth: Block constructor chain escape ([].constructor.constructor('return this')())
-      // Freeze key prototype constructors so they cannot be used to reach Function
-      try {
-        const prototypesToHarden = [
-          Object.prototype,
-          Array.prototype,
-          String.prototype,
-          Number.prototype,
-          Boolean.prototype,
-          RegExp.prototype,
-        ];
-        for (const proto of prototypesToHarden) {
-          try {
-            Object.defineProperty(proto, 'constructor', {
-              value: proto.constructor,
-              writable: false,
-              configurable: false,
-            });
-          } catch {
-            // Already frozen or non-configurable — acceptable
-          }
-        }
-      } catch {
-        console.warn('[ExtensionHost] Could not harden prototype constructors');
-      }
+      const env = createSandboxedEnvironment({ extId });
 
       // Provide a require() shim that maps allowed externals to window globals.
       // Extensions built with esbuild --format=iife --external:react etc. emit
@@ -686,15 +485,15 @@ class ExtensionHost {
         ...BLOCKED_GLOBALS,
       ];
       const paramValues: unknown[] = [
-        sandboxedWindow,
-        sandboxedWindow,
-        sandboxedWindow,
-        safeSetTimeout,
-        safeSetInterval,
-        safeDocument,
+        env.sandboxedWindow,
+        env.sandboxedWindow,
+        env.sandboxedWindow,
+        env.safeSetTimeout,
+        env.safeSetInterval,
+        env.safeDocument,
         sandboxRequire,
-        sandboxedObject,
-        sandboxedReflect,
+        env.sandboxedObject,
+        env.sandboxedReflect,
         null,
         ...BLOCKED_GLOBALS.map(() => undefined),
       ];
