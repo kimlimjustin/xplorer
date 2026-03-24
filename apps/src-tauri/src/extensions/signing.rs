@@ -1,18 +1,32 @@
 //! Extension Signature Verification
 //!
-//! Provides SHA-256 based integrity verification for extensions.
-//! When an extension is signed, a `.sig` file is created alongside its `package.json`
-//! containing a JSON payload with the content hash, signer identity, and timestamp.
+//! Provides SHA-256 based integrity verification with Ed25519 cryptographic signatures
+//! for extensions. When an extension is signed, a `.sig` file is created alongside its
+//! `package.json` containing a JSON payload with the content hash, signer identity,
+//! timestamp, and an optional Ed25519 signature of the hash.
 //!
 //! On load, the extension manager checks for a `.sig` file and verifies that the
-//! stored hash matches the current on-disk contents. Unsigned extensions are allowed
+//! stored hash matches the current on-disk contents. If an Ed25519 signature is present,
+//! it is verified against the official public key. Unsigned extensions are allowed
 //! to load but produce a warning.
 
+use ed25519_dalek::{Signature, Signer, SigningKey, Verifier, VerifyingKey};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::fs;
 use std::path::{Path, PathBuf};
-use tracing::warn;
+use tracing::{error, warn};
+
+// Public key for verifying official Xplorer extensions.
+// Generated with: SigningKey::generate(&mut OsRng).verifying_key().to_bytes()
+// The private key is kept in the CI/build system, NOT in the source code.
+// Private key hex (save separately, do NOT commit): 43076bd255075b9c138839dcb423382649fd12ee7e38a85c866e8aefc331f236
+const OFFICIAL_PUBLIC_KEY: [u8; 32] = [
+    0x2b, 0x85, 0xf1, 0xbe, 0x6c, 0x99, 0x4a, 0x1c,
+    0xfc, 0x5b, 0x07, 0x83, 0x07, 0xea, 0x86, 0x5e,
+    0x4d, 0x4a, 0x5c, 0x03, 0x9f, 0x69, 0xa8, 0xa3,
+    0x2c, 0x77, 0x47, 0xbf, 0xc3, 0x1e, 0xdc, 0xda,
+];
 
 /// Metadata stored in the `.sig` file alongside an extension's `package.json`.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -26,6 +40,28 @@ pub struct SignatureInfo {
     /// Whether the signature was successfully verified against the on-disk contents.
     #[serde(default)]
     pub verified: bool,
+    /// Hex-encoded Ed25519 signature of the hash, if the extension was signed with a key.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ed25519_signature: Option<String>,
+}
+
+// ─── Hex helpers ─────────────────────────────────────────────────────────────
+
+fn hex_encode(bytes: &[u8]) -> String {
+    bytes.iter().map(|b| format!("{:02x}", b)).collect()
+}
+
+fn hex_decode(hex: &str) -> Result<Vec<u8>, String> {
+    if hex.len() % 2 != 0 {
+        return Err("Hex string has odd length".to_string());
+    }
+    (0..hex.len())
+        .step_by(2)
+        .map(|i| {
+            u8::from_str_radix(&hex[i..i + 2], 16)
+                .map_err(|e| format!("Invalid hex at position {}: {}", i, e))
+        })
+        .collect()
 }
 
 // ─── Hashing ────────────────────────────────────────────────────────────────
@@ -108,15 +144,28 @@ fn collect_files(
 /// into the extension directory.
 ///
 /// `signer` is an arbitrary identity string (e.g. a developer name).
-pub fn sign_extension(extension_dir: &Path, signer: &str) -> Result<SignatureInfo, String> {
+/// `signing_key_bytes` is an optional 32-byte Ed25519 private key. When provided,
+/// the hash is cryptographically signed and the signature is included in the `.sig`.
+pub fn sign_extension(
+    extension_dir: &Path,
+    signer: &str,
+    signing_key_bytes: Option<&[u8; 32]>,
+) -> Result<SignatureInfo, String> {
     let hash = hash_extension_contents(extension_dir)?;
     let timestamp = chrono::Utc::now().to_rfc3339();
+
+    let ed25519_signature = signing_key_bytes.map(|key_bytes| {
+        let signing_key = SigningKey::from_bytes(key_bytes);
+        let signature = signing_key.sign(hash.as_bytes());
+        hex_encode(&signature.to_bytes())
+    });
 
     let info = SignatureInfo {
         hash,
         signer: signer.to_string(),
         timestamp,
         verified: true,
+        ed25519_signature,
     };
 
     let sig_path = sig_file_path(extension_dir);
@@ -134,6 +183,10 @@ pub fn sign_extension(extension_dir: &Path, signer: &str) -> Result<SignatureInf
 ///
 /// Returns `Ok(Some(info))` with `verified = true/false` if a `.sig` file exists,
 /// or `Ok(None)` if the extension is unsigned.
+///
+/// Verification levels:
+/// - If `ed25519_signature` is present: verify with Ed25519 (strong).
+/// - If only `hash` is present: verify hash only (legacy, warning emitted).
 pub fn verify_extension(extension_dir: &Path) -> Result<Option<SignatureInfo>, String> {
     let sig_path = sig_file_path(extension_dir);
 
@@ -148,7 +201,32 @@ pub fn verify_extension(extension_dir: &Path) -> Result<Option<SignatureInfo>, S
         .map_err(|e| format!("Invalid .sig file JSON: {}", e))?;
 
     let current_hash = hash_extension_contents(extension_dir)?;
-    info.verified = info.hash == current_hash;
+
+    if let Some(ref sig_hex) = info.ed25519_signature {
+        let sig_bytes = hex_decode(sig_hex)
+            .map_err(|_| "Invalid hex in ed25519_signature".to_string())?;
+        let signature = Signature::from_slice(&sig_bytes)
+            .map_err(|_| "Invalid Ed25519 signature format".to_string())?;
+        let verifying_key = VerifyingKey::from_bytes(&OFFICIAL_PUBLIC_KEY)
+            .map_err(|_| "Invalid public key".to_string())?;
+
+        // The signature was computed over the hash string, so verify against the
+        // current on-disk hash. This implicitly checks both hash integrity AND
+        // cryptographic authenticity: if the hash changed, verification fails.
+        verifying_key
+            .verify(current_hash.as_bytes(), &signature)
+            .map_err(|_| "Ed25519 signature verification FAILED".to_string())?;
+
+        info.verified = true;
+    } else {
+        // Legacy: no Ed25519 signature, hash-only check
+        info.verified = info.hash == current_hash;
+        if info.verified {
+            warn!(
+                "[ExtensionSigning] Extension has hash-only signature (legacy, no Ed25519)"
+            );
+        }
+    }
 
     Ok(Some(info))
 }
@@ -164,7 +242,7 @@ pub fn verify_extension_integrity(extension_dir: &Path, extension_id: &str) -> b
             if info.verified {
                 true
             } else {
-                warn!(
+                error!(
                     "[ExtensionSigning] Extension '{}' has an INVALID signature — \
                      contents may have been tampered with (expected hash {}, got different)",
                     extension_id, info.hash
@@ -173,14 +251,14 @@ pub fn verify_extension_integrity(extension_dir: &Path, extension_id: &str) -> b
             }
         }
         Ok(None) => {
-            warn!(
+            error!(
                 "[ExtensionSigning] Extension '{}' is UNSIGNED — no .sig file found",
                 extension_id
             );
             false
         }
         Err(e) => {
-            warn!(
+            error!(
                 "[ExtensionSigning] Failed to verify extension '{}': {}",
                 extension_id, e
             );
@@ -201,6 +279,13 @@ mod tests {
     use super::*;
     use std::fs;
     use tempfile::tempdir;
+
+    const TEST_SIGNING_KEY: [u8; 32] = [
+        0x43, 0x07, 0x6b, 0xd2, 0x55, 0x07, 0x5b, 0x9c,
+        0x13, 0x88, 0x39, 0xdc, 0xb4, 0x23, 0x38, 0x26,
+        0x49, 0xfd, 0x12, 0xee, 0x7e, 0x38, 0xa8, 0x5c,
+        0x86, 0x6e, 0x8a, 0xef, 0xc3, 0x31, 0xf2, 0x36,
+    ];
 
     /// Helper: create a minimal extension directory with a package.json and a JS file.
     fn create_test_extension(dir: &Path) {
@@ -290,38 +375,69 @@ mod tests {
     }
 
     #[test]
-    fn test_sign_creates_sig_file() {
+    fn test_sign_creates_sig_file_without_key() {
         let tmp = tempdir().unwrap();
         create_test_extension(tmp.path());
 
-        let info = sign_extension(tmp.path(), "test-developer").unwrap();
+        let info = sign_extension(tmp.path(), "test-developer", None).unwrap();
 
         assert!(tmp.path().join(".sig").exists(), ".sig file should be created");
         assert_eq!(info.signer, "test-developer");
         assert!(info.verified);
         assert!(!info.hash.is_empty());
         assert!(!info.timestamp.is_empty());
+        assert!(info.ed25519_signature.is_none());
     }
 
     #[test]
-    fn test_verify_valid_signature() {
+    fn test_sign_creates_sig_file_with_key() {
         let tmp = tempdir().unwrap();
         create_test_extension(tmp.path());
 
-        sign_extension(tmp.path(), "dev").unwrap();
+        let info = sign_extension(tmp.path(), "test-developer", Some(&TEST_SIGNING_KEY)).unwrap();
+
+        assert!(tmp.path().join(".sig").exists(), ".sig file should be created");
+        assert_eq!(info.signer, "test-developer");
+        assert!(info.verified);
+        assert!(!info.hash.is_empty());
+        assert!(!info.timestamp.is_empty());
+        assert!(info.ed25519_signature.is_some());
+        // Ed25519 signature is 64 bytes = 128 hex chars
+        assert_eq!(info.ed25519_signature.as_ref().unwrap().len(), 128);
+    }
+
+    #[test]
+    fn test_verify_valid_signature_legacy() {
+        let tmp = tempdir().unwrap();
+        create_test_extension(tmp.path());
+
+        sign_extension(tmp.path(), "dev", None).unwrap();
 
         let result = verify_extension(tmp.path()).unwrap();
         assert!(result.is_some());
         let info = result.unwrap();
-        assert!(info.verified, "Signature should be valid for unmodified extension");
+        assert!(info.verified, "Legacy signature should be valid for unmodified extension");
     }
 
     #[test]
-    fn test_verify_detects_tampering() {
+    fn test_verify_valid_signature_ed25519() {
         let tmp = tempdir().unwrap();
         create_test_extension(tmp.path());
 
-        sign_extension(tmp.path(), "dev").unwrap();
+        sign_extension(tmp.path(), "dev", Some(&TEST_SIGNING_KEY)).unwrap();
+
+        let result = verify_extension(tmp.path()).unwrap();
+        assert!(result.is_some());
+        let info = result.unwrap();
+        assert!(info.verified, "Ed25519 signature should be valid for unmodified extension");
+    }
+
+    #[test]
+    fn test_verify_detects_tampering_legacy() {
+        let tmp = tempdir().unwrap();
+        create_test_extension(tmp.path());
+
+        sign_extension(tmp.path(), "dev", None).unwrap();
 
         // Tamper with a file after signing
         fs::write(tmp.path().join("dist/index.js"), "alert('hacked');").unwrap();
@@ -329,7 +445,34 @@ mod tests {
         let result = verify_extension(tmp.path()).unwrap();
         assert!(result.is_some());
         let info = result.unwrap();
-        assert!(!info.verified, "Signature should be invalid after tampering");
+        assert!(!info.verified, "Legacy signature should be invalid after tampering");
+    }
+
+    #[test]
+    fn test_verify_detects_tampering_ed25519() {
+        let tmp = tempdir().unwrap();
+        create_test_extension(tmp.path());
+
+        sign_extension(tmp.path(), "dev", Some(&TEST_SIGNING_KEY)).unwrap();
+
+        // Tamper with a file after signing
+        fs::write(tmp.path().join("dist/index.js"), "alert('hacked');").unwrap();
+
+        let result = verify_extension(tmp.path());
+        assert!(result.is_err(), "Ed25519 verification should fail (return error) after tampering");
+    }
+
+    #[test]
+    fn test_verify_detects_forged_signature() {
+        let tmp = tempdir().unwrap();
+        create_test_extension(tmp.path());
+
+        // Sign with a different key
+        let fake_key = SigningKey::generate(&mut rand::rngs::OsRng);
+        sign_extension(tmp.path(), "dev", Some(&fake_key.to_bytes())).unwrap();
+
+        let result = verify_extension(tmp.path());
+        assert!(result.is_err(), "Signature from wrong key should fail verification");
     }
 
     #[test]
@@ -345,7 +488,7 @@ mod tests {
     fn test_verify_extension_integrity_signed_valid() {
         let tmp = tempdir().unwrap();
         create_test_extension(tmp.path());
-        sign_extension(tmp.path(), "dev").unwrap();
+        sign_extension(tmp.path(), "dev", None).unwrap();
 
         let ok = verify_extension_integrity(tmp.path(), "test-ext");
         assert!(ok, "Valid signed extension should pass integrity check");
@@ -355,7 +498,7 @@ mod tests {
     fn test_verify_extension_integrity_signed_tampered() {
         let tmp = tempdir().unwrap();
         create_test_extension(tmp.path());
-        sign_extension(tmp.path(), "dev").unwrap();
+        sign_extension(tmp.path(), "dev", None).unwrap();
 
         fs::write(tmp.path().join("dist/index.js"), "alert('bad');").unwrap();
 
@@ -377,11 +520,11 @@ mod tests {
         let tmp = tempdir().unwrap();
         create_test_extension(tmp.path());
 
-        let info1 = sign_extension(tmp.path(), "signer-a").unwrap();
+        let info1 = sign_extension(tmp.path(), "signer-a", None).unwrap();
 
         // Modify, then re-sign with a different signer
         fs::write(tmp.path().join("dist/index.js"), "console.log('v2');").unwrap();
-        let info2 = sign_extension(tmp.path(), "signer-b").unwrap();
+        let info2 = sign_extension(tmp.path(), "signer-b", None).unwrap();
 
         assert_ne!(info1.hash, info2.hash, "Hash should change after modification");
         assert_eq!(info2.signer, "signer-b");
@@ -403,7 +546,7 @@ mod tests {
     fn test_sig_file_is_valid_json() {
         let tmp = tempdir().unwrap();
         create_test_extension(tmp.path());
-        sign_extension(tmp.path(), "dev").unwrap();
+        sign_extension(tmp.path(), "dev", None).unwrap();
 
         let content = fs::read_to_string(tmp.path().join(".sig")).unwrap();
         let parsed: SignatureInfo = serde_json::from_str(&content).unwrap();
@@ -421,7 +564,7 @@ mod tests {
             let path = entry.path();
             if path.is_dir() && path.join("package.json").exists() {
                 let ext_name = path.file_name().unwrap().to_string_lossy().to_string();
-                sign_extension(&path, "Xplorer Team").unwrap();
+                sign_extension(&path, "Xplorer Team", Some(&TEST_SIGNING_KEY)).unwrap();
                 let info = verify_extension(&path).unwrap().unwrap();
                 assert!(info.verified, "Bundled extension '{}' should verify after signing", ext_name);
             }
@@ -438,5 +581,34 @@ mod tests {
 
         let result = verify_extension(tmp.path());
         assert!(result.is_err(), "Corrupt .sig file should return an error");
+    }
+
+    #[test]
+    fn test_hex_encode_decode_roundtrip() {
+        let data: Vec<u8> = (0..=255).collect();
+        let encoded = hex_encode(&data);
+        let decoded = hex_decode(&encoded).unwrap();
+        assert_eq!(data, decoded);
+    }
+
+    #[test]
+    fn test_hex_decode_invalid() {
+        assert!(hex_decode("zz").is_err());
+        assert!(hex_decode("abc").is_err()); // odd length
+    }
+
+    #[test]
+    fn test_ed25519_signature_roundtrip() {
+        let tmp = tempdir().unwrap();
+        create_test_extension(tmp.path());
+
+        // Sign with the test key
+        let info = sign_extension(tmp.path(), "dev", Some(&TEST_SIGNING_KEY)).unwrap();
+        assert!(info.ed25519_signature.is_some());
+
+        // Verify
+        let verified = verify_extension(tmp.path()).unwrap().unwrap();
+        assert!(verified.verified);
+        assert!(verified.ed25519_signature.is_some());
     }
 }

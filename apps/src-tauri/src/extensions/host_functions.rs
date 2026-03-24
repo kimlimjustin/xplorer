@@ -422,6 +422,7 @@ fn do_get_storage(
     key_ptr: i32,
     key_len: i32,
 ) -> Result<String, String> {
+    require_permission(ctx, "storage:read")?;
     let key = read_string_from_memory(ctx, key_ptr, key_len)?;
     validate_storage_key(&key)?;
     let ext_id = ctx.as_context().data().extension_id.clone();
@@ -444,6 +445,7 @@ fn do_set_storage(
     val_ptr: i32,
     val_len: i32,
 ) -> Result<String, String> {
+    require_permission(ctx, "storage:write")?;
     let key = read_string_from_memory(ctx, key_ptr, key_len)?;
     let value = read_string_from_memory(ctx, val_ptr, val_len)?;
     validate_storage_key(&key)?;
@@ -465,6 +467,7 @@ fn do_delete_storage(
     key_ptr: i32,
     key_len: i32,
 ) -> Result<String, String> {
+    require_permission(ctx, "storage:write")?;
     let key = read_string_from_memory(ctx, key_ptr, key_len)?;
     validate_storage_key(&key)?;
     let ext_id = ctx.as_context().data().extension_id.clone();
@@ -552,9 +555,20 @@ fn do_http_request(
         .iter()
         .map(|(k, v)| (k.to_string(), v.to_str().unwrap_or("").to_string()))
         .collect();
-    let resp_body = response
-        .text()
+    const MAX_HTTP_RESPONSE_SIZE: usize = 10 * 1024 * 1024; // 10MB
+
+    let resp_bytes = response
+        .bytes()
         .map_err(|e| format!("Failed to read response body: {}", e))?;
+
+    if resp_bytes.len() > MAX_HTTP_RESPONSE_SIZE {
+        return Err(format!(
+            "HTTP response too large: {} bytes (limit: {} bytes)",
+            resp_bytes.len(), MAX_HTTP_RESPONSE_SIZE
+        ));
+    }
+
+    let resp_body = String::from_utf8_lossy(&resp_bytes).to_string();
 
     let result = serde_json::json!({
         "status": status,

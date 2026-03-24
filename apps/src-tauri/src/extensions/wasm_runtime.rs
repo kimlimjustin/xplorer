@@ -33,6 +33,9 @@ pub struct WasmRuntime {
 /// Fuel budget for a single `call()` invocation.
 const CALL_FUEL_LIMIT: u64 = 1_000_000;
 
+/// Maximum linear memory pages an extension may use (64KB per page).
+const MAX_MEMORY_PAGES: u32 = 1024; // 64MB
+
 impl WasmRuntime {
     /// Create a new runtime with fuel-metered engine.
     pub fn new() -> Self {
@@ -81,8 +84,17 @@ impl WasmRuntime {
             .start(&mut store)
             .map_err(|e| format!("Failed to start WASM module: {}", e))?;
 
-        // Cache the guest memory export.
+        // Cache the guest memory export and enforce memory limit.
         if let Some(Extern::Memory(mem)) = instance.get_export(&store, "memory") {
+            let current_pages = mem.size(&store);
+            if current_pages > MAX_MEMORY_PAGES {
+                return Err(format!(
+                    "Extension '{}' initial memory ({} pages / {} MB) exceeds limit ({} pages / {} MB)",
+                    extension_id,
+                    current_pages, current_pages as u64 * 64 / 1024,
+                    MAX_MEMORY_PAGES, MAX_MEMORY_PAGES as u64 * 64 / 1024
+                ));
+            }
             store.data_mut().memory = Some(mem);
         }
 
