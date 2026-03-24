@@ -1375,11 +1375,12 @@ export class TauriAPI {
   }
 
   static async nativePluginInvoke(
+    extensionId: string,
     pluginId: string,
     command: string,
     args: Record<string, unknown>,
   ): Promise<unknown> {
-    return await transport('native_plugin_invoke', { pluginId, command, args });
+    return await transport('native_plugin_invoke', { extensionId, pluginId, command, args });
   }
 
   static async extensionBackendCall(

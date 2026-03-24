@@ -83,6 +83,46 @@ function parseMarkdown(md: string): string {
   return html;
 }
 
+// ── HTML Sanitizer ───────────────────────────────────────────────────────────
+
+/**
+ * Sanitize HTML output to prevent XSS attacks.
+ *
+ * - Strips <script>, <iframe>, <object>, <embed> tags and their contents
+ * - Removes event handler attributes (onclick, onerror, onload, etc.)
+ * - Converts javascript: URLs to safe "#" hrefs
+ */
+const sanitizeHtml = (html: string): string => {
+  let sanitized = html;
+
+  // Strip <script>...</script> tags and contents
+  sanitized = sanitized.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+  // Strip self-closing / unclosed <script> tags
+  sanitized = sanitized.replace(/<script\b[^>]*\/?>/gi, '');
+
+  // Strip <iframe> tags and contents
+  sanitized = sanitized.replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '');
+  sanitized = sanitized.replace(/<iframe\b[^>]*\/?>/gi, '');
+
+  // Strip <object> tags and contents
+  sanitized = sanitized.replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, '');
+  sanitized = sanitized.replace(/<object\b[^>]*\/?>/gi, '');
+
+  // Strip <embed> tags
+  sanitized = sanitized.replace(/<embed\b[^>]*\/?>/gi, '');
+
+  // Remove event handler attributes (on*)
+  sanitized = sanitized.replace(/\s+on\w+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '');
+
+  // Convert javascript: URLs to "#"
+  sanitized = sanitized.replace(/\bhref\s*=\s*"javascript:[^"]*"/gi, 'href="#"');
+  sanitized = sanitized.replace(/\bhref\s*=\s*'javascript:[^']*'/gi, "href='#'");
+  sanitized = sanitized.replace(/\bsrc\s*=\s*"javascript:[^"]*"/gi, 'src="#"');
+  sanitized = sanitized.replace(/\bsrc\s*=\s*'javascript:[^']*'/gi, "src='#'");
+
+  return sanitized;
+};
+
 // ── Preview Component ───────────────────────────────────────────────────────
 
 function MarkdownPreviewPanel({ filePath }: { filePath: string }) {
@@ -101,7 +141,7 @@ function MarkdownPreviewPanel({ filePath }: { filePath: string }) {
       .then((text) => {
         if (cancelled) return;
         setContent(text);
-        setHtml(parseMarkdown(text));
+        setHtml(sanitizeHtml(parseMarkdown(text)));
         setLoading(false);
       })
       .catch((err) => {

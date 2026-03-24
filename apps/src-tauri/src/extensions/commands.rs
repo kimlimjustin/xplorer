@@ -377,6 +377,12 @@ fn safe_extract_zip(archive_path: &std::path::Path, target_dir: &std::path::Path
     Ok(())
 }
 
+/// Public wrapper for `validate_url_security` so other modules (e.g. host_functions)
+/// can reuse the same SSRF-safe URL validation.
+pub fn validate_url_security_public(url: &str) -> Result<(), String> {
+    validate_url_security(url)
+}
+
 static EXTENSION_MANAGER: LazyLock<Mutex<Option<ExtensionManager>>> = LazyLock::new(|| Mutex::new(None));
 
 /// Get the temp directory for extension operations (downloads, extractions).
@@ -438,6 +444,15 @@ pub async fn activate_extension(extension_id: String) -> Result<(), String> {
 #[command]
 pub async fn deactivate_extension(extension_id: String) -> Result<(), String> {
     validate_extension_id(&extension_id)?;
+
+    // Unload WASM instance if loaded (separate mutex — no deadlock risk).
+    {
+        let mut runtime = super::WASM_RUNTIME
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
+        runtime.unload(&extension_id);
+    }
+
     let mut manager_guard = EXTENSION_MANAGER.lock().map_err(|e| e.to_string())?;
     if let Some(manager) = manager_guard.as_mut() {
         manager.deactivate_extension(&extension_id)
@@ -567,7 +582,8 @@ pub async fn download_and_install_extension(
         .ok_or("Extension manager not initialized")?;
 
     // Create temp dir inside the extensions directory
-    let temp_dir = get_extensions_tmp_dir()?;
+    // Note: use manager directly instead of get_extensions_tmp_dir() to avoid deadlock
+    let temp_dir = manager.extensions_dir.join(".tmp");
     std::fs::create_dir_all(&temp_dir).map_err(|e| e.to_string())?;
 
     // Canonicalize the temp dir so we can verify containment
@@ -639,18 +655,155 @@ pub async fn check_for_extension_updates(
 ///
 /// This allows extensions with compiled shared libraries to expose
 /// backend functionality (e.g., SSH, FTP) through a JSON-based command interface.
+///
+/// The calling extension must either own the plugin (extension_id == plugin_id)
+/// or have the `native:invoke` permission granted.
 #[command]
 pub async fn native_plugin_invoke(
+    extension_id: String,
     plugin_id: String,
     command: String,
     args: serde_json::Value,
 ) -> Result<serde_json::Value, String> {
+    validate_extension_id(&extension_id)?;
+    validate_extension_id(&plugin_id)?;
+
+    // Verify the calling extension is active and has appropriate permissions.
+    {
+        let manager_guard = EXTENSION_MANAGER.lock().map_err(|e| e.to_string())?;
+        let manager = manager_guard
+            .as_ref()
+            .ok_or("Extension manager not initialized")?;
+        let ext = manager
+            .installed_extensions
+            .iter()
+            .find(|e| e.manifest.id == extension_id)
+            .ok_or_else(|| format!("Extension '{}' not found", extension_id))?;
+        if !ext.is_active {
+            return Err(format!("Extension '{}' is not active", extension_id));
+        }
+
+        // The extension must either own the plugin or have native:invoke permission.
+        let permissions = ext.manifest.permissions.clone().unwrap_or_default();
+        if extension_id != plugin_id && !permissions.iter().any(|p| p == "native:invoke") {
+            return Err(format!(
+                "Extension '{}' lacks 'native:invoke' permission to invoke plugin '{}'",
+                extension_id, plugin_id
+            ));
+        }
+    }
+    // Manager lock released here.
+
     // Run in blocking thread since native plugin calls may block
     tokio::task::spawn_blocking(move || {
         plugin_registry::invoke_plugin(&plugin_id, &command, args)
     })
     .await
     .map_err(|e| format!("Plugin invocation failed: {}", e))?
+}
+
+// ─── WASM Backend Commands ────────────────────────────────────────────────
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct WasmBackendStatus {
+    pub loaded: bool,
+    pub has_wasm_file: bool,
+    pub extension_id: String,
+}
+
+/// Call a method on an extension's WASM backend.
+///
+/// If the WASM module isn't loaded yet, it will be loaded on-demand from
+/// the extension's `backend.wasm` file.
+#[command]
+pub async fn extension_backend_call(
+    extension_id: String,
+    method: String,
+    args: serde_json::Value,
+) -> Result<serde_json::Value, String> {
+    validate_extension_id(&extension_id)?;
+
+    let args_json = serde_json::to_string(&args)
+        .map_err(|e| format!("Failed to serialize args: {}", e))?;
+
+    // Run in a blocking thread since WASM execution is synchronous.
+    tokio::task::spawn_blocking(move || {
+        // Get extension info (path, permissions) from the extension manager.
+        let (ext_path, permissions) = {
+            let manager_guard = EXTENSION_MANAGER.lock().map_err(|e| e.to_string())?;
+            let manager = manager_guard.as_ref().ok_or("Extension manager not initialized")?;
+            let ext = manager
+                .installed_extensions
+                .iter()
+                .find(|e| e.manifest.id == extension_id)
+                .ok_or_else(|| format!("Extension '{}' not found", extension_id))?;
+            if !ext.is_active {
+                return Err(format!("Extension '{}' is not active", extension_id));
+            }
+            (
+                ext.path.clone(),
+                ext.manifest.permissions.clone().unwrap_or_default(),
+            )
+        };
+        // Manager lock released here.
+
+        let mut runtime = super::WASM_RUNTIME
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
+
+        // Load on demand if not already loaded.
+        if !runtime.is_loaded(&extension_id) {
+            let wasm_path = std::path::Path::new(&ext_path).join("backend.wasm");
+            if !wasm_path.exists() {
+                return Err(format!(
+                    "Extension '{}' has no backend.wasm file",
+                    extension_id
+                ));
+            }
+            let wasm_bytes = std::fs::read(&wasm_path)
+                .map_err(|e| format!("Failed to read backend.wasm: {}", e))?;
+            runtime.load_module(&extension_id, &wasm_bytes, permissions)?;
+        }
+
+        let result_json = runtime.call(&extension_id, &method, &args_json)?;
+
+        serde_json::from_str::<serde_json::Value>(&result_json)
+            .map_err(|e| format!("WASM returned invalid JSON: {}", e))
+    })
+    .await
+    .map_err(|e| format!("WASM backend call failed: {}", e))?
+}
+
+/// Get the status of an extension's WASM backend (loaded, has wasm file, etc.).
+#[command]
+pub async fn extension_backend_status(
+    extension_id: String,
+) -> Result<WasmBackendStatus, String> {
+    validate_extension_id(&extension_id)?;
+
+    let has_wasm_file = {
+        let manager_guard = EXTENSION_MANAGER.lock().map_err(|e| e.to_string())?;
+        let manager = manager_guard.as_ref().ok_or("Extension manager not initialized")?;
+        manager
+            .installed_extensions
+            .iter()
+            .find(|e| e.manifest.id == extension_id)
+            .map(|e| e.has_wasm_backend)
+            .unwrap_or(false)
+    };
+
+    let loaded = {
+        let runtime = super::WASM_RUNTIME
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
+        runtime.is_loaded(&extension_id)
+    };
+
+    Ok(WasmBackendStatus {
+        loaded,
+        has_wasm_file,
+        extension_id,
+    })
 }
 
 // ─── .xtension File Format ────────────────────────────────────────────────

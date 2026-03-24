@@ -234,7 +234,7 @@ export const createExtensionApi = (manifest: ExtensionManifest, deps: ExtensionA
       if (!hasPermission(manifest, 'native:invoke')) {
         throw new Error(`Extension "${manifest.id}" missing permission: native:invoke`);
       }
-      return TauriAPI.nativePluginInvoke(manifest.id, command, args || {});
+      return TauriAPI.nativePluginInvoke(manifest.id, manifest.id, command, args || {});
     },
     shortcuts: {
       register: async (
