@@ -8,6 +8,7 @@ import {
   viewModes,
   sortOptions,
   type FileGroup,
+  type SortField,
 } from '@/lib/utils';
 import OperationBar from '@/components/explorer/OperationBar';
 import { useClipboardContext } from '@/contexts/ExplorerContext';
@@ -21,8 +22,8 @@ import { useSmartView } from '@/hooks/use-smart-view';
 interface PaneFileExplorerProps {
   viewMode: string;
   setViewMode: React.Dispatch<React.SetStateAction<string>>;
-  sortBy: string;
-  setSortBy: React.Dispatch<React.SetStateAction<string>>;
+  sortBy: SortField;
+  setSortBy: React.Dispatch<React.SetStateAction<SortField>>;
   sortOrder: 'asc' | 'desc';
   toggleSortOrder: () => void;
   groupByDate: boolean;

@@ -5,15 +5,15 @@
   "type": "module",
   "license": "AGPL-3.0",
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "scripts": {
     "frontend:dev": "vite dev",
     "frontend:build": "vite build",
     "frontend:preview": "vite preview",
     "docs": "pnpm --filter docs run start",
-    "dev": "concurrently \"pnpm run frontend:dev\" \"pnpm run tauri:dev\"",
-    "dev:full": "concurrently \"pnpm run frontend:dev\" \"pnpm run tauri:dev\" \"pnpm run marketplace:dev\"",
+    "dev": "concurrently \"pnpm run frontend:dev\" \"pnpm run tauri:dev\" \"pnpm run marketplace:dev\"",
+    "dev:app": "concurrently \"pnpm run frontend:dev\" \"pnpm run tauri:dev\"",
     "marketplace:dev": "pnpm --filter xplorer-web run dev 2>/dev/null || echo 'Marketplace not available (clone private submodule first)'",
     "marketplace:db": "docker compose -f private/infra/docker-compose.yml up -d postgres 2>/dev/null || echo 'Private infra not available'",
     "build": "pnpm frontend:build && pnpm tauri:build",

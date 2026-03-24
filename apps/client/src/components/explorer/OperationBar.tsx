@@ -18,6 +18,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import type { SortField } from '@/lib/utils';
 
 interface ViewMode {
   id: string;
@@ -26,7 +27,7 @@ interface ViewMode {
 }
 
 interface SortOption {
-  id: string;
+  id: SortField;
   name: string;
   icon: React.ReactNode;
 }
@@ -35,11 +36,11 @@ interface OperationBarProps {
   viewMode: string;
   setViewMode: (mode: string) => void;
   viewModes: Record<string, ViewMode>;
-  sortBy: string;
-  setSortBy: (sortBy: string) => void;
+  sortBy: SortField;
+  setSortBy: (sortBy: SortField) => void;
   sortOrder: 'asc' | 'desc';
   toggleSortOrder: () => void;
-  sortOptions: Record<string, SortOption>;
+  sortOptions: Record<SortField, SortOption>;
   groupByDate?: boolean;
   setGroupByDate?: (enabled: boolean) => void;
   handleCreateFolder: () => void;

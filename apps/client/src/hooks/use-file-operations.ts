@@ -17,6 +17,7 @@ import {
 } from '@/lib/file-operation-helpers';
 import { executePaste, showPasteResultToast } from '@/lib/paste-helpers';
 import type { BottomPanelTabId } from '@/hooks/use-layout-state';
+import type { SortField } from '@/lib/utils';
 
 // ── Re-exports (preserve public API) ─────────────────────────────────────────
 
@@ -75,7 +76,7 @@ interface UseFileOperationsDeps {
   setBottomPanelTab: React.Dispatch<React.SetStateAction<BottomPanelTabId>>;
   setTerminalCwd: React.Dispatch<React.SetStateAction<string>>;
   setViewMode: React.Dispatch<React.SetStateAction<string>>;
-  setSortBy: React.Dispatch<React.SetStateAction<string>>;
+  setSortBy: React.Dispatch<React.SetStateAction<SortField>>;
   setSortOrder: React.Dispatch<React.SetStateAction<'asc' | 'desc'>>;
   navigateToPath: (path: string) => void;
   /** Called when paste detects a file name conflict. Returns the user's choice. */
@@ -647,7 +648,7 @@ export const useFileOperations = (deps: UseFileOperationsDeps) => {
       setViewMode: (mode: string) => {
         setViewModeRef.current(mode);
       },
-      setSortBy: (field: string) => {
+      setSortBy: (field: SortField) => {
         setSortByRef.current(field);
       },
       setSortOrder: (order: 'asc' | 'desc') => {

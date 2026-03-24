@@ -17,6 +17,7 @@ import { useVimMode, isVimModeEnabled, type VimModeActions } from '@/hooks/use-v
 import { useCommandPaletteCommands } from '@/hooks/use-command-palette-commands';
 import type { TabItem, EditorGroup } from '@/types/split-view';
 import type { BottomPanelTabId } from '@/hooks/use-layout-state';
+import type { SortField } from '@/lib/utils';
 import type { SplitLayoutHook } from '@/hooks/use-split-layout';
 import type { Toast } from '@/hooks/use-toast';
 import type { ClipboardState } from '@/hooks/use-context-menu';
@@ -117,7 +118,7 @@ export interface XplorerEffectsDeps {
   bottomPanelHeight: number;
   searchPanelOpen: boolean;
   setSearchPanelOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  sortBy: string;
+  sortBy: SortField;
   sortOrder: 'asc' | 'desc';
   theme: string;
 

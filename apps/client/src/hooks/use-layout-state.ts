@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { STORAGE_KEYS } from '@/lib/storage-keys';
+import type { SortField } from '@/lib/utils';
 
 // ── Helpers for persisting UI state to localStorage ──────────────────────────
 const UI_STATE_KEY = STORAGE_KEYS.UI_STATE;
@@ -65,8 +66,8 @@ export interface LayoutState {
   setViewMode: React.Dispatch<React.SetStateAction<string>>;
 
   // Sorting
-  sortBy: string;
-  setSortBy: React.Dispatch<React.SetStateAction<string>>;
+  sortBy: SortField;
+  setSortBy: React.Dispatch<React.SetStateAction<SortField>>;
   sortOrder: 'asc' | 'desc';
   setSortOrder: React.Dispatch<React.SetStateAction<'asc' | 'desc'>>;
 
@@ -141,7 +142,7 @@ export const useLayoutState = (): LayoutState => {
   const [viewMode, setViewMode] = useState<string>(() => loadUiState('viewMode', 'medium'));
 
   // Sorting
-  const [sortBy, setSortBy] = useState<string>(() => loadUiState('sortBy', 'name'));
+  const [sortBy, setSortBy] = useState<SortField>(() => loadUiState<SortField>('sortBy', 'name'));
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>(() => loadUiState('sortOrder', 'asc'));
 
   // Architecture mode

@@ -3,6 +3,7 @@ import type { FileEntry } from '@/lib/tauri-api';
 import type { FileCollection } from '@/lib/collections';
 import type { SharedPaneActions } from '@/components/split-view/EditorGroupPane';
 import type { PaneSyncMode } from '@/hooks/use-pane-sync';
+import type { SortField } from '@/lib/utils';
 
 // ── Selection ────────────────────────────────────────────────────────────────
 
@@ -18,8 +19,8 @@ export interface SelectionContextValue {
 export interface ViewSortContextValue {
   viewMode: string;
   setViewMode: React.Dispatch<React.SetStateAction<string>>;
-  sortBy: string;
-  setSortBy: React.Dispatch<React.SetStateAction<string>>;
+  sortBy: SortField;
+  setSortBy: React.Dispatch<React.SetStateAction<SortField>>;
   sortOrder: 'asc' | 'desc';
   setSortOrder: React.Dispatch<React.SetStateAction<'asc' | 'desc'>>;
 }
