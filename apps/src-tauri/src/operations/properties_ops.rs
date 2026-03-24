@@ -55,163 +55,183 @@ pub struct FileAttributes {
 #[command]
 pub async fn get_detailed_file_properties(file_path: String) -> Result<DetailedFileProperties, String> {
     validate_file_path(&file_path)?;
-    let path = Path::new(&file_path);
 
-    if !path.exists() {
-        return Err("File or directory does not exist".to_string());
-    }
+    tokio::task::spawn_blocking(move || {
+        let path = Path::new(&file_path);
 
-    let metadata = fs::metadata(path)
-        .map_err(|e| format!("Failed to read metadata: {}", e))?;
-
-    let name = path.file_name()
-        .unwrap_or_default()
-        .to_string_lossy()
-        .to_string();
-
-    let file_type = if metadata.is_dir() {
-        "Directory".to_string()
-    } else if metadata.is_file() {
-        if let Some(ext) = path.extension() {
-            format!("{} File", ext.to_string_lossy().to_uppercase())
-        } else {
-            "File".to_string()
+        if !path.exists() {
+            return Err("File or directory does not exist".to_string());
         }
-    } else if metadata.file_type().is_symlink() {
-        "Symbolic Link".to_string()
-    } else {
-        "Unknown".to_string()
-    };
 
-    let extension = path.extension().map(|e| e.to_string_lossy().to_string());
+        let metadata = fs::metadata(path)
+            .map_err(|e| format!("Failed to read metadata: {}", e))?;
 
-    // Get timestamps
-    let created = metadata.created()
-        .unwrap_or(SystemTime::UNIX_EPOCH)
-        .duration_since(SystemTime::UNIX_EPOCH)
-        .unwrap_or_default()
-        .as_secs();
+        let name = path.file_name()
+            .unwrap_or_default()
+            .to_string_lossy()
+            .to_string();
 
-    let modified = metadata.modified()
-        .unwrap_or(SystemTime::UNIX_EPOCH)
-        .duration_since(SystemTime::UNIX_EPOCH)
-        .unwrap_or_default()
-        .as_secs();
+        let file_type = if metadata.is_dir() {
+            "Directory".to_string()
+        } else if metadata.is_file() {
+            if let Some(ext) = path.extension() {
+                format!("{} File", ext.to_string_lossy().to_uppercase())
+            } else {
+                "File".to_string()
+            }
+        } else if metadata.file_type().is_symlink() {
+            "Symbolic Link".to_string()
+        } else {
+            "Unknown".to_string()
+        };
 
-    let accessed = metadata.accessed()
-        .unwrap_or(SystemTime::UNIX_EPOCH)
-        .duration_since(SystemTime::UNIX_EPOCH)
-        .unwrap_or_default()
-        .as_secs();
+        let extension = path.extension().map(|e| e.to_string_lossy().to_string());
 
-    // Format timestamps
-    let created_formatted = format_timestamp(created);
-    let modified_formatted = format_timestamp(modified);
-    let accessed_formatted = format_timestamp(accessed);
+        // Get timestamps
+        let created = metadata.created()
+            .unwrap_or(SystemTime::UNIX_EPOCH)
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_secs();
 
-    // Get permissions
-    let permissions = get_permissions(&metadata);
+        let modified = metadata.modified()
+            .unwrap_or(SystemTime::UNIX_EPOCH)
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_secs();
 
-    // Check if hidden
-    let is_hidden = is_hidden_file(path);
+        let accessed = metadata.accessed()
+            .unwrap_or(SystemTime::UNIX_EPOCH)
+            .duration_since(SystemTime::UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_secs();
 
-    // Get attributes
-    let attributes = get_file_attributes(path, &metadata).await?;
+        // Format timestamps
+        let created_formatted = format_timestamp(created);
+        let modified_formatted = format_timestamp(modified);
+        let accessed_formatted = format_timestamp(accessed);
 
-    // Get MIME type
-    let mime_type = get_mime_type(&file_path);
+        // Get permissions
+        let permissions = get_permissions(&metadata);
 
-    Ok(DetailedFileProperties {
-        path: file_path,
-        name,
-        file_type,
-        size: metadata.len(),
-        size_formatted: format_file_size(metadata.len()),
-        created,
-        modified,
-        accessed,
-        created_formatted,
-        modified_formatted,
-        accessed_formatted,
-        permissions: permissions.clone(),
-        is_directory: metadata.is_dir(),
-        is_hidden,
-        is_readonly: !permissions.writable,
-        extension,
-        mime_type,
-        attributes,
+        // Check if hidden
+        let is_hidden = is_hidden_file(path);
+
+        // Get attributes
+        let attributes = get_file_attributes(path, &metadata)?;
+
+        // Get MIME type
+        let mime_type = get_mime_type(&file_path);
+
+        Ok(DetailedFileProperties {
+            path: file_path,
+            name,
+            file_type,
+            size: metadata.len(),
+            size_formatted: format_file_size(metadata.len()),
+            created,
+            modified,
+            accessed,
+            created_formatted,
+            modified_formatted,
+            accessed_formatted,
+            permissions: permissions.clone(),
+            is_directory: metadata.is_dir(),
+            is_hidden,
+            is_readonly: !permissions.writable,
+            extension,
+            mime_type,
+            attributes,
+        })
     })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[command]
 pub async fn get_directory_size(dir_path: String) -> Result<u64, String> {
     validate_file_path(&dir_path)?;
-    let path = Path::new(&dir_path);
 
-    if !path.is_dir() {
-        return Err("Path is not a directory".to_string());
-    }
+    tokio::task::spawn_blocking(move || {
+        let path = Path::new(&dir_path);
 
-    calculate_directory_size(path)
+        if !path.is_dir() {
+            return Err("Path is not a directory".to_string());
+        }
+
+        calculate_directory_size(path)
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[command]
 pub async fn get_directory_item_count(dir_path: String) -> Result<u64, String> {
     validate_file_path(&dir_path)?;
-    let path = Path::new(&dir_path);
 
-    if !path.is_dir() {
-        return Err("Path is not a directory".to_string());
-    }
+    tokio::task::spawn_blocking(move || {
+        let path = Path::new(&dir_path);
 
-    count_directory_items(path)
+        if !path.is_dir() {
+            return Err("Path is not a directory".to_string());
+        }
+
+        count_directory_items(path)
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[command]
 pub async fn set_file_permissions(file_path: String, permissions: String) -> Result<(), String> {
     validate_file_path(&file_path)?;
-    let path = Path::new(&file_path);
 
-    if !path.exists() {
-        return Err("File or directory does not exist".to_string());
-    }
+    tokio::task::spawn_blocking(move || {
+        let path = Path::new(&file_path);
 
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        
-        // Parse octal permissions string (e.g., "755")
-        let mode = u32::from_str_radix(&permissions, 8)
-            .map_err(|_| "Invalid permissions format. Use octal format (e.g., '755')".to_string())?;
-        
-        let mut perms = fs::metadata(path)
-            .map_err(|e| format!("Failed to read current permissions: {}", e))?
-            .permissions();
-        
-        perms.set_mode(mode);
-        
-        fs::set_permissions(path, perms)
-            .map_err(|e| format!("Failed to set permissions: {}", e))?;
-    }
-
-    #[cfg(windows)]
-    {
-        // On Windows, we can only toggle read-only
-        let mut perms = fs::metadata(path)
-            .map_err(|e| format!("Failed to read current permissions: {}", e))?
-            .permissions();
-        
-        match permissions.as_str() {
-            "readonly" => perms.set_readonly(true),
-            "writable" => perms.set_readonly(false),
-            _ => return Err("On Windows, only 'readonly' and 'writable' are supported".to_string()),
+        if !path.exists() {
+            return Err("File or directory does not exist".to_string());
         }
-        
-        fs::set_permissions(path, perms)
-            .map_err(|e| format!("Failed to set permissions: {}", e))?;
-    }
 
-    Ok(())
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+
+            // Parse octal permissions string (e.g., "755")
+            let mode = u32::from_str_radix(&permissions, 8)
+                .map_err(|_| "Invalid permissions format. Use octal format (e.g., '755')".to_string())?;
+
+            let mut perms = fs::metadata(path)
+                .map_err(|e| format!("Failed to read current permissions: {}", e))?
+                .permissions();
+
+            perms.set_mode(mode);
+
+            fs::set_permissions(path, perms)
+                .map_err(|e| format!("Failed to set permissions: {}", e))?;
+        }
+
+        #[cfg(windows)]
+        {
+            // On Windows, we can only toggle read-only
+            let mut perms = fs::metadata(path)
+                .map_err(|e| format!("Failed to read current permissions: {}", e))?
+                .permissions();
+
+            match permissions.as_str() {
+                "readonly" => perms.set_readonly(true),
+                "writable" => perms.set_readonly(false),
+                _ => return Err("On Windows, only 'readonly' and 'writable' are supported".to_string()),
+            }
+
+            fs::set_permissions(path, perms)
+                .map_err(|e| format!("Failed to set permissions: {}", e))?;
+        }
+
+        Ok(())
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 fn get_permissions(metadata: &fs::Metadata) -> FilePermissions {
@@ -265,7 +285,7 @@ fn get_permissions(metadata: &fs::Metadata) -> FilePermissions {
     }
 }
 
-async fn get_file_attributes(path: &Path, metadata: &fs::Metadata) -> Result<FileAttributes, String> {
+fn get_file_attributes(path: &Path, metadata: &fs::Metadata) -> Result<FileAttributes, String> {
     let mut attributes = FileAttributes {
         item_count: None,
         total_size: None,

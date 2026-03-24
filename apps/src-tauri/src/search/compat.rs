@@ -630,7 +630,7 @@ impl SearchEngine {
 
             // Find files not yet in the index.
             for path in current_files.keys() {
-                if !idx.documents().values().any(|d| &d.path == path) {
+                if idx.get_document(path).is_none() {
                     new_or_modified.push(path.clone());
                 }
             }
