@@ -26,6 +26,7 @@ import {
   type ViewMode,
   type FileComparisonPageProps,
 } from './file-comparison-helpers';
+import { formatFileSize } from '@/lib/utils';
 
 // ─── Main component ────────────────────────────────────────────────────────
 const FileComparisonPage = ({ file1Path, file2Path, onError }: FileComparisonPageProps) => {
@@ -161,16 +162,7 @@ const FileComparisonPage = ({ file1Path, file2Path, onError }: FileComparisonPag
   }, [goNextHunk, goPrevHunk]);
 
   // ─── Utility ───────────────────────────────────────────────────────
-  const formatSize = (bytes: number): string => {
-    const units = ['B', 'KB', 'MB', 'GB'];
-    let size = bytes;
-    let i = 0;
-    while (size >= 1024 && i < units.length - 1) {
-      size /= 1024;
-      i++;
-    }
-    return `${size.toFixed(1)} ${units[i]}`;
-  };
+  const formatSize = formatFileSize;
 
   const toggleSection = (segIdx: number) => {
     setExpandedSections((prev) => {

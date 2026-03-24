@@ -1,5 +1,6 @@
 import { TauriAPI } from '@/lib/tauri-api';
 import { PATH_SEPARATOR, isWindows, joinPath } from '@/lib/constants';
+import { formatFileSize } from '@/lib/utils';
 
 const customCommands = new Set([
   'help',
@@ -388,11 +389,3 @@ async function handleSizeCommand(
     setTerminalHistory((prev) => [...prev, `Error getting size information: ${error}`, '']);
   }
 }
-
-const formatFileSize = (bytes: number): string => {
-  if (bytes === 0) return '0 B';
-  const k = 1024;
-  const sizes = ['B', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
-};

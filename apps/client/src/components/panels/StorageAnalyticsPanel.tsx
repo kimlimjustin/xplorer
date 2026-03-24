@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { listenToEvent } from '@/lib/transport';
 import { TauriAPI, StorageAnalytics, StorageAnalysisProgress } from '@/lib/tauri-api';
 import { BarChart3, HardDrive, FileText, FolderClosed } from 'lucide-react';
+import { formatFileSize } from '@/lib/utils';
 
 interface StorageAnalyticsPanelProps {
   currentPath: string;
@@ -28,14 +29,6 @@ const SIZE_CAT_COLORS = [
   'var(--xp-orange)', // Large - orange
   'var(--xp-red)', // Huge - red
 ];
-
-const formatFileSize = (bytes: number): string => {
-  if (bytes === 0) return '0 B';
-  const k = 1024;
-  const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
-};
 
 const formatNumber = (n: number): string => {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
@@ -290,10 +283,12 @@ const StorageAnalyticsPanel = ({ currentPath, navigateToPath }: StorageAnalytics
               style={{
                 width: `${usedPercent}%`,
                 background: (() => {
-                  if (usedPercent > 90)
-                    {return 'linear-gradient(90deg, var(--xp-orange), var(--xp-red))';}
-                  if (usedPercent > 70)
-                    {return 'linear-gradient(90deg, var(--xp-blue), var(--xp-orange))';}
+                  if (usedPercent > 90) {
+                    return 'linear-gradient(90deg, var(--xp-orange), var(--xp-red))';
+                  }
+                  if (usedPercent > 70) {
+                    return 'linear-gradient(90deg, var(--xp-blue), var(--xp-orange))';
+                  }
                   return 'linear-gradient(90deg, var(--xp-blue), var(--xp-green))';
                 })(),
               }}
