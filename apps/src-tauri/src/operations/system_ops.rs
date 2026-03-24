@@ -104,6 +104,39 @@ pub async fn list_drives() -> Result<Vec<DriveInfo>, String> {
 /// - Windows: Uses the DeviceIoControl IOCTL_STORAGE_EJECT_MEDIA API
 #[command]
 pub async fn eject_volume(path: String) -> Result<(), String> {
+    // Validate that the path exists
+    let mount_path = std::path::Path::new(&path);
+    if !mount_path.exists() {
+        return Err(format!("Path '{}' does not exist", path));
+    }
+
+    // Validate that the path is an actual mount point or drive
+    #[cfg(target_os = "macos")]
+    {
+        if !path.starts_with("/Volumes/") {
+            return Err(format!("Path '{}' is not a valid mount point (must be under /Volumes/)", path));
+        }
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        if !path.starts_with("/dev/") && !path.starts_with("/mnt/") && !path.starts_with("/media/") {
+            return Err(format!("Path '{}' is not a valid mount point (must be under /dev/, /mnt/, or /media/)", path));
+        }
+    }
+
+    #[cfg(windows)]
+    {
+        let path_bytes = path.as_bytes();
+        if path_bytes.len() < 2
+            || !path_bytes[0].is_ascii_alphabetic()
+            || path_bytes[1] != b':'
+            || (path_bytes.len() > 2 && path_bytes[2] != b'\\')
+        {
+            return Err(format!("Path '{}' is not a valid drive (must match drive letter pattern like D:\\)", path));
+        }
+    }
+
     #[cfg(target_os = "macos")]
     {
         let output = std::process::Command::new("diskutil")
@@ -339,8 +372,8 @@ fn sanitize_command(command: &str) -> Result<(), String> {
         return Ok(());
     }
 
-    // Non-allowlisted command without metacharacters — allow through
-    Ok(())
+    // Non-allowlisted commands are blocked
+    Err(format!("Command '{}' is not on the allowlist", binary_name))
 }
 
 fn build_shell_command(command: &str) -> std::process::Command {
@@ -386,11 +419,8 @@ pub async fn open_file(path: String) -> Result<(), String> {
     // Use the OS default application to open the file
     #[cfg(windows)]
     {
-        // Use quoted path to prevent command injection via filenames containing shell metacharacters
-        let quoted_path = format!("\"{}\"", path.to_string_lossy());
-        std::process::Command::new("cmd")
-            .args(["/C", "start", "", &quoted_path])
-            .creation_flags(0x08000000) // CREATE_NO_WINDOW
+        std::process::Command::new("explorer")
+            .arg(&path)
             .spawn()
             .map_err(|e| format!("Failed to open file: {}", e))?;
     }

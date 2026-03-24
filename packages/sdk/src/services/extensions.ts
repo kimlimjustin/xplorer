@@ -62,11 +62,12 @@ export const inspectXtensionFile = async (xtensionPath: string): Promise<Extensi
 };
 
 export const nativePluginInvoke = async (
+  extensionId: string,
   pluginId: string,
   command: string,
   args: Record<string, unknown>,
 ): Promise<unknown> => {
-  return await transport('native_plugin_invoke', { pluginId, command, args });
+  return await transport('native_plugin_invoke', { extensionId, pluginId, command, args });
 };
 
 export interface ExtensionUpdateInfo {

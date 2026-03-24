@@ -4,7 +4,7 @@ use std::sync::Arc;
 
 use aes_gcm::aead::{Aead, KeyInit};
 use aes_gcm::{Aes256Gcm, Nonce};
-use argon2::Argon2;
+use argon2::{Algorithm, Argon2, Params, Version};
 use rand::RngCore;
 use tauri::{command, AppHandle, State};
 
@@ -25,7 +25,12 @@ const KEY_LEN: usize = 32;
 
 fn derive_key(password: &str, salt: &[u8]) -> Result<[u8; KEY_LEN], String> {
     let mut key = [0u8; KEY_LEN];
-    Argon2::default()
+    let argon2 = Argon2::new(
+        Algorithm::Argon2id,
+        Version::V0x13,
+        Params::new(65536, 3, 1, Some(32)).map_err(|e| format!("Argon2 params error: {}", e))?,
+    );
+    argon2
         .hash_password_into(password.as_bytes(), salt, &mut key)
         .map_err(|e| format!("Key derivation failed: {}", e))?;
     Ok(key)
