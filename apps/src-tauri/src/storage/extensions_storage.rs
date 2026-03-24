@@ -1,9 +1,9 @@
 // Storage sub-module: Extension-scoped Storage
 //
-// Performance: in-memory cache with write-through.
-// The cache mutex is held across the entire read-modify-write cycle so we
-// never clone the full data structure just to modify one entry, and we
-// avoid double lock-acquire on write paths.
+// Performance: in-memory cache with write-behind.
+// The cache mutex is held only for the in-memory HashMap update; serialisation
+// and disk I/O happen after the lock is released so no other storage operation
+// is blocked during file writes.
 
 use std::collections::HashMap;
 use std::sync::{LazyLock, Mutex, MutexGuard};
@@ -75,19 +75,6 @@ fn ensure_extension_storage_cache(
     Ok(guard)
 }
 
-/// Persist extension storage to disk directly from the cache guard (no extra clone).
-fn flush_extension_storage_to_disk(
-    app_handle: &tauri::AppHandle,
-    guard: &MutexGuard<'static, Option<HashMap<String, HashMap<String, serde_json::Value>>>>,
-) -> Result<(), String> {
-    let map = guard.as_ref().ok_or_else(|| "Storage cache not initialized".to_string())?;
-    let path = extension_storage_path(app_handle)?;
-    let data =
-        serde_json::to_string_pretty(map).map_err(|e| format!("Failed to serialize: {}", e))?;
-    std::fs::write(&path, data)
-        .map_err(|e| format!("Failed to write extension storage: {}", e))?;
-    Ok(())
-}
 
 #[tauri::command]
 pub async fn get_extension_storage(
@@ -113,11 +100,18 @@ pub async fn set_extension_storage(
     app_handle: tauri::AppHandle,
 ) -> Result<(), String> {
     validate_extension_id(&extension_id)?;
-    let mut guard = ensure_extension_storage_cache(&app_handle)?;
-    let map = guard.as_mut().ok_or_else(|| "Storage cache not initialized".to_string())?;
-    let ext_map = map.entry(extension_id).or_insert_with(HashMap::new);
-    ext_map.insert(key, value);
-    flush_extension_storage_to_disk(&app_handle, &guard)?;
+    let path = extension_storage_path(&app_handle)?;
+    let data_to_write = {
+        let mut guard = ensure_extension_storage_cache(&app_handle)?;
+        let map = guard.as_mut().ok_or_else(|| "Storage cache not initialized".to_string())?;
+        let ext_map = map.entry(extension_id).or_insert_with(HashMap::new);
+        ext_map.insert(key, value);
+        serde_json::to_string_pretty(map).ok()
+    };
+    if let Some(data) = data_to_write {
+        std::fs::write(&path, data)
+            .map_err(|e| format!("Failed to write extension storage: {}", e))?;
+    }
     Ok(())
 }
 
@@ -128,14 +122,21 @@ pub async fn delete_extension_storage(
     app_handle: tauri::AppHandle,
 ) -> Result<(), String> {
     validate_extension_id(&extension_id)?;
-    let mut guard = ensure_extension_storage_cache(&app_handle)?;
-    let map = guard.as_mut().ok_or_else(|| "Storage cache not initialized".to_string())?;
-    if let Some(ext_map) = map.get_mut(&extension_id) {
-        ext_map.remove(&key);
-        if ext_map.is_empty() {
-            map.remove(&extension_id);
+    let path = extension_storage_path(&app_handle)?;
+    let data_to_write = {
+        let mut guard = ensure_extension_storage_cache(&app_handle)?;
+        let map = guard.as_mut().ok_or_else(|| "Storage cache not initialized".to_string())?;
+        if let Some(ext_map) = map.get_mut(&extension_id) {
+            ext_map.remove(&key);
+            if ext_map.is_empty() {
+                map.remove(&extension_id);
+            }
         }
+        serde_json::to_string_pretty(map).ok()
+    };
+    if let Some(data) = data_to_write {
+        std::fs::write(&path, data)
+            .map_err(|e| format!("Failed to write extension storage: {}", e))?;
     }
-    flush_extension_storage_to_disk(&app_handle, &guard)?;
     Ok(())
 }

@@ -86,12 +86,16 @@ impl ExtensionManager {
         // Verify extension signature after copying to the install location
         let verified = signing::verify_extension_integrity(&target_path, &manifest.id);
 
+        // Detect backend.wasm
+        let has_wasm_backend = target_path.join("backend.wasm").exists();
+
         let extension_package = ExtensionPackage {
             manifest,
             path: target_path.to_string_lossy().to_string(),
             is_active: false,
             is_installed: true,
             verified,
+            has_wasm_backend,
         };
 
         let result = extension_package.clone();
@@ -124,6 +128,24 @@ impl ExtensionManager {
     pub fn activate_extension(&mut self, extension_id: &str) -> Result<(), String> {
         if !self.installed_extensions.iter().any(|e| e.manifest.id == extension_id) {
             return Err(format!("Extension '{}' not installed", extension_id));
+        }
+
+        if let Some(ext) = self.installed_extensions.iter().find(|e| e.manifest.id == extension_id) {
+            if !ext.verified {
+                let ext_path = Path::new(&ext.path);
+                let is_builtin = !ext_path.starts_with(&self.extensions_dir);
+                if !is_builtin {
+                    return Err(format!(
+                        "Extension '{}' failed signature verification and cannot be activated. \
+                         Re-install from a trusted source.",
+                        extension_id
+                    ));
+                }
+                warn!(
+                    "[ExtensionManager] Activating UNVERIFIED built-in extension '{}'",
+                    extension_id
+                );
+            }
         }
 
         if !self.active_extensions.contains(&extension_id.to_string()) {
@@ -221,12 +243,15 @@ impl ExtensionManager {
                                 // Verify extension signature on load
                                 let verified = signing::verify_extension_integrity(&path, &manifest.id);
 
+                                let has_wasm_backend = path.join("backend.wasm").exists();
+
                                 let extension_package = ExtensionPackage {
                                     manifest,
                                     path: path.to_string_lossy().to_string(),
                                     is_active,
                                     is_installed: true,
                                     verified,
+                                    has_wasm_backend,
                                 };
                                 self.installed_extensions.push(extension_package);
                             }
