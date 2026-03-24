@@ -12,6 +12,7 @@ import {
   type FileComparisonResult,
   type ComparisonOptions,
 } from '@/lib/file-comparison';
+import { formatFileSize } from '@/lib/utils';
 
 interface FileComparisonDialogProps {
   isOpen: boolean;
@@ -66,19 +67,6 @@ const FileComparisonDialog = ({
     } finally {
       setLoading(false);
     }
-  };
-
-  const formatFileSize = (bytes: number): string => {
-    const units = ['B', 'KB', 'MB', 'GB'];
-    let size = bytes;
-    let unitIndex = 0;
-
-    while (size >= 1024 && unitIndex < units.length - 1) {
-      size /= 1024;
-      unitIndex++;
-    }
-
-    return `${size.toFixed(1)} ${units[unitIndex]}`;
   };
 
   const formatDate = (timestamp: number): string => {

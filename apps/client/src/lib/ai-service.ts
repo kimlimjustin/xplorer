@@ -1,4 +1,5 @@
 import { TauriAPI, type FileSystemNode, type AgentProgress } from './tauri-api';
+import { formatFileSize } from '@/lib/utils';
 
 export type { AgentProgress } from './tauri-api';
 
@@ -314,7 +315,7 @@ ${JSON.stringify(tree, null, 2)}`;
       } else {
         context += `${indent}     ${node.name}`;
         if (node.size) {
-          context += ` (${this.formatFileSize(node.size)})`;
+          context += ` (${formatFileSize(node.size)})`;
         }
         context += '\n';
 
@@ -354,19 +355,6 @@ ${JSON.stringify(tree, null, 2)}`;
 
     count(tree);
     return `${fileCount} files, ${dirCount} directories`;
-  }
-
-  static formatFileSize(bytes: number): string {
-    const units = ['B', 'KB', 'MB', 'GB'];
-    let size = bytes;
-    let unitIndex = 0;
-
-    while (size >= 1024 && unitIndex < units.length - 1) {
-      size /= 1024;
-      unitIndex++;
-    }
-
-    return `${size.toFixed(1)} ${units[unitIndex]}`;
   }
 }
 

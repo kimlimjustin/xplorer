@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { TauriAPI, TokenizerSettings, TokenIndex, IndexingProgress } from '@/lib/tauri-api';
 import { useToast } from '@/hooks/use-toast';
 import { STORAGE_KEYS } from '@/lib/storage-keys';
+import { formatFileSize } from '@/lib/utils';
 
 interface TokenizerSettingsProps {
   className?: string;
@@ -184,13 +185,6 @@ export default function TokenizerSettingsComponent({ className }: TokenizerSetti
         variant: 'destructive',
       });
     }
-  };
-
-  const formatFileSize = (bytes: number): string => {
-    const sizes = ['B', 'KB', 'MB', 'GB'];
-    if (bytes === 0) return '0 B';
-    const i = Math.floor(Math.log(bytes) / Math.log(1024));
-    return `${Math.round((bytes / Math.pow(1024, i)) * 100) / 100} ${sizes[i]}`;
   };
 
   const formatDuration = (seconds: number): string => {
