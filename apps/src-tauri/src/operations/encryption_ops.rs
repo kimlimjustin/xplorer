@@ -170,7 +170,9 @@ pub async fn decrypt_file(
         return Err("File does not have .enc extension".to_string());
     }
 
-    let output_path = path.strip_suffix(".enc").unwrap().to_string();
+    let output_path = path.strip_suffix(".enc")
+        .ok_or_else(|| "File does not have .enc extension".to_string())?
+        .to_string();
     let dest = Path::new(&output_path);
     if dest.exists() {
         return Err(format!("Output file already exists: {}", output_path));
