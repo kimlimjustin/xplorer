@@ -173,6 +173,36 @@ impl Reranker {
         self.rrf_fuse(&ranked)
     }
 
+    /// Convex combination fusion across multiple scored result lists.
+    ///
+    /// Each entry in `scored_lists` is a `(results, weight)` pair where
+    /// `results` contains `(id, score)` tuples and `weight` controls the
+    /// relative contribution of that retriever.  Scores within each list
+    /// are min-max normalised to [0, 1] before weighting.
+    ///
+    /// Returns `(id, fused_score)` pairs sorted by score descending.
+    pub fn convex_combination_fuse(&self, scored_lists: &[(Vec<(String, f64)>, f64)]) -> Vec<(String, f64)> {
+        let mut combined: HashMap<String, f64> = HashMap::new();
+
+        for (results, weight) in scored_lists {
+            if results.is_empty() { continue; }
+
+            // Min-max normalize scores
+            let min_score = results.iter().map(|(_, s)| *s).fold(f64::INFINITY, f64::min);
+            let max_score = results.iter().map(|(_, s)| *s).fold(f64::NEG_INFINITY, f64::max);
+            let range = max_score - min_score;
+
+            for (path, score) in results {
+                let normalized = if range > 0.0 { (score - min_score) / range } else { 1.0 };
+                *combined.entry(path.clone()).or_insert(0.0) += weight * normalized;
+            }
+        }
+
+        let mut result: Vec<_> = combined.into_iter().collect();
+        result.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
+        result
+    }
+
     /// In-place reranking: computes a new score for every result using
     /// [`compute_rerank_score`](Self::compute_rerank_score) and re-sorts the
     /// list by the updated score in descending order.

@@ -104,9 +104,17 @@ export const createExtensionApi = (manifest: ExtensionManifest, deps: ExtensionA
     navigation: {
       getCurrentPath: () => window.__xplorer_state__?.currentPath || '',
       navigateTo: (path: string) => {
+        if (!hasPermission(manifest, 'ui:modify')) {
+          console.warn(`[${manifest.name}] navigateTo blocked: missing ui:modify permission`);
+          return;
+        }
         window.__xplorer_state__?.navigateTo?.(path);
       },
       openInEditor: (path: string) => {
+        if (!hasPermission(manifest, 'file:read')) {
+          console.warn(`[${manifest.name}] openInEditor blocked: missing file:read permission`);
+          return;
+        }
         window.dispatchEvent(new CustomEvent('xplorer-open-in-editor', { detail: { path } }));
       },
       openTab: (options: {
@@ -115,6 +123,10 @@ export const createExtensionApi = (manifest: ExtensionManifest, deps: ExtensionA
         path: string;
         data?: Record<string, unknown>;
       }) => {
+        if (!hasPermission(manifest, 'ui:modify')) {
+          console.warn(`[${manifest.name}] openTab blocked: missing ui:modify permission`);
+          return;
+        }
         window.dispatchEvent(new CustomEvent('xplorer-open-tab', { detail: options }));
       },
     },
@@ -693,6 +705,12 @@ export const createExtensionApi = (manifest: ExtensionManifest, deps: ExtensionA
         }
       },
       confirm: async (message: string, _title?: string): Promise<boolean> => {
+        if (!hasPermission(manifest, 'ui:notifications')) {
+          console.warn(
+            `[${manifest.name}] dialog.confirm blocked: missing ui:notifications permission`,
+          );
+          return false;
+        }
         try {
           const { confirm } = await import('@tauri-apps/plugin-dialog');
           return await confirm(message);

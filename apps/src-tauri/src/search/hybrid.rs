@@ -140,31 +140,31 @@ impl HybridSearcher {
         // Apply intent-based multipliers.
         let (tw, sw) = Self::intent_weights(config, intent);
 
-        // Build scored lists: Vec<(path, weighted_score)>.
-        let mut scored_lists: Vec<Vec<(String, f64)>> = Vec::new();
+        // Build scored lists with weights for convex combination fusion.
+        let mut scored_lists: Vec<(Vec<(String, f64)>, f64)> = Vec::new();
 
         if config.enable_text && !text_results.is_empty() {
             let list: Vec<(String, f64)> = text_results
                 .iter()
-                .map(|r| (r.path.clone(), r.score * tw))
+                .map(|r| (r.path.clone(), r.score))
                 .collect();
-            scored_lists.push(list);
+            scored_lists.push((list, tw));
         }
 
         if config.enable_semantic && !semantic_results.is_empty() {
             let list: Vec<(String, f64)> = semantic_results
                 .iter()
-                .map(|r| (r.path.clone(), r.score * sw))
+                .map(|r| (r.path.clone(), r.score))
                 .collect();
-            scored_lists.push(list);
+            scored_lists.push((list, sw));
         }
 
         if scored_lists.is_empty() {
             return Vec::new();
         }
 
-        // RRF fusion via the reranker.
-        let fused = self.reranker.rrf_fuse_with_scores(&scored_lists);
+        // Convex combination fusion via the reranker.
+        let fused = self.reranker.convex_combination_fuse(&scored_lists);
 
         // Build lookup maps for merging matches from both sources.
         let text_map: HashMap<&str, &super::SearchResult> =

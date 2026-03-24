@@ -6,6 +6,7 @@
 // frontend continue to work without modification.
 
 use std::collections::{HashMap, HashSet};
+use rustc_hash::FxHashSet;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -15,7 +16,8 @@ use std::time::UNIX_EPOCH;
 
 use serde::{Deserialize, Serialize};
 use tracing::{info, warn};
-use walkdir::WalkDir;
+use jwalk::WalkDir;
+use rayon::prelude::*;
 
 use super::index::SearchIndex;
 use super::watcher::{FileChangeEvent, FileWatcher};
@@ -461,6 +463,7 @@ impl SearchEngine {
             }
 
             for entry in WalkDir::new(root_path)
+                .sort(false)
                 .follow_links(false)
                 .into_iter()
                 .filter_map(|e| e.ok())
@@ -477,8 +480,8 @@ impl SearchEngine {
                     continue;
                 }
 
-                if is_text_indexable(path, &blacklisted, settings.max_file_size) {
-                    files_to_index.push(path.to_path_buf());
+                if is_text_indexable(&path, &blacklisted, settings.max_file_size) {
+                    files_to_index.push(path);
                 }
             }
         }
@@ -497,38 +500,37 @@ impl SearchEngine {
             *idx = SearchIndex::new();
         }
 
-        let mut indexed_count: usize = 0;
         let memory_limit_bytes = (settings.memory_limit_mb as usize) * 1024 * 1024;
 
-        for file_path in &files_to_index {
-            let content = match read_file_content(file_path) {
-                Some(c) => c,
-                None => continue,
-            };
+        // Phase 1: parallel content reading (no lock held).
+        let file_contents: Vec<_> = files_to_index
+            .par_iter()
+            .filter_map(|file_path| {
+                let content = read_file_content(file_path)?;
+                let source = content_source_for(file_path);
+                let (size, modified) = file_meta(file_path);
+                let path_str = file_path.to_string_lossy().to_string();
+                Some((path_str, content, source, size, modified))
+            })
+            .collect();
 
-            let source = content_source_for(file_path);
-            let (size, modified) = file_meta(file_path);
-            let path_str = file_path.to_string_lossy().to_string();
+        // Phase 2: single lock acquisition for all indexing.
+        let mut indexed_count: usize = 0;
+        {
+            let mut idx = index.write().unwrap_or_else(|e| e.into_inner());
+            for (path_str, content, source, size, modified) in &file_contents {
+                idx.index_document(path_str, content, source, *size, *modified);
+                indexed_count += 1;
 
-            {
-                let mut idx = match index.write() {
-                    Ok(g) => g,
-                    Err(e) => e.into_inner(),
-                };
-                idx.index_document(&path_str, &content, source, size, modified);
-
-                // Check memory limit after indexing each document.
                 if memory_limit_bytes > 0 && idx.estimated_memory_bytes() >= memory_limit_bytes {
                     warn!(
                         "[SearchEngine] Memory limit reached ({} MB). Stopping indexing after {} files.",
                         settings.memory_limit_mb,
-                        indexed_count + 1
+                        indexed_count
                     );
-                    indexed_count += 1;
                     break;
                 }
             }
-            indexed_count += 1;
         }
 
         // Rebuild FST and update BM25F corpus stats.
@@ -581,6 +583,7 @@ impl SearchEngine {
             }
 
             for entry in WalkDir::new(root_path)
+                .sort(false)
                 .follow_links(false)
                 .into_iter()
                 .filter_map(|e| e.ok())
@@ -594,8 +597,8 @@ impl SearchEngine {
                 {
                     continue;
                 }
-                if is_text_indexable(path, &blacklisted, settings.max_file_size) {
-                    let (_, modified) = file_meta(path);
+                if is_text_indexable(&path, &blacklisted, settings.max_file_size) {
+                    let (_, modified) = file_meta(&path);
                     current_files.insert(path.to_string_lossy().to_string(), modified);
                 }
             }
@@ -665,35 +668,35 @@ impl SearchEngine {
 
         // Index new/modified files.
         let memory_limit_bytes = (settings.memory_limit_mb as usize) * 1024 * 1024;
+
+        // Phase 1: parallel content reading (no lock held).
+        let file_contents: Vec<_> = new_or_modified
+            .par_iter()
+            .filter_map(|path_str| {
+                let file_path = Path::new(path_str);
+                let content = read_file_content(file_path)?;
+                let source = content_source_for(file_path);
+                let (size, modified) = file_meta(file_path);
+                Some((path_str.clone(), content, source, size, modified))
+            })
+            .collect();
+
+        // Phase 2: single lock acquisition for all indexing.
         let mut indexed_count: usize = 0;
-
-        for path_str in &new_or_modified {
-            let file_path = Path::new(path_str);
-            let content = match read_file_content(file_path) {
-                Some(c) => c,
-                None => continue,
-            };
-
-            let source = content_source_for(file_path);
-            let (size, modified) = file_meta(file_path);
-
-            {
-                let mut idx = match index.write() {
-                    Ok(g) => g,
-                    Err(e) => e.into_inner(),
-                };
-                idx.index_document(path_str, &content, source, size, modified);
+        {
+            let mut idx = index.write().unwrap_or_else(|e| e.into_inner());
+            for (path_str, content, source, size, modified) in &file_contents {
+                idx.index_document(path_str, content, source, *size, *modified);
+                indexed_count += 1;
 
                 if memory_limit_bytes > 0 && idx.estimated_memory_bytes() >= memory_limit_bytes {
                     warn!(
                         "[SearchEngine] Memory limit reached during incremental update after {} files.",
-                        indexed_count + 1
+                        indexed_count
                     );
-                    indexed_count += 1;
                     break;
                 }
             }
-            indexed_count += 1;
         }
 
         // Rebuild FST and scorer stats.
@@ -739,13 +742,14 @@ impl SearchEngine {
     ) -> Vec<SearchResult> {
         let parsed = super::query_parser::parse(query);
 
-        // Expand keywords with synonyms.
+        // Expand keywords with synonyms (FxHashSet for O(1) dedup).
+        let mut seen: FxHashSet<String> = parsed.keywords.iter().cloned().collect();
         let mut expanded: Vec<String> = parsed.keywords.clone();
         for kw in &parsed.keywords {
             let related = super::synonyms::get_all_related(kw);
             for syn in related {
                 let s = syn.to_string();
-                if !expanded.contains(&s) {
+                if seen.insert(s.clone()) {
                     expanded.push(s);
                 }
             }
@@ -775,12 +779,13 @@ impl SearchEngine {
         let compat = parsed_to_compat(&parsed);
 
         // Run text search using all keywords (original + synonym expansion).
+        let mut seen: FxHashSet<String> = parsed.keywords.iter().cloned().collect();
         let mut all_keywords: Vec<String> = parsed.keywords.clone();
         for kw in &parsed.keywords {
             let related = super::synonyms::get_all_related(kw);
             for syn in related {
                 let s = syn.to_string();
-                if !all_keywords.contains(&s) {
+                if seen.insert(s.clone()) {
                     all_keywords.push(s);
                 }
             }
@@ -841,6 +846,7 @@ impl SearchEngine {
                     let root = Path::new(&ctx_path);
                     if root.exists() && root.is_dir() {
                         for entry in WalkDir::new(root)
+                            .sort(false)
                             .max_depth(10)
                             .follow_links(false)
                             .into_iter()
@@ -871,7 +877,7 @@ impl SearchEngine {
                                     continue;
                                 }
                             }
-                            let meta = match fs::metadata(p) {
+                            let meta = match fs::metadata(&p) {
                                 Ok(m) => m,
                                 Err(_) => continue,
                             };
@@ -1414,6 +1420,7 @@ impl SearchEngine {
                 let mut dirs_to_index: Vec<PathBuf> = Vec::new();
 
                 for entry in WalkDir::new(root)
+                    .sort(false)
                     .max_depth(depth as usize)
                     .follow_links(false)
                     .into_iter()
@@ -1421,7 +1428,7 @@ impl SearchEngine {
                 {
                     let p = entry.path();
                     // Skip the root directory itself.
-                    if p == root {
+                    if p.as_path() == root {
                         continue;
                     }
                     if p.file_name()
@@ -1432,9 +1439,9 @@ impl SearchEngine {
                         continue;
                     }
                     if p.is_dir() {
-                        dirs_to_index.push(p.to_path_buf());
-                    } else if is_text_indexable(p, &blacklisted, settings.max_file_size) {
-                        files_to_index.push(p.to_path_buf());
+                        dirs_to_index.push(p);
+                    } else if is_text_indexable(&p, &blacklisted, settings.max_file_size) {
+                        files_to_index.push(p);
                     }
                 }
 
