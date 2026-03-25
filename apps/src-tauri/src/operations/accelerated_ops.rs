@@ -46,10 +46,9 @@ impl HardwareInfo {
     }
 
     fn has_cpu_feature(_feature: &str) -> bool {
-        // Enhanced CPU feature detection using runtime detection
         #[cfg(target_arch = "x86_64")]
         {
-            match feature {
+            match _feature {
                 "avx2" => is_x86_feature_detected!("avx2"),
                 "sse4" => is_x86_feature_detected!("sse4.1"),
                 "sse2" => is_x86_feature_detected!("sse2"),
@@ -687,9 +686,9 @@ fn simd_process_buffer(buffer: &mut [u8], _hardware_info: &HardwareInfo) {
     
     #[cfg(target_arch = "x86_64")]
     {
-        if hardware_info.has_avx2 {
+        if _hardware_info.has_avx2 {
             simd_prefetch_avx2(buffer);
-        } else if hardware_info.has_sse4 {
+        } else if _hardware_info.has_sse4 {
             simd_prefetch_sse2(buffer);
         }
     }
