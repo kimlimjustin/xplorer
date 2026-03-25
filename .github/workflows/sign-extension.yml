@@ -1,0 +1,118 @@
+name: Sign Extension
+
+on:
+  repository_dispatch:
+    types: [extension-approved]
+
+env:
+  ED25519_PRIVATE_KEY: ${{ secrets.EXTENSION_SIGNING_KEY }}
+  BLOB_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
+  MARKETPLACE_URL: ${{ secrets.MARKETPLACE_URL }}
+  ADMIN_TOKEN: ${{ secrets.ADMIN_API_TOKEN }}
+
+jobs:
+  sign:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Download unsigned package
+        run: |
+          curl -fSL -o extension.xtension "${{ github.event.client_payload.blob_url }}"
+
+      - name: Extract and validate
+        run: |
+          mkdir -p ext
+          unzip extension.xtension -d ext/
+          node -e "
+            const fs = require('fs');
+            const pkg = JSON.parse(fs.readFileSync('ext/package.json', 'utf8'));
+            if (!pkg.xplorer?.id || !pkg.xplorer?.name || !pkg.xplorer?.version) {
+              console.error('Invalid extension manifest');
+              process.exit(1);
+            }
+            console.log('Extension:', pkg.xplorer.id, 'v' + pkg.xplorer.version);
+          "
+
+      - name: Generate checksum and sign
+        run: |
+          # SHA-256 checksum of dist/index.js
+          CHECKSUM=$(sha256sum ext/dist/index.js | cut -d' ' -f1)
+          echo "Checksum: $CHECKSUM"
+
+          # Create .sig file with Ed25519 signature
+          node -e "
+            const crypto = require('crypto');
+            const fs = require('fs');
+            const keyHex = process.env.ED25519_PRIVATE_KEY;
+            if (!keyHex) { console.error('No signing key'); process.exit(1); }
+
+            // Hash all extension files (same as Rust signing.rs)
+            const files = [];
+            function walk(dir, base) {
+              for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+                if (['.sig', 'node_modules', '.git', 'src', 'target'].includes(entry.name)) continue;
+                const full = dir + '/' + entry.name;
+                const rel = (base ? base + '/' : '') + entry.name;
+                if (entry.isDirectory()) walk(full, rel);
+                else files.push({ path: rel.replace(/\\\\/g, '/'), content: fs.readFileSync(full) });
+              }
+            }
+            walk('ext', '');
+            files.sort((a, b) => a.path.localeCompare(b.path));
+
+            const hasher = crypto.createHash('sha256');
+            for (const f of files) {
+              hasher.update(f.path);
+              hasher.update(f.content);
+            }
+            const hash = hasher.digest('hex');
+
+            // Ed25519 sign
+            const keyBytes = Buffer.from(keyHex, 'hex');
+            const privateKey = crypto.createPrivateKey({
+              key: Buffer.concat([Buffer.from('302e020100300506032b657004220420', 'hex'), keyBytes]),
+              format: 'der',
+              type: 'pkcs8'
+            });
+            const signature = crypto.sign(null, Buffer.from(hash), privateKey);
+
+            const sig = {
+              hash,
+              signer: 'Xplorer Marketplace',
+              timestamp: new Date().toISOString(),
+              verified: true,
+              ed25519_signature: signature.toString('hex')
+            };
+            fs.writeFileSync('ext/.sig', JSON.stringify(sig, null, 2));
+            console.log('Signed:', hash);
+          "
+
+      - name: Repackage
+        run: |
+          cd ext && zip -r ../signed.xtension . && cd ..
+          echo "Package size: $(du -h signed.xtension | cut -f1)"
+
+      - name: Upload signed package
+        run: |
+          curl -fSL -X PUT \
+            "${{ github.event.client_payload.upload_url }}" \
+            -H "Authorization: Bearer $BLOB_TOKEN" \
+            -H "Content-Type: application/octet-stream" \
+            --data-binary @signed.xtension
+
+      - name: Update marketplace database
+        run: |
+          CHECKSUM=$(sha256sum ext/dist/index.js | cut -d' ' -f1)
+          curl -fSL -X POST "$MARKETPLACE_URL/api/admin/extensions/publish" \
+            -H "Authorization: Bearer $ADMIN_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"extensionId\": \"${{ github.event.client_payload.extension_id }}\",
+              \"versionId\": \"${{ github.event.client_payload.version_id }}\",
+              \"checksum\": \"$CHECKSUM\"
+            }"

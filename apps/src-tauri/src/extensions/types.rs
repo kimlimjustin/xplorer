@@ -125,6 +125,9 @@ pub struct ExtensionPackage {
     /// `false` if the extension is unsigned, the signature is invalid, or verification failed.
     #[serde(default)]
     pub verified: bool,
+    /// Whether the extension has a `backend.wasm` file for WASM backend execution.
+    #[serde(default)]
+    pub has_wasm_backend: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

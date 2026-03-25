@@ -111,6 +111,8 @@ jobs:
             target: x86_64-pc-windows-msvc
           - platform: macos-latest
             target: aarch64-apple-darwin
+          - platform: macos-13
+            target: x86_64-apple-darwin
     runs-on: ${{ matrix.platform }}
 
     steps:
@@ -145,8 +147,11 @@ jobs:
       - name: Install frontend dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Cargo test
+        run: cargo test --manifest-path apps/src-tauri/Cargo.toml
+
       - name: Build Tauri app
-        uses: tauri-apps/tauri-action@v0
+        uses: tauri-apps/tauri-action@v0.5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
