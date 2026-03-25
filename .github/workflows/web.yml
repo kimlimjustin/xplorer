@@ -1,0 +1,49 @@
+name: Web CI
+
+on:
+  push:
+    paths: ['private/web/**']
+    branches: [next]
+  pull_request:
+    paths: ['private/web/**']
+
+jobs:
+  test-web:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: xplorer
+          POSTGRES_PASSWORD: xplorer
+          POSTGRES_DB: xplorer_test
+        ports: ['5432:5432']
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+          token: ${{ secrets.PRIVATE_REPO_TOKEN }}
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Push database schema
+        run: cd private/web && pnpm db:push
+        env:
+          DATABASE_URL: postgresql://xplorer:xplorer@localhost:5432/xplorer_test
+
+      - name: Run tests
+        run: cd private/web && pnpm test:run
+        env:
+          DATABASE_URL: postgresql://xplorer:xplorer@localhost:5432/xplorer_test
+          NEXTAUTH_SECRET: test-secret
+          NEXTAUTH_URL: http://localhost:3000
+
+      - name: Typecheck
+        run: cd private/web && npx tsc --noEmit

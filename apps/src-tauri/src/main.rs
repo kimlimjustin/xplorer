@@ -301,6 +301,8 @@ fn main() {
             extensions::validate_extension_path,
             extensions::download_and_install_extension,
             extensions::check_for_extension_updates,
+            extensions::download_extension,
+            extensions::check_extension_updates,
             extensions::pack_extension,
             extensions::install_xtension_file,
             extensions::inspect_xtension_file,
