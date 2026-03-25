@@ -1,0 +1,293 @@
+---
+id: types
+title: Types Reference
+sidebar_position: 3
+---
+
+# Types Reference
+
+Core data types shared between the Rust backend and TypeScript frontend.
+
+## FileEntry
+
+The fundamental file/directory representation used throughout Xplorer.
+
+### Rust (Backend)
+
+```rust
+#[derive(Serialize, Deserialize, Clone)]
+pub struct FileEntry {
+    pub name: String,
+    pub path: String,
+    pub is_dir: bool,
+    pub size: u64,
+    pub modified: u64,       // Unix timestamp (seconds)
+    pub created: u64,        // Unix timestamp (seconds)
+    pub extension: String,
+    pub is_hidden: bool,
+    pub is_symlink: bool,
+}
+```
+
+### TypeScript (Frontend)
+
+```typescript
+interface FileEntry {
+  name: string;
+  path: string;
+  is_dir: boolean;
+  size: number;
+  modified: number;
+  created: number;
+  extension: string;
+  is_hidden: boolean;
+  is_symlink: boolean;
+}
+```
+
+## SearchResult
+
+Returned by the tokenizer search engine.
+
+```typescript
+interface SearchResult {
+  path: string;
+  filename: string;
+  score: number;
+  matches: SearchMatch[];
+  file_size: number;
+  last_modified: number;
+  content_source: string;
+}
+
+interface SearchMatch {
+  token: string;
+  context: string;
+}
+```
+
+## OperationProgress
+
+Emitted during file copy/move operations.
+
+```typescript
+interface OperationProgress {
+  operation_id: string;
+  operation_type: string;
+  current_file: string;
+  bytes_done: number;
+  bytes_total: number;
+  files_done: number;
+  files_total: number;
+  percentage: number;
+  speed: number;            // bytes per second
+  estimated_remaining: number; // seconds
+  status: string;
+}
+```
+
+## DetailedFileProperties
+
+Full file property details returned by `get_detailed_file_properties`.
+
+```typescript
+interface DetailedFileProperties {
+  path: string;
+  name: string;
+  extension: string;
+  size: number;
+  size_formatted: string;
+  created: number;
+  modified: number;
+  accessed: number;
+  is_dir: boolean;
+  is_hidden: boolean;
+  is_readonly: boolean;
+  is_symlink: boolean;
+  mime_type: string;
+  file_type_description: string;
+  permissions: string;
+  // Images only:
+  dimensions?: { width: number; height: number };
+  // Computed:
+  sha256_hash?: string;
+  md5_hash?: string;
+}
+```
+
+## SSHConnection
+
+SSH connection configuration.
+
+```typescript
+interface SSHConnection {
+  id: string;
+  host: string;
+  port: number;
+  username: string;
+  status: 'connected' | 'connecting' | 'disconnected' | 'error';
+}
+
+interface SSHConnectionResult {
+  connection_id: string;
+  status: string;
+  message: string;
+}
+```
+
+## Git Types
+
+```typescript
+interface CommitInfo {
+  hash: string;
+  short_hash: string;
+  author: string;
+  author_email: string;
+  date: string;
+  message: string;
+  files_changed: number;
+}
+
+interface BlameLine {
+  line_number: number;
+  content: string;
+  commit_hash: string;
+  author: string;
+  date: string;
+}
+
+interface BranchInfo {
+  name: string;
+  is_current: boolean;
+  is_remote: boolean;
+  last_commit: string;
+}
+
+interface DiffResult {
+  hunks: DiffHunk[];
+  stats: { additions: number; deletions: number };
+}
+
+interface DiffHunk {
+  header: string;
+  lines: DiffLine[];
+}
+
+interface DiffLine {
+  type: 'add' | 'remove' | 'context';
+  content: string;
+  old_line?: number;
+  new_line?: number;
+}
+
+interface GitRemoteInfo {
+  name: string;
+  url: string;
+  push_url: string;
+}
+```
+
+## Extension Types
+
+```typescript
+interface Extension {
+  id: string;
+  name: string;
+  version: string;
+  description: string;
+  author: string;
+  status: 'active' | 'inactive' | 'error';
+  permissions: string[];
+  sourcePath: string;      // Filesystem path to extension source
+  loadedAt: number;        // Unix timestamp when extension was loaded
+}
+
+interface ExtensionManifest {
+  id: string;
+  name: string;
+  version: string;
+  description: string;
+  author: string;
+  main: string;
+  permissions: string[];
+  dependencies: Record<string, string>;
+}
+```
+
+## TokenizerStats
+
+```typescript
+interface TokenizerStats {
+  total_files: number;
+  total_tokens: number;
+  indexed_paths: string[];
+  last_indexed: number;    // Unix timestamp
+}
+```
+
+## FolderSizeInfo
+
+```typescript
+interface FolderSizeInfo {
+  path: string;
+  size: number;
+  file_count: number;
+  dir_count: number;
+}
+```
+
+## UndoRedoState
+
+Returned by `get_undo_redo_state` to indicate what operations can be undone or redone.
+
+```typescript
+interface UndoRedoState {
+  can_undo: boolean;
+  can_redo: boolean;
+  undo_description: string;  // Human-readable description of the undoable operation
+  redo_description: string;  // Human-readable description of the redoable operation
+}
+```
+
+## FileOperationRecord
+
+Passed to `record_file_operation` to track an operation for undo/redo. Each variant represents a different operation type.
+
+```typescript
+type FileOperationRecord =
+  | { Copy: { src: string; dst: string } }
+  | { Move: { src: string; dst: string } }
+  | { Rename: { old_path: string; new_path: string } }
+  | { Delete: { paths: string[] } }
+  | { CreateFile: { path: string } }
+  | { CreateFolder: { path: string } };
+```
+
+## AI Agent Types
+
+```typescript
+interface StreamItem {
+  type: 'text' | 'tool_call' | 'tool_result' | 'error' | 'done';
+  content: string;
+  tool_name?: string;
+  tool_input?: Record<string, unknown>;
+}
+
+interface ToolCallDisplay {
+  id: string;
+  name: string;
+  input: Record<string, unknown>;
+  output?: string;
+  status: 'pending' | 'running' | 'completed' | 'error';
+}
+```
+
+## GoogleDriveAccount
+
+```typescript
+interface GoogleDriveAccount {
+  id: string;
+  email: string;
+  display_name: string;
+}
+```

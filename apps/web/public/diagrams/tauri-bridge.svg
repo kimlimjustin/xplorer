@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" font-family="'Segoe UI', system-ui, -apple-system, sans-serif">
+  <defs>
+    <filter id="shadow" x="-4%" y="-4%" width="108%" height="112%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.2"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8"/>
+    </marker>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#3b82f6"/>
+    </marker>
+    <marker id="arrowOrange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#f97316"/>
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#22c55e"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="640" height="400" rx="12" fill="#0a0a1a"/>
+
+  <!-- Step 1: React Component -->
+  <rect x="30" y="30" width="260" height="50" rx="10" fill="#172554" stroke="#3b82f6" stroke-width="1.5" filter="url(#shadow)"/>
+  <circle cx="56" cy="55" r="14" fill="#1e40af"/>
+  <text x="56" y="60" text-anchor="middle" fill="#dbeafe" font-size="12" font-weight="700">1</text>
+  <text x="170" y="52" text-anchor="middle" fill="#bfdbfe" font-size="12" font-weight="500">React Component</text>
+  <text x="170" y="68" text-anchor="middle" fill="#60a5fa" font-size="10" font-family="'Cascadia Code', monospace">onClick, useEffect, ...</text>
+
+  <!-- Arrow 1→2 -->
+  <line x1="160" y1="80" x2="160" y2="108" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#arrowBlue)"/>
+  <text x="180" y="98" fill="#64748b" font-size="10">calls</text>
+
+  <!-- Step 2: TauriAPI -->
+  <rect x="30" y="110" width="260" height="50" rx="10" fill="#172554" stroke="#3b82f6" stroke-width="1.5" filter="url(#shadow)"/>
+  <circle cx="56" cy="135" r="14" fill="#1e40af"/>
+  <text x="56" y="140" text-anchor="middle" fill="#dbeafe" font-size="12" font-weight="700">2</text>
+  <text x="170" y="132" text-anchor="middle" fill="#bfdbfe" font-size="12" font-weight="500">TauriAPI.readDirectory(path)</text>
+  <text x="170" y="148" text-anchor="middle" fill="#60a5fa" font-size="10" font-family="'Cascadia Code', monospace">lib/tauri-api.ts</text>
+
+  <!-- Arrow 2→3 -->
+  <line x1="160" y1="160" x2="160" y2="188" stroke="#3b82f6" stroke-width="1.5" marker-end="url(#arrowBlue)"/>
+  <text x="180" y="178" fill="#64748b" font-size="10">calls</text>
+
+  <!-- Step 3: transport() -->
+  <rect x="30" y="190" width="260" height="50" rx="10" fill="#422006" stroke="#fbbf24" stroke-width="1.5" filter="url(#shadow)"/>
+  <circle cx="56" cy="215" r="14" fill="#92400e"/>
+  <text x="56" y="220" text-anchor="middle" fill="#fde68a" font-size="12" font-weight="700">3</text>
+  <text x="170" y="212" text-anchor="middle" fill="#fde68a" font-size="12" font-weight="500">transport('read_directory', {path})</text>
+  <text x="170" y="228" text-anchor="middle" fill="#fbbf24" font-size="10" font-family="'Cascadia Code', monospace">lib/transport.ts</text>
+
+  <!-- Arrow 3→4 -->
+  <line x1="160" y1="240" x2="160" y2="268" stroke="#f97316" stroke-width="1.5" marker-end="url(#arrowOrange)"/>
+  <text x="180" y="258" fill="#64748b" font-size="10">IPC / HTTP</text>
+
+  <!-- Step 4: Rust Command -->
+  <rect x="30" y="270" width="260" height="50" rx="10" fill="#1c1917" stroke="#f97316" stroke-width="1.5" filter="url(#shadow)"/>
+  <circle cx="56" cy="295" r="14" fill="#7c2d12"/>
+  <text x="56" y="300" text-anchor="middle" fill="#fed7aa" font-size="12" font-weight="700">4</text>
+  <text x="170" y="292" text-anchor="middle" fill="#fed7aa" font-size="12" font-weight="500">#[tauri::command]</text>
+  <text x="170" y="308" text-anchor="middle" fill="#fb923c" font-size="10" font-family="'Cascadia Code', monospace">fn read_directory(path: &str)</text>
+
+  <!-- Arrow 4→5 -->
+  <line x1="160" y1="320" x2="160" y2="348" stroke="#22c55e" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+  <text x="180" y="338" fill="#64748b" font-size="10">returns JSON</text>
+
+  <!-- Step 5: Result -->
+  <rect x="30" y="350" width="260" height="36" rx="10" fill="#052e16" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+  <circle cx="56" cy="368" r="14" fill="#166534"/>
+  <text x="56" y="373" text-anchor="middle" fill="#bbf7d0" font-size="12" font-weight="700">5</text>
+  <text x="170" y="373" text-anchor="middle" fill="#86efac" font-size="12" font-family="'Cascadia Code', monospace">Vec&lt;FileEntry&gt; → FileEntry[]</text>
+
+  <!-- Right side: serialization info -->
+  <rect x="340" y="30" width="270" height="160" rx="10" fill="#0f172a" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
+  <text x="475" y="54" text-anchor="middle" fill="#e2e8f0" font-size="13" font-weight="600">Data Serialization</text>
+
+  <text x="360" y="80" fill="#94a3b8" font-size="11">Rust Type</text>
+  <text x="500" y="80" fill="#94a3b8" font-size="11">TypeScript</text>
+
+  <line x1="355" y1="88" x2="595" y2="88" stroke="#1e293b" stroke-width="1"/>
+
+  <text x="360" y="106" fill="#fb923c" font-size="11" font-family="'Cascadia Code', monospace">String</text>
+  <text x="500" y="106" fill="#60a5fa" font-size="11" font-family="'Cascadia Code', monospace">string</text>
+
+  <text x="360" y="124" fill="#fb923c" font-size="11" font-family="'Cascadia Code', monospace">u64</text>
+  <text x="500" y="124" fill="#60a5fa" font-size="11" font-family="'Cascadia Code', monospace">number</text>
+
+  <text x="360" y="142" fill="#fb923c" font-size="11" font-family="'Cascadia Code', monospace">Vec&lt;T&gt;</text>
+  <text x="500" y="142" fill="#60a5fa" font-size="11" font-family="'Cascadia Code', monospace">T[]</text>
+
+  <text x="360" y="160" fill="#fb923c" font-size="11" font-family="'Cascadia Code', monospace">Option&lt;T&gt;</text>
+  <text x="500" y="160" fill="#60a5fa" font-size="11" font-family="'Cascadia Code', monospace">T | null</text>
+
+  <text x="360" y="178" fill="#fb923c" font-size="11" font-family="'Cascadia Code', monospace">Result&lt;T, E&gt;</text>
+  <text x="500" y="178" fill="#60a5fa" font-size="11" font-family="'Cascadia Code', monospace">Promise&lt;T&gt;</text>
+
+  <!-- Right side: Event system -->
+  <rect x="340" y="210" width="270" height="110" rx="10" fill="#0f172a" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
+  <text x="475" y="234" text-anchor="middle" fill="#e2e8f0" font-size="13" font-weight="600">Event System</text>
+
+  <rect x="360" y="248" width="230" height="24" rx="6" fill="#172554" stroke="#2563eb" stroke-width="0.5"/>
+  <text x="475" y="264" text-anchor="middle" fill="#93c5fd" font-size="10" font-family="'Cascadia Code', monospace">listenToEvent('progress', cb)</text>
+
+  <rect x="360" y="280" width="230" height="24" rx="6" fill="#431407" stroke="#f97316" stroke-width="0.5"/>
+  <text x="475" y="296" text-anchor="middle" fill="#fdba74" font-size="10" font-family="'Cascadia Code', monospace">app_handle.emit('progress', &data)</text>
+
+  <!-- Right side: Security -->
+  <rect x="340" y="340" width="270" height="48" rx="10" fill="#0f172a" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
+  <text x="475" y="362" text-anchor="middle" fill="#e2e8f0" font-size="13" font-weight="600">Security</text>
+  <text x="475" y="378" text-anchor="middle" fill="#94a3b8" font-size="10">Capability-based permissions (Tauri v2)</text>
+</svg>

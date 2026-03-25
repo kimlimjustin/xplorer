@@ -1,0 +1,75 @@
+---
+id: google-drive
+title: Google Drive Integration
+sidebar_position: 10
+---
+
+# Google Drive Integration
+
+Xplorer connects to Google Drive so you can browse, upload, download, and manage cloud files alongside your local filesystem.
+
+## Setup
+
+### 1. Create OAuth Credentials
+
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project (or select an existing one)
+3. Navigate to **APIs & Services > Credentials**
+4. Click **Create Credentials > OAuth client ID**
+5. Select **Desktop application** as the application type
+6. Copy the **Client ID** and **Client Secret**
+
+### 2. Configure in Xplorer
+
+1. Open **Settings > Google Drive**
+2. Paste your Client ID and Client Secret
+3. Click **Connect Account**
+4. Complete the OAuth consent flow in your browser
+5. Xplorer stores the refresh token in your system keychain
+
+## Browsing Files
+
+Once connected, your Google Drive accounts appear in the **left sidebar** under the Cloud section. Click an account to browse its contents.
+
+The cloud file browser supports the same view modes as the local explorer (grid, list, details) and shows file metadata including size, last modified date, and sharing status.
+
+## File Operations
+
+| Operation | Description |
+|-----------|-------------|
+| Browse | Navigate folders, view file metadata |
+| Download | Download cloud files to a local directory |
+| Upload | Upload local files to Google Drive |
+| Create Folder | Create new folders in Drive |
+| Rename | Rename files and folders |
+| Move | Move files between Drive folders |
+| Delete | Move files to Drive trash |
+
+### Download to Local
+
+Right-click a file in Drive and select **Download** to save it locally. You can choose the destination folder or use the default download location.
+
+### Upload from Local
+
+Drag files from the local file grid into a Drive folder, or right-click in a Drive folder and select **Upload Files**.
+
+### Context Menu
+
+When browsing a Google Drive folder, the context menu includes all standard Drive operations alongside Xplorer actions like preview and copy path.
+
+## Multi-Account Support
+
+You can connect multiple Google Drive accounts simultaneously. Each account appears as a separate entry in the sidebar. Switch between accounts by clicking on them.
+
+To add another account, go to **Settings > Google Drive > Add Account**.
+
+## Permissions
+
+- Xplorer requests the `drive.file` and `drive.readonly` scopes
+- OAuth consent is required on first connection
+- Credentials are stored securely in the system keychain (Windows Credential Manager, macOS Keychain, or Linux Secret Service)
+- You can revoke access at any time from Google Account settings or from **Settings > Google Drive > Disconnect**
+
+## Technical Details
+
+Google Drive integration runs as an extension (`examples/gdrive-extension`) and exposes its functionality through the `api.gdrive` namespace. The extension communicates with the Google Drive API v3 for all file operations.

@@ -1,0 +1,232 @@
+---
+id: getting-started
+title: Getting Started
+sidebar_position: 2
+---
+
+# Getting Started
+
+This guide will help you set up Xplorer for development.
+
+## Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+- **Node.js** v18+ and **pnpm** (package manager)
+- **Rust** (latest stable) via [rustup](https://rustup.rs/)
+- **Tauri v2 CLI**: `cargo install tauri-cli`
+- **Visual Studio Build Tools** (Windows) with C++ workload
+- **WebView2** (Windows 10/11 — usually pre-installed)
+
+### Optional
+
+- **Ollama** — For AI-powered features (file analysis, chat). Install from [ollama.ai](https://ollama.ai)
+
+## Installation
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/xplorer/xplorer.git
+cd xplorer
+```
+
+### 2. Install Dependencies
+
+```bash
+# Install frontend dependencies
+pnpm install
+
+# Rust dependencies are installed automatically on first build
+```
+
+### 3. Run in Development Mode
+
+```bash
+pnpm dev
+```
+
+This starts both the Vite dev server (port 5174) and the Tauri development window concurrently.
+
+### 4. Build for Production
+
+```bash
+pnpm build
+```
+
+The built installer will be at `src-tauri/target/release/bundle/`.
+
+## Project Scripts
+
+| Command | Description |
+|---------|-------------|
+| `pnpm dev` | Start development (frontend + Tauri) |
+| `pnpm build` | Build production installer |
+| `pnpm frontend:dev` | Start only the frontend dev server |
+| `pnpm tauri:dev` | Start only the Tauri backend |
+| `pnpm test` | Run frontend tests (Vitest) |
+| `pnpm test:tauri` | Run Rust backend tests |
+| `pnpm check` | TypeScript type checking |
+
+## Configuration
+
+### Environment Variables
+
+Create a `.env` file in the project root:
+
+```env
+# Required for AI Agent features (Claude)
+CLAUDE_API_KEY=your-api-key-here
+
+# Ollama is auto-detected on localhost:11434
+```
+
+:::caution
+Never commit your `.env` file. It is listed in `.gitignore` by default.
+:::
+
+### Tauri Configuration
+
+The main Tauri config is at `src-tauri/tauri.conf.json`. Key settings:
+
+- **`productName`** — The application name shown to users
+- **`identifier`** — Unique app identifier (e.g., `com.xplorer.app`)
+- **`bundle`** — Installer configuration (icons, file associations)
+- **`security.csp`** — Content Security Policy for the WebView
+
+## Folder Structure Deep Dive
+
+### Frontend (`client/src/`)
+
+```
+src/
+├── App.tsx              # Root component with routing
+├── main.tsx             # Entry point
+├── pages/
+│   ├── xplorer.tsx      # Main file explorer page
+│   ├── settings.tsx     # Settings page
+│   ├── ssh-explorer.tsx # SSH remote browser page
+│   ├── HomePage.tsx     # Home/start page
+│   ├── FileComparisonPage.tsx # Side-by-side file comparison
+│   └── not-found.tsx    # 404 page
+├── components/
+│   ├── explorer/        # Explorer UI (sidebar, topbar, grid, etc.)
+│   ├── previews/        # File preview components
+│   ├── panels/          # Preview and properties panels
+│   ├── ssh/             # SSH connection UI
+│   ├── extensions/      # Extension UI components
+│   └── ui/              # Base UI components (dialog, tabs, etc.)
+├── lib/
+│   ├── tauri-api.ts     # Tauri backend bridge (delegates to @xplorer/sdk)
+│   ├── ai-service.ts    # AI chat service
+│   ├── agent-service.ts # Claude agent service
+│   ├── ssh-plugin.tsx   # SSH connection manager
+│   ├── extension-host.ts # Extension system runtime
+│   ├── theme-registry.ts # Theme management
+│   ├── constants.ts     # App-wide constants
+│   ├── context-menu-factory.ts # Context menu builder
+│   ├── editable-files.ts # Editable file type definitions
+│   ├── drag-utils.ts    # Drag-and-drop utilities
+│   └── utils.ts         # Shared utilities
+├── extensions/
+│   ├── builtin/         # 8 built-in panel extensions
+│   └── advanced-selection/ # Advanced file selection extension
+└── hooks/
+    ├── use-navigation.ts    # Navigation and path management hook
+    ├── use-file-operations.ts # File CRUD operations hook
+    ├── use-context-menu.ts  # Context menu hook
+    ├── use-dialog-manager.ts # Dialog state management hook
+    ├── use-terminal.ts      # Terminal panel hook
+    ├── use-theme-manager.ts # Theme switching hook
+    ├── use-chat.ts          # AI chat hook
+    ├── use-chat-state.ts    # Chat state management hook
+    ├── use-split-layout.ts  # Split pane layout hook
+    ├── use-shortcuts.ts     # Keyboard shortcut hook
+    ├── use-toast.ts         # Toast notification hook
+    ├── use-folder-sizes.ts  # Folder size calculation hook
+    ├── use-vim-mode.ts      # Vim keybinding hook
+    ├── use-file-comparison.ts # File comparison hook
+    └── use-tour.ts          # Onboarding tour hook
+```
+
+### Backend (`src-tauri/src/`)
+
+```
+src/
+├── main.rs              # Entry point, 100+ Tauri command registrations
+├── error.rs             # Centralized error types
+├── utils.rs             # Shared backend utilities
+├── operations/
+│   ├── mod.rs           # Module exports
+│   ├── types.rs         # Shared types
+│   ├── directory_ops.rs # Directory listing, creation
+│   ├── file_ops.rs      # Copy, move, rename, delete
+│   ├── trash_ops.rs     # Recycle bin / trash operations
+│   ├── metadata_ops.rs  # File metadata retrieval
+│   ├── properties_ops.rs# Detailed file properties
+│   ├── compression_ops.rs # ZIP/TAR/GZ compression
+│   ├── accelerated_ops.rs # SIMD-optimized file copy
+│   ├── comparison_ops.rs  # File comparison / diff
+│   ├── system_ops.rs     # System info, drives
+│   ├── agent_ops.rs      # AI agent file operations
+│   ├── undo_redo_ops.rs   # Undo/redo operation tracking
+│   └── analytics_ops.rs  # Storage analytics operations
+├── ai.rs                # Ollama AI integration
+├── agent/               # Claude AI agent module
+│   ├── mod.rs           # Agent entry point
+│   ├── tools.rs         # Tool definitions
+│   ├── tool_executor.rs # Tool execution logic
+│   ├── streaming.rs     # Streaming response handling
+│   ├── planner.rs       # Multi-step task planning
+│   ├── memory.rs        # Conversation memory
+│   └── security.rs      # Path traversal guards
+├── search/              # Search engine module
+│   ├── mod.rs           # Search entry point
+│   ├── index.rs         # Inverted index construction
+│   ├── query_parser.rs  # Query parsing and structured queries
+│   ├── fuzzy.rs         # Fuzzy matching
+│   ├── stemmer.rs       # Word stemming
+│   ├── synonyms.rs      # Synonym expansion
+│   ├── hybrid.rs        # Hybrid keyword + semantic search
+│   ├── bm25f.rs         # BM25F scoring
+│   ├── fst_index.rs     # FST-based fast lookup
+│   ├── segment.rs       # Index segmentation
+│   ├── bitmap_filters.rs# Bitmap-based filtering
+│   ├── context_ranker.rs# Context-aware ranking
+│   ├── reranker.rs      # Result reranking
+│   ├── ai_pipeline.rs   # AI-augmented search pipeline
+│   ├── ollama_client.rs # Ollama embedding client
+│   ├── watcher.rs       # File system watcher for index updates
+│   └── compat.rs        # Backward compatibility layer
+├── storage/             # Local data storage module
+│   ├── mod.rs           # Storage entry point
+│   ├── bookmarks.rs     # Bookmark/favorites management
+│   ├── tags.rs          # File tagging system
+│   ├── notes.rs         # File notes/annotations
+│   ├── metadata.rs      # Custom metadata storage
+│   ├── recent.rs        # Recent files tracking
+│   └── extensions_storage.rs # Extension data persistence
+├── ssh.rs               # SSH/SFTP operations
+├── git_history.rs       # Git history and blame
+├── git_integration.rs   # Git status, pull, push, fetch, remotes
+├── google_drive.rs      # Google Drive file operations
+├── secure_credentials.rs# Secure credential storage
+├── duplicate_finder.rs  # Duplicate file detection
+├── file_organizer.rs    # AI-powered file organization
+├── document_extractor.rs# PDF/DOCX/XLSX/PPTX text extraction
+├── extension_watcher.rs # Hot-reload file watcher for extensions
+├── extensions/          # Extension system
+│   ├── types.rs         # Extension manifest and status types
+│   ├── manager.rs       # Install, activate, deactivate extensions
+│   ├── permissions.rs   # Permission definitions and validation
+│   ├── commands.rs      # Tauri commands for extension management
+│   ├── signing.rs       # Extension code signing verification
+│   └── native_plugin.rs # Native plugin support
+└── shortcuts/           # Keyboard shortcut system
+```
+
+## Next Steps
+
+- Learn about the [Architecture](/docs/architecture/overview)
+- Explore [Features](/docs/category/features)
+- Read the [API Reference](/docs/category/api-reference)

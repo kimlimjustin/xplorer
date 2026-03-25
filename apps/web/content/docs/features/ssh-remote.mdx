@@ -1,0 +1,88 @@
+---
+id: ssh-remote
+title: SSH Remote Browsing
+sidebar_position: 6
+---
+
+# SSH Remote Browsing
+
+Xplorer includes a full SSH/SFTP client that lets you browse and manage files on remote servers as if they were local.
+
+## Connecting
+
+### SSH Connection Manager
+
+1. Navigate to `/ssh` or click the SSH icon in the sidebar
+2. Click **New Connection**
+3. Enter connection details:
+   - **Host**: Server hostname or IP
+   - **Port**: SSH port (default: 22)
+   - **Username**: SSH username
+   - **Authentication**: Password or SSH key
+
+### Authentication Methods
+
+| Method | Description |
+|--------|-------------|
+| Password | Enter password directly |
+| SSH Key | Provide path to private key file |
+
+## Remote File Browsing
+
+Once connected, the SSH File Browser provides:
+
+- **Directory listing** — Browse remote directories with file icons, sizes, and dates
+- **Navigation** — Back, forward, up, and direct path entry
+- **File preview** — Preview text files directly from the remote server
+
+## File Operations
+
+### Upload
+Transfer local files to the remote server via SFTP.
+
+### Download
+Download remote files to your local filesystem.
+
+### Directory Management
+- Create remote directories
+- Delete remote files and directories
+
+## Connection Management
+
+### Active Connections
+View and manage all active SSH connections from the SSH panel.
+
+### Connection Pool
+Xplorer maintains a connection pool with session caching for performance. Connections are automatically cleaned up when:
+- You disconnect manually
+- The application closes
+- The server drops the connection
+
+### Connection Status
+The SSH panel shows real-time connection status:
+- **Connected** — Active and ready
+- **Connecting** — Authentication in progress
+- **Disconnected** — Connection closed
+- **Error** — Connection failed (with error details)
+
+## SSH File Browser Page
+
+The dedicated SSH explorer page (`/ssh/:connectionId`) provides a full file browser experience identical to the local explorer, but operating on remote files:
+
+- Same grid/list/detail views
+- Same context menu operations
+- Same preview panel
+- Navigation history within the remote filesystem
+
+## Technical Details
+
+### Protocol
+Uses SSH2 protocol via the `ssh2` Rust crate, which provides:
+- SSH session management
+- SFTP channel for file operations
+- Exec channel for command execution
+
+### Security
+- Passwords are not stored on disk by default
+- SSH key authentication is supported
+- All data is encrypted in transit via SSH

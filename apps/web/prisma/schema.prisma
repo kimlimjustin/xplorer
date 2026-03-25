@@ -1,0 +1,359 @@
+// Xplorer Web — Prisma Schema (PostgreSQL)
+// Migrated from SQLite to PostgreSQL for Vercel/Neon deployment
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ──────────────────────────────────────────────────────────────────
+
+enum SubscriptionTier {
+  FREE
+  PRO
+}
+
+enum PricingType {
+  FREE
+  PAID
+}
+
+enum ExtensionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  ARCHIVED
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+// ─── Auth Models ────────────────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  username      String?   @unique
+  role          UserRole  @default(USER)
+  bio           String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Subscription / Billing
+  subscriptionTier      SubscriptionTier @default(FREE)
+  stripeCustomerId      String?          @unique
+  stripeSubscriptionId  String?
+  subscriptionStatus    String?
+  subscriptionStartedAt DateTime?
+  subscriptionExpiresAt DateTime?
+
+  // Stripe Connect (for extension authors receiving payouts)
+  stripeConnectAccountId  String?  @unique
+  stripeConnectOnboarded  Boolean  @default(false)
+
+  // Relations
+  accounts   Account[]
+  sessions   Session[]
+  extensions Extension[]
+  reviews    Review[]
+  purchases  Purchase[]
+  trials     Trial[]
+  donations  Donation[]
+
+  // Cloud sync
+  syncedBookmarks SyncedBookmark[]
+  syncedTags      SyncedTag[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ─── Extension Models ───────────────────────────────────────────────────────
+
+model Extension {
+  id                    String   @id @default(cuid())
+  name                  String   @unique
+  slug                  String   @unique
+  displayName           String
+  description           String
+  longDescription       String?  @db.Text
+  version               String
+  minimumXplorerVersion String   @default("0.1.0")
+  icon                  String?
+  screenshots           String?  @db.Text
+  downloadCount         Int      @default(0)
+  averageRating         Float    @default(0)
+  reviewCount           Int      @default(0)
+  fileSize              Int      @default(0)
+  checksum              String   @default("")
+  downloadUrl           String   @default("")
+  status                ExtensionStatus @default(PENDING)
+  isPublished           Boolean  @default(false)
+  isFeatured            Boolean  @default(false)
+  licenseType           String   @default("MIT")
+  repositoryUrl         String?
+  homepageUrl           String?
+  bugReportUrl          String?
+  publishedAt           DateTime?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  // Pricing
+  pricingType PricingType @default(FREE)
+  price       Int?
+  currency    String      @default("usd")
+
+  // Relations
+  authorId   String
+  author     User               @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  versions   ExtensionVersion[]
+  categories CategoriesOnExtensions[]
+  tags       TagsOnExtensions[]
+  reviews    Review[]
+  purchases  Purchase[]
+  trials     Trial[]
+  downloads  Download[]
+
+  @@index([authorId])
+  @@index([status])
+  @@index([isPublished])
+  @@index([isPublished, status])
+  @@index([createdAt])
+  @@map("extensions")
+}
+
+model ExtensionVersion {
+  id          String   @id @default(cuid())
+  version     String
+  changeLog   String?  @db.Text
+  downloadUrl String
+  blobUrl     String?
+  fileSize    Int      @default(0)
+  checksum    String   @default("")
+  isLatest    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  extensionId String
+  extension   Extension @relation(fields: [extensionId], references: [id], onDelete: Cascade)
+
+  @@unique([extensionId, version])
+  @@map("extension_versions")
+}
+
+model Category {
+  id          String  @id @default(cuid())
+  name        String  @unique
+  slug        String  @unique
+  description String?
+  icon        String?
+  color       String?
+
+  extensions CategoriesOnExtensions[]
+
+  @@map("categories")
+}
+
+model CategoriesOnExtensions {
+  extensionId String
+  categoryId  String
+
+  extension Extension @relation(fields: [extensionId], references: [id], onDelete: Cascade)
+  category  Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([extensionId, categoryId])
+  @@map("categories_on_extensions")
+}
+
+model Tag {
+  id   String @id @default(cuid())
+  name String @unique
+  slug String @unique
+
+  extensions TagsOnExtensions[]
+
+  @@map("tags")
+}
+
+model TagsOnExtensions {
+  extensionId String
+  tagId       String
+
+  extension Extension @relation(fields: [extensionId], references: [id], onDelete: Cascade)
+  tag       Tag       @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([extensionId, tagId])
+  @@map("tags_on_extensions")
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int
+  title     String?
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId      String
+  extensionId String
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  extension Extension @relation(fields: [extensionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, extensionId])
+  @@index([userId])
+  @@index([extensionId])
+  @@map("reviews")
+}
+
+model Download {
+  id        String   @id @default(cuid())
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  extensionId String
+  extension   Extension @relation(fields: [extensionId], references: [id], onDelete: Cascade)
+
+  @@index([extensionId])
+  @@index([ip])
+  @@index([createdAt])
+  @@index([extensionId, ip, createdAt])
+  @@map("downloads")
+}
+
+// ─── Billing Models ─────────────────────────────────────────────────────────
+
+model Purchase {
+  id                   String   @id @default(cuid())
+  userId               String
+  extensionId          String
+  stripePaymentIntentId String?
+  stripeSessionId      String?
+  amount               Int
+  currency             String   @default("usd")
+  platformFee          Int
+  authorPayout         Int
+  status               String   @default("completed")
+  createdAt            DateTime @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  extension Extension @relation(fields: [extensionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, extensionId])
+  @@index([userId])
+  @@index([extensionId])
+  @@map("purchases")
+}
+
+model Trial {
+  id          String   @id @default(cuid())
+  userId      String
+  extensionId String
+  startedAt   DateTime @default(now())
+  expiresAt   DateTime
+  isExpired   Boolean  @default(false)
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  extension Extension @relation(fields: [extensionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, extensionId])
+  @@index([userId])
+  @@map("trials")
+}
+
+model Donation {
+  id                   String   @id @default(cuid())
+  userId               String?
+  stripePaymentIntentId String?
+  stripeSessionId      String?
+  amount               Int
+  currency             String   @default("usd")
+  message              String?  @db.Text
+  createdAt            DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@map("donations")
+}
+
+// ─── Cloud Sync Models ─────────────────────────────────────────────────────
+
+model SyncedBookmark {
+  id        String   @id @default(cuid())
+  userId    String
+  path      String
+  name      String
+  icon      String?
+  pinned    Boolean  @default(false)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, path])
+  @@index([userId])
+  @@map("synced_bookmarks")
+}
+
+model SyncedTag {
+  id        String   @id @default(cuid())
+  userId    String
+  filePath  String
+  name      String
+  color     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, filePath, name])
+  @@index([userId])
+  @@map("synced_tags")
+}

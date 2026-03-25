@@ -1,0 +1,764 @@
+---
+id: sdk
+title: SDK Reference
+sidebar_position: 4
+---
+
+# SDK Reference
+
+The Xplorer Extension SDK (`@xplorer/extension-sdk`) provides high-level registration APIs, React hooks, UI components, base classes, and type definitions for building extensions.
+
+```typescript
+import { Theme, Sidebar, Preview, Command, ContextMenu, Tab, Navigation, BottomTab, Editor } from '@xplorer/extension-sdk';
+```
+
+---
+
+## High-Level Registration APIs (Recommended)
+
+These APIs are the easiest way to create extensions. Each one handles manifest creation, lifecycle management, and host registration automatically.
+
+### Theme.register()
+
+Create a custom color theme. Pass a `colors` object and the SDK auto-generates all CSS variables.
+
+```typescript
+import { Theme } from '@xplorer/extension-sdk';
+
+Theme.register({
+  id: 'my-theme',            // CSS class: .theme-my-theme
+  name: 'My Theme',          // shown in theme picker
+  colors: {
+    bg: '#1a1a2e',           // background color
+    surface: '#16213e',      // panel/card backgrounds
+    surfaceLight: '#1e2a4a', // lighter surface variant
+    border: '#2a3a5a',       // border color
+    text: '#eee',            // primary text
+    textMuted: '#888',       // muted text
+    blue: '#e94560',         // accent / primary
+    green: '#50fa7b',        // success
+    red: '#ff5555',          // destructive
+    orange: '#ffb86c',       // warning
+    pink: '#ff79c6',
+    yellow: '#f1fa8c',
+    cyan: '#8be9fd',
+    purple: '#bd93f9',
+  },
+  background: 'linear-gradient(...)', // optional gradient
+  css: '...',                // optional extra CSS
+});
+```
+
+**What it does internally:**
+1. Generates all `--xp-*` and standard CSS variables from `colors`
+2. Injects a `<style>` element with the generated CSS + any extra `css`
+3. Dispatches `xplorer-theme-register` CustomEvent
+4. Registers the extension with the host
+
+### Sidebar.register()
+
+Create a sidebar panel with React UI.
+
+```typescript
+import { Sidebar, type XplorerAPI } from '@xplorer/extension-sdk';
+
+let api: XplorerAPI;
+
+Sidebar.register({
+  id: 'my-panel',
+  title: 'My Panel',
+  icon: 'star',               // icon name or emoji
+  onActivate: (injectedApi) => { api = injectedApi; },
+  render: (props) => {
+    return React.createElement('div', { style: { padding: 16 } },
+      React.createElement('h3', null, 'Hello!')
+    );
+  },
+});
+```
+
+**Props received by `render`:**
+- `currentPath?: string` — current directory
+- `selectedFiles?: FileEntry[]` — currently selected files
+
+### Preview.register()
+
+Create a custom file preview renderer.
+
+```typescript
+import { Preview, type XplorerAPI } from '@xplorer/extension-sdk';
+
+let api: XplorerAPI;
+
+Preview.register({
+  id: 'csv-preview',
+  title: 'CSV Preview',
+  icon: 'table',
+  permissions: ['file:read'],
+
+  canPreview: (file) => file.path.endsWith('.csv') && !file.is_dir,
+  priority: 10,               // higher = preferred when multiple match
+
+  onActivate: (injectedApi) => { api = injectedApi; },
+  render: (props) => {
+    const files = props.selectedFiles || [];
+    // ... render preview UI
+  },
+});
+```
+
+### Command.register()
+
+Register a command with an optional keyboard shortcut.
+
+```typescript
+import { Command, type XplorerAPI } from '@xplorer/extension-sdk';
+
+Command.register({
+  id: 'word-count',
+  title: 'Count Words in File',
+  shortcut: 'ctrl+shift+w',   // optional
+  action: async (api) => {
+    const path = api.navigation.getCurrentPath();
+    const text = await api.files.readText(path);
+    const count = text.split(/\s+/).filter(Boolean).length;
+    api.ui.showMessage(`Word count: ${count}`, 'info');
+  },
+});
+```
+
+### ContextMenu.register()
+
+Add an item to the right-click context menu.
+
+```typescript
+import { ContextMenu, type XplorerAPI } from '@xplorer/extension-sdk';
+
+ContextMenu.register({
+  id: 'calculate-hash',
+  title: 'Calculate SHA-256',
+  when: 'singleFileSelected',  // 'always' | 'singleFileSelected' | 'multipleFilesSelected' | ((files) => boolean)
+  action: async (files, api) => {
+    const data = await api.files.read(files[0].path);
+    const hash = await crypto.subtle.digest('SHA-256', data);
+    const hex = Array.from(new Uint8Array(hash))
+      .map(b => b.toString(16).padStart(2, '0')).join('');
+    api.ui.showMessage(`SHA-256: ${hex}`, 'info');
+  },
+});
+```
+
+### Tab.register()
+
+Register a custom tab type that appears in the main content area. Ideal for extensions that need a full-page view, like cloud file browsers or dashboards.
+
+```typescript
+import { Tab, type XplorerAPI } from '@xplorer/extension-sdk';
+
+let api: XplorerAPI;
+
+Tab.register({
+  id: 'gdrive-browser',
+  title: 'Google Drive',
+  icon: 'cloud',
+  tabType: 'gdrive',              // unique tab type identifier
+  onActivate: (injectedApi) => { api = injectedApi; },
+  render: (props) => {
+    // props.tabData contains data passed via api.navigation.openTab()
+    return React.createElement('div', { style: { padding: 16 } },
+      React.createElement('h2', null, 'Google Drive Browser'),
+    );
+  },
+});
+```
+
+**Props received by `render`:**
+- `tabData?: Record<string, any>` — custom data passed when opening the tab
+- `currentPath?: string` — current directory (if applicable)
+
+### Navigation.register()
+
+Register a navigation entry in the left sidebar. Clicking the entry navigates to a path or opens a custom tab.
+
+```typescript
+import { Navigation, type XplorerAPI } from '@xplorer/extension-sdk';
+
+Navigation.register({
+  id: 'gdrive-nav',
+  title: 'Google Drive',
+  icon: 'cloud',
+  section: 'cloud',                // sidebar section: 'favorites', 'cloud', 'devices', 'custom'
+  order: 10,                       // sort order within section
+  onClick: (api) => {
+    api.navigation.openTab({ type: 'gdrive', name: 'Google Drive' });
+  },
+});
+```
+
+### BottomTab.register()
+
+Register a tab in the bottom panel (alongside Terminal). Useful for persistent tooling panels like Git, Build Output, or Problems.
+
+```typescript
+import { BottomTab, type XplorerAPI } from '@xplorer/extension-sdk';
+
+let api: XplorerAPI;
+
+BottomTab.register({
+  id: 'git-panel',
+  title: 'Git',
+  icon: 'git-branch',
+  onActivate: (injectedApi) => { api = injectedApi; },
+  render: (props) => {
+    return React.createElement('div', { style: { padding: 12 } },
+      React.createElement('h3', null, 'Git Status'),
+    );
+  },
+});
+```
+
+**Props received by `render`:**
+- `currentPath?: string` — current directory
+- `selectedFiles?: FileEntry[]` — currently selected files
+
+### Editor.register()
+
+Register a custom file editor. When a user opens a file for editing, Xplorer checks registered editors for a match.
+
+```typescript
+import { Editor, type XplorerAPI } from '@xplorer/extension-sdk';
+
+let api: XplorerAPI;
+
+Editor.register({
+  id: 'markdown-editor',
+  title: 'Markdown Editor',
+  icon: 'edit',
+  permissions: ['file:read', 'file:write'],
+
+  canEdit: (file) => !file.is_dir && /\.(md|mdx|markdown)$/.test(file.path),
+  priority: 10,                    // higher = preferred when multiple match
+
+  onActivate: (injectedApi) => { api = injectedApi; },
+  render: (props) => {
+    // props.filePath contains the file being edited
+    return React.createElement('div', { style: { padding: 16 } },
+      React.createElement('h3', null, 'Editing: ' + props.filePath),
+    );
+  },
+});
+```
+
+**Props received by `render`:**
+- `filePath: string` — path of the file being edited
+- `currentPath?: string` — current directory
+
+---
+
+## Hooks
+
+React hooks for reading Xplorer state from within extension components.
+
+### useCurrentPath()
+
+Returns the current directory path. Re-renders when the path changes.
+
+```typescript
+import { useCurrentPath } from '@xplorer/extension-sdk';
+
+function MyComponent() {
+  const currentPath = useCurrentPath();
+  return React.createElement('span', null, `Current: ${currentPath}`);
+}
+```
+
+### useSelectedFiles()
+
+Returns the currently selected files. Re-renders when the selection changes.
+
+```typescript
+import { useSelectedFiles } from '@xplorer/extension-sdk';
+
+function MyComponent() {
+  const files = useSelectedFiles();
+  // files: Array<{ name: string; path: string; is_dir: boolean }>
+  return React.createElement('span', null, `${files.length} selected`);
+}
+```
+
+### navigateTo()
+
+Navigate to a directory programmatically.
+
+```typescript
+import { navigateTo } from '@xplorer/extension-sdk';
+
+navigateTo('/home/user/Documents');
+```
+
+---
+
+## UI Components
+
+Pre-built React components that automatically match the active theme via CSS variables.
+
+### Button
+
+```typescript
+import { Button } from '@xplorer/extension-sdk';
+
+React.createElement(Button, {
+  label: 'Click me',
+  onClick: () => console.log('clicked'),
+  variant: 'primary',    // 'primary' | 'secondary' | 'ghost' | 'danger'
+  size: 'md',            // 'sm' | 'md' | 'lg'
+  disabled: false,
+});
+```
+
+### Input
+
+```typescript
+import { Input } from '@xplorer/extension-sdk';
+
+React.createElement(Input, {
+  value: text,
+  onChange: (value) => setText(value),
+  placeholder: 'Search...',
+  type: 'text',          // any HTML input type
+});
+```
+
+### Select
+
+```typescript
+import { Select } from '@xplorer/extension-sdk';
+
+React.createElement(Select, {
+  value: selected,
+  onChange: (value) => setSelected(value),
+  options: [
+    { value: 'a', label: 'Option A' },
+    { value: 'b', label: 'Option B' },
+  ],
+});
+```
+
+### Toggle
+
+A styled toggle switch.
+
+```typescript
+import { Toggle } from '@xplorer/extension-sdk';
+
+React.createElement(Toggle, {
+  checked: enabled,
+  onChange: (checked) => setEnabled(checked),
+  label: 'Enable feature',
+});
+```
+
+### Spinner
+
+An animated loading spinner.
+
+```typescript
+import { Spinner } from '@xplorer/extension-sdk';
+
+React.createElement(Spinner, { size: 24 });
+```
+
+### Panel
+
+Full-height layout wrapper with optional title header.
+
+```typescript
+import { Panel } from '@xplorer/extension-sdk';
+
+React.createElement(Panel, { title: 'My Panel' },
+  React.createElement('p', null, 'Panel content here')
+);
+```
+
+### Card
+
+Surface box with optional title.
+
+```typescript
+import { Card } from '@xplorer/extension-sdk';
+
+React.createElement(Card, { title: 'Stats' },
+  React.createElement('p', null, '42 files')
+);
+```
+
+---
+
+## XplorerAPI
+
+The sandboxed API object provided to extensions at runtime. Method access is gated by the extension's declared permissions.
+
+### files
+
+Requires `file:read` and/or `file:write` permission.
+
+```typescript
+interface {
+  // Read a file as binary (requires file:read)
+  read(path: string): Promise<ArrayBuffer>;
+
+  // Read a file as text (requires file:read)
+  readText(path: string): Promise<string>;
+
+  // Write content to a file (requires file:write)
+  write(path: string, content: ArrayBuffer | string): Promise<void>;
+
+  // Check if a file exists (requires file:read)
+  exists(path: string): Promise<boolean>;
+
+  // List directory contents (requires directory:list)
+  list(path: string): Promise<FileEntry[]>;
+
+  // Watch for file changes (requires file:read)
+  // NOTE: Not yet implemented
+  watch(path: string, callback: (event: string, path: string) => void): { dispose(): void };
+}
+```
+
+### ui
+
+```typescript
+interface {
+  showMessage(message: string, type?: 'info' | 'warning' | 'error'): void;
+  showProgress(title: string, task: (progress: (value: number, message?: string) => void) => Promise<void>): Promise<void>;
+  showInputBox(options: { prompt?: string; placeholder?: string; value?: string }): Promise<string | undefined>;
+  showQuickPick<T>(items: T[], options?: { placeHolder?: string }): Promise<T | undefined>;
+}
+```
+
+### navigation
+
+```typescript
+interface {
+  getCurrentPath(): string;
+  navigateTo(path: string): void;
+  openFile(path: string): void;
+  openInNewTab(path: string): void;
+  openInEditor(path: string): void;
+  openTab(options: { type: string; name: string; path?: string; data?: Record<string, any> }): void;
+}
+```
+
+### settings
+
+Extension-scoped key-value storage. Data persists across app restarts. Each extension can only access its own storage.
+
+```typescript
+interface {
+  get<T>(key: string, defaultValue?: T): T;
+  set<T>(key: string, value: T): Promise<void>;
+  delete(key: string): Promise<void>;
+}
+```
+
+### commands
+
+```typescript
+interface {
+  register(command: string, callback: (...args: any[]) => any): { dispose(): void };
+  execute(command: string, ...args: any[]): Promise<any>;
+}
+```
+
+### shortcuts
+
+Register keyboard shortcuts programmatically at runtime.
+
+```typescript
+interface {
+  register(shortcutId: string, options: {
+    key: string;          // Key combination (e.g. "ctrl+shift+t")
+    title?: string;       // Description shown in settings
+    when?: string;        // Context condition (default: "file-explorer")
+  }): Promise<void>;
+  unregisterAll(): Promise<void>;
+}
+```
+
+### storage
+
+Extension-scoped key-value persistence. Data persists across app restarts. Each extension can only access its own storage.
+
+```typescript
+interface {
+  get<T>(key: string): Promise<T | null>;
+  set(key: string, value: any): Promise<void>;
+  delete(key: string): Promise<void>;
+}
+```
+
+### ai
+
+Access AI models for chat and analysis. Requires `ai:read` and/or `ai:chat` permission.
+
+```typescript
+interface {
+  getModels(): Promise<string[]>;
+  chat(model: string, messages: Array<{ role: string; content: string }>, fileContext?: string): Promise<string>;
+  checkOllamaStatus(): Promise<{ running: boolean; models: string[] }>;
+}
+```
+
+### search
+
+File search and duplicate detection. Requires `search:read` and/or `search:duplicates` permission.
+
+```typescript
+interface {
+  query(query: string, limit?: number): Promise<FileEntry[]>;
+  semantic(query: string, limit?: number): Promise<FileEntry[]>;
+  findDuplicates(rootPath: string, options?: { minSize?: number; hashAlgorithm?: string }): Promise<Array<{ hash: string; files: string[] }>>;
+}
+```
+
+### dialog
+
+System dialog access for user interaction.
+
+```typescript
+interface {
+  confirm(message: string, title?: string): Promise<boolean>;
+  alert(message: string, title?: string): Promise<void>;
+  pickSaveFile(defaultPath?: string): Promise<string | null>;
+  pickFile(options?: { multiple?: boolean; filters?: Array<{ name: string; extensions: string[] }> }): Promise<string[] | null>;
+}
+```
+
+### analytics
+
+Storage analysis and disk usage insights.
+
+```typescript
+interface {
+  analyzeStorage(path: string): Promise<{
+    totalSize: number;
+    fileCount: number;
+    dirCount: number;
+    byExtension: Record<string, { count: number; size: number }>;
+    largestFiles: Array<{ path: string; size: number }>;
+  }>;
+}
+```
+
+### comparison
+
+File comparison and diffing.
+
+```typescript
+interface {
+  compareFiles(file1: string, file2: string, options?: { ignoreWhitespace?: boolean }): Promise<{
+    identical: boolean;
+    diff: string;
+    additions: number;
+    deletions: number;
+  }>;
+}
+```
+
+### organizer
+
+AI-assisted file organization.
+
+```typescript
+interface {
+  analyzeDirectory(path: string): Promise<{
+    files: Array<{ path: string; suggestedFolder: string; reason: string }>;
+    categories: string[];
+  }>;
+  previewOrganization(path: string, indices: number[]): Promise<Array<{ from: string; to: string }>>;
+  executeOrganization(plan: Array<{ from: string; to: string }>): Promise<{ moved: number; errors: string[] }>;
+}
+```
+
+### gdrive
+
+Google Drive integration. Requires `gdrive:access` permission.
+
+```typescript
+interface {
+  authenticate(): Promise<{ accountId: string; email: string }>;
+  disconnect(accountId: string): Promise<void>;
+  listAccounts(): Promise<Array<{ id: string; email: string }>>;
+  listFiles(accountId: string, folderId?: string): Promise<Array<{ id: string; name: string; mimeType: string; size: number }>>;
+  downloadFile(accountId: string, fileId: string, destPath: string): Promise<void>;
+  uploadFile(accountId: string, localPath: string, folderId?: string): Promise<{ id: string }>;
+  deleteFile(accountId: string, fileId: string): Promise<void>;
+  renameFile(accountId: string, fileId: string, newName: string): Promise<void>;
+  moveFile(accountId: string, fileId: string, newParentId: string): Promise<void>;
+  createFolder(accountId: string, name: string, parentId?: string): Promise<{ id: string }>;
+  getFileContent(accountId: string, fileId: string): Promise<string>;
+  getSettings(): Promise<Record<string, any>>;
+  updateSettings(settings: Record<string, any>): Promise<void>;
+}
+```
+
+### git
+
+Git repository operations. Requires `git:read` and/or `git:write` permission.
+
+```typescript
+interface {
+  // Repository info
+  findRepository(path: string): Promise<string | null>;
+  getRepositoryInfo(repoPath: string): Promise<{ branch: string; remote?: string; clean: boolean }>;
+  getGitStatus(repoPath: string): Promise<Array<{ path: string; status: string }>>;
+  getGitRepoInfo(repoPath: string): Promise<{ branch: string; ahead: number; behind: number }>;
+
+  // File operations
+  getFileHistory(repoPath: string, filePath: string): Promise<Array<{ hash: string; message: string; date: string; author: string }>>;
+  getFileBlame(repoPath: string, filePath: string): Promise<Array<{ line: number; hash: string; author: string; date: string }>>;
+  getFileDiff(repoPath: string, filePath: string): Promise<string>;
+  getFileStatus(repoPath: string, filePath: string): Promise<string>;
+
+  // Commits
+  getCommitDiff(repoPath: string, commitHash: string): Promise<string>;
+  getAllCommits(repoPath: string, options?: { limit?: number; branch?: string }): Promise<Array<{ hash: string; message: string; date: string; author: string }>>;
+  commitChanges(repoPath: string, message: string): Promise<{ hash: string }>;
+
+  // Branches
+  getBranches(repoPath: string): Promise<Array<{ name: string; current: boolean }>>;
+  createBranch(repoPath: string, name: string): Promise<void>;
+  switchBranch(repoPath: string, name: string): Promise<void>;
+  deleteBranch(repoPath: string, name: string): Promise<void>;
+
+  // Staging
+  stageFile(repoPath: string, filePath: string): Promise<void>;
+  unstageFile(repoPath: string, filePath: string): Promise<void>;
+
+  // Stash
+  getStashes(repoPath: string): Promise<Array<{ index: number; message: string }>>;
+  createStash(repoPath: string, message?: string): Promise<void>;
+  applyStash(repoPath: string, index: number): Promise<void>;
+  dropStash(repoPath: string, index: number): Promise<void>;
+
+  // Remote
+  pull(dir: string): Promise<void>;
+  push(dir: string, force?: boolean): Promise<void>;
+  fetch(dir: string): Promise<void>;
+  getRemotes(dir: string): Promise<Array<{ name: string; url: string }>>;
+}
+```
+
+### dev
+
+Hot-reload and development utilities for extension authors.
+
+```typescript
+interface {
+  isDevMode(): boolean;
+  reload(): Promise<void>;
+  getLoadedExtensions(): Array<{ id: string; name: string; active: boolean }>;
+  isHotReloadActive(): boolean;
+}
+```
+
+---
+
+## Base Classes (Advanced)
+
+For complex extensions needing full lifecycle control, use the base classes directly:
+
+| Class | Category | Purpose |
+|-------|----------|---------|
+| `Extension` | any | Root base class |
+| `PanelExtension` | panel | Sidebar panels with `render()` |
+| `PreviewExtension` | preview | File previews with `canPreview()` + `render()` |
+| `ActionExtension` | action | Context menu items with `getActions()` |
+| `ThemeExtension` | theme | Color themes with `getTheme()` |
+| `TabExtension` | tab | Custom tab views with `render()` |
+| `NavigationExtension` | navigation | Left sidebar entries with `onClick()` |
+| `BottomTabExtension` | bottom-tab | Bottom panel tabs with `render()` |
+| `EditorExtension` | editor | File editors with `canEdit()` + `render()` |
+
+```typescript
+import { Extension, registerExtension } from '@xplorer/extension-sdk';
+
+class MyExtension extends Extension {
+  async activate() { /* ... */ }
+  async deactivate() { /* ... */ }
+}
+
+registerExtension(new MyExtension({ id: 'my-ext', name: 'My Ext', version: '1.0.0', author: 'Me', category: 'tool' }));
+```
+
+---
+
+## Type Definitions
+
+### FileEntry
+
+```typescript
+interface FileEntry {
+  path: string;
+  name: string;
+  is_dir: boolean;
+  size: number;
+  modified?: number;
+  extension?: string;
+}
+```
+
+### ExtensionManifest
+
+```typescript
+interface ExtensionManifest {
+  id: string;
+  name: string;
+  displayName?: string;
+  description?: string;
+  version: string;
+  author: string;
+  category: 'theme' | 'preview' | 'action' | 'panel' | 'tool' | 'tab' | 'navigation' | 'bottom-tab' | 'editor';
+  icon?: string;
+  permissions?: string[];
+  activationEvents?: string[];
+}
+```
+
+---
+
+## Sandbox
+
+Extensions run in a sandboxed environment. Dangerous globals are blocked:
+
+| Blocked | Reason |
+|---------|--------|
+| `fetch`, `XMLHttpRequest`, `WebSocket` | Prevent unauthorized network access |
+| `localStorage`, `sessionStorage`, `indexedDB` | Use `api.settings` instead |
+| `eval` | Prevent arbitrary code execution |
+| `__TAURI__`, `__TAURI_INTERNALS__`, `__TAURI_IPC__` | Prevent Tauri IPC bypass |
+
+**Allowed:** `React`, `ReactDOM`, `XplorerSDK`, `document`, `console`, `crypto.subtle`, `setTimeout`/`setInterval`, `CustomEvent`, `CSS`.
+
+---
+
+## Extension Host API
+
+The Extension Host is available at runtime for advanced use cases:
+
+```typescript
+import { extensionHost } from '@/lib/extension-host';
+```
+
+| Method | Description |
+|---|---|
+| `loadExtension(pkg)` | Load an extension package |
+| `activateExtension(id)` | Activate a loaded extension |
+| `deactivateExtension(id)` | Deactivate an extension |
+| `reloadExtension(id)` | Hot reload an extension |
+| `getRegisteredPanels()` | Get all active panel registrations |
+| `getAllExtensions()` | List all loaded extensions |
+| `registerCommand(command, handler)` | Register a global command |
+| `executeCommand(command, ...args)` | Execute a registered command |
+| `registerContextMenuItems(extensionId, items)` | Register context menu items |
+| `getContextMenuItems(context)` | Get menu items for a context |

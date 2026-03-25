@@ -30,10 +30,9 @@ This starts the Vite dev server and the Tauri desktop app together. The app will
 - `packages/extension-sdk/` — Public API for building extensions
 - `packages/create-extension/` — CLI to scaffold new extensions
 - `packages/extensions/` — 28 free extensions (themes, tools, previews)
-
-### Private Submodule
-
-The `private/` directory is a Git submodule containing the marketplace server and premium extensions. It is **not required** for core development. All public features, tests, and builds work without it.
+- `apps/web/` — Next.js marketplace server (Prisma, billing, admin)
+- `infra/` — Docker Compose for local PostgreSQL
+- `scripts/` — Extension signing and utility scripts
 
 ### Running Tests
 

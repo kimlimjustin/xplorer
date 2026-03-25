@@ -1,0 +1,214 @@
+---
+id: getting-started
+title: Getting Started
+sidebar_position: 2
+---
+
+# Getting Started
+
+This guide walks you through creating, building, and installing your first Xplorer extension.
+
+## Prerequisites
+
+- [Node.js](https://nodejs.org/) v18 or later
+- npm, yarn, or pnpm
+- Xplorer installed on your machine
+
+## Scaffold a New Extension
+
+The quickest way to start is with the scaffolding CLI:
+
+```bash
+npx create-xplorer-extension my-first-extension
+```
+
+The interactive wizard prompts you for:
+
+| Prompt | Description |
+|---|---|
+| **Extension name** | lowercase, dashes only (`my-first-extension`) |
+| **Display name** | human-readable name shown in the UI |
+| **Description** | one-line summary |
+| **Author** | your name |
+| **Template** | `basic`, `ui`, `processor`, or `theme` |
+| **Install dependencies?** | runs `npm install` automatically |
+
+### Template Types
+
+| Template | Best For |
+|---|---|
+| **Basic** | file operations, commands, context menu items |
+| **UI** | custom sidebar panels with React components |
+| **Processor** | file transformation and batch processing |
+| **Theme** | custom color schemes and styling |
+
+## Project Structure
+
+After scaffolding, your extension looks like this:
+
+```
+my-first-extension/
+├── package.json          ← npm config + xplorer manifest
+├── src/
+│   └── index.ts          ← entry point
+├── vite.config.ts        ← build configuration
+└── tsconfig.json         ← TypeScript configuration
+```
+
+### The Manifest
+
+Extension metadata lives in the `xplorer` field of `package.json`:
+
+```json
+{
+  "name": "my-first-extension",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "dependencies": {
+    "xplorer-extension-sdk": "^1.0.0"
+  },
+  "xplorer": {
+    "id": "my-first-extension",
+    "displayName": "My First Extension",
+    "category": "tool",
+    "version": "1.0.0",
+    "author": "Your Name",
+    "description": "A simple Xplorer extension",
+    "icon": "🔧",
+    "permissions": [
+      "file:read",
+      "ui:notifications"
+    ]
+  }
+}
+```
+
+See the [Manifest Reference](./manifest) for all available fields.
+
+### The Entry Point
+
+Your extension's `src/index.ts` exports a class that extends one of the SDK base classes:
+
+```typescript
+import { Extension, ExtensionContext } from '@xplorer/extension-sdk';
+
+export class MyExtension extends Extension {
+  constructor() {
+    super({
+      id: 'my-first-extension',
+      name: 'My First Extension',
+      version: '1.0.0',
+      author: 'Your Name',
+      category: 'tool',
+    });
+  }
+
+  async activate(context: ExtensionContext): Promise<void> {
+    this.log('Extension activated!');
+
+    // Register a command
+    this.registerCommand('hello', () => {
+      this.showMessage('Hello from my extension!');
+    });
+  }
+
+  async deactivate(): Promise<void> {
+    this.log('Extension deactivated');
+  }
+}
+```
+
+## Build Your Extension
+
+```bash
+cd my-first-extension
+npm run build
+```
+
+This compiles your TypeScript into `dist/index.js` as an ES module. The build is configured via `vite.config.ts`:
+
+```typescript
+import { defineConfig } from 'vite';
+
+export default defineConfig({
+  build: {
+    lib: {
+      entry: 'src/index.ts',
+      name: 'MyExtension',
+      fileName: 'index',
+      formats: ['es'],
+    },
+    rollupOptions: {
+      external: ['xplorer-extension-sdk'],
+    },
+    target: 'esnext',
+    minify: false,
+  },
+});
+```
+
+### Development Mode
+
+For iterative development, use watch mode:
+
+```bash
+npm run dev
+```
+
+This rebuilds automatically when you save changes. Combined with Xplorer's hot reload, you can see changes without restarting the app.
+
+## Install Your Extension
+
+### From the UI
+
+1. Open Xplorer
+2. Click the **Extensions** icon (🧩) in the right sidebar
+3. Click **"+ Install from Folder"** at the bottom
+4. Select your extension directory (the folder containing `package.json`)
+5. The extension appears in the **Installed Extensions** list
+
+### What Happens During Installation
+
+1. Xplorer copies your extension files into its extensions directory
+2. The manifest is validated — unrecognized permissions cause an error
+3. The extension is loaded into the Extension Host
+4. If activation is successful, it appears as "On" in the Extensions panel
+
+## Enable and Disable
+
+Toggle any extension on or off from the Extensions panel:
+
+- **Built-in extensions** appear under "Built-in Panels" with an On/Off toggle
+- **Installed extensions** appear under "Installed Extensions" with an On/Off toggle and an Uninstall button (visible on hover)
+
+Activation state persists across app restarts.
+
+## Uninstall
+
+Hover over an installed extension in the Extensions panel and click **Uninstall**. This:
+
+1. Deactivates the extension
+2. Removes all registered panels, commands, and decorators
+3. Deletes the extension files from disk
+
+:::caution
+Built-in extensions cannot be uninstalled, only disabled.
+:::
+
+## Package for Distribution
+
+Bundle your extension into a distributable archive:
+
+```bash
+npm run package
+```
+
+This creates a `.spx` file (a zip archive) containing `dist/`, `package.json`, and `README.md` — everything needed for installation.
+
+## Next Steps
+
+Now that you have a working extension, dive deeper:
+
+- [Creating Extensions](./creating-extensions) — build panels, previews, themes, and actions
+- [SDK Reference](./sdk) — `Extension` base class, `XplorerAPI`, and utilities
+- [Permissions](./permissions) — understand what each permission grants
