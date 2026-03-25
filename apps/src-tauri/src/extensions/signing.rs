@@ -18,14 +18,13 @@ use std::path::{Path, PathBuf};
 use tracing::{error, warn};
 
 // Public key for verifying official Xplorer extensions.
-// Generated with: SigningKey::generate(&mut OsRng).verifying_key().to_bytes()
-// The private key is kept in the CI/build system, NOT in the source code.
-// Private key hex (save separately, do NOT commit): 43076bd255075b9c138839dcb423382649fd12ee7e38a85c866e8aefc331f236
+// To generate a new keypair: run `cargo test generate_signing_keypair -- --nocapture`
+// Store the private key as EXTENSION_SIGNING_KEY in GitHub Secrets. NEVER commit it.
 const OFFICIAL_PUBLIC_KEY: [u8; 32] = [
-    0x2b, 0x85, 0xf1, 0xbe, 0x6c, 0x99, 0x4a, 0x1c,
-    0xfc, 0x5b, 0x07, 0x83, 0x07, 0xea, 0x86, 0x5e,
-    0x4d, 0x4a, 0x5c, 0x03, 0x9f, 0x69, 0xa8, 0xa3,
-    0x2c, 0x77, 0x47, 0xbf, 0xc3, 0x1e, 0xdc, 0xda,
+    0x27, 0xd1, 0x70, 0x02, 0x50, 0x70, 0x03, 0x8c, 
+    0x5f, 0xad, 0x36, 0xb6, 0x83, 0x2b, 0xe9, 0x60, 
+    0xc5, 0xa6, 0x8a, 0xb9, 0xc5, 0x47, 0xbf, 0xc0, 
+    0x3a, 0x15, 0x00, 0x24, 0x77, 0x44, 0x12, 0x3c, 
 ];
 
 /// Metadata stored in the `.sig` file alongside an extension's `package.json`.
@@ -188,6 +187,10 @@ pub fn sign_extension(
 /// - If `ed25519_signature` is present: verify with Ed25519 (strong).
 /// - If only `hash` is present: verify hash only (legacy, warning emitted).
 pub fn verify_extension(extension_dir: &Path) -> Result<Option<SignatureInfo>, String> {
+    verify_extension_with_key(extension_dir, &OFFICIAL_PUBLIC_KEY)
+}
+
+pub fn verify_extension_with_key(extension_dir: &Path, public_key: &[u8; 32]) -> Result<Option<SignatureInfo>, String> {
     let sig_path = sig_file_path(extension_dir);
 
     if !sig_path.exists() {
@@ -207,7 +210,7 @@ pub fn verify_extension(extension_dir: &Path) -> Result<Option<SignatureInfo>, S
             .map_err(|_| "Invalid hex in ed25519_signature".to_string())?;
         let signature = Signature::from_slice(&sig_bytes)
             .map_err(|_| "Invalid Ed25519 signature format".to_string())?;
-        let verifying_key = VerifyingKey::from_bytes(&OFFICIAL_PUBLIC_KEY)
+        let verifying_key = VerifyingKey::from_bytes(public_key)
             .map_err(|_| "Invalid public key".to_string())?;
 
         // The signature was computed over the hash string, so verify against the
@@ -280,12 +283,19 @@ mod tests {
     use std::fs;
     use tempfile::tempdir;
 
-    const TEST_SIGNING_KEY: [u8; 32] = [
-        0x43, 0x07, 0x6b, 0xd2, 0x55, 0x07, 0x5b, 0x9c,
-        0x13, 0x88, 0x39, 0xdc, 0xb4, 0x23, 0x38, 0x26,
-        0x49, 0xfd, 0x12, 0xee, 0x7e, 0x38, 0xa8, 0x5c,
-        0x86, 0x6e, 0x8a, 0xef, 0xc3, 0x31, 0xf2, 0x36,
-    ];
+    fn test_signing_key() -> [u8; 32] {
+        [
+            0xaa, 0xbb, 0xcc, 0xdd, 0x11, 0x22, 0x33, 0x44,
+            0x55, 0x66, 0x77, 0x88, 0x99, 0x00, 0xab, 0xcd,
+            0xef, 0x01, 0x23, 0x45, 0x67, 0x89, 0xfe, 0xdc,
+            0xba, 0x98, 0x76, 0x54, 0x32, 0x10, 0x0f, 0x1e,
+        ]
+    }
+
+    fn test_public_key() -> [u8; 32] {
+        let sk = ed25519_dalek::SigningKey::from_bytes(&test_signing_key());
+        sk.verifying_key().to_bytes()
+    }
 
     /// Helper: create a minimal extension directory with a package.json and a JS file.
     fn create_test_extension(dir: &Path) {
@@ -394,7 +404,7 @@ mod tests {
         let tmp = tempdir().unwrap();
         create_test_extension(tmp.path());
 
-        let info = sign_extension(tmp.path(), "test-developer", Some(&TEST_SIGNING_KEY)).unwrap();
+        let info = sign_extension(tmp.path(), "test-developer", Some(&test_signing_key())).unwrap();
 
         assert!(tmp.path().join(".sig").exists(), ".sig file should be created");
         assert_eq!(info.signer, "test-developer");
@@ -424,9 +434,9 @@ mod tests {
         let tmp = tempdir().unwrap();
         create_test_extension(tmp.path());
 
-        sign_extension(tmp.path(), "dev", Some(&TEST_SIGNING_KEY)).unwrap();
+        sign_extension(tmp.path(), "dev", Some(&test_signing_key())).unwrap();
 
-        let result = verify_extension(tmp.path()).unwrap();
+        let result = verify_extension_with_key(tmp.path(), &test_public_key()).unwrap();
         assert!(result.is_some());
         let info = result.unwrap();
         assert!(info.verified, "Ed25519 signature should be valid for unmodified extension");
@@ -453,12 +463,12 @@ mod tests {
         let tmp = tempdir().unwrap();
         create_test_extension(tmp.path());
 
-        sign_extension(tmp.path(), "dev", Some(&TEST_SIGNING_KEY)).unwrap();
+        sign_extension(tmp.path(), "dev", Some(&test_signing_key())).unwrap();
 
         // Tamper with a file after signing
         fs::write(tmp.path().join("dist/index.js"), "alert('hacked');").unwrap();
 
-        let result = verify_extension(tmp.path());
+        let result = verify_extension_with_key(tmp.path(), &test_public_key());
         assert!(result.is_err(), "Ed25519 verification should fail (return error) after tampering");
     }
 
@@ -471,7 +481,7 @@ mod tests {
         let fake_key = SigningKey::generate(&mut rand::rngs::OsRng);
         sign_extension(tmp.path(), "dev", Some(&fake_key.to_bytes())).unwrap();
 
-        let result = verify_extension(tmp.path());
+        let result = verify_extension_with_key(tmp.path(), &test_public_key());
         assert!(result.is_err(), "Signature from wrong key should fail verification");
     }
 
@@ -564,8 +574,8 @@ mod tests {
             let path = entry.path();
             if path.is_dir() && path.join("package.json").exists() {
                 let ext_name = path.file_name().unwrap().to_string_lossy().to_string();
-                sign_extension(&path, "Xplorer Team", Some(&TEST_SIGNING_KEY)).unwrap();
-                let info = verify_extension(&path).unwrap().unwrap();
+                sign_extension(&path, "Xplorer Team", Some(&test_signing_key())).unwrap();
+                let info = verify_extension_with_key(&path, &test_public_key()).unwrap().unwrap();
                 assert!(info.verified, "Bundled extension '{}' should verify after signing", ext_name);
             }
         }
@@ -603,12 +613,31 @@ mod tests {
         create_test_extension(tmp.path());
 
         // Sign with the test key
-        let info = sign_extension(tmp.path(), "dev", Some(&TEST_SIGNING_KEY)).unwrap();
+        let info = sign_extension(tmp.path(), "dev", Some(&test_signing_key())).unwrap();
         assert!(info.ed25519_signature.is_some());
 
         // Verify
-        let verified = verify_extension(tmp.path()).unwrap().unwrap();
+        let verified = verify_extension_with_key(tmp.path(), &test_public_key()).unwrap().unwrap();
         assert!(verified.verified);
         assert!(verified.ed25519_signature.is_some());
+    }
+
+    #[test]
+    #[ignore]
+    fn generate_signing_keypair() {
+        let sk = SigningKey::generate(&mut rand::rngs::OsRng);
+        let pk = sk.verifying_key();
+        println!("\n=== NEW ED25519 KEYPAIR ===");
+        println!("Private key (set as EXTENSION_SIGNING_KEY secret):");
+        println!("  {}", hex_encode(&sk.to_bytes()));
+        println!("Public key (set as OFFICIAL_PUBLIC_KEY in signing.rs):");
+        let pk_bytes = pk.to_bytes();
+        print!("  const OFFICIAL_PUBLIC_KEY: [u8; 32] = [\n    ");
+        for (i, b) in pk_bytes.iter().enumerate() {
+            print!("0x{:02x}, ", b);
+            if (i + 1) % 8 == 0 && i < 31 { print!("\n    "); }
+        }
+        println!("\n  ];");
+        println!("===========================\n");
     }
 }
