@@ -248,7 +248,7 @@ pub fn verify_extension_integrity(extension_dir: &Path, extension_id: &str) -> b
             }
         }
         Ok(None) => {
-            error!(
+            warn!(
                 "[ExtensionSigning] Extension '{}' is UNSIGNED — no .sig file found",
                 extension_id
             );
