@@ -1,0 +1,19 @@
+{
+  "name": "@xplorer/cli",
+  "version": "1.0.0",
+  "description": "Xplorer CLI — open folders, login, and publish extensions to xplorer.space",
+  "type": "module",
+  "bin": {
+    "xplorer": "./bin/xplorer.mjs"
+  },
+  "scripts": {
+    "build": "echo 'No build needed — pure JS'",
+    "start": "node bin/xplorer.mjs"
+  },
+  "files": [
+    "bin/",
+    "src/"
+  ],
+  "keywords": ["xplorer", "file-manager", "cli", "marketplace"],
+  "license": "AGPL-3.0"
+}
