@@ -108,10 +108,10 @@ export async function executePaste(ctx: PasteContext): Promise<PasteResult> {
       }
 
       if (isCut) {
-        await TauriAPI.moveFile(file.path, destination);
+        await TauriAPI.moveWithProgress(file.path, destination);
         emitFileActivity('modified', destination, file.name, file.path);
       } else {
-        await TauriAPI.copy(file.path, destination);
+        await TauriAPI.copyWithProgress(file.path, destination);
         emitFileActivity('create', destination, file.name);
       }
       succeeded++;
