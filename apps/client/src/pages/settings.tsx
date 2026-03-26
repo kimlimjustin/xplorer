@@ -93,7 +93,7 @@ const tabs: { id: SettingsTab; label: string; icon: React.ElementType; descripti
 ];
 
 const MARKETPLACE_KEY = STORAGE_KEYS.MARKETPLACE_URL;
-const DEFAULT_MARKETPLACE_URL = 'http://localhost:3000/api';
+const DEFAULT_MARKETPLACE_URL = 'https://xplorer.space/api';
 
 const MarketplaceSettings = ({
   marketplaceUrl,
@@ -126,7 +126,7 @@ const MarketplaceSettings = ({
           type="text"
           value={marketplaceUrl}
           onChange={(e) => setMarketplaceUrl(e.target.value)}
-          placeholder="http://localhost:3000/api"
+          placeholder="https://xplorer.space/api"
           className="border-xp-border bg-xp-bg text-xp-text hover:border-xp-text-secondary focus:border-xp-accent focus:ring-xp-accent h-9 w-full rounded-md border px-3 font-mono text-sm transition-colors focus:outline-none focus:ring-1"
         />
         <div className="mt-2 flex items-center justify-between">

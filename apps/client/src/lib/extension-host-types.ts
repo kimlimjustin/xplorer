@@ -231,7 +231,7 @@ export interface ExtensionUpdateResult {
 export interface ExtensionAutoUpdateConfig {
   /** Whether auto-update checking is enabled (default: true) */
   enabled?: boolean;
-  /** Marketplace base URL (default: https://localhost:3000) */
+  /** Marketplace base URL (default: https://xplorer.space) */
   marketplaceUrl?: string;
   /** Interval in ms between update checks (default: 4 hours) */
   checkIntervalMs?: number;

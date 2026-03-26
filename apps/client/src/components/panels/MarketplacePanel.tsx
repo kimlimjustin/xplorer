@@ -29,7 +29,7 @@ import ExtensionCard from './marketplace/ExtensionCard';
 import MarketplaceFilters from './marketplace/MarketplaceFilters';
 import MarketplacePagination from './marketplace/MarketplacePagination';
 
-const DEFAULT_MARKETPLACE_API = 'http://localhost:3000/api';
+const DEFAULT_MARKETPLACE_API = 'https://xplorer.space/api';
 
 const getMarketplaceApi = (): string => {
   try {
@@ -553,7 +553,7 @@ const MarketplacePanel = () => {
             <RefreshCw className={`h-3.5 w-3.5 ${isLoading ? 'animate-spin' : ''}`} />
           </button>
           <button
-            onClick={() => window.open('http://localhost:3000', '_blank')}
+            onClick={() => window.open('https://xplorer.space', '_blank')}
             className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text rounded p-1.5 transition-colors"
             title="Open Marketplace Website"
           >
@@ -750,7 +750,7 @@ const MarketplacePanel = () => {
       {/* Footer */}
       <div className="border-xp-border border-t px-3 py-1.5">
         <button
-          onClick={() => window.open('http://localhost:3000/publish', '_blank')}
+          onClick={() => window.open('https://xplorer.space/publish', '_blank')}
           className="text-xp-blue hover:text-xp-blue/80 w-full text-center text-xs transition-colors"
         >
           Publish Your Extension
