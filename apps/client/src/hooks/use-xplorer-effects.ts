@@ -574,15 +574,18 @@ export const useXplorerEffects = (deps: XplorerEffectsDeps) => {
     return () => document.removeEventListener('keydown', handleBookmarkKeys, true);
   }, [currentPath, toast, navigateWithHistory, setPathBookmarksDialogOpen]);
 
-  // ── Initialize extension system ───────────────────────────────────────────
+  // ── Initialize extension system (deferred — open folder first) ───────────
   useEffect(() => {
-    extensionHost.loadInstalledExtensions();
+    // Defer extension loading so the folder renders immediately.
+    // Extensions load after the first paint + a short idle period.
+    const timer = setTimeout(() => extensionHost.loadInstalledExtensions(), 300);
     (window as unknown as WindowWithXplorer).__xplorer_state__ = {
       currentPath: '',
       selectedFiles: [] as Array<{ name: string; path: string; is_dir: boolean }>,
       navigateTo: (path: string) => navigateToPathRef.current(path),
     };
     return () => {
+      clearTimeout(timer);
       delete (window as unknown as WindowWithXplorer).__xplorer_state__;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

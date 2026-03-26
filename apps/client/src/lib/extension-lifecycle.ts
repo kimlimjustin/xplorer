@@ -607,10 +607,10 @@ export class ExtensionLifecycle {
       const installed = await TauriAPI.getInstalledExtensions();
       const sorted = sortPackagesByDependencyOrder(installed);
 
-      for (const pkg of sorted) {
-        await this.loadExtension(pkg);
-      }
+      // Load all extensions in parallel (each is independent)
+      await Promise.all(sorted.map((pkg) => this.loadExtension(pkg).catch(() => {})));
 
+      // Activate sequentially (respects dependency order)
       for (const pkg of sorted) {
         if (pkg.is_active) {
           await this.activateExtension(pkg.manifest.id);
