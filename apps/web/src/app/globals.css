@@ -1,0 +1,155 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100;
+  }
+}
+
+/* ── Xplorer Glass Theme CSS Variables ─────────────────────────────
+ * Used by real Xplorer client components rendered on the landing page.
+ * Scoped to .xp-theme so they don't leak into the rest of the web app.
+ */
+.xp-theme {
+  color: rgba(255, 255, 255, 0.92);
+  --xp-bg: transparent;
+  --xp-surface: #111122;
+  --xp-surface-light: #161630;
+  --xp-blue: #6366f1;
+  --xp-blue-dark: #4f46e5;
+  --xp-purple: #a78bfa;
+  --xp-pink: #f472b6;
+  --xp-green: #34d399;
+  --xp-orange: #fb923c;
+  --xp-yellow: #fbbf24;
+  --xp-red: #f87171;
+  --xp-cyan: #22d3ee;
+  --xp-text: rgba(255, 255, 255, 0.92);
+  --xp-text-secondary: rgba(255, 255, 255, 0.60);
+  --xp-text-muted: rgba(255, 255, 255, 0.40);
+  --xp-border: rgba(255, 255, 255, 0.10);
+  --xp-border-light: rgba(255, 255, 255, 0.12);
+  --xp-popover: #1a1b2e;
+}
+
+/* Scroll-reveal animations */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+.reveal-delay-5 { transition-delay: 0.5s; }
+.reveal-delay-6 { transition-delay: 0.6s; }
+.reveal-delay-7 { transition-delay: 0.7s; }
+.reveal-delay-8 { transition-delay: 0.8s; }
+
+/* Window mockup glow */
+.window-glow {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    0 25px 50px -12px rgba(0, 0, 0, 0.4),
+    0 0 80px -20px rgba(99, 102, 241, 0.15);
+}
+
+.dark .window-glow {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 25px 50px -12px rgba(0, 0, 0, 0.6),
+    0 0 120px -20px rgba(99, 102, 241, 0.2);
+}
+
+/* Feature card hover glow */
+.feature-glow {
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.feature-glow:hover {
+  box-shadow: 0 0 40px -10px rgba(99, 102, 241, 0.15);
+}
+
+.dark .feature-glow:hover {
+  box-shadow: 0 0 40px -10px rgba(99, 102, 241, 0.25);
+}
+
+/* Animated gradient text shimmer */
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.animated-gradient-text {
+  background-size: 200% auto;
+  animation: gradient-shift 6s ease-in-out infinite;
+}
+
+/* Floating orb animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+.animate-float { animation: float 6s ease-in-out infinite; }
+.animate-float-delayed { animation: float 8s ease-in-out 2s infinite; }
+.animate-float-slow { animation: float 10s ease-in-out 1s infinite; }
+
+/* Pulsing glow for CTA button */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px -5px rgba(99, 102, 241, 0.4), 0 10px 25px -5px rgba(99, 102, 241, 0.15); }
+  50% { box-shadow: 0 0 40px -5px rgba(99, 102, 241, 0.6), 0 10px 25px -5px rgba(99, 102, 241, 0.25); }
+}
+
+.pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+
+/* Glass card for stats / tech chips */
+.glass-card {
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(12px);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dark .glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.glass-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px -10px rgba(99, 102, 241, 0.12);
+}
+
+.dark .glass-card:hover {
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 30px -10px rgba(99, 102, 241, 0.25);
+}
+
+/* Gradient border effect */
+.gradient-border {
+  position: relative;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(168, 85, 247, 0.3), rgba(99, 102, 241, 0.1));
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  pointer-events: none;
+}

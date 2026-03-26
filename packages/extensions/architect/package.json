@@ -1,0 +1,38 @@
+{
+  "name": "xplorer-architect",
+  "version": "1.0.0",
+  "description": "Interactive architecture visualizer - node graph for project structure, plan mode, and AI-driven vibe coding",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/index.tsx --bundle --format=iife --outfile=dist/index.js --external:react --external:react-dom --external:@xplorer/extension-sdk --target=es2020 --jsx=transform",
+    "watch": "esbuild src/index.tsx --bundle --format=iife --outfile=dist/index.js --external:react --external:react-dom --external:@xplorer/extension-sdk --target=es2020 --jsx=transform --watch"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.0",
+    "@types/react": "^18.2.0",
+    "typescript": "^5.2.0"
+  },
+  "xplorer": {
+    "id": "xplorer-architect",
+    "name": "Architecture Visualizer",
+    "displayName": "Architecture Visualizer",
+    "description": "Visualize, plan, and edit project architecture as an interactive node graph. Scan existing code, design new features visually, and let AI generate code from your architectural plan.",
+    "version": "1.0.0",
+    "author": "Xplorer Team",
+    "category": "editor",
+    "icon": "layout",
+    "keywords": ["architecture", "visualizer", "graph", "vibe-coding", "planning", "nodes"],
+    "permissions": ["file:read", "file:write", "directory:list", "ui:panels", "ui:notifications"],
+    "activationEvents": ["onStartup"],
+    "contributes": {
+      "editors": [
+        {
+          "id": "xplorer-architect",
+          "extensions": ["xparch"],
+          "priority": 50
+        }
+      ]
+    }
+  }
+}

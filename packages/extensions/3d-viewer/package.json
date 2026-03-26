@@ -1,0 +1,33 @@
+{
+  "name": "3d-viewer-extension",
+  "version": "1.0.0",
+  "description": "View STL and OBJ 3D models with rotation and zoom",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/index.tsx --bundle --format=iife --jsx=transform --outfile=dist/index.js --external:react --external:react-dom --external:@xplorer/extension-sdk --target=es2020"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.0",
+    "typescript": "^5.2.0",
+    "@types/react": "^18.0.0"
+  },
+  "xplorer": {
+    "id": "3d-viewer",
+    "name": "3D Model Viewer",
+    "displayName": "3D Model Viewer",
+    "description": "View STL and OBJ 3D models with rotation and zoom",
+    "version": "1.0.0",
+    "author": "Xplorer Team",
+    "category": "preview",
+    "permissions": ["file:read"],
+    "icon": "box",
+    "keywords": ["preview", "3d", "stl", "obj", "model", "viewer", "webgl"],
+    "activationEvents": ["onStartup"],
+    "contributes": {
+      "commands": [
+        { "command": "preview", "title": "Preview 3D Model", "category": "3D Viewer" }
+      ]
+    }
+  }
+}

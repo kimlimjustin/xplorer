@@ -1,7 +1,6 @@
 node_modules
 dist
 target
-private
 packages/extensions
 apps/src-tauri
 *.md

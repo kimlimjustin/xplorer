@@ -1,0 +1,82 @@
+---
+id: themes
+title: Themes
+sidebar_position: 14
+---
+
+# Themes
+
+Xplorer ships with several built-in themes and supports custom themes through both the settings UI and the extension SDK.
+
+## Built-in Themes
+
+| Theme | Description |
+|-------|-------------|
+| Glass | Default. Semi-transparent surfaces with backdrop-filter blur, glassmorphic aesthetic |
+| Tokyo Night | Dark theme inspired by the Tokyo Night color palette |
+| Dracula | Popular dark theme with vivid accent colors |
+| Nord | Arctic, north-bluish color palette |
+| Catppuccin | Warm pastel tones on a dark background |
+| Light | Clean light theme for daytime use |
+
+Switch themes in **Settings > Themes** or via the Command Palette.
+
+## Glass Theme
+
+The default Glass theme uses semi-transparent RGBA surfaces combined with `backdrop-filter: blur()` to create a layered, frosted-glass look. The background is a subtle gradient:
+
+```css
+background: linear-gradient(135deg, #0a0a1a ... #0a0a1a);
+```
+
+Panels, sidebars, and dialogs sit on top with varying levels of transparency, giving a sense of depth without sacrificing readability.
+
+## CSS Variable System
+
+All themes are built on the `--xp-*` CSS variable system. Theme classes (`.theme-glass`, `.theme-tokyo-night`, `.theme-dracula`, `.theme-nord`, `.theme-catppuccin`) override these variables on `document.documentElement`.
+
+Key variable groups:
+
+| Variable Prefix | Controls |
+|----------------|----------|
+| `--xp-bg-*` | Background colors (primary, secondary, tertiary) |
+| `--xp-text-*` | Text colors (primary, secondary, muted) |
+| `--xp-border-*` | Border colors |
+| `--xp-blue` | Primary accent color |
+| `--xp-accent-*` | Accent variants (hover, active) |
+| `--xp-sidebar-*` | Sidebar-specific colors |
+| `--xp-panel-*` | Panel-specific colors |
+
+Corresponding Tailwind utility classes are available: `.bg-xp-*`, `.text-xp-*`, `.border-xp-*`.
+
+The `:root` selector defines default values matching the Glass theme, so the UI appears glassmorphic even before JavaScript loads.
+
+## Custom Theme Editor
+
+Create your own theme from **Settings > Themes > Create Custom Theme**. The editor provides 13 color fields covering all major UI surfaces:
+
+- Background (primary, secondary, tertiary)
+- Text (primary, secondary, muted)
+- Borders
+- Accent colors
+- Sidebar and panel backgrounds
+
+A **live preview** updates in real time as you adjust colors, so you can see exactly how your theme will look before saving.
+
+## Theme Extensions
+
+Extension developers can register themes using the SDK:
+
+```js
+Theme.register({
+  name: 'My Custom Theme',
+  variables: {
+    '--xp-bg-primary': '#1a1b26',
+    '--xp-text-primary': '#c0caf5',
+    '--xp-blue': '#7aa2f7',
+    // ... other variables
+  }
+});
+```
+
+Registered themes appear alongside built-in themes in the theme selector. See the [Extensions SDK](/docs/extensions/sdk) documentation for the full `Theme.register()` API.

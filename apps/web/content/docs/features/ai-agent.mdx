@@ -1,0 +1,87 @@
+---
+id: ai-agent
+title: AI Agent
+sidebar_position: 12
+---
+
+# AI Agent
+
+Xplorer includes an AI-powered file management agent that can read, write, search, and organize files on your behalf using tool-use capabilities.
+
+## Supported Models
+
+The agent supports both cloud and local models:
+
+| Provider | Models | Requirements |
+|----------|--------|--------------|
+| Claude | Sonnet, Haiku, Opus | API key in Settings |
+| Ollama | Any installed model | Ollama running locally |
+
+Configure your preferred model in **Settings > AI Agent**.
+
+## Agent Mode
+
+The AI agent operates in **tool-use mode**, meaning it can call file operation tools to accomplish tasks. Available tools:
+
+| Tool | Description |
+|------|-------------|
+| Read File | Read the contents of a file |
+| Write File | Create or overwrite a file |
+| Search | Search for files by name or content |
+| List Directory | List files in a directory |
+| Organize | Move and rename files based on rules |
+
+### Example Requests
+
+- "Organize all the images in this folder by date"
+- "Find all TODO comments in this project"
+- "Summarize the contents of report.pdf"
+- "Create a folder structure for a new React project"
+
+## Approval Workflow
+
+Before the agent modifies any files, it requests your permission. Each proposed action is displayed with:
+
+- The tool being called (e.g., Write File, Organize)
+- The target path(s)
+- A description of what will change
+
+You can **Approve**, **Reject**, or **Approve All** remaining actions in a batch.
+
+:::caution
+Enabling **auto-approve** in Settings skips the confirmation step. Use this only for directories where you are comfortable with unsupervised file modifications.
+:::
+
+## Tool-Use Streaming
+
+The chat panel displays agent actions in real time as they happen:
+
+1. **Text responses** stream in as the model generates them
+2. **Tool calls** appear inline, showing which tool is being invoked and with what arguments
+3. **Tool results** are displayed after each call completes
+4. Text and tool calls are interleaved naturally in the conversation flow
+
+This gives you full visibility into what the agent is doing at every step.
+
+## Chat Panel
+
+The AI agent lives in the **right sidebar** under the Chat tab. The agent is context-aware and automatically includes:
+
+- The current directory path
+- Selected file(s) and their metadata
+- Recent navigation history
+
+You can reference files by name in your messages and the agent will resolve them relative to the current directory.
+
+## Configuration
+
+Open **Settings > AI Agent** to configure:
+
+| Setting | Description |
+|---------|-------------|
+| Model | Select Claude model or Ollama model |
+| Auto-Approve | Skip confirmation for file modifications |
+| Thinking Mode | Show the model's reasoning process |
+| API Key | Claude API key (for cloud models) |
+
+For Ollama, make sure the Ollama server is running on `http://localhost:11434` before starting a conversation.

@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 520" font-family="'Segoe UI', system-ui, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="frontendGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="tauriGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+    <linearGradient id="httpGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+    <linearGradient id="rustGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#ea580c"/>
+    </linearGradient>
+    <linearGradient id="serverGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+    <filter id="shadow" x="-4%" y="-4%" width="108%" height="112%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity="0.25"/>
+    </filter>
+    <filter id="shadowSm" x="-4%" y="-4%" width="108%" height="112%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#000" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="720" height="520" rx="12" fill="#0a0a1a"/>
+
+  <!-- Frontend container -->
+  <rect x="40" y="24" width="640" height="260" rx="12" fill="url(#frontendGrad)" stroke="#334155" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="360" y="56" text-anchor="middle" fill="#e2e8f0" font-size="16" font-weight="600">React Frontend</text>
+
+  <!-- TauriAPI call -->
+  <rect x="200" y="74" width="320" height="36" rx="8" fill="#1e3a5f" stroke="#2563eb" stroke-width="1" filter="url(#shadowSm)"/>
+  <text x="360" y="97" text-anchor="middle" fill="#93c5fd" font-size="13" font-family="'Cascadia Code', 'Fira Code', monospace">TauriAPI.methodName(args)</text>
+
+  <!-- Arrow down -->
+  <line x1="360" y1="110" x2="360" y2="130" stroke="#94a3b8" stroke-width="1.5"/>
+  <polygon points="354,126 360,134 366,126" fill="#94a3b8"/>
+
+  <!-- Transport layer -->
+  <rect x="140" y="134" width="440" height="40" rx="8" fill="#172554" stroke="#3b82f6" stroke-width="1.5" filter="url(#shadowSm)"/>
+  <text x="360" y="159" text-anchor="middle" fill="#bfdbfe" font-size="13" font-weight="500" font-family="'Cascadia Code', 'Fira Code', monospace">transport('command_name', { args })</text>
+
+  <!-- Label: transport.ts -->
+  <rect x="462" y="140" width="110" height="20" rx="4" fill="#1e40af"/>
+  <text x="517" y="154" text-anchor="middle" fill="#dbeafe" font-size="10">transport.ts</text>
+
+  <!-- Branching arrows -->
+  <line x1="280" y1="174" x2="280" y2="194" stroke="#fbbf24" stroke-width="1.5"/>
+  <polygon points="274,190 280,198 286,190" fill="#fbbf24"/>
+  <line x1="440" y1="174" x2="440" y2="194" stroke="#60a5fa" stroke-width="1.5"/>
+  <polygon points="434,190 440,198 446,190" fill="#60a5fa"/>
+
+  <!-- Tauri mode box -->
+  <rect x="160" y="198" width="240" height="68" rx="10" fill="#422006" stroke="#fbbf24" stroke-width="1.5" filter="url(#shadowSm)"/>
+  <circle cx="192" cy="222" r="8" fill="#fbbf24" opacity="0.3"/>
+  <circle cx="192" cy="222" r="4" fill="#fbbf24"/>
+  <text x="280" y="225" text-anchor="middle" fill="#fde68a" font-size="14" font-weight="600">Tauri Mode</text>
+  <text x="280" y="250" text-anchor="middle" fill="#fcd34d" font-size="12" font-family="'Cascadia Code', 'Fira Code', monospace">invoke(cmd, args)</text>
+
+  <!-- HTTP mode box -->
+  <rect x="420" y="198" width="240" height="68" rx="10" fill="#172554" stroke="#60a5fa" stroke-width="1.5" filter="url(#shadowSm)"/>
+  <circle cx="452" cy="222" r="8" fill="#60a5fa" opacity="0.3"/>
+  <circle cx="452" cy="222" r="4" fill="#60a5fa"/>
+  <text x="540" y="225" text-anchor="middle" fill="#bfdbfe" font-size="14" font-weight="600">HTTP Mode</text>
+  <text x="540" y="250" text-anchor="middle" fill="#93c5fd" font-size="12" font-family="'Cascadia Code', 'Fira Code', monospace">POST /api/{cmd}</text>
+
+  <!-- Arrows from mode boxes to backends -->
+  <line x1="280" y1="266" x2="280" y2="310" stroke="#fbbf24" stroke-width="2" stroke-dasharray="6,4"/>
+  <polygon points="274,306 280,316 286,306" fill="#fbbf24"/>
+
+  <line x1="540" y1="266" x2="540" y2="310" stroke="#60a5fa" stroke-width="2" stroke-dasharray="6,4"/>
+  <polygon points="534,306 540,316 546,306" fill="#60a5fa"/>
+
+  <!-- Divider label -->
+  <rect x="320" y="292" width="80" height="20" rx="10" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  <text x="360" y="306" text-anchor="middle" fill="#94a3b8" font-size="10" font-weight="500">NETWORK</text>
+
+  <!-- Rust backend -->
+  <rect x="120" y="320" width="320" height="160" rx="12" fill="#431407" stroke="#f97316" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="280" y="352" text-anchor="middle" fill="#fed7aa" font-size="16" font-weight="600">Rust Backend (built-in)</text>
+
+  <!-- Rust backend details -->
+  <rect x="148" y="366" width="264" height="28" rx="6" fill="#7c2d12" stroke="#fb923c" stroke-width="0.5"/>
+  <text x="280" y="385" text-anchor="middle" fill="#fdba74" font-size="11" font-family="'Cascadia Code', 'Fira Code', monospace">Tauri IPC  +  276 commands</text>
+
+  <rect x="148" y="402" width="128" height="28" rx="6" fill="#7c2d12" stroke="#fb923c" stroke-width="0.5"/>
+  <text x="212" y="421" text-anchor="middle" fill="#fdba74" font-size="11">File system ops</text>
+
+  <rect x="284" y="402" width="128" height="28" rx="6" fill="#7c2d12" stroke="#fb923c" stroke-width="0.5"/>
+  <text x="348" y="421" text-anchor="middle" fill="#fdba74" font-size="11">AI / Search</text>
+
+  <rect x="148" y="438" width="128" height="28" rx="6" fill="#7c2d12" stroke="#fb923c" stroke-width="0.5"/>
+  <text x="212" y="457" text-anchor="middle" fill="#fdba74" font-size="11">SSH / Terminal</text>
+
+  <rect x="284" y="438" width="128" height="28" rx="6" fill="#7c2d12" stroke="#fb923c" stroke-width="0.5"/>
+  <text x="348" y="457" text-anchor="middle" fill="#fdba74" font-size="11">Archives / Tags</text>
+
+  <!-- HTTP backend -->
+  <rect x="480" y="320" width="200" height="160" rx="12" fill="#1e1b4b" stroke="#818cf8" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="580" y="352" text-anchor="middle" fill="#c7d2fe" font-size="16" font-weight="600">HTTP Backend</text>
+  <text x="580" y="374" text-anchor="middle" fill="#a5b4fc" font-size="11">(you implement)</text>
+
+  <rect x="500" y="392" width="160" height="28" rx="6" fill="#312e81" stroke="#818cf8" stroke-width="0.5"/>
+  <text x="580" y="411" text-anchor="middle" fill="#c7d2fe" font-size="11" font-family="'Cascadia Code', 'Fira Code', monospace">POST /api/*</text>
+
+  <rect x="500" y="428" width="160" height="28" rx="6" fill="#312e81" stroke="#818cf8" stroke-width="0.5"/>
+  <text x="580" y="447" text-anchor="middle" fill="#c7d2fe" font-size="11" font-family="'Cascadia Code', 'Fira Code', monospace">GET /api/asset</text>
+
+  <rect x="500" y="464" width="160" height="28" rx="6" fill="#312e81" stroke="#818cf8" stroke-width="0.5"/>
+  <text x="580" y="483" text-anchor="middle" fill="#c7d2fe" font-size="11" font-family="'Cascadia Code', 'Fira Code', monospace">SSE /api/events/*</text>
+
+  <!-- "OR" label between backends -->
+  <rect x="446" y="390" width="30" height="22" rx="11" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  <text x="461" y="405" text-anchor="middle" fill="#94a3b8" font-size="11" font-weight="700">OR</text>
+</svg>

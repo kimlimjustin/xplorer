@@ -1,0 +1,107 @@
+---
+id: git-integration
+title: Git Integration
+sidebar_position: 11
+---
+
+# Git Integration
+
+Xplorer provides built-in Git support powered by the `git2` Rust crate, giving you repository management directly within the file explorer.
+
+## Repository Detection
+
+When you navigate into a directory, Xplorer automatically checks whether it (or any parent directory) is a Git repository. If a repository is detected:
+
+1. The Git History panel becomes available in the bottom panel
+2. File status indicators appear on files in the file grid
+3. Branch information is shown in the status bar
+
+## Commit History
+
+The **Git History** tab in the bottom panel displays the full commit log:
+
+- Author, date, and commit message for each entry
+- Pagination for large repositories
+- Click any commit to view its full diff
+
+## File History
+
+Select a file and open the Git History panel to see every commit that modified that file. This is useful for understanding how a specific file evolved over time.
+
+## File Blame
+
+View line-by-line annotations showing who last modified each line of a file. Click a blame entry to jump to the corresponding commit.
+
+## Diff Viewer
+
+### Commit Diff
+
+View all changes introduced by a commit:
+
+| Indicator | Meaning |
+|-----------|---------|
+| Green | Added files or lines |
+| Red | Removed files or lines |
+| Yellow | Modified files |
+
+Changes are displayed in unified diff format with surrounding context lines.
+
+### File Diff
+
+Compare a file between any two commits, or between the working tree and HEAD.
+
+## Branch Management
+
+| Operation | Description |
+|-----------|-------------|
+| List Branches | View all local and remote branches |
+| Create Branch | Create a new branch from HEAD |
+| Switch Branch | Checkout a different branch |
+| Delete Branch | Remove a local branch |
+
+The current branch is highlighted in the branch list, along with metadata such as the last commit and author.
+
+## Staging and Commits
+
+### Working Tree Status
+
+Files in the grid show their git status:
+
+| Status | Meaning |
+|--------|---------|
+| Modified | File has uncommitted changes |
+| Staged | File is staged for the next commit |
+| Untracked | New file not yet tracked by git |
+| Deleted | File has been removed |
+| Renamed | File has been renamed |
+
+### Committing
+
+Stage files and create commits directly from the Git panel. Write a commit message and click **Commit** to record your changes.
+
+## Stash Management
+
+| Operation | Description |
+|-----------|-------------|
+| Stash Changes | Save uncommitted changes to the stash |
+| List Stashes | View all stashed change sets |
+| Pop Stash | Apply and remove the latest stash |
+| Apply Stash | Apply a stash without removing it |
+| Drop Stash | Delete a stash entry |
+
+## Remote Operations
+
+| Operation | Description |
+|-----------|-------------|
+| Fetch | Download objects and refs from a remote |
+| Pull | Fetch and merge (fast-forward) from the remote branch |
+| Push | Upload local commits to the remote branch |
+| Force Push | Push with `--force` (requires confirmation) |
+
+## GitLens Panel
+
+The bottom panel includes a **GitLens** tab with a commit timeline visualization. This shows a chronological view of commits on the current branch, making it easy to see activity patterns and navigate through project history.
+
+## Technical Details
+
+Git integration runs as an extension (`examples/git-extension`) and exposes its functionality through the `api.git` namespace. All operations are powered by the `git2` Rust crate, which provides native Git support without requiring a system Git installation.

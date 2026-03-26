@@ -1,0 +1,72 @@
+{
+  "name": "xplorer-ssh",
+  "version": "1.0.0",
+  "description": "SSH connection manager and remote file browser for Xplorer. Connect to remote servers via SSH/SFTP, browse files, and execute commands.",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/index.tsx --bundle --format=iife --outfile=dist/index.js --external:react --external:react-dom --external:@xplorer/extension-sdk --target=es2020 --jsx=transform",
+    "watch": "esbuild src/index.tsx --bundle --format=iife --outfile=dist/index.js --external:react --external:react-dom --external:@xplorer/extension-sdk --target=es2020 --jsx=transform --watch",
+    "build-native": "cd native && cargo build --release"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "esbuild": "^0.20.0",
+    "@types/react": "^18.2.0",
+    "typescript": "^5.2.0"
+  },
+  "xplorer": {
+    "id": "xplorer-ssh",
+    "name": "SSH Manager",
+    "displayName": "SSH Manager",
+    "description": "Connect to remote servers via SSH/SFTP. Browse remote files, execute commands, and manage connections.",
+    "version": "1.0.0",
+    "author": "Xplorer Team",
+    "category": "remote",
+    "icon": "SSH",
+    "native": true,
+    "keywords": ["ssh", "sftp", "remote", "server", "terminal", "connection"],
+    "permissions": [
+      "native:invoke",
+      "ui:panels",
+      "ui:notifications",
+      "xplorer:settings"
+    ],
+    "activationEvents": ["onStartup"],
+    "contributes": {
+      "panels": [
+        {
+          "id": "ssh-panel",
+          "title": "SSH Connections",
+          "location": "right",
+          "icon": "SSH",
+          "when": "always"
+        }
+      ],
+      "commands": [
+        {
+          "command": "ssh.connect",
+          "title": "Connect SSH",
+          "category": "SSH"
+        },
+        {
+          "command": "ssh.disconnect",
+          "title": "Disconnect SSH",
+          "category": "SSH"
+        },
+        {
+          "command": "ssh.openManager",
+          "title": "Open SSH Manager",
+          "category": "SSH"
+        }
+      ],
+      "keybindings": [
+        {
+          "command": "ssh.openManager",
+          "key": "ctrl+shift+s",
+          "title": "Open SSH Manager"
+        }
+      ]
+    }
+  }
+}

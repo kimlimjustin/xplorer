@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 420" font-family="'Segoe UI', system-ui, -apple-system, sans-serif">
+  <defs>
+    <filter id="shadow" x="-4%" y="-4%" width="108%" height="112%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#000" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="680" height="420" rx="12" fill="#0a0a1a"/>
+
+  <!-- Title -->
+  <text x="340" y="28" text-anchor="middle" fill="#e2e8f0" font-size="14" font-weight="600">Frontend Component Hierarchy</text>
+
+  <!-- App root -->
+  <rect x="270" y="42" width="140" height="32" rx="8" fill="#1e40af" stroke="#3b82f6" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="340" y="63" text-anchor="middle" fill="#dbeafe" font-size="12" font-weight="600">App</text>
+
+  <!-- Lines to providers -->
+  <line x1="340" y1="74" x2="340" y2="90" stroke="#475569" stroke-width="1"/>
+
+  <!-- Providers row -->
+  <rect x="160" y="90" width="360" height="26" rx="6" fill="#172554" stroke="#2563eb" stroke-width="0.5"/>
+  <text x="340" y="108" text-anchor="middle" fill="#93c5fd" font-size="10">DragDropProvider  +  ThemeProvider  +  QueryClient</text>
+
+  <line x1="340" y1="116" x2="340" y2="130" stroke="#475569" stroke-width="1"/>
+
+  <!-- Xplorer Page -->
+  <rect x="240" y="130" width="200" height="32" rx="8" fill="#172554" stroke="#3b82f6" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="340" y="150" text-anchor="middle" fill="#bfdbfe" font-size="12" font-weight="500">XplorerPage  (main state)</text>
+
+  <!-- Lines to 3 columns -->
+  <line x1="340" y1="162" x2="110" y2="184" stroke="#475569" stroke-width="1"/>
+  <line x1="340" y1="162" x2="340" y2="184" stroke="#475569" stroke-width="1"/>
+  <line x1="340" y1="162" x2="570" y2="184" stroke="#475569" stroke-width="1"/>
+
+  <!-- Left Sidebar -->
+  <rect x="30" y="184" width="160" height="32" rx="8" fill="#052e16" stroke="#22c55e" stroke-width="1" filter="url(#shadow)"/>
+  <text x="110" y="204" text-anchor="middle" fill="#86efac" font-size="11" font-weight="500">LeftSidebar</text>
+
+  <line x1="110" y1="216" x2="110" y2="232" stroke="#475569" stroke-width="1"/>
+
+  <rect x="30" y="232" width="160" height="24" rx="6" fill="#0f172a" stroke="#334155" stroke-width="0.5"/>
+  <text x="110" y="248" text-anchor="middle" fill="#94a3b8" font-size="9">Drives, Favorites, TreeView</text>
+
+  <line x1="110" y1="256" x2="110" y2="270" stroke="#475569" stroke-width="1"/>
+
+  <rect x="30" y="270" width="160" height="24" rx="6" fill="#0f172a" stroke="#334155" stroke-width="0.5"/>
+  <text x="110" y="286" text-anchor="middle" fill="#94a3b8" font-size="9">ExtensionPanels</text>
+
+  <!-- Center: SplitContainer + TopBar -->
+  <rect x="220" y="184" width="240" height="32" rx="8" fill="#422006" stroke="#f59e0b" stroke-width="1" filter="url(#shadow)"/>
+  <text x="340" y="204" text-anchor="middle" fill="#fde68a" font-size="11" font-weight="500">TopBar + SplitContainer</text>
+
+  <line x1="280" y1="216" x2="280" y2="232" stroke="#475569" stroke-width="1"/>
+  <line x1="400" y1="216" x2="400" y2="232" stroke="#475569" stroke-width="1"/>
+
+  <!-- FileGrid -->
+  <rect x="220" y="232" width="120" height="32" rx="8" fill="#172554" stroke="#3b82f6" stroke-width="1" filter="url(#shadow)"/>
+  <text x="280" y="252" text-anchor="middle" fill="#93c5fd" font-size="11" font-weight="500">FileGrid</text>
+
+  <line x1="280" y1="264" x2="280" y2="280" stroke="#475569" stroke-width="1"/>
+
+  <rect x="220" y="280" width="120" height="24" rx="6" fill="#0f172a" stroke="#334155" stroke-width="0.5"/>
+  <text x="280" y="296" text-anchor="middle" fill="#94a3b8" font-size="9">FileGridItem(s)</text>
+
+  <line x1="280" y1="304" x2="280" y2="318" stroke="#475569" stroke-width="1"/>
+
+  <rect x="220" y="318" width="120" height="24" rx="6" fill="#0f172a" stroke="#334155" stroke-width="0.5"/>
+  <text x="280" y="334" text-anchor="middle" fill="#94a3b8" font-size="9">ContextMenu</text>
+
+  <!-- Panels -->
+  <rect x="360" y="232" width="100" height="32" rx="8" fill="#172554" stroke="#3b82f6" stroke-width="1" filter="url(#shadow)"/>
+  <text x="410" y="252" text-anchor="middle" fill="#93c5fd" font-size="11" font-weight="500">Panels</text>
+
+  <line x1="410" y1="264" x2="410" y2="278" stroke="#475569" stroke-width="1"/>
+
+  <rect x="360" y="278" width="100" height="20" rx="4" fill="#0f172a" stroke="#334155" stroke-width="0.5"/>
+  <text x="410" y="292" text-anchor="middle" fill="#94a3b8" font-size="8">Terminal</text>
+
+  <rect x="360" y="302" width="100" height="20" rx="4" fill="#0f172a" stroke="#334155" stroke-width="0.5"/>
+  <text x="410" y="316" text-anchor="middle" fill="#94a3b8" font-size="8">CodeEditor</text>
+
+  <rect x="360" y="326" width="100" height="20" rx="4" fill="#0f172a" stroke="#334155" stroke-width="0.5"/>
+  <text x="410" y="340" text-anchor="middle" fill="#94a3b8" font-size="8">StorageAnalytics</text>
+
+  <rect x="360" y="350" width="100" height="20" rx="4" fill="#0f172a" stroke="#334155" stroke-width="0.5"/>
+  <text x="410" y="364" text-anchor="middle" fill="#94a3b8" font-size="8">DuplicateFinder</text>
+
+  <!-- Right Sidebar -->
+  <rect x="490" y="184" width="160" height="32" rx="8" fill="#1a0a2e" stroke="#8b5cf6" stroke-width="1" filter="url(#shadow)"/>
+  <text x="570" y="204" text-anchor="middle" fill="#c4b5fd" font-size="11" font-weight="500">RightSidebar</text>
+
+  <line x1="570" y1="216" x2="570" y2="232" stroke="#475569" stroke-width="1"/>
+
+  <rect x="490" y="232" width="160" height="20" rx="4" fill="#0f172a" stroke="#334155" stroke-width="0.5"/>
+  <text x="570" y="246" text-anchor="middle" fill="#94a3b8" font-size="9">PreviewPanel</text>
+
+  <rect x="490" y="256" width="160" height="20" rx="4" fill="#0f172a" stroke="#334155" stroke-width="0.5"/>
+  <text x="570" y="270" text-anchor="middle" fill="#94a3b8" font-size="9">ChatPanel (AI)</text>
+
+  <rect x="490" y="280" width="160" height="20" rx="4" fill="#0f172a" stroke="#334155" stroke-width="0.5"/>
+  <text x="570" y="294" text-anchor="middle" fill="#94a3b8" font-size="9">ExtensionsPanel</text>
+
+  <rect x="490" y="304" width="160" height="20" rx="4" fill="#0f172a" stroke="#334155" stroke-width="0.5"/>
+  <text x="570" y="318" text-anchor="middle" fill="#94a3b8" font-size="9">RecommendationsPanel</text>
+
+  <rect x="490" y="328" width="160" height="20" rx="4" fill="#0f172a" stroke="#334155" stroke-width="0.5"/>
+  <text x="570" y="342" text-anchor="middle" fill="#94a3b8" font-size="9">TagsPanel</text>
+
+  <!-- Shared layer label -->
+  <rect x="200" y="386" width="280" height="24" rx="6" fill="#1e293b" stroke="#475569" stroke-width="0.5"/>
+  <text x="340" y="402" text-anchor="middle" fill="#94a3b8" font-size="10">Shared: TauriAPI (transport) + SmartSearch + Dialogs</text>
+</svg>

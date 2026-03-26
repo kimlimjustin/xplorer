@@ -186,6 +186,38 @@ export const revokeConsent = (extensionId: string): void => {
   localStorage.removeItem(getConsentKey(extensionId));
 };
 
+// ── Consent helpers ─────────────────────────────────────────────────────────
+
+/** Returns true when any requested permission needs an interactive consent dialog */
+export const requiresConsentDialog = (permissions: string[]): boolean => {
+  return permissions.length > 0;
+};
+
+/** Show a single-extension permission consent dialog. Resolves true if user allows. */
+export const requestPermissionConsent = (
+  detail: ExtensionPermissionRequestDetail,
+): Promise<boolean> => {
+  if (hasStoredConsent(detail.extensionId)) return Promise.resolve(true);
+
+  return new Promise<boolean>((resolve) => {
+    const event = new CustomEvent(EXTENSION_PERMISSION_REQUEST_EVENT, {
+      detail: { detail, resolve },
+    });
+    window.dispatchEvent(event);
+  });
+};
+
+/** Show permission consent for multiple extensions sequentially. Resolves false if any denied. */
+export const requestBulkPermissionConsent = async (
+  details: ExtensionPermissionRequestDetail[],
+): Promise<boolean> => {
+  for (const detail of details) {
+    const granted = await requestPermissionConsent(detail);
+    if (!granted) return false;
+  }
+  return true;
+};
+
 // ── Component ────────────────────────────────────────────────────────────────
 
 const ExtensionPermissionDialog = () => {

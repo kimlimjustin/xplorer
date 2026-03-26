@@ -2,10 +2,10 @@ name: Web CI
 
 on:
   push:
-    paths: ['private/web/**']
+    paths: ['apps/web/**']
     branches: [next]
   pull_request:
-    paths: ['private/web/**']
+    paths: ['apps/web/**']
 
 jobs:
   test-web:
@@ -21,9 +21,6 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - uses: actions/checkout@v4
-        with:
-          submodules: true
-          token: ${{ secrets.PRIVATE_REPO_TOKEN }}
 
       - uses: pnpm/action-setup@v4
         with:
@@ -36,16 +33,16 @@ jobs:
       - run: pnpm install --frozen-lockfile
 
       - name: Push database schema
-        run: cd private/web && pnpm db:push
+        run: cd apps/web && pnpm db:push
         env:
           DATABASE_URL: postgresql://xplorer:xplorer@localhost:5432/xplorer_test
 
       - name: Run tests
-        run: cd private/web && pnpm test:run
+        run: cd apps/web && pnpm test:run
         env:
           DATABASE_URL: postgresql://xplorer:xplorer@localhost:5432/xplorer_test
           NEXTAUTH_SECRET: test-secret
           NEXTAUTH_URL: http://localhost:3000
 
       - name: Typecheck
-        run: cd private/web && npx tsc --noEmit
+        run: cd apps/web && npx tsc --noEmit

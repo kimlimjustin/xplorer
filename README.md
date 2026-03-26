@@ -37,15 +37,9 @@ Xplorer is a cross-platform file manager built with Rust, Tauri 2, and React 18.
 - **Keyboard shortcuts** — fully configurable shortcut profiles
 - **Terminal** — integrated terminal panel with SSH support
 
-## Open-Core Model
+## Open Source
 
-Xplorer uses an open-core model:
-
-- **Core desktop app** (AGPL-3.0): The full Tauri desktop file explorer with 28 free extensions, the Extension SDK, and the create-extension CLI.
-- **Premium extensions**: Advanced features like AI chat, SSH, Google Drive integration, collaboration, and more are available through the Xplorer marketplace.
-- **Marketplace server**: The web-based extension marketplace is proprietary.
-
-The desktop app is fully functional without premium components.
+Xplorer is fully open source (AGPL-3.0). This includes the desktop app, the Extension SDK, the create-extension CLI, and the web marketplace at `apps/web/`. Extensions are developed and distributed through a separate public repository.
 
 ---
 
@@ -71,15 +65,6 @@ pnpm install
 pnpm dev
 ```
 
-### For maintainers (with private submodule)
-
-```bash
-git clone --recurse-submodules https://github.com/kimlimjustin/xplorer.git -b next
-cd xplorer
-pnpm install
-pnpm dev:full    # includes marketplace server
-```
-
 ### Building for Production
 
 ```bash
@@ -101,14 +86,16 @@ pnpm test:tauri   # Rust backend tests
 xplorer/
 ├── apps/
 │   ├── client/              # React 18 + TypeScript frontend (Vite)
-│   └── src-tauri/           # Rust backend (Tauri 2)
+│   ├── src-tauri/           # Rust backend (Tauri 2)
+│   └── web/                 # Next.js marketplace server
 ├── packages/
 │   ├── sdk/                 # @xplorer/sdk — internal service layer
 │   ├── extension-sdk/       # @xplorer/extension-sdk — public extension API
 │   ├── create-extension/    # CLI for scaffolding new extensions
 │   └── extensions/          # 28 free extensions (themes, tools, previews)
-├── e2e/                     # Playwright end-to-end tests
-└── private/                 # [submodule] premium extensions + marketplace
+├── infra/                   # Docker Compose for local PostgreSQL
+├── scripts/                 # Extension signing and utility scripts
+└── e2e/                     # Playwright end-to-end tests
 ```
 
 | Layer | Technology |

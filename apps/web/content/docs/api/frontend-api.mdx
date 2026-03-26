@@ -1,0 +1,183 @@
+---
+id: frontend-api
+title: Frontend API
+sidebar_position: 2
+---
+
+# Frontend API
+
+The frontend API is centralized in `client/src/lib/tauri-api.ts` as the `TauriAPI` object. Every backend call goes through this module.
+
+:::info
+As of the two-layer SDK architecture, `TauriAPI` is a thin facade that delegates to `@xplorer/sdk` service modules (16 modules wrapping Tauri `invoke()` calls) rather than making direct `invoke()` calls itself. The internal SDK lives at `xplorer-sdk/` and the external extension SDK at `extension-sdk/`.
+:::
+
+## Usage
+
+```typescript
+import { TauriAPI } from '@/lib/tauri-api';
+
+// Read a directory
+const files = await TauriAPI.readDirectory("C:\\Users\\username\\Documents");
+
+// Copy a file with progress
+await TauriAPI.copyWithProgress(source, destination, operationId);
+
+// Search files
+const results = await TauriAPI.searchFiles("quarterly report", 20);
+```
+
+## TauriAPI Methods
+
+### File System
+
+```typescript
+TauriAPI.readDirectory(path: string): Promise<FileEntry[]>
+TauriAPI.createDirectory(path: string): Promise<void>
+TauriAPI.getHomeDirectory(): Promise<string>
+TauriAPI.openFile(path: string): Promise<void>
+TauriAPI.getFileMetadata(path: string): Promise<FileMetadata>
+TauriAPI.calculateFolderSize(path: string): Promise<FolderSizeInfo>
+```
+
+### File Operations
+
+```typescript
+TauriAPI.copyWithProgress(src: string, dst: string, opId: string): Promise<void>
+TauriAPI.moveWithProgress(src: string, dst: string, opId: string): Promise<void>
+TauriAPI.rename(oldPath: string, newPath: string): Promise<void>
+TauriAPI.deleteFiles(paths: string[]): Promise<void>
+TauriAPI.moveToTrash(path: string): Promise<void>
+```
+
+### Search
+
+```typescript
+TauriAPI.searchFiles(query: string, limit?: number): Promise<SearchResult[]>
+TauriAPI.addPathToTokenizer(path: string): Promise<void>
+TauriAPI.rebuildTokenizerIndex(): Promise<void>
+TauriAPI.getTokenizerStats(): Promise<TokenizerStats>
+```
+
+### AI
+
+```typescript
+TauriAPI.chatWithOllama(params: ChatParams): Promise<string>
+TauriAPI.analyzeFileWithAI(path: string, model: string): Promise<string>
+TauriAPI.getAvailableModels(): Promise<string[]>
+TauriAPI.getOllamaStatus(): Promise<OllamaStatus>
+```
+
+### SSH
+
+```typescript
+TauriAPI.sshConnect(connection: SSHConnection): Promise<SSHConnectionResult>
+TauriAPI.sshDisconnect(connectionId: string): Promise<void>
+TauriAPI.sshListDirectory(connectionId: string, path: string): Promise<FileEntry[]>
+TauriAPI.sshUploadFile(connectionId: string, local: string, remote: string): Promise<void>
+TauriAPI.sshDownloadFile(connectionId: string, remote: string, local: string): Promise<void>
+```
+
+### Git
+
+```typescript
+TauriAPI.gitPull(repoPath: string, remote?: string, branch?: string): Promise<string>
+TauriAPI.gitPush(repoPath: string, remote?: string, branch?: string): Promise<string>
+TauriAPI.gitFetch(repoPath: string, remote?: string): Promise<string>
+TauriAPI.getGitRemotes(repoPath: string): Promise<GitRemoteInfo[]>
+```
+
+### Undo/Redo
+
+```typescript
+TauriAPI.recordFileOperation(operation: FileOperationRecord): Promise<void>
+TauriAPI.getUndoRedoState(): Promise<UndoRedoState>
+```
+
+### Google Drive
+
+```typescript
+TauriAPI.authenticateGdrive(): Promise<void>
+TauriAPI.listGdriveAccounts(): Promise<GoogleDriveAccount[]>
+TauriAPI.listGdriveFiles(accountId: string, folderId?: string): Promise<FileEntry[]>
+TauriAPI.downloadGdriveFile(accountId: string, fileId: string, destination: string): Promise<void>
+TauriAPI.uploadToGdrive(accountId: string, localPath: string, folderId?: string): Promise<void>
+TauriAPI.deleteGdriveFile(accountId: string, fileId: string): Promise<void>
+TauriAPI.renameGdriveFile(accountId: string, fileId: string, newName: string): Promise<void>
+TauriAPI.moveGdriveFile(accountId: string, fileId: string, newParentId: string): Promise<void>
+TauriAPI.createGdriveFolder(accountId: string, name: string, parentId?: string): Promise<void>
+TauriAPI.getGdriveFileContent(accountId: string, fileId: string): Promise<string>
+TauriAPI.getGdriveSettings(): Promise<Record<string, unknown>>
+TauriAPI.updateGdriveSettings(settings: Record<string, unknown>): Promise<void>
+```
+
+### Extension Watcher
+
+```typescript
+TauriAPI.watchExtensionDirectories(paths: string[]): Promise<void>
+TauriAPI.stopWatchingExtensions(): Promise<void>
+```
+
+### Events
+
+```typescript
+TauriAPI.listenToTerminalOutput(callback: (msg: string) => void): Promise<() => void>
+TauriAPI.listenToProgress(callback: (progress: OperationProgress) => void): Promise<() => void>
+```
+
+## AI Service
+
+`client/src/lib/ai-service.ts` provides a higher-level AI chat interface:
+
+```typescript
+import { AIService } from '@/lib/ai-service';
+
+const ai = new AIService();
+
+// Send a chat message
+const response = await ai.sendMessage("Summarize files in this folder", {
+  model: "llama3.2",
+  context: { currentPath: "/Users/docs" }
+});
+```
+
+## Agent Service
+
+`client/src/lib/agent-service.ts` provides the Claude agent interface:
+
+```typescript
+import { AgentService } from '@/lib/agent-service';
+
+const agent = new AgentService();
+
+// Execute an agent action
+const result = await agent.execute({
+  action: "analyze",
+  target: "/path/to/file.txt"
+});
+```
+
+## Utility Functions
+
+### `lib/utils.ts`
+
+```typescript
+// Get file icon emoji by extension
+getFileIcon(filename: string): string
+
+// Merge Tailwind classes with conflict resolution
+cn(...inputs: ClassValue[]): string
+```
+
+### `lib/preview-factory.ts`
+
+```typescript
+// Check if a file can be previewed
+defaultPreviewFactory.canPreview(file: FileEntry): boolean
+
+// Get the preview type category
+defaultPreviewFactory.getPreviewType(file: FileEntry): PreviewType
+
+// Lazy-load the preview component
+defaultPreviewFactory.getPreviewComponent(file: FileEntry): Promise<React.ComponentType>
+```
