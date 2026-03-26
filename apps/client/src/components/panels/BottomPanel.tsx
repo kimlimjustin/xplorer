@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 
 // Lazy-loaded sub-panels -- only loaded when the user switches to their tab
-const TerminalPanelEnhanced = React.lazy(() => import('./TerminalPanelEnhanced'));
+const XTermPanel = React.lazy(() => import('./XTermPanel'));
 const UndoHistoryPanel = React.lazy(() => import('./UndoHistoryPanel'));
 const NotificationCenter = React.lazy(() => import('./NotificationCenter'));
 const ClipboardHistoryPanel = React.lazy(() => import('./ClipboardHistoryPanel'));
@@ -223,14 +223,9 @@ const BottomPanel = ({
               }
             >
               {bottomPanelTab === 'terminal' && (
-                <TerminalPanelEnhanced
-                  terminalHistory={terminalHistory}
-                  terminalInput={terminalInput}
-                  setTerminalInput={setTerminalInput}
-                  terminalCwd={terminalCwd}
-                  executeTerminalCommand={executeTerminalCommand}
-                  bottomPanelCollapsed={bottomPanelCollapsed}
-                  bottomPanelTab={bottomPanelTab}
+                <XTermPanel
+                  cwd={terminalCwd}
+                  collapsed={bottomPanelCollapsed}
                 />
               )}
 

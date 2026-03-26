@@ -51,7 +51,6 @@ export const TerminalCommands = {
           refetch,
         );
       } else {
-        // Execute as system command
         await executeSystemCommand(trimmedCommand, terminalCwd, setTerminalHistory);
       }
     } catch (error) {

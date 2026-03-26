@@ -6,6 +6,7 @@ import type { MarketplaceExtension } from '../MarketplacePanel';
 interface ExtensionCardProps {
   extension: MarketplaceExtension;
   isInstalled: boolean;
+  isDev?: boolean;
   isInstalling: boolean;
   onInstall: (extension: MarketplaceExtension) => void;
   onUninstall: (extension: MarketplaceExtension) => void;
@@ -31,6 +32,7 @@ const ExtensionCard = React.memo(
   ({
     extension,
     isInstalled,
+    isDev,
     isInstalling,
     onInstall,
     onUninstall,
@@ -56,7 +58,11 @@ const ExtensionCard = React.memo(
             <div className="flex items-center justify-between gap-2">
               <h4 className="text-xp-text truncate text-sm font-medium">{extension.displayName}</h4>
               <div className="flex-shrink-0">
-                {isInstalled ? (
+                {isDev ? (
+                  <span className="rounded border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-400">
+                    Dev Mode
+                  </span>
+                ) : isInstalled ? (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();

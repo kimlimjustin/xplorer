@@ -159,6 +159,45 @@ export async function POST(request: NextRequest) {
       });
 
       if (existing) {
+        // If same author, treat as version update
+        if (existing.authorId === session.user.id) {
+          const { url, downloadUrl } = await uploadExtensionFile(file, existing.id, data.version, slug);
+
+          await tx.extension.update({
+            where: { id: existing.id },
+            data: {
+              displayName: data.displayName,
+              description: data.description,
+              longDescription: data.longDescription || existing.longDescription,
+              version: data.version,
+              downloadUrl,
+              fileSize: file.size,
+              checksum,
+            },
+          });
+
+          // Mark old versions as not latest
+          await tx.extensionVersion.updateMany({
+            where: { extensionId: existing.id },
+            data: { isLatest: false },
+          });
+
+          await tx.extensionVersion.create({
+            data: {
+              extensionId: existing.id,
+              version: data.version,
+              downloadUrl,
+              blobUrl: url,
+              fileSize: file.size,
+              checksum,
+              isLatest: true,
+              changeLog: (formData.get('changeLog') || 'Version update').toString(),
+            },
+          });
+
+          return existing;
+        }
+
         throw new Error('DUPLICATE_EXTENSION');
       }
 

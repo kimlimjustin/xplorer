@@ -4,6 +4,7 @@ packages:
   - 'packages/sdk'
   - 'packages/extension-sdk'
   - 'packages/create-extension'
+  - 'packages/cli'
   - 'packages/extensions/**'
 
 onlyBuiltDependencies:

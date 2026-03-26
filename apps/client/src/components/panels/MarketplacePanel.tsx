@@ -95,6 +95,7 @@ interface ExtensionsContentProps {
   error: string | null;
   extensions: MarketplaceExtension[];
   installedExtensions: string[];
+  devExtensions: Set<string>;
   installingId: string | null;
   debouncedSearch: string;
   selectedCategory: string;
@@ -112,6 +113,7 @@ const ExtensionsContent = ({
   error,
   extensions,
   installedExtensions,
+  devExtensions,
   installingId,
   debouncedSearch,
   selectedCategory,
@@ -178,6 +180,7 @@ const ExtensionsContent = ({
             installedExtensions.includes(extension.id) ||
             installedExtensions.includes(extension.slug)
           }
+          isDev={devExtensions.has(extension.id) || devExtensions.has(extension.slug)}
           isInstalling={installingId === extension.id}
           onInstall={handleInstall}
           onUninstall={handleUninstall}
@@ -199,6 +202,7 @@ const MarketplacePanel = () => {
   const [extensions, setExtensions] = useState<MarketplaceExtension[]>([]);
   const [categories, setCategories] = useState<MarketplaceCategory[]>([]);
   const [installedExtensions, setInstalledExtensions] = useState<string[]>([]);
+  const [devExtensions, setDevExtensions] = useState<Set<string>>(new Set());
   const [pagination, setPagination] = useState<PaginationInfo>({
     page: 1,
     limit: 20,
@@ -262,6 +266,9 @@ const MarketplacePanel = () => {
     try {
       const installed = await TauriAPI.getInstalledExtensions();
       setInstalledExtensions(installed.map((ext) => ext.manifest.id));
+      setDevExtensions(new Set(
+        installed.filter((ext) => (ext as { is_dev?: boolean }).is_dev).map((ext) => ext.manifest.id)
+      ));
     } catch (err) {
       console.error('Failed to load installed extensions:', err);
     }
@@ -724,6 +731,7 @@ const MarketplacePanel = () => {
             error={error}
             extensions={extensions}
             installedExtensions={installedExtensions}
+            devExtensions={devExtensions}
             installingId={installingId}
             debouncedSearch={debouncedSearch}
             selectedCategory={selectedCategory}
