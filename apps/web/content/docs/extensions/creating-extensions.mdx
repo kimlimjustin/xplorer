@@ -6,19 +6,18 @@ sidebar_position: 3
 
 # Creating Extensions
 
-Xplorer supports nine extension categories. This guide shows you how to build each one using the high-level registration APIs.
+Xplorer supports eight extension categories. This guide shows you how to build each one using the high-level registration APIs.
 
 ## Extension Categories
 
 | Category | API | Purpose |
 |---|---|---|
 | `theme` | `Theme.register()` | Custom color schemes |
-| `panel` | `Sidebar.register()` | Sidebar panels with React UI |
+| `panel` | `Sidebar.register()` | Right sidebar panels with React UI |
+| `panel` | `SidebarTab.register()` | Left sidebar tabs (alongside Explorer/Search) |
 | `preview` | `Preview.register()` | Custom file preview renderers |
 | `command` | `Command.register()` | Commands with keyboard shortcuts |
 | `action` | `ContextMenu.register()` | Right-click context menu items |
-| `tab` | `Tab.register()` | Custom tab views in the main content area |
-| `navigation` | `Navigation.register()` | Left sidebar navigation entries |
 | `bottom-tab` | `BottomTab.register()` | Bottom panel tabs (alongside Terminal) |
 | `editor` | `Editor.register()` | Custom file editor handlers |
 
@@ -276,11 +275,11 @@ ContextMenu.register({
 
 ---
 
-## Tab Extension
+## Sidebar Tab Extension
 
-Tab extensions render a full custom view inside the main content area as a tab, similar to how the file explorer itself is a tab. This is ideal for cloud service browsers, dashboards, or any full-page UI.
+Sidebar tab extensions add a tab icon to the left sidebar (alongside the built-in Explorer and Search tabs). When clicked, your component renders in the sidebar area. Combine with `Editor.register()` to also show content in the main area for specific file types.
 
-### Example: Google Drive File Browser
+### Example: Google Drive Sidebar
 
 ```typescript
 import { Tab, type XplorerAPI } from '@xplorer/extension-sdk';
@@ -325,62 +324,22 @@ function DriveBrowser({ tabData }: { tabData?: Record<string, any> }) {
   );
 }
 
-Tab.register({
-  id: 'gdrive-browser',
+SidebarTab.register({
+  id: 'gdrive-sidebar',
   title: 'Google Drive',
   icon: 'cloud',
-  tabType: 'gdrive',
   permissions: ['gdrive:access'],
   onActivate: (injectedApi) => { api = injectedApi; },
-  render: (props) => React.createElement(DriveBrowser, { tabData: props.tabData }),
+  render: (props) => React.createElement(DriveBrowser, { currentPath: props.currentPath }),
 });
 ```
 
 ### Key Points
 
-- Use `tabType` to define a unique identifier for your tab kind
-- Open your tab programmatically with `api.navigation.openTab({ type: 'gdrive', name: 'Google Drive', data: { accountId } })`
-- The `render` function receives `tabData` containing whatever was passed in `data`
-
----
-
-## Navigation Extension
-
-Navigation extensions add entries to the left sidebar. Clicking an entry can navigate to a path or open a custom tab.
-
-### Example: Cloud Storage Navigation
-
-```typescript
-import { Navigation, type XplorerAPI } from '@xplorer/extension-sdk';
-
-Navigation.register({
-  id: 'gdrive-nav',
-  title: 'Google Drive',
-  icon: 'cloud',
-  section: 'cloud',
-  order: 10,
-  onClick: (api) => {
-    api.navigation.openTab({ type: 'gdrive', name: 'Google Drive' });
-  },
-});
-
-Navigation.register({
-  id: 'dropbox-nav',
-  title: 'Dropbox',
-  icon: 'box',
-  section: 'cloud',
-  order: 20,
-  onClick: (api) => {
-    api.navigation.openTab({ type: 'dropbox', name: 'Dropbox' });
-  },
-});
-```
-
-### Key Points
-
-- `section` determines where the entry appears: `'favorites'`, `'cloud'`, `'devices'`, or `'custom'`
-- `order` controls sort position within the section (lower numbers appear first)
-- Multiple navigation entries can be registered from the same extension
+- `SidebarTab` adds a clickable icon in the left sidebar tab bar (alongside Explorer and Search)
+- When clicked, your `render` component replaces the sidebar content
+- Use `useCurrentPath()` hook inside your component for reactive path updates
+- Combine with `Editor.register()` if you also need a main area view for specific file types
 
 ---
 
