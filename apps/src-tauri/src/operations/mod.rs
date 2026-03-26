@@ -1,49 +1,49 @@
-pub mod types;
-pub mod file_ops;
+pub mod accelerated_ops;
+pub mod agent_ops;
+pub mod analytics_ops;
+pub mod comparison_ops;
+pub mod compression_ops;
+pub mod database_ops;
 pub mod directory_ops;
+pub mod docker_ops;
+pub mod encryption_ops;
+pub mod file_associations_ops;
+pub mod file_ops;
+pub mod image_ops;
 pub mod metadata_ops;
+pub mod progress;
+pub mod properties_ops;
+pub mod secure_delete_ops;
+pub mod shell_integration_ops;
 pub mod system_ops;
 pub mod trash_ops;
-pub mod agent_ops;
-pub mod progress;
-pub mod accelerated_ops;
-pub mod comparison_ops;
-pub mod properties_ops;
-pub mod file_associations_ops;
-pub mod compression_ops;
-pub mod analytics_ops;
+pub mod types;
 pub mod undo_redo_ops;
-pub mod encryption_ops;
-pub mod image_ops;
-pub mod database_ops;
-pub mod secure_delete_ops;
-pub mod docker_ops;
-pub mod shell_integration_ops;
 
-pub use types::*;
-pub use file_ops::*;
-pub use directory_ops::*;
-pub use metadata_ops::*;
-pub use system_ops::*;
-pub use trash_ops::*;
-pub use agent_ops::*;
-pub use progress::*;
 pub use accelerated_ops::*;
-pub use comparison_ops::*;
-pub use properties_ops::*;
-pub use file_associations_ops::*;
-pub use compression_ops::*;
+pub use agent_ops::*;
 pub use analytics_ops::*;
+pub use comparison_ops::*;
+pub use compression_ops::*;
+pub use directory_ops::*;
 pub use encryption_ops::*;
+pub use file_associations_ops::*;
+pub use file_ops::*;
 pub use image_ops::*;
+pub use metadata_ops::*;
+pub use progress::*;
+pub use properties_ops::*;
 pub use secure_delete_ops::*;
 pub use shell_integration_ops::*;
+pub use system_ops::*;
+pub use trash_ops::*;
+pub use types::*;
 // Note: undo_redo_ops items are accessed directly via operations::undo_redo_ops::*
 // in main.rs, so no glob re-export is needed here.
 
 // ─── Shared helpers ─────────────────────────────────────────────────────────
 
-use std::path::{Path, Component};
+use std::path::{Component, Path};
 
 /// Check whether a file is hidden (dot-prefix or Windows hidden attribute).
 pub(crate) fn is_hidden_file(path: &Path) -> bool {
@@ -83,7 +83,9 @@ fn normalize_path_for_validation(path: &str) -> std::path::PathBuf {
     let mut components: Vec<Component> = Vec::new();
     for component in p.components() {
         match component {
-            Component::ParentDir => { components.pop(); }
+            Component::ParentDir => {
+                components.pop();
+            }
             Component::CurDir => {}
             c => components.push(c),
         }
@@ -103,8 +105,8 @@ pub fn validate_file_path(path: &str) -> Result<(), String> {
     }
 
     // Normalize to collapse any `..` traversal
-    let canonical = std::fs::canonicalize(path)
-        .unwrap_or_else(|_| normalize_path_for_validation(path));
+    let canonical =
+        std::fs::canonicalize(path).unwrap_or_else(|_| normalize_path_for_validation(path));
     let path_lower = canonical.to_string_lossy().to_lowercase();
     // Also normalize separators to forward slashes for uniform matching
     let mut path_normalized = path_lower.replace('\\', "/");
@@ -116,11 +118,7 @@ pub fn validate_file_path(path: &str) -> Result<(), String> {
     // --- Windows-specific blocked directories ---
     #[cfg(target_os = "windows")]
     {
-        let blocked_prefixes = [
-            "c:/windows",
-            "c:/program files",
-            "c:/program files (x86)",
-        ];
+        let blocked_prefixes = ["c:/windows", "c:/program files", "c:/program files (x86)"];
         for prefix in &blocked_prefixes {
             if path_normalized.starts_with(prefix) {
                 return Err(format!(
@@ -134,13 +132,7 @@ pub fn validate_file_path(path: &str) -> Result<(), String> {
     // --- Unix-specific blocked directories ---
     #[cfg(not(target_os = "windows"))]
     {
-        let blocked_prefixes = [
-            "/etc",
-            "/usr",
-            "/bin",
-            "/sbin",
-            "/boot",
-        ];
+        let blocked_prefixes = ["/etc", "/usr", "/bin", "/sbin", "/boot"];
         for prefix in &blocked_prefixes {
             if path_normalized == *prefix || path_normalized.starts_with(&format!("{}/", prefix)) {
                 return Err(format!(
@@ -189,7 +181,11 @@ mod tests {
     fn test_validate_file_path_allows_temp_path() {
         let temp = tempfile::tempdir().unwrap();
         let result = validate_file_path(temp.path().to_str().unwrap());
-        assert!(result.is_ok(), "temp path should be allowed: {:?}", result.err());
+        assert!(
+            result.is_ok(),
+            "temp path should be allowed: {:?}",
+            result.err()
+        );
     }
 
     #[cfg(target_os = "windows")]
@@ -277,7 +273,12 @@ mod tests {
                 let result = validate_file_path(path.to_str().unwrap());
                 // This should be Ok (allowed) -- the dir may not exist but validation
                 // should not block it
-                assert!(result.is_ok(), "{} should be allowed, got: {:?}", subdir, result.err());
+                assert!(
+                    result.is_ok(),
+                    "{} should be allowed, got: {:?}",
+                    subdir,
+                    result.err()
+                );
             }
         }
     }
@@ -287,7 +288,10 @@ mod tests {
     fn test_validate_file_path_traversal_to_windows() {
         // A path that tries to escape via ../ to reach C:\Windows
         let result = validate_file_path("C:\\Users\\someone\\..\\..\\Windows\\System32\\cmd.exe");
-        assert!(result.is_err(), "traversal to Windows dir should be blocked");
+        assert!(
+            result.is_err(),
+            "traversal to Windows dir should be blocked"
+        );
     }
 
     #[cfg(not(target_os = "windows"))]

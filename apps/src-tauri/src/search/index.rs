@@ -14,8 +14,8 @@ use regex::Regex;
 use serde::{Deserialize, Serialize};
 use tracing::{info, warn};
 
-use super::bm25f::{Bm25fConfig, Bm25fScorer, FieldTermFreqs, SearchField};
 use super::bitmap_filters::{BitmapFilterIndex, FileMetaEntry};
+use super::bm25f::{Bm25fConfig, Bm25fScorer, FieldTermFreqs, SearchField};
 use super::fuzzy::FstIndex;
 use super::reranker::{path_depth, RankingSignals, Reranker};
 use super::{SearchMatch, SearchResult};
@@ -32,7 +32,7 @@ pub struct DocumentInfo {
     pub filename: String,
     pub extension: String,
     pub file_size: u64,
-    pub modified: u64,         // unix timestamp
+    pub modified: u64,          // unix timestamp
     pub content_source: String, // "text", "pdf_extract", etc.
 }
 
@@ -307,17 +307,25 @@ impl SearchIndex {
     /// good enough for a configurable "stop indexing" threshold.
     pub fn estimated_memory_bytes(&self) -> usize {
         // Per-document overhead: DocumentInfo fields + path string + doc_field_lengths entry
-        let docs_bytes: usize = self.documents.values()
-            .map(|d| 80 + d.path.len() + d.filename.len() + d.extension.len() + d.content_source.len())
+        let docs_bytes: usize = self
+            .documents
+            .values()
+            .map(|d| {
+                80 + d.path.len() + d.filename.len() + d.extension.len() + d.content_source.len()
+            })
             .sum();
 
         // Inverted index: term strings + posting entries (12 bytes each)
-        let postings_bytes: usize = self.postings.iter()
+        let postings_bytes: usize = self
+            .postings
+            .iter()
             .map(|r| r.key().len() + r.value().len() * 12)
             .sum();
 
         // Positional index: term + doc_id + position list
-        let positions_bytes: usize = self.positions.iter()
+        let positions_bytes: usize = self
+            .positions
+            .iter()
             .map(|(term, doc_map)| {
                 term.len() + doc_map.values().map(|pos| 4 + pos.len() * 4).sum::<usize>()
             })
@@ -332,7 +340,12 @@ impl SearchIndex {
         // path_to_id lookup
         let path_lookup_bytes: usize = self.path_to_id.keys().map(|k| k.len() + 4).sum();
 
-        docs_bytes + postings_bytes + positions_bytes + content_bytes + field_len_bytes + path_lookup_bytes
+        docs_bytes
+            + postings_bytes
+            + positions_bytes
+            + content_bytes
+            + field_len_bytes
+            + path_lookup_bytes
     }
 
     // -- 2. index_document() -------------------------------------------------
@@ -477,7 +490,8 @@ impl SearchIndex {
         let _ = full_content_freq;
 
         // -- Update total tokens ---------------------------------------------
-        self.total_tokens += (filename_exact_len + filename_stem_len + path_len + head_len + body_len) as usize;
+        self.total_tokens +=
+            (filename_exact_len + filename_stem_len + path_len + head_len + body_len) as usize;
 
         // -- Store field lengths for BM25F -----------------------------------
         self.doc_field_lengths.insert(doc_id, field_lengths);
@@ -676,8 +690,7 @@ impl SearchIndex {
         let doc_count = cache.documents.len();
         let term_count = cache.postings.len();
 
-        let postings: DashMap<String, Vec<PostingEntry>> =
-            cache.postings.into_iter().collect();
+        let postings: DashMap<String, Vec<PostingEntry>> = cache.postings.into_iter().collect();
 
         let mut index = Self {
             documents: cache.documents,
@@ -753,7 +766,9 @@ impl SearchIndex {
                 // Accumulate FieldTermFreqs per document for this term
                 let mut doc_ftfs: HashMap<DocId, FieldTermFreqs> = HashMap::new();
                 for entry in entries.value() {
-                    let ftf = doc_ftfs.entry(entry.doc_id).or_insert_with(FieldTermFreqs::new);
+                    let ftf = doc_ftfs
+                        .entry(entry.doc_id)
+                        .or_insert_with(FieldTermFreqs::new);
                     let field_len = self
                         .doc_field_lengths
                         .get(&entry.doc_id)
@@ -1017,13 +1032,7 @@ impl SearchIndex {
                     .unwrap_or_default();
 
                 let matches = doc_matched_terms
-                    .get(
-                        &self
-                            .path_to_id
-                            .get(&path)
-                            .copied()
-                            .unwrap_or(u32::MAX),
-                    )
+                    .get(&self.path_to_id.get(&path).copied().unwrap_or(u32::MAX))
                     .map(|terms| {
                         terms
                             .iter()
@@ -1218,7 +1227,9 @@ impl SearchIndex {
         if self.documents.is_empty() {
             return 0.0;
         }
-        let total: u64 = self.doc_field_lengths.values()
+        let total: u64 = self
+            .doc_field_lengths
+            .values()
             .flat_map(|fields| fields.values())
             .map(|&v| v as u64)
             .sum();
@@ -1227,7 +1238,9 @@ impl SearchIndex {
 
     /// Get document info by path.
     pub fn get_document(&self, path: &str) -> Option<&DocumentInfo> {
-        self.path_to_id.get(path).and_then(|id| self.documents.get(id))
+        self.path_to_id
+            .get(path)
+            .and_then(|id| self.documents.get(id))
     }
 
     /// Iterate over all documents as (path, info) pairs.
@@ -1237,7 +1250,11 @@ impl SearchIndex {
 
     /// Get last_updated timestamp (most recent document's modified time).
     pub fn last_updated(&self) -> u64 {
-        self.documents.values().map(|d| d.modified).max().unwrap_or(0)
+        self.documents
+            .values()
+            .map(|d| d.modified)
+            .max()
+            .unwrap_or(0)
     }
 
     /// Collect all terms that appear in postings for a given doc_id.
@@ -1278,8 +1295,7 @@ impl SearchIndex {
         }
 
         let n = self.documents.len() as f64;
-        let doc_id_set: std::collections::HashSet<DocId> =
-            doc_ids.iter().copied().collect();
+        let doc_id_set: std::collections::HashSet<DocId> = doc_ids.iter().copied().collect();
 
         // Accumulate term frequencies across the top docs.
         let mut term_tf: HashMap<String, u32> = HashMap::new();
@@ -1485,10 +1501,7 @@ mod tests {
         let has_config = results
             .iter()
             .any(|r| r.path == "/home/user/projects/config.yaml");
-        assert!(
-            !has_config,
-            "config.yaml should NOT be found after removal"
-        );
+        assert!(!has_config, "config.yaml should NOT be found after removal");
     }
 
     // -- stemming: "running quickly" found by "run" --------------------------
@@ -1498,9 +1511,7 @@ mod tests {
         let idx = build_test_index();
         // main.rs contains "running quickly"
         let results = idx.search("run", 10);
-        let has_main = results
-            .iter()
-            .any(|r| r.path == "/home/user/code/main.rs");
+        let has_main = results.iter().any(|r| r.path == "/home/user/code/main.rs");
         assert!(
             has_main,
             "search for 'run' should find main.rs (contains 'running')"
@@ -1523,10 +1534,7 @@ mod tests {
             .iter()
             .position(|r| r.path == "/home/user/docs/report.pdf");
 
-        assert!(
-            config_pos.is_some(),
-            "config.yaml should be in results"
-        );
+        assert!(config_pos.is_some(), "config.yaml should be in results");
         // report.pdf may or may not appear (stemming of "configuration" -> "configur")
         // If both appear, config.yaml should rank first
         if let (Some(cp), Some(rp)) = (config_pos, report_pos) {
@@ -1629,14 +1637,8 @@ mod tests {
 
     #[test]
     fn test_split_camel_case() {
-        assert_eq!(
-            split_camel_case("HttpResponse"),
-            vec!["Http", "Response"]
-        );
-        assert_eq!(
-            split_camel_case("XMLParser"),
-            vec!["XML", "Parser"]
-        );
+        assert_eq!(split_camel_case("HttpResponse"), vec!["Http", "Response"]);
+        assert_eq!(split_camel_case("XMLParser"), vec!["XML", "Parser"]);
         assert_eq!(
             split_camel_case("getHTTPResponse"),
             vec!["get", "HTTP", "Response"]
@@ -1815,10 +1817,7 @@ mod tests {
     fn phrase_search_empty_phrase_returns_empty() {
         let idx = build_phrase_test_index();
         let docs = idx.phrase_search("");
-        assert!(
-            docs.is_empty(),
-            "empty phrase should return no results"
-        );
+        assert!(docs.is_empty(), "empty phrase should return no results");
     }
 
     #[test]
@@ -1842,9 +1841,7 @@ mod tests {
         );
 
         // Verify unrelated.txt is NOT in results
-        let has_unrelated = results
-            .iter()
-            .any(|r| r.path == "/docs/unrelated.txt");
+        let has_unrelated = results.iter().any(|r| r.path == "/docs/unrelated.txt");
         assert!(
             !has_unrelated,
             "unrelated.txt should not match phrase 'deployment pipeline'"
@@ -1863,9 +1860,7 @@ mod tests {
         );
 
         // guide.txt has "server" but NOT "deployment pipeline" consecutively
-        let has_guide = results
-            .iter()
-            .any(|r| r.path == "/docs/guide.txt");
+        let has_guide = results.iter().any(|r| r.path == "/docs/guide.txt");
         assert!(
             !has_guide,
             "guide.txt should not match because it lacks 'deployment pipeline' as a phrase"
@@ -1885,7 +1880,10 @@ mod tests {
 
         // The report.txt doc_id should no longer be in results
         let report_id_gone = !idx.path_to_id.contains_key("/docs/report.txt");
-        assert!(report_id_gone, "report.txt should be removed from path_to_id");
+        assert!(
+            report_id_gone,
+            "report.txt should be removed from path_to_id"
+        );
 
         // Phrase search should still work for remaining docs
         let docs_after = idx.phrase_search("deployment pipeline");
@@ -1959,12 +1957,7 @@ mod tests {
         let idx = build_test_index();
 
         // Get doc_ids for the first two documents.
-        let doc_ids: Vec<DocId> = idx
-            .path_to_id
-            .values()
-            .copied()
-            .take(2)
-            .collect();
+        let doc_ids: Vec<DocId> = idx.path_to_id.values().copied().take(2).collect();
 
         let exclude = std::collections::HashSet::new();
         let expansion = idx.extract_expansion_terms(&doc_ids, &exclude, 5);
@@ -2041,7 +2034,10 @@ mod tests {
                 assert!(
                     window[0].1 >= window[1].1,
                     "expansion terms should be sorted descending by weight: {} ({}) >= {} ({})",
-                    window[0].0, window[0].1, window[1].0, window[1].1
+                    window[0].0,
+                    window[0].1,
+                    window[1].0,
+                    window[1].1
                 );
             }
         }

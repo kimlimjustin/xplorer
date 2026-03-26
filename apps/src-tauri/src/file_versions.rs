@@ -83,8 +83,8 @@ fn load_config_from_disk(app_handle: &tauri::AppHandle) -> Result<VersioningConf
     if !path.exists() {
         return Ok(VersioningConfig::default());
     }
-    let data =
-        fs::read_to_string(&path).map_err(|e| format!("Failed to read versioning config: {}", e))?;
+    let data = fs::read_to_string(&path)
+        .map_err(|e| format!("Failed to read versioning config: {}", e))?;
     serde_json::from_str(&data).map_err(|e| format!("Failed to parse versioning config: {}", e))
 }
 
@@ -109,16 +109,13 @@ fn flush_config_to_disk(
         .as_ref()
         .ok_or_else(|| "Config cache not initialized".to_string())?;
     let path = config_path(app_handle)?;
-    let data =
-        serde_json::to_string_pretty(config).map_err(|e| format!("Failed to serialize config: {}", e))?;
+    let data = serde_json::to_string_pretty(config)
+        .map_err(|e| format!("Failed to serialize config: {}", e))?;
     fs::write(&path, data).map_err(|e| format!("Failed to write versioning config: {}", e))?;
     Ok(())
 }
 
-fn is_directory_versioned(
-    app_handle: &tauri::AppHandle,
-    directory: &str,
-) -> Result<bool, String> {
+fn is_directory_versioned(app_handle: &tauri::AppHandle, directory: &str) -> Result<bool, String> {
     let guard = ensure_config_cache(app_handle)?;
     let config = guard
         .as_ref()
@@ -183,8 +180,8 @@ fn collect_versions(version_dir: &Path, original_name: &str) -> Result<Vec<FileV
         return Ok(versions);
     }
 
-    let entries = fs::read_dir(version_dir)
-        .map_err(|e| format!("Failed to read version dir: {}", e))?;
+    let entries =
+        fs::read_dir(version_dir).map_err(|e| format!("Failed to read version dir: {}", e))?;
 
     for entry in entries.filter_map(|e| e.ok()) {
         let name = entry.file_name().to_string_lossy().to_string();
@@ -241,7 +238,11 @@ pub async fn enable_versioning(
         .ok_or_else(|| "Config cache not initialized".to_string())?;
 
     let normalized = directory.replace('\\', "/");
-    if !config.enabled_dirs.iter().any(|d| d.replace('\\', "/") == normalized) {
+    if !config
+        .enabled_dirs
+        .iter()
+        .any(|d| d.replace('\\', "/") == normalized)
+    {
         config.enabled_dirs.push(directory);
     }
     flush_config_to_disk(&app_handle, &guard)?;
@@ -292,8 +293,7 @@ pub async fn create_version(
     let version_filename = format!("{}.v{}.{}", original_name, version_number, timestamp);
     let version_path = version_dir.join(&version_filename);
 
-    fs::copy(src, &version_path)
-        .map_err(|e| format!("Failed to create version: {}", e))?;
+    fs::copy(src, &version_path).map_err(|e| format!("Failed to create version: {}", e))?;
 
     let metadata = fs::metadata(&version_path)
         .map_err(|e| format!("Failed to read version metadata: {}", e))?;
@@ -368,8 +368,7 @@ pub async fn restore_version(
             .map_err(|e| format!("Failed to create destination directory: {}", e))?;
     }
 
-    fs::copy(version_src, src)
-        .map_err(|e| format!("Failed to restore version: {}", e))?;
+    fs::copy(version_src, src).map_err(|e| format!("Failed to restore version: {}", e))?;
 
     Ok(())
 }
@@ -395,8 +394,7 @@ pub async fn delete_version(
         .find(|v| v.version_number == version_number)
         .ok_or_else(|| format!("Version {} not found", version_number))?;
 
-    fs::remove_file(&version.path)
-        .map_err(|e| format!("Failed to delete version: {}", e))?;
+    fs::remove_file(&version.path).map_err(|e| format!("Failed to delete version: {}", e))?;
 
     Ok(())
 }
@@ -499,6 +497,5 @@ pub async fn read_version_content(
         .find(|v| v.version_number == version_number)
         .ok_or_else(|| format!("Version {} not found", version_number))?;
 
-    fs::read_to_string(&version.path)
-        .map_err(|e| format!("Failed to read version content: {}", e))
+    fs::read_to_string(&version.path).map_err(|e| format!("Failed to read version content: {}", e))
 }

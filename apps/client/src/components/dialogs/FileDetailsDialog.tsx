@@ -513,12 +513,13 @@ const AnnotationsTab = ({ filePath }: { filePath: string }) => {
       <div className="flex-1 space-y-3 overflow-y-auto px-4 py-3">
         {(() => {
           if (loading) return <p className="text-xp-text-muted text-sm">Loading...</p>;
-          if (annotations.length === 0)
-            {return (
+          if (annotations.length === 0) {
+            return (
               <p className="text-xp-text-muted text-sm italic">
                 No annotations yet — add one below.
               </p>
-            );}
+            );
+          }
           return (
             <>
               {activeAnnotations.length > 0 && (

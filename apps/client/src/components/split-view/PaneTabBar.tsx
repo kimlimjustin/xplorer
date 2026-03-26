@@ -533,8 +533,9 @@ const PaneTabBar = ({
                 maxWidth: isPinned ? 120 : 180,
                 userSelect: 'none',
                 background: (() => {
-                  if (isCrossDropTarget)
-                    {return 'color-mix(in srgb, var(--xp-blue) 20%, var(--xp-surface))';}
+                  if (isCrossDropTarget) {
+                    return 'color-mix(in srgb, var(--xp-blue) 20%, var(--xp-surface))';
+                  }
                   if (isActive) return 'var(--xp-bg)';
                   if (isPinned) return 'color-mix(in srgb, var(--xp-blue) 8%, var(--xp-surface))';
                   return 'transparent';

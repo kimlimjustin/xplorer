@@ -1,9 +1,9 @@
+use crate::operations::validate_file_path;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::Path;
 use tauri::{command, AppHandle, Emitter};
 use walkdir::WalkDir;
-use crate::operations::validate_file_path;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TypeDistribution {
@@ -159,9 +159,7 @@ pub async fn analyze_storage(
         let mut files_processed: u64 = 0;
         let mut last_emit: std::time::Instant = std::time::Instant::now();
 
-        let walker = WalkDir::new(&path)
-            .follow_links(false)
-            .into_iter();
+        let walker = WalkDir::new(&path).follow_links(false).into_iter();
 
         for entry_result in walker {
             let entry = match entry_result {
@@ -281,8 +279,16 @@ pub async fn analyze_storage(
         };
 
         StorageAnalytics {
-            total_size: if disk_total > 0 { disk_total } else { total_file_size },
-            used_size: if disk_total > 0 { disk_used } else { total_file_size },
+            total_size: if disk_total > 0 {
+                disk_total
+            } else {
+                total_file_size
+            },
+            used_size: if disk_total > 0 {
+                disk_used
+            } else {
+                total_file_size
+            },
             free_size: disk_free,
             file_count,
             dir_count,
@@ -366,22 +372,35 @@ mod tests {
         assert_eq!(size_category_index(1024), 1); // Small (exactly 1KB)
 
         assert_eq!(size_category_index(100 * 1024 - 1), 1); // Small
-        assert_eq!(size_category_index(100 * 1024), 2);      // Medium (exactly 100KB)
+        assert_eq!(size_category_index(100 * 1024), 2); // Medium (exactly 100KB)
 
         assert_eq!(size_category_index(10 * 1024 * 1024 - 1), 2); // Medium
-        assert_eq!(size_category_index(10 * 1024 * 1024), 3);     // Large (exactly 10MB)
+        assert_eq!(size_category_index(10 * 1024 * 1024), 3); // Large (exactly 10MB)
 
         assert_eq!(size_category_index(100 * 1024 * 1024 - 1), 3); // Large
-        assert_eq!(size_category_index(100 * 1024 * 1024), 4);     // Huge (exactly 100MB)
+        assert_eq!(size_category_index(100 * 1024 * 1024), 4); // Huge (exactly 100MB)
     }
 
     #[test]
     fn test_size_category_index_returns_valid_index() {
         // Ensure the returned index is always valid for the SIZE_CATEGORY_LABELS array
         let test_sizes: Vec<u64> = vec![
-            0, 1, 100, 1023, 1024, 10_000, 102_399, 102_400,
-            1_000_000, 10_485_759, 10_485_760, 50_000_000,
-            104_857_599, 104_857_600, 1_000_000_000, u64::MAX,
+            0,
+            1,
+            100,
+            1023,
+            1024,
+            10_000,
+            102_399,
+            102_400,
+            1_000_000,
+            10_485_759,
+            10_485_760,
+            50_000_000,
+            104_857_599,
+            104_857_600,
+            1_000_000_000,
+            u64::MAX,
         ];
         for size in test_sizes {
             let idx = size_category_index(size);
@@ -397,13 +416,21 @@ mod tests {
 
     #[test]
     fn test_size_category_labels_count() {
-        assert_eq!(SIZE_CATEGORY_LABELS.len(), 5, "should have exactly 5 size categories");
+        assert_eq!(
+            SIZE_CATEGORY_LABELS.len(),
+            5,
+            "should have exactly 5 size categories"
+        );
     }
 
     #[test]
     fn test_size_category_labels_not_empty() {
         for (i, label) in SIZE_CATEGORY_LABELS.iter().enumerate() {
-            assert!(!label.is_empty(), "label at index {} should not be empty", i);
+            assert!(
+                !label.is_empty(),
+                "label at index {} should not be empty",
+                i
+            );
         }
     }
 
@@ -459,27 +486,21 @@ mod tests {
             free_size: 250_000_000,
             file_count: 5000,
             dir_count: 300,
-            file_type_distribution: vec![
-                TypeDistribution {
-                    extension: "txt".to_string(),
-                    count: 100,
-                    total_size: 500_000,
-                },
-            ],
-            largest_files: vec![
-                LargeFile {
-                    path: "/big.bin".to_string(),
-                    name: "big.bin".to_string(),
-                    size: 100_000_000,
-                },
-            ],
-            size_categories: vec![
-                SizeCategory {
-                    label: "Tiny (<1 KB)".to_string(),
-                    count: 50,
-                    total_size: 25_000,
-                },
-            ],
+            file_type_distribution: vec![TypeDistribution {
+                extension: "txt".to_string(),
+                count: 100,
+                total_size: 500_000,
+            }],
+            largest_files: vec![LargeFile {
+                path: "/big.bin".to_string(),
+                name: "big.bin".to_string(),
+                size: 100_000_000,
+            }],
+            size_categories: vec![SizeCategory {
+                label: "Tiny (<1 KB)".to_string(),
+                count: 50,
+                total_size: 25_000,
+            }],
         };
         let json = serde_json::to_string(&analytics).unwrap();
         let deserialized: StorageAnalytics = serde_json::from_str(&json).unwrap();
@@ -575,6 +596,9 @@ mod tests {
     fn test_get_disk_space_for_invalid_path() {
         // A UNC path or path without drive letter should return None
         let result = get_disk_space(Path::new("/no/drive/letter"));
-        assert!(result.is_none(), "path without drive letter should return None");
+        assert!(
+            result.is_none(),
+            "path without drive letter should return None"
+        );
     }
 }

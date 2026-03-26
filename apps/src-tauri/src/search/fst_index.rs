@@ -74,8 +74,8 @@ impl FstIndex {
         let bytes = builder
             .into_inner()
             .map_err(|e| format!("FstIndex::build: failed to finish builder: {e}"))?;
-        let map = Map::new(bytes)
-            .map_err(|e| format!("FstIndex::build: failed to create Map: {e}"))?;
+        let map =
+            Map::new(bytes).map_err(|e| format!("FstIndex::build: failed to create Map: {e}"))?;
 
         Ok(Self {
             inner: FstStorage::Memory(map),
@@ -132,12 +132,8 @@ impl FstIndex {
     /// underlying file while it is mapped). In practice, FST files written
     /// by this module are treated as immutable artifacts and this is safe.
     pub fn load<P: AsRef<Path>>(path: P) -> Result<Self, String> {
-        let file = std::fs::File::open(path.as_ref()).map_err(|e| {
-            format!(
-                "failed to open FST file {}: {e}",
-                path.as_ref().display()
-            )
-        })?;
+        let file = std::fs::File::open(path.as_ref())
+            .map_err(|e| format!("failed to open FST file {}: {e}", path.as_ref().display()))?;
 
         // SAFETY: The FST file is treated as immutable. We do not modify it
         // while it is mapped.
@@ -150,12 +146,8 @@ impl FstIndex {
             })?
         };
 
-        let map = Map::new(mmap).map_err(|e| {
-            format!(
-                "failed to parse FST from {}: {e}",
-                path.as_ref().display()
-            )
-        })?;
+        let map = Map::new(mmap)
+            .map_err(|e| format!("failed to parse FST from {}: {e}", path.as_ref().display()))?;
 
         info!(
             "[search::fst_index] loaded FST from {} ({} terms)",
@@ -238,7 +230,11 @@ impl FstIndex {
     // -- Internal helpers -----------------------------------------------------
 
     /// Run an FST automaton query and collect up to `limit` results.
-    fn search_with_automaton<A: fst::Automaton>(&self, automaton: A, limit: usize) -> Vec<(String, u64)> {
+    fn search_with_automaton<A: fst::Automaton>(
+        &self,
+        automaton: A,
+        limit: usize,
+    ) -> Vec<(String, u64)> {
         match &self.inner {
             FstStorage::Empty => Vec::new(),
             FstStorage::Memory(m) => Self::stream_results(m, automaton, limit),

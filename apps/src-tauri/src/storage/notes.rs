@@ -54,8 +54,8 @@ fn load_file_notes_from_disk(
     if !path.exists() {
         return Ok(HashMap::new());
     }
-    let data = std::fs::read_to_string(&path)
-        .map_err(|e| format!("Failed to read file notes: {}", e))?;
+    let data =
+        std::fs::read_to_string(&path).map_err(|e| format!("Failed to read file notes: {}", e))?;
     let map: HashMap<String, Vec<FileNote>> =
         serde_json::from_str(&data).map_err(|e| format!("Failed to parse file notes: {}", e))?;
     Ok(map)
@@ -78,7 +78,9 @@ fn flush_file_notes_to_disk(
     app_handle: &tauri::AppHandle,
     guard: &MutexGuard<'static, Option<HashMap<String, Vec<FileNote>>>>,
 ) -> Result<(), String> {
-    let map = guard.as_ref().ok_or_else(|| "Storage cache not initialized".to_string())?;
+    let map = guard
+        .as_ref()
+        .ok_or_else(|| "Storage cache not initialized".to_string())?;
     let path = file_notes_path(app_handle)?;
     let data =
         serde_json::to_string_pretty(map).map_err(|e| format!("Failed to serialize: {}", e))?;
@@ -115,7 +117,9 @@ pub async fn add_file_note(
         updated_at: now,
     };
     let mut guard = ensure_file_notes_cache(&app_handle)?;
-    let map = guard.as_mut().ok_or_else(|| "Storage cache not initialized".to_string())?;
+    let map = guard
+        .as_mut()
+        .ok_or_else(|| "Storage cache not initialized".to_string())?;
     map.entry(path).or_default().push(note.clone());
     flush_file_notes_to_disk(&app_handle, &guard)?;
     Ok(note)
@@ -130,7 +134,9 @@ pub async fn update_file_note(
     app_handle: tauri::AppHandle,
 ) -> Result<(), String> {
     let mut guard = ensure_file_notes_cache(&app_handle)?;
-    let map = guard.as_mut().ok_or_else(|| "Storage cache not initialized".to_string())?;
+    let map = guard
+        .as_mut()
+        .ok_or_else(|| "Storage cache not initialized".to_string())?;
     let notes = map.get_mut(&path).ok_or("No notes found for this path")?;
     let note = notes
         .iter_mut()
@@ -150,7 +156,9 @@ pub async fn delete_file_note(
     app_handle: tauri::AppHandle,
 ) -> Result<(), String> {
     let mut guard = ensure_file_notes_cache(&app_handle)?;
-    let map = guard.as_mut().ok_or_else(|| "Storage cache not initialized".to_string())?;
+    let map = guard
+        .as_mut()
+        .ok_or_else(|| "Storage cache not initialized".to_string())?;
     if let Some(notes) = map.get_mut(&path) {
         notes.retain(|n| n.id != note_id);
         if notes.is_empty() {
@@ -162,9 +170,7 @@ pub async fn delete_file_note(
 }
 
 #[tauri::command]
-pub async fn get_all_notes(
-    app_handle: tauri::AppHandle,
-) -> HashMap<String, Vec<FileNote>> {
+pub async fn get_all_notes(app_handle: tauri::AppHandle) -> HashMap<String, Vec<FileNote>> {
     let guard = match ensure_file_notes_cache(&app_handle) {
         Ok(g) => g,
         Err(_) => return HashMap::new(),
@@ -173,10 +179,7 @@ pub async fn get_all_notes(
 }
 
 #[tauri::command]
-pub async fn search_notes(
-    query: String,
-    app_handle: tauri::AppHandle,
-) -> Vec<NoteSearchResult> {
+pub async fn search_notes(query: String, app_handle: tauri::AppHandle) -> Vec<NoteSearchResult> {
     let guard = match ensure_file_notes_cache(&app_handle) {
         Ok(g) => g,
         Err(_) => return Vec::new(),
@@ -221,7 +224,9 @@ pub async fn batch_set_notes(
     let now = chrono::Utc::now().to_rfc3339();
     let base_id = chrono::Utc::now().timestamp_millis();
     let mut guard = ensure_file_notes_cache(&app_handle)?;
-    let map = guard.as_mut().ok_or_else(|| "Storage cache not initialized".to_string())?;
+    let map = guard
+        .as_mut()
+        .ok_or_else(|| "Storage cache not initialized".to_string())?;
 
     for (idx, path) in paths.into_iter().enumerate() {
         let note_id = format!("{}-{}", base_id, idx);
@@ -246,7 +251,12 @@ pub async fn batch_set_notes(
                 };
                 map.entry(path).or_default().push(note);
             }
-            _ => return Err(format!("Invalid mode '{}'. Must be 'replace' or 'append'.", mode)),
+            _ => {
+                return Err(format!(
+                    "Invalid mode '{}'. Must be 'replace' or 'append'.",
+                    mode
+                ))
+            }
         }
     }
 
@@ -293,7 +303,9 @@ fn load_file_annotations_from_disk(
 fn ensure_file_annotations_cache(
     app_handle: &tauri::AppHandle,
 ) -> Result<MutexGuard<'static, Option<HashMap<String, Vec<FileAnnotation>>>>, String> {
-    let mut guard = FILE_ANNOTATIONS_CACHE.lock().unwrap_or_else(|e| e.into_inner());
+    let mut guard = FILE_ANNOTATIONS_CACHE
+        .lock()
+        .unwrap_or_else(|e| e.into_inner());
     if guard.is_none() {
         let data = load_file_annotations_from_disk(app_handle)?;
         *guard = Some(data);
@@ -306,12 +318,13 @@ fn flush_file_annotations_to_disk(
     app_handle: &tauri::AppHandle,
     guard: &MutexGuard<'static, Option<HashMap<String, Vec<FileAnnotation>>>>,
 ) -> Result<(), String> {
-    let map = guard.as_ref().ok_or_else(|| "Storage cache not initialized".to_string())?;
+    let map = guard
+        .as_ref()
+        .ok_or_else(|| "Storage cache not initialized".to_string())?;
     let path = file_annotations_path(app_handle)?;
     let data =
         serde_json::to_string_pretty(map).map_err(|e| format!("Failed to serialize: {}", e))?;
-    std::fs::write(&path, data)
-        .map_err(|e| format!("Failed to write file annotations: {}", e))?;
+    std::fs::write(&path, data).map_err(|e| format!("Failed to write file annotations: {}", e))?;
     Ok(())
 }
 
@@ -356,7 +369,9 @@ pub async fn add_file_annotation(
         resolved: false,
     };
     let mut guard = ensure_file_annotations_cache(&app_handle)?;
-    let map = guard.as_mut().ok_or_else(|| "Storage cache not initialized".to_string())?;
+    let map = guard
+        .as_mut()
+        .ok_or_else(|| "Storage cache not initialized".to_string())?;
     map.entry(path).or_default().push(annotation.clone());
     flush_file_annotations_to_disk(&app_handle, &guard)?;
     Ok(annotation)
@@ -369,7 +384,9 @@ pub async fn toggle_annotation_resolved(
     app_handle: tauri::AppHandle,
 ) -> Result<(), String> {
     let mut guard = ensure_file_annotations_cache(&app_handle)?;
-    let map = guard.as_mut().ok_or_else(|| "Storage cache not initialized".to_string())?;
+    let map = guard
+        .as_mut()
+        .ok_or_else(|| "Storage cache not initialized".to_string())?;
     let annotations = map
         .get_mut(&path)
         .ok_or("No annotations found for this path")?;
@@ -389,7 +406,9 @@ pub async fn delete_file_annotation(
     app_handle: tauri::AppHandle,
 ) -> Result<(), String> {
     let mut guard = ensure_file_annotations_cache(&app_handle)?;
-    let map = guard.as_mut().ok_or_else(|| "Storage cache not initialized".to_string())?;
+    let map = guard
+        .as_mut()
+        .ok_or_else(|| "Storage cache not initialized".to_string())?;
     if let Some(annotations) = map.get_mut(&path) {
         annotations.retain(|a| a.id != annotation_id);
         if annotations.is_empty() {

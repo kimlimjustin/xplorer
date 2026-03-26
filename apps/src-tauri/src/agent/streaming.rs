@@ -1,7 +1,7 @@
 use serde_json::{json, Value};
 use tracing::warn;
 
-use super::{AgentEvent, emit_event, now_ms};
+use super::{emit_event, now_ms, AgentEvent};
 
 /// Result of a streaming API call: assembled content blocks + stop reason
 pub struct StreamResult {
@@ -23,7 +23,11 @@ pub async fn call_claude_api_streaming(
     app_handle: &tauri::AppHandle,
 ) -> Result<StreamResult, String> {
     let client = reqwest::Client::builder()
-        .timeout(std::time::Duration::from_secs(if thinking_enabled { 300 } else { 120 }))
+        .timeout(std::time::Duration::from_secs(if thinking_enabled {
+            300
+        } else {
+            120
+        }))
         .connect_timeout(std::time::Duration::from_secs(10))
         .build()
         .map_err(|e| format!("Failed to create HTTP client: {}", e))?;
@@ -74,9 +78,12 @@ pub async fn call_claude_api_streaming(
     let mut stop_reason = "end_turn".to_string();
 
     // Track current content block being built
-    let mut current_text_parts: std::collections::HashMap<usize, String> = std::collections::HashMap::new();
-    let mut current_tool_inputs: std::collections::HashMap<usize, String> = std::collections::HashMap::new();
-    let mut block_metadata: std::collections::HashMap<usize, Value> = std::collections::HashMap::new();
+    let mut current_text_parts: std::collections::HashMap<usize, String> =
+        std::collections::HashMap::new();
+    let mut current_tool_inputs: std::collections::HashMap<usize, String> =
+        std::collections::HashMap::new();
+    let mut block_metadata: std::collections::HashMap<usize, Value> =
+        std::collections::HashMap::new();
 
     while let Some(chunk_result) = byte_stream.next().await {
         let chunk = chunk_result.map_err(|e| format!("Stream read error: {}", e))?;
@@ -118,12 +125,15 @@ pub async fn call_claude_api_streaming(
                             block_metadata.insert(index, json!({"type": "text", "text": ""}));
                         } else if block_type == "tool_use" {
                             current_tool_inputs.insert(index, String::new());
-                            block_metadata.insert(index, json!({
-                                "type": "tool_use",
-                                "id": block["id"].as_str().unwrap_or(""),
-                                "name": block["name"].as_str().unwrap_or(""),
-                                "input": {}
-                            }));
+                            block_metadata.insert(
+                                index,
+                                json!({
+                                    "type": "tool_use",
+                                    "id": block["id"].as_str().unwrap_or(""),
+                                    "name": block["name"].as_str().unwrap_or(""),
+                                    "input": {}
+                                }),
+                            );
                         }
                     }
 
@@ -181,7 +191,8 @@ pub async fn call_claude_api_streaming(
                         let index = event["index"].as_u64().unwrap_or(0) as usize;
 
                         // Check if this is a thinking block
-                        let is_thinking = block_metadata.get(&index)
+                        let is_thinking = block_metadata
+                            .get(&index)
                             .and_then(|m| m["type"].as_str())
                             .map(|t| t == "thinking")
                             .unwrap_or(false);
@@ -388,7 +399,9 @@ pub async fn call_openai_compatible_streaming(
         }
 
         // For o-series models, enable reasoning when thinking is enabled
-        if thinking_enabled && (model.starts_with("o1") || model.starts_with("o3") || model.starts_with("o4")) {
+        if thinking_enabled
+            && (model.starts_with("o1") || model.starts_with("o3") || model.starts_with("o4"))
+        {
             body["reasoning_effort"] = json!("high");
         }
 
@@ -417,14 +430,22 @@ pub async fn call_openai_compatible_streaming(
                 .unwrap_or_else(|_| "Unknown error".to_string());
 
             // Retry without tools if the model doesn't support them
-            if error_text.contains("does not support tools") || error_text.contains("does not support functions") {
-                warn!("[Agent] Model {} doesn't support tools, retrying without", model);
+            if error_text.contains("does not support tools")
+                || error_text.contains("does not support functions")
+            {
+                warn!(
+                    "[Agent] Model {} doesn't support tools, retrying without",
+                    model
+                );
                 let retry = send_request(false)
                     .await
                     .map_err(|e| format!("API request failed (retry): {}", e))?;
                 if !retry.status().is_success() {
                     let s2 = retry.status();
-                    let e2 = retry.text().await.unwrap_or_else(|_| "Unknown error".to_string());
+                    let e2 = retry
+                        .text()
+                        .await
+                        .unwrap_or_else(|_| "Unknown error".to_string());
                     return Err(format!("API error ({}): {}", s2, e2));
                 }
                 retry
@@ -446,9 +467,12 @@ pub async fn call_openai_compatible_streaming(
     let mut stop_reason = "end_turn".to_string();
 
     // Tool calls: indexed by position in the tool_calls array
-    let mut tool_call_ids: std::collections::HashMap<usize, String> = std::collections::HashMap::new();
-    let mut tool_call_names: std::collections::HashMap<usize, String> = std::collections::HashMap::new();
-    let mut tool_call_args: std::collections::HashMap<usize, String> = std::collections::HashMap::new();
+    let mut tool_call_ids: std::collections::HashMap<usize, String> =
+        std::collections::HashMap::new();
+    let mut tool_call_names: std::collections::HashMap<usize, String> =
+        std::collections::HashMap::new();
+    let mut tool_call_args: std::collections::HashMap<usize, String> =
+        std::collections::HashMap::new();
 
     while let Some(chunk_result) = byte_stream.next().await {
         let chunk = chunk_result.map_err(|e| format!("Stream read error: {}", e))?;

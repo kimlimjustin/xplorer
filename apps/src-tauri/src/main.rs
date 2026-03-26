@@ -1,25 +1,25 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use tauri::{Manager, Emitter, WindowEvent};
-use tracing::warn;
 use serde_json;
+use tauri::{Emitter, Manager, WindowEvent};
+use tracing::warn;
 
 // All modules are declared in lib.rs (the `xplorer` library crate).
 // Import them here so the binary can register Tauri commands.
-use xplorer::operations;
-use xplorer::extensions;
-use xplorer::storage;
+use xplorer::agent;
 use xplorer::ai;
 use xplorer::api;
-use xplorer::shortcuts;
 use xplorer::duplicate_finder;
-use xplorer::git_history;
+use xplorer::extensions;
 use xplorer::file_organizer;
-use xplorer::agent;
-use xplorer::google_drive;
-use xplorer::watcher;
 use xplorer::file_watcher;
+use xplorer::git_history;
+use xplorer::google_drive;
+use xplorer::operations;
+use xplorer::shortcuts;
+use xplorer::storage;
+use xplorer::watcher;
 // git_integration is consolidated into git_history
 use xplorer::audit_log;
 use xplorer::backup;
@@ -46,15 +46,17 @@ fn main() {
         .plugin(tauri_plugin_drag::init())
         .setup(|app| {
             // Initialize progress manager
-            let progress_manager = operations::ProgressManager::new()
-                .with_app_handle(app.handle().clone());
+            let progress_manager =
+                operations::ProgressManager::new().with_app_handle(app.handle().clone());
             app.manage(std::sync::Arc::new(progress_manager));
 
             // Initialize shortcuts manager
             shortcuts::init_shortcuts_manager("shortcuts");
 
             // Initialize extension manager using app data directory
-            let app_data_dir = app.path().app_data_dir()
+            let app_data_dir = app
+                .path()
+                .app_data_dir()
                 .unwrap_or_else(|_| std::path::PathBuf::from("./data"));
             std::fs::create_dir_all(&app_data_dir).unwrap_or_default();
             let extensions_dir = app_data_dir.join("extensions");
@@ -67,12 +69,18 @@ fn main() {
                 let mut actions: Vec<(std::path::PathBuf, String)> = Vec::new(); // (old_path, manifest_id)
                 for entry in entries.flatten() {
                     let path = entry.path();
-                    if !path.is_dir() { continue; }
+                    if !path.is_dir() {
+                        continue;
+                    }
                     let dir_name = entry.file_name().to_string_lossy().to_string();
                     let pkg_path = path.join("package.json");
                     if let Ok(raw) = std::fs::read_to_string(&pkg_path) {
                         if let Ok(pkg) = serde_json::from_str::<serde_json::Value>(&raw) {
-                            if let Some(id) = pkg.get("xplorer").and_then(|x| x.get("id")).and_then(|v| v.as_str()) {
+                            if let Some(id) = pkg
+                                .get("xplorer")
+                                .and_then(|x| x.get("id"))
+                                .and_then(|v| v.as_str())
+                            {
                                 if dir_name != id {
                                     actions.push((path.clone(), id.to_string()));
                                 }
@@ -92,9 +100,7 @@ fn main() {
                 }
             }
 
-            extensions::init_extension_manager(
-                app_data_dir.to_str().unwrap_or("./data")
-            );
+            extensions::init_extension_manager(app_data_dir.to_str().unwrap_or("./data"));
 
             // Check CLI args for .xtension file association opens
             let handle = app.handle().clone();

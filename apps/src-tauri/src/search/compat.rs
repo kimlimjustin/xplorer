@@ -5,8 +5,8 @@
 // old `tokenizer.rs` provided so that the existing Tauri commands and
 // frontend continue to work without modification.
 
-use std::collections::{HashMap, HashSet};
 use rustc_hash::FxHashSet;
+use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -14,17 +14,17 @@ use std::sync::{Arc, Mutex, OnceLock, RwLock};
 use std::thread;
 use std::time::UNIX_EPOCH;
 
-use serde::{Deserialize, Serialize};
-use tracing::{info, warn};
 use jwalk::WalkDir;
 use rayon::prelude::*;
+use serde::{Deserialize, Serialize};
+use tracing::{info, warn};
 
+use super::ai_pipeline::{AIIndexEntry, AIIndexStatus, AIPipeline};
+use super::context_ranker::ContextualRanker;
+use super::hybrid::{HybridSearchConfig, HybridSearcher};
 use super::index::SearchIndex;
 use super::watcher::{FileChangeEvent, FileWatcher};
 use super::SearchResult;
-use super::ai_pipeline::{AIPipeline, AIIndexEntry, AIIndexStatus};
-use super::hybrid::{HybridSearcher, HybridSearchConfig};
-use super::context_ranker::ContextualRanker;
 
 // ===== Configuration constants ==============================================
 
@@ -124,16 +124,11 @@ impl Default for TokenizerSettings {
             whitelisted_paths: vec![],
             blacklisted_extensions: vec![
                 // Binary executables / libraries
-                "exe", "dll", "so", "dylib", "bin", "obj",
-                // Archives
-                "zip", "tar", "gz", "rar", "7z", "iso",
-                // Images
-                "jpg", "jpeg", "png", "gif", "bmp", "tiff",
-                // Video
-                "mp4", "avi", "mov", "wmv", "flv", "mkv",
-                // Audio
-                "mp3", "wav", "flac", "aac", "ogg", "wma",
-                // Old binary doc formats
+                "exe", "dll", "so", "dylib", "bin", "obj", // Archives
+                "zip", "tar", "gz", "rar", "7z", "iso", // Images
+                "jpg", "jpeg", "png", "gif", "bmp", "tiff", // Video
+                "mp4", "avi", "mov", "wmv", "flv", "mkv", // Audio
+                "mp3", "wav", "flac", "aac", "ogg", "wma", // Old binary doc formats
                 "doc", "ppt", "xls",
             ]
             .into_iter()
@@ -183,7 +178,8 @@ fn save_settings(settings: &TokenizerSettings) {
 
 // ===== Document extraction extensions =======================================
 
-const EXTRACTABLE_DOC_EXTENSIONS: &[&str] = &["pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "rtf"];
+const EXTRACTABLE_DOC_EXTENSIONS: &[&str] =
+    &["pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "rtf"];
 
 // ===== Conversion helpers ===================================================
 
@@ -455,10 +451,7 @@ impl SearchEngine {
         for root in &settings.whitelisted_paths {
             let root_path = Path::new(root);
             if !root_path.exists() {
-                warn!(
-                    "[SearchEngine] Whitelisted path does not exist: {}",
-                    root
-                );
+                warn!("[SearchEngine] Whitelisted path does not exist: {}", root);
                 continue;
             }
 
@@ -858,7 +851,8 @@ impl SearchEngine {
                             }
                             // File type filter
                             if let Some(cat) = parsed.metadata.file_type {
-                                let matches_type = p.extension()
+                                let matches_type = p
+                                    .extension()
                                     .and_then(|e| e.to_str())
                                     .and_then(|e| super::classify_extension(e))
                                     .map(|c| c == cat)
@@ -869,9 +863,16 @@ impl SearchEngine {
                             }
                             // Extension filter
                             if !parsed.metadata.extensions.is_empty() {
-                                let matches_ext = p.extension()
+                                let matches_ext = p
+                                    .extension()
                                     .and_then(|e| e.to_str())
-                                    .map(|e| parsed.metadata.extensions.iter().any(|x| x.eq_ignore_ascii_case(e)))
+                                    .map(|e| {
+                                        parsed
+                                            .metadata
+                                            .extensions
+                                            .iter()
+                                            .any(|x| x.eq_ignore_ascii_case(e))
+                                    })
                                     .unwrap_or(false);
                                 if !matches_ext {
                                     continue;
@@ -882,29 +883,40 @@ impl SearchEngine {
                                 Err(_) => continue,
                             };
                             let file_size = meta.len();
-                            let modified = meta.modified().ok()
+                            let modified = meta
+                                .modified()
+                                .ok()
                                 .and_then(|t| t.duration_since(UNIX_EPOCH).ok())
                                 .map(|d| d.as_secs())
                                 .unwrap_or(0);
                             // Size filter
                             if let Some(ref sf) = parsed.metadata.size {
                                 if let Some(min) = sf.min_bytes {
-                                    if file_size < min { continue; }
+                                    if file_size < min {
+                                        continue;
+                                    }
                                 }
                                 if let Some(max) = sf.max_bytes {
-                                    if file_size > max { continue; }
+                                    if file_size > max {
+                                        continue;
+                                    }
                                 }
                             }
                             // Date filter
                             if let Some(ref df) = parsed.metadata.date {
                                 if let Some(after) = df.after {
-                                    if modified < after { continue; }
+                                    if modified < after {
+                                        continue;
+                                    }
                                 }
                                 if let Some(before) = df.before {
-                                    if modified > before { continue; }
+                                    if modified > before {
+                                        continue;
+                                    }
                                 }
                             }
-                            let filename = p.file_name()
+                            let filename = p
+                                .file_name()
                                 .and_then(|n| n.to_str())
                                 .unwrap_or("")
                                 .to_string();
@@ -985,11 +997,7 @@ impl SearchEngine {
                     // Extension filter.
                     if !parsed.metadata.extensions.is_empty() {
                         if let Some(ext) = path.extension().and_then(|e| e.to_str()) {
-                            if !parsed
-                                .metadata
-                                .extensions
-                                .contains(&ext.to_lowercase())
-                            {
+                            if !parsed.metadata.extensions.contains(&ext.to_lowercase()) {
                                 return false;
                             }
                         } else {
@@ -1179,10 +1187,7 @@ impl SearchEngine {
     /// Add a path to the whitelist and trigger a background re-index.
     pub fn add_path(&self, path: String) {
         {
-            let mut settings = self
-                .settings
-                .lock()
-                .unwrap_or_else(|e| e.into_inner());
+            let mut settings = self.settings.lock().unwrap_or_else(|e| e.into_inner());
             if !settings.whitelisted_paths.contains(&path) {
                 settings.whitelisted_paths.push(path);
                 save_settings(&settings);
@@ -1199,10 +1204,7 @@ impl SearchEngine {
     pub fn set_settings(&self, new_settings: TokenizerSettings) {
         let old_paths: Vec<String>;
         {
-            let mut guard = self
-                .settings
-                .lock()
-                .unwrap_or_else(|e| e.into_inner());
+            let mut guard = self.settings.lock().unwrap_or_else(|e| e.into_inner());
             old_paths = guard.whitelisted_paths.clone();
             *guard = new_settings.clone();
         }
@@ -1263,11 +1265,7 @@ impl SearchEngine {
     // -- 13. get_file_recommendations() --------------------------------------
 
     /// Find files similar to the given file by keyword overlap.
-    pub fn get_file_recommendations(
-        &self,
-        file_path: &str,
-        limit: usize,
-    ) -> Vec<SearchResult> {
+    pub fn get_file_recommendations(&self, file_path: &str, limit: usize) -> Vec<SearchResult> {
         let idx = match self.index.read() {
             Ok(g) => g,
             Err(e) => e.into_inner(),
@@ -1294,8 +1292,7 @@ impl SearchEngine {
             }
             let other_tokens: HashSet<String> = idx.terms_for_doc(doc.doc_id);
             let intersection = current_tokens.intersection(&other_tokens).count();
-            let union_size =
-                current_tokens.len() + other_tokens.len() - intersection;
+            let union_size = current_tokens.len() + other_tokens.len() - intersection;
             let similarity = if union_size > 0 {
                 intersection as f64 / union_size as f64
             } else {
@@ -1306,9 +1303,7 @@ impl SearchEngine {
             }
         }
 
-        scored.sort_by(|a, b| {
-            b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal)
-        });
+        scored.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
         scored.truncate(limit);
 
         scored
@@ -1347,12 +1342,7 @@ impl SearchEngine {
 
     /// Inject AI-generated descriptions and extracted text for a file into
     /// the search index (used by the AI indexer pipeline).
-    pub fn inject_ai_tokens(
-        &self,
-        path: &str,
-        description: &str,
-        extracted_text: &str,
-    ) {
+    pub fn inject_ai_tokens(&self, path: &str, description: &str, extracted_text: &str) {
         let combined = format!("{} {}", description, extracted_text);
         let (size, modified) = file_meta(Path::new(path));
 
@@ -1591,7 +1581,10 @@ impl SearchEngine {
 
     /// Get the current context path.
     pub fn get_context_path(&self) -> Option<String> {
-        self.context_path.lock().unwrap_or_else(|e| e.into_inner()).clone()
+        self.context_path
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .clone()
     }
 
     // -- 18. search_with_context_boost() -------------------------------------
@@ -1628,7 +1621,11 @@ impl SearchEngine {
         }
 
         // Re-sort by score.
-        results.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap_or(std::cmp::Ordering::Equal));
+        results.sort_by(|a, b| {
+            b.score
+                .partial_cmp(&a.score)
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
     }
 
     // -- Internal: watcher setup ---------------------------------------------
@@ -1653,9 +1650,7 @@ impl SearchEngine {
 
         let max_file_size = settings.max_file_size;
 
-        let mut watcher = watcher_arc
-            .lock()
-            .unwrap_or_else(|e| e.into_inner());
+        let mut watcher = watcher_arc.lock().unwrap_or_else(|e| e.into_inner());
 
         watcher.set_blacklisted_extensions(blacklisted.clone());
 
@@ -1714,9 +1709,7 @@ impl SearchEngine {
                                     Ok(g) => g,
                                     Err(e) => e.into_inner(),
                                 };
-                                idx.index_document(
-                                    &to_str, &content, source, size, modified,
-                                );
+                                idx.index_document(&to_str, &content, source, size, modified);
                             }
                         }
                     }
@@ -1733,10 +1726,7 @@ impl SearchEngine {
         // Watch each whitelisted path.
         for root in &settings.whitelisted_paths {
             if let Err(e) = watcher.watch_path(Path::new(root)) {
-                warn!(
-                    "[SearchEngine] Failed to watch path {}: {}",
-                    root, e
-                );
+                warn!("[SearchEngine] Failed to watch path {}: {}", root, e);
             }
         }
     }
@@ -1794,7 +1784,10 @@ pub async fn rebuild_token_index() -> Result<(), String> {
 }
 
 #[tauri::command]
-pub async fn search_tokens(query: String, limit: Option<usize>) -> Result<Vec<SearchResult>, String> {
+pub async fn search_tokens(
+    query: String,
+    limit: Option<usize>,
+) -> Result<Vec<SearchResult>, String> {
     Ok(get_search_engine().search(&query, limit.unwrap_or(DEFAULT_SEARCH_LIMIT)))
 }
 
@@ -1837,7 +1830,8 @@ pub async fn get_file_recommendations(
     file_path: String,
     limit: Option<usize>,
 ) -> Result<Vec<SearchResult>, String> {
-    Ok(get_search_engine().get_file_recommendations(&file_path, limit.unwrap_or(DEFAULT_RECOMMENDATION_LIMIT)))
+    Ok(get_search_engine()
+        .get_file_recommendations(&file_path, limit.unwrap_or(DEFAULT_RECOMMENDATION_LIMIT)))
 }
 
 #[tauri::command]
@@ -1854,7 +1848,11 @@ pub async fn enhanced_search(
     language: Option<String>,
     limit: Option<usize>,
 ) -> Result<EnhancedSearchResult, String> {
-    Ok(get_search_engine().enhanced_search(&query, language.as_deref(), limit.unwrap_or(DEFAULT_SEARCH_LIMIT)))
+    Ok(get_search_engine().enhanced_search(
+        &query,
+        language.as_deref(),
+        limit.unwrap_or(DEFAULT_SEARCH_LIMIT),
+    ))
 }
 
 // ===== Auto-index and context commands =======================================
@@ -1939,13 +1937,9 @@ pub async fn ai_search(
     );
 
     // Step 3: Call AI provider.
-    let ai_response = crate::ai::search_rerank_with_ai(
-        &prompt,
-        &provider,
-        api_key.as_deref(),
-        model.as_deref(),
-    )
-    .await?;
+    let ai_response =
+        crate::ai::search_rerank_with_ai(&prompt, &provider, api_key.as_deref(), model.as_deref())
+            .await?;
 
     // Step 4: Parse AI response and re-rank.
     if let Ok(rankings) = serde_json::from_str::<Vec<serde_json::Value>>(&ai_response) {
@@ -2143,21 +2137,13 @@ pub async fn hybrid_search(
     // Hybrid fusion
     let searcher = HybridSearcher::new();
     let config = HybridSearchConfig::default();
-    let mut fused = searcher.fuse_results(
-        &text_results,
-        &semantic_results,
-        &config,
-        &intent,
-        lim,
-    );
+    let mut fused = searcher.fuse_results(&text_results, &semantic_results, &config, &intent, lim);
 
     // Apply contextual re-ranking if context is available
     if current_directory.is_some() || recent_files.is_some() {
         let recents = recent_files.unwrap_or_default();
-        let ctx = ContextualRanker::build_context_from_recents(
-            &recents,
-            current_directory.as_deref(),
-        );
+        let ctx =
+            ContextualRanker::build_context_from_recents(&recents, current_directory.as_deref());
         let ranker = ContextualRanker::new();
         ranker.apply_context_ranking(&mut fused, &ctx);
     }
@@ -2273,9 +2259,7 @@ mod tests {
         let engine = build_prf_test_engine();
         let results = engine.search_with_prf("server", 10, None, None);
 
-        let has_recipes = results
-            .iter()
-            .any(|r| r.path == "/docs/recipes.txt");
+        let has_recipes = results.iter().any(|r| r.path == "/docs/recipes.txt");
         assert!(
             !has_recipes,
             "PRF search for 'server' should not surface the recipes document"

@@ -11,8 +11,7 @@ use crate::file_watcher;
 
 /// Stores the watcher id returned by `file_watcher::watch_directory` so we can
 /// tear it down later via `stop_watcher` / `stop_watching`.
-static PRIMARY_WATCHER_ID: LazyLock<Mutex<Option<String>>> =
-    LazyLock::new(|| Mutex::new(None));
+static PRIMARY_WATCHER_ID: LazyLock<Mutex<Option<String>>> = LazyLock::new(|| Mutex::new(None));
 
 /// Take the current primary watcher id out of the static, if any.
 fn take_primary_id() -> Option<String> {

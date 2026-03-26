@@ -8,11 +8,15 @@ pub fn get_file_type(path: &Path, is_dir: bool) -> String {
         match path.extension() {
             Some(ext) => match ext.to_str() {
                 Some("txt") | Some("md") | Some("log") => "text".to_string(),
-                Some("jpg") | Some("jpeg") | Some("png") | Some("gif") | Some("bmp") => "image".to_string(),
+                Some("jpg") | Some("jpeg") | Some("png") | Some("gif") | Some("bmp") => {
+                    "image".to_string()
+                }
                 Some("mp4") | Some("avi") | Some("mkv") | Some("mov") => "video".to_string(),
                 Some("mp3") | Some("wav") | Some("flac") | Some("aac") => "audio".to_string(),
                 Some("pdf") => "pdf".to_string(),
-                Some("zip") | Some("rar") | Some("7z") | Some("tar") | Some("gz") => "archive".to_string(),
+                Some("zip") | Some("rar") | Some("7z") | Some("tar") | Some("gz") => {
+                    "archive".to_string()
+                }
                 Some("exe") | Some("msi") | Some("deb") | Some("rpm") => "executable".to_string(),
                 _ => "file".to_string(),
             },

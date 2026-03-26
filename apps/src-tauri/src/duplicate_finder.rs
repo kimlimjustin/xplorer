@@ -1,14 +1,14 @@
+use crossbeam::channel::{unbounded, Receiver, Sender};
+use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
+use sha2::{Digest, Sha256};
 use std::collections::HashMap;
-use std::path::{Path, PathBuf};
 use std::fs;
 use std::io::{BufReader, Read};
-use sha2::{Digest, Sha256};
-use rayon::prelude::*;
-use crossbeam::channel::{unbounded, Receiver, Sender};
-use tauri::{command, Emitter};
+use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering};
 use std::sync::Arc;
+use tauri::{command, Emitter};
 
 /// Per-scan cancellation: incrementing this ID invalidates any running scan
 /// that was started with a previous value.
@@ -131,7 +131,9 @@ impl DuplicateFinder {
             total_wasted_space: 0,
         });
 
-        let files = self.scan_directory_tree(root_path, scan_id, progress_callback.clone()).await?;
+        let files = self
+            .scan_directory_tree(root_path, scan_id, progress_callback.clone())
+            .await?;
 
         if files.is_empty() {
             return Ok(DuplicateFinderResult {
@@ -160,11 +162,20 @@ impl DuplicateFinder {
         let total_files_to_hash: usize = size_groups.values().map(|group| group.len()).sum();
 
         let duplicate_groups = self
-            .find_hash_duplicates(size_groups, total_files_to_hash, scan_id, progress_callback, processed_count)
+            .find_hash_duplicates(
+                size_groups,
+                total_files_to_hash,
+                scan_id,
+                progress_callback,
+                processed_count,
+            )
             .await?;
 
         let total_duplicates = duplicate_groups.iter().map(|group| group.files.len()).sum();
-        let total_wasted_space = duplicate_groups.iter().map(|group| group.total_wasted_space).sum();
+        let total_wasted_space = duplicate_groups
+            .iter()
+            .map(|group| group.total_wasted_space)
+            .sum();
 
         Ok(DuplicateFinderResult {
             duplicate_groups,
@@ -197,7 +208,7 @@ impl DuplicateFinder {
         let progress_cb_clone = progress_callback.clone();
         let scan_handle = tokio::task::spawn_blocking(move || {
             let mut processed = 0;
-            
+
             fn scan_dir_recursive(
                 path: &Path,
                 sender: &Sender<DuplicateFile>,
@@ -210,7 +221,8 @@ impl DuplicateFinder {
                 progress_callback: &dyn Fn(DuplicateFinderProgress),
                 scan_id: u64,
             ) -> Result<(), String> {
-                let entries = fs::read_dir(path).map_err(|e| format!("Failed to read directory {}: {}", path.display(), e))?;
+                let entries = fs::read_dir(path)
+                    .map_err(|e| format!("Failed to read directory {}: {}", path.display(), e))?;
 
                 for entry in entries {
                     if CURRENT_SCAN_ID.load(Ordering::Relaxed) != scan_id {
@@ -227,7 +239,10 @@ impl DuplicateFinder {
                     }
 
                     // Skip excluded paths
-                    if exclude_paths.iter().any(|excluded| entry_path.ends_with(excluded)) {
+                    if exclude_paths
+                        .iter()
+                        .any(|excluded| entry_path.ends_with(excluded))
+                    {
                         continue;
                     }
 
@@ -345,7 +360,10 @@ impl DuplicateFinder {
         let mut size_groups: HashMap<u64, Vec<DuplicateFile>> = HashMap::new();
 
         for file in files {
-            size_groups.entry(file.size).or_insert_with(Vec::new).push(file);
+            size_groups
+                .entry(file.size)
+                .or_insert_with(Vec::new)
+                .push(file);
         }
 
         // Filter out single files (no potential duplicates)
@@ -370,11 +388,10 @@ impl DuplicateFinder {
 
         // Process each size group in parallel
         let size_groups_vec: Vec<_> = size_groups.into_iter().collect();
-        
+
         tokio::task::spawn_blocking(move || {
-            size_groups_vec
-                .into_par_iter()
-                .try_for_each(|(size, mut files)| -> Result<(), String> {
+            size_groups_vec.into_par_iter().try_for_each(
+                |(size, mut files)| -> Result<(), String> {
                     // Calculate hashes for all files in this size group
                     let hashed_files: Result<Vec<_>, String> = files
                         .par_iter_mut()
@@ -384,8 +401,9 @@ impl DuplicateFinder {
                             }
                             let hash = calculate_file_hash(&file.path)?;
                             file.hash = hash;
-                            
-                            let current_processed = processed_count.fetch_add(1, Ordering::SeqCst) + 1;
+
+                            let current_processed =
+                                processed_count.fetch_add(1, Ordering::SeqCst) + 1;
                             if current_processed % 10 == 0 || current_processed == total_files {
                                 progress_callback(DuplicateFinderProgress {
                                     current_file: file.name.clone(),
@@ -396,7 +414,7 @@ impl DuplicateFinder {
                                     total_wasted_space: 0,
                                 });
                             }
-                            
+
                             Ok(file.clone())
                         })
                         .collect();
@@ -406,7 +424,10 @@ impl DuplicateFinder {
                     // Group by hash
                     let mut hash_groups: HashMap<String, Vec<DuplicateFile>> = HashMap::new();
                     for file in hashed_files {
-                        hash_groups.entry(file.hash.clone()).or_insert_with(Vec::new).push(file);
+                        hash_groups
+                            .entry(file.hash.clone())
+                            .or_insert_with(Vec::new)
+                            .push(file);
                     }
 
                     // Create duplicate groups
@@ -419,7 +440,7 @@ impl DuplicateFinder {
                                 files: files_in_group,
                                 total_wasted_space,
                             };
-                            
+
                             if let Err(_) = sender_clone.try_send(duplicate_group) {
                                 return Err("Failed to send duplicate group".to_string());
                             }
@@ -427,13 +448,16 @@ impl DuplicateFinder {
                     }
 
                     Ok(())
-                })?;
-            
+                },
+            )?;
+
             Ok::<(), String>(())
-        }).await.map_err(|e| e.to_string())??;
+        })
+        .await
+        .map_err(|e| e.to_string())??;
 
         drop(sender); // Signal completion
-        
+
         let mut duplicate_groups = Vec::new();
         while let Ok(group) = receiver.recv() {
             duplicate_groups.push(group);
@@ -448,13 +472,16 @@ impl DuplicateFinder {
 
 fn calculate_file_hash(file_path: &str) -> Result<String, String> {
     let path = Path::new(file_path);
-    let file = fs::File::open(path).map_err(|e| format!("Failed to open file {}: {}", file_path, e))?;
+    let file =
+        fs::File::open(path).map_err(|e| format!("Failed to open file {}: {}", file_path, e))?;
     let mut reader = BufReader::new(file);
     let mut hasher = Sha256::new();
     let mut buffer = [0; 8192]; // 8KB buffer for reading
 
     loop {
-        let bytes_read = reader.read(&mut buffer).map_err(|e| format!("Failed to read file {}: {}", file_path, e))?;
+        let bytes_read = reader
+            .read(&mut buffer)
+            .map_err(|e| format!("Failed to read file {}: {}", file_path, e))?;
         if bytes_read == 0 {
             break;
         }
@@ -559,8 +586,8 @@ pub async fn move_duplicate_files_to_trash(file_paths: Vec<String>) -> Result<Ve
 #[cfg(test)]
 mod tests {
     use super::*;
-    use tempfile::tempdir;
     use std::fs;
+    use tempfile::tempdir;
 
     #[test]
     fn test_calculate_file_hash_identical_files() {
@@ -605,7 +632,10 @@ mod tests {
         let result = calculate_file_hash(f.to_str().unwrap());
         assert!(result.is_ok(), "hashing empty file should succeed");
         let hash = result.unwrap();
-        assert!(!hash.is_empty(), "hash of empty file should not be empty string");
+        assert!(
+            !hash.is_empty(),
+            "hash of empty file should not be empty string"
+        );
     }
 
     #[test]
@@ -634,22 +664,47 @@ mod tests {
         assert_eq!(finder.max_file_size, None);
         assert!(!finder.include_hidden);
         assert!(finder.file_extensions.is_none());
-        assert!(!finder.exclude_paths.is_empty(), "should have default exclusions");
+        assert!(
+            !finder.exclude_paths.is_empty(),
+            "should have default exclusions"
+        );
     }
 
     #[test]
     fn test_group_files_by_size_filters_singletons() {
         let finder = DuplicateFinder::new();
         let files = vec![
-            DuplicateFile { path: "a".into(), name: "a".into(), size: 100, hash: String::new(), modified: 0 },
-            DuplicateFile { path: "b".into(), name: "b".into(), size: 100, hash: String::new(), modified: 0 },
-            DuplicateFile { path: "c".into(), name: "c".into(), size: 200, hash: String::new(), modified: 0 },
+            DuplicateFile {
+                path: "a".into(),
+                name: "a".into(),
+                size: 100,
+                hash: String::new(),
+                modified: 0,
+            },
+            DuplicateFile {
+                path: "b".into(),
+                name: "b".into(),
+                size: 100,
+                hash: String::new(),
+                modified: 0,
+            },
+            DuplicateFile {
+                path: "c".into(),
+                name: "c".into(),
+                size: 200,
+                hash: String::new(),
+                modified: 0,
+            },
         ];
 
         let groups = finder.group_files_by_size(files);
 
         // Size 100 has 2 files (potential duplicates), size 200 has 1 (filtered out)
-        assert_eq!(groups.len(), 1, "only size groups with >1 file should remain");
+        assert_eq!(
+            groups.len(),
+            1,
+            "only size groups with >1 file should remain"
+        );
         assert!(groups.contains_key(&100));
         assert!(!groups.contains_key(&200));
         assert_eq!(groups[&100].len(), 2);
@@ -666,17 +721,38 @@ mod tests {
     fn test_group_files_by_size_all_unique() {
         let finder = DuplicateFinder::new();
         let files = vec![
-            DuplicateFile { path: "a".into(), name: "a".into(), size: 100, hash: String::new(), modified: 0 },
-            DuplicateFile { path: "b".into(), name: "b".into(), size: 200, hash: String::new(), modified: 0 },
-            DuplicateFile { path: "c".into(), name: "c".into(), size: 300, hash: String::new(), modified: 0 },
+            DuplicateFile {
+                path: "a".into(),
+                name: "a".into(),
+                size: 100,
+                hash: String::new(),
+                modified: 0,
+            },
+            DuplicateFile {
+                path: "b".into(),
+                name: "b".into(),
+                size: 200,
+                hash: String::new(),
+                modified: 0,
+            },
+            DuplicateFile {
+                path: "c".into(),
+                name: "c".into(),
+                size: 300,
+                hash: String::new(),
+                modified: 0,
+            },
         ];
 
         let groups = finder.group_files_by_size(files);
-        assert!(groups.is_empty(), "all unique sizes should result in no groups");
+        assert!(
+            groups.is_empty(),
+            "all unique sizes should result in no groups"
+        );
     }
 
-    use std::sync::Mutex as StdMutex;
     use std::sync::LazyLock;
+    use std::sync::Mutex as StdMutex;
 
     // Serialize tests that use CURRENT_SCAN_ID to avoid parallel race conditions.
     static SCAN_TEST_MUTEX: LazyLock<StdMutex<()>> = LazyLock::new(|| StdMutex::new(()));
@@ -704,7 +780,11 @@ mod tests {
             .find_duplicates(temp.path(), scan_id, |_progress| {})
             .await;
 
-        assert!(result.is_ok(), "find_duplicates should succeed: {:?}", result.err());
+        assert!(
+            result.is_ok(),
+            "find_duplicates should succeed: {:?}",
+            result.err()
+        );
         let result = result.unwrap();
 
         assert!(
@@ -720,7 +800,10 @@ mod tests {
         );
         let group = dup_group.unwrap();
         assert_eq!(group.files.len(), 2);
-        assert!(group.total_wasted_space > 0, "wasted space should be non-zero");
+        assert!(
+            group.total_wasted_space > 0,
+            "wasted space should be non-zero"
+        );
     }
 
     #[tokio::test]
@@ -780,9 +863,7 @@ mod tests {
         CURRENT_SCAN_ID.fetch_add(1, Ordering::SeqCst);
 
         let finder = DuplicateFinder::new().min_file_size(1);
-        let result = finder
-            .find_duplicates(temp.path(), scan_id, |_| {})
-            .await;
+        let result = finder.find_duplicates(temp.path(), scan_id, |_| {}).await;
 
         // The scan should either error with "Scan cancelled" or return early with no results
         // (depending on timing, the cancellation may or may not be picked up)
@@ -863,8 +944,20 @@ mod tests {
             hash: "abc123".to_string(),
             size: 1024,
             files: vec![
-                DuplicateFile { path: "a".into(), name: "a".into(), size: 1024, hash: "abc123".into(), modified: 100 },
-                DuplicateFile { path: "b".into(), name: "b".into(), size: 1024, hash: "abc123".into(), modified: 200 },
+                DuplicateFile {
+                    path: "a".into(),
+                    name: "a".into(),
+                    size: 1024,
+                    hash: "abc123".into(),
+                    modified: 100,
+                },
+                DuplicateFile {
+                    path: "b".into(),
+                    name: "b".into(),
+                    size: 1024,
+                    hash: "abc123".into(),
+                    modified: 200,
+                },
             ],
             total_wasted_space: 1024,
         };

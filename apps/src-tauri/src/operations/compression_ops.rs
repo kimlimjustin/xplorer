@@ -1,13 +1,13 @@
+use serde::{Deserialize, Serialize};
 use std::fs::{self, File};
 use std::io::{self, Read, Write};
 use std::path::Path;
 use tauri::{command, AppHandle, Emitter};
-use serde::{Deserialize, Serialize};
 
-use crate::operations::types::{FileOperationProgress, OperationStatus};
-use crate::operations::progress::generate_operation_id;
-use crate::operations::validate_file_path;
 use crate::audit_log::log_operation;
+use crate::operations::progress::generate_operation_id;
+use crate::operations::types::{FileOperationProgress, OperationStatus};
+use crate::operations::validate_file_path;
 
 // Import ZIP writer
 use zip::write::ZipWriter;
@@ -88,7 +88,11 @@ pub async fn compress_files(
     validate_file_path(&output_path)?;
     let output = Path::new(&output_path);
     let op_id = generate_operation_id();
-    let out_name = output.file_name().unwrap_or_default().to_string_lossy().to_string();
+    let out_name = output
+        .file_name()
+        .unwrap_or_default()
+        .to_string_lossy()
+        .to_string();
 
     // Validate input paths and calculate total size
     let mut total_size: u64 = 0;
@@ -125,24 +129,27 @@ pub async fn compress_files(
     }
 
     // Emit starting progress
-    let _ = app_handle.emit("file-operation-progress", FileOperationProgress {
-        operation_id: op_id.clone(),
-        operation_type: "compress".to_string(),
-        source_path: file_paths.first().cloned().unwrap_or_default(),
-        destination_path: Some(output_path.clone()),
-        current_file: out_name.clone(),
-        bytes_processed: 0,
-        total_bytes: 0,
-        files_processed: 0,
-        total_files: file_paths.len() as u64,
-        progress_percentage: 0.0,
-        speed_bytes_per_second: 0.0,
-        estimated_remaining_seconds: None,
-        status: OperationStatus::InProgress,
-        error_message: None,
-        copy_strategy: None,
-        hardware_acceleration: false,
-    });
+    let _ = app_handle.emit(
+        "file-operation-progress",
+        FileOperationProgress {
+            operation_id: op_id.clone(),
+            operation_type: "compress".to_string(),
+            source_path: file_paths.first().cloned().unwrap_or_default(),
+            destination_path: Some(output_path.clone()),
+            current_file: out_name.clone(),
+            bytes_processed: 0,
+            total_bytes: 0,
+            files_processed: 0,
+            total_files: file_paths.len() as u64,
+            progress_percentage: 0.0,
+            speed_bytes_per_second: 0.0,
+            estimated_remaining_seconds: None,
+            status: OperationStatus::InProgress,
+            error_message: None,
+            copy_strategy: None,
+            hardware_acceleration: false,
+        },
+    );
 
     let result = match options.format {
         CompressionFormat::Zip => compress_to_zip(&file_paths, output, &options).await,
@@ -151,29 +158,38 @@ pub async fn compress_files(
         CompressionFormat::TarBz2 => compress_to_tar_bz2(&file_paths, output, &options).await,
         CompressionFormat::TarXz => compress_to_tar_xz(&file_paths, output, &options).await,
         CompressionFormat::SevenZ => compress_to_7z(&file_paths, output, &options).await,
-        CompressionFormat::Rar => Err("RAR creation is not supported (proprietary format)".to_string()),
+        CompressionFormat::Rar => {
+            Err("RAR creation is not supported (proprietary format)".to_string())
+        }
     };
 
     // Emit completion/failure
-    let status = if result.is_ok() { OperationStatus::Completed } else { OperationStatus::Failed };
-    let _ = app_handle.emit("file-operation-progress", FileOperationProgress {
-        operation_id: op_id,
-        operation_type: "compress".to_string(),
-        source_path: file_paths.first().cloned().unwrap_or_default(),
-        destination_path: Some(output_path.clone()),
-        current_file: out_name,
-        bytes_processed: 0,
-        total_bytes: 0,
-        files_processed: file_paths.len() as u64,
-        total_files: file_paths.len() as u64,
-        progress_percentage: if result.is_ok() { 100.0 } else { 0.0 },
-        speed_bytes_per_second: 0.0,
-        estimated_remaining_seconds: None,
-        status,
-        error_message: result.as_ref().err().cloned(),
-        copy_strategy: None,
-        hardware_acceleration: false,
-    });
+    let status = if result.is_ok() {
+        OperationStatus::Completed
+    } else {
+        OperationStatus::Failed
+    };
+    let _ = app_handle.emit(
+        "file-operation-progress",
+        FileOperationProgress {
+            operation_id: op_id,
+            operation_type: "compress".to_string(),
+            source_path: file_paths.first().cloned().unwrap_or_default(),
+            destination_path: Some(output_path.clone()),
+            current_file: out_name,
+            bytes_processed: 0,
+            total_bytes: 0,
+            files_processed: file_paths.len() as u64,
+            total_files: file_paths.len() as u64,
+            progress_percentage: if result.is_ok() { 100.0 } else { 0.0 },
+            speed_bytes_per_second: 0.0,
+            estimated_remaining_seconds: None,
+            status,
+            error_message: result.as_ref().err().cloned(),
+            copy_strategy: None,
+            hardware_acceleration: false,
+        },
+    );
 
     let mut audit_paths = file_paths.clone();
     audit_paths.push(output_path);
@@ -192,12 +208,13 @@ pub async fn get_compression_info(file_paths: Vec<String>) -> Result<Compression
     let mut total_size = 0u64;
     let mut total_files = 0u64;
     let mut total_dirs = 0u64;
-    
+
     for path in file_paths {
         let path = Path::new(&path);
         if path.is_file() {
             total_files += 1;
-            total_size += path.metadata()
+            total_size += path
+                .metadata()
                 .map_err(|e| format!("Failed to get metadata for {}: {}", path.display(), e))?
                 .len();
         } else if path.is_dir() {
@@ -207,7 +224,7 @@ pub async fn get_compression_info(file_paths: Vec<String>) -> Result<Compression
             total_size += size;
         }
     }
-    
+
     Ok(CompressionInfo {
         total_files,
         total_directories: total_dirs,
@@ -226,7 +243,11 @@ pub async fn extract_archive(
     validate_file_path(&options.output_directory)?;
     let arc_path = Path::new(&archive_path);
     let op_id = generate_operation_id();
-    let arc_name = arc_path.file_name().unwrap_or_default().to_string_lossy().to_string();
+    let arc_name = arc_path
+        .file_name()
+        .unwrap_or_default()
+        .to_string_lossy()
+        .to_string();
 
     if !arc_path.exists() {
         return Err("Archive file does not exist".to_string());
@@ -241,24 +262,27 @@ pub async fn extract_archive(
     }
 
     // Emit starting progress
-    let _ = app_handle.emit("file-operation-progress", FileOperationProgress {
-        operation_id: op_id.clone(),
-        operation_type: "extract".to_string(),
-        source_path: archive_path.clone(),
-        destination_path: Some(options.output_directory.clone()),
-        current_file: arc_name.clone(),
-        bytes_processed: 0,
-        total_bytes: 0,
-        files_processed: 0,
-        total_files: 0,
-        progress_percentage: 0.0,
-        speed_bytes_per_second: 0.0,
-        estimated_remaining_seconds: None,
-        status: OperationStatus::InProgress,
-        error_message: None,
-        copy_strategy: None,
-        hardware_acceleration: false,
-    });
+    let _ = app_handle.emit(
+        "file-operation-progress",
+        FileOperationProgress {
+            operation_id: op_id.clone(),
+            operation_type: "extract".to_string(),
+            source_path: archive_path.clone(),
+            destination_path: Some(options.output_directory.clone()),
+            current_file: arc_name.clone(),
+            bytes_processed: 0,
+            total_bytes: 0,
+            files_processed: 0,
+            total_files: 0,
+            progress_percentage: 0.0,
+            speed_bytes_per_second: 0.0,
+            estimated_remaining_seconds: None,
+            status: OperationStatus::InProgress,
+            error_message: None,
+            copy_strategy: None,
+            hardware_acceleration: false,
+        },
+    );
 
     let result = match format {
         CompressionFormat::Zip => extract_zip(arc_path, &options).await,
@@ -270,25 +294,32 @@ pub async fn extract_archive(
         CompressionFormat::Rar => extract_rar(arc_path, &options).await,
     };
 
-    let status = if result.is_ok() { OperationStatus::Completed } else { OperationStatus::Failed };
-    let _ = app_handle.emit("file-operation-progress", FileOperationProgress {
-        operation_id: op_id,
-        operation_type: "extract".to_string(),
-        source_path: archive_path.clone(),
-        destination_path: Some(options.output_directory.clone()),
-        current_file: arc_name,
-        bytes_processed: 0,
-        total_bytes: 0,
-        files_processed: 0,
-        total_files: 0,
-        progress_percentage: if result.is_ok() { 100.0 } else { 0.0 },
-        speed_bytes_per_second: 0.0,
-        estimated_remaining_seconds: None,
-        status,
-        error_message: result.as_ref().err().cloned(),
-        copy_strategy: None,
-        hardware_acceleration: false,
-    });
+    let status = if result.is_ok() {
+        OperationStatus::Completed
+    } else {
+        OperationStatus::Failed
+    };
+    let _ = app_handle.emit(
+        "file-operation-progress",
+        FileOperationProgress {
+            operation_id: op_id,
+            operation_type: "extract".to_string(),
+            source_path: archive_path.clone(),
+            destination_path: Some(options.output_directory.clone()),
+            current_file: arc_name,
+            bytes_processed: 0,
+            total_bytes: 0,
+            files_processed: 0,
+            total_files: 0,
+            progress_percentage: if result.is_ok() { 100.0 } else { 0.0 },
+            speed_bytes_per_second: 0.0,
+            estimated_remaining_seconds: None,
+            status,
+            error_message: result.as_ref().err().cloned(),
+            copy_strategy: None,
+            hardware_acceleration: false,
+        },
+    );
 
     log_operation(
         "extract",
@@ -303,13 +334,13 @@ pub async fn extract_archive(
 #[command]
 pub async fn get_archive_info(archive_path: String) -> Result<ArchiveInfo, String> {
     let archive_path = Path::new(&archive_path);
-    
+
     if !archive_path.exists() {
         return Err("Archive file does not exist".to_string());
     }
-    
+
     let format = detect_archive_format(&archive_path)?;
-    
+
     match format {
         CompressionFormat::Zip => get_zip_info(archive_path).await,
         CompressionFormat::Tar => get_tar_info(archive_path).await,
@@ -333,7 +364,11 @@ pub async fn extract_selected_entries(
     validate_file_path(&output_dir)?;
     let arc_path = Path::new(&archive_path);
     let op_id = generate_operation_id();
-    let arc_name = arc_path.file_name().unwrap_or_default().to_string_lossy().to_string();
+    let arc_name = arc_path
+        .file_name()
+        .unwrap_or_default()
+        .to_string_lossy()
+        .to_string();
 
     if !arc_path.exists() {
         return Err("Archive file does not exist".to_string());
@@ -353,54 +388,134 @@ pub async fn extract_selected_entries(
 
     let total_entries = entries.len() as u64;
 
-    let _ = app_handle.emit("file-operation-progress", FileOperationProgress {
-        operation_id: op_id.clone(),
-        operation_type: "extract".to_string(),
-        source_path: archive_path.clone(),
-        destination_path: Some(output_dir.clone()),
-        current_file: arc_name.clone(),
-        bytes_processed: 0,
-        total_bytes: 0,
-        files_processed: 0,
-        total_files: total_entries,
-        progress_percentage: 0.0,
-        speed_bytes_per_second: 0.0,
-        estimated_remaining_seconds: None,
-        status: OperationStatus::InProgress,
-        error_message: None,
-        copy_strategy: None,
-        hardware_acceleration: false,
-    });
+    let _ = app_handle.emit(
+        "file-operation-progress",
+        FileOperationProgress {
+            operation_id: op_id.clone(),
+            operation_type: "extract".to_string(),
+            source_path: archive_path.clone(),
+            destination_path: Some(output_dir.clone()),
+            current_file: arc_name.clone(),
+            bytes_processed: 0,
+            total_bytes: 0,
+            files_processed: 0,
+            total_files: total_entries,
+            progress_percentage: 0.0,
+            speed_bytes_per_second: 0.0,
+            estimated_remaining_seconds: None,
+            status: OperationStatus::InProgress,
+            error_message: None,
+            copy_strategy: None,
+            hardware_acceleration: false,
+        },
+    );
 
     let result = match format {
-        CompressionFormat::Zip => extract_zip_selected(arc_path, &entries, &output_dir, overwrite, &app_handle, &op_id).await,
-        CompressionFormat::Tar => extract_tar_selected(arc_path, &entries, &output_dir, overwrite, &app_handle, &op_id).await,
-        CompressionFormat::TarGz => extract_tar_gz_selected(arc_path, &entries, &output_dir, overwrite, &app_handle, &op_id).await,
-        CompressionFormat::TarBz2 => extract_tar_bz2_selected(arc_path, &entries, &output_dir, overwrite, &app_handle, &op_id).await,
-        CompressionFormat::TarXz => extract_tar_xz_selected(arc_path, &entries, &output_dir, overwrite, &app_handle, &op_id).await,
-        CompressionFormat::SevenZ => extract_7z_selected(arc_path, &entries, &output_dir, overwrite, &app_handle, &op_id).await,
-        CompressionFormat::Rar => extract_rar_selected(arc_path, &entries, &output_dir, overwrite, &app_handle, &op_id).await,
+        CompressionFormat::Zip => {
+            extract_zip_selected(
+                arc_path,
+                &entries,
+                &output_dir,
+                overwrite,
+                &app_handle,
+                &op_id,
+            )
+            .await
+        }
+        CompressionFormat::Tar => {
+            extract_tar_selected(
+                arc_path,
+                &entries,
+                &output_dir,
+                overwrite,
+                &app_handle,
+                &op_id,
+            )
+            .await
+        }
+        CompressionFormat::TarGz => {
+            extract_tar_gz_selected(
+                arc_path,
+                &entries,
+                &output_dir,
+                overwrite,
+                &app_handle,
+                &op_id,
+            )
+            .await
+        }
+        CompressionFormat::TarBz2 => {
+            extract_tar_bz2_selected(
+                arc_path,
+                &entries,
+                &output_dir,
+                overwrite,
+                &app_handle,
+                &op_id,
+            )
+            .await
+        }
+        CompressionFormat::TarXz => {
+            extract_tar_xz_selected(
+                arc_path,
+                &entries,
+                &output_dir,
+                overwrite,
+                &app_handle,
+                &op_id,
+            )
+            .await
+        }
+        CompressionFormat::SevenZ => {
+            extract_7z_selected(
+                arc_path,
+                &entries,
+                &output_dir,
+                overwrite,
+                &app_handle,
+                &op_id,
+            )
+            .await
+        }
+        CompressionFormat::Rar => {
+            extract_rar_selected(
+                arc_path,
+                &entries,
+                &output_dir,
+                overwrite,
+                &app_handle,
+                &op_id,
+            )
+            .await
+        }
     };
 
-    let status = if result.is_ok() { OperationStatus::Completed } else { OperationStatus::Failed };
-    let _ = app_handle.emit("file-operation-progress", FileOperationProgress {
-        operation_id: op_id,
-        operation_type: "extract".to_string(),
-        source_path: archive_path,
-        destination_path: Some(output_dir.clone()),
-        current_file: arc_name,
-        bytes_processed: 0,
-        total_bytes: 0,
-        files_processed: if result.is_ok() { total_entries } else { 0 },
-        total_files: total_entries,
-        progress_percentage: if result.is_ok() { 100.0 } else { 0.0 },
-        speed_bytes_per_second: 0.0,
-        estimated_remaining_seconds: None,
-        status,
-        error_message: result.as_ref().err().cloned(),
-        copy_strategy: None,
-        hardware_acceleration: false,
-    });
+    let status = if result.is_ok() {
+        OperationStatus::Completed
+    } else {
+        OperationStatus::Failed
+    };
+    let _ = app_handle.emit(
+        "file-operation-progress",
+        FileOperationProgress {
+            operation_id: op_id,
+            operation_type: "extract".to_string(),
+            source_path: archive_path,
+            destination_path: Some(output_dir.clone()),
+            current_file: arc_name,
+            bytes_processed: 0,
+            total_bytes: 0,
+            files_processed: if result.is_ok() { total_entries } else { 0 },
+            total_files: total_entries,
+            progress_percentage: if result.is_ok() { 100.0 } else { 0.0 },
+            speed_bytes_per_second: 0.0,
+            estimated_remaining_seconds: None,
+            status,
+            error_message: result.as_ref().err().cloned(),
+            copy_strategy: None,
+            hardware_acceleration: false,
+        },
+    );
 
     result
 }
@@ -408,11 +523,11 @@ pub async fn extract_selected_entries(
 #[command]
 pub async fn is_archive(file_path: String) -> Result<bool, String> {
     let path = Path::new(&file_path);
-    
+
     if !path.exists() || !path.is_file() {
         return Ok(false);
     }
-    
+
     match detect_archive_format(path) {
         Ok(_) => Ok(true),
         Err(_) => Ok(false),
@@ -421,14 +536,15 @@ pub async fn is_archive(file_path: String) -> Result<bool, String> {
 
 // Archive format detection
 fn detect_archive_format(path: &Path) -> Result<CompressionFormat, String> {
-    let extension = path.extension()
+    let extension = path
+        .extension()
         .and_then(|ext| ext.to_str())
         .ok_or("Unable to determine file extension")?
         .to_lowercase();
-    
+
     // Handle compound extensions like .tar.gz
     let path_str = path.to_string_lossy().to_lowercase();
-    
+
     if path_str.ends_with(".tar.gz") || path_str.ends_with(".tgz") {
         Ok(CompressionFormat::TarGz)
     } else if path_str.ends_with(".tar.bz2") || path_str.ends_with(".tbz2") {
@@ -448,20 +564,20 @@ fn detect_archive_format(path: &Path) -> Result<CompressionFormat, String> {
 
 // ZIP extraction implementation
 async fn extract_zip(archive_path: &Path, options: &ExtractionOptions) -> Result<String, String> {
-    use zip::ZipArchive;
     use std::io::BufReader;
-    
-    let file = File::open(archive_path)
-        .map_err(|e| format!("Failed to open ZIP file: {}", e))?;
-    
+    use zip::ZipArchive;
+
+    let file = File::open(archive_path).map_err(|e| format!("Failed to open ZIP file: {}", e))?;
+
     let reader = BufReader::new(file);
-    let mut archive = ZipArchive::new(reader)
-        .map_err(|e| format!("Failed to read ZIP archive: {}", e))?;
-    
+    let mut archive =
+        ZipArchive::new(reader).map_err(|e| format!("Failed to read ZIP archive: {}", e))?;
+
     for i in 0..archive.len() {
-        let mut file = archive.by_index(i)
+        let mut file = archive
+            .by_index(i)
             .map_err(|e| format!("Failed to read ZIP entry: {}", e))?;
-        
+
         // Zip Slip protection: reject any entry containing path traversal components
         let raw_name = file.name();
 
@@ -517,27 +633,26 @@ async fn extract_zip(archive_path: &Path, options: &ExtractionOptions) -> Result
                         .map_err(|e| format!("Failed to create parent directory: {}", e))?;
                 }
             }
-            
+
             // Check if file exists and handle overwrite
             if outpath.exists() && !options.overwrite_existing {
                 continue;
             }
-            
+
             let mut outfile = File::create(&outpath)
                 .map_err(|e| format!("Failed to create output file: {}", e))?;
-            
+
             io::copy(&mut file, &mut outfile)
                 .map_err(|e| format!("Failed to extract file: {}", e))?;
         }
     }
-    
+
     Ok(options.output_directory.clone())
 }
 
 // TAR extraction implementations
 async fn extract_tar(archive_path: &Path, options: &ExtractionOptions) -> Result<String, String> {
-    let file = File::open(archive_path)
-        .map_err(|e| format!("Failed to open TAR file: {}", e))?;
+    let file = File::open(archive_path).map_err(|e| format!("Failed to open TAR file: {}", e))?;
 
     let mut archive = tar::Archive::new(file);
 
@@ -546,11 +661,14 @@ async fn extract_tar(archive_path: &Path, options: &ExtractionOptions) -> Result
     Ok(options.output_directory.clone())
 }
 
-async fn extract_tar_gz(archive_path: &Path, options: &ExtractionOptions) -> Result<String, String> {
+async fn extract_tar_gz(
+    archive_path: &Path,
+    options: &ExtractionOptions,
+) -> Result<String, String> {
     use flate2::read::GzDecoder;
 
-    let file = File::open(archive_path)
-        .map_err(|e| format!("Failed to open TAR.GZ file: {}", e))?;
+    let file =
+        File::open(archive_path).map_err(|e| format!("Failed to open TAR.GZ file: {}", e))?;
 
     let gz_decoder = GzDecoder::new(file);
     let mut archive = tar::Archive::new(gz_decoder);
@@ -560,11 +678,14 @@ async fn extract_tar_gz(archive_path: &Path, options: &ExtractionOptions) -> Res
     Ok(options.output_directory.clone())
 }
 
-async fn extract_tar_bz2(archive_path: &Path, options: &ExtractionOptions) -> Result<String, String> {
+async fn extract_tar_bz2(
+    archive_path: &Path,
+    options: &ExtractionOptions,
+) -> Result<String, String> {
     use bzip2::read::BzDecoder;
 
-    let file = File::open(archive_path)
-        .map_err(|e| format!("Failed to open TAR.BZ2 file: {}", e))?;
+    let file =
+        File::open(archive_path).map_err(|e| format!("Failed to open TAR.BZ2 file: {}", e))?;
 
     let bz_decoder = BzDecoder::new(file);
     let mut archive = tar::Archive::new(bz_decoder);
@@ -574,11 +695,14 @@ async fn extract_tar_bz2(archive_path: &Path, options: &ExtractionOptions) -> Re
     Ok(options.output_directory.clone())
 }
 
-async fn extract_tar_xz(archive_path: &Path, options: &ExtractionOptions) -> Result<String, String> {
+async fn extract_tar_xz(
+    archive_path: &Path,
+    options: &ExtractionOptions,
+) -> Result<String, String> {
     use xz2::read::XzDecoder;
 
-    let file = File::open(archive_path)
-        .map_err(|e| format!("Failed to open TAR.XZ file: {}", e))?;
+    let file =
+        File::open(archive_path).map_err(|e| format!("Failed to open TAR.XZ file: {}", e))?;
 
     let xz_decoder = XzDecoder::new(file);
     let mut archive = tar::Archive::new(xz_decoder);
@@ -589,13 +713,25 @@ async fn extract_tar_xz(archive_path: &Path, options: &ExtractionOptions) -> Res
 }
 
 /// Safely extract TAR entries, skipping path traversal attempts and symlinks/hardlinks.
-fn extract_tar_safely<R: Read>(archive: &mut tar::Archive<R>, options: &ExtractionOptions) -> Result<(), String> {
-    for entry in archive.entries().map_err(|e| format!("Failed to read TAR entries: {}", e))? {
+fn extract_tar_safely<R: Read>(
+    archive: &mut tar::Archive<R>,
+    options: &ExtractionOptions,
+) -> Result<(), String> {
+    for entry in archive
+        .entries()
+        .map_err(|e| format!("Failed to read TAR entries: {}", e))?
+    {
         let mut entry = entry.map_err(|e| format!("Failed to read TAR entry: {}", e))?;
-        let path = entry.path().map_err(|e| format!("Failed to get entry path: {}", e))?;
+        let path = entry
+            .path()
+            .map_err(|e| format!("Failed to get entry path: {}", e))?;
 
         // Skip absolute paths and path traversal
-        if path.is_absolute() || path.components().any(|c| matches!(c, std::path::Component::ParentDir)) {
+        if path.is_absolute()
+            || path
+                .components()
+                .any(|c| matches!(c, std::path::Component::ParentDir))
+        {
             continue;
         }
 
@@ -605,7 +741,8 @@ fn extract_tar_safely<R: Read>(archive: &mut tar::Archive<R>, options: &Extracti
             continue;
         }
 
-        entry.unpack_in(&options.output_directory)
+        entry
+            .unpack_in(&options.output_directory)
             .map_err(|e| format!("Failed to extract entry: {}", e))?;
     }
     Ok(())
@@ -621,23 +758,23 @@ async fn extract_zip_selected(
     app_handle: &AppHandle,
     op_id: &str,
 ) -> Result<String, String> {
-    use zip::ZipArchive;
-    use std::io::BufReader;
     use std::collections::HashSet;
+    use std::io::BufReader;
+    use zip::ZipArchive;
 
     let selected: HashSet<&str> = entries.iter().map(|s| s.as_str()).collect();
 
-    let file = File::open(archive_path)
-        .map_err(|e| format!("Failed to open ZIP file: {}", e))?;
+    let file = File::open(archive_path).map_err(|e| format!("Failed to open ZIP file: {}", e))?;
     let reader = BufReader::new(file);
-    let mut archive = ZipArchive::new(reader)
-        .map_err(|e| format!("Failed to read ZIP archive: {}", e))?;
+    let mut archive =
+        ZipArchive::new(reader).map_err(|e| format!("Failed to read ZIP archive: {}", e))?;
 
     let total = entries.len() as u64;
     let mut processed: u64 = 0;
 
     for i in 0..archive.len() {
-        let mut file = archive.by_index(i)
+        let mut file = archive
+            .by_index(i)
             .map_err(|e| format!("Failed to read ZIP entry: {}", e))?;
 
         let raw_name = file.name().to_string();
@@ -702,25 +839,32 @@ async fn extract_zip_selected(
         }
 
         processed += 1;
-        let pct = if total > 0 { (processed as f64 / total as f64) * 100.0 } else { 100.0 };
-        let _ = app_handle.emit("file-operation-progress", FileOperationProgress {
-            operation_id: op_id.to_string(),
-            operation_type: "extract".to_string(),
-            source_path: archive_path.to_string_lossy().to_string(),
-            destination_path: Some(output_dir.to_string()),
-            current_file: safe_name,
-            bytes_processed: 0,
-            total_bytes: 0,
-            files_processed: processed,
-            total_files: total,
-            progress_percentage: pct,
-            speed_bytes_per_second: 0.0,
-            estimated_remaining_seconds: None,
-            status: OperationStatus::InProgress,
-            error_message: None,
-            copy_strategy: None,
-            hardware_acceleration: false,
-        });
+        let pct = if total > 0 {
+            (processed as f64 / total as f64) * 100.0
+        } else {
+            100.0
+        };
+        let _ = app_handle.emit(
+            "file-operation-progress",
+            FileOperationProgress {
+                operation_id: op_id.to_string(),
+                operation_type: "extract".to_string(),
+                source_path: archive_path.to_string_lossy().to_string(),
+                destination_path: Some(output_dir.to_string()),
+                current_file: safe_name,
+                bytes_processed: 0,
+                total_bytes: 0,
+                files_processed: processed,
+                total_files: total,
+                progress_percentage: pct,
+                speed_bytes_per_second: 0.0,
+                estimated_remaining_seconds: None,
+                status: OperationStatus::InProgress,
+                error_message: None,
+                copy_strategy: None,
+                hardware_acceleration: false,
+            },
+        );
     }
 
     Ok(output_dir.to_string())
@@ -734,10 +878,17 @@ async fn extract_tar_selected(
     app_handle: &AppHandle,
     op_id: &str,
 ) -> Result<String, String> {
-    let file = File::open(archive_path)
-        .map_err(|e| format!("Failed to open TAR file: {}", e))?;
+    let file = File::open(archive_path).map_err(|e| format!("Failed to open TAR file: {}", e))?;
     let mut archive = tar::Archive::new(file);
-    extract_tar_selected_safely(&mut archive, entries, output_dir, overwrite, app_handle, op_id, archive_path)?;
+    extract_tar_selected_safely(
+        &mut archive,
+        entries,
+        output_dir,
+        overwrite,
+        app_handle,
+        op_id,
+        archive_path,
+    )?;
     Ok(output_dir.to_string())
 }
 
@@ -750,11 +901,19 @@ async fn extract_tar_gz_selected(
     op_id: &str,
 ) -> Result<String, String> {
     use flate2::read::GzDecoder;
-    let file = File::open(archive_path)
-        .map_err(|e| format!("Failed to open TAR.GZ file: {}", e))?;
+    let file =
+        File::open(archive_path).map_err(|e| format!("Failed to open TAR.GZ file: {}", e))?;
     let gz_decoder = GzDecoder::new(file);
     let mut archive = tar::Archive::new(gz_decoder);
-    extract_tar_selected_safely(&mut archive, entries, output_dir, overwrite, app_handle, op_id, archive_path)?;
+    extract_tar_selected_safely(
+        &mut archive,
+        entries,
+        output_dir,
+        overwrite,
+        app_handle,
+        op_id,
+        archive_path,
+    )?;
     Ok(output_dir.to_string())
 }
 
@@ -767,11 +926,19 @@ async fn extract_tar_bz2_selected(
     op_id: &str,
 ) -> Result<String, String> {
     use bzip2::read::BzDecoder;
-    let file = File::open(archive_path)
-        .map_err(|e| format!("Failed to open TAR.BZ2 file: {}", e))?;
+    let file =
+        File::open(archive_path).map_err(|e| format!("Failed to open TAR.BZ2 file: {}", e))?;
     let bz_decoder = BzDecoder::new(file);
     let mut archive = tar::Archive::new(bz_decoder);
-    extract_tar_selected_safely(&mut archive, entries, output_dir, overwrite, app_handle, op_id, archive_path)?;
+    extract_tar_selected_safely(
+        &mut archive,
+        entries,
+        output_dir,
+        overwrite,
+        app_handle,
+        op_id,
+        archive_path,
+    )?;
     Ok(output_dir.to_string())
 }
 
@@ -784,11 +951,19 @@ async fn extract_tar_xz_selected(
     op_id: &str,
 ) -> Result<String, String> {
     use xz2::read::XzDecoder;
-    let file = File::open(archive_path)
-        .map_err(|e| format!("Failed to open TAR.XZ file: {}", e))?;
+    let file =
+        File::open(archive_path).map_err(|e| format!("Failed to open TAR.XZ file: {}", e))?;
     let xz_decoder = XzDecoder::new(file);
     let mut archive = tar::Archive::new(xz_decoder);
-    extract_tar_selected_safely(&mut archive, entries, output_dir, overwrite, app_handle, op_id, archive_path)?;
+    extract_tar_selected_safely(
+        &mut archive,
+        entries,
+        output_dir,
+        overwrite,
+        app_handle,
+        op_id,
+        archive_path,
+    )?;
     Ok(output_dir.to_string())
 }
 
@@ -807,16 +982,25 @@ fn extract_tar_selected_safely<R: Read>(
     let total = entries.len() as u64;
     let mut processed: u64 = 0;
 
-    for entry_result in archive.entries().map_err(|e| format!("Failed to read TAR entries: {}", e))? {
+    for entry_result in archive
+        .entries()
+        .map_err(|e| format!("Failed to read TAR entries: {}", e))?
+    {
         let mut entry = entry_result.map_err(|e| format!("Failed to read TAR entry: {}", e))?;
-        let path = entry.path().map_err(|e| format!("Failed to get entry path: {}", e))?;
+        let path = entry
+            .path()
+            .map_err(|e| format!("Failed to get entry path: {}", e))?;
         let path_str = path.to_string_lossy().to_string();
 
         if !selected.contains(path_str.as_str()) {
             continue;
         }
 
-        if path.is_absolute() || path.components().any(|c| matches!(c, std::path::Component::ParentDir)) {
+        if path.is_absolute()
+            || path
+                .components()
+                .any(|c| matches!(c, std::path::Component::ParentDir))
+        {
             continue;
         }
 
@@ -831,29 +1015,37 @@ fn extract_tar_selected_safely<R: Read>(
             continue;
         }
 
-        entry.unpack_in(output_dir)
+        entry
+            .unpack_in(output_dir)
             .map_err(|e| format!("Failed to extract entry: {}", e))?;
 
         processed += 1;
-        let pct = if total > 0 { (processed as f64 / total as f64) * 100.0 } else { 100.0 };
-        let _ = app_handle.emit("file-operation-progress", FileOperationProgress {
-            operation_id: op_id.to_string(),
-            operation_type: "extract".to_string(),
-            source_path: archive_path.to_string_lossy().to_string(),
-            destination_path: Some(output_dir.to_string()),
-            current_file: path_str,
-            bytes_processed: 0,
-            total_bytes: 0,
-            files_processed: processed,
-            total_files: total,
-            progress_percentage: pct,
-            speed_bytes_per_second: 0.0,
-            estimated_remaining_seconds: None,
-            status: OperationStatus::InProgress,
-            error_message: None,
-            copy_strategy: None,
-            hardware_acceleration: false,
-        });
+        let pct = if total > 0 {
+            (processed as f64 / total as f64) * 100.0
+        } else {
+            100.0
+        };
+        let _ = app_handle.emit(
+            "file-operation-progress",
+            FileOperationProgress {
+                operation_id: op_id.to_string(),
+                operation_type: "extract".to_string(),
+                source_path: archive_path.to_string_lossy().to_string(),
+                destination_path: Some(output_dir.to_string()),
+                current_file: path_str,
+                bytes_processed: 0,
+                total_bytes: 0,
+                files_processed: processed,
+                total_files: total,
+                progress_percentage: pct,
+                speed_bytes_per_second: 0.0,
+                estimated_remaining_seconds: None,
+                status: OperationStatus::InProgress,
+                error_message: None,
+                copy_strategy: None,
+                hardware_acceleration: false,
+            },
+        );
     }
 
     Ok(())
@@ -861,32 +1053,31 @@ fn extract_tar_selected_safely<R: Read>(
 
 // Archive info implementations
 async fn get_zip_info(archive_path: &Path) -> Result<ArchiveInfo, String> {
-    use zip::ZipArchive;
     use std::io::BufReader;
-    
-    let file = File::open(archive_path)
-        .map_err(|e| format!("Failed to open ZIP file: {}", e))?;
-    
+    use zip::ZipArchive;
+
+    let file = File::open(archive_path).map_err(|e| format!("Failed to open ZIP file: {}", e))?;
+
     let reader = BufReader::new(file);
-    let mut archive = ZipArchive::new(reader)
-        .map_err(|e| format!("Failed to read ZIP archive: {}", e))?;
-    
+    let mut archive =
+        ZipArchive::new(reader).map_err(|e| format!("Failed to read ZIP archive: {}", e))?;
+
     let mut total_files = 0u64;
     let mut total_directories = 0u64;
     let mut total_size = 0u64;
-    let compressed_size = archive_path.metadata()
-        .map(|m| m.len())
-        .unwrap_or(0);
+    let compressed_size = archive_path.metadata().map(|m| m.len()).unwrap_or(0);
     let mut files = Vec::new();
     let mut is_encrypted = false;
 
-    let archive_modified = archive_path.metadata()
+    let archive_modified = archive_path
+        .metadata()
         .and_then(|m| m.modified())
         .ok()
         .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
         .map(|d| d.as_secs())
         .unwrap_or(0);
-    let archive_created = archive_path.metadata()
+    let archive_created = archive_path
+        .metadata()
         .and_then(|m| m.created())
         .ok()
         .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
@@ -895,7 +1086,8 @@ async fn get_zip_info(archive_path: &Path) -> Result<ArchiveInfo, String> {
 
     for i in 0..archive.len() {
         // Use by_index_raw to avoid decryption failures on encrypted archives
-        let file = archive.by_index_raw(i)
+        let file = archive
+            .by_index_raw(i)
             .map_err(|e| format!("Failed to read ZIP entry: {}", e))?;
 
         let is_directory = file.name().ends_with('/');
@@ -909,7 +1101,9 @@ async fn get_zip_info(archive_path: &Path) -> Result<ArchiveInfo, String> {
         let modified = {
             let dt = file.last_modified();
             chrono::NaiveDate::from_ymd_opt(dt.year() as i32, dt.month() as u32, dt.day() as u32)
-                .and_then(|date| date.and_hms_opt(dt.hour() as u32, dt.minute() as u32, dt.second() as u32))
+                .and_then(|date| {
+                    date.and_hms_opt(dt.hour() as u32, dt.minute() as u32, dt.second() as u32)
+                })
                 .and_then(|ndt| ndt.and_utc().timestamp().try_into().ok())
                 .unwrap_or(0u64)
         };
@@ -919,7 +1113,13 @@ async fn get_zip_info(archive_path: &Path) -> Result<ArchiveInfo, String> {
             is_encrypted = true;
         }
 
-        let entry_name = file.name().split('/').filter(|s| !s.is_empty()).last().unwrap_or("").to_string();
+        let entry_name = file
+            .name()
+            .split('/')
+            .filter(|s| !s.is_empty())
+            .last()
+            .unwrap_or("")
+            .to_string();
         files.push(ArchiveEntry {
             name: entry_name,
             path: file.name().to_string(),
@@ -954,78 +1154,78 @@ async fn get_zip_info(archive_path: &Path) -> Result<ArchiveInfo, String> {
 }
 
 async fn get_tar_info(archive_path: &Path) -> Result<ArchiveInfo, String> {
-    let file = File::open(archive_path)
-        .map_err(|e| format!("Failed to open TAR file: {}", e))?;
-    
+    let file = File::open(archive_path).map_err(|e| format!("Failed to open TAR file: {}", e))?;
+
     get_tar_info_from_reader(file, CompressionFormat::Tar, archive_path)
 }
 
 async fn get_tar_gz_info(archive_path: &Path) -> Result<ArchiveInfo, String> {
     use flate2::read::GzDecoder;
-    
-    let file = File::open(archive_path)
-        .map_err(|e| format!("Failed to open TAR.GZ file: {}", e))?;
-    
+
+    let file =
+        File::open(archive_path).map_err(|e| format!("Failed to open TAR.GZ file: {}", e))?;
+
     let gz_decoder = GzDecoder::new(file);
     get_tar_info_from_reader(gz_decoder, CompressionFormat::TarGz, archive_path)
 }
 
 async fn get_tar_bz2_info(archive_path: &Path) -> Result<ArchiveInfo, String> {
     use bzip2::read::BzDecoder;
-    
-    let file = File::open(archive_path)
-        .map_err(|e| format!("Failed to open TAR.BZ2 file: {}", e))?;
-    
+
+    let file =
+        File::open(archive_path).map_err(|e| format!("Failed to open TAR.BZ2 file: {}", e))?;
+
     let bz_decoder = BzDecoder::new(file);
     get_tar_info_from_reader(bz_decoder, CompressionFormat::TarBz2, archive_path)
 }
 
 async fn get_tar_xz_info(archive_path: &Path) -> Result<ArchiveInfo, String> {
     use xz2::read::XzDecoder;
-    
-    let file = File::open(archive_path)
-        .map_err(|e| format!("Failed to open TAR.XZ file: {}", e))?;
-    
+
+    let file =
+        File::open(archive_path).map_err(|e| format!("Failed to open TAR.XZ file: {}", e))?;
+
     let xz_decoder = XzDecoder::new(file);
     get_tar_info_from_reader(xz_decoder, CompressionFormat::TarXz, archive_path)
 }
 
 fn get_tar_info_from_reader<R: Read>(
-    reader: R, 
-    format: CompressionFormat, 
-    archive_path: &Path
+    reader: R,
+    format: CompressionFormat,
+    archive_path: &Path,
 ) -> Result<ArchiveInfo, String> {
     let mut archive = tar::Archive::new(reader);
 
     let mut total_files = 0u64;
     let mut total_directories = 0u64;
     let mut total_size = 0u64;
-    let compressed_size = archive_path.metadata()
-        .map(|m| m.len())
-        .unwrap_or(0);
+    let compressed_size = archive_path.metadata().map(|m| m.len()).unwrap_or(0);
     let mut files = Vec::new();
 
-    let archive_modified = archive_path.metadata()
+    let archive_modified = archive_path
+        .metadata()
         .and_then(|m| m.modified())
         .ok()
         .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
         .map(|d| d.as_secs())
         .unwrap_or(0);
-    let archive_created = archive_path.metadata()
+    let archive_created = archive_path
+        .metadata()
         .and_then(|m| m.created())
         .ok()
         .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
         .map(|d| d.as_secs())
         .unwrap_or(0);
 
-    for entry_result in archive.entries()
+    for entry_result in archive
+        .entries()
         .map_err(|e| format!("Failed to read TAR entries: {}", e))?
     {
-        let entry = entry_result
-            .map_err(|e| format!("Failed to read TAR entry: {}", e))?;
+        let entry = entry_result.map_err(|e| format!("Failed to read TAR entry: {}", e))?;
 
         let header = entry.header();
-        let path = entry.path()
+        let path = entry
+            .path()
             .map_err(|e| format!("Failed to get entry path: {}", e))?
             .to_string_lossy()
             .to_string();
@@ -1040,7 +1240,12 @@ fn get_tar_info_from_reader<R: Read>(
             total_size += size;
         }
 
-        let entry_name = path.split('/').filter(|s| !s.is_empty()).last().unwrap_or("").to_string();
+        let entry_name = path
+            .split('/')
+            .filter(|s| !s.is_empty())
+            .last()
+            .unwrap_or("")
+            .to_string();
         files.push(ArchiveEntry {
             name: entry_name,
             path,
@@ -1080,15 +1285,15 @@ async fn compress_to_zip(
 ) -> Result<String, String> {
     use zip::write::{FileOptions, ZipWriter};
     use zip::CompressionMethod;
-    
-    let file = File::create(output_path)
-        .map_err(|e| format!("Failed to create ZIP file: {}", e))?;
-    
+
+    let file =
+        File::create(output_path).map_err(|e| format!("Failed to create ZIP file: {}", e))?;
+
     let mut zip = ZipWriter::new(file);
     let zip_options = FileOptions::default()
         .compression_method(CompressionMethod::Deflated)
         .compression_level(options.compression_level.map(|l| l as i32));
-    
+
     for file_path in file_paths {
         let path = Path::new(file_path);
         if path.is_file() {
@@ -1097,10 +1302,10 @@ async fn compress_to_zip(
             add_directory_to_zip(&mut zip, path, None, &zip_options, options)?;
         }
     }
-    
+
     zip.finish()
         .map_err(|e| format!("Failed to finalize ZIP file: {}", e))?;
-    
+
     Ok(output_path.to_string_lossy().to_string())
 }
 
@@ -1112,28 +1317,27 @@ fn add_file_to_zip<W: Write + io::Seek>(
     compression_options: &CompressionOptions,
 ) -> Result<(), String> {
     let relative_path = if let Some(base) = base_path {
-        file_path.strip_prefix(base)
-            .unwrap_or(file_path)
+        file_path.strip_prefix(base).unwrap_or(file_path)
     } else {
-        file_path.file_name()
+        file_path
+            .file_name()
             .map(|name| Path::new(name))
             .unwrap_or(file_path)
     };
-    
+
     // Skip hidden files if not requested
     if !compression_options.include_hidden && is_hidden_file(file_path) {
         return Ok(());
     }
-    
+
     let mut file = File::open(file_path)
         .map_err(|e| format!("Failed to open file {}: {}", file_path.display(), e))?;
-    
+
     zip.start_file(relative_path.to_string_lossy(), *options)
         .map_err(|e| format!("Failed to start ZIP entry: {}", e))?;
-    
-    io::copy(&mut file, zip)
-        .map_err(|e| format!("Failed to write file to ZIP: {}", e))?;
-    
+
+    io::copy(&mut file, zip).map_err(|e| format!("Failed to write file to ZIP: {}", e))?;
+
     Ok(())
 }
 
@@ -1145,21 +1349,20 @@ fn add_directory_to_zip<W: Write + io::Seek>(
     compression_options: &CompressionOptions,
 ) -> Result<(), String> {
     let base = base_path.unwrap_or(dir_path);
-    
+
     for entry in fs::read_dir(dir_path)
-        .map_err(|e| format!("Failed to read directory {}: {}", dir_path.display(), e))? 
+        .map_err(|e| format!("Failed to read directory {}: {}", dir_path.display(), e))?
     {
-        let entry = entry
-            .map_err(|e| format!("Failed to read directory entry: {}", e))?;
+        let entry = entry.map_err(|e| format!("Failed to read directory entry: {}", e))?;
         let path = entry.path();
-        
+
         if path.is_file() {
             add_file_to_zip(zip, &path, Some(base), options, compression_options)?;
         } else if path.is_dir() {
             add_directory_to_zip(zip, &path, Some(base), options, compression_options)?;
         }
     }
-    
+
     Ok(())
 }
 
@@ -1169,27 +1372,31 @@ async fn compress_to_tar(
     output_path: &Path,
     _options: &CompressionOptions,
 ) -> Result<String, String> {
-    let file = File::create(output_path)
-        .map_err(|e| format!("Failed to create TAR file: {}", e))?;
-    
+    let file =
+        File::create(output_path).map_err(|e| format!("Failed to create TAR file: {}", e))?;
+
     let mut builder = tar::Builder::new(file);
-    
+
     for file_path in file_paths {
         let path = Path::new(file_path);
         if path.is_file() {
-            let name = path.file_name()
+            let name = path
+                .file_name()
                 .unwrap_or_else(|| std::ffi::OsStr::new("unknown"));
-            builder.append_path_with_name(path, name)
+            builder
+                .append_path_with_name(path, name)
                 .map_err(|e| format!("Failed to add file to TAR: {}", e))?;
         } else if path.is_dir() {
-            builder.append_dir_all(".", path)
+            builder
+                .append_dir_all(".", path)
                 .map_err(|e| format!("Failed to add directory to TAR: {}", e))?;
         }
     }
-    
-    builder.finish()
+
+    builder
+        .finish()
         .map_err(|e| format!("Failed to finalize TAR file: {}", e))?;
-    
+
     Ok(output_path.to_string_lossy().to_string())
 }
 
@@ -1200,36 +1407,42 @@ async fn compress_to_tar_gz(
 ) -> Result<String, String> {
     use flate2::write::GzEncoder;
     use flate2::Compression;
-    
-    let file = File::create(output_path)
-        .map_err(|e| format!("Failed to create TAR.GZ file: {}", e))?;
-    
-    let compression_level = options.compression_level
+
+    let file =
+        File::create(output_path).map_err(|e| format!("Failed to create TAR.GZ file: {}", e))?;
+
+    let compression_level = options
+        .compression_level
         .map(|l| Compression::new(l.clamp(0, 9)))
         .unwrap_or(Compression::default());
-    
+
     let gz_encoder = GzEncoder::new(file, compression_level);
     let mut builder = tar::Builder::new(gz_encoder);
-    
+
     for file_path in file_paths {
         let path = Path::new(file_path);
         if path.is_file() {
-            let name = path.file_name()
+            let name = path
+                .file_name()
                 .unwrap_or_else(|| std::ffi::OsStr::new("unknown"));
-            builder.append_path_with_name(path, name)
+            builder
+                .append_path_with_name(path, name)
                 .map_err(|e| format!("Failed to add file to TAR.GZ: {}", e))?;
         } else if path.is_dir() {
-            builder.append_dir_all(".", path)
+            builder
+                .append_dir_all(".", path)
                 .map_err(|e| format!("Failed to add directory to TAR.GZ: {}", e))?;
         }
     }
-    
-    let gz_encoder = builder.into_inner()
+
+    let gz_encoder = builder
+        .into_inner()
         .map_err(|e| format!("Failed to get GZ encoder: {}", e))?;
-    
-    gz_encoder.finish()
+
+    gz_encoder
+        .finish()
         .map_err(|e| format!("Failed to finalize TAR.GZ file: {}", e))?;
-    
+
     Ok(output_path.to_string_lossy().to_string())
 }
 
@@ -1240,36 +1453,42 @@ async fn compress_to_tar_bz2(
 ) -> Result<String, String> {
     use bzip2::write::BzEncoder;
     use bzip2::Compression;
-    
-    let file = File::create(output_path)
-        .map_err(|e| format!("Failed to create TAR.BZ2 file: {}", e))?;
-    
-    let compression_level = options.compression_level
+
+    let file =
+        File::create(output_path).map_err(|e| format!("Failed to create TAR.BZ2 file: {}", e))?;
+
+    let compression_level = options
+        .compression_level
         .map(|l| Compression::new(l.clamp(1, 9)))
         .unwrap_or(Compression::default());
-    
+
     let bz_encoder = BzEncoder::new(file, compression_level);
     let mut builder = tar::Builder::new(bz_encoder);
-    
+
     for file_path in file_paths {
         let path = Path::new(file_path);
         if path.is_file() {
-            let name = path.file_name()
+            let name = path
+                .file_name()
                 .unwrap_or_else(|| std::ffi::OsStr::new("unknown"));
-            builder.append_path_with_name(path, name)
+            builder
+                .append_path_with_name(path, name)
                 .map_err(|e| format!("Failed to add file to TAR.BZ2: {}", e))?;
         } else if path.is_dir() {
-            builder.append_dir_all(".", path)
+            builder
+                .append_dir_all(".", path)
                 .map_err(|e| format!("Failed to add directory to TAR.BZ2: {}", e))?;
         }
     }
-    
-    let bz_encoder = builder.into_inner()
+
+    let bz_encoder = builder
+        .into_inner()
         .map_err(|e| format!("Failed to get BZ2 encoder: {}", e))?;
-    
-    bz_encoder.finish()
+
+    bz_encoder
+        .finish()
         .map_err(|e| format!("Failed to finalize TAR.BZ2 file: {}", e))?;
-    
+
     Ok(output_path.to_string_lossy().to_string())
 }
 
@@ -1279,33 +1498,38 @@ async fn compress_to_tar_xz(
     options: &CompressionOptions,
 ) -> Result<String, String> {
     use xz2::write::XzEncoder;
-    
-    let file = File::create(output_path)
-        .map_err(|e| format!("Failed to create TAR.XZ file: {}", e))?;
-    
+
+    let file =
+        File::create(output_path).map_err(|e| format!("Failed to create TAR.XZ file: {}", e))?;
+
     let compression_level = options.compression_level.unwrap_or(6);
     let xz_encoder = XzEncoder::new(file, compression_level);
     let mut builder = tar::Builder::new(xz_encoder);
-    
+
     for file_path in file_paths {
         let path = Path::new(file_path);
         if path.is_file() {
-            let name = path.file_name()
+            let name = path
+                .file_name()
                 .unwrap_or_else(|| std::ffi::OsStr::new("unknown"));
-            builder.append_path_with_name(path, name)
+            builder
+                .append_path_with_name(path, name)
                 .map_err(|e| format!("Failed to add file to TAR.XZ: {}", e))?;
         } else if path.is_dir() {
-            builder.append_dir_all(".", path)
+            builder
+                .append_dir_all(".", path)
                 .map_err(|e| format!("Failed to add directory to TAR.XZ: {}", e))?;
         }
     }
-    
-    let xz_encoder = builder.into_inner()
+
+    let xz_encoder = builder
+        .into_inner()
         .map_err(|e| format!("Failed to get XZ encoder: {}", e))?;
-    
-    xz_encoder.finish()
+
+    xz_encoder
+        .finish()
         .map_err(|e| format!("Failed to finalize TAR.XZ file: {}", e))?;
-    
+
     Ok(output_path.to_string_lossy().to_string())
 }
 
@@ -1417,72 +1641,75 @@ fn copy_dir_recursive(src: &Path, dest: &Path) -> Result<(), String> {
 // 7z archive info implementation
 async fn get_7z_info(archive_path: &Path) -> Result<ArchiveInfo, String> {
     let src = archive_path.to_path_buf();
-    let compressed_size = archive_path.metadata()
-        .map(|m| m.len())
-        .unwrap_or(0);
+    let compressed_size = archive_path.metadata().map(|m| m.len()).unwrap_or(0);
 
-    let archive_modified = archive_path.metadata()
+    let archive_modified = archive_path
+        .metadata()
         .and_then(|m| m.modified())
         .ok()
         .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
         .map(|d| d.as_secs())
         .unwrap_or(0);
-    let archive_created = archive_path.metadata()
+    let archive_created = archive_path
+        .metadata()
         .and_then(|m| m.created())
         .ok()
         .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
         .map(|d| d.as_secs())
         .unwrap_or(0);
 
-    let (files, total_files, total_directories, total_size) = tokio::task::spawn_blocking(move || {
-        let archive = sevenz_rust2::Archive::open(&src)
-            .map_err(|e| format!("Failed to open 7z archive: {}", e))?;
+    let (files, total_files, total_directories, total_size) =
+        tokio::task::spawn_blocking(move || {
+            let archive = sevenz_rust2::Archive::open(&src)
+                .map_err(|e| format!("Failed to open 7z archive: {}", e))?;
 
-        let mut total_files = 0u64;
-        let mut total_directories = 0u64;
-        let mut total_size = 0u64;
-        let mut files = Vec::new();
+            let mut total_files = 0u64;
+            let mut total_directories = 0u64;
+            let mut total_size = 0u64;
+            let mut files = Vec::new();
 
-        for entry in &archive.files {
-            let is_dir = entry.is_directory();
-            let size = entry.size();
-            let name_str = entry.name().to_string();
+            for entry in &archive.files {
+                let is_dir = entry.is_directory();
+                let size = entry.size();
+                let name_str = entry.name().to_string();
 
-            if is_dir {
-                total_directories += 1;
-            } else {
-                total_files += 1;
-                total_size += size;
+                if is_dir {
+                    total_directories += 1;
+                } else {
+                    total_files += 1;
+                    total_size += size;
+                }
+
+                let modified = {
+                    let nt = entry.last_modified_date();
+                    let sys_time: std::time::SystemTime = nt.into();
+                    sys_time
+                        .duration_since(std::time::UNIX_EPOCH)
+                        .map(|d| d.as_secs())
+                        .unwrap_or(0)
+                };
+
+                let entry_name = name_str
+                    .split('/')
+                    .filter(|s| !s.is_empty())
+                    .last()
+                    .unwrap_or("")
+                    .to_string();
+
+                files.push(ArchiveEntry {
+                    name: entry_name,
+                    path: name_str,
+                    size,
+                    compressed_size: 0,
+                    is_directory: is_dir,
+                    modified,
+                });
             }
 
-            let modified = {
-                let nt = entry.last_modified_date();
-                let sys_time: std::time::SystemTime = nt.into();
-                sys_time.duration_since(std::time::UNIX_EPOCH)
-                    .map(|d| d.as_secs())
-                    .unwrap_or(0)
-            };
-
-            let entry_name = name_str.split('/')
-                .filter(|s| !s.is_empty())
-                .last()
-                .unwrap_or("")
-                .to_string();
-
-            files.push(ArchiveEntry {
-                name: entry_name,
-                path: name_str,
-                size,
-                compressed_size: 0,
-                is_directory: is_dir,
-                modified,
-            });
-        }
-
-        Ok::<_, String>((files, total_files, total_directories, total_size))
-    })
-    .await
-    .map_err(|e| format!("Task join error: {}", e))??;
+            Ok::<_, String>((files, total_files, total_directories, total_size))
+        })
+        .await
+        .map_err(|e| format!("Task join error: {}", e))??;
 
     Ok(ArchiveInfo {
         format: CompressionFormat::SevenZ,
@@ -1524,8 +1751,7 @@ async fn extract_7z_selected(
     }
 
     tokio::task::spawn_blocking(move || {
-        let file = File::open(&src)
-            .map_err(|e| format!("Failed to open 7z file: {}", e))?;
+        let file = File::open(&src).map_err(|e| format!("Failed to open 7z file: {}", e))?;
 
         let reader = std::io::BufReader::new(file);
         let mut processed: u64 = 0;
@@ -1563,28 +1789,36 @@ async fn extract_7z_selected(
             }
 
             processed += 1;
-            let pct = if total > 0 { (processed as f64 / total as f64) * 100.0 } else { 100.0 };
-            let _ = app.emit("file-operation-progress", FileOperationProgress {
-                operation_id: oid.clone(),
-                operation_type: "extract".to_string(),
-                source_path: arc_str.clone(),
-                destination_path: Some(out_str.clone()),
-                current_file: entry_name,
-                bytes_processed: 0,
-                total_bytes: 0,
-                files_processed: processed,
-                total_files: total,
-                progress_percentage: pct,
-                speed_bytes_per_second: 0.0,
-                estimated_remaining_seconds: None,
-                status: OperationStatus::InProgress,
-                error_message: None,
-                copy_strategy: None,
-                hardware_acceleration: false,
-            });
+            let pct = if total > 0 {
+                (processed as f64 / total as f64) * 100.0
+            } else {
+                100.0
+            };
+            let _ = app.emit(
+                "file-operation-progress",
+                FileOperationProgress {
+                    operation_id: oid.clone(),
+                    operation_type: "extract".to_string(),
+                    source_path: arc_str.clone(),
+                    destination_path: Some(out_str.clone()),
+                    current_file: entry_name,
+                    bytes_processed: 0,
+                    total_bytes: 0,
+                    files_processed: processed,
+                    total_files: total,
+                    progress_percentage: pct,
+                    speed_bytes_per_second: 0.0,
+                    estimated_remaining_seconds: None,
+                    status: OperationStatus::InProgress,
+                    error_message: None,
+                    copy_strategy: None,
+                    hardware_acceleration: false,
+                },
+            );
 
             Ok(true)
-        }).map_err(|e| format!("Failed to extract 7z entries: {}", e))?;
+        })
+        .map_err(|e| format!("Failed to extract 7z entries: {}", e))?;
 
         Ok::<_, String>(())
     })
@@ -1632,19 +1866,28 @@ async fn extract_rar(archive_path: &Path, options: &ExtractionOptions) -> Result
                     let entry_path = entry.filename.to_string_lossy().to_string();
 
                     if entry_path.contains("..") {
-                        cursor = Some(header.skip().map_err(|e| format!("Failed to skip RAR entry: {}", e))?);
+                        cursor = Some(
+                            header
+                                .skip()
+                                .map_err(|e| format!("Failed to skip RAR entry: {}", e))?,
+                        );
                         continue;
                     }
 
                     let out_path = dest.join(&entry_path);
 
                     if out_path.exists() && !overwrite {
-                        cursor = Some(header.skip().map_err(|e| format!("Failed to skip RAR entry: {}", e))?);
+                        cursor = Some(
+                            header
+                                .skip()
+                                .map_err(|e| format!("Failed to skip RAR entry: {}", e))?,
+                        );
                         continue;
                     }
 
-                    cursor = Some(header.extract_to(&dest)
-                        .map_err(|e| format!("Failed to extract RAR entry '{}': {}", entry_path, e))?);
+                    cursor = Some(header.extract_to(&dest).map_err(|e| {
+                        format!("Failed to extract RAR entry '{}': {}", entry_path, e)
+                    })?);
                 }
                 Ok(None) => break,
                 Err(e) => return Err(format!("Failed to read RAR header: {}", e)),
@@ -1662,76 +1905,84 @@ async fn extract_rar(archive_path: &Path, options: &ExtractionOptions) -> Result
 // RAR archive info implementation
 async fn get_rar_info(archive_path: &Path) -> Result<ArchiveInfo, String> {
     let src = archive_path.to_path_buf();
-    let compressed_size = archive_path.metadata()
-        .map(|m| m.len())
-        .unwrap_or(0);
+    let compressed_size = archive_path.metadata().map(|m| m.len()).unwrap_or(0);
 
-    let archive_modified = archive_path.metadata()
+    let archive_modified = archive_path
+        .metadata()
         .and_then(|m| m.modified())
         .ok()
         .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
         .map(|d| d.as_secs())
         .unwrap_or(0);
-    let archive_created = archive_path.metadata()
+    let archive_created = archive_path
+        .metadata()
         .and_then(|m| m.created())
         .ok()
         .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
         .map(|d| d.as_secs())
         .unwrap_or(0);
 
-    let (files, total_files, total_directories, total_size, is_encrypted) = tokio::task::spawn_blocking(move || {
-        let archive = unrar::Archive::new(&src)
-            .open_for_listing()
-            .map_err(|e| format!("Failed to open RAR archive for listing: {}", e))?;
+    let (files, total_files, total_directories, total_size, is_encrypted) =
+        tokio::task::spawn_blocking(move || {
+            let archive = unrar::Archive::new(&src)
+                .open_for_listing()
+                .map_err(|e| format!("Failed to open RAR archive for listing: {}", e))?;
 
-        let mut total_files = 0u64;
-        let mut total_directories = 0u64;
-        let mut total_size = 0u64;
-        let mut files = Vec::new();
-        let mut is_encrypted = false;
+            let mut total_files = 0u64;
+            let mut total_directories = 0u64;
+            let mut total_size = 0u64;
+            let mut files = Vec::new();
+            let mut is_encrypted = false;
 
-        for entry_result in archive {
-            let entry = entry_result.map_err(|e| format!("Failed to read RAR entry: {}", e))?;
+            for entry_result in archive {
+                let entry = entry_result.map_err(|e| format!("Failed to read RAR entry: {}", e))?;
 
-            let is_dir = entry.is_directory();
-            let size = entry.unpacked_size as u64;
-            let entry_compressed_size = 0u64;
-            let full_path = entry.filename.to_string_lossy().to_string();
+                let is_dir = entry.is_directory();
+                let size = entry.unpacked_size as u64;
+                let entry_compressed_size = 0u64;
+                let full_path = entry.filename.to_string_lossy().to_string();
 
-            if entry.is_encrypted() {
-                is_encrypted = true;
+                if entry.is_encrypted() {
+                    is_encrypted = true;
+                }
+
+                if is_dir {
+                    total_directories += 1;
+                } else {
+                    total_files += 1;
+                    total_size += size;
+                }
+
+                let modified = msdos_time_to_unix(entry.file_time);
+
+                let entry_name = full_path
+                    .split('/')
+                    .chain(full_path.split('\\'))
+                    .filter(|s| !s.is_empty())
+                    .last()
+                    .unwrap_or("")
+                    .to_string();
+
+                files.push(ArchiveEntry {
+                    name: entry_name,
+                    path: full_path,
+                    size,
+                    compressed_size: entry_compressed_size,
+                    is_directory: is_dir,
+                    modified,
+                });
             }
 
-            if is_dir {
-                total_directories += 1;
-            } else {
-                total_files += 1;
-                total_size += size;
-            }
-
-            let modified = msdos_time_to_unix(entry.file_time);
-
-            let entry_name = full_path.split('/')
-                .chain(full_path.split('\\'))
-                .filter(|s| !s.is_empty())
-                .last()
-                .unwrap_or("")
-                .to_string();
-
-            files.push(ArchiveEntry {
-                name: entry_name,
-                path: full_path,
-                size,
-                compressed_size: entry_compressed_size,
-                is_directory: is_dir,
-                modified,
-            });
-        }
-
-        Ok::<_, String>((files, total_files, total_directories, total_size, is_encrypted))
-    })
-    .await
-    .map_err(|e| format!("Task join error: {}", e))??;
+            Ok::<_, String>((
+                files,
+                total_files,
+                total_directories,
+                total_size,
+                is_encrypted,
+            ))
+        })
+        .await
+        .map_err(|e| format!("Task join error: {}", e))??;
 
     Ok(ArchiveInfo {
         format: CompressionFormat::Rar,
@@ -1786,40 +2037,56 @@ async fn extract_rar_selected(
                     let entry_path = entry.filename.to_string_lossy().to_string();
 
                     if !selected.contains(&entry_path) || entry_path.contains("..") {
-                        cursor = Some(header.skip().map_err(|e| format!("Failed to skip RAR entry: {}", e))?);
+                        cursor = Some(
+                            header
+                                .skip()
+                                .map_err(|e| format!("Failed to skip RAR entry: {}", e))?,
+                        );
                         continue;
                     }
 
                     let out_path = dest.join(&entry_path);
 
                     if out_path.exists() && !overwrite {
-                        cursor = Some(header.skip().map_err(|e| format!("Failed to skip RAR entry: {}", e))?);
+                        cursor = Some(
+                            header
+                                .skip()
+                                .map_err(|e| format!("Failed to skip RAR entry: {}", e))?,
+                        );
                         continue;
                     }
 
-                    cursor = Some(header.extract_to(&dest)
-                        .map_err(|e| format!("Failed to extract RAR entry '{}': {}", entry_path, e))?);
+                    cursor = Some(header.extract_to(&dest).map_err(|e| {
+                        format!("Failed to extract RAR entry '{}': {}", entry_path, e)
+                    })?);
 
                     processed += 1;
-                    let pct = if total > 0 { (processed as f64 / total as f64) * 100.0 } else { 100.0 };
-                    let _ = app.emit("file-operation-progress", FileOperationProgress {
-                        operation_id: oid.clone(),
-                        operation_type: "extract".to_string(),
-                        source_path: arc_str.clone(),
-                        destination_path: Some(out_str.clone()),
-                        current_file: entry_path,
-                        bytes_processed: 0,
-                        total_bytes: 0,
-                        files_processed: processed,
-                        total_files: total,
-                        progress_percentage: pct,
-                        speed_bytes_per_second: 0.0,
-                        estimated_remaining_seconds: None,
-                        status: OperationStatus::InProgress,
-                        error_message: None,
-                        copy_strategy: None,
-                        hardware_acceleration: false,
-                    });
+                    let pct = if total > 0 {
+                        (processed as f64 / total as f64) * 100.0
+                    } else {
+                        100.0
+                    };
+                    let _ = app.emit(
+                        "file-operation-progress",
+                        FileOperationProgress {
+                            operation_id: oid.clone(),
+                            operation_type: "extract".to_string(),
+                            source_path: arc_str.clone(),
+                            destination_path: Some(out_str.clone()),
+                            current_file: entry_path,
+                            bytes_processed: 0,
+                            total_bytes: 0,
+                            files_processed: processed,
+                            total_files: total,
+                            progress_percentage: pct,
+                            speed_bytes_per_second: 0.0,
+                            estimated_remaining_seconds: None,
+                            status: OperationStatus::InProgress,
+                            error_message: None,
+                            copy_strategy: None,
+                            hardware_acceleration: false,
+                        },
+                    );
                 }
                 Ok(None) => break,
                 Err(e) => return Err(format!("Failed to read RAR header: {}", e)),
@@ -1839,18 +2106,21 @@ fn count_directory_contents(dir: &Path) -> Result<(u64, u64, u64), String> {
     let mut files = 0u64;
     let mut dirs = 0u64;
     let mut total_size = 0u64;
-    
-    fn count_recursive(dir: &Path, files: &mut u64, dirs: &mut u64, size: &mut u64) -> Result<(), String> {
-        for entry in fs::read_dir(dir)
-            .map_err(|e| format!("Failed to read directory: {}", e))? 
-        {
-            let entry = entry
-                .map_err(|e| format!("Failed to read entry: {}", e))?;
+
+    fn count_recursive(
+        dir: &Path,
+        files: &mut u64,
+        dirs: &mut u64,
+        size: &mut u64,
+    ) -> Result<(), String> {
+        for entry in fs::read_dir(dir).map_err(|e| format!("Failed to read directory: {}", e))? {
+            let entry = entry.map_err(|e| format!("Failed to read entry: {}", e))?;
             let path = entry.path();
-            
+
             if path.is_file() {
                 *files += 1;
-                *size += entry.metadata()
+                *size += entry
+                    .metadata()
                     .map_err(|e| format!("Failed to get metadata: {}", e))?
                     .len();
             } else if path.is_dir() {
@@ -1860,7 +2130,7 @@ fn count_directory_contents(dir: &Path) -> Result<(u64, u64, u64), String> {
         }
         Ok(())
     }
-    
+
     count_recursive(dir, &mut files, &mut dirs, &mut total_size)?;
     Ok((files, dirs, total_size))
 }
@@ -1894,9 +2164,9 @@ use super::is_hidden_file;
 #[cfg(test)]
 mod tests {
     use super::*;
-    use tempfile::tempdir;
     use std::fs::{self, File};
     use std::io::Write;
+    use tempfile::tempdir;
 
     // Helper to create a ZIP archive from a set of files for testing
     fn create_test_zip(zip_path: &Path, files: &[(&str, &[u8])]) {
@@ -1905,11 +2175,11 @@ mod tests {
 
         let file = File::create(zip_path).expect("Failed to create ZIP file");
         let mut zip = ZipWriter::new(file);
-        let options = FileOptions::default()
-            .compression_method(CompressionMethod::Deflated);
+        let options = FileOptions::default().compression_method(CompressionMethod::Deflated);
 
         for (name, content) in files {
-            zip.start_file(*name, options).expect("Failed to start ZIP entry");
+            zip.start_file(*name, options)
+                .expect("Failed to start ZIP entry");
             zip.write_all(content).expect("Failed to write ZIP content");
         }
         zip.finish().expect("Failed to finalize ZIP");
@@ -1944,11 +2214,19 @@ mod tests {
             ],
             &zip_path,
             &options,
-        ).await;
+        )
+        .await;
 
-        assert!(compress_result.is_ok(), "compress should succeed: {:?}", compress_result.err());
+        assert!(
+            compress_result.is_ok(),
+            "compress should succeed: {:?}",
+            compress_result.err()
+        );
         assert!(zip_path.exists(), "ZIP file should exist");
-        assert!(zip_path.metadata().unwrap().len() > 0, "ZIP should not be empty");
+        assert!(
+            zip_path.metadata().unwrap().len() > 0,
+            "ZIP should not be empty"
+        );
 
         // Extract
         let extract_options = ExtractionOptions {
@@ -1960,13 +2238,29 @@ mod tests {
         };
         let extract_result = extract_zip(&zip_path, &extract_options).await;
 
-        assert!(extract_result.is_ok(), "extract should succeed: {:?}", extract_result.err());
+        assert!(
+            extract_result.is_ok(),
+            "extract should succeed: {:?}",
+            extract_result.err()
+        );
 
         // Verify extracted files
-        assert!(extract_dir.join("hello.txt").exists(), "hello.txt should be extracted");
-        assert!(extract_dir.join("world.txt").exists(), "world.txt should be extracted");
-        assert_eq!(fs::read_to_string(extract_dir.join("hello.txt")).unwrap(), "Hello!");
-        assert_eq!(fs::read_to_string(extract_dir.join("world.txt")).unwrap(), "World!");
+        assert!(
+            extract_dir.join("hello.txt").exists(),
+            "hello.txt should be extracted"
+        );
+        assert!(
+            extract_dir.join("world.txt").exists(),
+            "world.txt should be extracted"
+        );
+        assert_eq!(
+            fs::read_to_string(extract_dir.join("hello.txt")).unwrap(),
+            "Hello!"
+        );
+        assert_eq!(
+            fs::read_to_string(extract_dir.join("world.txt")).unwrap(),
+            "World!"
+        );
     }
 
     #[tokio::test]
@@ -1975,15 +2269,22 @@ mod tests {
         let zip_path = temp.path().join("test_info.zip");
 
         // Create a test ZIP with known content
-        create_test_zip(&zip_path, &[
-            ("file1.txt", b"content1"),
-            ("file2.txt", b"content2"),
-            ("subdir/file3.txt", b"content3"),
-        ]);
+        create_test_zip(
+            &zip_path,
+            &[
+                ("file1.txt", b"content1"),
+                ("file2.txt", b"content2"),
+                ("subdir/file3.txt", b"content3"),
+            ],
+        );
 
         let result = get_archive_info(zip_path.to_string_lossy().to_string()).await;
 
-        assert!(result.is_ok(), "get_archive_info should succeed: {:?}", result.err());
+        assert!(
+            result.is_ok(),
+            "get_archive_info should succeed: {:?}",
+            result.err()
+        );
         let info = result.unwrap();
 
         assert_eq!(info.total_files, 3, "should have 3 files");
@@ -2013,12 +2314,12 @@ mod tests {
             include_hidden: false,
         };
 
-        let result = extract_zip(
-            Path::new("/nonexistent/archive.zip"),
-            &extract_options,
-        ).await;
+        let result = extract_zip(Path::new("/nonexistent/archive.zip"), &extract_options).await;
 
-        assert!(result.is_err(), "extracting nonexistent archive should fail");
+        assert!(
+            result.is_err(),
+            "extracting nonexistent archive should fail"
+        );
     }
 
     #[test]
@@ -2126,7 +2427,10 @@ mod tests {
 
         let result = is_archive(txt_path.to_string_lossy().to_string()).await;
         assert!(result.is_ok());
-        assert!(!result.unwrap(), "txt file should not be recognized as archive");
+        assert!(
+            !result.unwrap(),
+            "txt file should not be recognized as archive"
+        );
     }
 
     #[tokio::test]
@@ -2158,9 +2462,14 @@ mod tests {
             &[file_path.to_string_lossy().to_string()],
             &tar_gz_path,
             &options,
-        ).await;
+        )
+        .await;
 
-        assert!(compress_result.is_ok(), "tar.gz compress should succeed: {:?}", compress_result.err());
+        assert!(
+            compress_result.is_ok(),
+            "tar.gz compress should succeed: {:?}",
+            compress_result.err()
+        );
         assert!(tar_gz_path.exists(), "tar.gz file should exist");
 
         // Extract
@@ -2172,10 +2481,20 @@ mod tests {
             include_hidden: false,
         };
         let extract_result = extract_tar_gz(&tar_gz_path, &extract_options).await;
-        assert!(extract_result.is_ok(), "tar.gz extract should succeed: {:?}", extract_result.err());
+        assert!(
+            extract_result.is_ok(),
+            "tar.gz extract should succeed: {:?}",
+            extract_result.err()
+        );
 
-        assert!(extract_dir.join("data.txt").exists(), "data.txt should be extracted");
-        assert_eq!(fs::read_to_string(extract_dir.join("data.txt")).unwrap(), "tar gz test data");
+        assert!(
+            extract_dir.join("data.txt").exists(),
+            "data.txt should be extracted"
+        );
+        assert_eq!(
+            fs::read_to_string(extract_dir.join("data.txt")).unwrap(),
+            "tar gz test data"
+        );
     }
 
     #[tokio::test]
@@ -2187,7 +2506,8 @@ mod tests {
         let result = get_compression_info(vec![
             temp.path().join("a.txt").to_string_lossy().to_string(),
             temp.path().join("b.txt").to_string_lossy().to_string(),
-        ]).await;
+        ])
+        .await;
 
         assert!(result.is_ok(), "get_compression_info should succeed");
         let info = result.unwrap();
@@ -2214,10 +2534,12 @@ mod tests {
             let options = FileOptions::default().compression_method(CompressionMethod::Stored);
 
             // Entry with ".." path traversal
-            zip.start_file("../../etc/evil.txt", options).expect("Failed to start entry");
+            zip.start_file("../../etc/evil.txt", options)
+                .expect("Failed to start entry");
             zip.write_all(b"malicious").expect("Failed to write");
             // Normal entry
-            zip.start_file("safe.txt", options).expect("Failed to start entry");
+            zip.start_file("safe.txt", options)
+                .expect("Failed to start entry");
             zip.write_all(b"safe content").expect("Failed to write");
             zip.finish().expect("Failed to finalize");
         }
@@ -2230,13 +2552,21 @@ mod tests {
             include_hidden: true,
         };
         let result = extract_zip(&zip_path, &extract_options).await;
-        assert!(result.is_ok(), "extract should succeed but skip malicious entries");
+        assert!(
+            result.is_ok(),
+            "extract should succeed but skip malicious entries"
+        );
 
         // The safe file should be extracted
-        assert!(extract_dir.join("safe.txt").exists(), "safe.txt should be extracted");
+        assert!(
+            extract_dir.join("safe.txt").exists(),
+            "safe.txt should be extracted"
+        );
 
         // The malicious entry should NOT create a file outside the output directory
-        assert!(!temp.path().join("etc").join("evil.txt").exists(),
-            "path traversal entry should not be extracted outside output dir");
+        assert!(
+            !temp.path().join("etc").join("evil.txt").exists(),
+            "path traversal entry should not be extracted outside output dir"
+        );
     }
 }

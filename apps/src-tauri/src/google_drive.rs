@@ -1,9 +1,9 @@
-use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
-use std::sync::{Arc, LazyLock, RwLock};
-use std::path::PathBuf;
-use sha2::{Sha256, Digest};
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
+use serde::{Deserialize, Serialize};
+use sha2::{Digest, Sha256};
+use std::collections::HashMap;
+use std::path::PathBuf;
+use std::sync::{Arc, LazyLock, RwLock};
 use tracing::warn;
 
 // ---------------------------------------------------------------------------
@@ -247,7 +247,10 @@ fn load_gdrive_settings() -> Result<GoogleDriveSettings, String> {
         }
     } else {
         // Migrate plaintext secret to keychain
-        crate::secure_credentials::migrate_to_keychain("gdrive-client-secret", &settings.client_secret);
+        crate::secure_credentials::migrate_to_keychain(
+            "gdrive-client-secret",
+            &settings.client_secret,
+        );
     }
 
     if settings.client_id.is_empty() || settings.client_secret.is_empty() {
@@ -270,7 +273,8 @@ fn save_gdrive_settings(settings: &GoogleDriveSettings) -> Result<(), String> {
     };
     let path = gdrive_settings_path()?;
     let json = serde_json::to_string_pretty(&safe).map_err(|e| e.to_string())?;
-    std::fs::write(&path, json).map_err(|e| format!("Failed to write Google Drive settings: {}", e))?;
+    std::fs::write(&path, json)
+        .map_err(|e| format!("Failed to write Google Drive settings: {}", e))?;
     Ok(())
 }
 
@@ -381,11 +385,7 @@ fn to_file_entry(file: &GoogleDriveFile, account_id: &str) -> GDriveFileEntry {
     let ext = if is_dir {
         "directory".to_string()
     } else {
-        file.name
-            .rsplit('.')
-            .next()
-            .unwrap_or("")
-            .to_string()
+        file.name.rsplit('.').next().unwrap_or("").to_string()
     };
 
     GDriveFileEntry {
@@ -458,9 +458,7 @@ pub async fn gdrive_authenticate() -> Result<GDriveAccountInfo, String> {
     }
     #[cfg(target_os = "macos")]
     {
-        let _ = std::process::Command::new("open")
-            .arg(&auth_url)
-            .spawn();
+        let _ = std::process::Command::new("open").arg(&auth_url).spawn();
     }
     #[cfg(target_os = "linux")]
     {
@@ -650,7 +648,10 @@ pub async fn gdrive_list_files(
     if !resp.status().is_success() {
         let status = resp.status();
         let body = resp.text().await.unwrap_or_default();
-        return Err(format!("List files failed with status {}: {}", status, body));
+        return Err(format!(
+            "List files failed with status {}: {}",
+            status, body
+        ));
     }
 
     let file_list: DriveFileList = resp
@@ -659,7 +660,10 @@ pub async fn gdrive_list_files(
         .map_err(|e| format!("Failed to parse file list: {}", e))?;
 
     let files = file_list.files.unwrap_or_default();
-    Ok(files.iter().map(|f| to_file_entry(f, &account_id)).collect())
+    Ok(files
+        .iter()
+        .map(|f| to_file_entry(f, &account_id))
+        .collect())
 }
 
 /// 5. Download a file from Google Drive to a local path.
@@ -973,7 +977,10 @@ pub async fn get_gdrive_settings() -> Result<GoogleDriveSettings, String> {
 
 /// Save Google Drive OAuth credentials.
 #[tauri::command]
-pub async fn update_gdrive_settings(client_id: String, client_secret: String) -> Result<(), String> {
+pub async fn update_gdrive_settings(
+    client_id: String,
+    client_secret: String,
+) -> Result<(), String> {
     if client_id.trim().is_empty() || client_secret.trim().is_empty() {
         return Err("Both Client ID and Client Secret are required.".to_string());
     }

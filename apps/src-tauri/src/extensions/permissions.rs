@@ -11,18 +11,18 @@ pub enum ExtensionPermission {
     DirectoryCreate,
     DirectoryDelete,
     DirectoryList,
-    
+
     // UI permissions
     ShowNotifications,
     CreatePanels,
     ModifyUI,
     AccessClipboard,
-    
+
     // System permissions
     ExecuteCommands,
     NetworkAccess,
     SystemInfo,
-    
+
     // Native plugin permissions
     NativeInvoke,
 

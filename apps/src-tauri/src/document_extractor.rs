@@ -1,16 +1,17 @@
 // Phase 2: Document text extraction for PDF, DOCX, XLSX, PPTX
 // Extracts searchable text content from document formats using lightweight methods.
 
+use regex::Regex;
 use std::io::Read;
 use std::path::Path;
-use regex::Regex;
 use tracing::warn;
 
 /// Extract text from a document file based on its extension.
 /// Supports: .pdf (via pdf-extract), .docx, .xlsx, .pptx (via zip + XML parsing)
 pub fn extract_text(file_path: &str) -> Result<String, String> {
     let path = Path::new(file_path);
-    let extension = path.extension()
+    let extension = path
+        .extension()
         .map(|e| e.to_string_lossy().to_lowercase())
         .unwrap_or_default();
 
@@ -29,8 +30,7 @@ pub fn extract_text(file_path: &str) -> Result<String, String> {
 
 /// Extract text from PDF using pdf-extract crate
 fn extract_pdf_text(file_path: &str) -> Result<String, String> {
-    let bytes = std::fs::read(file_path)
-        .map_err(|e| format!("Failed to read PDF file: {}", e))?;
+    let bytes = std::fs::read(file_path).map_err(|e| format!("Failed to read PDF file: {}", e))?;
 
     match pdf_extract::extract_text_from_mem(&bytes) {
         Ok(text) => {
@@ -40,7 +40,10 @@ fn extract_pdf_text(file_path: &str) -> Result<String, String> {
         }
         Err(e) => {
             // PDF might be image-based (scanned) - return empty, Phase 3 handles OCR
-            warn!("[DocExtract] PDF text extraction failed for {} (may be scanned): {}", file_path, e);
+            warn!(
+                "[DocExtract] PDF text extraction failed for {} (may be scanned): {}",
+                file_path, e
+            );
             Ok(String::new())
         }
     }
@@ -48,18 +51,18 @@ fn extract_pdf_text(file_path: &str) -> Result<String, String> {
 
 /// Extract text from DOCX (Office Open XML) by reading word/document.xml from the zip
 fn extract_docx_text(file_path: &str) -> Result<String, String> {
-    let file = std::fs::File::open(file_path)
-        .map_err(|e| format!("Failed to open DOCX: {}", e))?;
+    let file = std::fs::File::open(file_path).map_err(|e| format!("Failed to open DOCX: {}", e))?;
 
-    let mut archive = zip::ZipArchive::new(file)
-        .map_err(|e| format!("Failed to read DOCX as ZIP: {}", e))?;
+    let mut archive =
+        zip::ZipArchive::new(file).map_err(|e| format!("Failed to read DOCX as ZIP: {}", e))?;
 
     let mut text = String::new();
 
     // Read word/document.xml
     if let Ok(mut doc_xml) = archive.by_name("word/document.xml") {
         let mut xml_content = String::new();
-        doc_xml.read_to_string(&mut xml_content)
+        doc_xml
+            .read_to_string(&mut xml_content)
             .map_err(|e| format!("Failed to read document.xml: {}", e))?;
         text.push_str(&strip_xml_tags(&xml_content));
     }
@@ -86,18 +89,18 @@ fn extract_docx_text(file_path: &str) -> Result<String, String> {
 
 /// Extract text from XLSX by reading xl/sharedStrings.xml from the zip
 fn extract_xlsx_text(file_path: &str) -> Result<String, String> {
-    let file = std::fs::File::open(file_path)
-        .map_err(|e| format!("Failed to open XLSX: {}", e))?;
+    let file = std::fs::File::open(file_path).map_err(|e| format!("Failed to open XLSX: {}", e))?;
 
-    let mut archive = zip::ZipArchive::new(file)
-        .map_err(|e| format!("Failed to read XLSX as ZIP: {}", e))?;
+    let mut archive =
+        zip::ZipArchive::new(file).map_err(|e| format!("Failed to read XLSX as ZIP: {}", e))?;
 
     let mut text = String::new();
 
     // Read shared strings
     if let Ok(mut shared_strings) = archive.by_name("xl/sharedStrings.xml") {
         let mut xml_content = String::new();
-        shared_strings.read_to_string(&mut xml_content)
+        shared_strings
+            .read_to_string(&mut xml_content)
             .map_err(|e| format!("Failed to read sharedStrings.xml: {}", e))?;
 
         // Extract <t> tag contents (shared string values)
@@ -139,11 +142,10 @@ fn extract_xlsx_text(file_path: &str) -> Result<String, String> {
 
 /// Extract text from PPTX by reading ppt/slides/slide*.xml files
 fn extract_pptx_text(file_path: &str) -> Result<String, String> {
-    let file = std::fs::File::open(file_path)
-        .map_err(|e| format!("Failed to open PPTX: {}", e))?;
+    let file = std::fs::File::open(file_path).map_err(|e| format!("Failed to open PPTX: {}", e))?;
 
-    let mut archive = zip::ZipArchive::new(file)
-        .map_err(|e| format!("Failed to read PPTX as ZIP: {}", e))?;
+    let mut archive =
+        zip::ZipArchive::new(file).map_err(|e| format!("Failed to read PPTX as ZIP: {}", e))?;
 
     let mut text = String::new();
 
@@ -201,8 +203,7 @@ fn extract_pptx_text(file_path: &str) -> Result<String, String> {
 /// Extract text from legacy .doc (Word 97-2003 binary format).
 /// Uses heuristic: scans the OLE2 binary for UTF-16LE and ASCII text runs.
 fn extract_doc_text(file_path: &str) -> Result<String, String> {
-    let bytes = std::fs::read(file_path)
-        .map_err(|e| format!("Failed to read .doc file: {}", e))?;
+    let bytes = std::fs::read(file_path).map_err(|e| format!("Failed to read .doc file: {}", e))?;
 
     // Check OLE2 magic number
     if bytes.len() < 8 || bytes[0..8] != [0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1] {
@@ -222,7 +223,10 @@ fn extract_doc_text(file_path: &str) -> Result<String, String> {
     };
 
     if text.trim().is_empty() {
-        Err("Could not extract text from .doc file. File may be encrypted or image-only.".to_string())
+        Err(
+            "Could not extract text from .doc file. File may be encrypted or image-only."
+                .to_string(),
+        )
     } else {
         Ok(clean_extracted_text(&text))
     }
@@ -230,8 +234,7 @@ fn extract_doc_text(file_path: &str) -> Result<String, String> {
 
 /// Extract text from legacy .xls (Excel 97-2003 binary format).
 fn extract_xls_text(file_path: &str) -> Result<String, String> {
-    let bytes = std::fs::read(file_path)
-        .map_err(|e| format!("Failed to read .xls file: {}", e))?;
+    let bytes = std::fs::read(file_path).map_err(|e| format!("Failed to read .xls file: {}", e))?;
 
     if bytes.len() < 8 || bytes[0..8] != [0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1] {
         return Err("Not a valid .xls file (missing OLE2 signature)".to_string());
@@ -254,8 +257,7 @@ fn extract_xls_text(file_path: &str) -> Result<String, String> {
 
 /// Extract text from legacy .ppt (PowerPoint 97-2003 binary format).
 fn extract_ppt_text(file_path: &str) -> Result<String, String> {
-    let bytes = std::fs::read(file_path)
-        .map_err(|e| format!("Failed to read .ppt file: {}", e))?;
+    let bytes = std::fs::read(file_path).map_err(|e| format!("Failed to read .ppt file: {}", e))?;
 
     if bytes.len() < 8 || bytes[0..8] != [0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1] {
         return Err("Not a valid .ppt file (missing OLE2 signature)".to_string());
@@ -294,18 +296,24 @@ fn extract_rtf_text(file_path: &str) -> Result<String, String> {
                 if let Some(&next) = chars.peek() {
                     if next == '\'' {
                         // Hex escape \'xx - skip 3 chars
-                        chars.next(); chars.next(); chars.next();
+                        chars.next();
+                        chars.next();
+                        chars.next();
                     } else if next.is_alphabetic() {
                         while chars.peek().map_or(false, |c| c.is_alphabetic()) {
                             chars.next();
                         }
                         // Skip optional numeric parameter
-                        if chars.peek() == Some(&'-') { chars.next(); }
+                        if chars.peek() == Some(&'-') {
+                            chars.next();
+                        }
                         while chars.peek().map_or(false, |c| c.is_ascii_digit()) {
                             chars.next();
                         }
                         // Skip trailing space
-                        if chars.peek() == Some(&' ') { chars.next(); }
+                        if chars.peek() == Some(&' ') {
+                            chars.next();
+                        }
                     } else {
                         chars.next(); // skip escaped char like \\ \{ \}
                     }
@@ -347,7 +355,7 @@ fn extract_utf16le_runs(bytes: &[u8]) -> String {
                 || (code_unit >= 0x2000 && code_unit <= 0x9FFF)   // CJK + symbols
                 || (code_unit >= 0xAC00 && code_unit <= 0xD7AF)   // Korean
                 || (code_unit >= 0x3000 && code_unit <= 0x30FF)   // CJK punctuation + Katakana
-                || (code_unit >= 0xFF00 && code_unit <= 0xFFEF);  // Fullwidth forms
+                || (code_unit >= 0xFF00 && code_unit <= 0xFFEF); // Fullwidth forms
 
             if is_text && code_unit != 0 {
                 current_run.push(ch);
@@ -451,7 +459,8 @@ fn clean_extracted_text(text: &str) -> String {
 /// Extract slide number from filename like "ppt/slides/slide1.xml"
 fn extract_slide_number(name: &str) -> u32 {
     let num_regex = Regex::new(r"slide(\d+)\.xml").unwrap();
-    num_regex.captures(name)
+    num_regex
+        .captures(name)
         .and_then(|c| c.get(1))
         .and_then(|m| m.as_str().parse().ok())
         .unwrap_or(0)

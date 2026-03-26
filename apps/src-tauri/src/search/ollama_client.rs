@@ -156,11 +156,7 @@ impl OllamaClient {
     }
 
     /// POST `/api/embeddings` and return the embedding vector.
-    pub async fn get_embedding(
-        &self,
-        model: &str,
-        text: &str,
-    ) -> Result<Vec<f32>, String> {
+    pub async fn get_embedding(&self, model: &str, text: &str) -> Result<Vec<f32>, String> {
         let url = format!("{}/api/embeddings", OLLAMA_BASE_URL);
 
         let body = OllamaEmbeddingRequest {
@@ -386,9 +382,6 @@ mod tests {
 
     #[test]
     fn test_build_url_tags() {
-        assert_eq!(
-            build_url("/api/tags"),
-            "http://localhost:11434/api/tags"
-        );
+        assert_eq!(build_url("/api/tags"), "http://localhost:11434/api/tags");
     }
 }

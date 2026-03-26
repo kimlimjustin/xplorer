@@ -11,8 +11,9 @@ use tauri::Manager;
 
 // ─── In-memory cache ─────────────────────────────────────────────────────────
 
-static EXTENSION_STORAGE_CACHE: LazyLock<Mutex<Option<HashMap<String, HashMap<String, serde_json::Value>>>>> =
-    LazyLock::new(|| Mutex::new(None));
+static EXTENSION_STORAGE_CACHE: LazyLock<
+    Mutex<Option<HashMap<String, HashMap<String, serde_json::Value>>>>,
+> = LazyLock::new(|| Mutex::new(None));
 
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -66,15 +67,17 @@ fn load_extension_storage_from_disk(
 /// Acquire the cache lock and ensure it is populated from disk.
 fn ensure_extension_storage_cache(
     app_handle: &tauri::AppHandle,
-) -> Result<MutexGuard<'static, Option<HashMap<String, HashMap<String, serde_json::Value>>>>, String> {
-    let mut guard = EXTENSION_STORAGE_CACHE.lock().unwrap_or_else(|e| e.into_inner());
+) -> Result<MutexGuard<'static, Option<HashMap<String, HashMap<String, serde_json::Value>>>>, String>
+{
+    let mut guard = EXTENSION_STORAGE_CACHE
+        .lock()
+        .unwrap_or_else(|e| e.into_inner());
     if guard.is_none() {
         let data = load_extension_storage_from_disk(app_handle)?;
         *guard = Some(data);
     }
     Ok(guard)
 }
-
 
 #[tauri::command]
 pub async fn get_extension_storage(
@@ -103,7 +106,9 @@ pub async fn set_extension_storage(
     let path = extension_storage_path(&app_handle)?;
     let data_to_write = {
         let mut guard = ensure_extension_storage_cache(&app_handle)?;
-        let map = guard.as_mut().ok_or_else(|| "Storage cache not initialized".to_string())?;
+        let map = guard
+            .as_mut()
+            .ok_or_else(|| "Storage cache not initialized".to_string())?;
         let ext_map = map.entry(extension_id).or_insert_with(HashMap::new);
         ext_map.insert(key, value);
         serde_json::to_string_pretty(map).ok()
@@ -125,7 +130,9 @@ pub async fn delete_extension_storage(
     let path = extension_storage_path(&app_handle)?;
     let data_to_write = {
         let mut guard = ensure_extension_storage_cache(&app_handle)?;
-        let map = guard.as_mut().ok_or_else(|| "Storage cache not initialized".to_string())?;
+        let map = guard
+            .as_mut()
+            .ok_or_else(|| "Storage cache not initialized".to_string())?;
         if let Some(ext_map) = map.get_mut(&extension_id) {
             ext_map.remove(&key);
             if ext_map.is_empty() {

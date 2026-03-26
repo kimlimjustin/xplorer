@@ -27,20 +27,25 @@ pub struct QueryResult {
 }
 
 fn configure_connection(conn: &Connection) -> rusqlite::Result<()> {
-    conn.execute_batch("
+    conn.execute_batch(
+        "
         PRAGMA journal_mode = WAL;
         PRAGMA synchronous = normal;
         PRAGMA temp_store = memory;
         PRAGMA mmap_size = 268435456;
         PRAGMA cache_size = -32000;
         PRAGMA foreign_keys = ON;
-    ")
+    ",
+    )
 }
 
 fn open_readonly(path: &str) -> Result<Connection, String> {
     validate_file_path(path)?;
-    let conn = Connection::open_with_flags(path, OpenFlags::SQLITE_OPEN_READ_ONLY | OpenFlags::SQLITE_OPEN_NO_MUTEX)
-        .map_err(|e| format!("Failed to open database: {}", e))?;
+    let conn = Connection::open_with_flags(
+        path,
+        OpenFlags::SQLITE_OPEN_READ_ONLY | OpenFlags::SQLITE_OPEN_NO_MUTEX,
+    )
+    .map_err(|e| format!("Failed to open database: {}", e))?;
     configure_connection(&conn).map_err(|e| format!("Failed to configure database: {}", e))?;
     Ok(conn)
 }
@@ -69,7 +74,9 @@ fn is_read_only_query(sql: &str) -> bool {
     }
     let upper = s.to_uppercase();
     let allowed_prefixes = ["SELECT ", "PRAGMA ", "EXPLAIN ", "WITH "];
-    allowed_prefixes.iter().any(|prefix| upper.starts_with(prefix))
+    allowed_prefixes
+        .iter()
+        .any(|prefix| upper.starts_with(prefix))
 }
 
 #[tauri::command]
@@ -217,10 +224,7 @@ pub async fn query_sqlite_table(
 }
 
 #[tauri::command]
-pub async fn execute_sqlite_query(
-    path: String,
-    query: String,
-) -> Result<QueryResult, String> {
+pub async fn execute_sqlite_query(path: String, query: String) -> Result<QueryResult, String> {
     if !is_read_only_query(&query) {
         return Err("Only SELECT, PRAGMA, EXPLAIN, and WITH queries are allowed".to_string());
     }
@@ -287,7 +291,9 @@ mod tests {
         assert!(is_read_only_query("  select count(*) from orders  "));
         assert!(is_read_only_query("PRAGMA table_info(users)"));
         assert!(is_read_only_query("EXPLAIN SELECT * FROM users"));
-        assert!(is_read_only_query("WITH cte AS (SELECT 1) SELECT * FROM cte"));
+        assert!(is_read_only_query(
+            "WITH cte AS (SELECT 1) SELECT * FROM cte"
+        ));
         assert!(is_read_only_query("-- comment\nSELECT 1"));
         assert!(is_read_only_query("/* block */  SELECT 1"));
 

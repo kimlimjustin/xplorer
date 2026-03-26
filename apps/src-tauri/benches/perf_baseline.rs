@@ -1,7 +1,7 @@
-use criterion::{black_box, criterion_group, criterion_main, Criterion, BenchmarkId};
+use criterion::{black_box, criterion_group, criterion_main, BenchmarkId, Criterion};
+use std::collections::VecDeque;
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::collections::VecDeque;
 use tempfile::TempDir;
 
 // ============================================================
@@ -25,28 +25,30 @@ fn bench_sort_by_lowercase(c: &mut Criterion) {
                     .enumerate()
                     .map(|(i, name)| (i % 5 == 0, name.clone()))
                     .collect();
-                v.sort_by(|a, b| {
-                    match (a.0, b.0) {
-                        (true, false) => std::cmp::Ordering::Less,
-                        (false, true) => std::cmp::Ordering::Greater,
-                        _ => a.1.to_lowercase().cmp(&b.1.to_lowercase()),
-                    }
+                v.sort_by(|a, b| match (a.0, b.0) {
+                    (true, false) => std::cmp::Ordering::Less,
+                    (false, true) => std::cmp::Ordering::Greater,
+                    _ => a.1.to_lowercase().cmp(&b.1.to_lowercase()),
                 });
                 black_box(&v);
             });
         });
-        group.bench_with_input(BenchmarkId::new("sort_by_cached_key", size), &size, |b, &n| {
-            let names = make_file_names(n);
-            b.iter(|| {
-                let mut v: Vec<(bool, String)> = names
-                    .iter()
-                    .enumerate()
-                    .map(|(i, name)| (i % 5 == 0, name.clone()))
-                    .collect();
-                v.sort_by_cached_key(|f| (!f.0, f.1.to_lowercase()));
-                black_box(&v);
-            });
-        });
+        group.bench_with_input(
+            BenchmarkId::new("sort_by_cached_key", size),
+            &size,
+            |b, &n| {
+                let names = make_file_names(n);
+                b.iter(|| {
+                    let mut v: Vec<(bool, String)> = names
+                        .iter()
+                        .enumerate()
+                        .map(|(i, name)| (i % 5 == 0, name.clone()))
+                        .collect();
+                    v.sort_by_cached_key(|f| (!f.0, f.1.to_lowercase()));
+                    black_box(&v);
+                });
+            },
+        );
     }
     group.finish();
 }
@@ -143,16 +145,20 @@ fn cosine_f64_fold(a: &[f32], b: &[f32]) -> f64 {
     if a.len() != b.len() || a.is_empty() {
         return 0.0;
     }
-    let (dot, mag_a, mag_b) = a.iter().zip(b.iter()).fold(
-        (0.0_f64, 0.0_f64, 0.0_f64),
-        |(dot, ma, mb), (&x, &y)| {
-            let x = x as f64;
-            let y = y as f64;
-            (dot + x * y, ma + x * x, mb + y * y)
-        },
-    );
+    let (dot, mag_a, mag_b) =
+        a.iter()
+            .zip(b.iter())
+            .fold((0.0_f64, 0.0_f64, 0.0_f64), |(dot, ma, mb), (&x, &y)| {
+                let x = x as f64;
+                let y = y as f64;
+                (dot + x * y, ma + x * x, mb + y * y)
+            });
     let denom = mag_a.sqrt() * mag_b.sqrt();
-    if denom == 0.0 { 0.0 } else { dot / denom }
+    if denom == 0.0 {
+        0.0
+    } else {
+        dot / denom
+    }
 }
 
 fn cosine_f32_indexed(a: &[f32], b: &[f32]) -> f64 {
@@ -170,7 +176,11 @@ fn cosine_f32_indexed(a: &[f32], b: &[f32]) -> f64 {
         mag_b += y * y;
     }
     let denom = (mag_a.sqrt() * mag_b.sqrt()) as f64;
-    if denom == 0.0 { 0.0 } else { (dot as f64) / denom }
+    if denom == 0.0 {
+        0.0
+    } else {
+        (dot as f64) / denom
+    }
 }
 
 fn bench_cosine(c: &mut Criterion) {

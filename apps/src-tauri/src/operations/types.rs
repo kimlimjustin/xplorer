@@ -1,5 +1,5 @@
-use std::time::{Instant, SystemTime};
 use serde::{Deserialize, Serialize};
+use std::time::{Instant, SystemTime};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct FileEntry {

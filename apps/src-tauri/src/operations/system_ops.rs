@@ -69,7 +69,9 @@ pub async fn list_drives() -> Result<Vec<DriveInfo>, String> {
         if let Ok(entries) = std::fs::read_dir("/Volumes") {
             for entry in entries.flatten() {
                 let name = entry.file_name().to_string_lossy().to_string();
-                if name == "Macintosh HD" { continue; }
+                if name == "Macintosh HD" {
+                    continue;
+                }
                 let path = entry.path().to_string_lossy().to_string();
                 drives.push(DriveInfo {
                     letter: String::new(),
@@ -114,14 +116,21 @@ pub async fn eject_volume(path: String) -> Result<(), String> {
     #[cfg(target_os = "macos")]
     {
         if !path.starts_with("/Volumes/") {
-            return Err(format!("Path '{}' is not a valid mount point (must be under /Volumes/)", path));
+            return Err(format!(
+                "Path '{}' is not a valid mount point (must be under /Volumes/)",
+                path
+            ));
         }
     }
 
     #[cfg(target_os = "linux")]
     {
-        if !path.starts_with("/dev/") && !path.starts_with("/mnt/") && !path.starts_with("/media/") {
-            return Err(format!("Path '{}' is not a valid mount point (must be under /dev/, /mnt/, or /media/)", path));
+        if !path.starts_with("/dev/") && !path.starts_with("/mnt/") && !path.starts_with("/media/")
+        {
+            return Err(format!(
+                "Path '{}' is not a valid mount point (must be under /dev/, /mnt/, or /media/)",
+                path
+            ));
         }
     }
 
@@ -133,7 +142,10 @@ pub async fn eject_volume(path: String) -> Result<(), String> {
             || path_bytes[1] != b':'
             || (path_bytes.len() > 2 && path_bytes[2] != b'\\')
         {
-            return Err(format!("Path '{}' is not a valid drive (must match drive letter pattern like D:\\)", path));
+            return Err(format!(
+                "Path '{}' is not a valid drive (must match drive letter pattern like D:\\)",
+                path
+            ));
         }
     }
 
@@ -169,8 +181,8 @@ pub async fn eject_volume(path: String) -> Result<(), String> {
     #[cfg(windows)]
     {
         use std::ffi::OsStr;
-        use std::os::windows::ffi::OsStrExt;
         use std::iter::once;
+        use std::os::windows::ffi::OsStrExt;
 
         // Derive the drive letter root (e.g. "D:\") from the path
         let root = if path.len() >= 2 && path.as_bytes()[1] == b':' {
@@ -181,7 +193,10 @@ pub async fn eject_volume(path: String) -> Result<(), String> {
 
         // Open the volume with GENERIC_READ | GENERIC_WRITE access
         let volume_path = format!("\\\\.\\{}", root.trim_end_matches('\\'));
-        let wide: Vec<u16> = OsStr::new(&volume_path).encode_wide().chain(once(0)).collect();
+        let wide: Vec<u16> = OsStr::new(&volume_path)
+            .encode_wide()
+            .chain(once(0))
+            .collect();
 
         #[link(name = "kernel32")]
         extern "system" {
@@ -268,8 +283,8 @@ unsafe fn windows_drives_bitmask() -> u32 {
 #[cfg(windows)]
 fn get_volume_label(root: &str) -> Option<String> {
     use std::ffi::OsStr;
-    use std::os::windows::ffi::OsStrExt;
     use std::iter::once;
+    use std::os::windows::ffi::OsStrExt;
 
     #[link(name = "kernel32")]
     extern "system" {
@@ -302,14 +317,20 @@ fn get_volume_label(root: &str) -> Option<String> {
     };
 
     if ok != 0 {
-        let len = name_buf.iter().position(|&c| c == 0).unwrap_or(name_buf.len());
+        let len = name_buf
+            .iter()
+            .position(|&c| c == 0)
+            .unwrap_or(name_buf.len());
         let label = String::from_utf16_lossy(&name_buf[..len]);
-        if label.is_empty() { None } else { Some(label) }
+        if label.is_empty() {
+            None
+        } else {
+            Some(label)
+        }
     } else {
         None
     }
 }
-
 
 #[derive(serde::Serialize)]
 pub struct FileSearchMatch {
@@ -322,9 +343,9 @@ pub struct FileSearchMatch {
 /// NOTE: `env` and `find` were intentionally removed — `env` can execute arbitrary
 /// commands (e.g. `env /bin/sh -c …`), and `find` can execute via `-exec`.
 const SAFE_COMMANDS: &[&str] = &[
-    "ls", "dir", "cat", "head", "tail", "echo", "pwd", "cd", "whoami",
-    "hostname", "uname", "date", "which", "where", "type", "grep",
-    "wc", "sort", "uniq", "file", "stat", "df", "du", "printenv", "set",
+    "ls", "dir", "cat", "head", "tail", "echo", "pwd", "cd", "whoami", "hostname", "uname", "date",
+    "which", "where", "type", "grep", "wc", "sort", "uniq", "file", "stat", "df", "du", "printenv",
+    "set",
 ];
 
 /// Shell metacharacters that indicate chaining, piping, or injection.
@@ -411,11 +432,11 @@ fn walk_files(root: &PathBuf, out: &mut Vec<PathBuf>) -> Result<(), String> {
 #[command]
 pub async fn open_file(path: String) -> Result<(), String> {
     let path = std::path::Path::new(&path);
-    
+
     if !path.exists() {
         return Err("File does not exist".to_string());
     }
-    
+
     // Use the OS default application to open the file
     #[cfg(windows)]
     {
@@ -424,7 +445,7 @@ pub async fn open_file(path: String) -> Result<(), String> {
             .spawn()
             .map_err(|e| format!("Failed to open file: {}", e))?;
     }
-    
+
     #[cfg(target_os = "macos")]
     {
         std::process::Command::new("open")
@@ -432,7 +453,7 @@ pub async fn open_file(path: String) -> Result<(), String> {
             .spawn()
             .map_err(|e| format!("Failed to open file: {}", e))?;
     }
-    
+
     #[cfg(target_os = "linux")]
     {
         std::process::Command::new("xdg-open")
@@ -440,24 +461,24 @@ pub async fn open_file(path: String) -> Result<(), String> {
             .spawn()
             .map_err(|e| format!("Failed to open file: {}", e))?;
     }
-    
+
     Ok(())
 }
 
 #[command]
 pub async fn open_in_terminal(path: String) -> Result<(), String> {
     let path = std::path::Path::new(&path);
-    
+
     if !path.exists() {
         return Err("Path does not exist".to_string());
     }
-    
+
     let dir_path = if path.is_dir() {
         path
     } else {
         path.parent().unwrap_or(path)
     };
-    
+
     #[cfg(windows)]
     {
         // Use quoted path to prevent command injection via directory names containing shell metacharacters
@@ -468,7 +489,7 @@ pub async fn open_in_terminal(path: String) -> Result<(), String> {
             .spawn()
             .map_err(|e| format!("Failed to open terminal: {}", e))?;
     }
-    
+
     #[cfg(target_os = "macos")]
     {
         std::process::Command::new("open")
@@ -476,16 +497,16 @@ pub async fn open_in_terminal(path: String) -> Result<(), String> {
             .spawn()
             .map_err(|e| format!("Failed to open terminal: {}", e))?;
     }
-    
+
     #[cfg(target_os = "linux")]
     {
-        // Try different terminal emulators      
+        // Try different terminal emulators
         let terminals = ["gnome-terminal", "konsole", "xterm", "alacritty", "kitty"];
         let mut success = false;
-        
+
         for terminal in &terminals {
             if let Ok(_) = std::process::Command::new(terminal)
-                .arg("--working-directory")   
+                .arg("--working-directory")
                 .arg(&dir_path)
                 .spawn()
             {
@@ -493,12 +514,12 @@ pub async fn open_in_terminal(path: String) -> Result<(), String> {
                 break;
             }
         }
-        
+
         if !success {
             return Err("No suitable terminal emulator found".to_string());
         }
     }
-    
+
     Ok(())
 }
 
@@ -508,7 +529,10 @@ pub async fn open_in_terminal(path: String) -> Result<(), String> {
 // at the Tauri permission layer (capabilities) to restrict which frontends can invoke
 // this command. Do NOT expose this to untrusted or sandboxed extension contexts.
 #[command]
-pub async fn execute_command(command: String, working_dir: String) -> Result<CommandExecutionResult, String> {
+pub async fn execute_command(
+    command: String,
+    working_dir: String,
+) -> Result<CommandExecutionResult, String> {
     let working_dir_path = std::path::Path::new(&working_dir);
     if !working_dir_path.exists() || !working_dir_path.is_dir() {
         return Err("Working directory does not exist or is not a directory".to_string());
@@ -533,7 +557,7 @@ pub async fn execute_command(command: String, working_dir: String) -> Result<Com
 pub async fn execute_command_stream(
     app_handle: tauri::AppHandle,
     command: String,
-    working_dir: String
+    working_dir: String,
 ) -> Result<(), String> {
     let result = execute_command(command, working_dir).await?;
     if !result.stdout.is_empty() {
@@ -757,7 +781,10 @@ pub async fn find_files(pattern: String, search_path: String) -> Result<Vec<Stri
 }
 
 #[command]
-pub async fn search_in_files(pattern: String, search_path: String) -> Result<Vec<FileSearchMatch>, String> {
+pub async fn search_in_files(
+    pattern: String,
+    search_path: String,
+) -> Result<Vec<FileSearchMatch>, String> {
     let root = PathBuf::from(search_path);
     if !root.exists() || !root.is_dir() {
         return Err("Search path does not exist or is not a directory".to_string());
@@ -770,11 +797,15 @@ pub async fn search_in_files(pattern: String, search_path: String) -> Result<Vec
     let mut matches = Vec::new();
 
     for file_path in files {
-        let Ok(metadata) = std::fs::metadata(&file_path) else { continue };
+        let Ok(metadata) = std::fs::metadata(&file_path) else {
+            continue;
+        };
         if metadata.len() > 1_000_000 {
             continue;
         }
-        let Ok(content) = std::fs::read_to_string(&file_path) else { continue };
+        let Ok(content) = std::fs::read_to_string(&file_path) else {
+            continue;
+        };
         for (index, line) in content.lines().enumerate() {
             if line.to_lowercase().contains(&pattern_lower) {
                 matches.push(FileSearchMatch {
@@ -841,8 +872,8 @@ pub async fn show_in_folder(path: String) -> Result<(), String> {
 pub struct DirectoryProblem {
     pub path: String,
     pub name: String,
-    pub severity: String,  // "error", "warning", "info"
-    pub category: String,  // "empty", "large", "broken", "naming", "permission", "junk"
+    pub severity: String, // "error", "warning", "info"
+    pub category: String, // "empty", "large", "broken", "naming", "permission", "junk"
     pub message: String,
     pub size: Option<u64>,
 }
@@ -855,7 +886,11 @@ pub struct DiagnosisResult {
 }
 
 #[command]
-pub async fn diagnose_directory(path: String, skip_hidden: Option<bool>, skip_gitignored: Option<bool>) -> Result<DiagnosisResult, String> {
+pub async fn diagnose_directory(
+    path: String,
+    skip_hidden: Option<bool>,
+    skip_gitignored: Option<bool>,
+) -> Result<DiagnosisResult, String> {
     let root = PathBuf::from(&path);
     if !root.exists() || !root.is_dir() {
         return Err("Path does not exist or is not a directory".to_string());
@@ -870,24 +905,36 @@ pub async fn diagnose_directory(path: String, skip_hidden: Option<bool>, skip_gi
         let mut scanned_dirs: u64 = 0;
 
         // Track names for case-collision detection
-        let mut seen_names: std::collections::HashMap<String, String> = std::collections::HashMap::new();
+        let mut seen_names: std::collections::HashMap<String, String> =
+            std::collections::HashMap::new();
 
         let junk_files: std::collections::HashSet<&str> = [
-            "thumbs.db", "desktop.ini", ".ds_store",
-            ".spotlight-v100", ".trashes",
-            ".fseventsd", "pagefile.sys", "hiberfil.sys", "swapfile.sys",
-        ].iter().copied().collect();
+            "thumbs.db",
+            "desktop.ini",
+            ".ds_store",
+            ".spotlight-v100",
+            ".trashes",
+            ".fseventsd",
+            "pagefile.sys",
+            "hiberfil.sys",
+            "swapfile.sys",
+        ]
+        .iter()
+        .copied()
+        .collect();
 
-        let junk_extensions: std::collections::HashSet<&str> = [
-            "tmp", "temp", "bak", "old", "orig", "swp", "swo",
-        ].iter().copied().collect();
+        let junk_extensions: std::collections::HashSet<&str> =
+            ["tmp", "temp", "bak", "old", "orig", "swp", "swo"]
+                .iter()
+                .copied()
+                .collect();
 
         // Use the `ignore` crate walker — respects .gitignore and hidden files
         let walker = ignore::WalkBuilder::new(&path)
             .max_depth(Some(5))
             .follow_links(false)
-            .hidden(skip_hidden)           // skip hidden files/dirs by default
-            .git_ignore(skip_gitignored)   // respect .gitignore by default
+            .hidden(skip_hidden) // skip hidden files/dirs by default
+            .git_ignore(skip_gitignored) // respect .gitignore by default
             .git_global(skip_gitignored)
             .git_exclude(skip_gitignored)
             .build();
@@ -915,7 +962,8 @@ pub async fn diagnose_directory(path: String, skip_hidden: Option<bool>, skip_gi
 
             let entry_path = entry.path();
             let p = entry_path.to_string_lossy().to_string();
-            let name = entry_path.file_name()
+            let name = entry_path
+                .file_name()
                 .map(|n| n.to_string_lossy().to_string())
                 .unwrap_or_default();
 
@@ -928,7 +976,8 @@ pub async fn diagnose_directory(path: String, skip_hidden: Option<bool>, skip_gi
             if ft.is_symlink() {
                 if !entry_path.exists() {
                     problems.push(DirectoryProblem {
-                        path: p, name,
+                        path: p,
+                        name,
                         severity: "error".to_string(),
                         category: "broken".to_string(),
                         message: "Broken symlink — target does not exist".to_string(),
@@ -945,7 +994,8 @@ pub async fn diagnose_directory(path: String, skip_hidden: Option<bool>, skip_gi
                 if let Ok(mut rd) = std::fs::read_dir(entry_path) {
                     if rd.next().is_none() {
                         problems.push(DirectoryProblem {
-                            path: p.clone(), name: name.clone(),
+                            path: p.clone(),
+                            name: name.clone(),
                             severity: "info".to_string(),
                             category: "empty".to_string(),
                             message: "Empty directory".to_string(),
@@ -959,10 +1009,14 @@ pub async fn diagnose_directory(path: String, skip_hidden: Option<bool>, skip_gi
                 if let Some(existing) = seen_names.get(&name_lower) {
                     if existing != &name {
                         problems.push(DirectoryProblem {
-                            path: p, name: name.clone(),
+                            path: p,
+                            name: name.clone(),
                             severity: "warning".to_string(),
                             category: "naming".to_string(),
-                            message: format!("Name collision (case-insensitive): \"{}\" vs \"{}\"", name, existing),
+                            message: format!(
+                                "Name collision (case-insensitive): \"{}\" vs \"{}\"",
+                                name, existing
+                            ),
                             size: None,
                         });
                     }
@@ -983,7 +1037,8 @@ pub async fn diagnose_directory(path: String, skip_hidden: Option<bool>, skip_gi
             // Empty files
             if size == 0 {
                 problems.push(DirectoryProblem {
-                    path: p.clone(), name: name.clone(),
+                    path: p.clone(),
+                    name: name.clone(),
                     severity: "info".to_string(),
                     category: "empty".to_string(),
                     message: "Empty file (0 bytes)".to_string(),
@@ -995,7 +1050,8 @@ pub async fn diagnose_directory(path: String, skip_hidden: Option<bool>, skip_gi
             if size > 500 * 1024 * 1024 {
                 let size_mb = size / (1024 * 1024);
                 problems.push(DirectoryProblem {
-                    path: p.clone(), name: name.clone(),
+                    path: p.clone(),
+                    name: name.clone(),
                     severity: "warning".to_string(),
                     category: "large".to_string(),
                     message: format!("Very large file ({} MB)", size_mb),
@@ -1006,14 +1062,16 @@ pub async fn diagnose_directory(path: String, skip_hidden: Option<bool>, skip_gi
             // Junk/temporary files
             let name_lower = name.to_lowercase();
             let is_junk = junk_files.contains(name_lower.as_str());
-            let ext_lower = entry_path.extension()
+            let ext_lower = entry_path
+                .extension()
                 .map(|e| e.to_string_lossy().to_lowercase())
                 .unwrap_or_default();
             let is_junk_ext = junk_extensions.contains(ext_lower.as_str());
 
             if is_junk || is_junk_ext {
                 problems.push(DirectoryProblem {
-                    path: p.clone(), name: name.clone(),
+                    path: p.clone(),
+                    name: name.clone(),
                     severity: "info".to_string(),
                     category: "junk".to_string(),
                     message: if is_junk {
@@ -1028,7 +1086,8 @@ pub async fn diagnose_directory(path: String, skip_hidden: Option<bool>, skip_gi
             // Long file names (>200 chars)
             if name.len() > 200 {
                 problems.push(DirectoryProblem {
-                    path: p.clone(), name: name.clone(),
+                    path: p.clone(),
+                    name: name.clone(),
                     severity: "warning".to_string(),
                     category: "naming".to_string(),
                     message: format!("Very long filename ({} chars)", name.len()),
@@ -1037,30 +1096,38 @@ pub async fn diagnose_directory(path: String, skip_hidden: Option<bool>, skip_gi
             }
 
             // Special characters in filename
-            let has_special = name.chars().any(|c| {
-                matches!(c, '<' | '>' | ':' | '"' | '|' | '?' | '*')
-                || (c as u32) < 32
-            });
+            let has_special = name
+                .chars()
+                .any(|c| matches!(c, '<' | '>' | ':' | '"' | '|' | '?' | '*') || (c as u32) < 32);
             if has_special {
                 problems.push(DirectoryProblem {
-                    path: p.clone(), name: name.clone(),
+                    path: p.clone(),
+                    name: name.clone(),
                     severity: "warning".to_string(),
                     category: "naming".to_string(),
-                    message: "Filename contains special characters that may cause issues".to_string(),
+                    message: "Filename contains special characters that may cause issues"
+                        .to_string(),
                     size: Some(size),
                 });
             }
 
             // ── Filename grammar / style checks ──
-            let stem = entry_path.file_stem()
+            let stem = entry_path
+                .file_stem()
                 .map(|s| s.to_string_lossy().to_string())
                 .unwrap_or_default();
 
             // Leading or trailing spaces/dots
-            if name != name.trim() || stem.ends_with('.') || stem.starts_with('.') && stem.len() > 1 && stem.chars().nth(1).map_or(false, |c| c == ' ') {
+            if name != name.trim()
+                || stem.ends_with('.')
+                || stem.starts_with('.')
+                    && stem.len() > 1
+                    && stem.chars().nth(1).map_or(false, |c| c == ' ')
+            {
                 if name != name.trim() {
                     problems.push(DirectoryProblem {
-                        path: p.clone(), name: name.clone(),
+                        path: p.clone(),
+                        name: name.clone(),
                         severity: "warning".to_string(),
                         category: "naming".to_string(),
                         message: "Filename has leading or trailing spaces".to_string(),
@@ -1072,7 +1139,8 @@ pub async fn diagnose_directory(path: String, skip_hidden: Option<bool>, skip_gi
             // Consecutive spaces
             if name.contains("  ") {
                 problems.push(DirectoryProblem {
-                    path: p.clone(), name: name.clone(),
+                    path: p.clone(),
+                    name: name.clone(),
                     severity: "info".to_string(),
                     category: "naming".to_string(),
                     message: "Filename contains consecutive spaces".to_string(),
@@ -1083,7 +1151,8 @@ pub async fn diagnose_directory(path: String, skip_hidden: Option<bool>, skip_gi
             // Mixed separators (both hyphens and underscores in same stem)
             if stem.contains('-') && stem.contains('_') {
                 problems.push(DirectoryProblem {
-                    path: p.clone(), name: name.clone(),
+                    path: p.clone(),
+                    name: name.clone(),
                     severity: "info".to_string(),
                     category: "naming".to_string(),
                     message: "Mixed separators (both - and _ in filename)".to_string(),
@@ -1108,7 +1177,8 @@ pub async fn diagnose_directory(path: String, skip_hidden: Option<bool>, skip_gi
                 // camelCase/PascalCase in code files is normal, so only flag if spaces present
                 if has_upper_after_lower && stem.contains(' ') {
                     problems.push(DirectoryProblem {
-                        path: p.clone(), name: name.clone(),
+                        path: p.clone(),
+                        name: name.clone(),
                         severity: "info".to_string(),
                         category: "naming".to_string(),
                         message: "Inconsistent casing in filename".to_string(),
@@ -1123,7 +1193,8 @@ pub async fn diagnose_directory(path: String, skip_hidden: Option<bool>, skip_gi
                 let dot_count = name.chars().filter(|&c| c == '.').count();
                 if dot_count >= 3 {
                     problems.push(DirectoryProblem {
-                        path: p.clone(), name: name.clone(),
+                        path: p.clone(),
+                        name: name.clone(),
                         severity: "info".to_string(),
                         category: "naming".to_string(),
                         message: format!("Multiple extensions ({} dots in filename)", dot_count),
@@ -1149,7 +1220,8 @@ pub async fn diagnose_directory(path: String, skip_hidden: Option<bool>, skip_gi
                     || stem_lower.contains(" copy ");
                 if is_copy_pattern {
                     problems.push(DirectoryProblem {
-                        path: p.clone(), name: name.clone(),
+                        path: p.clone(),
+                        name: name.clone(),
                         severity: "info".to_string(),
                         category: "naming".to_string(),
                         message: "Looks like a duplicate/copy filename".to_string(),
@@ -1162,10 +1234,14 @@ pub async fn diagnose_directory(path: String, skip_hidden: Option<bool>, skip_gi
             if let Some(existing) = seen_names.get(&name_lower) {
                 if existing != &name {
                     problems.push(DirectoryProblem {
-                        path: p, name: name.clone(),
+                        path: p,
+                        name: name.clone(),
                         severity: "warning".to_string(),
                         category: "naming".to_string(),
-                        message: format!("Name collision (case-insensitive): \"{}\" vs \"{}\"", name, existing),
+                        message: format!(
+                            "Name collision (case-insensitive): \"{}\" vs \"{}\"",
+                            name, existing
+                        ),
                         size: Some(size),
                     });
                 }

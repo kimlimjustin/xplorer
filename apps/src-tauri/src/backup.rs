@@ -45,11 +45,14 @@ struct BackupProgress {
 }
 
 fn compute_sha256(path: &Path) -> Result<String, String> {
-    let mut file = fs::File::open(path).map_err(|e| format!("Failed to open file for hashing: {e}"))?;
+    let mut file =
+        fs::File::open(path).map_err(|e| format!("Failed to open file for hashing: {e}"))?;
     let mut hasher = Sha256::new();
     let mut buffer = [0u8; 8192];
     loop {
-        let n = file.read(&mut buffer).map_err(|e| format!("Failed to read file for hashing: {e}"))?;
+        let n = file
+            .read(&mut buffer)
+            .map_err(|e| format!("Failed to read file for hashing: {e}"))?;
         if n == 0 {
             break;
         }
@@ -63,11 +66,16 @@ fn collect_files(source_dir: &Path) -> Result<Vec<(PathBuf, u64, u64)>, String> 
     for entry in WalkDir::new(source_dir).into_iter().filter_map(|e| e.ok()) {
         let path = entry.path().to_path_buf();
         if path.is_file() {
-            let metadata = fs::metadata(&path).map_err(|e| format!("Failed to read metadata for {}: {e}", path.display()))?;
+            let metadata = fs::metadata(&path)
+                .map_err(|e| format!("Failed to read metadata for {}: {e}", path.display()))?;
             let size = metadata.len();
             let modified = metadata
                 .modified()
-                .map(|t| t.duration_since(std::time::UNIX_EPOCH).unwrap_or_default().as_secs())
+                .map(|t| {
+                    t.duration_since(std::time::UNIX_EPOCH)
+                        .unwrap_or_default()
+                        .as_secs()
+                })
                 .unwrap_or(0);
             files.push((path, size, modified));
         }
@@ -115,7 +123,11 @@ fn load_manifest_by_id(backup_dir: &str, name: &str, backup_id: &str) -> Option<
 }
 
 fn emit_progress(app: &AppHandle, phase: &str, current: u64, total: u64, current_file: &str) {
-    let percentage = if total > 0 { (current as f64 / total as f64) * 100.0 } else { 0.0 };
+    let percentage = if total > 0 {
+        (current as f64 / total as f64) * 100.0
+    } else {
+        0.0
+    };
     let _ = app.emit(
         "backup-progress",
         BackupProgress {
@@ -143,7 +155,8 @@ pub async fn create_backup(
     let timestamp = Local::now().format("%Y-%m-%d_%H%M%S").to_string();
     let backup_id = timestamp.clone();
     let backup_path = get_backup_base_dir(&backup_dir, &name).join(&backup_id);
-    fs::create_dir_all(&backup_path).map_err(|e| format!("Failed to create backup directory: {e}"))?;
+    fs::create_dir_all(&backup_path)
+        .map_err(|e| format!("Failed to create backup directory: {e}"))?;
 
     emit_progress(&app, "scanning", 0, 0, "");
 
@@ -194,10 +207,22 @@ pub async fn create_backup(
         let needs_copy = !is_incremental || is_new || is_modified;
 
         if needs_copy {
-            files_to_copy.push((file_path.clone(), relative_normalized.clone(), is_new, is_modified));
+            files_to_copy.push((
+                file_path.clone(),
+                relative_normalized.clone(),
+                is_new,
+                is_modified,
+            ));
         }
 
-        manifest_entries.push((relative_normalized, *size, *modified, is_new, is_modified, needs_copy));
+        manifest_entries.push((
+            relative_normalized,
+            *size,
+            *modified,
+            is_new,
+            is_modified,
+            needs_copy,
+        ));
 
         if (i + 1) % 100 == 0 {
             emit_progress(&app, "comparing", (i + 1) as u64, total_files, &relative);
@@ -210,9 +235,11 @@ pub async fn create_backup(
     for (i, (file_path, relative, _is_new, _is_modified)) in files_to_copy.iter().enumerate() {
         let dest = backup_path.join(relative);
         if let Some(parent) = dest.parent() {
-            fs::create_dir_all(parent).map_err(|e| format!("Failed to create directory {}: {e}", parent.display()))?;
+            fs::create_dir_all(parent)
+                .map_err(|e| format!("Failed to create directory {}: {e}", parent.display()))?;
         }
-        fs::copy(file_path, &dest).map_err(|e| format!("Failed to copy {}: {e}", file_path.display()))?;
+        fs::copy(file_path, &dest)
+            .map_err(|e| format!("Failed to copy {}: {e}", file_path.display()))?;
 
         if (i + 1) % 10 == 0 || i + 1 == files_to_copy.len() {
             emit_progress(&app, "copying", (i + 1) as u64, copy_total, relative);
@@ -222,7 +249,9 @@ pub async fn create_backup(
     emit_progress(&app, "hashing", 0, total_files, "");
 
     let mut final_entries = Vec::new();
-    for (i, (relative, size, modified, is_new, is_modified, needs_copy)) in manifest_entries.into_iter().enumerate() {
+    for (i, (relative, size, modified, is_new, is_modified, needs_copy)) in
+        manifest_entries.into_iter().enumerate()
+    {
         let hash = if needs_copy {
             let dest = backup_path.join(&relative);
             compute_sha256(&dest).unwrap_or_default()
@@ -260,12 +289,18 @@ pub async fn create_backup(
         source_dir: source_dir.clone(),
         files: final_entries,
         total_size,
-        backup_type: if is_incremental { "incremental".to_string() } else { "full".to_string() },
+        backup_type: if is_incremental {
+            "incremental".to_string()
+        } else {
+            "full".to_string()
+        },
     };
 
-    let manifest_json = serde_json::to_string_pretty(&manifest).map_err(|e| format!("Failed to serialize manifest: {e}"))?;
+    let manifest_json = serde_json::to_string_pretty(&manifest)
+        .map_err(|e| format!("Failed to serialize manifest: {e}"))?;
     let manifest_path = backup_path.join("manifest.json");
-    fs::write(&manifest_path, manifest_json).map_err(|e| format!("Failed to write manifest: {e}"))?;
+    fs::write(&manifest_path, manifest_json)
+        .map_err(|e| format!("Failed to write manifest: {e}"))?;
 
     emit_progress(&app, "complete", total_files, total_files, "");
 
@@ -310,7 +345,8 @@ pub async fn restore_backup(
     restore_to: String,
 ) -> Result<(), String> {
     let restore_path = Path::new(&restore_to);
-    fs::create_dir_all(restore_path).map_err(|e| format!("Failed to create restore directory: {e}"))?;
+    fs::create_dir_all(restore_path)
+        .map_err(|e| format!("Failed to create restore directory: {e}"))?;
 
     let target_manifest = load_manifest_by_id(&backup_dir, &name, &backup_id)
         .ok_or_else(|| format!("Backup not found: {backup_id}"))?;
@@ -355,9 +391,11 @@ pub async fn restore_backup(
         }
 
         if let Some(parent) = dest_file.parent() {
-            fs::create_dir_all(parent).map_err(|e| format!("Failed to create directory {}: {e}", parent.display()))?;
+            fs::create_dir_all(parent)
+                .map_err(|e| format!("Failed to create directory {}: {e}", parent.display()))?;
         }
-        fs::copy(&source_file, &dest_file).map_err(|e| format!("Failed to restore {}: {e}", relative_path))?;
+        fs::copy(&source_file, &dest_file)
+            .map_err(|e| format!("Failed to restore {}: {e}", relative_path))?;
 
         count += 1;
         if count % 10 == 0 || count == total {
@@ -412,7 +450,9 @@ fn build_restore_chain(
     }
 
     if !found_full {
-        return Err("Could not find a full backup in the chain. Backup data may be corrupted.".to_string());
+        return Err(
+            "Could not find a full backup in the chain. Backup data may be corrupted.".to_string(),
+        );
     }
 
     chain.reverse();
@@ -438,11 +478,15 @@ pub async fn delete_backup(
             let mut has_dependent_incrementals = false;
             if let Ok(entries) = fs::read_dir(&base) {
                 for entry in entries.filter_map(|e| e.ok()) {
-                    if entry.path().is_dir() && *entry.file_name().to_string_lossy() > *backup_id.as_str() {
+                    if entry.path().is_dir()
+                        && *entry.file_name().to_string_lossy() > *backup_id.as_str()
+                    {
                         let dep_manifest_path = entry.path().join("manifest.json");
                         if dep_manifest_path.exists() {
                             if let Ok(content) = fs::read_to_string(&dep_manifest_path) {
-                                if let Ok(dep_manifest) = serde_json::from_str::<BackupManifest>(&content) {
+                                if let Ok(dep_manifest) =
+                                    serde_json::from_str::<BackupManifest>(&content)
+                                {
                                     if dep_manifest.backup_type == "incremental" {
                                         has_dependent_incrementals = true;
                                         break;

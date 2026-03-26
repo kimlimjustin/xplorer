@@ -96,10 +96,7 @@ impl ContextualRanker {
         }
 
         // -- Recent access boost (decays with position) -----------------------
-        let max_depth = self
-            .config
-            .max_recent_depth
-            .min(context.recent_files.len());
+        let max_depth = self.config.max_recent_depth.min(context.recent_files.len());
         for (position, recent_path) in context.recent_files[..max_depth].iter().enumerate() {
             let norm_recent = normalize_path(recent_path);
             if norm_recent == norm_result {
@@ -378,12 +375,12 @@ mod tests {
         let boost_low = ranker.compute_context_boost("/docs/notes.txt", &ctx);
         let boost_zero = ranker.compute_context_boost("/docs/other.txt", &ctx);
 
-        assert!(boost_high > boost_low, "Higher access count -> larger boost");
-        assert!(boost_low > 0.0, "Count of 1 should still produce a boost");
         assert!(
-            boost_zero < f64::EPSILON,
-            "No access count -> no boost"
+            boost_high > boost_low,
+            "Higher access count -> larger boost"
         );
+        assert!(boost_low > 0.0, "Count of 1 should still produce a boost");
+        assert!(boost_zero < f64::EPSILON, "No access count -> no boost");
     }
 
     // -- test_no_context_no_boost ---------------------------------------------
@@ -471,8 +468,7 @@ mod tests {
             "/c/d.txt".to_string(), // duplicate
         ];
 
-        let ctx =
-            ContextualRanker::build_context_from_recents(&recents, Some("C:\\Users\\me"));
+        let ctx = ContextualRanker::build_context_from_recents(&recents, Some("C:\\Users\\me"));
 
         // Deduplication: should have 3 unique entries, order preserved.
         assert_eq!(ctx.recent_files.len(), 3);
@@ -500,8 +496,7 @@ mod tests {
             access_counts: HashMap::new(),
         };
 
-        let boost =
-            ranker.compute_context_boost("D:\\Projects\\Web\\src\\app.js", &ctx);
+        let boost = ranker.compute_context_boost("D:\\Projects\\Web\\src\\app.js", &ctx);
         assert!(
             boost > 0.0,
             "Windows paths should be normalized and produce a boost, got {}",

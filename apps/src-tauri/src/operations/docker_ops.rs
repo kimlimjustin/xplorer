@@ -22,16 +22,13 @@ pub struct ImageInfo {
 }
 
 fn run_docker_command(args: &[&str]) -> Result<String, String> {
-    let output = StdCommand::new("docker")
-        .args(args)
-        .output()
-        .map_err(|e| {
-            if e.kind() == std::io::ErrorKind::NotFound {
-                "Docker CLI not found. Please install Docker and ensure it is in your PATH.".to_string()
-            } else {
-                format!("Failed to execute docker command: {}", e)
-            }
-        })?;
+    let output = StdCommand::new("docker").args(args).output().map_err(|e| {
+        if e.kind() == std::io::ErrorKind::NotFound {
+            "Docker CLI not found. Please install Docker and ensure it is in your PATH.".to_string()
+        } else {
+            format!("Failed to execute docker command: {}", e)
+        }
+    })?;
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr).to_string();
@@ -44,23 +41,67 @@ fn run_docker_command(args: &[&str]) -> Result<String, String> {
 fn parse_container_json(line: &str) -> Option<ContainerInfo> {
     let v: serde_json::Value = serde_json::from_str(line).ok()?;
     Some(ContainerInfo {
-        id: v.get("ID").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-        name: v.get("Names").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-        image: v.get("Image").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-        status: v.get("Status").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-        ports: v.get("Ports").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-        created: v.get("CreatedAt").and_then(|v| v.as_str()).unwrap_or("").to_string(),
+        id: v
+            .get("ID")
+            .and_then(|v| v.as_str())
+            .unwrap_or("")
+            .to_string(),
+        name: v
+            .get("Names")
+            .and_then(|v| v.as_str())
+            .unwrap_or("")
+            .to_string(),
+        image: v
+            .get("Image")
+            .and_then(|v| v.as_str())
+            .unwrap_or("")
+            .to_string(),
+        status: v
+            .get("Status")
+            .and_then(|v| v.as_str())
+            .unwrap_or("")
+            .to_string(),
+        ports: v
+            .get("Ports")
+            .and_then(|v| v.as_str())
+            .unwrap_or("")
+            .to_string(),
+        created: v
+            .get("CreatedAt")
+            .and_then(|v| v.as_str())
+            .unwrap_or("")
+            .to_string(),
     })
 }
 
 fn parse_image_json(line: &str) -> Option<ImageInfo> {
     let v: serde_json::Value = serde_json::from_str(line).ok()?;
     Some(ImageInfo {
-        id: v.get("ID").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-        repository: v.get("Repository").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-        tag: v.get("Tag").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-        size: v.get("Size").and_then(|v| v.as_str()).unwrap_or("").to_string(),
-        created: v.get("CreatedSince").and_then(|v| v.as_str()).unwrap_or("").to_string(),
+        id: v
+            .get("ID")
+            .and_then(|v| v.as_str())
+            .unwrap_or("")
+            .to_string(),
+        repository: v
+            .get("Repository")
+            .and_then(|v| v.as_str())
+            .unwrap_or("")
+            .to_string(),
+        tag: v
+            .get("Tag")
+            .and_then(|v| v.as_str())
+            .unwrap_or("")
+            .to_string(),
+        size: v
+            .get("Size")
+            .and_then(|v| v.as_str())
+            .unwrap_or("")
+            .to_string(),
+        created: v
+            .get("CreatedSince")
+            .and_then(|v| v.as_str())
+            .unwrap_or("")
+            .to_string(),
     })
 }
 

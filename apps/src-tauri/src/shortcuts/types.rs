@@ -98,7 +98,7 @@ pub struct ShortcutBinding {
     pub enabled: bool,
     pub profile: String,
     pub description: Option<String>,
-    pub global: bool, // Whether this is a global system shortcut
+    pub global: bool,            // Whether this is a global system shortcut
     pub key_combination: String, // Combined representation
 }
 

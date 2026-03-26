@@ -8,15 +8,13 @@
 // bursts of writes (e.g. saves, builds) are collapsed into a single
 // callback invocation.
 
-use notify::{
-    event::ModifyKind, EventKind, RecommendedWatcher, RecursiveMode, Watcher,
-};
+use notify::{event::ModifyKind, EventKind, RecommendedWatcher, RecursiveMode, Watcher};
 use std::collections::HashSet;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{mpsc, Arc, Mutex};
 use std::time::{Duration, Instant};
-use tracing::{warn, error};
+use tracing::{error, warn};
 
 // ===== Public types =====
 
@@ -181,8 +179,14 @@ impl FileWatcher {
         let canonical = match std::fs::canonicalize(path) {
             Ok(p) => p,
             Err(e) => {
-                warn!("[search::watcher] cannot canonicalize {}: {e}", path.display());
-                return Err(format!("Path does not exist or is inaccessible: {}", path.display()));
+                warn!(
+                    "[search::watcher] cannot canonicalize {}: {e}",
+                    path.display()
+                );
+                return Err(format!(
+                    "Path does not exist or is inaccessible: {}",
+                    path.display()
+                ));
             }
         };
 
@@ -198,14 +202,13 @@ impl FileWatcher {
             let mut watcher_guard = self.watcher.lock().unwrap_or_else(|e| e.into_inner());
             match watcher_guard.as_mut() {
                 Some(w) => {
-                    w.watch(&canonical, RecursiveMode::Recursive)
-                        .map_err(|e| {
-                            warn!(
-                                "[search::watcher] failed to watch {}: {e}",
-                                canonical.display()
-                            );
-                            format!("Failed to watch {}: {e}", canonical.display())
-                        })?;
+                    w.watch(&canonical, RecursiveMode::Recursive).map_err(|e| {
+                        warn!(
+                            "[search::watcher] failed to watch {}: {e}",
+                            canonical.display()
+                        );
+                        format!("Failed to watch {}: {e}", canonical.display())
+                    })?;
                 }
                 None => {
                     return Err("Watcher has not been started yet. Call start() first.".into());
@@ -232,14 +235,13 @@ impl FileWatcher {
         {
             let mut watcher_guard = self.watcher.lock().unwrap_or_else(|e| e.into_inner());
             if let Some(w) = watcher_guard.as_mut() {
-                w.unwatch(&canonical)
-                    .map_err(|e| {
-                        warn!(
-                            "[search::watcher] failed to unwatch {}: {e}",
-                            canonical.display()
-                        );
-                        format!("Failed to unwatch {}: {e}", canonical.display())
-                    })?;
+                w.unwatch(&canonical).map_err(|e| {
+                    warn!(
+                        "[search::watcher] failed to unwatch {}: {e}",
+                        canonical.display()
+                    );
+                    format!("Failed to unwatch {}: {e}", canonical.display())
+                })?;
             }
         }
 
@@ -481,9 +483,7 @@ mod tests {
     #[test]
     fn classifies_modify_event() {
         let event = notify::Event {
-            kind: EventKind::Modify(ModifyKind::Data(
-                notify::event::DataChange::Content,
-            )),
+            kind: EventKind::Modify(ModifyKind::Data(notify::event::DataChange::Content)),
             paths: vec![PathBuf::from("/tmp/edited.txt")],
             attrs: Default::default(),
         };
@@ -534,9 +534,7 @@ mod tests {
     #[test]
     fn classifies_rename_event_with_two_paths() {
         let event = notify::Event {
-            kind: EventKind::Modify(ModifyKind::Name(
-                notify::event::RenameMode::Both,
-            )),
+            kind: EventKind::Modify(ModifyKind::Name(notify::event::RenameMode::Both)),
             paths: vec![
                 PathBuf::from("/tmp/old_name.txt"),
                 PathBuf::from("/tmp/new_name.txt"),
@@ -557,9 +555,7 @@ mod tests {
     #[test]
     fn classifies_rename_event_single_path_as_modified() {
         let event = notify::Event {
-            kind: EventKind::Modify(ModifyKind::Name(
-                notify::event::RenameMode::To,
-            )),
+            kind: EventKind::Modify(ModifyKind::Name(notify::event::RenameMode::To)),
             paths: vec![PathBuf::from("/tmp/appeared.txt")],
             attrs: Default::default(),
         };
@@ -613,7 +609,10 @@ mod tests {
             "Dll".to_string(),
             "so".to_string(),
         ]);
-        let guard = watcher.blacklisted_extensions.lock().unwrap_or_else(|e| e.into_inner());
+        let guard = watcher
+            .blacklisted_extensions
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
         assert!(guard.contains("exe"));
         assert!(guard.contains("dll"));
         assert!(guard.contains("so"));

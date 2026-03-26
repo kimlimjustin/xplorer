@@ -181,19 +181,34 @@ impl Reranker {
     /// are min-max normalised to [0, 1] before weighting.
     ///
     /// Returns `(id, fused_score)` pairs sorted by score descending.
-    pub fn convex_combination_fuse(&self, scored_lists: &[(Vec<(String, f64)>, f64)]) -> Vec<(String, f64)> {
+    pub fn convex_combination_fuse(
+        &self,
+        scored_lists: &[(Vec<(String, f64)>, f64)],
+    ) -> Vec<(String, f64)> {
         let mut combined: HashMap<String, f64> = HashMap::new();
 
         for (results, weight) in scored_lists {
-            if results.is_empty() { continue; }
+            if results.is_empty() {
+                continue;
+            }
 
             // Min-max normalize scores
-            let min_score = results.iter().map(|(_, s)| *s).fold(f64::INFINITY, f64::min);
-            let max_score = results.iter().map(|(_, s)| *s).fold(f64::NEG_INFINITY, f64::max);
+            let min_score = results
+                .iter()
+                .map(|(_, s)| *s)
+                .fold(f64::INFINITY, f64::min);
+            let max_score = results
+                .iter()
+                .map(|(_, s)| *s)
+                .fold(f64::NEG_INFINITY, f64::max);
             let range = max_score - min_score;
 
             for (path, score) in results {
-                let normalized = if range > 0.0 { (score - min_score) / range } else { 1.0 };
+                let normalized = if range > 0.0 {
+                    (score - min_score) / range
+                } else {
+                    1.0
+                };
                 *combined.entry(path.clone()).or_insert(0.0) += weight * normalized;
             }
         }

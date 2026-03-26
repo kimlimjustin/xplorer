@@ -84,7 +84,10 @@ pub fn load_native_plugin(lib_path: &str) -> Result<String, String> {
     let plugin = NativePlugin::load(lib_path)?;
     let plugin_id = plugin.id.clone();
 
-    info!("[NativePlugin] Loaded plugin '{}' ({})", plugin.name, plugin.id);
+    info!(
+        "[NativePlugin] Loaded plugin '{}' ({})",
+        plugin.name, plugin.id
+    );
 
     let mut registry = NATIVE_PLUGIN_REGISTRY
         .write()
@@ -108,7 +111,10 @@ pub fn unload_native_plugin(plugin_id: &str) -> Result<(), String> {
         drop(plugin);
         Ok(())
     } else {
-        Err(format!("Native plugin '{}' not found in registry", plugin_id))
+        Err(format!(
+            "Native plugin '{}' not found in registry",
+            plugin_id
+        ))
     }
 }
 

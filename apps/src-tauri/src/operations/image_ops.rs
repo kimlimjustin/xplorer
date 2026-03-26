@@ -1,9 +1,9 @@
+use image::imageops::FilterType;
+use image::{self, DynamicImage, GenericImageView, ImageFormat};
+use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::Path;
 use tauri::{command, AppHandle, Emitter};
-use serde::{Deserialize, Serialize};
-use image::{self, DynamicImage, ImageFormat, GenericImageView};
-use image::imageops::FilterType;
 
 use crate::operations::validate_file_path;
 
@@ -62,7 +62,10 @@ fn parse_image_format(format_str: &str) -> Result<ImageFormat, String> {
         "BMP" => Ok(ImageFormat::Bmp),
         "TIFF" | "TIF" => Ok(ImageFormat::Tiff),
         "GIF" => Ok(ImageFormat::Gif),
-        _ => Err(format!("Unsupported image format: {}. Supported: PNG, JPEG, WebP, BMP, TIFF, GIF", format_str)),
+        _ => Err(format!(
+            "Unsupported image format: {}. Supported: PNG, JPEG, WebP, BMP, TIFF, GIF",
+            format_str
+        )),
     }
 }
 
@@ -171,8 +174,7 @@ pub async fn resize_image(
         return Err("Width and height must be greater than 0".to_string());
     }
 
-    let img = image::open(&path)
-        .map_err(|e| format!("Failed to open image '{}': {}", path, e))?;
+    let img = image::open(&path).map_err(|e| format!("Failed to open image '{}': {}", path, e))?;
 
     let (orig_w, orig_h) = img.dimensions();
     let (new_w, new_h) = compute_resize_dimensions(orig_w, orig_h, width, height, maintain_aspect);
@@ -203,8 +205,7 @@ pub async fn convert_image(
 
     let format = parse_image_format(&output_format)?;
 
-    let img = image::open(&path)
-        .map_err(|e| format!("Failed to open image '{}': {}", path, e))?;
+    let img = image::open(&path).map_err(|e| format!("Failed to open image '{}': {}", path, e))?;
 
     save_image_with_quality(&img, &output_path, format, Some(quality))?;
 
@@ -222,8 +223,7 @@ pub async fn get_image_info(path: String) -> Result<ImageInfo, String> {
     let format = image::ImageFormat::from_path(&path)
         .map_err(|e| format!("Failed to detect image format: {}", e))?;
 
-    let img = image::open(&path)
-        .map_err(|e| format!("Failed to open image '{}': {}", path, e))?;
+    let img = image::open(&path).map_err(|e| format!("Failed to open image '{}': {}", path, e))?;
 
     let (width, height) = img.dimensions();
 
@@ -259,25 +259,24 @@ pub async fn batch_process_images(
             .unwrap_or("unknown");
 
         // Emit progress
-        let _ = app.emit("batch-image-progress", BatchImageProgress {
-            current_file: file_name.to_string(),
-            processed: i,
-            total,
-            progress_percentage: (i as f64 / total as f64) * 100.0,
-            status: format!("Processing {}", file_name),
-        });
+        let _ = app.emit(
+            "batch-image-progress",
+            BatchImageProgress {
+                current_file: file_name.to_string(),
+                processed: i,
+                total,
+                progress_percentage: (i as f64 / total as f64) * 100.0,
+                status: format!("Processing {}", file_name),
+            },
+        );
 
-        let original_size = fs::metadata(file_path)
-            .map(|m| m.len())
-            .unwrap_or(0);
+        let original_size = fs::metadata(file_path).map(|m| m.len()).unwrap_or(0);
 
         let result = process_single_image(file_path, &operations, &output_dir);
 
         match result {
             Ok(output_path) => {
-                let new_size = fs::metadata(&output_path)
-                    .map(|m| m.len())
-                    .unwrap_or(0);
+                let new_size = fs::metadata(&output_path).map(|m| m.len()).unwrap_or(0);
 
                 results.push(BatchImageResult {
                     path: file_path.clone(),
@@ -302,13 +301,16 @@ pub async fn batch_process_images(
     }
 
     // Emit completion
-    let _ = app.emit("batch-image-progress", BatchImageProgress {
-        current_file: String::new(),
-        processed: total,
-        total,
-        progress_percentage: 100.0,
-        status: "Complete".to_string(),
-    });
+    let _ = app.emit(
+        "batch-image-progress",
+        BatchImageProgress {
+            current_file: String::new(),
+            processed: total,
+            total,
+            progress_percentage: 100.0,
+            status: "Complete".to_string(),
+        },
+    );
 
     Ok(results)
 }
@@ -322,14 +324,18 @@ pub async fn rotate_image(
     validate_file_path(&path)?;
     validate_file_path(&output_path)?;
 
-    let img = image::open(&path)
-        .map_err(|e| format!("Failed to open image '{}': {}", path, e))?;
+    let img = image::open(&path).map_err(|e| format!("Failed to open image '{}': {}", path, e))?;
 
     let rotated = match degrees {
         90 => img.rotate90(),
         180 => img.rotate180(),
         270 => img.rotate270(),
-        _ => return Err(format!("Unsupported rotation: {}. Use 90, 180, or 270 degrees.", degrees)),
+        _ => {
+            return Err(format!(
+                "Unsupported rotation: {}. Use 90, 180, or 270 degrees.",
+                degrees
+            ))
+        }
     };
 
     let out_ext = Path::new(&output_path)
@@ -351,13 +357,17 @@ pub async fn flip_image(
     validate_file_path(&path)?;
     validate_file_path(&output_path)?;
 
-    let img = image::open(&path)
-        .map_err(|e| format!("Failed to open image '{}': {}", path, e))?;
+    let img = image::open(&path).map_err(|e| format!("Failed to open image '{}': {}", path, e))?;
 
     let flipped = match direction.to_lowercase().as_str() {
         "horizontal" => img.fliph(),
         "vertical" => img.flipv(),
-        _ => return Err(format!("Unsupported flip direction: '{}'. Use 'horizontal' or 'vertical'.", direction)),
+        _ => {
+            return Err(format!(
+                "Unsupported flip direction: '{}'. Use 'horizontal' or 'vertical'.",
+                direction
+            ))
+        }
     };
 
     let out_ext = Path::new(&output_path)
@@ -386,8 +396,7 @@ pub async fn crop_image(
         return Err("Crop width and height must be greater than 0".to_string());
     }
 
-    let img = image::open(&path)
-        .map_err(|e| format!("Failed to open image '{}': {}", path, e))?;
+    let img = image::open(&path).map_err(|e| format!("Failed to open image '{}': {}", path, e))?;
 
     let (img_w, img_h) = img.dimensions();
     if x + width > img_w || y + height > img_h {
@@ -420,8 +429,7 @@ pub async fn adjust_brightness(
 
     let clamped = value.clamp(-100, 100);
 
-    let img = image::open(&path)
-        .map_err(|e| format!("Failed to open image '{}': {}", path, e))?;
+    let img = image::open(&path).map_err(|e| format!("Failed to open image '{}': {}", path, e))?;
 
     let adjusted = img.brighten(clamped);
 
@@ -450,8 +458,7 @@ pub async fn adjust_contrast(
     // with 1.0 meaning no change.
     let contrast_value = (clamped - 1.0) * 50.0;
 
-    let img = image::open(&path)
-        .map_err(|e| format!("Failed to open image '{}': {}", path, e))?;
+    let img = image::open(&path).map_err(|e| format!("Failed to open image '{}': {}", path, e))?;
 
     let adjusted = img.adjust_contrast(contrast_value);
 
@@ -466,15 +473,11 @@ pub async fn adjust_contrast(
 }
 
 #[command]
-pub async fn grayscale_image(
-    path: String,
-    output_path: String,
-) -> Result<String, String> {
+pub async fn grayscale_image(path: String, output_path: String) -> Result<String, String> {
     validate_file_path(&path)?;
     validate_file_path(&output_path)?;
 
-    let img = image::open(&path)
-        .map_err(|e| format!("Failed to open image '{}': {}", path, e))?;
+    let img = image::open(&path).map_err(|e| format!("Failed to open image '{}': {}", path, e))?;
 
     let gray = img.grayscale();
 
@@ -497,8 +500,7 @@ fn process_single_image(
         return Err(e);
     }
 
-    let img = image::open(path)
-        .map_err(|e| format!("Failed to open image '{}': {}", path, e))?;
+    let img = image::open(path).map_err(|e| format!("Failed to open image '{}': {}", path, e))?;
 
     let mut processed = img;
 
@@ -509,8 +511,10 @@ fn process_single_image(
         }
         let (orig_w, orig_h) = processed.dimensions();
         let (new_w, new_h) = compute_resize_dimensions(
-            orig_w, orig_h,
-            resize.width, resize.height,
+            orig_w,
+            orig_h,
+            resize.width,
+            resize.height,
             resize.maintain_aspect,
         );
         processed = processed.resize_exact(new_w, new_h, FilterType::Lanczos3);
@@ -526,8 +530,7 @@ fn process_single_image(
     let output_format = if let Some(ref conv) = operations.convert {
         parse_image_format(&conv.format)?
     } else {
-        ImageFormat::from_path(path)
-            .unwrap_or(ImageFormat::Png)
+        ImageFormat::from_path(path).unwrap_or(ImageFormat::Png)
     };
 
     let ext = format_to_extension(output_format);

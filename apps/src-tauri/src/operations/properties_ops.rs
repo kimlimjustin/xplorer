@@ -1,9 +1,9 @@
+use crate::operations::validate_file_path;
+use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::Path;
 use std::time::SystemTime;
 use tauri::command;
-use serde::{Deserialize, Serialize};
-use crate::operations::validate_file_path;
 
 #[cfg(windows)]
 use std::os::windows::fs::MetadataExt;
@@ -53,7 +53,9 @@ pub struct FileAttributes {
 }
 
 #[command]
-pub async fn get_detailed_file_properties(file_path: String) -> Result<DetailedFileProperties, String> {
+pub async fn get_detailed_file_properties(
+    file_path: String,
+) -> Result<DetailedFileProperties, String> {
     validate_file_path(&file_path)?;
 
     tokio::task::spawn_blocking(move || {
@@ -63,10 +65,10 @@ pub async fn get_detailed_file_properties(file_path: String) -> Result<DetailedF
             return Err("File or directory does not exist".to_string());
         }
 
-        let metadata = fs::metadata(path)
-            .map_err(|e| format!("Failed to read metadata: {}", e))?;
+        let metadata = fs::metadata(path).map_err(|e| format!("Failed to read metadata: {}", e))?;
 
-        let name = path.file_name()
+        let name = path
+            .file_name()
             .unwrap_or_default()
             .to_string_lossy()
             .to_string();
@@ -88,19 +90,22 @@ pub async fn get_detailed_file_properties(file_path: String) -> Result<DetailedF
         let extension = path.extension().map(|e| e.to_string_lossy().to_string());
 
         // Get timestamps
-        let created = metadata.created()
+        let created = metadata
+            .created()
             .unwrap_or(SystemTime::UNIX_EPOCH)
             .duration_since(SystemTime::UNIX_EPOCH)
             .unwrap_or_default()
             .as_secs();
 
-        let modified = metadata.modified()
+        let modified = metadata
+            .modified()
             .unwrap_or(SystemTime::UNIX_EPOCH)
             .duration_since(SystemTime::UNIX_EPOCH)
             .unwrap_or_default()
             .as_secs();
 
-        let accessed = metadata.accessed()
+        let accessed = metadata
+            .accessed()
             .unwrap_or(SystemTime::UNIX_EPOCH)
             .duration_since(SystemTime::UNIX_EPOCH)
             .unwrap_or_default()
@@ -198,8 +203,9 @@ pub async fn set_file_permissions(file_path: String, permissions: String) -> Res
             use std::os::unix::fs::PermissionsExt;
 
             // Parse octal permissions string (e.g., "755")
-            let mode = u32::from_str_radix(&permissions, 8)
-                .map_err(|_| "Invalid permissions format. Use octal format (e.g., '755')".to_string())?;
+            let mode = u32::from_str_radix(&permissions, 8).map_err(|_| {
+                "Invalid permissions format. Use octal format (e.g., '755')".to_string()
+            })?;
 
             let mut perms = fs::metadata(path)
                 .map_err(|e| format!("Failed to read current permissions: {}", e))?
@@ -221,7 +227,11 @@ pub async fn set_file_permissions(file_path: String, permissions: String) -> Res
             match permissions.as_str() {
                 "readonly" => perms.set_readonly(true),
                 "writable" => perms.set_readonly(false),
-                _ => return Err("On Windows, only 'readonly' and 'writable' are supported".to_string()),
+                _ => {
+                    return Err(
+                        "On Windows, only 'readonly' and 'writable' are supported".to_string()
+                    )
+                }
             }
 
             fs::set_permissions(path, perms)
@@ -238,14 +248,14 @@ fn get_permissions(metadata: &fs::Metadata) -> FilePermissions {
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
-        
+
         let mode = metadata.permissions().mode();
         let readable = mode & 0o400 != 0;
         let writable = mode & 0o200 != 0;
         let executable = mode & 0o100 != 0;
-        
+
         let permissions_string = format!("{:o}", mode & 0o777);
-        
+
         FilePermissions {
             readable,
             writable,
@@ -261,10 +271,10 @@ fn get_permissions(metadata: &fs::Metadata) -> FilePermissions {
         let writable = !readonly;
         let readable = true; // Assume readable on Windows
         let executable = false; // Would need more complex detection
-        
+
         let permissions_string = if readonly { "Read-only" } else { "Read/Write" }.to_string();
         let attributes = metadata.file_attributes();
-        
+
         FilePermissions {
             readable,
             writable,
@@ -300,7 +310,7 @@ fn get_file_attributes(path: &Path, metadata: &fs::Metadata) -> Result<FileAttri
         if let Ok(count) = count_directory_items(path) {
             attributes.item_count = Some(count);
         }
-        
+
         if let Ok(size) = calculate_directory_size(path) {
             attributes.total_size = Some(size);
         }
@@ -326,17 +336,17 @@ fn get_file_attributes(path: &Path, metadata: &fs::Metadata) -> Result<FileAttri
 
 fn calculate_directory_size(dir: &Path) -> Result<u64, String> {
     let mut total_size = 0u64;
-    
+
     fn calculate_recursive(dir: &Path, total: &mut u64) -> Result<(), String> {
-        let entries = fs::read_dir(dir)
-            .map_err(|e| format!("Failed to read directory: {}", e))?;
-        
+        let entries = fs::read_dir(dir).map_err(|e| format!("Failed to read directory: {}", e))?;
+
         for entry in entries {
             let entry = entry.map_err(|e| format!("Failed to read entry: {}", e))?;
             let path = entry.path();
-            let metadata = entry.metadata()
+            let metadata = entry
+                .metadata()
                 .map_err(|e| format!("Failed to read metadata: {}", e))?;
-            
+
             if metadata.is_file() {
                 *total += metadata.len();
             } else if metadata.is_dir() {
@@ -345,31 +355,30 @@ fn calculate_directory_size(dir: &Path) -> Result<u64, String> {
         }
         Ok(())
     }
-    
+
     calculate_recursive(dir, &mut total_size)?;
     Ok(total_size)
 }
 
 fn count_directory_items(dir: &Path) -> Result<u64, String> {
     let mut count = 0u64;
-    
+
     fn count_recursive(dir: &Path, count: &mut u64) -> Result<(), String> {
-        let entries = fs::read_dir(dir)
-            .map_err(|e| format!("Failed to read directory: {}", e))?;
-        
+        let entries = fs::read_dir(dir).map_err(|e| format!("Failed to read directory: {}", e))?;
+
         for entry in entries {
             let entry = entry.map_err(|e| format!("Failed to read entry: {}", e))?;
             let path = entry.path();
-            
+
             *count += 1;
-            
+
             if path.is_dir() {
                 count_recursive(&path, count)?;
             }
         }
         Ok(())
     }
-    
+
     count_recursive(dir, &mut count)?;
     Ok(count)
 }
@@ -378,10 +387,10 @@ use super::is_hidden_file;
 
 fn get_mime_type(file_path: &str) -> Option<String> {
     let path = Path::new(file_path);
-    
+
     if let Some(extension) = path.extension() {
         let ext = extension.to_string_lossy().to_lowercase();
-        
+
         match ext.as_str() {
             // Images
             "jpg" | "jpeg" => Some("image/jpeg".to_string()),
@@ -390,16 +399,24 @@ fn get_mime_type(file_path: &str) -> Option<String> {
             "bmp" => Some("image/bmp".to_string()),
             "webp" => Some("image/webp".to_string()),
             "svg" => Some("image/svg+xml".to_string()),
-            
+
             // Documents
             "pdf" => Some("application/pdf".to_string()),
             "doc" => Some("application/msword".to_string()),
-            "docx" => Some("application/vnd.openxmlformats-officedocument.wordprocessingml.document".to_string()),
+            "docx" => Some(
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    .to_string(),
+            ),
             "xls" => Some("application/vnd.ms-excel".to_string()),
-            "xlsx" => Some("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet".to_string()),
+            "xlsx" => Some(
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet".to_string(),
+            ),
             "ppt" => Some("application/vnd.ms-powerpoint".to_string()),
-            "pptx" => Some("application/vnd.openxmlformats-officedocument.presentationml.presentation".to_string()),
-            
+            "pptx" => Some(
+                "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+                    .to_string(),
+            ),
+
             // Text
             "txt" => Some("text/plain".to_string()),
             "md" => Some("text/markdown".to_string()),
@@ -408,7 +425,7 @@ fn get_mime_type(file_path: &str) -> Option<String> {
             "js" => Some("application/javascript".to_string()),
             "json" => Some("application/json".to_string()),
             "xml" => Some("application/xml".to_string()),
-            
+
             // Code
             "rs" => Some("text/x-rust".to_string()),
             "py" => Some("text/x-python".to_string()),
@@ -416,26 +433,26 @@ fn get_mime_type(file_path: &str) -> Option<String> {
             "cpp" | "cc" | "cxx" => Some("text/x-c++".to_string()),
             "c" => Some("text/x-c".to_string()),
             "h" => Some("text/x-c-header".to_string()),
-            
+
             // Audio
             "mp3" => Some("audio/mpeg".to_string()),
             "wav" => Some("audio/wav".to_string()),
             "ogg" => Some("audio/ogg".to_string()),
             "flac" => Some("audio/flac".to_string()),
-            
+
             // Video
             "mp4" => Some("video/mp4".to_string()),
             "avi" => Some("video/x-msvideo".to_string()),
             "mov" => Some("video/quicktime".to_string()),
             "webm" => Some("video/webm".to_string()),
-            
+
             // Archives
             "zip" => Some("application/zip".to_string()),
             "tar" => Some("application/x-tar".to_string()),
             "gz" => Some("application/gzip".to_string()),
             "7z" => Some("application/x-7z-compressed".to_string()),
             "rar" => Some("application/vnd.rar".to_string()),
-            
+
             _ => None,
         }
     } else {
@@ -447,12 +464,12 @@ fn format_file_size(size: u64) -> String {
     const UNITS: &[&str] = &["B", "KB", "MB", "GB", "TB"];
     let mut size = size as f64;
     let mut unit_index = 0;
-    
+
     while size >= 1024.0 && unit_index < UNITS.len() - 1 {
         size /= 1024.0;
         unit_index += 1;
     }
-    
+
     if unit_index == 0 {
         format!("{} {}", size as u64, UNITS[unit_index])
     } else {
@@ -461,7 +478,7 @@ fn format_file_size(size: u64) -> String {
 }
 
 fn format_timestamp(timestamp: u64) -> String {
-    use std::time::{SystemTime, Duration};
+    use std::time::{Duration, SystemTime};
 
     if timestamp == 0 {
         return "Unknown".to_string();

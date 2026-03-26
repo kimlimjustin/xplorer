@@ -50,8 +50,8 @@ fn load_from_disk(app_handle: &tauri::AppHandle) -> Result<ChatHistory, String> 
     if !path.exists() {
         return Ok(ChatHistory::default());
     }
-    let data =
-        std::fs::read_to_string(&path).map_err(|e| format!("Failed to read chat history: {}", e))?;
+    let data = std::fs::read_to_string(&path)
+        .map_err(|e| format!("Failed to read chat history: {}", e))?;
     serde_json::from_str(&data).map_err(|e| format!("Failed to parse chat history: {}", e))
 }
 
@@ -84,7 +84,9 @@ fn flush_to_disk(
 
 /// List all chat sessions (without full message bodies for performance).
 #[tauri::command]
-pub async fn get_chat_sessions(app_handle: tauri::AppHandle) -> Result<Vec<ChatSessionSummary>, String> {
+pub async fn get_chat_sessions(
+    app_handle: tauri::AppHandle,
+) -> Result<Vec<ChatSessionSummary>, String> {
     let guard = ensure_cache(&app_handle)?;
     let history = guard.as_ref().unwrap();
     Ok(history
@@ -108,7 +110,11 @@ pub async fn get_chat_session(
 ) -> Result<Option<ChatSession>, String> {
     let guard = ensure_cache(&app_handle)?;
     let history = guard.as_ref().unwrap();
-    Ok(history.sessions.iter().find(|s| s.id == session_id).cloned())
+    Ok(history
+        .sessions
+        .iter()
+        .find(|s| s.id == session_id)
+        .cloned())
 }
 
 /// Save (create or update) a chat session.

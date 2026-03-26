@@ -1,8 +1,8 @@
-use std::sync::{Arc, Mutex};
+use crate::operations::types::{FileOperationProgress, OperationProgress, OperationStatus};
 use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
 use std::time::{Instant, SystemTime};
 use tauri::{AppHandle, Emitter};
-use crate::operations::types::{FileOperationProgress, OperationProgress, OperationStatus};
 
 pub type ProgressCallback = Arc<dyn Fn(FileOperationProgress) + Send + Sync>;
 
@@ -72,16 +72,17 @@ impl ProgressManager {
                 progress.processed_count = processed_count;
                 progress.bytes_processed = bytes_processed;
                 progress.status = OperationStatus::InProgress;
-                
+
                 // Calculate progress percentage
                 if progress.total_count > 0 {
-                    progress.progress_percentage = 
+                    progress.progress_percentage =
                         (processed_count as f64 / progress.total_count as f64) * 100.0;
                 }
 
                 // Estimate remaining time based on processing rate
                 if processed_count > 0 && progress.total_count > processed_count {
-                    let elapsed = progress.start_time
+                    let elapsed = progress
+                        .start_time
                         .map(|t| t.elapsed().as_secs())
                         .unwrap_or(0);
 
@@ -89,7 +90,8 @@ impl ProgressManager {
                         let rate = processed_count as f64 / elapsed as f64;
                         if rate > 0.0 {
                             let remaining_items = progress.total_count - processed_count;
-                            progress.estimated_remaining = Some((remaining_items as f64 / rate) as u64);
+                            progress.estimated_remaining =
+                                Some((remaining_items as f64 / rate) as u64);
                         }
                     }
                 }
@@ -105,7 +107,7 @@ impl ProgressManager {
                 progress.status = OperationStatus::Completed;
                 progress.progress_percentage = 100.0;
                 progress.estimated_remaining = Some(0);
-                
+
                 self.notify_progress(progress);
             }
         }
@@ -116,7 +118,7 @@ impl ProgressManager {
             if let Some(progress) = operations.get_mut(operation_id) {
                 progress.status = OperationStatus::Failed;
                 progress.error_message = Some(error_message);
-                
+
                 self.notify_progress(progress);
             }
         }
@@ -204,17 +206,18 @@ impl ProgressManager {
                 progress.copy_strategy = copy_strategy;
                 progress.hardware_acceleration = hardware_acceleration;
                 progress.speed_bytes_per_second = speed_bytes_per_second;
-                
+
                 // Calculate progress percentage
                 if progress.total_files > 0 {
-                    progress.progress_percentage = 
+                    progress.progress_percentage =
                         (files_processed as f64 / progress.total_files as f64) * 100.0;
                 }
 
                 // Estimate remaining time
                 if speed_bytes_per_second > 0.0 && progress.total_bytes > bytes_processed {
                     let remaining_bytes = progress.total_bytes - bytes_processed;
-                    progress.estimated_remaining_seconds = Some((remaining_bytes as f64 / speed_bytes_per_second) as u64);
+                    progress.estimated_remaining_seconds =
+                        Some((remaining_bytes as f64 / speed_bytes_per_second) as u64);
                 }
 
                 self.notify_file_progress(progress);
@@ -228,7 +231,7 @@ impl ProgressManager {
                 progress.status = OperationStatus::Completed;
                 progress.progress_percentage = 100.0;
                 progress.estimated_remaining_seconds = Some(0);
-                
+
                 self.notify_file_progress(progress);
             }
         }
@@ -239,7 +242,7 @@ impl ProgressManager {
             if let Some(progress) = operations.get_mut(operation_id) {
                 progress.status = OperationStatus::Failed;
                 progress.error_message = Some(error_message);
-                
+
                 self.notify_file_progress(progress);
             }
         }

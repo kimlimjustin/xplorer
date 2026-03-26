@@ -77,15 +77,17 @@ pub struct ContextMenuContribution {
 /// 1. NPM-style package.json with an `xplorer` key containing manifest fields
 /// 2. Flat manifest where all fields are at the top level
 pub fn parse_manifest_from_package_json(content: &str) -> Result<ExtensionManifest, String> {
-    let raw: serde_json::Value = serde_json::from_str(content)
-        .map_err(|e| format!("Invalid JSON: {}", e))?;
+    let raw: serde_json::Value =
+        serde_json::from_str(content).map_err(|e| format!("Invalid JSON: {}", e))?;
 
-    let obj = raw.as_object()
+    let obj = raw
+        .as_object()
         .ok_or_else(|| "package.json must be a JSON object".to_string())?;
 
     // If there's an `xplorer` key, extract manifest fields from it
     if let Some(xplorer_val) = obj.get("xplorer") {
-        let mut manifest_obj = xplorer_val.as_object()
+        let mut manifest_obj = xplorer_val
+            .as_object()
             .ok_or_else(|| "xplorer field must be a JSON object".to_string())?
             .clone();
 
@@ -103,14 +105,15 @@ pub fn parse_manifest_from_package_json(content: &str) -> Result<ExtensionManife
             }
         }
 
-        let manifest: ExtensionManifest = serde_json::from_value(serde_json::Value::Object(manifest_obj))
-            .map_err(|e| format!("Invalid manifest in xplorer field: {}", e))?;
+        let manifest: ExtensionManifest =
+            serde_json::from_value(serde_json::Value::Object(manifest_obj))
+                .map_err(|e| format!("Invalid manifest in xplorer field: {}", e))?;
         return Ok(manifest);
     }
 
     // No xplorer key — try direct deserialization
-    let manifest: ExtensionManifest = serde_json::from_value(raw)
-        .map_err(|e| format!("Invalid manifest JSON: {}", e))?;
+    let manifest: ExtensionManifest =
+        serde_json::from_value(raw).map_err(|e| format!("Invalid manifest JSON: {}", e))?;
     Ok(manifest)
 }
 

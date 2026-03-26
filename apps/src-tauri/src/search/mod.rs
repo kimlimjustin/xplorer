@@ -2,28 +2,28 @@
 // Modular search pipeline: stemming, BM25F, FST fuzzy, bitmap filters,
 // incremental indexing, hybrid retrieval, multi-signal reranking.
 
-pub mod stemmer;
-pub mod synonyms;
-pub mod query_parser;
-pub mod bm25f;
-pub mod fuzzy;
-pub mod bitmap_filters;
-pub mod watcher;
-pub mod reranker;
-pub mod index;
-pub mod compat;
-pub mod ollama_client;
-pub mod hybrid;
 pub mod ai_pipeline;
+pub mod bitmap_filters;
+pub mod bm25f;
+pub mod compat;
 pub mod context_ranker;
 pub mod fst_index;
+pub mod fuzzy;
+pub mod hybrid;
+pub mod index;
+pub mod ollama_client;
+pub mod query_parser;
+pub mod reranker;
+pub mod stemmer;
+pub mod synonyms;
+pub mod watcher;
 
 // Re-export main public types
-pub use index::{SearchIndex, DocId, DocumentInfo};
-pub use query_parser::{ParsedQuery, FieldFilter, MetadataFilters, SortHint};
 pub use bm25f::Bm25fScorer;
-pub use reranker::{Reranker, RankingSignals};
 pub use compat::SearchEngine;
+pub use index::{DocId, DocumentInfo, SearchIndex};
+pub use query_parser::{FieldFilter, MetadataFilters, ParsedQuery, SortHint};
+pub use reranker::{RankingSignals, Reranker};
 
 use serde::{Deserialize, Serialize};
 
@@ -79,17 +79,20 @@ pub struct DateFilter {
 // ===== File extension groups =====
 
 pub const VIDEO_EXTENSIONS: &[&str] = &["mp4", "avi", "mov", "wmv", "flv", "mkv", "webm", "m4v"];
-pub const IMAGE_EXTENSIONS: &[&str] = &["jpg", "jpeg", "png", "gif", "bmp", "tiff", "svg", "webp", "ico", "raw", "cr2", "nef"];
+pub const IMAGE_EXTENSIONS: &[&str] = &[
+    "jpg", "jpeg", "png", "gif", "bmp", "tiff", "svg", "webp", "ico", "raw", "cr2", "nef",
+];
 pub const AUDIO_EXTENSIONS: &[&str] = &["mp3", "wav", "flac", "aac", "ogg", "wma", "m4a", "opus"];
-pub const ARCHIVE_EXTENSIONS: &[&str] = &["zip", "tar", "gz", "rar", "7z", "iso", "bz2", "xz", "zst"];
+pub const ARCHIVE_EXTENSIONS: &[&str] =
+    &["zip", "tar", "gz", "rar", "7z", "iso", "bz2", "xz", "zst"];
 pub const CODE_EXTENSIONS: &[&str] = &[
-    "js", "ts", "jsx", "tsx", "py", "rs", "go", "java", "c", "cpp", "h", "hpp",
-    "cs", "rb", "php", "swift", "kt", "scala", "lua", "sh", "bash", "ps1",
-    "html", "css", "scss", "sass", "less", "vue", "svelte", "zig", "hs", "ex",
+    "js", "ts", "jsx", "tsx", "py", "rs", "go", "java", "c", "cpp", "h", "hpp", "cs", "rb", "php",
+    "swift", "kt", "scala", "lua", "sh", "bash", "ps1", "html", "css", "scss", "sass", "less",
+    "vue", "svelte", "zig", "hs", "ex",
 ];
 pub const DOCUMENT_EXTENSIONS: &[&str] = &[
-    "pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "odt", "ods", "odp",
-    "txt", "md", "rtf", "csv", "epub", "mobi",
+    "pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "odt", "ods", "odp", "txt", "md", "rtf",
+    "csv", "epub", "mobi",
 ];
 
 // ===== Shared math utilities =====
@@ -114,17 +117,33 @@ pub fn cosine_similarity(a: &[f32], b: &[f32]) -> f64 {
     }
 
     let denom = (mag_a.sqrt() * mag_b.sqrt()) as f64;
-    if denom == 0.0 { 0.0 } else { (dot as f64) / denom }
+    if denom == 0.0 {
+        0.0
+    } else {
+        (dot as f64) / denom
+    }
 }
 
 pub fn classify_extension(ext: &str) -> Option<FileTypeCategory> {
     let ext_lower = ext.to_lowercase();
     let ext = ext_lower.as_str();
-    if IMAGE_EXTENSIONS.contains(&ext) { return Some(FileTypeCategory::Images); }
-    if VIDEO_EXTENSIONS.contains(&ext) { return Some(FileTypeCategory::Videos); }
-    if AUDIO_EXTENSIONS.contains(&ext) { return Some(FileTypeCategory::Audio); }
-    if DOCUMENT_EXTENSIONS.contains(&ext) { return Some(FileTypeCategory::Documents); }
-    if CODE_EXTENSIONS.contains(&ext) { return Some(FileTypeCategory::Code); }
-    if ARCHIVE_EXTENSIONS.contains(&ext) { return Some(FileTypeCategory::Archives); }
+    if IMAGE_EXTENSIONS.contains(&ext) {
+        return Some(FileTypeCategory::Images);
+    }
+    if VIDEO_EXTENSIONS.contains(&ext) {
+        return Some(FileTypeCategory::Videos);
+    }
+    if AUDIO_EXTENSIONS.contains(&ext) {
+        return Some(FileTypeCategory::Audio);
+    }
+    if DOCUMENT_EXTENSIONS.contains(&ext) {
+        return Some(FileTypeCategory::Documents);
+    }
+    if CODE_EXTENSIONS.contains(&ext) {
+        return Some(FileTypeCategory::Code);
+    }
+    if ARCHIVE_EXTENSIONS.contains(&ext) {
+        return Some(FileTypeCategory::Archives);
+    }
     None
 }

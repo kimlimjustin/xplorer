@@ -65,7 +65,9 @@ fn flush_recent_files_to_disk(
     app_handle: &tauri::AppHandle,
     guard: &MutexGuard<'static, Option<Vec<RecentFile>>>,
 ) -> Result<(), String> {
-    let files = guard.as_ref().ok_or_else(|| "Storage cache not initialized".to_string())?;
+    let files = guard
+        .as_ref()
+        .ok_or_else(|| "Storage cache not initialized".to_string())?;
     let path = recent_files_path(app_handle)?;
     let data =
         serde_json::to_string_pretty(files).map_err(|e| format!("Failed to serialize: {}", e))?;
@@ -114,7 +116,9 @@ pub async fn add_recent_file(path: String, app_handle: tauri::AppHandle) -> Resu
     };
 
     let mut guard = ensure_recent_files_cache(&app_handle)?;
-    let files = guard.as_mut().ok_or_else(|| "Storage cache not initialized".to_string())?;
+    let files = guard
+        .as_mut()
+        .ok_or_else(|| "Storage cache not initialized".to_string())?;
 
     // Deduplicate: remove existing entry with the same path
     files.retain(|f| f.path != path);
@@ -171,7 +175,9 @@ pub async fn clear_recent_files(app_handle: tauri::AppHandle) -> Result<(), Stri
 #[tauri::command]
 pub async fn remove_recent_file(path: String, app_handle: tauri::AppHandle) -> Result<(), String> {
     let mut guard = ensure_recent_files_cache(&app_handle)?;
-    let files = guard.as_mut().ok_or_else(|| "Storage cache not initialized".to_string())?;
+    let files = guard
+        .as_mut()
+        .ok_or_else(|| "Storage cache not initialized".to_string())?;
     files.retain(|f| f.path != path);
     flush_recent_files_to_disk(&app_handle, &guard)?;
     Ok(())
