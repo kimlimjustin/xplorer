@@ -22,6 +22,11 @@ function csrfCheck(req: NextRequest): NextResponse | null {
     return null;
   }
 
+  // Exclude NextAuth endpoints — they handle their own CSRF via the csrfToken
+  if (path.startsWith('/api/auth/')) {
+    return null;
+  }
+
   // Check 1: Custom header present (browsers block custom headers in simple cross-origin requests)
   if (req.headers.get('x-requested-with') === 'XMLHttpRequest') {
     return null;
@@ -119,6 +124,11 @@ export default async function middleware(req: NextRequest) {
   const csrfResult = csrfCheck(req);
   if (csrfResult) {
     return csrfResult;
+  }
+
+  // Skip auth middleware for NextAuth's own endpoints
+  if (req.nextUrl.pathname.startsWith('/api/auth/')) {
+    return NextResponse.next();
   }
 
   // Only run auth middleware on paths that need it
