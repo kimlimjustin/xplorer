@@ -21,10 +21,8 @@ use tracing::{error, warn};
 // To generate a new keypair: run `cargo test generate_signing_keypair -- --nocapture`
 // Store the private key as EXTENSION_SIGNING_KEY in GitHub Secrets. NEVER commit it.
 const OFFICIAL_PUBLIC_KEY: [u8; 32] = [
-    0x27, 0xd1, 0x70, 0x02, 0x50, 0x70, 0x03, 0x8c, 
-    0x5f, 0xad, 0x36, 0xb6, 0x83, 0x2b, 0xe9, 0x60, 
-    0xc5, 0xa6, 0x8a, 0xb9, 0xc5, 0x47, 0xbf, 0xc0, 
-    0x3a, 0x15, 0x00, 0x24, 0x77, 0x44, 0x12, 0x3c, 
+    0x27, 0xd1, 0x70, 0x02, 0x50, 0x70, 0x03, 0x8c, 0x5f, 0xad, 0x36, 0xb6, 0x83, 0x2b, 0xe9, 0x60,
+    0xc5, 0xa6, 0x8a, 0xb9, 0xc5, 0x47, 0xbf, 0xc0, 0x3a, 0x15, 0x00, 0x24, 0x77, 0x44, 0x12, 0x3c,
 ];
 
 /// Metadata stored in the `.sig` file alongside an extension's `package.json`.
@@ -91,11 +89,7 @@ pub fn hash_extension_contents(extension_dir: &Path) -> Result<String, String> {
 /// Recursively collect `(relative_path, file_bytes)` tuples for every file
 /// under `dir`, skipping directories that are not part of a distribution and
 /// skipping the `.sig` file itself.
-fn collect_files(
-    base: &Path,
-    dir: &Path,
-    out: &mut Vec<(String, Vec<u8>)>,
-) -> Result<(), String> {
+fn collect_files(base: &Path, dir: &Path, out: &mut Vec<(String, Vec<u8>)>) -> Result<(), String> {
     let entries = fs::read_dir(dir)
         .map_err(|e| format!("Failed to read directory '{}': {}", dir.display(), e))?;
 
@@ -170,8 +164,7 @@ pub fn sign_extension(
     let sig_path = sig_file_path(extension_dir);
     let json = serde_json::to_string_pretty(&info)
         .map_err(|e| format!("Failed to serialize signature: {}", e))?;
-    fs::write(&sig_path, json)
-        .map_err(|e| format!("Failed to write .sig file: {}", e))?;
+    fs::write(&sig_path, json).map_err(|e| format!("Failed to write .sig file: {}", e))?;
 
     Ok(info)
 }
@@ -190,28 +183,31 @@ pub fn verify_extension(extension_dir: &Path) -> Result<Option<SignatureInfo>, S
     verify_extension_with_key(extension_dir, &OFFICIAL_PUBLIC_KEY)
 }
 
-pub fn verify_extension_with_key(extension_dir: &Path, public_key: &[u8; 32]) -> Result<Option<SignatureInfo>, String> {
+pub fn verify_extension_with_key(
+    extension_dir: &Path,
+    public_key: &[u8; 32],
+) -> Result<Option<SignatureInfo>, String> {
     let sig_path = sig_file_path(extension_dir);
 
     if !sig_path.exists() {
         return Ok(None);
     }
 
-    let sig_content = fs::read_to_string(&sig_path)
-        .map_err(|e| format!("Failed to read .sig file: {}", e))?;
+    let sig_content =
+        fs::read_to_string(&sig_path).map_err(|e| format!("Failed to read .sig file: {}", e))?;
 
-    let mut info: SignatureInfo = serde_json::from_str(&sig_content)
-        .map_err(|e| format!("Invalid .sig file JSON: {}", e))?;
+    let mut info: SignatureInfo =
+        serde_json::from_str(&sig_content).map_err(|e| format!("Invalid .sig file JSON: {}", e))?;
 
     let current_hash = hash_extension_contents(extension_dir)?;
 
     if let Some(ref sig_hex) = info.ed25519_signature {
-        let sig_bytes = hex_decode(sig_hex)
-            .map_err(|_| "Invalid hex in ed25519_signature".to_string())?;
+        let sig_bytes =
+            hex_decode(sig_hex).map_err(|_| "Invalid hex in ed25519_signature".to_string())?;
         let signature = Signature::from_slice(&sig_bytes)
             .map_err(|_| "Invalid Ed25519 signature format".to_string())?;
-        let verifying_key = VerifyingKey::from_bytes(public_key)
-            .map_err(|_| "Invalid public key".to_string())?;
+        let verifying_key =
+            VerifyingKey::from_bytes(public_key).map_err(|_| "Invalid public key".to_string())?;
 
         // The signature was computed over the hash string, so verify against the
         // current on-disk hash. This implicitly checks both hash integrity AND
@@ -225,9 +221,7 @@ pub fn verify_extension_with_key(extension_dir: &Path, public_key: &[u8; 32]) ->
         // Legacy: no Ed25519 signature, hash-only check
         info.verified = info.hash == current_hash;
         if info.verified {
-            warn!(
-                "[ExtensionSigning] Extension has hash-only signature (legacy, no Ed25519)"
-            );
+            warn!("[ExtensionSigning] Extension has hash-only signature (legacy, no Ed25519)");
         }
     }
 
@@ -285,10 +279,9 @@ mod tests {
 
     fn test_signing_key() -> [u8; 32] {
         [
-            0xaa, 0xbb, 0xcc, 0xdd, 0x11, 0x22, 0x33, 0x44,
-            0x55, 0x66, 0x77, 0x88, 0x99, 0x00, 0xab, 0xcd,
-            0xef, 0x01, 0x23, 0x45, 0x67, 0x89, 0xfe, 0xdc,
-            0xba, 0x98, 0x76, 0x54, 0x32, 0x10, 0x0f, 0x1e,
+            0xaa, 0xbb, 0xcc, 0xdd, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0x00,
+            0xab, 0xcd, 0xef, 0x01, 0x23, 0x45, 0x67, 0x89, 0xfe, 0xdc, 0xba, 0x98, 0x76, 0x54,
+            0x32, 0x10, 0x0f, 0x1e,
         ]
     }
 
@@ -317,7 +310,10 @@ mod tests {
         let hash1 = hash_extension_contents(tmp.path()).unwrap();
         let hash2 = hash_extension_contents(tmp.path()).unwrap();
 
-        assert_eq!(hash1, hash2, "Hashing the same directory twice should yield the same result");
+        assert_eq!(
+            hash1, hash2,
+            "Hashing the same directory twice should yield the same result"
+        );
         assert!(!hash1.is_empty());
         assert_eq!(hash1.len(), 64, "SHA-256 hex digest should be 64 chars");
     }
@@ -334,7 +330,10 @@ mod tests {
 
         let hash_after = hash_extension_contents(tmp.path()).unwrap();
 
-        assert_ne!(hash_before, hash_after, "Hash should change when file contents change");
+        assert_ne!(
+            hash_before, hash_after,
+            "Hash should change when file contents change"
+        );
     }
 
     #[test]
@@ -349,7 +348,10 @@ mod tests {
 
         let hash_after = hash_extension_contents(tmp.path()).unwrap();
 
-        assert_ne!(hash_before, hash_after, "Hash should change when a file is added");
+        assert_ne!(
+            hash_before, hash_after,
+            "Hash should change when a file is added"
+        );
     }
 
     #[test]
@@ -360,11 +362,18 @@ mod tests {
         let hash_before = hash_extension_contents(tmp.path()).unwrap();
 
         // Write a .sig file — should not affect the hash
-        fs::write(tmp.path().join(".sig"), r#"{"hash":"abc","signer":"x","timestamp":"t","verified":true}"#).unwrap();
+        fs::write(
+            tmp.path().join(".sig"),
+            r#"{"hash":"abc","signer":"x","timestamp":"t","verified":true}"#,
+        )
+        .unwrap();
 
         let hash_after = hash_extension_contents(tmp.path()).unwrap();
 
-        assert_eq!(hash_before, hash_after, ".sig file should be excluded from hash computation");
+        assert_eq!(
+            hash_before, hash_after,
+            ".sig file should be excluded from hash computation"
+        );
     }
 
     #[test]
@@ -381,7 +390,10 @@ mod tests {
 
         let hash_after = hash_extension_contents(tmp.path()).unwrap();
 
-        assert_eq!(hash_before, hash_after, "node_modules should be excluded from hash");
+        assert_eq!(
+            hash_before, hash_after,
+            "node_modules should be excluded from hash"
+        );
     }
 
     #[test]
@@ -391,7 +403,10 @@ mod tests {
 
         let info = sign_extension(tmp.path(), "test-developer", None).unwrap();
 
-        assert!(tmp.path().join(".sig").exists(), ".sig file should be created");
+        assert!(
+            tmp.path().join(".sig").exists(),
+            ".sig file should be created"
+        );
         assert_eq!(info.signer, "test-developer");
         assert!(info.verified);
         assert!(!info.hash.is_empty());
@@ -406,7 +421,10 @@ mod tests {
 
         let info = sign_extension(tmp.path(), "test-developer", Some(&test_signing_key())).unwrap();
 
-        assert!(tmp.path().join(".sig").exists(), ".sig file should be created");
+        assert!(
+            tmp.path().join(".sig").exists(),
+            ".sig file should be created"
+        );
         assert_eq!(info.signer, "test-developer");
         assert!(info.verified);
         assert!(!info.hash.is_empty());
@@ -426,7 +444,10 @@ mod tests {
         let result = verify_extension(tmp.path()).unwrap();
         assert!(result.is_some());
         let info = result.unwrap();
-        assert!(info.verified, "Legacy signature should be valid for unmodified extension");
+        assert!(
+            info.verified,
+            "Legacy signature should be valid for unmodified extension"
+        );
     }
 
     #[test]
@@ -439,7 +460,10 @@ mod tests {
         let result = verify_extension_with_key(tmp.path(), &test_public_key()).unwrap();
         assert!(result.is_some());
         let info = result.unwrap();
-        assert!(info.verified, "Ed25519 signature should be valid for unmodified extension");
+        assert!(
+            info.verified,
+            "Ed25519 signature should be valid for unmodified extension"
+        );
     }
 
     #[test]
@@ -455,7 +479,10 @@ mod tests {
         let result = verify_extension(tmp.path()).unwrap();
         assert!(result.is_some());
         let info = result.unwrap();
-        assert!(!info.verified, "Legacy signature should be invalid after tampering");
+        assert!(
+            !info.verified,
+            "Legacy signature should be invalid after tampering"
+        );
     }
 
     #[test]
@@ -469,7 +496,10 @@ mod tests {
         fs::write(tmp.path().join("dist/index.js"), "alert('hacked');").unwrap();
 
         let result = verify_extension_with_key(tmp.path(), &test_public_key());
-        assert!(result.is_err(), "Ed25519 verification should fail (return error) after tampering");
+        assert!(
+            result.is_err(),
+            "Ed25519 verification should fail (return error) after tampering"
+        );
     }
 
     #[test]
@@ -482,7 +512,10 @@ mod tests {
         sign_extension(tmp.path(), "dev", Some(&fake_key.to_bytes())).unwrap();
 
         let result = verify_extension_with_key(tmp.path(), &test_public_key());
-        assert!(result.is_err(), "Signature from wrong key should fail verification");
+        assert!(
+            result.is_err(),
+            "Signature from wrong key should fail verification"
+        );
     }
 
     #[test]
@@ -536,7 +569,10 @@ mod tests {
         fs::write(tmp.path().join("dist/index.js"), "console.log('v2');").unwrap();
         let info2 = sign_extension(tmp.path(), "signer-b", None).unwrap();
 
-        assert_ne!(info1.hash, info2.hash, "Hash should change after modification");
+        assert_ne!(
+            info1.hash, info2.hash,
+            "Hash should change after modification"
+        );
         assert_eq!(info2.signer, "signer-b");
 
         // The new signature should verify
@@ -549,7 +585,11 @@ mod tests {
         let tmp = tempdir().unwrap();
         // Empty directory should produce a valid (though degenerate) hash
         let hash = hash_extension_contents(tmp.path()).unwrap();
-        assert_eq!(hash.len(), 64, "Should still produce a valid SHA-256 hex digest");
+        assert_eq!(
+            hash.len(),
+            64,
+            "Should still produce a valid SHA-256 hex digest"
+        );
     }
 
     #[test]
@@ -575,8 +615,14 @@ mod tests {
             if path.is_dir() && path.join("package.json").exists() {
                 let ext_name = path.file_name().unwrap().to_string_lossy().to_string();
                 sign_extension(&path, "Xplorer Team", Some(&test_signing_key())).unwrap();
-                let info = verify_extension_with_key(&path, &test_public_key()).unwrap().unwrap();
-                assert!(info.verified, "Bundled extension '{}' should verify after signing", ext_name);
+                let info = verify_extension_with_key(&path, &test_public_key())
+                    .unwrap()
+                    .unwrap();
+                assert!(
+                    info.verified,
+                    "Bundled extension '{}' should verify after signing",
+                    ext_name
+                );
             }
         }
     }
@@ -617,7 +663,9 @@ mod tests {
         assert!(info.ed25519_signature.is_some());
 
         // Verify
-        let verified = verify_extension_with_key(tmp.path(), &test_public_key()).unwrap().unwrap();
+        let verified = verify_extension_with_key(tmp.path(), &test_public_key())
+            .unwrap()
+            .unwrap();
         assert!(verified.verified);
         assert!(verified.ed25519_signature.is_some());
     }
@@ -635,7 +683,9 @@ mod tests {
         print!("  const OFFICIAL_PUBLIC_KEY: [u8; 32] = [\n    ");
         for (i, b) in pk_bytes.iter().enumerate() {
             print!("0x{:02x}, ", b);
-            if (i + 1) % 8 == 0 && i < 31 { print!("\n    "); }
+            if (i + 1) % 8 == 0 && i < 31 {
+                print!("\n    ");
+            }
         }
         println!("\n  ];");
         println!("===========================\n");

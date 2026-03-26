@@ -50,12 +50,18 @@ impl AuditLog {
     }
 
     fn load_from_disk(&mut self) {
-        let Some(path) = Self::log_file_path() else { return };
+        let Some(path) = Self::log_file_path() else {
+            return;
+        };
         if !path.exists() {
             return;
         }
-        let Ok(data) = fs::read_to_string(&path) else { return };
-        let Ok(entries) = serde_json::from_str::<Vec<AuditEntry>>(&data) else { return };
+        let Ok(data) = fs::read_to_string(&path) else {
+            return;
+        };
+        let Ok(entries) = serde_json::from_str::<Vec<AuditEntry>>(&data) else {
+            return;
+        };
         for entry in entries {
             if entry.id >= self.next_id {
                 self.next_id = entry.id + 1;
@@ -68,7 +74,9 @@ impl AuditLog {
     }
 
     fn flush_to_disk(&self) {
-        let Some(path) = Self::log_file_path() else { return };
+        let Some(path) = Self::log_file_path() else {
+            return;
+        };
         if let Some(parent) = path.parent() {
             let _ = fs::create_dir_all(parent);
         }
@@ -171,8 +179,7 @@ impl AuditLog {
                 entry.success
             ));
         }
-        fs::write(output_path, csv)
-            .map_err(|e| format!("Failed to write CSV: {}", e))?;
+        fs::write(output_path, csv).map_err(|e| format!("Failed to write CSV: {}", e))?;
         Ok(())
     }
 }
@@ -249,12 +256,7 @@ mod tests {
             pending_writes: 0,
         };
         for i in 0..RING_BUFFER_CAPACITY + 100 {
-            log.add_entry(
-                "test".to_string(),
-                vec![format!("/path/{}", i)],
-                None,
-                true,
-            );
+            log.add_entry("test".to_string(), vec![format!("/path/{}", i)], None, true);
         }
         assert_eq!(log.entries.len(), RING_BUFFER_CAPACITY);
         assert!(log.entries.front().unwrap().id > 100);

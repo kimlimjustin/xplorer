@@ -12,10 +12,10 @@
 // DuplicateFinder benchmarks, which may need a public API addition.
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use xplorer::duplicate_finder::DuplicateFinder;
-use xplorer::shortcuts::{types::*, manager::*};
 use std::{fs, path::Path};
 use tempfile::TempDir;
+use xplorer::duplicate_finder::DuplicateFinder;
+use xplorer::shortcuts::{manager::*, types::*};
 
 fn create_test_files(dir: &Path, count: usize) {
     for i in 0..count {
@@ -71,11 +71,7 @@ fn benchmark_duplicate_finder_builder(c: &mut Criterion) {
                 .min_file_size(black_box(1024))
                 .max_file_size(black_box(10_000_000))
                 .include_hidden(black_box(false))
-                .file_extensions(black_box(vec![
-                    "txt".into(),
-                    "rs".into(),
-                    "json".into(),
-                ]))
+                .file_extensions(black_box(vec!["txt".into(), "rs".into(), "json".into()]))
                 .exclude_paths(black_box(vec![
                     std::path::PathBuf::from("node_modules"),
                     std::path::PathBuf::from(".git"),

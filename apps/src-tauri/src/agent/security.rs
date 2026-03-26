@@ -8,7 +8,9 @@ pub fn normalize_path(path: &str) -> std::path::PathBuf {
     let mut components: Vec<std::path::Component> = Vec::new();
     for component in p.components() {
         match component {
-            std::path::Component::ParentDir => { components.pop(); }
+            std::path::Component::ParentDir => {
+                components.pop();
+            }
             std::path::Component::CurDir => {}
             c => components.push(c),
         }
@@ -31,15 +33,19 @@ pub fn validate_agent_path(path: &str) -> Result<(), String> {
         let trimmed = path.trim_start();
         if trimmed.starts_with("\\\\?\\")
             || trimmed.starts_with("\\\\.\\")
-            || (trimmed.starts_with("\\\\") && !trimmed.starts_with("\\\\?") && !trimmed.starts_with("\\\\."))
+            || (trimmed.starts_with("\\\\")
+                && !trimmed.starts_with("\\\\?")
+                && !trimmed.starts_with("\\\\."))
         {
-            return Err(format!("Access denied: UNC/device paths are not allowed: '{}'", path));
+            return Err(format!(
+                "Access denied: UNC/device paths are not allowed: '{}'",
+                path
+            ));
         }
     }
 
     // Normalize the path before validation to collapse ".." etc.
-    let canonical = std::fs::canonicalize(path)
-        .unwrap_or_else(|_| normalize_path(path));
+    let canonical = std::fs::canonicalize(path).unwrap_or_else(|_| normalize_path(path));
     let path_str = canonical.to_string_lossy().to_lowercase();
     #[cfg(target_os = "windows")]
     {
@@ -53,19 +59,32 @@ pub fn validate_agent_path(path: &str) -> Result<(), String> {
         ];
         for b in &blocked {
             if path_str.starts_with(b) {
-                return Err(format!("Access denied: path '{}' is in a protected system directory", path));
+                return Err(format!(
+                    "Access denied: path '{}' is in a protected system directory",
+                    path
+                ));
             }
         }
         // Block sensitive user directories
         if let Some(home) = dirs::home_dir() {
             let home_str = home.to_string_lossy().to_lowercase();
-            let sensitive_user_dirs = [".ssh", ".gnupg", ".aws", ".azure", ".config\\gcloud",
-                "appdata\\local\\google\\chrome", "appdata\\local\\microsoft\\edge",
-                "appdata\\roaming\\mozilla\\firefox"];
+            let sensitive_user_dirs = [
+                ".ssh",
+                ".gnupg",
+                ".aws",
+                ".azure",
+                ".config\\gcloud",
+                "appdata\\local\\google\\chrome",
+                "appdata\\local\\microsoft\\edge",
+                "appdata\\roaming\\mozilla\\firefox",
+            ];
             for dir in &sensitive_user_dirs {
                 let blocked_path = format!("{}\\{}", home_str, dir);
                 if path_str.starts_with(&blocked_path) {
-                    return Err(format!("Access denied: path '{}' contains sensitive user data", path));
+                    return Err(format!(
+                        "Access denied: path '{}' contains sensitive user data",
+                        path
+                    ));
                 }
             }
         }
@@ -73,24 +92,44 @@ pub fn validate_agent_path(path: &str) -> Result<(), String> {
     #[cfg(not(target_os = "windows"))]
     {
         let blocked = [
-            "/etc/shadow", "/etc/passwd", "/etc/sudoers", "/etc/security",
-            "/boot/", "/sys/", "/proc/", "/dev/",
+            "/etc/shadow",
+            "/etc/passwd",
+            "/etc/sudoers",
+            "/etc/security",
+            "/boot/",
+            "/sys/",
+            "/proc/",
+            "/dev/",
             "/root/",
         ];
         for b in &blocked {
             if path_str.starts_with(b) {
-                return Err(format!("Access denied: path '{}' is in a protected system directory", path));
+                return Err(format!(
+                    "Access denied: path '{}' is in a protected system directory",
+                    path
+                ));
             }
         }
         // Block sensitive user directories
         if let Some(home) = dirs::home_dir() {
             let home_str = home.to_string_lossy().to_lowercase();
-            let sensitive_user_dirs = [".ssh", ".gnupg", ".aws", ".azure", ".config/gcloud",
-                ".mozilla", ".config/google-chrome", ".config/chromium"];
+            let sensitive_user_dirs = [
+                ".ssh",
+                ".gnupg",
+                ".aws",
+                ".azure",
+                ".config/gcloud",
+                ".mozilla",
+                ".config/google-chrome",
+                ".config/chromium",
+            ];
             for dir in &sensitive_user_dirs {
                 let blocked_path = format!("{}/{}", home_str, dir);
                 if path_str.starts_with(&blocked_path) {
-                    return Err(format!("Access denied: path '{}' contains sensitive user data", path));
+                    return Err(format!(
+                        "Access denied: path '{}' contains sensitive user data",
+                        path
+                    ));
                 }
             }
         }
@@ -188,10 +227,32 @@ pub fn is_blocked_command(cmd: &str) -> Option<&'static str> {
 
     // Block pipe to dangerous commands (expanded list)
     let dangerous_pipe_targets = [
-        "rm", "del", "curl", "wget", "powershell", "pwsh", "sudo",
-        "bash", "sh", "zsh", "fish", "csh", "tcsh",
-        "python", "python3", "py", "perl", "node", "ruby", "php",
-        "cmd", "env", "nc", "ncat", "netcat", "dd",
+        "rm",
+        "del",
+        "curl",
+        "wget",
+        "powershell",
+        "pwsh",
+        "sudo",
+        "bash",
+        "sh",
+        "zsh",
+        "fish",
+        "csh",
+        "tcsh",
+        "python",
+        "python3",
+        "py",
+        "perl",
+        "node",
+        "ruby",
+        "php",
+        "cmd",
+        "env",
+        "nc",
+        "ncat",
+        "netcat",
+        "dd",
     ];
     for target in &dangerous_pipe_targets {
         if cmd_lower.contains(&format!("| {}", target))
@@ -251,7 +312,10 @@ pub fn is_network_command(cmd: &str) -> Option<&'static str> {
     }
 
     // Block common network-related flags/patterns in commands
-    if cmd_lower.contains("http://") || cmd_lower.contains("https://") || cmd_lower.contains("ftp://") {
+    if cmd_lower.contains("http://")
+        || cmd_lower.contains("https://")
+        || cmd_lower.contains("ftp://")
+    {
         return Some("URL in command arguments");
     }
 
@@ -286,8 +350,7 @@ pub fn validate_agent_path_with_permissions(
     validate_agent_path(path)?;
 
     // Normalize for comparison
-    let canonical = std::fs::canonicalize(path)
-        .unwrap_or_else(|_| normalize_path(path));
+    let canonical = std::fs::canonicalize(path).unwrap_or_else(|_| normalize_path(path));
     let path_str = canonical.to_string_lossy().to_lowercase();
     // Strip \\?\ prefix on Windows
     #[cfg(target_os = "windows")]
@@ -297,7 +360,10 @@ pub fn validate_agent_path_with_permissions(
     for bp in blocked_paths {
         let bp_lower = bp.trim().to_lowercase().replace('/', "\\");
         if !bp_lower.is_empty() && path_str.starts_with(&bp_lower) {
-            return Err(format!("Access denied: path '{}' is in a user-blocked directory", path));
+            return Err(format!(
+                "Access denied: path '{}' is in a user-blocked directory",
+                path
+            ));
         }
     }
 
@@ -329,21 +395,32 @@ mod tests {
         let result = validate_agent_path("file\0hidden");
         assert!(result.is_err(), "null bytes should be rejected");
         let err = result.unwrap_err();
-        assert!(err.contains("null bytes"), "error should mention null bytes, got: {}", err);
+        assert!(
+            err.contains("null bytes"),
+            "error should mention null bytes, got: {}",
+            err
+        );
     }
 
     #[test]
     fn test_validate_allows_normal_temp_path() {
         let temp = tempfile::tempdir().unwrap();
         let result = validate_agent_path(temp.path().to_str().unwrap());
-        assert!(result.is_ok(), "valid temp path should be allowed: {:?}", result.err());
+        assert!(
+            result.is_ok(),
+            "valid temp path should be allowed: {:?}",
+            result.err()
+        );
     }
 
     #[cfg(target_os = "windows")]
     #[test]
     fn test_validate_rejects_windows_system_dir() {
         let result = validate_agent_path("C:\\Windows\\nonexistent_test_dir\\file.txt");
-        assert!(result.is_err(), "Windows system directory should be rejected");
+        assert!(
+            result.is_err(),
+            "Windows system directory should be rejected"
+        );
     }
 
     #[cfg(target_os = "windows")]
@@ -498,25 +575,37 @@ mod tests {
     #[test]
     fn test_blocked_command_env() {
         let result = is_blocked_command("env rm -rf /");
-        assert!(result.is_some(), "env should be blocked (can prefix arbitrary commands)");
+        assert!(
+            result.is_some(),
+            "env should be blocked (can prefix arbitrary commands)"
+        );
     }
 
     #[test]
     fn test_blocked_command_case_insensitive() {
         let result = is_blocked_command("RM -rf /");
-        assert!(result.is_some(), "blocked commands should be case insensitive");
+        assert!(
+            result.is_some(),
+            "blocked commands should be case insensitive"
+        );
     }
 
     #[test]
     fn test_blocked_backtick_substitution() {
         let result = is_blocked_command("echo `rm -rf /`");
-        assert!(result.is_some(), "backtick command substitution should be blocked");
+        assert!(
+            result.is_some(),
+            "backtick command substitution should be blocked"
+        );
     }
 
     #[test]
     fn test_blocked_dollar_paren_substitution() {
         let result = is_blocked_command("echo $(rm -rf /)");
-        assert!(result.is_some(), "dollar-paren command substitution should be blocked");
+        assert!(
+            result.is_some(),
+            "dollar-paren command substitution should be blocked"
+        );
     }
 
     #[test]
@@ -638,7 +727,10 @@ mod tests {
             // normalize_path fallback.
             let ssh_path = home.join(".ssh").join("__nonexistent_test_key__");
             let result = validate_agent_path(ssh_path.to_str().unwrap());
-            assert!(result.is_err(), ".ssh with non-existent sub-path should be rejected via normalize_path fallback");
+            assert!(
+                result.is_err(),
+                ".ssh with non-existent sub-path should be rejected via normalize_path fallback"
+            );
             assert!(result.unwrap_err().contains("sensitive user data"));
         }
     }
@@ -649,7 +741,10 @@ mod tests {
         if let Some(home) = dirs::home_dir() {
             let gnupg_path = home.join(".gnupg").join("__nonexistent_test_key__");
             let result = validate_agent_path(gnupg_path.to_str().unwrap());
-            assert!(result.is_err(), ".gnupg with non-existent sub-path should be rejected");
+            assert!(
+                result.is_err(),
+                ".gnupg with non-existent sub-path should be rejected"
+            );
         }
     }
 
@@ -659,7 +754,10 @@ mod tests {
         if let Some(home) = dirs::home_dir() {
             let aws_path = home.join(".aws").join("__nonexistent_test_credentials__");
             let result = validate_agent_path(aws_path.to_str().unwrap());
-            assert!(result.is_err(), ".aws with non-existent sub-path should be rejected");
+            assert!(
+                result.is_err(),
+                ".aws with non-existent sub-path should be rejected"
+            );
         }
     }
 
@@ -692,13 +790,19 @@ mod tests {
     #[test]
     fn test_blocked_pipe_no_space() {
         let result = is_blocked_command("cat data.txt |rm file");
-        assert!(result.is_some(), "piping without space should also be blocked");
+        assert!(
+            result.is_some(),
+            "piping without space should also be blocked"
+        );
     }
 
     #[test]
     fn test_blocked_redirect_to_windows_system() {
         let result = is_blocked_command("echo hacked > c:\\windows\\test.txt");
-        assert!(result.is_some(), "redirect to c:\\windows should be blocked");
+        assert!(
+            result.is_some(),
+            "redirect to c:\\windows should be blocked"
+        );
     }
 
     #[test]
@@ -731,7 +835,10 @@ mod tests {
     #[test]
     fn test_blocked_command_leading_whitespace() {
         let result = is_blocked_command("  rm -rf /");
-        assert!(result.is_some(), "blocked commands with leading whitespace should be caught");
+        assert!(
+            result.is_some(),
+            "blocked commands with leading whitespace should be caught"
+        );
     }
 
     #[test]

@@ -46,8 +46,8 @@ fn load_file_tags_from_disk(
     if !path.exists() {
         return Ok(HashMap::new());
     }
-    let data = std::fs::read_to_string(&path)
-        .map_err(|e| format!("Failed to read file tags: {}", e))?;
+    let data =
+        std::fs::read_to_string(&path).map_err(|e| format!("Failed to read file tags: {}", e))?;
     let map: HashMap<String, Vec<FileTag>> =
         serde_json::from_str(&data).map_err(|e| format!("Failed to parse file tags: {}", e))?;
     Ok(map)
@@ -72,7 +72,9 @@ fn flush_file_tags_to_disk(
     app_handle: &tauri::AppHandle,
     guard: &MutexGuard<'static, Option<HashMap<String, Vec<FileTag>>>>,
 ) -> Result<(), String> {
-    let map = guard.as_ref().ok_or_else(|| "Storage cache not initialized".to_string())?;
+    let map = guard
+        .as_ref()
+        .ok_or_else(|| "Storage cache not initialized".to_string())?;
     let path = file_tags_path(app_handle)?;
     let data =
         serde_json::to_string_pretty(map).map_err(|e| format!("Failed to serialize: {}", e))?;
@@ -102,7 +104,9 @@ pub async fn set_file_tags(
     app_handle: tauri::AppHandle,
 ) -> Result<(), String> {
     let mut guard = ensure_file_tags_cache(&app_handle)?;
-    let map = guard.as_mut().ok_or_else(|| "Storage cache not initialized".to_string())?;
+    let map = guard
+        .as_mut()
+        .ok_or_else(|| "Storage cache not initialized".to_string())?;
     if tags.is_empty() {
         map.remove(&path);
     } else {
@@ -169,7 +173,9 @@ pub async fn remove_all_tags_from_file(
     app_handle: tauri::AppHandle,
 ) -> Result<(), String> {
     let mut guard = ensure_file_tags_cache(&app_handle)?;
-    let map = guard.as_mut().ok_or_else(|| "Storage cache not initialized".to_string())?;
+    let map = guard
+        .as_mut()
+        .ok_or_else(|| "Storage cache not initialized".to_string())?;
     map.remove(&path);
     flush_file_tags_to_disk(&app_handle, &guard)?;
     Ok(())
@@ -182,7 +188,9 @@ pub async fn remove_tag_globally(
     app_handle: tauri::AppHandle,
 ) -> Result<(), String> {
     let mut guard = ensure_file_tags_cache(&app_handle)?;
-    let map = guard.as_mut().ok_or_else(|| "Storage cache not initialized".to_string())?;
+    let map = guard
+        .as_mut()
+        .ok_or_else(|| "Storage cache not initialized".to_string())?;
     for tags in map.values_mut() {
         tags.retain(|t| t.name != tag_name);
     }
@@ -203,7 +211,9 @@ pub async fn batch_add_tags(
     app_handle: tauri::AppHandle,
 ) -> Result<(), String> {
     let mut guard = ensure_file_tags_cache(&app_handle)?;
-    let map = guard.as_mut().ok_or_else(|| "Storage cache not initialized".to_string())?;
+    let map = guard
+        .as_mut()
+        .ok_or_else(|| "Storage cache not initialized".to_string())?;
     for path in paths {
         let entry = map.entry(path).or_default();
         for tag in &tags {
@@ -224,7 +234,9 @@ pub async fn batch_remove_tags(
     app_handle: tauri::AppHandle,
 ) -> Result<(), String> {
     let mut guard = ensure_file_tags_cache(&app_handle)?;
-    let map = guard.as_mut().ok_or_else(|| "Storage cache not initialized".to_string())?;
+    let map = guard
+        .as_mut()
+        .ok_or_else(|| "Storage cache not initialized".to_string())?;
     for path in &paths {
         if let Some(tags) = map.get_mut(path) {
             tags.retain(|t| !tag_names.contains(&t.name));
@@ -275,7 +287,9 @@ fn load_tag_categories_from_disk(
 fn ensure_tag_categories_cache(
     app_handle: &tauri::AppHandle,
 ) -> Result<MutexGuard<'static, Option<Vec<TagCategory>>>, String> {
-    let mut guard = TAG_CATEGORIES_CACHE.lock().unwrap_or_else(|e| e.into_inner());
+    let mut guard = TAG_CATEGORIES_CACHE
+        .lock()
+        .unwrap_or_else(|e| e.into_inner());
     if guard.is_none() {
         let data = load_tag_categories_from_disk(app_handle)?;
         *guard = Some(data);
@@ -288,12 +302,13 @@ fn flush_tag_categories_to_disk(
     app_handle: &tauri::AppHandle,
     guard: &MutexGuard<'static, Option<Vec<TagCategory>>>,
 ) -> Result<(), String> {
-    let categories = guard.as_ref().ok_or_else(|| "Storage cache not initialized".to_string())?;
+    let categories = guard
+        .as_ref()
+        .ok_or_else(|| "Storage cache not initialized".to_string())?;
     let path = tag_categories_path(app_handle)?;
     let data = serde_json::to_string_pretty(categories)
         .map_err(|e| format!("Failed to serialize: {}", e))?;
-    std::fs::write(&path, data)
-        .map_err(|e| format!("Failed to write tag categories: {}", e))?;
+    std::fs::write(&path, data).map_err(|e| format!("Failed to write tag categories: {}", e))?;
     Ok(())
 }
 
@@ -320,7 +335,9 @@ pub async fn add_tag_category(
         parent_id,
     };
     let mut guard = ensure_tag_categories_cache(&app_handle)?;
-    let categories = guard.as_mut().ok_or_else(|| "Storage cache not initialized".to_string())?;
+    let categories = guard
+        .as_mut()
+        .ok_or_else(|| "Storage cache not initialized".to_string())?;
     categories.push(category.clone());
     flush_tag_categories_to_disk(&app_handle, &guard)?;
     Ok(category)
@@ -335,7 +352,9 @@ pub async fn update_tag_category(
     app_handle: tauri::AppHandle,
 ) -> Result<(), String> {
     let mut guard = ensure_tag_categories_cache(&app_handle)?;
-    let categories = guard.as_mut().ok_or_else(|| "Storage cache not initialized".to_string())?;
+    let categories = guard
+        .as_mut()
+        .ok_or_else(|| "Storage cache not initialized".to_string())?;
     let cat = categories
         .iter_mut()
         .find(|c| c.id == id)
@@ -353,12 +372,11 @@ pub async fn update_tag_category(
 }
 
 #[tauri::command]
-pub async fn delete_tag_category(
-    id: String,
-    app_handle: tauri::AppHandle,
-) -> Result<(), String> {
+pub async fn delete_tag_category(id: String, app_handle: tauri::AppHandle) -> Result<(), String> {
     let mut guard = ensure_tag_categories_cache(&app_handle)?;
-    let categories = guard.as_mut().ok_or_else(|| "Storage cache not initialized".to_string())?;
+    let categories = guard
+        .as_mut()
+        .ok_or_else(|| "Storage cache not initialized".to_string())?;
     // Also orphan children by setting their parent_id to None
     for cat in categories.iter_mut() {
         if cat.parent_id.as_deref() == Some(&id) {

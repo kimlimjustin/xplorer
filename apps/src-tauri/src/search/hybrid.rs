@@ -91,7 +91,8 @@ impl HybridSearcher {
     /// Inspect a `ParsedQuery` and decide what kind of search the user wants.
     pub fn classify_intent(parsed: &super::query_parser::ParsedQuery) -> SearchIntent {
         let raw = parsed.intent.as_deref().unwrap_or("").to_lowercase();
-        let keywords_lower: Vec<String> = parsed.keywords.iter().map(|k| k.to_lowercase()).collect();
+        let keywords_lower: Vec<String> =
+            parsed.keywords.iter().map(|k| k.to_lowercase()).collect();
         let joined = keywords_lower.join(" ");
 
         // "similar", "like", "resembl" anywhere in intent or keywords → FindSimilar
@@ -169,8 +170,10 @@ impl HybridSearcher {
         // Build lookup maps for merging matches from both sources.
         let text_map: HashMap<&str, &super::SearchResult> =
             text_results.iter().map(|r| (r.path.as_str(), r)).collect();
-        let sem_map: HashMap<&str, &super::SearchResult> =
-            semantic_results.iter().map(|r| (r.path.as_str(), r)).collect();
+        let sem_map: HashMap<&str, &super::SearchResult> = semantic_results
+            .iter()
+            .map(|r| (r.path.as_str(), r))
+            .collect();
 
         let mut out: Vec<super::SearchResult> = Vec::with_capacity(limit.min(fused.len()));
 
@@ -351,7 +354,11 @@ pub fn late_interaction_rescore(
         }
     }
 
-    results.sort_by(|a, b| b.score.partial_cmp(&a.score).unwrap_or(std::cmp::Ordering::Equal));
+    results.sort_by(|a, b| {
+        b.score
+            .partial_cmp(&a.score)
+            .unwrap_or(std::cmp::Ordering::Equal)
+    });
 }
 
 // ===========================================================================
@@ -364,8 +371,12 @@ mod tests {
 
     // Helpers ----------------------------------------------------------------
 
-    fn make_parsed(intent: &str, keywords: &[&str], has_metadata: bool) -> super::super::query_parser::ParsedQuery {
-        use super::super::query_parser::{ParsedQuery, MetadataFilters};
+    fn make_parsed(
+        intent: &str,
+        keywords: &[&str],
+        has_metadata: bool,
+    ) -> super::super::query_parser::ParsedQuery {
+        use super::super::query_parser::{MetadataFilters, ParsedQuery};
         let metadata = if has_metadata {
             MetadataFilters {
                 file_type: Some(super::super::FileTypeCategory::Documents),
@@ -385,7 +396,11 @@ mod tests {
             negations: vec![],
             field_filters: vec![],
             metadata,
-            intent: if intent.is_empty() { None } else { Some(intent.to_string()) },
+            intent: if intent.is_empty() {
+                None
+            } else {
+                Some(intent.to_string())
+            },
         }
     }
 
@@ -404,7 +419,12 @@ mod tests {
         }
     }
 
-    fn make_embedding(path: &str, chunk_id: usize, text: &str, embedding: Vec<f32>) -> EmbeddingEntry {
+    fn make_embedding(
+        path: &str,
+        chunk_id: usize,
+        text: &str,
+        embedding: Vec<f32>,
+    ) -> EmbeddingEntry {
         EmbeddingEntry {
             path: path.to_string(),
             chunk_id,
@@ -419,39 +439,63 @@ mod tests {
     #[test]
     fn test_classify_intent_general() {
         let parsed = make_parsed("search", &["hello", "world"], false);
-        assert_eq!(HybridSearcher::classify_intent(&parsed), SearchIntent::General);
+        assert_eq!(
+            HybridSearcher::classify_intent(&parsed),
+            SearchIntent::General
+        );
     }
 
     #[test]
     fn test_classify_intent_similar() {
         let parsed = make_parsed("find similar", &["sunset", "photo"], false);
-        assert_eq!(HybridSearcher::classify_intent(&parsed), SearchIntent::FindSimilar);
+        assert_eq!(
+            HybridSearcher::classify_intent(&parsed),
+            SearchIntent::FindSimilar
+        );
 
         // Also via keywords.
         let parsed2 = make_parsed("search", &["files", "like", "this"], false);
-        assert_eq!(HybridSearcher::classify_intent(&parsed2), SearchIntent::FindSimilar);
+        assert_eq!(
+            HybridSearcher::classify_intent(&parsed2),
+            SearchIntent::FindSimilar
+        );
 
         // "resembl" prefix.
         let parsed3 = make_parsed("search", &["resembling", "a", "cat"], false);
-        assert_eq!(HybridSearcher::classify_intent(&parsed3), SearchIntent::FindSimilar);
+        assert_eq!(
+            HybridSearcher::classify_intent(&parsed3),
+            SearchIntent::FindSimilar
+        );
     }
 
     #[test]
     fn test_classify_intent_metadata() {
         let parsed = make_parsed("search", &["large", "pdf"], true);
-        assert_eq!(HybridSearcher::classify_intent(&parsed), SearchIntent::FindByMetadata);
+        assert_eq!(
+            HybridSearcher::classify_intent(&parsed),
+            SearchIntent::FindByMetadata
+        );
     }
 
     #[test]
     fn test_classify_intent_content() {
         let parsed = make_parsed("search", &["photos", "of", "dogs"], false);
-        assert_eq!(HybridSearcher::classify_intent(&parsed), SearchIntent::FindByContent);
+        assert_eq!(
+            HybridSearcher::classify_intent(&parsed),
+            SearchIntent::FindByContent
+        );
 
         let parsed2 = make_parsed("find images of cats", &["cats"], false);
-        assert_eq!(HybridSearcher::classify_intent(&parsed2), SearchIntent::FindByContent);
+        assert_eq!(
+            HybridSearcher::classify_intent(&parsed2),
+            SearchIntent::FindByContent
+        );
 
         let parsed3 = make_parsed("search", &["pictures", "of", "mountains"], false);
-        assert_eq!(HybridSearcher::classify_intent(&parsed3), SearchIntent::FindByContent);
+        assert_eq!(
+            HybridSearcher::classify_intent(&parsed3),
+            SearchIntent::FindByContent
+        );
     }
 
     // Cosine similarity ------------------------------------------------------
@@ -460,7 +504,10 @@ mod tests {
     fn test_cosine_similarity_identical() {
         let v = vec![1.0_f32, 2.0, 3.0];
         let sim = cosine_similarity(&v, &v);
-        assert!((sim - 1.0).abs() < 1e-6, "identical vectors should have similarity ~1.0, got {sim}");
+        assert!(
+            (sim - 1.0).abs() < 1e-6,
+            "identical vectors should have similarity ~1.0, got {sim}"
+        );
     }
 
     #[test]
@@ -468,7 +515,10 @@ mod tests {
         let a = vec![1.0_f32, 0.0, 0.0];
         let b = vec![0.0_f32, 1.0, 0.0];
         let sim = cosine_similarity(&a, &b);
-        assert!(sim.abs() < 1e-6, "orthogonal vectors should have similarity ~0.0, got {sim}");
+        assert!(
+            sim.abs() < 1e-6,
+            "orthogonal vectors should have similarity ~0.0, got {sim}"
+        );
     }
 
     // Fusion -----------------------------------------------------------------
@@ -549,7 +599,10 @@ mod tests {
         let mut doc_content = HashMap::new();
         // /b.txt contains both tokens; /a.txt contains neither.
         doc_content.insert("/a.txt".to_string(), "nothing relevant here".to_string());
-        doc_content.insert("/b.txt".to_string(), "hello world is a greeting".to_string());
+        doc_content.insert(
+            "/b.txt".to_string(),
+            "hello world is a greeting".to_string(),
+        );
 
         late_interaction_rescore(&mut results, &query_tokens, &doc_content);
 
@@ -557,9 +610,17 @@ mod tests {
         assert_eq!(results[0].path, "/b.txt");
 
         // /b.txt's score should have increased by 0.2 * (2/2) = 0.2 → 1.1.
-        assert!((results[0].score - 1.1).abs() < 1e-6, "expected 1.1, got {}", results[0].score);
+        assert!(
+            (results[0].score - 1.1).abs() < 1e-6,
+            "expected 1.1, got {}",
+            results[0].score
+        );
 
         // /a.txt should remain at 1.0 (0 overlap → +0.0).
-        assert!((results[1].score - 1.0).abs() < 1e-6, "expected 1.0, got {}", results[1].score);
+        assert!(
+            (results[1].score - 1.0).abs() < 1e-6,
+            "expected 1.0, got {}",
+            results[1].score
+        );
     }
 }

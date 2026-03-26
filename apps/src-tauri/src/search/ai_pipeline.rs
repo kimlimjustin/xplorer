@@ -43,9 +43,7 @@ pub struct VisionProviderConfig {
 // Constants
 // ---------------------------------------------------------------------------
 
-pub const IMAGE_EXTENSIONS: &[&str] = &[
-    "jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp",
-];
+pub const IMAGE_EXTENSIONS: &[&str] = &["jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp"];
 
 /// Maximum image file size we will attempt to process (20 MB).
 pub const MAX_IMAGE_SIZE: u64 = 20 * 1024 * 1024;
@@ -130,16 +128,8 @@ impl AIPipeline {
 
     /// Return a snapshot of the pipeline's current status.
     pub fn get_status(&self) -> AIIndexStatus {
-        let total_indexed = self
-            .entries
-            .read()
-            .unwrap_or_else(|e| e.into_inner())
-            .len();
-        let queue_length = self
-            .queue
-            .lock()
-            .unwrap_or_else(|e| e.into_inner())
-            .len();
+        let total_indexed = self.entries.read().unwrap_or_else(|e| e.into_inner()).len();
+        let queue_length = self.queue.lock().unwrap_or_else(|e| e.into_inner()).len();
         let vision_model = self
             .vision_model
             .lock()
@@ -291,7 +281,10 @@ impl AIPipeline {
                     let client = super::ollama_client::get_client();
                     match client.detect_vision_model().await {
                         Some(m) => {
-                            *pipeline.vision_model.lock().unwrap_or_else(|e| e.into_inner()) = Some(m.clone());
+                            *pipeline
+                                .vision_model
+                                .lock()
+                                .unwrap_or_else(|e| e.into_inner()) = Some(m.clone());
                             m
                         }
                         None => {
@@ -302,13 +295,22 @@ impl AIPipeline {
                     }
                 }
                 VisionProvider::Claude => {
-                    let m = cfg.model.clone().unwrap_or_else(|| "claude-sonnet-4-6-20250514".to_string());
-                    *pipeline.vision_model.lock().unwrap_or_else(|e| e.into_inner()) = Some(m.clone());
+                    let m = cfg
+                        .model
+                        .clone()
+                        .unwrap_or_else(|| "claude-sonnet-4-6-20250514".to_string());
+                    *pipeline
+                        .vision_model
+                        .lock()
+                        .unwrap_or_else(|e| e.into_inner()) = Some(m.clone());
                     m
                 }
                 VisionProvider::Openai => {
                     let m = cfg.model.clone().unwrap_or_else(|| "gpt-4o".to_string());
-                    *pipeline.vision_model.lock().unwrap_or_else(|e| e.into_inner()) = Some(m.clone());
+                    *pipeline
+                        .vision_model
+                        .lock()
+                        .unwrap_or_else(|e| e.into_inner()) = Some(m.clone());
                     m
                 }
             };
@@ -348,9 +350,9 @@ impl AIPipeline {
                 let prompt = "Describe this image in detail. Include objects, colors, text, people, and any notable features.";
                 let media_type = guess_media_type(&file_path);
 
-                let result = describe_image_with_provider(
-                    &cfg, &model_name, prompt, &b64, &media_type,
-                ).await;
+                let result =
+                    describe_image_with_provider(&cfg, &model_name, prompt, &b64, &media_type)
+                        .await;
 
                 match result {
                     Ok(description) => {
@@ -372,7 +374,8 @@ impl AIPipeline {
 
                         // Store entry
                         {
-                            let mut entries = pipeline.entries.write().unwrap_or_else(|e| e.into_inner());
+                            let mut entries =
+                                pipeline.entries.write().unwrap_or_else(|e| e.into_inner());
                             entries.insert(file_path, entry);
                         }
 
@@ -388,8 +391,14 @@ impl AIPipeline {
             pipeline.is_processing.store(false, Ordering::SeqCst);
             // Final persist
             pipeline.persist();
-            tracing::info!("[ai_pipeline] Processing complete. Total indexed: {}",
-                pipeline.entries.read().unwrap_or_else(|e| e.into_inner()).len());
+            tracing::info!(
+                "[ai_pipeline] Processing complete. Total indexed: {}",
+                pipeline
+                    .entries
+                    .read()
+                    .unwrap_or_else(|e| e.into_inner())
+                    .len()
+            );
         });
     }
 
@@ -408,8 +417,7 @@ impl AIPipeline {
 
 /// Path to the on-disk AI index file.
 fn ai_index_path() -> PathBuf {
-    let base = dirs::data_local_dir()
-        .unwrap_or_else(|| PathBuf::from("."));
+    let base = dirs::data_local_dir().unwrap_or_else(|| PathBuf::from("."));
     base.join("xplorer").join("ai_index.json")
 }
 
@@ -449,8 +457,7 @@ fn load_ai_index() -> HashMap<String, AIIndexEntry> {
 
 /// Path to the on-disk embeddings file.
 fn embeddings_path() -> PathBuf {
-    let base = dirs::data_local_dir()
-        .unwrap_or_else(|| PathBuf::from("."));
+    let base = dirs::data_local_dir().unwrap_or_else(|| PathBuf::from("."));
     base.join("xplorer").join("vector_embeddings.json")
 }
 
@@ -513,11 +520,7 @@ pub fn compute_file_hash(path: &str) -> Option<String> {
 ///   previous chunk into the start of the next (default 40).
 ///
 /// Sentence boundaries recognised: `. `, `! `, `? `, `\n\n`.
-pub fn chunk_text_sentences(
-    text: &str,
-    target_size: usize,
-    min_overlap: usize,
-) -> Vec<String> {
+pub fn chunk_text_sentences(text: &str, target_size: usize, min_overlap: usize) -> Vec<String> {
     if text.trim().is_empty() {
         return Vec::new();
     }
@@ -601,7 +604,7 @@ fn split_sentences(text: &str) -> Vec<String> {
             }
             current = String::new();
             i += 1; // skip the trailing space
-            // Advance past any additional whitespace.
+                    // Advance past any additional whitespace.
             while i < len && chars[i] == ' ' {
                 i += 1;
             }
@@ -804,9 +807,15 @@ async fn describe_image_with_provider(
             let key = config
                 .api_key
                 .clone()
-                .or_else(|| crate::secure_credentials::get_secret("agent-api-key").ok().flatten())
+                .or_else(|| {
+                    crate::secure_credentials::get_secret("agent-api-key")
+                        .ok()
+                        .flatten()
+                })
                 .or_else(|| std::env::var("CLAUDE_API_KEY").ok())
-                .ok_or_else(|| "Claude API key not configured. Set it in Settings → AI Agent.".to_string())?;
+                .ok_or_else(|| {
+                    "Claude API key not configured. Set it in Settings → AI Agent.".to_string()
+                })?;
 
             let client = reqwest::Client::builder()
                 .timeout(std::time::Duration::from_secs(120))
@@ -868,9 +877,15 @@ async fn describe_image_with_provider(
             let key = config
                 .api_key
                 .clone()
-                .or_else(|| crate::secure_credentials::get_secret("agent-openai-api-key").ok().flatten())
+                .or_else(|| {
+                    crate::secure_credentials::get_secret("agent-openai-api-key")
+                        .ok()
+                        .flatten()
+                })
                 .or_else(|| std::env::var("OPENAI_API_KEY").ok())
-                .ok_or_else(|| "OpenAI API key not configured. Set it in Settings → AI Agent.".to_string())?;
+                .ok_or_else(|| {
+                    "OpenAI API key not configured. Set it in Settings → AI Agent.".to_string()
+                })?;
 
             let client = reqwest::Client::builder()
                 .timeout(std::time::Duration::from_secs(120))
@@ -933,13 +948,47 @@ async fn describe_image_with_provider(
 /// Heuristic tag extraction from a description string.
 fn extract_tags(description: &str) -> Vec<String> {
     let candidates = [
-        "person", "people", "face", "landscape", "nature", "animal",
-        "dog", "cat", "bird", "building", "architecture", "car", "vehicle",
-        "food", "text", "document", "screenshot", "chart", "graph",
-        "diagram", "map", "sky", "water", "ocean", "mountain", "tree",
-        "flower", "sunset", "night", "indoor", "outdoor", "street",
-        "city", "abstract", "art", "logo", "icon", "photo",
-        "illustration", "drawing", "painting",
+        "person",
+        "people",
+        "face",
+        "landscape",
+        "nature",
+        "animal",
+        "dog",
+        "cat",
+        "bird",
+        "building",
+        "architecture",
+        "car",
+        "vehicle",
+        "food",
+        "text",
+        "document",
+        "screenshot",
+        "chart",
+        "graph",
+        "diagram",
+        "map",
+        "sky",
+        "water",
+        "ocean",
+        "mountain",
+        "tree",
+        "flower",
+        "sunset",
+        "night",
+        "indoor",
+        "outdoor",
+        "street",
+        "city",
+        "abstract",
+        "art",
+        "logo",
+        "icon",
+        "photo",
+        "illustration",
+        "drawing",
+        "painting",
     ];
 
     let lower = description.to_lowercase();
@@ -1025,8 +1074,7 @@ mod tests {
 
     #[test]
     fn test_extract_tags() {
-        let description =
-            "A person standing outdoors near a large building with a dog";
+        let description = "A person standing outdoors near a large building with a dog";
         let tags = extract_tags_from_description(description);
         assert!(tags.contains(&"person".to_string()));
         assert!(tags.contains(&"outdoor".to_string()));
@@ -1083,10 +1131,7 @@ mod tests {
         // the entry survives the round-trip.
         let pipeline = AIPipeline::new();
         {
-            let mut entries = pipeline
-                .entries
-                .write()
-                .unwrap_or_else(|e| e.into_inner());
+            let mut entries = pipeline.entries.write().unwrap_or_else(|e| e.into_inner());
             entries.insert(
                 "test_persist_key.png".to_string(),
                 AIIndexEntry {
@@ -1112,10 +1157,7 @@ mod tests {
 
         // Cleanup: remove the test key so we don't pollute future runs.
         {
-            let mut entries = pipeline2
-                .entries
-                .write()
-                .unwrap_or_else(|e| e.into_inner());
+            let mut entries = pipeline2.entries.write().unwrap_or_else(|e| e.into_inner());
             entries.remove("test_persist_key.png");
         }
         pipeline2.persist();
@@ -1222,7 +1264,10 @@ mod tests {
         pipeline.set_auto_index(false);
         pipeline.on_file_changed("photo.jpg");
         let status = pipeline.get_status();
-        assert_eq!(status.queue_length, 0, "should not queue when auto-index is off");
+        assert_eq!(
+            status.queue_length, 0,
+            "should not queue when auto-index is off"
+        );
     }
 
     #[test]
@@ -1245,7 +1290,10 @@ mod tests {
         pipeline.set_auto_index(true);
         pipeline.on_file_changed("readme.txt");
         let status = pipeline.get_status();
-        assert_eq!(status.queue_length, 0, "non-image/pdf files should be ignored");
+        assert_eq!(
+            status.queue_length, 0,
+            "non-image/pdf files should be ignored"
+        );
     }
 
     // -- helpers ------------------------------------------------------------

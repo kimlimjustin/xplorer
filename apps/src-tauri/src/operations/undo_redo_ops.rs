@@ -1,9 +1,9 @@
+use chrono::Local;
+use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::{LazyLock, Mutex};
-use serde::{Serialize, Deserialize};
 use tauri::command;
-use chrono::Local;
 
 const MAX_HISTORY: usize = 50;
 
@@ -35,34 +35,41 @@ impl FileOperation {
     pub fn describe(&self) -> String {
         match self {
             FileOperation::Copy { src, dest } => {
-                let src_name = Path::new(src).file_name()
+                let src_name = Path::new(src)
+                    .file_name()
                     .map(|n| n.to_string_lossy().to_string())
                     .unwrap_or_else(|| src.clone());
-                let dest_dir = Path::new(dest).parent()
+                let dest_dir = Path::new(dest)
+                    .parent()
                     .map(|p| p.to_string_lossy().to_string())
                     .unwrap_or_else(|| dest.clone());
                 format!("copied {} to {}", src_name, dest_dir)
             }
             FileOperation::Move { src, dest } => {
-                let name = Path::new(dest).file_name()
+                let name = Path::new(dest)
+                    .file_name()
                     .map(|n| n.to_string_lossy().to_string())
                     .unwrap_or_else(|| dest.clone());
-                let src_dir = Path::new(src).parent()
+                let src_dir = Path::new(src)
+                    .parent()
                     .map(|p| p.to_string_lossy().to_string())
                     .unwrap_or_else(|| src.clone());
                 format!("moved {} back to {}", name, src_dir)
             }
             FileOperation::Delete { original_path, .. } => {
-                let name = Path::new(original_path).file_name()
+                let name = Path::new(original_path)
+                    .file_name()
                     .map(|n| n.to_string_lossy().to_string())
                     .unwrap_or_else(|| original_path.clone());
                 format!("restored {}", name)
             }
             FileOperation::Rename { old_path, new_path } => {
-                let old_name = Path::new(old_path).file_name()
+                let old_name = Path::new(old_path)
+                    .file_name()
                     .map(|n| n.to_string_lossy().to_string())
                     .unwrap_or_else(|| old_path.clone());
-                let new_name = Path::new(new_path).file_name()
+                let new_name = Path::new(new_path)
+                    .file_name()
                     .map(|n| n.to_string_lossy().to_string())
                     .unwrap_or_else(|| new_path.clone());
                 format!("renamed {} back to {}", new_name, old_name)
@@ -74,31 +81,37 @@ impl FileOperation {
     pub fn describe_redo(&self) -> String {
         match self {
             FileOperation::Copy { src, dest: _ } => {
-                let src_name = Path::new(src).file_name()
+                let src_name = Path::new(src)
+                    .file_name()
                     .map(|n| n.to_string_lossy().to_string())
                     .unwrap_or_else(|| src.clone());
                 format!("re-copied {}", src_name)
             }
             FileOperation::Move { src, dest } => {
-                let name = Path::new(src).file_name()
+                let name = Path::new(src)
+                    .file_name()
                     .map(|n| n.to_string_lossy().to_string())
                     .unwrap_or_else(|| src.clone());
-                let dest_dir = Path::new(dest).parent()
+                let dest_dir = Path::new(dest)
+                    .parent()
                     .map(|p| p.to_string_lossy().to_string())
                     .unwrap_or_else(|| dest.clone());
                 format!("re-moved {} to {}", name, dest_dir)
             }
             FileOperation::Delete { original_path, .. } => {
-                let name = Path::new(original_path).file_name()
+                let name = Path::new(original_path)
+                    .file_name()
                     .map(|n| n.to_string_lossy().to_string())
                     .unwrap_or_else(|| original_path.clone());
                 format!("re-deleted {}", name)
             }
             FileOperation::Rename { old_path, new_path } => {
-                let old_name = Path::new(old_path).file_name()
+                let old_name = Path::new(old_path)
+                    .file_name()
                     .map(|n| n.to_string_lossy().to_string())
                     .unwrap_or_else(|| old_path.clone());
-                let new_name = Path::new(new_path).file_name()
+                let new_name = Path::new(new_path)
+                    .file_name()
                     .map(|n| n.to_string_lossy().to_string())
                     .unwrap_or_else(|| new_path.clone());
                 format!("renamed {} to {}", old_name, new_name)
@@ -133,7 +146,10 @@ impl OperationHistory {
     /// Clears the redo stack (new action invalidates redo history).
     pub fn push(&mut self, op: FileOperation) {
         let ts = Local::now().timestamp_millis();
-        self.undo_stack.push(TimestampedOperation { op, timestamp_ms: ts });
+        self.undo_stack.push(TimestampedOperation {
+            op,
+            timestamp_ms: ts,
+        });
         // Enforce max history size
         if self.undo_stack.len() > MAX_HISTORY {
             self.undo_stack.remove(0);
@@ -161,7 +177,8 @@ impl OperationHistory {
     }
 }
 
-pub static OPERATION_HISTORY: LazyLock<Mutex<OperationHistory>> = LazyLock::new(|| Mutex::new(OperationHistory::new()));
+pub static OPERATION_HISTORY: LazyLock<Mutex<OperationHistory>> =
+    LazyLock::new(|| Mutex::new(OperationHistory::new()));
 
 /// Get (or create) the staging directory for soft-deleted files.
 /// Located at <user data dir>/.xplorer_trash/
@@ -195,7 +212,8 @@ pub fn soft_delete(path: &str) -> Result<String, String> {
 
     let staging_dir = get_staging_dir()?;
     let timestamp = Local::now().format("%Y%m%d_%H%M%S_%3f").to_string();
-    let original_name = src.file_name()
+    let original_name = src
+        .file_name()
         .map(|n| n.to_string_lossy().to_string())
         .unwrap_or_else(|| "unknown".to_string());
     let staging_name = format!("{}_{}", timestamp, original_name);
@@ -211,8 +229,7 @@ pub fn soft_delete(path: &str) -> Result<String, String> {
         } else {
             fs::copy(src, &staging_path)
                 .map_err(|e| format!("Failed to copy to staging: {}", e))?;
-            fs::remove_file(src)
-                .map_err(|e| format!("Failed to remove original file: {}", e))
+            fs::remove_file(src).map_err(|e| format!("Failed to remove original file: {}", e))
         }
     })?;
 
@@ -273,12 +290,19 @@ fn execute_undo(op: &FileOperation) -> Result<(), String> {
                 }
             })
         }
-        FileOperation::Delete { original_path, staging_path, .. } => {
+        FileOperation::Delete {
+            original_path,
+            staging_path,
+            ..
+        } => {
             // Undo delete = restore from staging area
             let staging = Path::new(staging_path);
             let original = Path::new(original_path);
             if !staging.exists() {
-                return Err(format!("Cannot undo delete: staging file {} no longer exists", staging_path));
+                return Err(format!(
+                    "Cannot undo delete: staging file {} no longer exists",
+                    staging_path
+                ));
             }
             // Ensure parent directory exists
             if let Some(parent) = original.parent() {
@@ -307,8 +331,7 @@ fn execute_undo(op: &FileOperation) -> Result<(), String> {
             if !new.exists() {
                 return Err(format!("Cannot undo rename: {} no longer exists", new_path));
             }
-            fs::rename(new, old)
-                .map_err(|e| format!("Failed to undo rename: {}", e))
+            fs::rename(new, old).map_err(|e| format!("Failed to undo rename: {}", e))
         }
     }
 }
@@ -361,12 +384,19 @@ fn execute_redo(op: &FileOperation) -> Result<(), String> {
                 }
             })
         }
-        FileOperation::Delete { original_path, staging_path, was_dir } => {
+        FileOperation::Delete {
+            original_path,
+            staging_path,
+            was_dir,
+        } => {
             // Redo delete = move it back to staging
             let original = Path::new(original_path);
             let staging = Path::new(staging_path);
             if !original.exists() {
-                return Err(format!("Cannot redo delete: {} no longer exists", original_path));
+                return Err(format!(
+                    "Cannot redo delete: {} no longer exists",
+                    original_path
+                ));
             }
             fs::rename(original, staging).or_else(|_| {
                 if *was_dir {
@@ -387,8 +417,7 @@ fn execute_redo(op: &FileOperation) -> Result<(), String> {
             if !old.exists() {
                 return Err(format!("Cannot redo rename: {} no longer exists", old_path));
             }
-            fs::rename(old, new)
-                .map_err(|e| format!("Failed to redo rename: {}", e))
+            fs::rename(old, new).map_err(|e| format!("Failed to redo rename: {}", e))
         }
     }
 }
@@ -421,7 +450,8 @@ pub async fn undo_operation() -> Result<UndoRedoResult, String> {
                 FileOperation::Move { .. } => "move",
                 FileOperation::Delete { .. } => "delete",
                 FileOperation::Rename { .. } => "rename",
-            }.to_string();
+            }
+            .to_string();
 
             match execute_undo(&ts_op.op) {
                 Ok(()) => {
@@ -465,7 +495,8 @@ pub async fn redo_operation() -> Result<UndoRedoResult, String> {
                 FileOperation::Move { .. } => "move",
                 FileOperation::Delete { .. } => "delete",
                 FileOperation::Rename { .. } => "rename",
-            }.to_string();
+            }
+            .to_string();
 
             match execute_redo(&ts_op.op) {
                 Ok(()) => {
@@ -527,34 +558,41 @@ impl FileOperation {
     pub fn describe_forward(&self) -> String {
         match self {
             FileOperation::Copy { src, dest } => {
-                let src_name = Path::new(src).file_name()
+                let src_name = Path::new(src)
+                    .file_name()
                     .map(|n| n.to_string_lossy().to_string())
                     .unwrap_or_else(|| src.clone());
-                let dest_dir = Path::new(dest).parent()
+                let dest_dir = Path::new(dest)
+                    .parent()
                     .map(|p| p.to_string_lossy().to_string())
                     .unwrap_or_else(|| dest.clone());
                 format!("Copied {} to {}", src_name, dest_dir)
             }
             FileOperation::Move { src, dest } => {
-                let name = Path::new(src).file_name()
+                let name = Path::new(src)
+                    .file_name()
                     .map(|n| n.to_string_lossy().to_string())
                     .unwrap_or_else(|| src.clone());
-                let dest_dir = Path::new(dest).parent()
+                let dest_dir = Path::new(dest)
+                    .parent()
                     .map(|p| p.to_string_lossy().to_string())
                     .unwrap_or_else(|| dest.clone());
                 format!("Moved {} to {}", name, dest_dir)
             }
             FileOperation::Delete { original_path, .. } => {
-                let name = Path::new(original_path).file_name()
+                let name = Path::new(original_path)
+                    .file_name()
                     .map(|n| n.to_string_lossy().to_string())
                     .unwrap_or_else(|| original_path.clone());
                 format!("Deleted {}", name)
             }
             FileOperation::Rename { old_path, new_path } => {
-                let old_name = Path::new(old_path).file_name()
+                let old_name = Path::new(old_path)
+                    .file_name()
                     .map(|n| n.to_string_lossy().to_string())
                     .unwrap_or_else(|| old_path.clone());
-                let new_name = Path::new(new_path).file_name()
+                let new_name = Path::new(new_path)
+                    .file_name()
                     .map(|n| n.to_string_lossy().to_string())
                     .unwrap_or_else(|| new_path.clone());
                 format!("Renamed {} to {}", old_name, new_name)
@@ -578,8 +616,14 @@ fn extract_paths(op: &FileOperation) -> (Option<String>, Option<String>) {
     match op {
         FileOperation::Copy { src, dest } => (Some(src.clone()), Some(dest.clone())),
         FileOperation::Move { src, dest } => (Some(src.clone()), Some(dest.clone())),
-        FileOperation::Delete { original_path, staging_path, .. } => (Some(original_path.clone()), Some(staging_path.clone())),
-        FileOperation::Rename { old_path, new_path } => (Some(old_path.clone()), Some(new_path.clone())),
+        FileOperation::Delete {
+            original_path,
+            staging_path,
+            ..
+        } => (Some(original_path.clone()), Some(staging_path.clone())),
+        FileOperation::Rename { old_path, new_path } => {
+            (Some(old_path.clone()), Some(new_path.clone()))
+        }
     }
 }
 
@@ -686,7 +730,10 @@ mod tests {
         let mut history = OperationHistory::new();
 
         // Push some operations
-        history.push(FileOperation::Copy { src: "/a".into(), dest: "/b".into() });
+        history.push(FileOperation::Copy {
+            src: "/a".into(),
+            dest: "/b".into(),
+        });
 
         // Simulate undo -> redo by manually pushing to redo stack
         let ts_op = history.pop_undo().unwrap();
@@ -696,15 +743,24 @@ mod tests {
         assert!(history.pop_redo().is_some());
         // Restore it
         history.push_redo(TimestampedOperation {
-            op: FileOperation::Copy { src: "/a".into(), dest: "/b".into() },
+            op: FileOperation::Copy {
+                src: "/a".into(),
+                dest: "/b".into(),
+            },
             timestamp_ms: Local::now().timestamp_millis(),
         });
 
         // Now push a NEW operation — this should clear the redo stack
-        history.push(FileOperation::Rename { old_path: "/c".into(), new_path: "/d".into() });
+        history.push(FileOperation::Rename {
+            old_path: "/c".into(),
+            new_path: "/d".into(),
+        });
 
         // Redo stack should be empty because a new operation was pushed
-        assert!(history.pop_redo().is_none(), "redo should be cleared after new push");
+        assert!(
+            history.pop_redo().is_none(),
+            "redo should be cleared after new push"
+        );
     }
 
     #[test]
@@ -712,7 +768,10 @@ mod tests {
         let mut history = OperationHistory::new();
 
         let ts_op = TimestampedOperation {
-            op: FileOperation::Move { src: "/x".into(), dest: "/y".into() },
+            op: FileOperation::Move {
+                src: "/x".into(),
+                dest: "/y".into(),
+            },
             timestamp_ms: Local::now().timestamp_millis(),
         };
         history.push_redo(ts_op);
@@ -798,7 +857,11 @@ mod tests {
         };
         let desc = op.describe();
         assert!(desc.contains("copied"), "should mention 'copied': {}", desc);
-        assert!(desc.contains("file.txt"), "should mention the filename: {}", desc);
+        assert!(
+            desc.contains("file.txt"),
+            "should mention the filename: {}",
+            desc
+        );
     }
 
     #[test]
@@ -819,8 +882,16 @@ mod tests {
             was_dir: false,
         };
         let desc = op.describe();
-        assert!(desc.contains("restored"), "should mention 'restored': {}", desc);
-        assert!(desc.contains("deleted.txt"), "should mention filename: {}", desc);
+        assert!(
+            desc.contains("restored"),
+            "should mention 'restored': {}",
+            desc
+        );
+        assert!(
+            desc.contains("deleted.txt"),
+            "should mention filename: {}",
+            desc
+        );
     }
 
     #[test]
@@ -830,7 +901,11 @@ mod tests {
             new_path: "/home/user/new_name.txt".into(),
         };
         let desc = op.describe();
-        assert!(desc.contains("renamed"), "should mention 'renamed': {}", desc);
+        assert!(
+            desc.contains("renamed"),
+            "should mention 'renamed': {}",
+            desc
+        );
     }
 
     #[test]
@@ -840,7 +915,11 @@ mod tests {
             dest: "/dst/file.txt".into(),
         };
         let desc = op.describe_redo();
-        assert!(desc.contains("re-copied"), "redo copy should say 're-copied': {}", desc);
+        assert!(
+            desc.contains("re-copied"),
+            "redo copy should say 're-copied': {}",
+            desc
+        );
     }
 
     #[test]
@@ -850,14 +929,21 @@ mod tests {
             new_path: "/new.txt".into(),
         };
         let desc = op.describe_redo();
-        assert!(desc.contains("renamed"), "redo rename should say 'renamed': {}", desc);
+        assert!(
+            desc.contains("renamed"),
+            "redo rename should say 'renamed': {}",
+            desc
+        );
     }
 
     // ─── FileOperation serialization tests ──────────────────────────────
 
     #[test]
     fn test_file_operation_serialization_copy() {
-        let op = FileOperation::Copy { src: "/a".into(), dest: "/b".into() };
+        let op = FileOperation::Copy {
+            src: "/a".into(),
+            dest: "/b".into(),
+        };
         let json = serde_json::to_string(&op).unwrap();
         let deserialized: FileOperation = serde_json::from_str(&json).unwrap();
         match deserialized {
@@ -879,7 +965,11 @@ mod tests {
         let json = serde_json::to_string(&op).unwrap();
         let deserialized: FileOperation = serde_json::from_str(&json).unwrap();
         match deserialized {
-            FileOperation::Delete { original_path, staging_path, was_dir } => {
+            FileOperation::Delete {
+                original_path,
+                staging_path,
+                was_dir,
+            } => {
                 assert_eq!(original_path, "/orig");
                 assert_eq!(staging_path, "/stage");
                 assert!(was_dir);
@@ -890,7 +980,10 @@ mod tests {
 
     #[test]
     fn test_file_operation_serialization_move() {
-        let op = FileOperation::Move { src: "/x".into(), dest: "/y".into() };
+        let op = FileOperation::Move {
+            src: "/x".into(),
+            dest: "/y".into(),
+        };
         let json = serde_json::to_string(&op).unwrap();
         assert!(json.contains("\"type\":\"Move\""));
         let deserialized: FileOperation = serde_json::from_str(&json).unwrap();
@@ -905,7 +998,10 @@ mod tests {
 
     #[test]
     fn test_file_operation_serialization_rename() {
-        let op = FileOperation::Rename { old_path: "/old".into(), new_path: "/new".into() };
+        let op = FileOperation::Rename {
+            old_path: "/old".into(),
+            new_path: "/new".into(),
+        };
         let json = serde_json::to_string(&op).unwrap();
         assert!(json.contains("\"type\":\"Rename\""));
     }
@@ -928,9 +1024,19 @@ mod tests {
         };
 
         let result = execute_undo(&op);
-        assert!(result.is_ok(), "undo copy should succeed: {:?}", result.err());
-        assert!(!dest_path.exists(), "copied file should be removed after undo");
-        assert!(src_path.exists(), "source should still exist after undoing copy");
+        assert!(
+            result.is_ok(),
+            "undo copy should succeed: {:?}",
+            result.err()
+        );
+        assert!(
+            !dest_path.exists(),
+            "copied file should be removed after undo"
+        );
+        assert!(
+            src_path.exists(),
+            "source should still exist after undoing copy"
+        );
     }
 
     #[test]
@@ -950,7 +1056,11 @@ mod tests {
         };
 
         let result = execute_undo(&op);
-        assert!(result.is_ok(), "undo rename should succeed: {:?}", result.err());
+        assert!(
+            result.is_ok(),
+            "undo rename should succeed: {:?}",
+            result.err()
+        );
         assert!(old_path.exists(), "old name should be restored");
         assert!(!new_path.exists(), "new name should be gone");
     }
@@ -970,7 +1080,11 @@ mod tests {
         };
 
         let result = execute_undo(&op);
-        assert!(result.is_ok(), "undo move should succeed: {:?}", result.err());
+        assert!(
+            result.is_ok(),
+            "undo move should succeed: {:?}",
+            result.err()
+        );
         assert!(src.exists(), "source should be restored");
         assert!(!dest.exists(), "destination should be gone");
     }
@@ -989,7 +1103,11 @@ mod tests {
         };
 
         let result = execute_redo(&op);
-        assert!(result.is_ok(), "redo copy should succeed: {:?}", result.err());
+        assert!(
+            result.is_ok(),
+            "redo copy should succeed: {:?}",
+            result.err()
+        );
         assert!(dest.exists(), "dest should exist after redo copy");
         assert_eq!(
             std::fs::read_to_string(&dest).unwrap(),
@@ -1011,7 +1129,11 @@ mod tests {
         };
 
         let result = execute_redo(&op);
-        assert!(result.is_ok(), "redo rename should succeed: {:?}", result.err());
+        assert!(
+            result.is_ok(),
+            "redo rename should succeed: {:?}",
+            result.err()
+        );
         assert!(!old.exists(), "old path should be gone after redo rename");
         assert!(new.exists(), "new path should exist after redo rename");
     }
@@ -1044,10 +1166,7 @@ mod tests {
         assert!(!old.exists());
         assert!(new.exists());
 
-        assert_eq!(
-            std::fs::read_to_string(&new).unwrap(),
-            "roundtrip content"
-        );
+        assert_eq!(std::fs::read_to_string(&new).unwrap(), "roundtrip content");
     }
 
     #[test]
@@ -1079,7 +1198,10 @@ mod tests {
         let popped = history.pop_undo();
         // We may or may not get our specific operation (other tests may have added too),
         // but the call should not panic.
-        assert!(popped.is_some() || true, "pop may or may not return our op due to global state");
+        assert!(
+            popped.is_some() || true,
+            "pop may or may not return our op due to global state"
+        );
     }
 
     // ─── Error case tests ───────────────────────────────────────────────
@@ -1091,7 +1213,10 @@ mod tests {
             dest: "/nonexistent_dest_12345".into(),
         };
         let result = execute_undo(&op);
-        assert!(result.is_err(), "undoing a move where dest is gone should error");
+        assert!(
+            result.is_err(),
+            "undoing a move where dest is gone should error"
+        );
     }
 
     #[test]
@@ -1101,7 +1226,10 @@ mod tests {
             new_path: "/nonexistent_new".into(),
         };
         let result = execute_undo(&op);
-        assert!(result.is_err(), "undoing a rename where new_path is gone should error");
+        assert!(
+            result.is_err(),
+            "undoing a rename where new_path is gone should error"
+        );
     }
 
     #[test]
@@ -1111,7 +1239,10 @@ mod tests {
             dest: "/nonexistent_dest_12345".into(),
         };
         let result = execute_redo(&op);
-        assert!(result.is_err(), "redoing a copy where source is gone should error");
+        assert!(
+            result.is_err(),
+            "redoing a copy where source is gone should error"
+        );
     }
 
     #[test]
@@ -1133,7 +1264,11 @@ mod tests {
         std::fs::write(&file_path, "delete me").unwrap();
 
         let result = soft_delete(file_path.to_str().unwrap());
-        assert!(result.is_ok(), "soft_delete should succeed: {:?}", result.err());
+        assert!(
+            result.is_ok(),
+            "soft_delete should succeed: {:?}",
+            result.err()
+        );
 
         // Original file should be gone
         assert!(!file_path.exists(), "original file should be removed");
@@ -1164,8 +1299,15 @@ mod tests {
         std::fs::write(dir_path.join("inside.txt"), "inner file").unwrap();
 
         let result = soft_delete(dir_path.to_str().unwrap());
-        assert!(result.is_ok(), "soft_delete on directory should succeed: {:?}", result.err());
-        assert!(!dir_path.exists(), "directory should be removed from original location");
+        assert!(
+            result.is_ok(),
+            "soft_delete on directory should succeed: {:?}",
+            result.err()
+        );
+        assert!(
+            !dir_path.exists(),
+            "directory should be removed from original location"
+        );
 
         let staging_path = result.unwrap();
         assert!(

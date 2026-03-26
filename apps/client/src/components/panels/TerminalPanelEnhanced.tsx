@@ -135,8 +135,9 @@ const TerminalPanel = ({
       <div ref={terminalOutputRef} className="flex-1 overflow-y-auto px-3 pt-2 leading-snug">
         {terminalHistory.slice(-500).map((line, index) => {
           const lineColor = (() => {
-            if (line.startsWith(terminalCwd.split(/[\\/]/).pop() || terminalCwd))
-              {return 'text-xp-green';}
+            if (line.startsWith(terminalCwd.split(/[\\/]/).pop() || terminalCwd)) {
+              return 'text-xp-green';
+            }
             if (line.startsWith('Error:')) return 'text-xp-red';
             if (line.startsWith('Warning:')) return 'text-xp-yellow';
             return 'text-xp-text';

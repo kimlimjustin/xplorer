@@ -1,20 +1,22 @@
+use crate::operations::types::*;
+use crate::operations::validate_file_path;
+use rayon::prelude::*;
 use std::collections::VecDeque;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::LazyLock;
-use rayon::prelude::*;
 use tauri::command;
 use tokio::sync::Semaphore;
-use crate::operations::types::*;
-use crate::operations::validate_file_path;
 
-static FILE_IO_SEMAPHORE: LazyLock<Semaphore> = LazyLock::new(|| {
-    Semaphore::new(num_cpus::get().max(4) * 2)
-});
+static FILE_IO_SEMAPHORE: LazyLock<Semaphore> =
+    LazyLock::new(|| Semaphore::new(num_cpus::get().max(4) * 2));
 
 #[command]
 pub async fn read_directory(path: String) -> Result<Vec<FileEntry>, String> {
-    let _permit = FILE_IO_SEMAPHORE.acquire().await.map_err(|e| e.to_string())?;
+    let _permit = FILE_IO_SEMAPHORE
+        .acquire()
+        .await
+        .map_err(|e| e.to_string())?;
     tokio::task::spawn_blocking(move || {
         let path = Path::new(&path);
 
@@ -31,11 +33,13 @@ pub async fn read_directory(path: String) -> Result<Vec<FileEntry>, String> {
             .filter_map(|e| e.ok())
             .collect();
 
-        let mut files: Vec<FileEntry> = raw_entries.par_iter()
+        let mut files: Vec<FileEntry> = raw_entries
+            .par_iter()
             .filter_map(|entry| {
                 let path = entry.path();
                 let metadata = entry.metadata().ok()?;
-                let name = path.file_name()
+                let name = path
+                    .file_name()
                     .and_then(|n| n.to_str())
                     .unwrap_or("Unknown")
                     .to_string();
@@ -48,7 +52,11 @@ pub async fn read_directory(path: String) -> Result<Vec<FileEntry>, String> {
                     path: path.to_string_lossy().to_string(),
                     is_dir,
                     size: metadata.len(),
-                    modified: system_time_to_timestamp(metadata.modified().unwrap_or(std::time::SystemTime::UNIX_EPOCH)),
+                    modified: system_time_to_timestamp(
+                        metadata
+                            .modified()
+                            .unwrap_or(std::time::SystemTime::UNIX_EPOCH),
+                    ),
                     file_type,
                     mime_type,
                     is_readonly,
@@ -60,7 +68,9 @@ pub async fn read_directory(path: String) -> Result<Vec<FileEntry>, String> {
         files.sort_by_cached_key(|f| (!f.is_dir, f.name.to_lowercase()));
 
         Ok(files)
-    }).await.map_err(|e| e.to_string())?
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[command]
@@ -68,7 +78,9 @@ pub async fn is_dir(path: String) -> Result<bool, String> {
     tokio::task::spawn_blocking(move || {
         let path = Path::new(&path);
         Ok(path.is_dir())
-    }).await.map_err(|e| e.to_string())?
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[command]
@@ -80,18 +92,17 @@ pub async fn get_files_in_directory(path: String) -> Result<Vec<FileEntry>, Stri
 pub async fn remove_dir(path: String) -> Result<(), String> {
     validate_file_path(&path)?;
     let path = Path::new(&path);
-    
+
     if !path.exists() {
         return Err("Directory does not exist".to_string());
     }
-    
+
     if !path.is_dir() {
         return Err("Path is not a directory".to_string());
     }
-    
-    fs::remove_dir_all(path)
-        .map_err(|e| format!("Failed to remove directory: {}", e))?;
-    
+
+    fs::remove_dir_all(path).map_err(|e| format!("Failed to remove directory: {}", e))?;
+
     Ok(())
 }
 
@@ -99,16 +110,18 @@ pub async fn remove_dir(path: String) -> Result<(), String> {
 pub async fn create_dir_recursive(path: String) -> Result<(), String> {
     validate_file_path(&path)?;
     let path = Path::new(&path);
-    
-    fs::create_dir_all(path)
-        .map_err(|e| format!("Failed to create directory: {}", e))?;
-    
+
+    fs::create_dir_all(path).map_err(|e| format!("Failed to create directory: {}", e))?;
+
     Ok(())
 }
 
 #[command]
 pub async fn get_dir_size(path: String) -> Result<DirectorySize, String> {
-    let _permit = FILE_IO_SEMAPHORE.acquire().await.map_err(|e| e.to_string())?;
+    let _permit = FILE_IO_SEMAPHORE
+        .acquire()
+        .await
+        .map_err(|e| e.to_string())?;
     tokio::task::spawn_blocking(move || {
         let path = Path::new(&path);
 
@@ -149,5 +162,7 @@ pub async fn get_dir_size(path: String) -> Result<DirectorySize, String> {
             file_count,
             dir_count,
         })
-    }).await.map_err(|e| e.to_string())?
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }

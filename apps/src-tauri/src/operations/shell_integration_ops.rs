@@ -28,7 +28,12 @@ mod windows_impl {
             // SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, NULL, NULL)
             #[link(name = "shell32")]
             extern "system" {
-                fn SHChangeNotify(wEventId: i32, uFlags: u32, dwItem1: *const std::ffi::c_void, dwItem2: *const std::ffi::c_void);
+                fn SHChangeNotify(
+                    wEventId: i32,
+                    uFlags: u32,
+                    dwItem1: *const std::ffi::c_void,
+                    dwItem2: *const std::ffi::c_void,
+                );
             }
             SHChangeNotify(0x08000000, 0x0000, std::ptr::null(), std::ptr::null());
         }
@@ -43,13 +48,22 @@ mod windows_impl {
             let (dir_verb, _) = hkcu
                 .create_subkey(&format!("Software\\Classes\\Directory\\shell\\{}", VERB))
                 .map_err(|e| e.to_string())?;
-            dir_verb.set_value("", &DISPLAY_NAME).map_err(|e| e.to_string())?;
-            dir_verb.set_value("Icon", &exe_path).map_err(|e| e.to_string())?;
+            dir_verb
+                .set_value("", &DISPLAY_NAME)
+                .map_err(|e| e.to_string())?;
+            dir_verb
+                .set_value("Icon", &exe_path)
+                .map_err(|e| e.to_string())?;
 
             let (dir_cmd, _) = hkcu
-                .create_subkey(&format!("Software\\Classes\\Directory\\shell\\{}\\command", VERB))
+                .create_subkey(&format!(
+                    "Software\\Classes\\Directory\\shell\\{}\\command",
+                    VERB
+                ))
                 .map_err(|e| e.to_string())?;
-            dir_cmd.set_value("", &format!("\"{}\" \"%1\"", exe_path)).map_err(|e| e.to_string())?;
+            dir_cmd
+                .set_value("", &format!("\"{}\" \"%1\"", exe_path))
+                .map_err(|e| e.to_string())?;
 
             // Set as default verb for Directory
             let (dir_shell, _) = hkcu
@@ -61,39 +75,68 @@ mod windows_impl {
             let (drive_verb, _) = hkcu
                 .create_subkey(&format!("Software\\Classes\\Drive\\shell\\{}", VERB))
                 .map_err(|e| e.to_string())?;
-            drive_verb.set_value("", &DISPLAY_NAME).map_err(|e| e.to_string())?;
-            drive_verb.set_value("Icon", &exe_path).map_err(|e| e.to_string())?;
+            drive_verb
+                .set_value("", &DISPLAY_NAME)
+                .map_err(|e| e.to_string())?;
+            drive_verb
+                .set_value("Icon", &exe_path)
+                .map_err(|e| e.to_string())?;
 
             let (drive_cmd, _) = hkcu
-                .create_subkey(&format!("Software\\Classes\\Drive\\shell\\{}\\command", VERB))
+                .create_subkey(&format!(
+                    "Software\\Classes\\Drive\\shell\\{}\\command",
+                    VERB
+                ))
                 .map_err(|e| e.to_string())?;
-            drive_cmd.set_value("", &format!("\"{}\" \"%1\"", exe_path)).map_err(|e| e.to_string())?;
+            drive_cmd
+                .set_value("", &format!("\"{}\" \"%1\"", exe_path))
+                .map_err(|e| e.to_string())?;
 
             // Set as default verb for Drive
             let (drive_shell, _) = hkcu
                 .create_subkey("Software\\Classes\\Drive\\shell")
                 .map_err(|e| e.to_string())?;
-            drive_shell.set_value("", &VERB).map_err(|e| e.to_string())?;
+            drive_shell
+                .set_value("", &VERB)
+                .map_err(|e| e.to_string())?;
 
             // Also register background context menu
             let (bg_verb, _) = hkcu
-                .create_subkey(&format!("Software\\Classes\\Directory\\Background\\shell\\{}", VERB))
+                .create_subkey(&format!(
+                    "Software\\Classes\\Directory\\Background\\shell\\{}",
+                    VERB
+                ))
                 .map_err(|e| e.to_string())?;
-            bg_verb.set_value("", &DISPLAY_NAME).map_err(|e| e.to_string())?;
-            bg_verb.set_value("Icon", &exe_path).map_err(|e| e.to_string())?;
+            bg_verb
+                .set_value("", &DISPLAY_NAME)
+                .map_err(|e| e.to_string())?;
+            bg_verb
+                .set_value("Icon", &exe_path)
+                .map_err(|e| e.to_string())?;
 
             let (bg_cmd, _) = hkcu
-                .create_subkey(&format!("Software\\Classes\\Directory\\Background\\shell\\{}\\command", VERB))
+                .create_subkey(&format!(
+                    "Software\\Classes\\Directory\\Background\\shell\\{}\\command",
+                    VERB
+                ))
                 .map_err(|e| e.to_string())?;
-            bg_cmd.set_value("", &format!("\"{}\" \"%V\"", exe_path)).map_err(|e| e.to_string())?;
+            bg_cmd
+                .set_value("", &format!("\"{}\" \"%V\"", exe_path))
+                .map_err(|e| e.to_string())?;
         } else {
             // Remove verb registrations
-            let _ = hkcu.delete_subkey_all(&format!("Software\\Classes\\Directory\\shell\\{}", VERB));
+            let _ =
+                hkcu.delete_subkey_all(&format!("Software\\Classes\\Directory\\shell\\{}", VERB));
             let _ = hkcu.delete_subkey_all(&format!("Software\\Classes\\Drive\\shell\\{}", VERB));
-            let _ = hkcu.delete_subkey_all(&format!("Software\\Classes\\Directory\\Background\\shell\\{}", VERB));
+            let _ = hkcu.delete_subkey_all(&format!(
+                "Software\\Classes\\Directory\\Background\\shell\\{}",
+                VERB
+            ));
 
             // Reset default verb for Directory
-            if let Ok(dir_shell) = hkcu.open_subkey_with_flags("Software\\Classes\\Directory\\shell", KEY_READ | KEY_WRITE) {
+            if let Ok(dir_shell) = hkcu
+                .open_subkey_with_flags("Software\\Classes\\Directory\\shell", KEY_READ | KEY_WRITE)
+            {
                 let current: String = dir_shell.get_value("").unwrap_or_default();
                 if current == VERB {
                     let _ = dir_shell.delete_value("");
@@ -101,7 +144,9 @@ mod windows_impl {
             }
 
             // Reset default verb for Drive
-            if let Ok(drive_shell) = hkcu.open_subkey_with_flags("Software\\Classes\\Drive\\shell", KEY_READ | KEY_WRITE) {
+            if let Ok(drive_shell) =
+                hkcu.open_subkey_with_flags("Software\\Classes\\Drive\\shell", KEY_READ | KEY_WRITE)
+            {
                 let current: String = drive_shell.get_value("").unwrap_or_default();
                 if current == VERB {
                     let _ = drive_shell.delete_value("");
@@ -121,37 +166,67 @@ mod windows_impl {
         let (dir_verb, _) = hkcu
             .create_subkey(&format!("Software\\Classes\\Directory\\shell\\{}", VERB))
             .map_err(|e| e.to_string())?;
-        dir_verb.set_value("", &DISPLAY_NAME).map_err(|e| e.to_string())?;
-        dir_verb.set_value("Icon", &exe_path).map_err(|e| e.to_string())?;
+        dir_verb
+            .set_value("", &DISPLAY_NAME)
+            .map_err(|e| e.to_string())?;
+        dir_verb
+            .set_value("Icon", &exe_path)
+            .map_err(|e| e.to_string())?;
 
         let (dir_cmd, _) = hkcu
-            .create_subkey(&format!("Software\\Classes\\Directory\\shell\\{}\\command", VERB))
+            .create_subkey(&format!(
+                "Software\\Classes\\Directory\\shell\\{}\\command",
+                VERB
+            ))
             .map_err(|e| e.to_string())?;
-        dir_cmd.set_value("", &format!("\"{}\" \"%1\"", exe_path)).map_err(|e| e.to_string())?;
+        dir_cmd
+            .set_value("", &format!("\"{}\" \"%1\"", exe_path))
+            .map_err(|e| e.to_string())?;
 
         // Drive context menu
         let (drive_verb, _) = hkcu
             .create_subkey(&format!("Software\\Classes\\Drive\\shell\\{}", VERB))
             .map_err(|e| e.to_string())?;
-        drive_verb.set_value("", &DISPLAY_NAME).map_err(|e| e.to_string())?;
-        drive_verb.set_value("Icon", &exe_path).map_err(|e| e.to_string())?;
+        drive_verb
+            .set_value("", &DISPLAY_NAME)
+            .map_err(|e| e.to_string())?;
+        drive_verb
+            .set_value("Icon", &exe_path)
+            .map_err(|e| e.to_string())?;
 
         let (drive_cmd, _) = hkcu
-            .create_subkey(&format!("Software\\Classes\\Drive\\shell\\{}\\command", VERB))
+            .create_subkey(&format!(
+                "Software\\Classes\\Drive\\shell\\{}\\command",
+                VERB
+            ))
             .map_err(|e| e.to_string())?;
-        drive_cmd.set_value("", &format!("\"{}\" \"%1\"", exe_path)).map_err(|e| e.to_string())?;
+        drive_cmd
+            .set_value("", &format!("\"{}\" \"%1\"", exe_path))
+            .map_err(|e| e.to_string())?;
 
         // Background (right-click empty space inside a folder)
         let (bg_verb, _) = hkcu
-            .create_subkey(&format!("Software\\Classes\\Directory\\Background\\shell\\{}", VERB))
+            .create_subkey(&format!(
+                "Software\\Classes\\Directory\\Background\\shell\\{}",
+                VERB
+            ))
             .map_err(|e| e.to_string())?;
-        bg_verb.set_value("", &DISPLAY_NAME).map_err(|e| e.to_string())?;
-        bg_verb.set_value("Icon", &exe_path).map_err(|e| e.to_string())?;
+        bg_verb
+            .set_value("", &DISPLAY_NAME)
+            .map_err(|e| e.to_string())?;
+        bg_verb
+            .set_value("Icon", &exe_path)
+            .map_err(|e| e.to_string())?;
 
         let (bg_cmd, _) = hkcu
-            .create_subkey(&format!("Software\\Classes\\Directory\\Background\\shell\\{}\\command", VERB))
+            .create_subkey(&format!(
+                "Software\\Classes\\Directory\\Background\\shell\\{}\\command",
+                VERB
+            ))
             .map_err(|e| e.to_string())?;
-        bg_cmd.set_value("", &format!("\"{}\" \"%V\"", exe_path)).map_err(|e| e.to_string())?;
+        bg_cmd
+            .set_value("", &format!("\"{}\" \"%V\"", exe_path))
+            .map_err(|e| e.to_string())?;
 
         notify_shell();
         Ok(())
@@ -162,7 +237,10 @@ mod windows_impl {
 
         let _ = hkcu.delete_subkey_all(&format!("Software\\Classes\\Directory\\shell\\{}", VERB));
         let _ = hkcu.delete_subkey_all(&format!("Software\\Classes\\Drive\\shell\\{}", VERB));
-        let _ = hkcu.delete_subkey_all(&format!("Software\\Classes\\Directory\\Background\\shell\\{}", VERB));
+        let _ = hkcu.delete_subkey_all(&format!(
+            "Software\\Classes\\Directory\\Background\\shell\\{}",
+            VERB
+        ));
 
         notify_shell();
         Ok(())
@@ -180,7 +258,10 @@ mod windows_impl {
 
         // Check if context menu entry exists
         let context_menu = hkcu
-            .open_subkey(&format!("Software\\Classes\\Directory\\shell\\{}\\command", VERB))
+            .open_subkey(&format!(
+                "Software\\Classes\\Directory\\shell\\{}\\command",
+                VERB
+            ))
             .is_ok();
 
         Ok(ShellIntegrationStatus {

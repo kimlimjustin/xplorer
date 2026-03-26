@@ -9,7 +9,7 @@ use std::sync::{Arc, LazyLock, Mutex};
 pub struct MemoryEntry {
     pub key: String,
     pub value: String,
-    pub category: String,  // "preference", "knowledge", "context"
+    pub category: String, // "preference", "knowledge", "context"
     pub created_at: u64,
     pub updated_at: u64,
     pub access_count: u32,
@@ -71,7 +71,10 @@ pub fn execute_remember(input: &Value) -> Result<String, String> {
         .to_string();
 
     if !["preference", "knowledge", "context"].contains(&category.as_str()) {
-        return Err(format!("Invalid category '{}'. Must be: preference, knowledge, context", category));
+        return Err(format!(
+            "Invalid category '{}'. Must be: preference, knowledge, context",
+            category
+        ));
     }
 
     let now = now_secs();
@@ -95,7 +98,8 @@ pub fn execute_remember(input: &Value) -> Result<String, String> {
         "status": if was_update { "updated" } else { "created" },
         "key": key,
         "category": category,
-    }).to_string())
+    })
+    .to_string())
 }
 
 /// Recall stored memories.
@@ -122,14 +126,18 @@ pub fn execute_recall(input: &Value) -> Result<String, String> {
     }
 
     // Filter by category or return all
-    let entries: Vec<Value> = store.entries.values()
+    let entries: Vec<Value> = store
+        .entries
+        .values()
         .filter(|e| category.is_none() || e.category == category.unwrap())
-        .map(|e| json!({
-            "key": e.key,
-            "value": e.value,
-            "category": e.category,
-            "updated_at": e.updated_at,
-        }))
+        .map(|e| {
+            json!({
+                "key": e.key,
+                "value": e.value,
+                "category": e.category,
+                "updated_at": e.updated_at,
+            })
+        })
         .collect();
 
     // Bump access count for retrieved entries
@@ -151,8 +159,13 @@ pub fn execute_recall(input: &Value) -> Result<String, String> {
 
 /// Get all memories for display.
 pub fn get_all_memories() -> Vec<MemoryEntry> {
-    MEMORY.lock().unwrap_or_else(|e| e.into_inner())
-        .entries.values().cloned().collect()
+    MEMORY
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .entries
+        .values()
+        .cloned()
+        .collect()
 }
 
 /// Clear all memories.
@@ -166,7 +179,9 @@ pub fn clear_all_memories() -> Result<(), String> {
 /// Delete a specific memory by key.
 pub fn delete_memory(key: &str) -> Result<(), String> {
     let mut store = MEMORY.lock().unwrap_or_else(|e| e.into_inner());
-    store.entries.remove(key)
+    store
+        .entries
+        .remove(key)
         .ok_or(format!("Memory key '{}' not found", key))?;
     save_memory_to_disk(&store);
     Ok(())
@@ -182,7 +197,9 @@ pub fn build_memory_context() -> Option<String> {
     let mut sections = Vec::new();
 
     // Preferences first
-    let prefs: Vec<&MemoryEntry> = store.entries.values()
+    let prefs: Vec<&MemoryEntry> = store
+        .entries
+        .values()
         .filter(|e| e.category == "preference")
         .collect();
     if !prefs.is_empty() {
@@ -194,7 +211,9 @@ pub fn build_memory_context() -> Option<String> {
     }
 
     // Knowledge
-    let knowledge: Vec<&MemoryEntry> = store.entries.values()
+    let knowledge: Vec<&MemoryEntry> = store
+        .entries
+        .values()
         .filter(|e| e.category == "knowledge")
         .collect();
     if !knowledge.is_empty() {
@@ -206,7 +225,9 @@ pub fn build_memory_context() -> Option<String> {
     }
 
     // Context
-    let context: Vec<&MemoryEntry> = store.entries.values()
+    let context: Vec<&MemoryEntry> = store
+        .entries
+        .values()
         .filter(|e| e.category == "context")
         .collect();
     if !context.is_empty() {

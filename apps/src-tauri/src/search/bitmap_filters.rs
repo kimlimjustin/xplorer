@@ -46,14 +46,14 @@ pub struct BitmapFilterIndex {
     type_bitmaps: HashMap<FileTypeCategory, RoaringBitmap>,
 
     /// Size range bitmaps (pre-computed buckets)
-    size_tiny: RoaringBitmap,   // < 100 KB
+    size_tiny: RoaringBitmap, // < 100 KB
     size_small: RoaringBitmap,  // 100 KB ..< 1 MB
     size_medium: RoaringBitmap, // 1 MB ..< 100 MB
     size_large: RoaringBitmap,  // 100 MB ..< 1 GB
     size_huge: RoaringBitmap,   // >= 1 GB
 
     /// Date range bitmaps (pre-computed relative ranges)
-    date_today: RoaringBitmap,      // modified within 24 h
+    date_today: RoaringBitmap, // modified within 24 h
     date_this_week: RoaringBitmap,  // modified within 7 days
     date_this_month: RoaringBitmap, // modified within 30 days
     date_this_year: RoaringBitmap,  // modified within 365 days
@@ -484,7 +484,7 @@ mod tests {
             FileMetaEntry {
                 doc_id: 0,
                 extension: "png".into(),
-                size: 50 * 1024, // 50 KB
+                size: 50 * 1024,           // 50 KB
                 modified: TEST_NOW - 3600, // 1 hour ago
             },
             // 1: small code file, modified this week
@@ -519,7 +519,7 @@ mod tests {
             FileMetaEntry {
                 doc_id: 5,
                 extension: "jpg".into(),
-                size: 150 * MB_1, // 150 MB
+                size: 150 * MB_1,          // 150 MB
                 modified: TEST_NOW - 7200, // 2 hours ago
             },
             // 6: tiny audio, modified this week
@@ -735,13 +735,7 @@ mod tests {
     #[test]
     fn apply_filters_with_extensions() {
         let idx = build_test_index();
-        let result = idx.apply_filters(
-            None,
-            None,
-            None,
-            None,
-            &["png".into(), "jpg".into()],
-        );
+        let result = idx.apply_filters(None, None, None, None, &["png".into(), "jpg".into()]);
         // Only image files by extension: doc 0 (png) and doc 5 (jpg)
         assert!(result.contains(0));
         assert!(result.contains(5));
@@ -760,7 +754,8 @@ mod tests {
         base.insert(1);
         base.insert(2);
 
-        let result = idx.apply_filters(Some(&base), Some(FileTypeCategory::Images), None, None, &[]);
+        let result =
+            idx.apply_filters(Some(&base), Some(FileTypeCategory::Images), None, None, &[]);
         // Of {0,1,2}, only 0 is an image
         assert!(result.contains(0));
         assert_eq!(result.len(), 1);

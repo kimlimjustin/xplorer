@@ -8,26 +8,26 @@
 //   - metadata:           Custom metadata fields
 //   - extensions_storage: Extension-scoped key-value storage
 
-mod recent;
 mod bookmarks;
-mod tags;
-mod notes;
-mod metadata;
-mod extensions_storage;
 mod chat;
 pub mod chat_files;
+mod extensions_storage;
+mod metadata;
+mod notes;
+mod recent;
+mod tags;
 
 // Re-export everything so downstream code using `crate::storage::*` keeps working.
-pub use recent::*;
 pub use bookmarks::*;
-pub use tags::*;
-pub use notes::*;
-pub use metadata::*;
-pub use extensions_storage::*;
 pub use chat::*;
+pub use extensions_storage::*;
+pub use metadata::*;
+pub use notes::*;
+pub use recent::*;
+pub use tags::*;
 
 use serde::{Deserialize, Serialize};
-use sha2::{Sha256, Digest};
+use sha2::{Digest, Sha256};
 use std::collections::HashMap;
 use std::sync::{LazyLock, Mutex};
 
@@ -210,7 +210,8 @@ impl Storage {
 
     // File methods
     pub fn get_files(&self, parent_id: Option<i32>) -> Vec<&FileRecord> {
-        self.files.values()
+        self.files
+            .values()
             .filter(|f| f.parent_id == parent_id)
             .collect()
     }
@@ -219,7 +220,13 @@ impl Storage {
         self.files.get(&id)
     }
 
-    pub fn create_file(&mut self, name: String, path: String, file_type: String, parent_id: Option<i32>) -> FileRecord {
+    pub fn create_file(
+        &mut self,
+        name: String,
+        path: String,
+        file_type: String,
+        parent_id: Option<i32>,
+    ) -> FileRecord {
         let file = FileRecord {
             id: self.current_file_id,
             name,
@@ -268,7 +275,8 @@ impl Storage {
     }
 
     pub fn get_files_by_tag(&self, tag: &str) -> Vec<&FileRecord> {
-        self.files.values()
+        self.files
+            .values()
             .filter(|f| f.tags.contains(&tag.to_string()))
             .collect()
     }
@@ -289,12 +297,16 @@ impl Storage {
     }
 
     pub fn get_active_extensions(&self) -> Vec<&Extension> {
-        self.extensions.values()
-            .filter(|e| e.is_active)
-            .collect()
+        self.extensions.values().filter(|e| e.is_active).collect()
     }
 
-    pub fn create_extension(&mut self, name: String, description: String, version: String, author: String) -> Extension {
+    pub fn create_extension(
+        &mut self,
+        name: String,
+        description: String,
+        version: String,
+        author: String,
+    ) -> Extension {
         let extension = Extension {
             id: self.current_extension_id,
             name,
@@ -308,7 +320,8 @@ impl Storage {
             updated_at: chrono::Utc::now().to_rfc3339(),
         };
 
-        self.extensions.insert(self.current_extension_id, extension.clone());
+        self.extensions
+            .insert(self.current_extension_id, extension.clone());
         self.current_extension_id += 1;
         extension
     }
@@ -329,12 +342,18 @@ impl Storage {
 
     // Chat methods
     pub fn get_chat_messages(&self, session_id: &str) -> Vec<&StoredChatMessage> {
-        self.chat_messages.values()
+        self.chat_messages
+            .values()
             .filter(|m| m.session_id == session_id)
             .collect()
     }
 
-    pub fn create_chat_message(&mut self, session_id: String, role: String, content: String) -> StoredChatMessage {
+    pub fn create_chat_message(
+        &mut self,
+        session_id: String,
+        role: String,
+        content: String,
+    ) -> StoredChatMessage {
         let message = StoredChatMessage {
             id: self.current_chat_id,
             session_id,
@@ -343,7 +362,8 @@ impl Storage {
             created_at: chrono::Utc::now().to_rfc3339(),
         };
 
-        self.chat_messages.insert(self.current_chat_id, message.clone());
+        self.chat_messages
+            .insert(self.current_chat_id, message.clone());
         self.current_chat_id += 1;
         message
     }
@@ -353,8 +373,16 @@ impl Storage {
         self.user_settings.values().find(|s| s.user_id == user_id)
     }
 
-    pub fn update_user_settings(&mut self, user_id: i32, theme: Option<String>, view_mode: Option<String>, show_hidden_files: Option<bool>) -> Option<&UserSettings> {
-        let settings_id = self.user_settings.values()
+    pub fn update_user_settings(
+        &mut self,
+        user_id: i32,
+        theme: Option<String>,
+        view_mode: Option<String>,
+        show_hidden_files: Option<bool>,
+    ) -> Option<&UserSettings> {
+        let settings_id = self
+            .user_settings
+            .values()
             .find(|s| s.user_id == user_id)
             .map(|s| s.id);
 
@@ -419,7 +447,7 @@ mod tests {
             "test.txt".to_string(),
             "/test.txt".to_string(),
             "text".to_string(),
-            None
+            None,
         );
 
         assert_eq!(file.name, "test.txt");
@@ -440,7 +468,7 @@ mod tests {
             "test-ext".to_string(),
             "Test extension".to_string(),
             "1.0.0".to_string(),
-            "testdev".to_string()
+            "testdev".to_string(),
         );
 
         assert_eq!(extension.name, "test-ext");
@@ -460,7 +488,7 @@ mod tests {
         let message = storage.create_chat_message(
             "session-123".to_string(),
             "user".to_string(),
-            "Hello, world!".to_string()
+            "Hello, world!".to_string(),
         );
 
         assert_eq!(message.session_id, "session-123");
@@ -493,19 +521,30 @@ mod tests {
 
         let deleted = storage.delete_file(id);
         assert!(deleted, "delete_file should return true for existing file");
-        assert!(storage.get_file(id).is_none(), "file should be gone after deletion");
+        assert!(
+            storage.get_file(id).is_none(),
+            "file should be gone after deletion"
+        );
     }
 
     #[test]
     fn test_delete_nonexistent_file_returns_false() {
         let mut storage = Storage::new();
-        assert!(!storage.delete_file(9999), "deleting nonexistent ID should return false");
+        assert!(
+            !storage.delete_file(9999),
+            "deleting nonexistent ID should return false"
+        );
     }
 
     #[test]
     fn test_file_tag_update() {
         let mut storage = Storage::new();
-        let file = storage.create_file("tagged.txt".into(), "/tagged.txt".into(), "text".into(), None);
+        let file = storage.create_file(
+            "tagged.txt".into(),
+            "/tagged.txt".into(),
+            "text".into(),
+            None,
+        );
         let id = file.id;
 
         let updated = storage.update_file_tags(id, vec!["important".into(), "work".into()]);
@@ -525,7 +564,12 @@ mod tests {
     #[test]
     fn test_file_color_update() {
         let mut storage = Storage::new();
-        let file = storage.create_file("colored.txt".into(), "/colored.txt".into(), "text".into(), None);
+        let file = storage.create_file(
+            "colored.txt".into(),
+            "/colored.txt".into(),
+            "text".into(),
+            None,
+        );
         let id = file.id;
 
         let updated = storage.update_file_color(id, "#ff0000".to_string());
@@ -580,7 +624,12 @@ mod tests {
     fn test_get_files_by_parent_id() {
         let mut storage = Storage::new();
         let root = storage.create_file("root.txt".into(), "/root.txt".into(), "text".into(), None);
-        let _child = storage.create_file("child.txt".into(), "/dir/child.txt".into(), "text".into(), Some(root.id));
+        let _child = storage.create_file(
+            "child.txt".into(),
+            "/dir/child.txt".into(),
+            "text".into(),
+            Some(root.id),
+        );
 
         let root_files = storage.get_files(None);
         assert_eq!(root_files.len(), 1);
@@ -596,8 +645,10 @@ mod tests {
     #[test]
     fn test_extension_creation_increments_id() {
         let mut storage = Storage::new();
-        let e1 = storage.create_extension("ext1".into(), "desc1".into(), "1.0".into(), "auth1".into());
-        let e2 = storage.create_extension("ext2".into(), "desc2".into(), "1.0".into(), "auth2".into());
+        let e1 =
+            storage.create_extension("ext1".into(), "desc1".into(), "1.0".into(), "auth1".into());
+        let e2 =
+            storage.create_extension("ext2".into(), "desc2".into(), "1.0".into(), "auth2".into());
         assert_ne!(e1.id, e2.id);
         assert_eq!(e2.id, e1.id + 1);
     }
@@ -635,7 +686,8 @@ mod tests {
     #[test]
     fn test_delete_extension() {
         let mut storage = Storage::new();
-        let ext = storage.create_extension("disposable".into(), "d".into(), "1.0".into(), "a".into());
+        let ext =
+            storage.create_extension("disposable".into(), "d".into(), "1.0".into(), "a".into());
         let id = ext.id;
 
         assert!(storage.delete_extension(id));
@@ -738,7 +790,9 @@ mod tests {
     #[test]
     fn test_update_nonexistent_user_settings_returns_none() {
         let mut storage = Storage::new();
-        assert!(storage.update_user_settings(9999, Some("x".into()), None, None).is_none());
+        assert!(storage
+            .update_user_settings(9999, Some("x".into()), None, None)
+            .is_none());
     }
 
     // ─── Struct serialization round-trip tests ──────────────────────────
@@ -811,7 +865,10 @@ mod tests {
         assert!(file.color.is_none(), "new file should have no color");
         assert!(!file.is_hidden, "new file should not be hidden");
         assert!(file.size.is_none(), "new file should have no size");
-        assert!(file.mime_type.is_none(), "new file should have no mime type");
+        assert!(
+            file.mime_type.is_none(),
+            "new file should have no mime type"
+        );
         assert!(file.content.is_none(), "new file should have no content");
         assert_eq!(file.user_id, 1, "new file should belong to default user");
     }
@@ -823,7 +880,10 @@ mod tests {
         let hash = hash_password("test");
         // SHA-256 produces a 64-character hex string
         assert_eq!(hash.len(), 64, "hash should be 64 hex characters");
-        assert!(hash.chars().all(|c| c.is_ascii_hexdigit()), "hash should only contain hex digits");
+        assert!(
+            hash.chars().all(|c| c.is_ascii_hexdigit()),
+            "hash should only contain hex digits"
+        );
     }
 
     #[test]
@@ -843,26 +903,41 @@ mod tests {
     #[test]
     fn test_hash_password_is_not_plaintext() {
         let hash = hash_password("password");
-        assert_ne!(hash, "password", "hash should not equal the plaintext password");
+        assert_ne!(
+            hash, "password",
+            "hash should not equal the plaintext password"
+        );
     }
 
     #[test]
     fn test_verify_password_correct() {
         let hash = hash_password("mysecret");
-        assert!(verify_password("mysecret", &hash), "correct password should verify");
+        assert!(
+            verify_password("mysecret", &hash),
+            "correct password should verify"
+        );
     }
 
     #[test]
     fn test_verify_password_incorrect() {
         let hash = hash_password("mysecret");
-        assert!(!verify_password("wrongpassword", &hash), "wrong password should not verify");
+        assert!(
+            !verify_password("wrongpassword", &hash),
+            "wrong password should not verify"
+        );
     }
 
     #[test]
     fn test_seed_data_password_is_hashed() {
         let storage = Storage::new();
         let user = storage.users.get(&1).expect("default user should exist");
-        assert_ne!(user.password_hash, "password", "seed password should not be stored in plaintext");
-        assert!(verify_password("password", &user.password_hash), "seed password should verify with 'password'");
+        assert_ne!(
+            user.password_hash, "password",
+            "seed password should not be stored in plaintext"
+        );
+        assert!(
+            verify_password("password", &user.password_hash),
+            "seed password should verify with 'password'"
+        );
     }
 }

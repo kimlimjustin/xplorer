@@ -293,13 +293,14 @@ fn ok_json(value: &str) -> String {
 // ─── Permission checking ────────────────────────────────────────────────────
 
 fn has_permission(ctx: &impl AsContext<Data = HostState>, perm: &str) -> bool {
-    ctx.as_context().data().permissions.iter().any(|p| p == perm)
+    ctx.as_context()
+        .data()
+        .permissions
+        .iter()
+        .any(|p| p == perm)
 }
 
-fn require_permission(
-    ctx: &impl AsContext<Data = HostState>,
-    perm: &str,
-) -> Result<(), String> {
+fn require_permission(ctx: &impl AsContext<Data = HostState>, perm: &str) -> Result<(), String> {
     if has_permission(ctx, perm) {
         Ok(())
     } else {
@@ -406,8 +407,8 @@ fn do_file_exists(
 
 /// Get the extension-scoped storage directory.
 fn extension_storage_dir(extension_id: &str) -> Result<std::path::PathBuf, String> {
-    let data_dir = dirs::data_dir()
-        .ok_or_else(|| "Could not determine app data directory".to_string())?;
+    let data_dir =
+        dirs::data_dir().ok_or_else(|| "Could not determine app data directory".to_string())?;
     let storage_dir = data_dir
         .join("com.xplorer.app")
         .join("extension_storage")
@@ -491,8 +492,8 @@ fn do_http_request(
     require_permission(ctx, "system:network")?;
     let req_json = read_string_from_memory(ctx, req_ptr, req_len)?;
 
-    let req: serde_json::Value = serde_json::from_str(&req_json)
-        .map_err(|e| format!("Invalid HTTP request JSON: {}", e))?;
+    let req: serde_json::Value =
+        serde_json::from_str(&req_json).map_err(|e| format!("Invalid HTTP request JSON: {}", e))?;
 
     let url = req
         .get("url")
@@ -564,7 +565,8 @@ fn do_http_request(
     if resp_bytes.len() > MAX_HTTP_RESPONSE_SIZE {
         return Err(format!(
             "HTTP response too large: {} bytes (limit: {} bytes)",
-            resp_bytes.len(), MAX_HTTP_RESPONSE_SIZE
+            resp_bytes.len(),
+            MAX_HTTP_RESPONSE_SIZE
         ));
     }
 
@@ -608,8 +610,8 @@ fn do_git_exec(
     require_permission(ctx, "git:read")?;
 
     let req_json = read_string_from_memory(ctx, req_ptr, req_len)?;
-    let req: serde_json::Value = serde_json::from_str(&req_json)
-        .map_err(|e| format!("Invalid git request JSON: {}", e))?;
+    let req: serde_json::Value =
+        serde_json::from_str(&req_json).map_err(|e| format!("Invalid git request JSON: {}", e))?;
 
     let repo_path = req
         .get("repo_path")
@@ -638,8 +640,22 @@ fn do_git_exec(
 
     // SECURITY: Check if this is a write operation and require git:write.
     let write_commands = [
-        "add", "commit", "push", "merge", "rebase", "reset", "checkout", "branch", "tag",
-        "stash", "cherry-pick", "revert", "rm", "mv", "clean", "init",
+        "add",
+        "commit",
+        "push",
+        "merge",
+        "rebase",
+        "reset",
+        "checkout",
+        "branch",
+        "tag",
+        "stash",
+        "cherry-pick",
+        "revert",
+        "rm",
+        "mv",
+        "clean",
+        "init",
     ];
     if let Some(first_arg) = args.first() {
         if write_commands.contains(&first_arg.as_str()) {
@@ -813,8 +829,8 @@ fn validate_read_path(path: &str, extension_id: &str) -> Result<(), String> {
     let target = std::path::Path::new(path);
 
     // 1) Always allow reads within the extension's own data directory.
-    let data_dir = dirs::data_dir()
-        .ok_or_else(|| "Could not determine app data directory".to_string())?;
+    let data_dir =
+        dirs::data_dir().ok_or_else(|| "Could not determine app data directory".to_string())?;
     let ext_data_base = data_dir
         .join("com.xplorer.app")
         .join("extension_data")
@@ -907,8 +923,8 @@ fn validate_write_path(path: &str, extension_id: &str) -> Result<(), String> {
     validate_file_path(path)?;
 
     // Extension write operations should be scoped to their own data directory.
-    let data_dir = dirs::data_dir()
-        .ok_or_else(|| "Could not determine app data directory".to_string())?;
+    let data_dir =
+        dirs::data_dir().ok_or_else(|| "Could not determine app data directory".to_string())?;
     let allowed_base = data_dir
         .join("com.xplorer.app")
         .join("extension_data")

@@ -1,22 +1,22 @@
-pub mod security;
-pub mod tools;
-pub mod tool_executor;
-pub mod streaming;
-pub mod planner;
 pub mod memory;
+pub mod planner;
+pub mod security;
+pub mod streaming;
+pub mod tool_executor;
+pub mod tools;
 
 use serde::{Deserialize, Serialize};
-use tracing::warn;
 use serde_json::{json, Value};
 use std::collections::HashMap;
 use std::sync::{Arc, LazyLock, Mutex};
 use tauri::command;
 use tauri::Emitter;
 use tokio::sync::oneshot;
+use tracing::warn;
 
 // Re-export key types
-pub use planner::OperationPlan;
 pub use memory::MemoryEntry;
+pub use planner::OperationPlan;
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -216,7 +216,10 @@ fn load_settings() -> AgentSettings {
     if let Ok(Some(key)) = crate::secure_credentials::get_secret("agent-openai-api-key") {
         settings.openai_api_key = key;
     } else if !settings.openai_api_key.is_empty() {
-        crate::secure_credentials::migrate_to_keychain("agent-openai-api-key", &settings.openai_api_key);
+        crate::secure_credentials::migrate_to_keychain(
+            "agent-openai-api-key",
+            &settings.openai_api_key,
+        );
     }
 
     settings
@@ -241,8 +244,7 @@ fn save_settings(settings: &AgentSettings) -> Result<(), String> {
     let path = settings_path();
     let json = serde_json::to_string_pretty(&safe_settings)
         .map_err(|e| format!("Failed to serialize settings: {}", e))?;
-    std::fs::write(&path, &json)
-        .map_err(|e| format!("Failed to write settings: {}", e))?;
+    std::fs::write(&path, &json).map_err(|e| format!("Failed to write settings: {}", e))?;
 
     // Restrict file permissions so only the current user can read it
     #[cfg(unix)]
@@ -275,23 +277,22 @@ fn save_permissions(perms: &AgentPermissions) -> Result<(), String> {
     let path = permissions_path();
     let json = serde_json::to_string_pretty(perms)
         .map_err(|e| format!("Failed to serialize permissions: {}", e))?;
-    std::fs::write(&path, &json)
-        .map_err(|e| format!("Failed to write permissions: {}", e))?;
+    std::fs::write(&path, &json).map_err(|e| format!("Failed to write permissions: {}", e))?;
     Ok(())
 }
 
 fn is_session_cancelled(session_id: &str) -> bool {
-    CANCELLED_SESSIONS.lock().unwrap_or_else(|e| e.into_inner()).contains(session_id)
+    CANCELLED_SESSIONS
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .contains(session_id)
 }
 
 // ─── Extracted Sub-functions ────────────────────────────────────────────────
 
 /// Build the system prompt incorporating the current path, filesystem context,
 /// and memory from previous sessions.
-fn build_system_prompt(
-    current_path: &str,
-    filesystem_context: &Option<String>,
-) -> String {
+fn build_system_prompt(current_path: &str, filesystem_context: &Option<String>) -> String {
     let fs_context_section = if let Some(ref ctx) = filesystem_context {
         format!(
             "\n\nFilesystem overview (from index — may not be 100% current):\n{}\n\n\
@@ -404,11 +405,10 @@ async fn execute_read_only_tools(
 
         let tname_ret = tname.clone();
         join_set.spawn(async move {
-            let result = tokio::task::spawn_blocking(move || {
-                tool_executor::execute_tool(&tname, &tinput)
-            })
-            .await
-            .unwrap_or_else(|e| Err(format!("Task join error: {}", e)));
+            let result =
+                tokio::task::spawn_blocking(move || tool_executor::execute_tool(&tname, &tinput))
+                    .await
+                    .unwrap_or_else(|e| Err(format!("Task join error: {}", e)));
 
             (tid, tname_ret, result, sid, ah)
         });
@@ -499,7 +499,7 @@ async fn handle_approval(
     match tokio::time::timeout(std::time::Duration::from_secs(300), rx).await {
         Ok(Ok(response)) => response,
         Ok(Err(_)) => "deny_once".to_string(), // Channel closed
-        Err(_) => "deny_once".to_string(),      // Timeout
+        Err(_) => "deny_once".to_string(),     // Timeout
     }
 }
 
@@ -643,9 +643,8 @@ async fn execute_write_tools(
         }
 
         if allowed && !is_session_cancelled(session_id) {
-            let (result_json, tc) = execute_write_tool(
-                tool_id, tool_name, tool_input, session_id, app_handle,
-            );
+            let (result_json, tc) =
+                execute_write_tool(tool_id, tool_name, tool_input, session_id, app_handle);
             tool_results.push(result_json);
             final_tool_call = tc;
         } else {
@@ -719,7 +718,10 @@ pub async fn agent_chat(
 
     // Clear cancel flag for this session
     {
-        CANCELLED_SESSIONS.lock().unwrap_or_else(|e| e.into_inner()).remove(&session_id);
+        CANCELLED_SESSIONS
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .remove(&session_id);
     }
 
     let system_prompt = build_system_prompt(&current_path, &filesystem_context);
@@ -837,8 +839,12 @@ pub async fn agent_chat(
 
         // Execute write tools sequentially (need approval)
         let write_results = execute_write_tools(
-            &write_tools, &session_id, &app_handle, settings.auto_approve,
-        ).await;
+            &write_tools,
+            &session_id,
+            &app_handle,
+            settings.auto_approve,
+        )
+        .await;
         tool_results.extend(write_results);
 
         // Append tool results as user message
@@ -892,10 +898,16 @@ pub async fn agent_respond_approval(tool_call_id: String, response: String) -> R
             .remove(&tool_call_id)
     };
     if let Some(pending) = sender {
-        pending.sender.send(response).map_err(|_| "Approval channel closed".to_string())?;
+        pending
+            .sender
+            .send(response)
+            .map_err(|_| "Approval channel closed".to_string())?;
         Ok(())
     } else {
-        Err(format!("No pending approval found for tool call: {}", tool_call_id))
+        Err(format!(
+            "No pending approval found for tool call: {}",
+            tool_call_id
+        ))
     }
 }
 

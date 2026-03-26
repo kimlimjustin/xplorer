@@ -1,5 +1,5 @@
 use notify::RecursiveMode;
-use notify_debouncer_full::{new_debouncer, DebouncedEvent, DebounceEventResult};
+use notify_debouncer_full::{new_debouncer, DebounceEventResult, DebouncedEvent};
 use serde::Serialize;
 use std::collections::HashMap;
 use std::path::Path;

@@ -195,7 +195,7 @@ pub struct GitCommit {
     pub date: String,
     pub timestamp: i64,
     pub message: String,
-    pub summary: String, // First line of message
+    pub summary: String,      // First line of message
     pub body: Option<String>, // Rest of message
     pub parent_hashes: Vec<String>,
     pub files_changed: Vec<String>,
@@ -290,10 +290,15 @@ fn validate_git_ref(value: &str, label: &str) -> Result<(), String> {
         return Err(format!("{} cannot be empty", label));
     }
     if value.starts_with('-') {
-        return Err(format!("{} '{}' looks like a flag — rejecting to prevent injection", label, value));
+        return Err(format!(
+            "{} '{}' looks like a flag — rejecting to prevent injection",
+            label, value
+        ));
     }
     // Reject shell metacharacters that should never appear in a git ref
-    const FORBIDDEN: &[char] = &[';', '|', '&', '$', '`', '\n', '\r', '\0', '>', '<', '\'', '"'];
+    const FORBIDDEN: &[char] = &[
+        ';', '|', '&', '$', '`', '\n', '\r', '\0', '>', '<', '\'', '"',
+    ];
     for &ch in FORBIDDEN {
         if value.contains(ch) {
             return Err(format!("{} contains forbidden character '{}'", label, ch));
@@ -301,7 +306,10 @@ fn validate_git_ref(value: &str, label: &str) -> Result<(), String> {
     }
     // Reject ".." to prevent ref traversal (e.g. "../../etc/passwd")
     if value.contains("..") {
-        return Err(format!("{} contains '..' — rejecting to prevent traversal", label));
+        return Err(format!(
+            "{} contains '..' — rejecting to prevent traversal",
+            label
+        ));
     }
     Ok(())
 }
@@ -314,7 +322,10 @@ fn validate_git_path(value: &str, label: &str) -> Result<(), String> {
         return Err(format!("{} cannot be empty", label));
     }
     if value.starts_with('-') {
-        return Err(format!("{} '{}' looks like a flag — rejecting to prevent injection", label, value));
+        return Err(format!(
+            "{} '{}' looks like a flag — rejecting to prevent injection",
+            label, value
+        ));
     }
     // Reject null bytes which could truncate the argument
     if value.contains('\0') {
@@ -330,20 +341,20 @@ impl GitService {
 
     pub fn find_git_repository(&self, path: &Path) -> Option<PathBuf> {
         let mut current_path = path.to_path_buf();
-        
+
         loop {
             let git_dir = current_path.join(".git");
             if git_dir.exists() {
                 return Some(current_path);
             }
-            
+
             if let Some(parent) = current_path.parent() {
                 current_path = parent.to_path_buf();
             } else {
                 break;
             }
         }
-        
+
         None
     }
 
@@ -351,12 +362,12 @@ impl GitService {
         let current_branch = self.get_current_branch(repo_path)?;
         let remote_url = self.get_remote_url(repo_path).ok();
         let last_commit = self.get_latest_commit(repo_path).ok();
-        
+
         let status = self.get_git_status(repo_path)?;
-        
+
         // Count total commits
         let total_commits = self.count_total_commits(repo_path)?;
-        
+
         // Count contributors
         let total_contributors = self.count_contributors(repo_path)?;
 
@@ -367,16 +378,24 @@ impl GitService {
             total_commits,
             total_contributors,
             last_commit,
-            uncommitted_changes: !status.modified_files.is_empty() || !status.staged_files.is_empty(),
+            uncommitted_changes: !status.modified_files.is_empty()
+                || !status.staged_files.is_empty(),
             untracked_files: status.untracked_files,
             modified_files: status.modified_files,
             staged_files: status.staged_files,
         })
     }
 
-    pub fn get_file_history(&self, repo_path: &Path, file_path: &str, limit: Option<usize>) -> Result<GitFileHistory, String> {
+    pub fn get_file_history(
+        &self,
+        repo_path: &Path,
+        file_path: &str,
+        limit: Option<usize>,
+    ) -> Result<GitFileHistory, String> {
         validate_git_path(file_path, "File path")?;
-        let limit_str = limit.map(|l| l.to_string()).unwrap_or_else(|| "100".to_string());
+        let limit_str = limit
+            .map(|l| l.to_string())
+            .unwrap_or_else(|| "100".to_string());
 
         let output = Command::new("git")
             .current_dir(repo_path)
@@ -388,13 +407,16 @@ impl GitService {
                 "--stat=1000",
                 &format!("-{}", limit_str),
                 "--",
-                file_path
+                file_path,
             ])
             .output()
             .map_err(|e| format!("Failed to execute git log: {}", e))?;
 
         if !output.status.success() {
-            return Err(format!("Git log failed: {}", String::from_utf8_lossy(&output.stderr)));
+            return Err(format!(
+                "Git log failed: {}",
+                String::from_utf8_lossy(&output.stderr)
+            ));
         }
 
         let log_output = String::from_utf8_lossy(&output.stdout);
@@ -414,28 +436,30 @@ impl GitService {
         })
     }
 
-    pub fn get_file_blame(&self, repo_path: &Path, file_path: &str) -> Result<GitFileBlame, String> {
+    pub fn get_file_blame(
+        &self,
+        repo_path: &Path,
+        file_path: &str,
+    ) -> Result<GitFileBlame, String> {
         validate_git_path(file_path, "File path")?;
         let output = Command::new("git")
             .current_dir(repo_path)
-            .args([
-                "blame",
-                "--porcelain",
-                "--line-porcelain",
-                "--",
-                file_path
-            ])
+            .args(["blame", "--porcelain", "--line-porcelain", "--", file_path])
             .output()
             .map_err(|e| format!("Failed to execute git blame: {}", e))?;
 
         if !output.status.success() {
-            return Err(format!("Git blame failed: {}", String::from_utf8_lossy(&output.stderr)));
+            return Err(format!(
+                "Git blame failed: {}",
+                String::from_utf8_lossy(&output.stderr)
+            ));
         }
 
         let blame_output = String::from_utf8_lossy(&output.stdout);
         let lines = self.parse_git_blame(&blame_output)?;
-        
-        let mut unique_authors = lines.iter()
+
+        let mut unique_authors = lines
+            .iter()
             .map(|line| line.author_name.clone())
             .collect::<std::collections::HashSet<_>>()
             .into_iter()
@@ -450,7 +474,12 @@ impl GitService {
         })
     }
 
-    pub fn get_file_diff(&self, repo_path: &Path, file_path: &str, commit_hash: Option<&str>) -> Result<GitDiff, String> {
+    pub fn get_file_diff(
+        &self,
+        repo_path: &Path,
+        file_path: &str,
+        commit_hash: Option<&str>,
+    ) -> Result<GitDiff, String> {
         validate_git_path(file_path, "File path")?;
         if let Some(hash) = commit_hash {
             validate_git_ref(hash, "Commit hash")?;
@@ -472,14 +501,21 @@ impl GitService {
             .map_err(|e| format!("Failed to execute git diff: {}", e))?;
 
         if !output.status.success() {
-            return Err(format!("Git diff failed: {}", String::from_utf8_lossy(&output.stderr)));
+            return Err(format!(
+                "Git diff failed: {}",
+                String::from_utf8_lossy(&output.stderr)
+            ));
         }
 
         let diff_output = String::from_utf8_lossy(&output.stdout);
         self.parse_git_diff(&diff_output, file_path)
     }
 
-    pub fn get_commit_diff(&self, repo_path: &Path, commit_hash: &str) -> Result<Vec<GitDiff>, String> {
+    pub fn get_commit_diff(
+        &self,
+        repo_path: &Path,
+        commit_hash: &str,
+    ) -> Result<Vec<GitDiff>, String> {
         validate_git_ref(commit_hash, "Commit hash")?;
         let output = Command::new("git")
             .current_dir(repo_path)
@@ -489,13 +525,16 @@ impl GitService {
                 "--no-ext-diff",
                 "-U3",
                 "--format=",
-                commit_hash
+                commit_hash,
             ])
             .output()
             .map_err(|e| format!("Failed to execute git show: {}", e))?;
 
         if !output.status.success() {
-            return Err(format!("Git show failed: {}", String::from_utf8_lossy(&output.stderr)));
+            return Err(format!(
+                "Git show failed: {}",
+                String::from_utf8_lossy(&output.stderr)
+            ));
         }
 
         let diff_output = String::from_utf8_lossy(&output.stdout);
@@ -538,7 +577,7 @@ impl GitService {
                 "log",
                 "-1",
                 "--pretty=format:%H|%h|%an|%ae|%cn|%ce|%ad|%at|%s|%b",
-                "--date=iso"
+                "--date=iso",
             ])
             .output()
             .map_err(|e| format!("Failed to get latest commit: {}", e))?;
@@ -549,8 +588,10 @@ impl GitService {
 
         let log_output = String::from_utf8_lossy(&output.stdout);
         let commits = self.parse_git_log(&log_output, "")?;
-        
-        commits.into_iter().next()
+
+        commits
+            .into_iter()
+            .next()
             .ok_or_else(|| "No commits found".to_string())
     }
 
@@ -579,7 +620,8 @@ impl GitService {
         if output.status.success() {
             let output_str = String::from_utf8_lossy(&output.stdout);
             let count_str = output_str.trim();
-            count_str.parse::<usize>()
+            count_str
+                .parse::<usize>()
                 .map_err(|e| format!("Failed to parse commit count: {}", e))
         } else {
             Ok(0)
@@ -607,9 +649,15 @@ impl GitService {
     fn parse_git_log(&self, log_output: &str, _file_path: &str) -> Result<Vec<GitCommit>, String> {
         let mut commits = Vec::new();
         let mut current_commit_lines = Vec::new();
-        
+
         for line in log_output.lines() {
-            if line.contains('|') && line.chars().nth(0).map(|c| c.is_alphanumeric()).unwrap_or(false) {
+            if line.contains('|')
+                && line
+                    .chars()
+                    .nth(0)
+                    .map(|c| c.is_alphanumeric())
+                    .unwrap_or(false)
+            {
                 // Process previous commit if exists
                 if !current_commit_lines.is_empty() {
                     if let Ok(commit) = self.parse_single_commit(&current_commit_lines) {
@@ -622,21 +670,21 @@ impl GitService {
                 current_commit_lines.push(line.to_string());
             }
         }
-        
+
         // Process final commit
         if !current_commit_lines.is_empty() {
             if let Ok(commit) = self.parse_single_commit(&current_commit_lines) {
                 commits.push(commit);
             }
         }
-        
+
         Ok(commits)
     }
 
     fn parse_single_commit(&self, lines: &[String]) -> Result<GitCommit, String> {
         let first_line = lines.first().ok_or("Empty commit data")?;
         let parts: Vec<&str> = first_line.split('|').collect();
-        
+
         if parts.len() < 9 {
             return Err("Invalid commit format".to_string());
         }
@@ -650,7 +698,7 @@ impl GitService {
         let date = parts[6].to_string();
         let timestamp = parts[7].parse::<i64>().unwrap_or(0);
         let summary = parts[8].to_string();
-        
+
         let body = if parts.len() > 9 && !parts[9].trim().is_empty() {
             Some(parts[9].to_string())
         } else {
@@ -661,7 +709,7 @@ impl GitService {
         let mut insertions = 0;
         let mut deletions = 0;
         let mut files_changed = Vec::new();
-        
+
         for line in lines.iter().skip(1) {
             if line.contains("file changed") || line.contains("files changed") {
                 // Parse insertions and deletions from git stat line
@@ -718,32 +766,52 @@ impl GitService {
             if line.starts_with('\t') {
                 // This is the actual code line
                 let content = line[1..].to_string(); // Remove the tab
-                
-                let commit_hash = current_commit_info.get("hash").unwrap_or(&String::new()).clone();
-                let short_hash = if commit_hash.len() >= 8 { 
-                    commit_hash[..8].to_string() 
-                } else { 
-                    commit_hash.clone() 
+
+                let commit_hash = current_commit_info
+                    .get("hash")
+                    .unwrap_or(&String::new())
+                    .clone();
+                let short_hash = if commit_hash.len() >= 8 {
+                    commit_hash[..8].to_string()
+                } else {
+                    commit_hash.clone()
                 };
-                
+
                 lines.push(GitBlameLine {
                     line_number,
                     content,
                     commit_hash: commit_hash.clone(),
                     short_hash,
-                    author_name: current_commit_info.get("author").unwrap_or(&String::new()).clone(),
-                    author_email: current_commit_info.get("author-mail").unwrap_or(&String::new()).clone(),
-                    date: current_commit_info.get("author-time").unwrap_or(&String::new()).clone(),
-                    timestamp: current_commit_info.get("author-time")
+                    author_name: current_commit_info
+                        .get("author")
+                        .unwrap_or(&String::new())
+                        .clone(),
+                    author_email: current_commit_info
+                        .get("author-mail")
+                        .unwrap_or(&String::new())
+                        .clone(),
+                    date: current_commit_info
+                        .get("author-time")
+                        .unwrap_or(&String::new())
+                        .clone(),
+                    timestamp: current_commit_info
+                        .get("author-time")
                         .unwrap_or(&String::new())
                         .parse::<i64>()
                         .unwrap_or(0),
-                    summary: current_commit_info.get("summary").unwrap_or(&String::new()).clone(),
+                    summary: current_commit_info
+                        .get("summary")
+                        .unwrap_or(&String::new())
+                        .clone(),
                 });
-                
+
                 line_number += 1;
             } else if let Some(space_pos) = line.find(' ') {
-                if line.chars().all(|c| c.is_alphanumeric() || c.is_whitespace()) && space_pos == 40 {
+                if line
+                    .chars()
+                    .all(|c| c.is_alphanumeric() || c.is_whitespace())
+                    && space_pos == 40
+                {
                     // This is a commit hash line
                     current_commit_info.insert("hash".to_string(), line[..space_pos].to_string());
                 } else if let Some(value_pos) = line.find(' ') {
@@ -773,7 +841,7 @@ impl GitService {
                 if let Some(hunk) = current_hunk.take() {
                     hunks.push(hunk);
                 }
-                
+
                 // Parse hunk header
                 if let Some(header_match) = self.parse_hunk_header(line) {
                     current_hunk = Some(GitDiffHunk {
@@ -822,7 +890,7 @@ impl GitService {
                 binary = true;
             }
         }
-        
+
         // Save final hunk
         if let Some(hunk) = current_hunk {
             hunks.push(hunk);
@@ -854,16 +922,16 @@ impl GitService {
                     }
                     current_diff_lines.clear();
                 }
-                
+
                 // Extract file path from diff header
                 if let Some(file_path) = self.extract_file_path_from_diff_header(line) {
                     current_file = Some(file_path);
                 }
             }
-            
+
             current_diff_lines.push(line.to_string());
         }
-        
+
         // Process final file
         if let Some(file_path) = current_file {
             let diff_text = current_diff_lines.join("\n");
@@ -881,24 +949,24 @@ impl GitService {
         if parts.len() >= 3 {
             let old_part = parts[1].strip_prefix('-')?;
             let new_part = parts[2].strip_prefix('+')?;
-            
+
             let old_parts: Vec<&str> = old_part.split(',').collect();
             let new_parts: Vec<&str> = new_part.split(',').collect();
-            
+
             let old_start = old_parts[0].parse::<u32>().ok()?;
-            let old_lines = if old_parts.len() > 1 { 
-                old_parts[1].parse::<u32>().ok()? 
-            } else { 
-                1 
+            let old_lines = if old_parts.len() > 1 {
+                old_parts[1].parse::<u32>().ok()?
+            } else {
+                1
             };
-            
+
             let new_start = new_parts[0].parse::<u32>().ok()?;
-            let new_lines = if new_parts.len() > 1 { 
-                new_parts[1].parse::<u32>().ok()? 
-            } else { 
-                1 
+            let new_lines = if new_parts.len() > 1 {
+                new_parts[1].parse::<u32>().ok()?
+            } else {
+                1
             };
-            
+
             Some((old_start, old_lines, new_start, new_lines))
         } else {
             None
@@ -961,7 +1029,12 @@ impl GitService {
         Ok(branches)
     }
 
-    pub fn create_branch(&self, repo_path: &Path, branch_name: &str, from_commit: Option<&str>) -> Result<(), String> {
+    pub fn create_branch(
+        &self,
+        repo_path: &Path,
+        branch_name: &str,
+        from_commit: Option<&str>,
+    ) -> Result<(), String> {
         validate_git_ref(branch_name, "Branch name")?;
         if let Some(commit) = from_commit {
             validate_git_ref(commit, "Source commit")?;
@@ -980,7 +1053,10 @@ impl GitService {
         if output.status.success() {
             Ok(())
         } else {
-            Err(format!("Failed to create branch: {}", String::from_utf8_lossy(&output.stderr)))
+            Err(format!(
+                "Failed to create branch: {}",
+                String::from_utf8_lossy(&output.stderr)
+            ))
         }
     }
 
@@ -995,11 +1071,19 @@ impl GitService {
         if output.status.success() {
             Ok(())
         } else {
-            Err(format!("Failed to switch branch: {}", String::from_utf8_lossy(&output.stderr)))
+            Err(format!(
+                "Failed to switch branch: {}",
+                String::from_utf8_lossy(&output.stderr)
+            ))
         }
     }
 
-    pub fn delete_branch(&self, repo_path: &Path, branch_name: &str, force: bool) -> Result<(), String> {
+    pub fn delete_branch(
+        &self,
+        repo_path: &Path,
+        branch_name: &str,
+        force: bool,
+    ) -> Result<(), String> {
         validate_git_ref(branch_name, "Branch name")?;
         let flag = if force { "-D" } else { "-d" };
         let output = Command::new("git")
@@ -1011,7 +1095,10 @@ impl GitService {
         if output.status.success() {
             Ok(())
         } else {
-            Err(format!("Failed to delete branch: {}", String::from_utf8_lossy(&output.stderr)))
+            Err(format!(
+                "Failed to delete branch: {}",
+                String::from_utf8_lossy(&output.stderr)
+            ))
         }
     }
 
@@ -1026,7 +1113,10 @@ impl GitService {
         if output.status.success() {
             Ok(())
         } else {
-            Err(format!("Failed to stage file: {}", String::from_utf8_lossy(&output.stderr)))
+            Err(format!(
+                "Failed to stage file: {}",
+                String::from_utf8_lossy(&output.stderr)
+            ))
         }
     }
 
@@ -1041,11 +1131,19 @@ impl GitService {
         if output.status.success() {
             Ok(())
         } else {
-            Err(format!("Failed to unstage file: {}", String::from_utf8_lossy(&output.stderr)))
+            Err(format!(
+                "Failed to unstage file: {}",
+                String::from_utf8_lossy(&output.stderr)
+            ))
         }
     }
 
-    pub fn commit_changes(&self, repo_path: &Path, message: &str, amend: bool) -> Result<String, String> {
+    pub fn commit_changes(
+        &self,
+        repo_path: &Path,
+        message: &str,
+        amend: bool,
+    ) -> Result<String, String> {
         if message.is_empty() {
             return Err("Commit message cannot be empty".to_string());
         }
@@ -1066,7 +1164,10 @@ impl GitService {
         if output.status.success() {
             Ok(String::from_utf8_lossy(&output.stdout).to_string())
         } else {
-            Err(format!("Failed to commit: {}", String::from_utf8_lossy(&output.stderr)))
+            Err(format!(
+                "Failed to commit: {}",
+                String::from_utf8_lossy(&output.stderr)
+            ))
         }
     }
 
@@ -1085,7 +1186,12 @@ impl GitService {
         Ok(self.parse_stashes(&stash_output)?)
     }
 
-    pub fn create_stash(&self, repo_path: &Path, message: Option<&str>, include_untracked: bool) -> Result<(), String> {
+    pub fn create_stash(
+        &self,
+        repo_path: &Path,
+        message: Option<&str>,
+        include_untracked: bool,
+    ) -> Result<(), String> {
         if let Some(msg) = message {
             if msg.contains('\0') {
                 return Err("Stash message contains null byte".to_string());
@@ -1108,7 +1214,10 @@ impl GitService {
         if output.status.success() {
             Ok(())
         } else {
-            Err(format!("Failed to create stash: {}", String::from_utf8_lossy(&output.stderr)))
+            Err(format!(
+                "Failed to create stash: {}",
+                String::from_utf8_lossy(&output.stderr)
+            ))
         }
     }
 
@@ -1125,7 +1234,10 @@ impl GitService {
         if output.status.success() {
             Ok(())
         } else {
-            Err(format!("Failed to apply stash: {}", String::from_utf8_lossy(&output.stderr)))
+            Err(format!(
+                "Failed to apply stash: {}",
+                String::from_utf8_lossy(&output.stderr)
+            ))
         }
     }
 
@@ -1141,7 +1253,10 @@ impl GitService {
         if output.status.success() {
             Ok(())
         } else {
-            Err(format!("Failed to drop stash: {}", String::from_utf8_lossy(&output.stderr)))
+            Err(format!(
+                "Failed to drop stash: {}",
+                String::from_utf8_lossy(&output.stderr)
+            ))
         }
     }
 
@@ -1179,7 +1294,7 @@ impl GitService {
                     } else {
                         ("renamed".to_string(), None)
                     }
-                },
+                }
                 "C " => ("copied".to_string(), None),
                 "U " | " U" | "UU" => ("conflicted".to_string(), None),
                 _ => ("unknown".to_string(), None),
@@ -1195,7 +1310,11 @@ impl GitService {
         file_statuses
     }
 
-    fn parse_simple_branches(&self, branch_output: &str, is_remote: bool) -> Result<Vec<GitBranch>, String> {
+    fn parse_simple_branches(
+        &self,
+        branch_output: &str,
+        is_remote: bool,
+    ) -> Result<Vec<GitBranch>, String> {
         let mut branches = Vec::new();
 
         for line in branch_output.lines() {
@@ -1209,11 +1328,7 @@ impl GitService {
             let is_current = line.starts_with('*');
 
             // Remove the current marker and extra spaces
-            let clean_line = if is_current {
-                line[1..].trim()
-            } else {
-                line
-            };
+            let clean_line = if is_current { line[1..].trim() } else { line };
 
             // Split by whitespace and take first part as branch name
             let parts: Vec<&str> = clean_line.split_whitespace().collect();
@@ -1274,7 +1389,6 @@ impl GitService {
         Ok(stashes)
     }
 
-
     fn parse_git_status(&self, status_output: &str) -> GitStatus {
         let mut untracked_files = Vec::new();
         let mut modified_files = Vec::new();
@@ -1292,7 +1406,7 @@ impl GitService {
                     "MM" => {
                         staged_files.push(file_path.to_string());
                         modified_files.push(file_path.to_string());
-                    },
+                    }
                     "A " => staged_files.push(file_path.to_string()),
                     "D " => staged_files.push(file_path.to_string()),
                     " D" => modified_files.push(file_path.to_string()),
@@ -1308,11 +1422,18 @@ impl GitService {
         }
     }
 
-    pub fn get_all_commits(&self, repo_path: &Path, limit: Option<usize>, branch: Option<&str>) -> Result<Vec<GitCommit>, String> {
+    pub fn get_all_commits(
+        &self,
+        repo_path: &Path,
+        limit: Option<usize>,
+        branch: Option<&str>,
+    ) -> Result<Vec<GitCommit>, String> {
         if let Some(b) = branch {
             validate_git_ref(b, "Branch")?;
         }
-        let limit_str = limit.map(|l| l.to_string()).unwrap_or_else(|| "100".to_string());
+        let limit_str = limit
+            .map(|l| l.to_string())
+            .unwrap_or_else(|| "100".to_string());
         let branch_or_all = branch.unwrap_or("--all");
 
         let output = Command::new("git")
@@ -1329,14 +1450,16 @@ impl GitService {
             .map_err(|e| format!("Failed to execute git log: {}", e))?;
 
         if !output.status.success() {
-            return Err(format!("Git log failed: {}", String::from_utf8_lossy(&output.stderr)));
+            return Err(format!(
+                "Git log failed: {}",
+                String::from_utf8_lossy(&output.stderr)
+            ));
         }
 
         let log_output = String::from_utf8_lossy(&output.stdout);
         self.parse_git_log(&log_output, "")
     }
 }
-
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GitFileStatus {
@@ -1384,8 +1507,9 @@ struct GitStatus {
 pub async fn find_git_repository(path: String) -> Result<Option<String>, String> {
     let service = GitService::new();
     let path_buf = PathBuf::from(path);
-    
-    Ok(service.find_git_repository(&path_buf)
+
+    Ok(service
+        .find_git_repository(&path_buf)
         .map(|p| p.to_string_lossy().to_string()))
 }
 
@@ -1398,9 +1522,9 @@ pub async fn get_repository_info(repo_path: String) -> Result<GitRepositoryInfo,
 
 #[command]
 pub async fn get_file_history(
-    repo_path: String, 
-    file_path: String, 
-    limit: Option<usize>
+    repo_path: String,
+    file_path: String,
+    limit: Option<usize>,
 ) -> Result<GitFileHistory, String> {
     let service = GitService::new();
     let path = Path::new(&repo_path);
@@ -1416,9 +1540,9 @@ pub async fn get_file_blame(repo_path: String, file_path: String) -> Result<GitF
 
 #[command]
 pub async fn get_file_diff(
-    repo_path: String, 
-    file_path: String, 
-    commit_hash: Option<String>
+    repo_path: String,
+    file_path: String,
+    commit_hash: Option<String>,
 ) -> Result<GitDiff, String> {
     let service = GitService::new();
     let path = Path::new(&repo_path);
@@ -1426,7 +1550,10 @@ pub async fn get_file_diff(
 }
 
 #[command]
-pub async fn get_commit_diff(repo_path: String, commit_hash: String) -> Result<Vec<GitDiff>, String> {
+pub async fn get_commit_diff(
+    repo_path: String,
+    commit_hash: String,
+) -> Result<Vec<GitDiff>, String> {
     let service = GitService::new();
     let path = Path::new(&repo_path);
     service.get_commit_diff(path, &commit_hash)
@@ -1447,7 +1574,11 @@ pub async fn get_branches(repo_path: String) -> Result<Vec<GitBranch>, String> {
 }
 
 #[command]
-pub async fn create_branch(repo_path: String, branch_name: String, from_commit: Option<String>) -> Result<(), String> {
+pub async fn create_branch(
+    repo_path: String,
+    branch_name: String,
+    from_commit: Option<String>,
+) -> Result<(), String> {
     let service = GitService::new();
     let path = Path::new(&repo_path);
     service.create_branch(path, &branch_name, from_commit.as_deref())
@@ -1461,7 +1592,11 @@ pub async fn switch_branch(repo_path: String, branch_name: String) -> Result<(),
 }
 
 #[command]
-pub async fn delete_branch(repo_path: String, branch_name: String, force: bool) -> Result<(), String> {
+pub async fn delete_branch(
+    repo_path: String,
+    branch_name: String,
+    force: bool,
+) -> Result<(), String> {
     let service = GitService::new();
     let path = Path::new(&repo_path);
     service.delete_branch(path, &branch_name, force)
@@ -1482,7 +1617,11 @@ pub async fn unstage_file(repo_path: String, file_path: String) -> Result<(), St
 }
 
 #[command]
-pub async fn commit_changes(repo_path: String, message: String, amend: bool) -> Result<String, String> {
+pub async fn commit_changes(
+    repo_path: String,
+    message: String,
+    amend: bool,
+) -> Result<String, String> {
     let service = GitService::new();
     let path = Path::new(&repo_path);
     service.commit_changes(path, &message, amend)
@@ -1496,7 +1635,11 @@ pub async fn get_stashes(repo_path: String) -> Result<Vec<GitStash>, String> {
 }
 
 #[command]
-pub async fn create_stash(repo_path: String, message: Option<String>, include_untracked: bool) -> Result<(), String> {
+pub async fn create_stash(
+    repo_path: String,
+    message: Option<String>,
+    include_untracked: bool,
+) -> Result<(), String> {
     let service = GitService::new();
     let path = Path::new(&repo_path);
     service.create_stash(path, message.as_deref(), include_untracked)
@@ -1520,7 +1663,7 @@ pub async fn drop_stash(repo_path: String, stash_index: u32) -> Result<(), Strin
 pub async fn get_all_commits(
     repo_path: String,
     limit: Option<usize>,
-    branch: Option<String>
+    branch: Option<String>,
 ) -> Result<Vec<GitCommit>, String> {
     let service = GitService::new();
     let path = Path::new(&repo_path);

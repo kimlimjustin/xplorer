@@ -1,18 +1,18 @@
+use crate::audit_log::log_operation;
+use crate::operations::progress::{generate_operation_id, ProgressManager};
+use crate::operations::undo_redo_ops::{record_operation, FileOperation};
+use crate::operations::validate_file_path;
+use chrono::Local;
+use regex::RegexBuilder;
+use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
 use std::fs;
 use std::path::Path;
 use std::sync::{Arc, OnceLock};
 use std::thread;
-use chrono::Local;
-use regex::RegexBuilder;
-use serde::{Serialize, Deserialize};
 use tauri::command;
 use tracing::warn;
 use walkdir::WalkDir;
-use crate::operations::progress::{ProgressManager, generate_operation_id};
-use crate::operations::undo_redo_ops::{record_operation, FileOperation};
-use crate::operations::validate_file_path;
-use crate::audit_log::log_operation;
 
 // ─── Conflict Resolution Types ───────────────────────────────────────────────
 
@@ -36,7 +36,8 @@ fn file_info_from_path(p: &Path) -> Result<ConflictFileInfo, String> {
         .map_err(|e| format!("Failed to read metadata for {}: {}", p.display(), e))?;
     let modified = {
         let sys_time = meta.modified().unwrap_or(std::time::SystemTime::UNIX_EPOCH);
-        sys_time.duration_since(std::time::SystemTime::UNIX_EPOCH)
+        sys_time
+            .duration_since(std::time::SystemTime::UNIX_EPOCH)
             .map(|d| d.as_secs() as i64)
             .unwrap_or(0)
     };
@@ -47,7 +48,10 @@ fn file_info_from_path(p: &Path) -> Result<ConflictFileInfo, String> {
     };
     Ok(ConflictFileInfo {
         path: p.to_string_lossy().to_string(),
-        name: p.file_name().map(|n| n.to_string_lossy().to_string()).unwrap_or_default(),
+        name: p
+            .file_name()
+            .map(|n| n.to_string_lossy().to_string())
+            .unwrap_or_default(),
         is_dir: meta.is_dir(),
         size,
         modified,
@@ -56,7 +60,11 @@ fn file_info_from_path(p: &Path) -> Result<ConflictFileInfo, String> {
 
 fn dir_total_size(dir: &Path) -> u64 {
     let mut total = 0u64;
-    for entry in WalkDir::new(dir).min_depth(1).into_iter().filter_map(|e| e.ok()) {
+    for entry in WalkDir::new(dir)
+        .min_depth(1)
+        .into_iter()
+        .filter_map(|e| e.ok())
+    {
         if entry.file_type().is_file() {
             if let Ok(m) = entry.metadata() {
                 total += m.len();
@@ -93,10 +101,16 @@ pub async fn check_conflicts(
 ) -> Result<Vec<ConflictInfo>, String> {
     let dest_dir = Path::new(&destination_dir);
     if !dest_dir.exists() {
-        return Err(format!("Destination directory does not exist: {}", destination_dir));
+        return Err(format!(
+            "Destination directory does not exist: {}",
+            destination_dir
+        ));
     }
     if !dest_dir.is_dir() {
-        return Err(format!("Destination is not a directory: {}", destination_dir));
+        return Err(format!(
+            "Destination is not a directory: {}",
+            destination_dir
+        ));
     }
 
     let mut conflicts: Vec<ConflictInfo> = Vec::new();
@@ -140,7 +154,7 @@ pub async fn get_rename_destination(
 pub async fn copy_with_progress(
     source: String,
     destination: String,
-    progress_manager: tauri::State<'_, Arc<ProgressManager>>
+    progress_manager: tauri::State<'_, Arc<ProgressManager>>,
 ) -> Result<String, String> {
     validate_file_path(&source)?;
     validate_file_path(&destination)?;
@@ -158,7 +172,7 @@ pub async fn copy_with_progress(
     thread::spawn(move || {
         let src = Path::new(&source_clone);
         let dst = Path::new(&destination_clone);
-        
+
         let result = if src.is_file() {
             copy_file_with_progress(&src, &dst, &progress_manager, &operation_id_clone)
         } else if src.is_dir() {
@@ -179,7 +193,15 @@ pub async fn copy_with_progress(
                 progress_manager.complete_operation(&operation_id_clone);
             }
             Err(e) => {
-                log_operation("copy", vec![src.to_string_lossy().to_string(), dst.to_string_lossy().to_string()], Some(e.clone()), false);
+                log_operation(
+                    "copy",
+                    vec![
+                        src.to_string_lossy().to_string(),
+                        dst.to_string_lossy().to_string(),
+                    ],
+                    Some(e.clone()),
+                    false,
+                );
                 progress_manager.fail_operation(&operation_id_clone, e);
             }
         }
@@ -192,7 +214,7 @@ pub async fn copy_with_progress(
 pub async fn move_with_progress(
     source: String,
     destination: String,
-    progress_manager: tauri::State<'_, Arc<ProgressManager>>
+    progress_manager: tauri::State<'_, Arc<ProgressManager>>,
 ) -> Result<String, String> {
     validate_file_path(&source)?;
     validate_file_path(&destination)?;
@@ -210,7 +232,7 @@ pub async fn move_with_progress(
     thread::spawn(move || {
         let src = Path::new(&source_clone);
         let dst = Path::new(&destination_clone);
-        
+
         let result = move_with_progress_impl(&src, &dst, &progress_manager, &operation_id_clone);
 
         match result {
@@ -225,7 +247,15 @@ pub async fn move_with_progress(
                 progress_manager.complete_operation(&operation_id_clone);
             }
             Err(e) => {
-                log_operation("move", vec![src.to_string_lossy().to_string(), dst.to_string_lossy().to_string()], Some(e.clone()), false);
+                log_operation(
+                    "move",
+                    vec![
+                        src.to_string_lossy().to_string(),
+                        dst.to_string_lossy().to_string(),
+                    ],
+                    Some(e.clone()),
+                    false,
+                );
                 progress_manager.fail_operation(&operation_id_clone, e);
             }
         }
@@ -242,7 +272,7 @@ fn copy_file_with_progress(
 ) -> Result<(), String> {
     let metadata = fs::metadata(src).map_err(|e| format!("Failed to get metadata: {}", e))?;
     let file_size = metadata.len();
-    
+
     progress_manager.start_operation(
         operation_id.to_string(),
         "copy_file".to_string(),
@@ -250,12 +280,7 @@ fn copy_file_with_progress(
         file_size,
     );
 
-    progress_manager.update_progress(
-        operation_id,
-        src.to_string_lossy().to_string(),
-        0,
-        0,
-    );
+    progress_manager.update_progress(operation_id, src.to_string_lossy().to_string(), 0, 0);
 
     // Create parent directory if it doesn't exist
     if let Some(parent) = dst.parent() {
@@ -264,8 +289,7 @@ fn copy_file_with_progress(
     }
 
     // Use std::fs::copy for now, but could be enhanced with chunked copying for large files
-    fs::copy(src, dst)
-        .map_err(|e| format!("Failed to copy file: {}", e))?;
+    fs::copy(src, dst).map_err(|e| format!("Failed to copy file: {}", e))?;
 
     progress_manager.update_progress(
         operation_id,
@@ -285,7 +309,7 @@ fn copy_directory_with_progress(
 ) -> Result<(), String> {
     // First, count total files and calculate total size
     let (total_count, total_size) = count_directory_contents(src)?;
-    
+
     progress_manager.start_operation(
         operation_id.to_string(),
         "copy_directory".to_string(),
@@ -319,8 +343,8 @@ fn copy_directory_recursive(
             .map_err(|e| format!("Failed to create destination directory: {}", e))?;
     }
 
-    let entries = fs::read_dir(src)
-        .map_err(|e| format!("Failed to read source directory: {}", e))?;
+    let entries =
+        fs::read_dir(src).map_err(|e| format!("Failed to read source directory: {}", e))?;
 
     for entry in entries {
         let entry = entry.map_err(|e| format!("Failed to read entry: {}", e))?;
@@ -336,7 +360,9 @@ fn copy_directory_recursive(
         }
 
         if src_path.is_file() {
-            let metadata = entry.metadata().map_err(|e| format!("Failed to get metadata: {}", e))?;
+            let metadata = entry
+                .metadata()
+                .map_err(|e| format!("Failed to get metadata: {}", e))?;
             let file_size = metadata.len();
 
             progress_manager.update_progress(
@@ -382,7 +408,7 @@ fn move_with_progress_impl(
     // Try rename first (most efficient for same filesystem)
     if fs::rename(src, dst).is_ok() {
         let file_size = fs::metadata(dst).map(|m| m.len()).unwrap_or(0);
-        
+
         progress_manager.start_operation(
             operation_id.to_string(),
             "move_file".to_string(),
@@ -396,19 +422,17 @@ fn move_with_progress_impl(
             1,
             file_size,
         );
-        
+
         return Ok(());
     }
 
     // If rename fails (different filesystems), fall back to copy + delete
     if src.is_file() {
         copy_file_with_progress(src, dst, progress_manager, operation_id)?;
-        fs::remove_file(src)
-            .map_err(|e| format!("Failed to remove source file: {}", e))?;
+        fs::remove_file(src).map_err(|e| format!("Failed to remove source file: {}", e))?;
     } else if src.is_dir() {
         copy_directory_with_progress(src, dst, progress_manager, operation_id)?;
-        fs::remove_dir_all(src)
-            .map_err(|e| format!("Failed to remove source directory: {}", e))?;
+        fs::remove_dir_all(src).map_err(|e| format!("Failed to remove source directory: {}", e))?;
     }
 
     Ok(())
@@ -418,9 +442,12 @@ fn count_directory_contents(dir: &Path) -> Result<(u64, u64), String> {
     let mut file_count = 0u64;
     let mut total_size = 0u64;
 
-    fn count_recursive(dir: &Path, file_count: &mut u64, total_size: &mut u64) -> Result<(), String> {
-        let entries = fs::read_dir(dir)
-            .map_err(|e| format!("Failed to read directory: {}", e))?;
+    fn count_recursive(
+        dir: &Path,
+        file_count: &mut u64,
+        total_size: &mut u64,
+    ) -> Result<(), String> {
+        let entries = fs::read_dir(dir).map_err(|e| format!("Failed to read directory: {}", e))?;
 
         for entry in entries {
             let entry = entry.map_err(|e| format!("Failed to read entry: {}", e))?;
@@ -454,7 +481,7 @@ pub async fn copy(source: String, destination: String) -> Result<(), String> {
     if !src.exists() {
         return Err("Source file does not exist".to_string());
     }
-    
+
     // Check if source is a symlink — warn and skip to avoid following symlinks
     // into unexpected locations
     let src_meta = fs::symlink_metadata(src)
@@ -467,13 +494,15 @@ pub async fn copy(source: String, destination: String) -> Result<(), String> {
     }
 
     if src.is_file() {
-        fs::copy(src, dst)
-            .map_err(|e| format!("Failed to copy file: {}", e))?;
+        fs::copy(src, dst).map_err(|e| format!("Failed to copy file: {}", e))?;
     } else if src.is_dir() {
         copy_dir_recursive(src, dst)?;
     }
 
-    record_operation(FileOperation::Copy { src: source.clone(), dest: destination.clone() });
+    record_operation(FileOperation::Copy {
+        src: source.clone(),
+        dest: destination.clone(),
+    });
     log_operation("copy", vec![source, destination], None, true);
 
     Ok(())
@@ -519,15 +548,13 @@ pub async fn move_file(source: String, destination: String) -> Result<(), String
     if !src.exists() {
         return Err("Source file does not exist".to_string());
     }
-    
+
     // Try rename first (most efficient for same filesystem)
     if let Err(_) = fs::rename(src, dst) {
         // If rename fails (different filesystems), fall back to copy + delete
         if src.is_file() {
-            fs::copy(src, dst)
-                .map_err(|e| format!("Failed to copy file: {}", e))?;
-            fs::remove_file(src)
-                .map_err(|e| format!("Failed to remove source file: {}", e))?;
+            fs::copy(src, dst).map_err(|e| format!("Failed to copy file: {}", e))?;
+            fs::remove_file(src).map_err(|e| format!("Failed to remove source file: {}", e))?;
         } else if src.is_dir() {
             copy_dir_recursive(src, dst)?;
             fs::remove_dir_all(src)
@@ -535,7 +562,10 @@ pub async fn move_file(source: String, destination: String) -> Result<(), String
         }
     }
 
-    record_operation(FileOperation::Move { src: source.clone(), dest: destination.clone() });
+    record_operation(FileOperation::Move {
+        src: source.clone(),
+        dest: destination.clone(),
+    });
     log_operation("move", vec![source, destination], None, true);
 
     Ok(())
@@ -554,8 +584,7 @@ pub async fn remove_file(path: String) -> Result<(), String> {
         return Err("Path is a directory, use remove_dir instead".to_string());
     }
 
-    fs::remove_file(p)
-        .map_err(|e| format!("Failed to remove file: {}", e))?;
+    fs::remove_file(p).map_err(|e| format!("Failed to remove file: {}", e))?;
     log_operation("delete", vec![path], None, true);
 
     Ok(())
@@ -571,11 +600,13 @@ pub async fn rename(old_path: String, new_path: String) -> Result<(), String> {
     if !old.exists() {
         return Err("Source file does not exist".to_string());
     }
-    
-    fs::rename(old, new)
-        .map_err(|e| format!("Failed to rename: {}", e))?;
 
-    record_operation(FileOperation::Rename { old_path: old_path.clone(), new_path: new_path.clone() });
+    fs::rename(old, new).map_err(|e| format!("Failed to rename: {}", e))?;
+
+    record_operation(FileOperation::Rename {
+        old_path: old_path.clone(),
+        new_path: new_path.clone(),
+    });
     log_operation("rename", vec![old_path, new_path], None, true);
 
     Ok(())
@@ -591,8 +622,7 @@ pub async fn create_file(path: String) -> Result<(), String> {
             .map_err(|e| format!("Failed to create parent directory: {}", e))?;
     }
 
-    fs::File::create(path)
-        .map_err(|e| format!("Failed to create file: {}", e))?;
+    fs::File::create(path).map_err(|e| format!("Failed to create file: {}", e))?;
 
     Ok(())
 }
@@ -611,8 +641,7 @@ pub async fn create_file_with_content(path: String, content: String) -> Result<(
             .map_err(|e| format!("Failed to create parent directory: {}", e))?;
     }
 
-    fs::write(file_path, content)
-        .map_err(|e| format!("Failed to write file: {}", e))?;
+    fs::write(file_path, content).map_err(|e| format!("Failed to write file: {}", e))?;
 
     Ok(())
 }
@@ -629,10 +658,13 @@ pub async fn read_text_file(path: String) -> Result<String, String> {
 #[command]
 pub async fn read_binary_file(path: String) -> Result<Vec<u8>, String> {
     validate_file_path(&path)?;
-    let metadata = fs::metadata(&path)
-        .map_err(|e| format!("Failed to get file metadata {}: {}", path, e))?;
+    let metadata =
+        fs::metadata(&path).map_err(|e| format!("Failed to get file metadata {}: {}", path, e))?;
     if metadata.len() > 500 * 1024 * 1024 {
-        return Err(format!("File too large ({} bytes, max 500MB)", metadata.len()));
+        return Err(format!(
+            "File too large ({} bytes, max 500MB)",
+            metadata.len()
+        ));
     }
     match fs::read(&path) {
         Ok(content) => Ok(content),
@@ -677,7 +709,10 @@ pub async fn bulk_rename(
             .expect("hardcoded nested-quantifier regex is valid")
     });
     if nested_re.is_match(&pattern) {
-        return Err("Regex pattern contains nested quantifiers which could cause excessive backtracking".to_string());
+        return Err(
+            "Regex pattern contains nested quantifiers which could cause excessive backtracking"
+                .to_string(),
+        );
     }
     let regex = RegexBuilder::new(&pattern)
         .size_limit(10_000) // 10KB compiled size limit to prevent ReDoS
@@ -723,7 +758,9 @@ pub async fn bulk_rename(
         };
 
         // Apply regex replacement to the filename
-        let mut new_name = regex.replace_all(&original_name, replacement.as_str()).to_string();
+        let mut new_name = regex
+            .replace_all(&original_name, replacement.as_str())
+            .to_string();
 
         // Process special replacement tokens
         let seq_number = index + 1;
@@ -778,10 +815,7 @@ pub async fn bulk_rename(
         let new_path = Path::new(&result.new_path);
         if new_path.exists() && !original_paths.contains(&result.new_path) {
             result.success = false;
-            result.error = Some(format!(
-                "File already exists: '{}'",
-                result.new_name
-            ));
+            result.error = Some(format!("File already exists: '{}'", result.new_name));
         }
     }
 
@@ -829,8 +863,8 @@ pub async fn get_directory_sizes(dir_path: String) -> Result<Vec<DirectorySizeEn
         return Err(format!("Path is not a directory: {}", dir_path));
     }
 
-    let entries = fs::read_dir(root)
-        .map_err(|e| format!("Failed to read directory {}: {}", dir_path, e))?;
+    let entries =
+        fs::read_dir(root).map_err(|e| format!("Failed to read directory {}: {}", dir_path, e))?;
 
     let mut results: Vec<DirectorySizeEntry> = Vec::new();
 
@@ -846,7 +880,11 @@ pub async fn get_directory_sizes(dir_path: String) -> Result<Vec<DirectorySizeEn
         if is_dir {
             let mut total_size: u64 = 0;
             let mut children_count: u64 = 0;
-            for walk_entry in WalkDir::new(&path).min_depth(1).into_iter().filter_map(|e| e.ok()) {
+            for walk_entry in WalkDir::new(&path)
+                .min_depth(1)
+                .into_iter()
+                .filter_map(|e| e.ok())
+            {
                 if walk_entry.file_type().is_file() {
                     if let Ok(meta) = walk_entry.metadata() {
                         total_size += meta.len();
@@ -891,14 +929,62 @@ pub struct FileTemplate {
 #[command]
 pub async fn get_file_templates() -> Result<Vec<FileTemplate>, String> {
     Ok(vec![
-        FileTemplate { id: "html".into(), name: "HTML Page".into(), default_filename: "index.html".into(), extension: "html".into(), description: "HTML5 boilerplate page".into() },
-        FileTemplate { id: "react".into(), name: "React Component".into(), default_filename: "Component.tsx".into(), extension: "tsx".into(), description: "React functional component".into() },
-        FileTemplate { id: "python".into(), name: "Python Script".into(), default_filename: "script.py".into(), extension: "py".into(), description: "Python script with main guard".into() },
-        FileTemplate { id: "markdown".into(), name: "Markdown Document".into(), default_filename: "document.md".into(), extension: "md".into(), description: "Markdown document with sections".into() },
-        FileTemplate { id: "json".into(), name: "JSON File".into(), default_filename: "data.json".into(), extension: "json".into(), description: "Empty JSON object".into() },
-        FileTemplate { id: "css".into(), name: "CSS Stylesheet".into(), default_filename: "styles.css".into(), extension: "css".into(), description: "CSS stylesheet with basic reset".into() },
-        FileTemplate { id: "typescript".into(), name: "TypeScript Module".into(), default_filename: "module.ts".into(), extension: "ts".into(), description: "TypeScript module with export".into() },
-        FileTemplate { id: "shell".into(), name: "Shell Script".into(), default_filename: "script.sh".into(), extension: "sh".into(), description: "Bash shell script".into() },
+        FileTemplate {
+            id: "html".into(),
+            name: "HTML Page".into(),
+            default_filename: "index.html".into(),
+            extension: "html".into(),
+            description: "HTML5 boilerplate page".into(),
+        },
+        FileTemplate {
+            id: "react".into(),
+            name: "React Component".into(),
+            default_filename: "Component.tsx".into(),
+            extension: "tsx".into(),
+            description: "React functional component".into(),
+        },
+        FileTemplate {
+            id: "python".into(),
+            name: "Python Script".into(),
+            default_filename: "script.py".into(),
+            extension: "py".into(),
+            description: "Python script with main guard".into(),
+        },
+        FileTemplate {
+            id: "markdown".into(),
+            name: "Markdown Document".into(),
+            default_filename: "document.md".into(),
+            extension: "md".into(),
+            description: "Markdown document with sections".into(),
+        },
+        FileTemplate {
+            id: "json".into(),
+            name: "JSON File".into(),
+            default_filename: "data.json".into(),
+            extension: "json".into(),
+            description: "Empty JSON object".into(),
+        },
+        FileTemplate {
+            id: "css".into(),
+            name: "CSS Stylesheet".into(),
+            default_filename: "styles.css".into(),
+            extension: "css".into(),
+            description: "CSS stylesheet with basic reset".into(),
+        },
+        FileTemplate {
+            id: "typescript".into(),
+            name: "TypeScript Module".into(),
+            default_filename: "module.ts".into(),
+            extension: "ts".into(),
+            description: "TypeScript module with export".into(),
+        },
+        FileTemplate {
+            id: "shell".into(),
+            name: "Shell Script".into(),
+            default_filename: "script.sh".into(),
+            extension: "sh".into(),
+            description: "Bash shell script".into(),
+        },
     ])
 }
 
@@ -917,7 +1003,11 @@ fn get_template_content(template_id: &str) -> Result<String, String> {
 }
 
 #[command]
-pub async fn create_from_template(directory: String, template_id: String, filename: String) -> Result<String, String> {
+pub async fn create_from_template(
+    directory: String,
+    template_id: String,
+    filename: String,
+) -> Result<String, String> {
     let content = get_template_content(&template_id)?;
     let file_path = Path::new(&directory).join(&filename);
     if file_path.exists() {
@@ -1000,9 +1090,9 @@ pub async fn create_symlink(target: String, link_path: String) -> Result<(), Str
 #[cfg(test)]
 mod tests {
     use super::*;
-    use tempfile::tempdir;
     use std::fs::{self, File};
     use std::io::Write;
+    use tempfile::tempdir;
 
     #[tokio::test]
     async fn test_copy_file_basic() {
@@ -1016,7 +1106,8 @@ mod tests {
         let result = copy(
             src_path.to_string_lossy().to_string(),
             dst_path.to_string_lossy().to_string(),
-        ).await;
+        )
+        .await;
 
         assert!(result.is_ok(), "copy should succeed: {:?}", result.err());
         assert!(dst_path.exists(), "destination file should exist");
@@ -1042,7 +1133,8 @@ mod tests {
         let result = copy(
             link_path.to_string_lossy().to_string(),
             dst_path.to_string_lossy().to_string(),
-        ).await;
+        )
+        .await;
 
         assert!(result.is_err(), "copy of symlink should return error");
         let err = result.unwrap_err();
@@ -1062,7 +1154,8 @@ mod tests {
         let result = copy(
             src_path.to_string_lossy().to_string(),
             dst_path.to_string_lossy().to_string(),
-        ).await;
+        )
+        .await;
 
         assert!(result.is_err(), "copy of nonexistent source should fail");
     }
@@ -1078,7 +1171,8 @@ mod tests {
         let result = rename(
             old_path.to_string_lossy().to_string(),
             new_path.to_string_lossy().to_string(),
-        ).await;
+        )
+        .await;
 
         assert!(result.is_ok(), "rename should succeed: {:?}", result.err());
         assert!(!old_path.exists(), "old path should no longer exist");
@@ -1094,7 +1188,8 @@ mod tests {
         let result = rename(
             old_path.to_string_lossy().to_string(),
             new_path.to_string_lossy().to_string(),
-        ).await;
+        )
+        .await;
 
         assert!(result.is_err(), "rename of nonexistent file should fail");
     }
@@ -1109,7 +1204,11 @@ mod tests {
 
         let result = remove_file(file_path.to_string_lossy().to_string()).await;
 
-        assert!(result.is_ok(), "remove_file should succeed: {:?}", result.err());
+        assert!(
+            result.is_ok(),
+            "remove_file should succeed: {:?}",
+            result.err()
+        );
         assert!(!file_path.exists(), "file should not exist after deletion");
     }
 
@@ -1143,7 +1242,11 @@ mod tests {
 
         let result = create_file(file_path.to_string_lossy().to_string()).await;
 
-        assert!(result.is_ok(), "create_file should succeed: {:?}", result.err());
+        assert!(
+            result.is_ok(),
+            "create_file should succeed: {:?}",
+            result.err()
+        );
         assert!(file_path.exists(), "file should exist after creation");
     }
 
@@ -1154,8 +1257,14 @@ mod tests {
 
         let result = create_file(file_path.to_string_lossy().to_string()).await;
 
-        assert!(result.is_ok(), "create_file with nested dirs should succeed");
-        assert!(file_path.exists(), "file should exist after creation with nested dirs");
+        assert!(
+            result.is_ok(),
+            "create_file with nested dirs should succeed"
+        );
+        assert!(
+            file_path.exists(),
+            "file should exist after creation with nested dirs"
+        );
     }
 
     #[tokio::test]
@@ -1188,7 +1297,13 @@ mod tests {
         assert!(result_exists.is_ok());
         assert!(result_exists.unwrap(), "existing file should return true");
 
-        let result_missing = file_exist(temp.path().join("missing.txt").to_string_lossy().to_string()).await;
+        let result_missing = file_exist(
+            temp.path()
+                .join("missing.txt")
+                .to_string_lossy()
+                .to_string(),
+        )
+        .await;
         assert!(result_missing.is_ok());
         assert!(!result_missing.unwrap(), "missing file should return false");
     }
@@ -1221,7 +1336,10 @@ mod tests {
         let subdir_entry = entries.iter().find(|e| e.name == "subdir").unwrap();
         assert!(subdir_entry.is_dir);
         assert!(subdir_entry.size > 0, "subdir should have non-zero size");
-        assert_eq!(subdir_entry.children_count, 2, "subdir should have 2 children");
+        assert_eq!(
+            subdir_entry.children_count, 2,
+            "subdir should have 2 children"
+        );
     }
 
     #[tokio::test]
@@ -1242,9 +1360,14 @@ mod tests {
         let result = copy(
             src_path.to_string_lossy().to_string(),
             dst_path.to_string_lossy().to_string(),
-        ).await;
+        )
+        .await;
 
-        assert!(result.is_ok(), "copy with special chars should succeed: {:?}", result.err());
+        assert!(
+            result.is_ok(),
+            "copy with special chars should succeed: {:?}",
+            result.err()
+        );
         assert!(dst_path.exists(), "dest with special chars should exist");
 
         let dst_content = fs::read_to_string(&dst_path).unwrap();
@@ -1265,11 +1388,15 @@ mod tests {
         let result = copy(
             src_dir.to_string_lossy().to_string(),
             dst_dir.to_string_lossy().to_string(),
-        ).await;
+        )
+        .await;
 
         assert!(result.is_ok(), "recursive copy should succeed");
         assert!(dst_dir.join("file1.txt").exists(), "file1 should be copied");
-        assert!(dst_dir.join("nested").join("file2.txt").exists(), "nested file2 should be copied");
+        assert!(
+            dst_dir.join("nested").join("file2.txt").exists(),
+            "nested file2 should be copied"
+        );
 
         let content = fs::read_to_string(dst_dir.join("nested").join("file2.txt")).unwrap();
         assert_eq!(content, "content2");
@@ -1287,9 +1414,14 @@ mod tests {
         let result = move_file(
             src.to_string_lossy().to_string(),
             dst.to_string_lossy().to_string(),
-        ).await;
+        )
+        .await;
 
-        assert!(result.is_ok(), "move_file should succeed: {:?}", result.err());
+        assert!(
+            result.is_ok(),
+            "move_file should succeed: {:?}",
+            result.err()
+        );
         assert!(!src.exists(), "source should not exist after move");
         assert!(dst.exists(), "destination should exist after move");
         assert_eq!(fs::read_to_string(&dst).unwrap(), content);
@@ -1304,7 +1436,8 @@ mod tests {
         let result = move_file(
             src.to_string_lossy().to_string(),
             dst.to_string_lossy().to_string(),
-        ).await;
+        )
+        .await;
 
         assert!(result.is_err(), "move of nonexistent file should fail");
     }
@@ -1340,7 +1473,8 @@ mod tests {
             "img_".to_string(),
             "photo_".to_string(),
             true, // preview_only
-        ).await;
+        )
+        .await;
 
         assert!(result.is_ok(), "bulk_rename preview should succeed");
         let results = result.unwrap();
@@ -1372,7 +1506,8 @@ mod tests {
             "old_".to_string(),
             "new_".to_string(),
             false, // actually rename
-        ).await;
+        )
+        .await;
 
         assert!(result.is_ok(), "bulk_rename should succeed");
         let results = result.unwrap();
@@ -1395,9 +1530,13 @@ mod tests {
             pattern,
             "replacement".to_string(),
             true,
-        ).await;
+        )
+        .await;
 
-        assert!(result.is_err(), "pattern longer than 200 chars should be rejected");
+        assert!(
+            result.is_err(),
+            "pattern longer than 200 chars should be rejected"
+        );
         assert!(result.unwrap_err().contains("too long"));
     }
 
@@ -1422,12 +1561,20 @@ mod tests {
             temp.path().to_string_lossy().to_string(),
             "json".to_string(),
             "data.json".to_string(),
-        ).await;
+        )
+        .await;
 
-        assert!(result.is_ok(), "create_from_template should succeed: {:?}", result.err());
+        assert!(
+            result.is_ok(),
+            "create_from_template should succeed: {:?}",
+            result.err()
+        );
         let created_path = result.unwrap();
         let content = fs::read_to_string(&created_path).unwrap();
-        assert!(content.contains("{"), "JSON template should contain opening brace");
+        assert!(
+            content.contains("{"),
+            "JSON template should contain opening brace"
+        );
     }
 
     #[tokio::test]
@@ -1440,7 +1587,8 @@ mod tests {
             temp.path().to_string_lossy().to_string(),
             "json".to_string(),
             "data.json".to_string(),
-        ).await;
+        )
+        .await;
 
         assert!(result.is_err(), "should fail when file already exists");
         assert!(result.unwrap_err().contains("already exists"));

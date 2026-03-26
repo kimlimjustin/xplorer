@@ -138,7 +138,11 @@ impl FieldTermFreqs {
             let boost = config.field_boosts.get(field).copied().unwrap_or(1.0);
             let b_f = config.field_b.get(field).copied().unwrap_or(config.b);
             let dl = self.field_lengths.get(field).copied().unwrap_or(0) as f64;
-            let avgdl = avg_field_lengths.get(field).copied().unwrap_or(1.0).max(1.0);
+            let avgdl = avg_field_lengths
+                .get(field)
+                .copied()
+                .unwrap_or(1.0)
+                .max(1.0);
 
             let numerator = boost * tf;
             let denominator = 1.0 + b_f * (dl / avgdl - 1.0);
@@ -242,11 +246,7 @@ impl Bm25fScorer {
     }
 
     /// Update corpus statistics after an index change (e.g. new files indexed).
-    pub fn update_stats(
-        &mut self,
-        num_docs: usize,
-        avg_field_lengths: HashMap<SearchField, f64>,
-    ) {
+    pub fn update_stats(&mut self, num_docs: usize, avg_field_lengths: HashMap<SearchField, f64>) {
         self.num_docs = num_docs;
         self.avg_field_lengths = avg_field_lengths;
     }
@@ -296,12 +296,30 @@ mod tests {
         assert!((cfg.k1 - 1.2).abs() < f64::EPSILON);
         assert!((cfg.b - 0.75).abs() < f64::EPSILON);
 
-        assert_eq!(*cfg.field_boosts.get(&SearchField::FilenameExact).unwrap(), 15.0);
-        assert_eq!(*cfg.field_boosts.get(&SearchField::FilenameStem).unwrap(), 10.0);
-        assert_eq!(*cfg.field_boosts.get(&SearchField::PathComponent).unwrap(), 3.0);
-        assert_eq!(*cfg.field_boosts.get(&SearchField::ContentHead).unwrap(), 2.0);
-        assert_eq!(*cfg.field_boosts.get(&SearchField::ContentBody).unwrap(), 1.0);
-        assert_eq!(*cfg.field_boosts.get(&SearchField::AiDescription).unwrap(), 2.0);
+        assert_eq!(
+            *cfg.field_boosts.get(&SearchField::FilenameExact).unwrap(),
+            15.0
+        );
+        assert_eq!(
+            *cfg.field_boosts.get(&SearchField::FilenameStem).unwrap(),
+            10.0
+        );
+        assert_eq!(
+            *cfg.field_boosts.get(&SearchField::PathComponent).unwrap(),
+            3.0
+        );
+        assert_eq!(
+            *cfg.field_boosts.get(&SearchField::ContentHead).unwrap(),
+            2.0
+        );
+        assert_eq!(
+            *cfg.field_boosts.get(&SearchField::ContentBody).unwrap(),
+            1.0
+        );
+        assert_eq!(
+            *cfg.field_boosts.get(&SearchField::AiDescription).unwrap(),
+            2.0
+        );
 
         assert_eq!(*cfg.field_b.get(&SearchField::FilenameExact).unwrap(), 0.0);
         assert_eq!(*cfg.field_b.get(&SearchField::FilenameStem).unwrap(), 0.1);
@@ -477,10 +495,7 @@ mod tests {
         ftf_world.add(SearchField::ContentBody, 3, 500);
         doc_tfs.insert("world".into(), ftf_world);
 
-        let query_terms = vec![
-            ("hello".into(), 50_usize),
-            ("world".into(), 200_usize),
-        ];
+        let query_terms = vec![("hello".into(), 50_usize), ("world".into(), 200_usize)];
 
         let total = scorer.score_document(&query_terms, &doc_tfs);
 

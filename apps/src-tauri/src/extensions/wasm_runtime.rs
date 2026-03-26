@@ -119,7 +119,8 @@ impl WasmRuntime {
             dealloc,
         };
 
-        self.instances.insert(extension_id.to_string(), Mutex::new(wasm_instance));
+        self.instances
+            .insert(extension_id.to_string(), Mutex::new(wasm_instance));
         Ok(())
     }
 
@@ -135,9 +136,7 @@ impl WasmRuntime {
             .instances
             .get(extension_id)
             .ok_or_else(|| format!("WASM instance '{}' not loaded", extension_id))?;
-        let mut inst = instance_ref
-            .lock()
-            .unwrap_or_else(|e| e.into_inner());
+        let mut inst = instance_ref.lock().unwrap_or_else(|e| e.into_inner());
 
         // Copy the TypedFunc handles — they are Copy and do not borrow `inst`.
         let alloc = inst.alloc;

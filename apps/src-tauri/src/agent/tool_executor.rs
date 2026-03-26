@@ -2,9 +2,12 @@ use serde_json::{json, Value};
 use std::path::Path;
 use std::sync::OnceLock;
 
-use super::security::{is_blocked_command, is_custom_blocked_command, is_network_command, validate_agent_path_with_permissions};
-use super::planner;
 use super::memory;
+use super::planner;
+use super::security::{
+    is_blocked_command, is_custom_blocked_command, is_network_command,
+    validate_agent_path_with_permissions,
+};
 
 // ===== Configuration constants ==============================================
 
@@ -52,9 +55,7 @@ fn validate_path_with_perms(path: &str) -> Result<(), String> {
 }
 
 pub fn execute_read_file(input: &Value) -> Result<String, String> {
-    let path = input["path"]
-        .as_str()
-        .ok_or("Missing 'path' parameter")?;
+    let path = input["path"].as_str().ok_or("Missing 'path' parameter")?;
     validate_path_with_perms(path)?;
     let file_size = std::fs::metadata(path)
         .map_err(|e| format!("Failed to get metadata for '{}': {}", path, e))?
@@ -80,9 +81,7 @@ pub fn execute_read_file(input: &Value) -> Result<String, String> {
 }
 
 pub fn execute_list_directory(input: &Value) -> Result<String, String> {
-    let path = input["path"]
-        .as_str()
-        .ok_or("Missing 'path' parameter")?;
+    let path = input["path"].as_str().ok_or("Missing 'path' parameter")?;
     validate_path_with_perms(path)?;
     let entries = std::fs::read_dir(path)
         .map_err(|e| format!("Failed to read directory '{}': {}", path, e))?;
@@ -103,9 +102,7 @@ pub fn execute_search_files(input: &Value) -> Result<String, String> {
     let pattern = input["pattern"]
         .as_str()
         .ok_or("Missing 'pattern' parameter")?;
-    let base_path = input["path"]
-        .as_str()
-        .ok_or("Missing 'path' parameter")?;
+    let base_path = input["path"].as_str().ok_or("Missing 'path' parameter")?;
 
     let full_pattern = format!(
         "{}{}{}",
@@ -136,12 +133,7 @@ const WALK_MAX_DEPTH: u32 = 20;
 /// Maximum number of file entries collected per walk (prevents unbounded memory use).
 const WALK_MAX_FILES: usize = 10_000;
 
-fn walk_recursive(
-    dir: &Path,
-    depth: u32,
-    max_depth: u32,
-    entries: &mut Vec<std::path::PathBuf>,
-) {
+fn walk_recursive(dir: &Path, depth: u32, max_depth: u32, entries: &mut Vec<std::path::PathBuf>) {
     if depth > max_depth || depth > WALK_MAX_DEPTH {
         return;
     }
@@ -166,12 +158,13 @@ pub fn execute_search_content(input: &Value) -> Result<String, String> {
     let pattern_str = input["pattern"]
         .as_str()
         .ok_or("Missing 'pattern' parameter")?;
-    let dir_path = input["path"]
-        .as_str()
-        .ok_or("Missing 'path' parameter")?;
+    let dir_path = input["path"].as_str().ok_or("Missing 'path' parameter")?;
 
     if pattern_str.len() > REGEX_PATTERN_MAX_LEN {
-        return Err(format!("Regex pattern too long (max {} characters)", REGEX_PATTERN_MAX_LEN));
+        return Err(format!(
+            "Regex pattern too long (max {} characters)",
+            REGEX_PATTERN_MAX_LEN
+        ));
     }
     // Reject patterns with nested quantifiers that could cause catastrophic backtracking
     static NESTED_QUANTIFIER_RE: OnceLock<regex::Regex> = OnceLock::new();
@@ -180,7 +173,10 @@ pub fn execute_search_content(input: &Value) -> Result<String, String> {
             .expect("hardcoded nested-quantifier regex is valid")
     });
     if nested_re.is_match(pattern_str) {
-        return Err("Regex pattern contains nested quantifiers which could cause excessive backtracking".to_string());
+        return Err(
+            "Regex pattern contains nested quantifiers which could cause excessive backtracking"
+                .to_string(),
+        );
     }
     let re = regex::RegexBuilder::new(pattern_str)
         .size_limit(REGEX_COMPILED_SIZE_LIMIT)
@@ -189,7 +185,12 @@ pub fn execute_search_content(input: &Value) -> Result<String, String> {
 
     let mut results: Vec<Value> = Vec::new();
     let mut entries = Vec::new();
-    walk_recursive(Path::new(dir_path), 0, SEARCH_CONTENT_MAX_DEPTH, &mut entries);
+    walk_recursive(
+        Path::new(dir_path),
+        0,
+        SEARCH_CONTENT_MAX_DEPTH,
+        &mut entries,
+    );
 
     for path in &entries {
         if results.len() >= SEARCH_CONTENT_RESULT_LIMIT {
@@ -234,9 +235,7 @@ pub fn execute_get_system_info() -> Result<String, String> {
 }
 
 pub fn execute_write_file(input: &Value) -> Result<String, String> {
-    let path = input["path"]
-        .as_str()
-        .ok_or("Missing 'path' parameter")?;
+    let path = input["path"].as_str().ok_or("Missing 'path' parameter")?;
     validate_path_with_perms(path)?;
     let content = input["content"]
         .as_str()
@@ -247,15 +246,16 @@ pub fn execute_write_file(input: &Value) -> Result<String, String> {
         std::fs::create_dir_all(parent)
             .map_err(|e| format!("Failed to create parent directory: {}", e))?;
     }
-    std::fs::write(path, content)
-        .map_err(|e| format!("Failed to write file '{}': {}", path, e))?;
-    Ok(format!("Successfully wrote {} bytes to {}", content.len(), path))
+    std::fs::write(path, content).map_err(|e| format!("Failed to write file '{}': {}", path, e))?;
+    Ok(format!(
+        "Successfully wrote {} bytes to {}",
+        content.len(),
+        path
+    ))
 }
 
 pub fn execute_create_directory(input: &Value) -> Result<String, String> {
-    let path = input["path"]
-        .as_str()
-        .ok_or("Missing 'path' parameter")?;
+    let path = input["path"].as_str().ok_or("Missing 'path' parameter")?;
     validate_path_with_perms(path)?;
     std::fs::create_dir_all(path)
         .map_err(|e| format!("Failed to create directory '{}': {}", path, e))?;
@@ -277,12 +277,9 @@ pub fn execute_rename(input: &Value) -> Result<String, String> {
 }
 
 pub fn execute_delete(input: &Value) -> Result<String, String> {
-    let path = input["path"]
-        .as_str()
-        .ok_or("Missing 'path' parameter")?;
+    let path = input["path"].as_str().ok_or("Missing 'path' parameter")?;
     validate_path_with_perms(path)?;
-    trash::delete(path)
-        .map_err(|e| format!("Failed to move '{}' to trash: {}", path, e))?;
+    trash::delete(path).map_err(|e| format!("Failed to move '{}' to trash: {}", path, e))?;
     Ok(format!("Successfully moved {} to trash", path))
 }
 
@@ -382,7 +379,10 @@ pub fn execute_command(input: &Value) -> Result<String, String> {
 
     // Truncate long output
     let stdout_display = if stdout.len() > COMMAND_OUTPUT_TRUNCATE {
-        format!("{}...\n[truncated]", truncate_to_char_boundary(&stdout, COMMAND_OUTPUT_TRUNCATE))
+        format!(
+            "{}...\n[truncated]",
+            truncate_to_char_boundary(&stdout, COMMAND_OUTPUT_TRUNCATE)
+        )
     } else {
         stdout
     };
@@ -397,9 +397,7 @@ pub fn execute_command(input: &Value) -> Result<String, String> {
 
 /// Extract text from document files (PDF, DOCX, XLSX, PPTX).
 pub fn execute_extract_document_text(input: &Value) -> Result<String, String> {
-    let path_str = input["path"]
-        .as_str()
-        .ok_or("Missing 'path' parameter")?;
+    let path_str = input["path"].as_str().ok_or("Missing 'path' parameter")?;
 
     validate_path_with_perms(path_str)?;
 
@@ -416,7 +414,10 @@ pub fn execute_extract_document_text(input: &Value) -> Result<String, String> {
         .map(|e| e.to_string_lossy().to_lowercase())
         .unwrap_or_default();
 
-    if !matches!(ext.as_str(), "pdf" | "doc" | "docx" | "xls" | "xlsx" | "ppt" | "pptx" | "rtf") {
+    if !matches!(
+        ext.as_str(),
+        "pdf" | "doc" | "docx" | "xls" | "xlsx" | "ppt" | "pptx" | "rtf"
+    ) {
         return Err(format!(
             "Unsupported document format: .{}. Supported: .pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .rtf",
             ext
@@ -428,7 +429,11 @@ pub fn execute_extract_document_text(input: &Value) -> Result<String, String> {
     // Truncate very large documents
     let truncated = if text.len() > READ_FILE_CONTENT_TRUNCATE {
         let cut: String = text.chars().take(READ_FILE_CONTENT_TRUNCATE).collect();
-        format!("{}\n\n[... truncated — document has {} total characters]", cut, text.len())
+        format!(
+            "{}\n\n[... truncated — document has {} total characters]",
+            cut,
+            text.len()
+        )
     } else {
         text
     };
@@ -448,8 +453,11 @@ pub fn execute_search_indexed(input: &Value) -> Result<String, String> {
         .to_string();
     let limit = input["limit"].as_u64().map(|n| n as usize);
 
-    let results = crate::search::compat::get_search_engine()
-        .natural_language_search(&query, None, limit.unwrap_or(SEARCH_INDEXED_DEFAULT_LIMIT));
+    let results = crate::search::compat::get_search_engine().natural_language_search(
+        &query,
+        None,
+        limit.unwrap_or(SEARCH_INDEXED_DEFAULT_LIMIT),
+    );
 
     let output = json!({
         "result_count": results.len(),
@@ -544,7 +552,9 @@ mod tests {
         let input = json!({});
         let result = execute_tool("nonexistent_tool", &input);
         assert!(result.is_err());
-        assert!(result.unwrap_err().contains("Unknown tool: nonexistent_tool"));
+        assert!(result
+            .unwrap_err()
+            .contains("Unknown tool: nonexistent_tool"));
     }
 
     #[test]
@@ -707,7 +717,11 @@ mod tests {
         let result = execute_read_file(&input);
         assert!(result.is_err());
         let err = result.unwrap_err();
-        assert!(err.contains("too large"), "Expected 'too large' in error: {}", err);
+        assert!(
+            err.contains("too large"),
+            "Expected 'too large' in error: {}",
+            err
+        );
         assert!(err.contains(&(READ_FILE_MAX_SIZE + 1).to_string()));
     }
 
@@ -873,7 +887,11 @@ mod tests {
     #[test]
     fn search_content_finds_matching_lines() {
         let dir = tempfile::tempdir().unwrap();
-        std::fs::write(dir.path().join("test.txt"), "line one\nfoo bar\nline three\n").unwrap();
+        std::fs::write(
+            dir.path().join("test.txt"),
+            "line one\nfoo bar\nline three\n",
+        )
+        .unwrap();
 
         let input = json!({
             "pattern": "foo",
@@ -995,7 +1013,10 @@ mod tests {
         let result = execute_command(&input).unwrap();
         let parsed: Value = serde_json::from_str(&result).unwrap();
         assert_eq!(parsed["exit_code"], 0);
-        assert!(parsed["stdout"].as_str().unwrap().contains("hello_from_test"));
+        assert!(parsed["stdout"]
+            .as_str()
+            .unwrap()
+            .contains("hello_from_test"));
     }
 
     // ─── execute_rename ─────────────────────────────────────────────────

@@ -1,8 +1,8 @@
-use crate::extensions::{types::*, permissions::*, plugin_registry, signing};
+use crate::extensions::{permissions::*, plugin_registry, signing, types::*};
 use serde_json;
 use std::fs;
 use std::path::{Path, PathBuf};
-use tracing::{warn, error};
+use tracing::{error, warn};
 
 pub struct ExtensionManager {
     pub extensions_dir: PathBuf,
@@ -47,7 +47,11 @@ impl ExtensionManager {
         Self::validate_extension_id(&manifest.id)?;
 
         // Remove existing if upgrading
-        if let Some(idx) = self.installed_extensions.iter().position(|e| e.manifest.id == manifest.id) {
+        if let Some(idx) = self
+            .installed_extensions
+            .iter()
+            .position(|e| e.manifest.id == manifest.id)
+        {
             self.installed_extensions.remove(idx);
         }
 
@@ -65,7 +69,9 @@ impl ExtensionManager {
             let mut normalized_target = std::path::PathBuf::new();
             for component in canonical_extensions_dir.join(&manifest.id).components() {
                 match component {
-                    std::path::Component::ParentDir => { normalized_target.pop(); }
+                    std::path::Component::ParentDir => {
+                        normalized_target.pop();
+                    }
                     std::path::Component::CurDir => {}
                     c => normalized_target.push(c.as_os_str()),
                 }
@@ -78,7 +84,8 @@ impl ExtensionManager {
             }
         }
         if target_path.exists() {
-            fs::remove_dir_all(&target_path).map_err(|e| format!("Failed to remove existing extension: {}", e))?;
+            fs::remove_dir_all(&target_path)
+                .map_err(|e| format!("Failed to remove existing extension: {}", e))?;
         }
 
         self.copy_dir_all(Path::new(extension_path), &target_path)?;
@@ -108,7 +115,11 @@ impl ExtensionManager {
         self.deactivate_extension(extension_id)?;
 
         // Remove from installed extensions
-        if let Some(index) = self.installed_extensions.iter().position(|e| e.manifest.id == extension_id) {
+        if let Some(index) = self
+            .installed_extensions
+            .iter()
+            .position(|e| e.manifest.id == extension_id)
+        {
             let extension = &self.installed_extensions[index];
             let extension_path = Path::new(&extension.path);
 
@@ -126,11 +137,19 @@ impl ExtensionManager {
     }
 
     pub fn activate_extension(&mut self, extension_id: &str) -> Result<(), String> {
-        if !self.installed_extensions.iter().any(|e| e.manifest.id == extension_id) {
+        if !self
+            .installed_extensions
+            .iter()
+            .any(|e| e.manifest.id == extension_id)
+        {
             return Err(format!("Extension '{}' not installed", extension_id));
         }
 
-        if let Some(ext) = self.installed_extensions.iter().find(|e| e.manifest.id == extension_id) {
+        if let Some(ext) = self
+            .installed_extensions
+            .iter()
+            .find(|e| e.manifest.id == extension_id)
+        {
             if !ext.verified {
                 let ext_path = Path::new(&ext.path);
                 let is_builtin = !ext_path.starts_with(&self.extensions_dir);
@@ -150,13 +169,21 @@ impl ExtensionManager {
 
         if !self.active_extensions.contains(&extension_id.to_string()) {
             // SECURITY: Check for native plugin but do NOT load it (CRIT-04)
-            if let Some(ext) = self.installed_extensions.iter().find(|e| e.manifest.id == extension_id) {
+            if let Some(ext) = self
+                .installed_extensions
+                .iter()
+                .find(|e| e.manifest.id == extension_id)
+            {
                 self.try_load_native_plugin(&ext.path, extension_id);
             }
 
             self.active_extensions.push(extension_id.to_string());
 
-            if let Some(ext) = self.installed_extensions.iter_mut().find(|e| e.manifest.id == extension_id) {
+            if let Some(ext) = self
+                .installed_extensions
+                .iter_mut()
+                .find(|e| e.manifest.id == extension_id)
+            {
                 ext.is_active = true;
             }
 
@@ -167,17 +194,28 @@ impl ExtensionManager {
     }
 
     pub fn deactivate_extension(&mut self, extension_id: &str) -> Result<(), String> {
-        if let Some(index) = self.active_extensions.iter().position(|id| id == extension_id) {
+        if let Some(index) = self
+            .active_extensions
+            .iter()
+            .position(|id| id == extension_id)
+        {
             // Unload native plugin if loaded
             if plugin_registry::is_plugin_loaded(extension_id) {
                 if let Err(e) = plugin_registry::unload_native_plugin(extension_id) {
-                    warn!("[ExtensionManager] Failed to unload native plugin for '{}': {}", extension_id, e);
+                    warn!(
+                        "[ExtensionManager] Failed to unload native plugin for '{}': {}",
+                        extension_id, e
+                    );
                 }
             }
 
             self.active_extensions.remove(index);
 
-            if let Some(ext) = self.installed_extensions.iter_mut().find(|e| e.manifest.id == extension_id) {
+            if let Some(ext) = self
+                .installed_extensions
+                .iter_mut()
+                .find(|e| e.manifest.id == extension_id)
+            {
                 ext.is_active = false;
             }
 
@@ -187,7 +225,11 @@ impl ExtensionManager {
     }
 
     pub fn get_extension_permissions(&self, extension_id: &str) -> Result<Vec<String>, String> {
-        if let Some(extension) = self.installed_extensions.iter().find(|e| e.manifest.id == extension_id) {
+        if let Some(extension) = self
+            .installed_extensions
+            .iter()
+            .find(|e| e.manifest.id == extension_id)
+        {
             Ok(extension.manifest.permissions.clone().unwrap_or_default())
         } else {
             Err(format!("Extension '{}' not found", extension_id))
@@ -237,11 +279,14 @@ impl ExtensionManager {
                     let manifest_path = path.join("package.json");
                     if manifest_path.exists() {
                         if let Ok(manifest_content) = fs::read_to_string(&manifest_path) {
-                            if let Ok(manifest) = super::types::parse_manifest_from_package_json(&manifest_content) {
+                            if let Ok(manifest) =
+                                super::types::parse_manifest_from_package_json(&manifest_content)
+                            {
                                 let is_active = self.active_extensions.contains(&manifest.id);
 
                                 // Verify extension signature on load
-                                let verified = signing::verify_extension_integrity(&path, &manifest.id);
+                                let verified =
+                                    signing::verify_extension_integrity(&path, &manifest.id);
 
                                 let has_wasm_backend = path.join("backend.wasm").exists();
 
@@ -298,7 +343,10 @@ impl ExtensionManager {
             return Err("Extension ID must not exceed 128 characters".to_string());
         }
         // Only allow safe characters: alphanumeric, hyphens, dots (but not leading dot), underscores
-        if !id.chars().all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_' || c == '.') {
+        if !id
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_' || c == '.')
+        {
             return Err(format!(
                 "Extension ID '{}' contains invalid characters. Only alphanumeric, hyphens, underscores, and dots are allowed.",
                 id
@@ -314,9 +362,15 @@ impl ExtensionManager {
         Ok(())
     }
 
-    fn validate_extension(&self, extension_path: &str, manifest: &ExtensionManifest) -> Result<(), String> {
+    fn validate_extension(
+        &self,
+        extension_path: &str,
+        manifest: &ExtensionManifest,
+    ) -> Result<(), String> {
         if manifest.id.is_empty() || manifest.name.is_empty() || manifest.version.is_empty() {
-            return Err("Invalid manifest: missing required fields (id, name, version)".to_string());
+            return Err(
+                "Invalid manifest: missing required fields (id, name, version)".to_string(),
+            );
         }
 
         // SECURITY: Validate extension ID format to prevent path traversal
@@ -325,16 +379,28 @@ impl ExtensionManager {
         // Validate that the main entry point is specified
         match &manifest.main {
             None => return Err("Invalid manifest: missing 'main' entry point".to_string()),
-            Some(main) if main.is_empty() => return Err("Invalid manifest: 'main' entry point is empty".to_string()),
+            Some(main) if main.is_empty() => {
+                return Err("Invalid manifest: 'main' entry point is empty".to_string())
+            }
             Some(main) => {
                 // SECURITY: Validate main entry point does not contain path traversal
-                if main.contains("..") || main.starts_with('/') || main.starts_with('\\') || main.contains('\0') {
-                    return Err(format!("Invalid manifest: main entry point '{}' contains path traversal", main));
+                if main.contains("..")
+                    || main.starts_with('/')
+                    || main.starts_with('\\')
+                    || main.contains('\0')
+                {
+                    return Err(format!(
+                        "Invalid manifest: main entry point '{}' contains path traversal",
+                        main
+                    ));
                 }
                 // Verify the main file actually exists in the extension directory
                 let main_path = Path::new(extension_path).join(main);
                 if !main_path.exists() {
-                    return Err(format!("Invalid manifest: main entry point '{}' not found", main));
+                    return Err(format!(
+                        "Invalid manifest: main entry point '{}' not found",
+                        main
+                    ));
                 }
             }
         }
@@ -402,7 +468,9 @@ impl ExtensionManager {
             if content.contains(pattern) {
                 return Err(format!(
                     "Blocked: {} in {}\nHint: {}",
-                    pattern, file_path.display(), suggestion
+                    pattern,
+                    file_path.display(),
+                    suggestion
                 ));
             }
         }
@@ -427,7 +495,9 @@ impl ExtensionManager {
         let canonical_src = fs::canonicalize(src)
             .map_err(|e| format!("Failed to canonicalize source directory: {}", e))?;
 
-        for entry in fs::read_dir(src).map_err(|e| format!("Failed to read source directory: {}", e))? {
+        for entry in
+            fs::read_dir(src).map_err(|e| format!("Failed to read source directory: {}", e))?
+        {
             let entry = entry.map_err(|e| format!("Failed to read entry: {}", e))?;
             let src_path = entry.path();
             let dst_path = dst.join(entry.file_name());
@@ -435,10 +505,14 @@ impl ExtensionManager {
             // SECURITY: Check if the entry is a symlink and skip it.
             // Symlinks in extension packages could point outside the extension directory,
             // allowing exfiltration of sensitive files during installation.
-            let file_type = entry.file_type()
+            let file_type = entry
+                .file_type()
                 .map_err(|e| format!("Failed to get file type: {}", e))?;
             if file_type.is_symlink() {
-                warn!("[ExtensionManager] Skipping symlink during installation: {}", src_path.display());
+                warn!(
+                    "[ExtensionManager] Skipping symlink during installation: {}",
+                    src_path.display()
+                );
                 continue;
             }
 
@@ -446,7 +520,10 @@ impl ExtensionManager {
             // This catches symlinks that were followed via parent directory resolution.
             if let Ok(canonical_entry) = fs::canonicalize(&src_path) {
                 if !canonical_entry.starts_with(&canonical_src) {
-                    warn!("[ExtensionManager] Skipping entry outside source directory: {}", src_path.display());
+                    warn!(
+                        "[ExtensionManager] Skipping entry outside source directory: {}",
+                        src_path.display()
+                    );
                     continue;
                 }
             }
@@ -454,7 +531,8 @@ impl ExtensionManager {
             if src_path.is_dir() {
                 self.copy_dir_all(&src_path, &dst_path)?;
             } else {
-                fs::copy(&src_path, &dst_path).map_err(|e| format!("Failed to copy file: {}", e))?;
+                fs::copy(&src_path, &dst_path)
+                    .map_err(|e| format!("Failed to copy file: {}", e))?;
             }
         }
         Ok(())

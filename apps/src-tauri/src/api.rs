@@ -1,6 +1,6 @@
 // API commands module - handles all API routes from the old server
+use crate::storage::{Extension, FileRecord, StoredChatMessage, UserSettings, STORAGE};
 use tauri::command;
-use crate::storage::{FileRecord, Extension, StoredChatMessage, UserSettings, STORAGE};
 
 // File API commands
 #[command]
@@ -30,7 +30,12 @@ pub async fn get_file_content(id: i32) -> Result<Option<String>, String> {
 }
 
 #[command]
-pub async fn create_file_record(name: String, path: String, file_type: String, parent_id: Option<i32>) -> Result<FileRecord, String> {
+pub async fn create_file_record(
+    name: String,
+    path: String,
+    file_type: String,
+    parent_id: Option<i32>,
+) -> Result<FileRecord, String> {
     let mut storage = STORAGE.lock().unwrap_or_else(|e| e.into_inner());
     Ok(storage.create_file(name, path, file_type, parent_id))
 }
@@ -83,7 +88,12 @@ pub async fn get_active_extensions() -> Result<Vec<Extension>, String> {
 }
 
 #[command]
-pub async fn create_extension(name: String, description: String, version: String, author: String) -> Result<Extension, String> {
+pub async fn create_extension(
+    name: String,
+    description: String,
+    version: String,
+    author: String,
+) -> Result<Extension, String> {
     let mut storage = STORAGE.lock().unwrap_or_else(|e| e.into_inner());
     Ok(storage.create_extension(name, description, version, author))
 }
@@ -115,7 +125,11 @@ pub async fn get_chat_messages(session_id: String) -> Result<Vec<StoredChatMessa
 }
 
 #[command]
-pub async fn create_chat_message(session_id: String, role: String, content: String) -> Result<StoredChatMessage, String> {
+pub async fn create_chat_message(
+    session_id: String,
+    role: String,
+    content: String,
+) -> Result<StoredChatMessage, String> {
     let mut storage = STORAGE.lock().unwrap_or_else(|e| e.into_inner());
     Ok(storage.create_chat_message(session_id, role, content))
 }
@@ -129,10 +143,12 @@ pub async fn get_user_settings() -> Result<Option<UserSettings>, String> {
 
 #[command]
 pub async fn update_user_settings(
-    theme: Option<String>, 
-    view_mode: Option<String>, 
-    show_hidden_files: Option<bool>
+    theme: Option<String>,
+    view_mode: Option<String>,
+    show_hidden_files: Option<bool>,
 ) -> Result<Option<UserSettings>, String> {
     let mut storage = STORAGE.lock().unwrap_or_else(|e| e.into_inner());
-    Ok(storage.update_user_settings(1, theme, view_mode, show_hidden_files).cloned())
+    Ok(storage
+        .update_user_settings(1, theme, view_mode, show_hidden_files)
+        .cloned())
 }

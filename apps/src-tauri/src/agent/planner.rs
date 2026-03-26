@@ -12,7 +12,7 @@ pub struct PlanStep {
     pub action: String,
     pub description: String,
     pub params: Value,
-    pub status: String,       // "pending", "running", "completed", "failed", "skipped"
+    pub status: String, // "pending", "running", "completed", "failed", "skipped"
     pub result: Option<String>,
     pub error: Option<String>,
 }
@@ -23,7 +23,7 @@ pub struct OperationPlan {
     pub title: String,
     pub description: Option<String>,
     pub steps: Vec<PlanStep>,
-    pub status: String,        // "pending_approval", "approved", "executing", "completed", "failed", "cancelled"
+    pub status: String, // "pending_approval", "approved", "executing", "completed", "failed", "cancelled"
     pub created_at: u64,
     pub completed_at: Option<u64>,
     pub completed_steps: usize,
@@ -92,7 +92,10 @@ pub fn execute_create_plan(input: &Value) -> Result<String, String> {
     };
 
     // Store plan
-    PLANS.lock().unwrap_or_else(|e| e.into_inner()).insert(plan_id.clone(), plan.clone());
+    PLANS
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .insert(plan_id.clone(), plan.clone());
 
     // Return plan summary for Claude to show the user
     let summary = json!({
@@ -123,13 +126,18 @@ pub fn execute_execute_plan(input: &Value) -> Result<String, String> {
     // Get plan (clone to release lock)
     let plan = {
         let plans = PLANS.lock().unwrap_or_else(|e| e.into_inner());
-        plans.get(plan_id).cloned()
+        plans
+            .get(plan_id)
+            .cloned()
             .ok_or(format!("Plan '{}' not found", plan_id))?
     };
 
     // Auto-approve plans (user already approved via the tool approval mechanism)
     if plan.status != "pending_approval" && plan.status != "approved" {
-        return Err(format!("Plan '{}' is in state '{}', cannot execute", plan_id, plan.status));
+        return Err(format!(
+            "Plan '{}' is in state '{}', cannot execute",
+            plan_id, plan.status
+        ));
     }
 
     // Mark as executing
@@ -237,7 +245,11 @@ pub fn execute_execute_plan(input: &Value) -> Result<String, String> {
 
 /// Get a plan by ID (for UI display).
 pub fn get_plan(plan_id: &str) -> Option<OperationPlan> {
-    PLANS.lock().unwrap_or_else(|e| e.into_inner()).get(plan_id).cloned()
+    PLANS
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .get(plan_id)
+        .cloned()
 }
 
 /// Approve a pending plan.
@@ -248,7 +260,10 @@ pub fn approve_plan(plan_id: &str) -> Result<(), String> {
             plan.status = "approved".to_string();
             Ok(())
         } else {
-            Err(format!("Plan '{}' is not pending approval (status: {})", plan_id, plan.status))
+            Err(format!(
+                "Plan '{}' is not pending approval (status: {})",
+                plan_id, plan.status
+            ))
         }
     } else {
         Err(format!("Plan '{}' not found", plan_id))
@@ -257,7 +272,9 @@ pub fn approve_plan(plan_id: &str) -> Result<(), String> {
 
 /// Get all plans (for UI listing).
 pub fn get_all_plans() -> Vec<OperationPlan> {
-    PLANS.lock().unwrap_or_else(|e| e.into_inner())
+    PLANS
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
         .values()
         .cloned()
         .collect()
@@ -292,7 +309,11 @@ mod tests {
     fn create_plan_success() {
         let input = make_plan_input("test_create_plan_success", 3);
         let result = execute_create_plan(&input);
-        assert!(result.is_ok(), "create_plan should succeed: {:?}", result.err());
+        assert!(
+            result.is_ok(),
+            "create_plan should succeed: {:?}",
+            result.err()
+        );
 
         let output: Value = serde_json::from_str(&result.unwrap()).unwrap();
         assert_eq!(output["status"], "pending_approval");
@@ -377,24 +398,27 @@ mod tests {
     fn create_plan_stores_plan_in_global_map() {
         // Use the insert_test_plan helper with a unique ID to avoid
         // collisions from now_secs()-based IDs in concurrent tests.
-        let plan_id = insert_test_plan("stores_plan_check", vec![
-            PlanStep {
-                action: "create_directory".to_string(),
-                description: "Step 1".to_string(),
-                params: json!({"path": "/tmp/test_sp1"}),
-                status: "pending".to_string(),
-                result: None,
-                error: None,
-            },
-            PlanStep {
-                action: "create_directory".to_string(),
-                description: "Step 2".to_string(),
-                params: json!({"path": "/tmp/test_sp2"}),
-                status: "pending".to_string(),
-                result: None,
-                error: None,
-            },
-        ]);
+        let plan_id = insert_test_plan(
+            "stores_plan_check",
+            vec![
+                PlanStep {
+                    action: "create_directory".to_string(),
+                    description: "Step 1".to_string(),
+                    params: json!({"path": "/tmp/test_sp1"}),
+                    status: "pending".to_string(),
+                    result: None,
+                    error: None,
+                },
+                PlanStep {
+                    action: "create_directory".to_string(),
+                    description: "Step 2".to_string(),
+                    params: json!({"path": "/tmp/test_sp2"}),
+                    status: "pending".to_string(),
+                    result: None,
+                    error: None,
+                },
+            ],
+        );
 
         let plan = get_plan(&plan_id);
         assert!(plan.is_some(), "Plan should be retrievable after insertion");
@@ -434,16 +458,17 @@ mod tests {
 
     #[test]
     fn approve_plan_success() {
-        let plan_id = insert_test_plan("approve_success", vec![
-            PlanStep {
+        let plan_id = insert_test_plan(
+            "approve_success",
+            vec![PlanStep {
                 action: "create_directory".to_string(),
                 description: "Step".to_string(),
                 params: json!({}),
                 status: "pending".to_string(),
                 result: None,
                 error: None,
-            },
-        ]);
+            }],
+        );
 
         // Should start as pending_approval
         let plan = get_plan(&plan_id).unwrap();
@@ -461,16 +486,17 @@ mod tests {
     #[test]
     fn approve_plan_already_approved() {
         // Use a unique plan ID to avoid collisions with concurrent tests.
-        let plan_id = insert_test_plan("double_approve", vec![
-            PlanStep {
+        let plan_id = insert_test_plan(
+            "double_approve",
+            vec![PlanStep {
                 action: "create_directory".to_string(),
                 description: "Step".to_string(),
                 params: json!({}),
                 status: "pending".to_string(),
                 result: None,
                 error: None,
-            },
-        ]);
+            }],
+        );
 
         approve_plan(&plan_id).unwrap();
 
@@ -514,7 +540,10 @@ mod tests {
             completed_steps: 0,
             total_steps: total,
         };
-        PLANS.lock().unwrap_or_else(|e| e.into_inner()).insert(plan_id.clone(), plan);
+        PLANS
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .insert(plan_id.clone(), plan);
         plan_id
     }
 
@@ -524,24 +553,27 @@ mod tests {
         let dir1 = dir.path().join("plan_dir_a");
         let dir2 = dir.path().join("plan_dir_b");
 
-        let plan_id = insert_test_plan("exec_dirs", vec![
-            PlanStep {
-                action: "create_directory".to_string(),
-                description: "Create dir A".to_string(),
-                params: json!({"path": dir1.to_str().unwrap()}),
-                status: "pending".to_string(),
-                result: None,
-                error: None,
-            },
-            PlanStep {
-                action: "create_directory".to_string(),
-                description: "Create dir B".to_string(),
-                params: json!({"path": dir2.to_str().unwrap()}),
-                status: "pending".to_string(),
-                result: None,
-                error: None,
-            },
-        ]);
+        let plan_id = insert_test_plan(
+            "exec_dirs",
+            vec![
+                PlanStep {
+                    action: "create_directory".to_string(),
+                    description: "Create dir A".to_string(),
+                    params: json!({"path": dir1.to_str().unwrap()}),
+                    status: "pending".to_string(),
+                    result: None,
+                    error: None,
+                },
+                PlanStep {
+                    action: "create_directory".to_string(),
+                    description: "Create dir B".to_string(),
+                    params: json!({"path": dir2.to_str().unwrap()}),
+                    status: "pending".to_string(),
+                    result: None,
+                    error: None,
+                },
+            ],
+        );
 
         let exec_input = json!({"plan_id": plan_id});
         let exec_result = execute_execute_plan(&exec_input).unwrap();
@@ -562,32 +594,35 @@ mod tests {
         let good_dir = dir.path().join("good");
         let skipped_dir = dir.path().join("skipped");
 
-        let plan_id = insert_test_plan("exec_failure", vec![
-            PlanStep {
-                action: "create_directory".to_string(),
-                description: "Create good dir".to_string(),
-                params: json!({"path": good_dir.to_str().unwrap()}),
-                status: "pending".to_string(),
-                result: None,
-                error: None,
-            },
-            PlanStep {
-                action: "unknown_action_xyz".to_string(),
-                description: "This will fail".to_string(),
-                params: json!({}),
-                status: "pending".to_string(),
-                result: None,
-                error: None,
-            },
-            PlanStep {
-                action: "create_directory".to_string(),
-                description: "This should be skipped".to_string(),
-                params: json!({"path": skipped_dir.to_str().unwrap()}),
-                status: "pending".to_string(),
-                result: None,
-                error: None,
-            },
-        ]);
+        let plan_id = insert_test_plan(
+            "exec_failure",
+            vec![
+                PlanStep {
+                    action: "create_directory".to_string(),
+                    description: "Create good dir".to_string(),
+                    params: json!({"path": good_dir.to_str().unwrap()}),
+                    status: "pending".to_string(),
+                    result: None,
+                    error: None,
+                },
+                PlanStep {
+                    action: "unknown_action_xyz".to_string(),
+                    description: "This will fail".to_string(),
+                    params: json!({}),
+                    status: "pending".to_string(),
+                    result: None,
+                    error: None,
+                },
+                PlanStep {
+                    action: "create_directory".to_string(),
+                    description: "This should be skipped".to_string(),
+                    params: json!({"path": skipped_dir.to_str().unwrap()}),
+                    status: "pending".to_string(),
+                    result: None,
+                    error: None,
+                },
+            ],
+        );
 
         let exec_input = json!({"plan_id": plan_id});
         let exec_result = execute_execute_plan(&exec_input).unwrap();

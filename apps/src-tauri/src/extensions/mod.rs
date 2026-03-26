@@ -1,12 +1,12 @@
-pub mod types;
-pub mod manager;
-pub mod permissions;
 pub mod commands;
+pub mod host_functions;
+pub mod manager;
 pub mod native_plugin;
+pub mod permissions;
 pub mod plugin_registry;
 pub mod signing;
+pub mod types;
 pub mod wasm_runtime;
-pub mod host_functions;
 
 use std::sync::LazyLock;
 

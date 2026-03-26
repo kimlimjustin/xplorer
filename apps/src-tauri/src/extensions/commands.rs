@@ -1,8 +1,8 @@
-use crate::extensions::{types::*, manager::*, plugin_registry};
-use tauri::command;
-use std::sync::{LazyLock, Mutex};
+use crate::extensions::{manager::*, plugin_registry, types::*};
 use serde::{Deserialize, Serialize};
 use std::net::IpAddr;
+use std::sync::{LazyLock, Mutex};
+use tauri::command;
 
 /// Validate that an extension ID contains only safe characters.
 ///
@@ -41,10 +41,7 @@ fn validate_extension_id(id: &str) -> Result<(), String> {
 
     // Reject null bytes
     if id.contains('\0') {
-        return Err(format!(
-            "Extension ID '{}' contains null byte",
-            id
-        ));
+        return Err(format!("Extension ID '{}' contains null byte", id));
     }
 
     // Every character must be in the allowed set: a-z A-Z 0-9 . _ - @ /
@@ -87,11 +84,11 @@ fn validate_extension_id(id: &str) -> Result<(), String> {
 /// Localhost (127.0.0.1, ::1, localhost) is allowed with HTTP for local development
 /// (e.g., local marketplace server). All remote URLs must use HTTPS.
 fn validate_url_security(url: &str) -> Result<(), String> {
-    let parsed = reqwest::Url::parse(url)
-        .map_err(|e| format!("Invalid URL '{}': {}", url, e))?;
+    let parsed = reqwest::Url::parse(url).map_err(|e| format!("Invalid URL '{}': {}", url, e))?;
 
     // Check if this is a localhost URL (allowed with HTTP for local dev)
-    let host_str = parsed.host_str()
+    let host_str = parsed
+        .host_str()
         .ok_or_else(|| "URL has no host".to_string())?;
     let host_lower = host_str.to_lowercase();
     let is_localhost = host_lower == "localhost"
@@ -263,13 +260,15 @@ fn is_private_ip(ip: &IpAddr) -> bool {
 
 /// Safely extract a ZIP archive into `target_dir`, guarding against Zip Slip
 /// (path traversal), symlinks, and other malicious entry names.
-fn safe_extract_zip(archive_path: &std::path::Path, target_dir: &std::path::Path) -> Result<(), String> {
+fn safe_extract_zip(
+    archive_path: &std::path::Path,
+    target_dir: &std::path::Path,
+) -> Result<(), String> {
     use std::io::{Read, Write};
 
-    let file = std::fs::File::open(archive_path)
-        .map_err(|e| format!("Failed to open zip file: {}", e))?;
-    let mut archive = zip::ZipArchive::new(file)
-        .map_err(|e| format!("Invalid zip file: {}", e))?;
+    let file =
+        std::fs::File::open(archive_path).map_err(|e| format!("Failed to open zip file: {}", e))?;
+    let mut archive = zip::ZipArchive::new(file).map_err(|e| format!("Invalid zip file: {}", e))?;
 
     std::fs::create_dir_all(target_dir)
         .map_err(|e| format!("Failed to create target directory: {}", e))?;
@@ -278,7 +277,8 @@ fn safe_extract_zip(archive_path: &std::path::Path, target_dir: &std::path::Path
         .map_err(|e| format!("Failed to canonicalize target directory: {}", e))?;
 
     for i in 0..archive.len() {
-        let mut entry = archive.by_index(i)
+        let mut entry = archive
+            .by_index(i)
             .map_err(|e| format!("Failed to read zip entry {}: {}", i, e))?;
 
         let entry_name = entry.name().to_string();
@@ -320,7 +320,9 @@ fn safe_extract_zip(archive_path: &std::path::Path, target_dir: &std::path::Path
             let mut normalized = std::path::PathBuf::new();
             for component in outpath.components() {
                 match component {
-                    std::path::Component::ParentDir => { normalized.pop(); }
+                    std::path::Component::ParentDir => {
+                        normalized.pop();
+                    }
                     std::path::Component::CurDir => {}
                     c => normalized.push(c.as_os_str()),
                 }
@@ -357,11 +359,13 @@ fn safe_extract_zip(archive_path: &std::path::Path, target_dir: &std::path::Path
 
             // 5. Extract the file
             let mut buf = Vec::new();
-            entry.read_to_end(&mut buf)
+            entry
+                .read_to_end(&mut buf)
                 .map_err(|e| format!("Failed to read zip entry: {}", e))?;
             let mut outfile = std::fs::File::create(&outpath)
                 .map_err(|e| format!("Failed to create file {}: {}", outpath.display(), e))?;
-            outfile.write_all(&buf)
+            outfile
+                .write_all(&buf)
                 .map_err(|e| format!("Failed to write file: {}", e))?;
 
             // Final verification: ensure the file we just wrote is still inside the target
@@ -383,12 +387,15 @@ pub fn validate_url_security_public(url: &str) -> Result<(), String> {
     validate_url_security(url)
 }
 
-static EXTENSION_MANAGER: LazyLock<Mutex<Option<ExtensionManager>>> = LazyLock::new(|| Mutex::new(None));
+static EXTENSION_MANAGER: LazyLock<Mutex<Option<ExtensionManager>>> =
+    LazyLock::new(|| Mutex::new(None));
 
 /// Get the temp directory for extension operations (downloads, extractions).
 fn get_extensions_tmp_dir() -> Result<std::path::PathBuf, String> {
     let manager_guard = EXTENSION_MANAGER.lock().map_err(|e| e.to_string())?;
-    let manager = manager_guard.as_ref().ok_or("Extension manager not initialized")?;
+    let manager = manager_guard
+        .as_ref()
+        .ok_or("Extension manager not initialized")?;
     Ok(manager.extensions_dir.join(".tmp"))
 }
 
@@ -410,7 +417,9 @@ pub async fn get_installed_extensions() -> Result<Vec<ExtensionPackage>, String>
 }
 
 #[command]
-pub async fn install_extension_from_path(extension_path: String) -> Result<ExtensionPackage, String> {
+pub async fn install_extension_from_path(
+    extension_path: String,
+) -> Result<ExtensionPackage, String> {
     let mut manager_guard = EXTENSION_MANAGER.lock().map_err(|e| e.to_string())?;
     if let Some(manager) = manager_guard.as_mut() {
         manager.install_extension(&extension_path)
@@ -479,8 +488,8 @@ pub async fn get_active_extension_ids() -> Result<Vec<String>, String> {
 
 #[command]
 pub async fn validate_extension_path(extension_path: String) -> Result<ExtensionManifest, String> {
-    use std::path::Path;
     use std::fs;
+    use std::path::Path;
 
     let manifest_path = Path::new(&extension_path).join("package.json");
     if !manifest_path.exists() {
@@ -530,7 +539,8 @@ pub async fn download_and_install_extension(
     const MAX_DOWNLOAD_SIZE: u64 = 50 * 1024 * 1024; // 50 MB max
 
     let client = reqwest::Client::new();
-    let resp = client.get(&download_url)
+    let resp = client
+        .get(&download_url)
         .send()
         .await
         .map_err(|e| format!("Download failed: {}", e))?;
@@ -549,31 +559,38 @@ pub async fn download_and_install_extension(
         }
     }
 
-    let bytes = resp.bytes().await
+    let bytes = resp
+        .bytes()
+        .await
         .map_err(|e| format!("Failed to read response: {}", e))?;
 
     // SECURITY: Verify actual size after download (Content-Length can be spoofed)
     if bytes.len() as u64 > MAX_DOWNLOAD_SIZE {
         return Err(format!(
             "Extension download too large: {} bytes (max {} bytes)",
-            bytes.len(), MAX_DOWNLOAD_SIZE
+            bytes.len(),
+            MAX_DOWNLOAD_SIZE
         ));
     }
 
     // 2. Verify checksum if provided
     if let Some(ref expected) = expected_checksum {
-        use sha2::{Sha256, Digest};
+        use sha2::{Digest, Sha256};
         let mut hasher = Sha256::new();
         hasher.update(&bytes);
         let actual = format!("{:x}", hasher.finalize());
         if actual != *expected {
-            return Err(format!("Checksum mismatch: expected {}, got {}", expected, actual));
+            return Err(format!(
+                "Checksum mismatch: expected {}, got {}",
+                expected, actual
+            ));
         }
     }
 
     // 3. Lock manager and do filesystem operations
     let mut manager_guard = EXTENSION_MANAGER.lock().map_err(|e| e.to_string())?;
-    let manager = manager_guard.as_mut()
+    let manager = manager_guard
+        .as_mut()
         .ok_or("Extension manager not initialized")?;
 
     // Create temp dir inside the extensions directory
@@ -611,9 +628,7 @@ pub async fn download_and_install_extension(
     safe_extract_zip(&zip_path, &extract_dir)?;
 
     // 5. Install from extracted path
-    let result = manager.install_extension(
-        extract_dir.to_str().ok_or("Invalid path")?
-    );
+    let result = manager.install_extension(extract_dir.to_str().ok_or("Invalid path")?);
 
     // 6. Cleanup
     let _ = std::fs::remove_file(&zip_path);
@@ -631,14 +646,18 @@ pub async fn check_for_extension_updates(
     validate_url_security(&marketplace_url)?;
 
     let client = reqwest::Client::new();
-    let resp = client.post(&format!("{}/extensions/check-updates", marketplace_url))
+    let resp = client
+        .post(&format!("{}/extensions/check-updates", marketplace_url))
         .json(&installed_extensions)
         .send()
         .await
         .map_err(|e| format!("Failed to check updates: {}", e))?;
 
     if !resp.status().is_success() {
-        return Err(format!("Update check failed with status: {}", resp.status()));
+        return Err(format!(
+            "Update check failed with status: {}",
+            resp.status()
+        ));
     }
 
     resp.json::<Vec<UpdateInfo>>()
@@ -670,7 +689,8 @@ pub async fn download_extension(
     const MAX_DOWNLOAD_SIZE: u64 = 50 * 1024 * 1024; // 50 MB
 
     let client = reqwest::Client::new();
-    let resp = client.get(&url)
+    let resp = client
+        .get(&url)
         .send()
         .await
         .map_err(|e| format!("Download failed: {}", e))?;
@@ -689,20 +709,23 @@ pub async fn download_extension(
         }
     }
 
-    let bytes = resp.bytes().await
+    let bytes = resp
+        .bytes()
+        .await
         .map_err(|e| format!("Failed to read response: {}", e))?;
 
     // Verify actual size after download (Content-Length can be spoofed)
     if bytes.len() as u64 > MAX_DOWNLOAD_SIZE {
         return Err(format!(
             "Extension download too large: {} bytes (max {} bytes)",
-            bytes.len(), MAX_DOWNLOAD_SIZE
+            bytes.len(),
+            MAX_DOWNLOAD_SIZE
         ));
     }
 
     // 2. Verify SHA-256 checksum if provided
     if let Some(ref expected) = expected_checksum {
-        use sha2::{Sha256, Digest};
+        use sha2::{Digest, Sha256};
         let mut hasher = Sha256::new();
         hasher.update(&bytes);
         let actual = format!("{:x}", hasher.finalize());
@@ -716,7 +739,8 @@ pub async fn download_extension(
 
     // 3. Extract to a temp directory (it's a zip file)
     let mut manager_guard = EXTENSION_MANAGER.lock().map_err(|e| e.to_string())?;
-    let manager = manager_guard.as_mut()
+    let manager = manager_guard
+        .as_mut()
         .ok_or("Extension manager not initialized")?;
 
     let temp_dir = manager.extensions_dir.join(".tmp");
@@ -746,12 +770,11 @@ pub async fn download_extension(
         return Err("Downloaded extension has no package.json manifest".to_string());
     }
 
-    let manifest_content = std::fs::read_to_string(&manifest_path)
-        .map_err(|e| {
-            let _ = std::fs::remove_file(&zip_path);
-            let _ = std::fs::remove_dir_all(&extract_dir);
-            format!("Failed to read manifest: {}", e)
-        })?;
+    let manifest_content = std::fs::read_to_string(&manifest_path).map_err(|e| {
+        let _ = std::fs::remove_file(&zip_path);
+        let _ = std::fs::remove_dir_all(&extract_dir);
+        format!("Failed to read manifest: {}", e)
+    })?;
 
     let manifest = crate::extensions::types::parse_manifest_from_package_json(&manifest_content)
         .map_err(|e| {
@@ -766,9 +789,8 @@ pub async fn download_extension(
     // 5. Verify Ed25519 signature if .sig exists
     let sig_path = extract_dir.join(".sig");
     if sig_path.exists() {
-        let verified = crate::extensions::signing::verify_extension_integrity(
-            &extract_dir, &extension_id,
-        );
+        let verified =
+            crate::extensions::signing::verify_extension_integrity(&extract_dir, &extension_id);
         if !verified {
             let _ = std::fs::remove_file(&zip_path);
             let _ = std::fs::remove_dir_all(&extract_dir);
@@ -780,9 +802,7 @@ pub async fn download_extension(
     }
 
     // 6. Install via the existing flow (copy to extensions_dir)
-    let result = manager.install_extension(
-        extract_dir.to_str().ok_or("Invalid path")?
-    );
+    let result = manager.install_extension(extract_dir.to_str().ok_or("Invalid path")?);
 
     // Cleanup temp files
     let _ = std::fs::remove_file(&zip_path);
@@ -896,11 +916,9 @@ pub async fn native_plugin_invoke(
     // Manager lock released here.
 
     // Run in blocking thread since native plugin calls may block
-    tokio::task::spawn_blocking(move || {
-        plugin_registry::invoke_plugin(&plugin_id, &command, args)
-    })
-    .await
-    .map_err(|e| format!("Plugin invocation failed: {}", e))?
+    tokio::task::spawn_blocking(move || plugin_registry::invoke_plugin(&plugin_id, &command, args))
+        .await
+        .map_err(|e| format!("Plugin invocation failed: {}", e))?
 }
 
 // ─── WASM Backend Commands ────────────────────────────────────────────────
@@ -924,15 +942,17 @@ pub async fn extension_backend_call(
 ) -> Result<serde_json::Value, String> {
     validate_extension_id(&extension_id)?;
 
-    let args_json = serde_json::to_string(&args)
-        .map_err(|e| format!("Failed to serialize args: {}", e))?;
+    let args_json =
+        serde_json::to_string(&args).map_err(|e| format!("Failed to serialize args: {}", e))?;
 
     // Run in a blocking thread since WASM execution is synchronous.
     tokio::task::spawn_blocking(move || {
         // Get extension info (path, permissions) from the extension manager.
         let (ext_path, permissions) = {
             let manager_guard = EXTENSION_MANAGER.lock().map_err(|e| e.to_string())?;
-            let manager = manager_guard.as_ref().ok_or("Extension manager not initialized")?;
+            let manager = manager_guard
+                .as_ref()
+                .ok_or("Extension manager not initialized")?;
             let ext = manager
                 .installed_extensions
                 .iter()
@@ -975,14 +995,14 @@ pub async fn extension_backend_call(
 
 /// Get the status of an extension's WASM backend (loaded, has wasm file, etc.).
 #[command]
-pub async fn extension_backend_status(
-    extension_id: String,
-) -> Result<WasmBackendStatus, String> {
+pub async fn extension_backend_status(extension_id: String) -> Result<WasmBackendStatus, String> {
     validate_extension_id(&extension_id)?;
 
     let has_wasm_file = {
         let manager_guard = EXTENSION_MANAGER.lock().map_err(|e| e.to_string())?;
-        let manager = manager_guard.as_ref().ok_or("Extension manager not initialized")?;
+        let manager = manager_guard
+            .as_ref()
+            .ok_or("Extension manager not initialized")?;
         manager
             .installed_extensions
             .iter()
@@ -991,9 +1011,7 @@ pub async fn extension_backend_status(
             .unwrap_or(false)
     };
 
-    let loaded = {
-        super::WASM_RUNTIME.is_loaded(&extension_id)
-    };
+    let loaded = { super::WASM_RUNTIME.is_loaded(&extension_id) };
 
     Ok(WasmBackendStatus {
         loaded,
@@ -1011,8 +1029,8 @@ pub async fn pack_extension(
     extension_dir: String,
     output_path: Option<String>,
 ) -> Result<String, String> {
-    use std::path::Path;
     use std::io::Write;
+    use std::path::Path;
 
     let ext_path = Path::new(&extension_dir);
     if !ext_path.is_dir() {
@@ -1037,11 +1055,11 @@ pub async fn pack_extension(
         }
     };
 
-    let file = std::fs::File::create(&out)
-        .map_err(|e| format!("Failed to create output file: {}", e))?;
+    let file =
+        std::fs::File::create(&out).map_err(|e| format!("Failed to create output file: {}", e))?;
     let mut zip_writer = zip::ZipWriter::new(file);
-    let options = zip::write::FileOptions::default()
-        .compression_method(zip::CompressionMethod::Deflated);
+    let options =
+        zip::write::FileOptions::default().compression_method(zip::CompressionMethod::Deflated);
 
     // Recursively add files from the extension directory
     fn add_dir_to_zip(
@@ -1065,15 +1083,18 @@ pub async fn pack_extension(
             }
 
             if path.is_dir() {
-                zip_writer.add_directory(&name, options)
+                zip_writer
+                    .add_directory(&name, options)
                     .map_err(|e| format!("Failed to add directory: {}", e))?;
                 add_dir_to_zip(zip_writer, base, &path, options)?;
             } else {
-                zip_writer.start_file(&name, options)
+                zip_writer
+                    .start_file(&name, options)
                     .map_err(|e| format!("Failed to start file: {}", e))?;
                 let content = std::fs::read(&path)
                     .map_err(|e| format!("Failed to read file {}: {}", path.display(), e))?;
-                zip_writer.write_all(&content)
+                zip_writer
+                    .write_all(&content)
                     .map_err(|e| format!("Failed to write to zip: {}", e))?;
             }
         }
@@ -1081,7 +1102,9 @@ pub async fn pack_extension(
     }
 
     add_dir_to_zip(&mut zip_writer, ext_path, ext_path, options)?;
-    zip_writer.finish().map_err(|e| format!("Failed to finalize zip: {}", e))?;
+    zip_writer
+        .finish()
+        .map_err(|e| format!("Failed to finalize zip: {}", e))?;
 
     Ok(out.to_string_lossy().to_string())
 }
@@ -1108,7 +1131,8 @@ pub async fn install_xtension_file(xtension_path: String) -> Result<ExtensionPac
     std::fs::create_dir_all(&temp_dir).map_err(|e| e.to_string())?;
 
     // Generate a unique extraction folder name
-    let stem = file_path.file_stem()
+    let stem = file_path
+        .file_stem()
         .and_then(|s| s.to_str())
         .unwrap_or("extension");
     let extract_dir = temp_dir.join(stem);
@@ -1121,12 +1145,11 @@ pub async fn install_xtension_file(xtension_path: String) -> Result<ExtensionPac
 
     // Install via the extension manager
     let mut manager_guard = EXTENSION_MANAGER.lock().map_err(|e| e.to_string())?;
-    let manager = manager_guard.as_mut()
+    let manager = manager_guard
+        .as_mut()
         .ok_or("Extension manager not initialized")?;
 
-    let result = manager.install_extension(
-        extract_dir.to_str().ok_or("Invalid path")?
-    );
+    let result = manager.install_extension(extract_dir.to_str().ok_or("Invalid path")?);
 
     // Cleanup temp extraction
     let _ = std::fs::remove_dir_all(&extract_dir);
@@ -1140,17 +1163,19 @@ pub async fn install_xtension_file(xtension_path: String) -> Result<ExtensionPac
 pub async fn inspect_xtension_file(xtension_path: String) -> Result<ExtensionManifest, String> {
     use std::io::Read;
 
-    let file = std::fs::File::open(&xtension_path)
-        .map_err(|e| format!("Failed to open file: {}", e))?;
-    let mut archive = zip::ZipArchive::new(file)
-        .map_err(|e| format!("Invalid .xtension file: {}", e))?;
+    let file =
+        std::fs::File::open(&xtension_path).map_err(|e| format!("Failed to open file: {}", e))?;
+    let mut archive =
+        zip::ZipArchive::new(file).map_err(|e| format!("Invalid .xtension file: {}", e))?;
 
     // Find and read package.json from the archive
     let mut manifest_content = String::new();
     {
-        let mut manifest_file = archive.by_name("package.json")
+        let mut manifest_file = archive
+            .by_name("package.json")
             .map_err(|_| "No package.json found in .xtension file".to_string())?;
-        manifest_file.read_to_string(&mut manifest_content)
+        manifest_file
+            .read_to_string(&mut manifest_content)
             .map_err(|e| format!("Failed to read manifest: {}", e))?;
     }
 
@@ -1166,14 +1191,10 @@ mod tests {
 
     /// Helper: create a zip archive in memory with the given list of
     /// (entry_name, contents) pairs and write it to `path`.
-    fn create_zip_with_entries(
-        path: &std::path::Path,
-        entries: &[(&str, &[u8])],
-    ) {
+    fn create_zip_with_entries(path: &std::path::Path, entries: &[(&str, &[u8])]) {
         let file = std::fs::File::create(path).expect("create zip file");
         let mut writer = zip::ZipWriter::new(file);
-        let options = FileOptions::default()
-            .compression_method(zip::CompressionMethod::Stored);
+        let options = FileOptions::default().compression_method(zip::CompressionMethod::Stored);
         for (name, data) in entries {
             writer.start_file(*name, options).expect("start file entry");
             writer.write_all(data).expect("write entry data");
@@ -1187,28 +1208,29 @@ mod tests {
         let zip_path = temp.path().join("valid.zip");
         let extract_dir = temp.path().join("out");
 
-        create_zip_with_entries(&zip_path, &[
-            ("hello.txt", b"Hello, world!"),
-            ("subdir/nested.txt", b"Nested content"),
-        ]);
+        create_zip_with_entries(
+            &zip_path,
+            &[
+                ("hello.txt", b"Hello, world!"),
+                ("subdir/nested.txt", b"Nested content"),
+            ],
+        );
 
         let result = safe_extract_zip(&zip_path, &extract_dir);
-        assert!(result.is_ok(), "extraction should succeed: {:?}", result.err());
+        assert!(
+            result.is_ok(),
+            "extraction should succeed: {:?}",
+            result.err()
+        );
 
         // Verify extracted files
         let hello = extract_dir.join("hello.txt");
         assert!(hello.exists(), "hello.txt should be extracted");
-        assert_eq!(
-            std::fs::read_to_string(&hello).unwrap(),
-            "Hello, world!"
-        );
+        assert_eq!(std::fs::read_to_string(&hello).unwrap(), "Hello, world!");
 
         let nested = extract_dir.join("subdir/nested.txt");
         assert!(nested.exists(), "subdir/nested.txt should be extracted");
-        assert_eq!(
-            std::fs::read_to_string(&nested).unwrap(),
-            "Nested content"
-        );
+        assert_eq!(std::fs::read_to_string(&nested).unwrap(), "Nested content");
     }
 
     #[test]
@@ -1218,10 +1240,13 @@ mod tests {
         let extract_dir = temp.path().join("out");
 
         // Create a zip with a path-traversal entry ("../evil.txt")
-        create_zip_with_entries(&zip_path, &[
-            ("good.txt", b"safe"),
-            ("../evil.txt", b"I should not appear outside"),
-        ]);
+        create_zip_with_entries(
+            &zip_path,
+            &[
+                ("good.txt", b"safe"),
+                ("../evil.txt", b"I should not appear outside"),
+            ],
+        );
 
         let result = safe_extract_zip(&zip_path, &extract_dir);
         assert!(result.is_ok(), "should not error, just skip bad entries");
@@ -1248,10 +1273,10 @@ mod tests {
 
         // Create a zip whose entry starts with "/" — the code strips leading slashes
         // but we verify it lands inside the target directory, not at the root.
-        create_zip_with_entries(&zip_path, &[
-            ("/etc/passwd", b"root:x:0:0"),
-            ("normal.txt", b"ok"),
-        ]);
+        create_zip_with_entries(
+            &zip_path,
+            &[("/etc/passwd", b"root:x:0:0"), ("normal.txt", b"ok")],
+        );
 
         let result = safe_extract_zip(&zip_path, &extract_dir);
         assert!(result.is_ok(), "should succeed, stripping leading slashes");
@@ -1281,7 +1306,10 @@ mod tests {
 
         let result = safe_extract_zip(&zip_path, &extract_dir);
         assert!(result.is_ok(), "extracting empty zip should succeed");
-        assert!(extract_dir.exists(), "target dir should be created even if zip is empty");
+        assert!(
+            extract_dir.exists(),
+            "target dir should be created even if zip is empty"
+        );
     }
 
     #[test]
@@ -1292,10 +1320,11 @@ mod tests {
 
         let file = std::fs::File::create(&zip_path).expect("create zip file");
         let mut writer = zip::ZipWriter::new(file);
-        let options = FileOptions::default()
-            .compression_method(zip::CompressionMethod::Stored);
+        let options = FileOptions::default().compression_method(zip::CompressionMethod::Stored);
         writer.add_directory("mydir/", options).expect("add dir");
-        writer.start_file("mydir/file.txt", options).expect("start file");
+        writer
+            .start_file("mydir/file.txt", options)
+            .expect("start file");
         writer.write_all(b"inside dir").expect("write data");
         writer.finish().expect("finish zip");
 
@@ -1320,7 +1349,10 @@ mod tests {
     #[test]
     fn test_validate_url_accepts_valid_https() {
         assert!(validate_url_security("https://marketplace.example.com/ext.zip").is_ok());
-        assert!(validate_url_security("https://github.com/user/repo/releases/download/v1/ext.zip").is_ok());
+        assert!(
+            validate_url_security("https://github.com/user/repo/releases/download/v1/ext.zip")
+                .is_ok()
+        );
     }
 
     #[test]
@@ -1445,7 +1477,7 @@ mod tests {
         assert!(validate_url_security("https://example.com:9200/ext.zip").is_err()); // Elasticsearch
         assert!(validate_url_security("https://example.com:2375/ext.zip").is_err()); // Docker
         assert!(validate_url_security("https://example.com:8080/ext.zip").is_err()); // common alt HTTP
-        // Port 443 (default HTTPS) should be fine explicitly
+                                                                                     // Port 443 (default HTTPS) should be fine explicitly
         assert!(validate_url_security("https://example.com:443/ext.zip").is_ok());
         // No port (defaults to 443) should be fine
         assert!(validate_url_security("https://example.com/ext.zip").is_ok());

@@ -11,7 +11,7 @@
 //! - `plugin_free(ptr)` — Frees a string returned by `plugin_invoke`
 //! - `plugin_shutdown()` — Cleans up plugin resources
 
-use std::ffi::{CStr, CString, c_char};
+use std::ffi::{c_char, CStr, CString};
 
 /// Function signatures that plugins must export
 #[allow(dead_code)]
@@ -54,26 +54,29 @@ impl NativePlugin {
     pub fn load(lib_path: &str) -> Result<Self, String> {
         // SECURITY (CRIT-04): Native plugin loading is disabled until code signing is implemented.
         // Unsigned native plugins can execute arbitrary code at full process privilege.
-        return Err(
-            "Native plugin loading is currently disabled for security. \
+        return Err("Native plugin loading is currently disabled for security. \
              Extension code signing must be implemented before native plugins can be loaded."
-                .into(),
-        );
+            .into());
 
         // Safety: we trust that the library implements the plugin ABI correctly.
         // This is the nature of dynamic library loading.
         #[allow(unreachable_code)]
         unsafe {
-            let lib = libloading::Library::new(lib_path)
-                .map_err(|e| format!("Failed to load native plugin library '{}': {}", lib_path, e))?;
+            let lib = libloading::Library::new(lib_path).map_err(|e| {
+                format!("Failed to load native plugin library '{}': {}", lib_path, e)
+            })?;
 
-            let init_fn: libloading::Symbol<PluginInitFn> = lib.get(b"plugin_init")
+            let init_fn: libloading::Symbol<PluginInitFn> = lib
+                .get(b"plugin_init")
                 .map_err(|e| format!("Missing 'plugin_init' symbol: {}", e))?;
-            let invoke_fn: libloading::Symbol<PluginInvokeFn> = lib.get(b"plugin_invoke")
+            let invoke_fn: libloading::Symbol<PluginInvokeFn> = lib
+                .get(b"plugin_invoke")
                 .map_err(|e| format!("Missing 'plugin_invoke' symbol: {}", e))?;
-            let free_fn: libloading::Symbol<PluginFreeFn> = lib.get(b"plugin_free")
+            let free_fn: libloading::Symbol<PluginFreeFn> = lib
+                .get(b"plugin_free")
                 .map_err(|e| format!("Missing 'plugin_free' symbol: {}", e))?;
-            let shutdown_fn: libloading::Symbol<PluginShutdownFn> = lib.get(b"plugin_shutdown")
+            let shutdown_fn: libloading::Symbol<PluginShutdownFn> = lib
+                .get(b"plugin_shutdown")
                 .map_err(|e| format!("Missing 'plugin_shutdown' symbol: {}", e))?;
 
             // Cache the raw function pointers before the symbols are dropped
@@ -93,12 +96,11 @@ impl NativePlugin {
             let info: serde_json::Value = serde_json::from_str(info_str)
                 .map_err(|e| format!("Invalid JSON from plugin_init: {}", e))?;
 
-            let id = info["id"].as_str()
+            let id = info["id"]
+                .as_str()
                 .ok_or("Plugin metadata missing 'id' field")?
                 .to_string();
-            let name = info["name"].as_str()
-                .unwrap_or(&id)
-                .to_string();
+            let name = info["name"].as_str().unwrap_or(&id).to_string();
 
             Ok(NativePlugin {
                 _lib: lib,
@@ -115,9 +117,12 @@ impl NativePlugin {
     ///
     /// Serializes args to JSON, calls the plugin's `plugin_invoke`, reads the result,
     /// frees the returned string, and deserializes the JSON result.
-    pub fn invoke(&self, command: &str, args: serde_json::Value) -> Result<serde_json::Value, String> {
-        let cmd = CString::new(command)
-            .map_err(|e| format!("Invalid command string: {}", e))?;
+    pub fn invoke(
+        &self,
+        command: &str,
+        args: serde_json::Value,
+    ) -> Result<serde_json::Value, String> {
+        let cmd = CString::new(command).map_err(|e| format!("Invalid command string: {}", e))?;
         let args_json = CString::new(serde_json::to_string(&args).map_err(|e| e.to_string())?)
             .map_err(|e| format!("Failed to create args CString: {}", e))?;
 

@@ -43,8 +43,8 @@ fn load_file_metadata_from_disk(
     }
     let data = std::fs::read_to_string(&path)
         .map_err(|e| format!("Failed to read file metadata: {}", e))?;
-    let map: HashMap<String, Vec<CustomMetadataField>> = serde_json::from_str(&data)
-        .map_err(|e| format!("Failed to parse file metadata: {}", e))?;
+    let map: HashMap<String, Vec<CustomMetadataField>> =
+        serde_json::from_str(&data).map_err(|e| format!("Failed to parse file metadata: {}", e))?;
     Ok(map)
 }
 
@@ -65,12 +65,13 @@ fn flush_metadata_to_disk(
     app_handle: &tauri::AppHandle,
     guard: &MutexGuard<'static, Option<HashMap<String, Vec<CustomMetadataField>>>>,
 ) -> Result<(), String> {
-    let map = guard.as_ref().ok_or_else(|| "Storage cache not initialized".to_string())?;
+    let map = guard
+        .as_ref()
+        .ok_or_else(|| "Storage cache not initialized".to_string())?;
     let path = file_metadata_path(app_handle)?;
     let data =
         serde_json::to_string_pretty(map).map_err(|e| format!("Failed to serialize: {}", e))?;
-    std::fs::write(&path, data)
-        .map_err(|e| format!("Failed to write file metadata: {}", e))?;
+    std::fs::write(&path, data).map_err(|e| format!("Failed to write file metadata: {}", e))?;
     Ok(())
 }
 
@@ -97,7 +98,9 @@ pub async fn set_file_metadata(
     app_handle: tauri::AppHandle,
 ) -> Result<(), String> {
     let mut guard = ensure_metadata_cache(&app_handle)?;
-    let map = guard.as_mut().ok_or_else(|| "Storage cache not initialized".to_string())?;
+    let map = guard
+        .as_mut()
+        .ok_or_else(|| "Storage cache not initialized".to_string())?;
     if fields.is_empty() {
         map.remove(&path);
     } else {

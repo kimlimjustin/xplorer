@@ -135,10 +135,11 @@ const FileTagsDialog = ({ isOpen, onClose, filePath, onSaved }: FileTagsDialogPr
             </p>
             {(() => {
               if (loading) return <p className="text-xp-text-muted text-sm">Loading...</p>;
-              if (tags.length === 0)
-                {return (
+              if (tags.length === 0) {
+                return (
                   <p className="text-xp-text-muted text-sm italic">No tags — add one below.</p>
-                );}
+                );
+              }
               return (
                 <div className="flex flex-wrap gap-1.5">
                   {tags.map((tag, idx) => (

@@ -61,7 +61,13 @@ pub struct ChatFileSummary {
 fn sanitize_title(title: &str) -> String {
     let sanitized: String = title
         .chars()
-        .map(|c| if c.is_alphanumeric() || c == '-' { c } else { '-' })
+        .map(|c| {
+            if c.is_alphanumeric() || c == '-' {
+                c
+            } else {
+                '-'
+            }
+        })
         .collect();
 
     // Collapse consecutive hyphens
@@ -126,14 +132,10 @@ pub async fn get_chats_directory() -> Result<String, String> {
 ///
 /// Returns the full file path of the created file.
 #[tauri::command]
-pub async fn create_chat_file(
-    directory: String,
-    title: Option<String>,
-) -> Result<String, String> {
+pub async fn create_chat_file(directory: String, title: Option<String>) -> Result<String, String> {
     let dir = Path::new(&directory);
     if !dir.exists() {
-        std::fs::create_dir_all(dir)
-            .map_err(|e| format!("Failed to create directory: {}", e))?;
+        std::fs::create_dir_all(dir).map_err(|e| format!("Failed to create directory: {}", e))?;
     }
 
     let raw_title = title.unwrap_or_else(|| "New Chat".to_string());
@@ -159,8 +161,7 @@ pub async fn create_chat_file(
 
     let json = serde_json::to_string_pretty(&data)
         .map_err(|e| format!("Failed to serialize chat data: {}", e))?;
-    std::fs::write(&file_path, json)
-        .map_err(|e| format!("Failed to write chat file: {}", e))?;
+    std::fs::write(&file_path, json).map_err(|e| format!("Failed to write chat file: {}", e))?;
 
     file_path
         .to_str()
@@ -176,8 +177,8 @@ pub async fn read_chat_file(path: String) -> Result<ChatFileData, String> {
         return Err(format!("Chat file does not exist: {}", path));
     }
 
-    let data =
-        std::fs::read_to_string(file_path).map_err(|e| format!("Failed to read chat file: {}", e))?;
+    let data = std::fs::read_to_string(file_path)
+        .map_err(|e| format!("Failed to read chat file: {}", e))?;
     serde_json::from_str(&data).map_err(|e| format!("Failed to parse chat file: {}", e))
 }
 
@@ -198,8 +199,8 @@ pub async fn get_chat_file_summary(path: String) -> Result<ChatFileSummary, Stri
         return Err(format!("Chat file does not exist: {}", path));
     }
 
-    let raw =
-        std::fs::read_to_string(file_path).map_err(|e| format!("Failed to read chat file: {}", e))?;
+    let raw = std::fs::read_to_string(file_path)
+        .map_err(|e| format!("Failed to read chat file: {}", e))?;
     let data: ChatFileData =
         serde_json::from_str(&raw).map_err(|e| format!("Failed to parse chat file: {}", e))?;
 

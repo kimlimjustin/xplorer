@@ -8,9 +8,9 @@ use argon2::{Algorithm, Argon2, Params, Version};
 use rand::RngCore;
 use tauri::{command, AppHandle, State};
 
+use crate::audit_log::log_operation;
 use crate::operations::progress::{generate_operation_id, ProgressManager};
 use crate::operations::validate_file_path;
-use crate::audit_log::log_operation;
 
 const SALT_LEN: usize = 16;
 const NONCE_LEN: usize = 12;
@@ -81,8 +81,7 @@ pub async fn encrypt_file(
     let path_for_log = path.clone();
 
     let result = tokio::task::spawn_blocking(move || {
-        let plaintext = fs::read(&path)
-            .map_err(|e| format!("Failed to read file: {}", e))?;
+        let plaintext = fs::read(&path).map_err(|e| format!("Failed to read file: {}", e))?;
 
         pm.update_file_progress(
             &op_id_clone,
@@ -112,8 +111,8 @@ pub async fn encrypt_file(
             0.0,
         );
 
-        let cipher = Aes256Gcm::new_from_slice(&key)
-            .map_err(|e| format!("Cipher init failed: {}", e))?;
+        let cipher =
+            Aes256Gcm::new_from_slice(&key).map_err(|e| format!("Cipher init failed: {}", e))?;
         let nonce = Nonce::from_slice(&nonce_bytes);
 
         let ciphertext = cipher
@@ -136,11 +135,21 @@ pub async fn encrypt_file(
     match &result {
         Ok(out) => {
             progress_manager.complete_file_operation(&op_id);
-            log_operation("encrypt", vec![path_for_log.clone(), out.clone()], None, true);
+            log_operation(
+                "encrypt",
+                vec![path_for_log.clone(), out.clone()],
+                None,
+                true,
+            );
         }
         Err(msg) => {
             progress_manager.fail_file_operation(&op_id, msg.clone());
-            log_operation("encrypt", vec![path_for_log.clone()], Some(msg.clone()), false);
+            log_operation(
+                "encrypt",
+                vec![path_for_log.clone()],
+                Some(msg.clone()),
+                false,
+            );
         }
     }
 
@@ -170,7 +179,8 @@ pub async fn decrypt_file(
         return Err("File does not have .enc extension".to_string());
     }
 
-    let output_path = path.strip_suffix(".enc")
+    let output_path = path
+        .strip_suffix(".enc")
         .ok_or_else(|| "File does not have .enc extension".to_string())?
         .to_string();
     let dest = Path::new(&output_path);
@@ -202,8 +212,7 @@ pub async fn decrypt_file(
     let path_for_log = path.clone();
 
     let result = tokio::task::spawn_blocking(move || {
-        let data = fs::read(&path)
-            .map_err(|e| format!("Failed to read file: {}", e))?;
+        let data = fs::read(&path).map_err(|e| format!("Failed to read file: {}", e))?;
 
         if data.len() < SALT_LEN + NONCE_LEN {
             return Err("File is too small to be a valid encrypted file".to_string());
@@ -235,8 +244,8 @@ pub async fn decrypt_file(
             0.0,
         );
 
-        let cipher = Aes256Gcm::new_from_slice(&key)
-            .map_err(|e| format!("Cipher init failed: {}", e))?;
+        let cipher =
+            Aes256Gcm::new_from_slice(&key).map_err(|e| format!("Cipher init failed: {}", e))?;
         let nonce = Nonce::from_slice(nonce_bytes);
 
         let plaintext = cipher
@@ -254,11 +263,21 @@ pub async fn decrypt_file(
     match &result {
         Ok(out) => {
             progress_manager.complete_file_operation(&op_id);
-            log_operation("decrypt", vec![path_for_log.clone(), out.clone()], None, true);
+            log_operation(
+                "decrypt",
+                vec![path_for_log.clone(), out.clone()],
+                None,
+                true,
+            );
         }
         Err(msg) => {
             progress_manager.fail_file_operation(&op_id, msg.clone());
-            log_operation("decrypt", vec![path_for_log.clone()], Some(msg.clone()), false);
+            log_operation(
+                "decrypt",
+                vec![path_for_log.clone()],
+                Some(msg.clone()),
+                false,
+            );
         }
     }
 

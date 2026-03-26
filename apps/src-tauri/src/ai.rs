@@ -1,16 +1,13 @@
+use ollama_rs::{generation::completion::request::GenerationRequest, Ollama};
 use serde::{Deserialize, Serialize};
-use tauri::command;
-use tauri::Emitter;
-use tracing::{info, warn};
-use ollama_rs::{
-    generation::completion::request::GenerationRequest,
-    Ollama,
-};
 use std::collections::HashMap;
+use std::env;
 use std::path::Path;
 use std::sync::{Arc, LazyLock, Mutex};
 use std::time::{SystemTime, UNIX_EPOCH};
-use std::env;
+use tauri::command;
+use tauri::Emitter;
+use tracing::{info, warn};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ChatMessage {
@@ -82,9 +79,9 @@ fn send_terminal_output(app_handle: &tauri::AppHandle, message: &str) {
 #[command]
 pub async fn get_ai_models() -> Result<Vec<AIModel>, String> {
     info!("Fetching AI models...");
-    
+
     let mut all_models = Vec::new();
-    
+
     // Add Claude models if API key is available (from keychain or env var for dev)
     let claude_api_key = crate::secure_credentials::get_secret("agent-api-key")
         .ok()
@@ -113,7 +110,7 @@ pub async fn get_ai_models() -> Result<Vec<AIModel>, String> {
         ]);
         info!("Added Claude models to available models");
     }
-    
+
     // Try to get Ollama models
     let ollama = Ollama::default();
     match ollama.list_local_models().await {
@@ -126,7 +123,10 @@ pub async fn get_ai_models() -> Result<Vec<AIModel>, String> {
                     available: true,
                 });
             }
-            info!("Added {} Ollama models", all_models.iter().filter(|m| m.provider == "ollama").count());
+            info!(
+                "Added {} Ollama models",
+                all_models.iter().filter(|m| m.provider == "ollama").count()
+            );
         }
         Err(e) => {
             warn!("Failed to connect to Ollama: {}", e);
@@ -148,7 +148,7 @@ pub async fn get_ai_models() -> Result<Vec<AIModel>, String> {
             info!("Added default Ollama models (marked as unavailable)");
         }
     }
-    
+
     info!("Total available models: {}", all_models.len());
     Ok(all_models)
 }
@@ -156,9 +156,9 @@ pub async fn get_ai_models() -> Result<Vec<AIModel>, String> {
 #[command]
 pub async fn check_ollama_status() -> Result<bool, String> {
     info!("Checking Ollama status...");
-    
+
     let ollama = Ollama::default();
-    
+
     match ollama.list_local_models().await {
         Ok(_) => {
             info!("Ollama is running and accessible");
@@ -178,7 +178,7 @@ pub async fn chat_with_ai(
     file_context: Option<FileContext>,
 ) -> Result<String, String> {
     info!("Starting chat with AI using model: {}", model);
-    
+
     // Route to appropriate AI service
     route_ai_request(model, messages, file_context).await
 }
@@ -189,7 +189,7 @@ pub async fn analyze_file_with_ai(
     file_context: FileContext,
 ) -> Result<String, String> {
     info!("Analyzing file with AI using model: {}", model);
-    
+
     // Create a message for analysis
     let analysis_message = ChatMessage {
         role: "user".to_string(),
@@ -203,7 +203,7 @@ pub async fn analyze_file_with_ai(
             Be concise and practical."
         ),
     };
-    
+
     // Route to appropriate AI service
     route_ai_request(model, vec![analysis_message], Some(file_context)).await
 }
@@ -215,7 +215,7 @@ pub async fn get_file_help(
     file_type: String,
 ) -> Result<String, String> {
     info!("Getting file help with AI using model: {}", model);
-    
+
     // Create a message for file help
     let help_message = ChatMessage {
         role: "user".to_string(),
@@ -232,21 +232,26 @@ pub async fn get_file_help(
             file_name, file_type
         ),
     };
-    
+
     // Route to appropriate AI service
     route_ai_request(model, vec![help_message], None).await
 }
 
 #[command]
-pub async fn calculate_folder_size(folder_path: String, app_handle: tauri::AppHandle) -> Result<FolderSizeInfo, String> {
-    
+pub async fn calculate_folder_size(
+    folder_path: String,
+    app_handle: tauri::AppHandle,
+) -> Result<FolderSizeInfo, String> {
     let path = Path::new(&folder_path);
     if !path.exists() || !path.is_dir() {
         return Err("Path does not exist or is not a directory".to_string());
     }
-    
-    send_terminal_output(&app_handle, &format!("Starting folder size calculation for: {}", folder_path));
-    
+
+    send_terminal_output(
+        &app_handle,
+        &format!("Starting folder size calculation for: {}", folder_path),
+    );
+
     // Check cache first
     {
         let cache = FOLDER_SIZE_CACHE.lock().unwrap_or_else(|e| e.into_inner());
@@ -255,18 +260,21 @@ pub async fn calculate_folder_size(folder_path: String, app_handle: tauri::AppHa
                 .duration_since(UNIX_EPOCH)
                 .unwrap_or_default()
                 .as_secs();
-            
+
             // Return cached result if it's not expired
             if now - cached_info.cache_timestamp < CACHE_EXPIRATION_SECONDS {
-                send_terminal_output(&app_handle, &format!("Returning cached folder size for: {}", folder_path));
+                send_terminal_output(
+                    &app_handle,
+                    &format!("Returning cached folder size for: {}", folder_path),
+                );
                 return Ok(cached_info.clone());
             }
         }
     }
-    
+
     // Calculate folder size
     let size_info = calculate_directory_size_recursive(path, &app_handle).await?;
-    
+
     let folder_size_info = FolderSizeInfo {
         total_size: size_info.total_size,
         file_count: size_info.file_count,
@@ -277,25 +285,33 @@ pub async fn calculate_folder_size(folder_path: String, app_handle: tauri::AppHa
             .unwrap_or_default()
             .as_secs(),
     };
-    
+
     // Update cache
     {
         let mut cache = FOLDER_SIZE_CACHE.lock().unwrap_or_else(|e| e.into_inner());
         cache.insert(folder_path.clone(), folder_size_info.clone());
     }
-    
-    send_terminal_output(&app_handle, &format!("Calculated and cached folder size for: {} - {} bytes", folder_path, folder_size_info.total_size));
+
+    send_terminal_output(
+        &app_handle,
+        &format!(
+            "Calculated and cached folder size for: {} - {} bytes",
+            folder_path, folder_size_info.total_size
+        ),
+    );
     Ok(folder_size_info)
 }
 
 #[command]
-pub async fn get_cached_folder_sizes(folder_paths: Vec<String>) -> Result<HashMap<String, FolderSizeInfo>, String> {
+pub async fn get_cached_folder_sizes(
+    folder_paths: Vec<String>,
+) -> Result<HashMap<String, FolderSizeInfo>, String> {
     let cache = FOLDER_SIZE_CACHE.lock().unwrap_or_else(|e| e.into_inner());
     let now = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap_or_default()
         .as_secs();
-    
+
     let mut result = HashMap::new();
     for path in folder_paths {
         if let Some(cached_info) = cache.get(&path) {
@@ -305,7 +321,7 @@ pub async fn get_cached_folder_sizes(folder_paths: Vec<String>) -> Result<HashMa
             }
         }
     }
-    
+
     Ok(result)
 }
 
@@ -324,30 +340,33 @@ struct DirectorySizeResult {
     dir_count: u64,
 }
 
-async fn calculate_directory_size_recursive(dir_path: &Path, app_handle: &tauri::AppHandle) -> Result<DirectorySizeResult, String> {
+async fn calculate_directory_size_recursive(
+    dir_path: &Path,
+    app_handle: &tauri::AppHandle,
+) -> Result<DirectorySizeResult, String> {
     use std::fs;
-    
+
     let mut total_size = 0u64;
     let mut file_count = 0u64;
     let mut dir_count = 0u64;
-    
+
     let entries = fs::read_dir(dir_path)
         .map_err(|e| format!("Failed to read directory {}: {}", dir_path.display(), e))?;
-    
+
     for entry in entries {
-        let entry = entry
-            .map_err(|e| format!("Failed to read directory entry: {}", e))?;
-        
+        let entry = entry.map_err(|e| format!("Failed to read directory entry: {}", e))?;
+
         let path = entry.path();
-        let metadata = entry.metadata()
+        let metadata = entry
+            .metadata()
             .map_err(|e| format!("Failed to get metadata for {}: {}", path.display(), e))?;
-        
+
         if metadata.is_file() {
             total_size += metadata.len();
             file_count += 1;
         } else if metadata.is_dir() {
             dir_count += 1;
-            
+
             // Recursively calculate subdirectory size using Box::pin to avoid infinite size
             let recursive_future = Box::pin(calculate_directory_size_recursive(&path, app_handle));
             match recursive_future.await {
@@ -358,12 +377,19 @@ async fn calculate_directory_size_recursive(dir_path: &Path, app_handle: &tauri:
                 }
                 Err(e) => {
                     // Log error but continue with other directories
-                    send_terminal_output(&app_handle, &format!("Warning: Failed to calculate size for subdirectory {}: {}", path.display(), e));
+                    send_terminal_output(
+                        &app_handle,
+                        &format!(
+                            "Warning: Failed to calculate size for subdirectory {}: {}",
+                            path.display(),
+                            e
+                        ),
+                    );
                 }
             }
         }
     }
-    
+
     Ok(DirectorySizeResult {
         total_size,
         file_count,
@@ -374,8 +400,8 @@ async fn calculate_directory_size_recursive(dir_path: &Path, app_handle: &tauri:
 // User directory operations
 #[command]
 pub async fn get_user_directories() -> Result<UserDirectories, String> {
-    let home_path = dirs::home_dir()
-        .ok_or_else(|| "Could not determine home directory".to_string())?;
+    let home_path =
+        dirs::home_dir().ok_or_else(|| "Could not determine home directory".to_string())?;
     let home = home_path.to_string_lossy().to_string();
 
     Ok(UserDirectories {
@@ -398,18 +424,18 @@ pub async fn get_recent_folders() -> Result<Vec<String>, String> {
 #[command]
 pub async fn add_to_recent_folders(path: String) -> Result<(), String> {
     let mut recent_folders = RECENT_FOLDERS.lock().map_err(|e| e.to_string())?;
-    
+
     // Remove if already exists
     recent_folders.retain(|p| p != &path);
-    
+
     // Add to front
     recent_folders.insert(0, path);
-    
+
     // Keep only last 10
     if recent_folders.len() > 10 {
         recent_folders.truncate(10);
     }
-    
+
     Ok(())
 }
 
@@ -421,7 +447,7 @@ pub async fn get_system_info() -> Result<SystemInfo, String> {
     let hostname = env::var("COMPUTERNAME")
         .or_else(|_| env::var("HOSTNAME"))
         .unwrap_or_else(|_| "Unknown".to_string());
-    
+
     Ok(SystemInfo {
         os,
         arch,
@@ -469,8 +495,10 @@ async fn chat_with_claude(
         .ok()
         .flatten()
         .or_else(|| env::var("CLAUDE_API_KEY").ok())
-        .ok_or_else(|| "Claude API key not configured. Set it in Settings → AI Agent.".to_string())?;
-    
+        .ok_or_else(|| {
+            "Claude API key not configured. Set it in Settings → AI Agent.".to_string()
+        })?;
+
     let client = reqwest::Client::builder()
         .timeout(std::time::Duration::from_secs(60))
         .connect_timeout(std::time::Duration::from_secs(10))
@@ -479,35 +507,39 @@ async fn chat_with_claude(
 
     // Build system message
     let mut system_message = "You are Copilot, an AI assistant integrated into the Xplorer file explorer. You help users with file management, code analysis, and development tasks. Be helpful, thorough, and practical. Provide detailed, comprehensive responses with specific examples and step-by-step guidance when appropriate. Include code examples, best practices, and additional context that would be valuable to the user.".to_string();
-    
+
     // Add file context to system message if provided
     if let Some(context) = &file_context {
         system_message.push_str(&format!(
             "\n\nYou are currently working with:\nFile: {}\nPath: {}\nType: {}",
             context.name, context.path, context.file_type
         ));
-        
+
         if let Some(content) = &context.content {
             system_message.push_str(&format!("\nContent:\n{}", content));
         }
     }
-    
+
     // Convert messages to Claude format
     let claude_messages: Vec<ClaudeMessage> = messages
         .into_iter()
         .map(|msg| ClaudeMessage {
-            role: if msg.role == "user" { "user".to_string() } else { "assistant".to_string() },
+            role: if msg.role == "user" {
+                "user".to_string()
+            } else {
+                "assistant".to_string()
+            },
             content: msg.content,
         })
         .collect();
-    
+
     let request_body = ClaudeRequest {
         model,
         max_tokens: 4096,
         messages: claude_messages,
         system: Some(system_message),
     };
-    
+
     let response = client
         .post("https://api.anthropic.com/v1/messages")
         .header("x-api-key", api_key)
@@ -517,7 +549,7 @@ async fn chat_with_claude(
         .send()
         .await
         .map_err(|e| format!("Failed to send request to Claude API: {}", e))?;
-    
+
     if !response.status().is_success() {
         let error_text = response
             .text()
@@ -525,12 +557,12 @@ async fn chat_with_claude(
             .unwrap_or_else(|_| "Unknown error".to_string());
         return Err(format!("Claude API error: {}", error_text));
     }
-    
+
     let claude_response: ClaudeResponse = response
         .json()
         .await
         .map_err(|e| format!("Failed to parse Claude response: {}", e))?;
-    
+
     // Extract text from the first content item
     claude_response
         .content
@@ -571,9 +603,15 @@ pub async fn search_rerank_with_ai(
         "claude" => {
             let key = api_key
                 .map(|k| k.to_string())
-                .or_else(|| crate::secure_credentials::get_secret("agent-api-key").ok().flatten())
+                .or_else(|| {
+                    crate::secure_credentials::get_secret("agent-api-key")
+                        .ok()
+                        .flatten()
+                })
                 .or_else(|| env::var("CLAUDE_API_KEY").ok())
-                .ok_or_else(|| "Claude API key not configured. Set it in Settings → AI Agent.".to_string())?;
+                .ok_or_else(|| {
+                    "Claude API key not configured. Set it in Settings → AI Agent.".to_string()
+                })?;
 
             let model_id = model.unwrap_or("claude-sonnet-4-6-20250514");
 
@@ -630,9 +668,15 @@ pub async fn search_rerank_with_ai(
         "openai" => {
             let key = api_key
                 .map(|k| k.to_string())
-                .or_else(|| crate::secure_credentials::get_secret("agent-openai-api-key").ok().flatten())
+                .or_else(|| {
+                    crate::secure_credentials::get_secret("agent-openai-api-key")
+                        .ok()
+                        .flatten()
+                })
                 .or_else(|| env::var("OPENAI_API_KEY").ok())
-                .ok_or_else(|| "OpenAI API key not configured. Set it in Settings → AI Agent.".to_string())?;
+                .ok_or_else(|| {
+                    "OpenAI API key not configured. Set it in Settings → AI Agent.".to_string()
+                })?;
 
             let model_id = model.unwrap_or("gpt-4o-mini");
 
@@ -690,10 +734,7 @@ pub async fn search_rerank_with_ai(
             let model_id = model.unwrap_or("llama3");
 
             let ollama = Ollama::default();
-            let request = GenerationRequest::new(
-                model_id.to_string(),
-                prompt.to_string(),
-            );
+            let request = GenerationRequest::new(model_id.to_string(), prompt.to_string());
 
             match ollama.generate(request).await {
                 Ok(response) => {
@@ -717,8 +758,12 @@ pub async fn search_rerank_with_ai(
 // AI Rename Suggestions
 // ─────────────────────────────────────────────────────────────────────────────
 
-const IMAGE_EXTENSIONS: &[&str] = &["jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp", "svg", "ico"];
-const DOCUMENT_EXTENSIONS: &[&str] = &["pdf", "docx", "xlsx", "pptx", "doc", "xls", "ppt", "txt", "md", "rtf", "csv"];
+const IMAGE_EXTENSIONS: &[&str] = &[
+    "jpg", "jpeg", "png", "gif", "bmp", "tiff", "webp", "svg", "ico",
+];
+const DOCUMENT_EXTENSIONS: &[&str] = &[
+    "pdf", "docx", "xlsx", "pptx", "doc", "xls", "ppt", "txt", "md", "rtf", "csv",
+];
 
 /// Ask Ollama to suggest 3 descriptive filenames for a given file.
 /// Uses vision for images, text extraction for documents, and metadata for other files.
@@ -729,11 +774,13 @@ pub async fn suggest_filename(file_path: String) -> Result<Vec<String>, String> 
         return Err(format!("File does not exist: {}", file_path));
     }
 
-    let ext = path.extension()
+    let ext = path
+        .extension()
         .map(|e| e.to_string_lossy().to_lowercase())
         .unwrap_or_default();
 
-    let original_name = path.file_stem()
+    let original_name = path
+        .file_stem()
         .map(|s| s.to_string_lossy().to_string())
         .unwrap_or_default();
 
@@ -743,17 +790,17 @@ pub async fn suggest_filename(file_path: String) -> Result<Vec<String>, String> 
         // For images: use vision model to describe, then suggest filenames
         let vision_model = detect_ollama_vision_model().await;
         if let Some(model) = vision_model {
-            let image_bytes = std::fs::read(&file_path)
-                .map_err(|e| format!("Failed to read image: {}", e))?;
-            let base64_image = base64::Engine::encode(
-                &base64::engine::general_purpose::STANDARD,
-                &image_bytes,
-            );
+            let image_bytes =
+                std::fs::read(&file_path).map_err(|e| format!("Failed to read image: {}", e))?;
+            let base64_image =
+                base64::Engine::encode(&base64::engine::general_purpose::STANDARD, &image_bytes);
 
-            let description = call_ollama_vision_async(&model,
+            let description = call_ollama_vision_async(
+                &model,
                 "Describe this image briefly in 1-2 sentences. What is the main subject?",
                 &[base64_image],
-            ).await?;
+            )
+            .await?;
 
             prompt = format!(
                 "Based on this image description: \"{}\"\n\n\
@@ -781,7 +828,9 @@ pub async fn suggest_filename(file_path: String) -> Result<Vec<String>, String> 
                  - Keep names under 40 characters\n\
                  - Do NOT include the file extension\n\n\
                  Return ONLY the 3 filenames, one per line, nothing else.",
-                original_name, ext, meta.len()
+                original_name,
+                ext,
+                meta.len()
             );
         }
     } else if DOCUMENT_EXTENSIONS.contains(&ext.as_str()) {
@@ -814,10 +863,11 @@ pub async fn suggest_filename(file_path: String) -> Result<Vec<String>, String> 
         );
     } else {
         // For other files: use metadata
-        let meta = std::fs::metadata(&file_path)
-            .map_err(|e| format!("Failed to read metadata: {}", e))?;
+        let meta =
+            std::fs::metadata(&file_path).map_err(|e| format!("Failed to read metadata: {}", e))?;
 
-        let modified = meta.modified()
+        let modified = meta
+            .modified()
             .unwrap_or(std::time::UNIX_EPOCH)
             .duration_since(std::time::UNIX_EPOCH)
             .unwrap_or_default()
@@ -835,7 +885,10 @@ pub async fn suggest_filename(file_path: String) -> Result<Vec<String>, String> 
              - Make names descriptive based on the file type and original name\n\
              - Do NOT include the file extension\n\n\
              Return ONLY the 3 filenames, one per line, nothing else.",
-            original_name, ext, meta.len(), modified
+            original_name,
+            ext,
+            meta.len(),
+            modified
         );
     }
 
@@ -844,24 +897,38 @@ pub async fn suggest_filename(file_path: String) -> Result<Vec<String>, String> 
     let ollama = Ollama::default();
     let request = GenerationRequest::new(model.clone(), prompt);
 
-    let response = ollama.generate(request).await
-        .map_err(|e| format!("Failed to get AI response: {}. Make sure Ollama is running.", e))?;
+    let response = ollama.generate(request).await.map_err(|e| {
+        format!(
+            "Failed to get AI response: {}. Make sure Ollama is running.",
+            e
+        )
+    })?;
 
     // Parse the response into individual filenames
-    let suggestions: Vec<String> = response.response
+    let suggestions: Vec<String> = response
+        .response
         .lines()
         .map(|line| line.trim())
         .filter(|line| !line.is_empty())
         // Strip leading numbering like "1." or "1)" or "- "
         .map(|line| {
             let cleaned = line
-                .trim_start_matches(|c: char| c.is_ascii_digit() || c == '.' || c == ')' || c == '-' || c == '*')
+                .trim_start_matches(|c: char| {
+                    c.is_ascii_digit() || c == '.' || c == ')' || c == '-' || c == '*'
+                })
                 .trim();
             // Remove quotes if present
             let cleaned = cleaned.trim_matches('"').trim_matches('\'');
             // Sanitize: only allow alphanumeric, hyphens, underscores
-            let sanitized: String = cleaned.chars()
-                .map(|c| if c.is_alphanumeric() || c == '-' || c == '_' || c == ' ' { c } else { '-' })
+            let sanitized: String = cleaned
+                .chars()
+                .map(|c| {
+                    if c.is_alphanumeric() || c == '-' || c == '_' || c == ' ' {
+                        c
+                    } else {
+                        '-'
+                    }
+                })
                 .collect();
             let sanitized = sanitized.trim_matches('-').to_string();
             // Replace spaces with hyphens
@@ -876,7 +943,8 @@ pub async fn suggest_filename(file_path: String) -> Result<Vec<String>, String> 
     }
 
     // Append the original extension
-    let with_ext: Vec<String> = suggestions.into_iter()
+    let with_ext: Vec<String> = suggestions
+        .into_iter()
         .map(|name| {
             if ext.is_empty() {
                 name
@@ -913,7 +981,8 @@ pub async fn auto_tag_files(file_paths: Vec<String>) -> Result<Vec<(String, Vec<
             continue;
         }
 
-        let ext = path.extension()
+        let ext = path
+            .extension()
             .map(|e| e.to_string_lossy().to_lowercase())
             .unwrap_or_default();
 
@@ -934,10 +1003,13 @@ pub async fn auto_tag_files(file_paths: Vec<String>) -> Result<Vec<(String, Vec<
                     &image_bytes,
                 );
 
-                let description = match call_ollama_vision_async(vm,
+                let description = match call_ollama_vision_async(
+                    vm,
                     "Describe this image briefly. What type of image is it?",
                     &[base64_image],
-                ).await {
+                )
+                .await
+                {
                     Ok(d) => d,
                     Err(_) => {
                         results.push((file_path.clone(), classify_by_extension(&ext)));
@@ -991,17 +1063,33 @@ pub async fn auto_tag_files(file_paths: Vec<String>) -> Result<Vec<(String, Vec<
         let request = GenerationRequest::new(model.clone(), prompt);
         match ollama.generate(request).await {
             Ok(response) => {
-                let tags: Vec<String> = response.response
+                let tags: Vec<String> = response
+                    .response
                     .split(',')
                     .map(|t| t.trim().to_lowercase())
                     .filter(|t| !t.is_empty() && t.len() < 30)
                     // Only keep recognized categories
                     .filter(|t| {
                         let valid_tags = [
-                            "receipt", "screenshot", "photo", "document", "code",
-                            "presentation", "spreadsheet", "music", "video",
-                            "report", "letter", "invoice", "resume", "notes",
-                            "diagram", "chart", "meme", "artwork", "icon",
+                            "receipt",
+                            "screenshot",
+                            "photo",
+                            "document",
+                            "code",
+                            "presentation",
+                            "spreadsheet",
+                            "music",
+                            "video",
+                            "report",
+                            "letter",
+                            "invoice",
+                            "resume",
+                            "notes",
+                            "diagram",
+                            "chart",
+                            "meme",
+                            "artwork",
+                            "icon",
                         ];
                         valid_tags.contains(&t.as_str())
                     })
@@ -1025,13 +1113,16 @@ pub async fn auto_tag_files(file_paths: Vec<String>) -> Result<Vec<(String, Vec<
 /// Fallback classification purely from file extension
 fn classify_by_extension(ext: &str) -> Vec<String> {
     match ext {
-        "jpg" | "jpeg" | "png" | "gif" | "bmp" | "tiff" | "webp" | "svg" | "ico" => vec!["photo".to_string()],
+        "jpg" | "jpeg" | "png" | "gif" | "bmp" | "tiff" | "webp" | "svg" | "ico" => {
+            vec!["photo".to_string()]
+        }
         "pdf" | "docx" | "doc" | "rtf" | "txt" | "md" => vec!["document".to_string()],
         "xlsx" | "xls" | "csv" => vec!["spreadsheet".to_string()],
         "pptx" | "ppt" => vec!["presentation".to_string()],
         "mp3" | "wav" | "flac" | "aac" | "ogg" | "wma" | "m4a" => vec!["music".to_string()],
         "mp4" | "avi" | "mkv" | "mov" | "wmv" | "flv" | "webm" => vec!["video".to_string()],
-        "rs" | "js" | "ts" | "tsx" | "jsx" | "py" | "go" | "java" | "c" | "cpp" | "h" | "cs" | "rb" | "php" | "swift" | "kt" => vec!["code".to_string()],
+        "rs" | "js" | "ts" | "tsx" | "jsx" | "py" | "go" | "java" | "c" | "cpp" | "h" | "cs"
+        | "rb" | "php" | "swift" | "kt" => vec!["code".to_string()],
         "zip" | "rar" | "7z" | "tar" | "gz" | "bz2" => vec!["archive".to_string()],
         "exe" | "msi" | "dmg" | "deb" | "rpm" | "appimage" => vec!["executable".to_string()],
         _ => vec![],
@@ -1040,7 +1131,14 @@ fn classify_by_extension(ext: &str) -> Vec<String> {
 
 /// Detect an available Ollama vision model (async version)
 async fn detect_ollama_vision_model() -> Option<String> {
-    let vision_models = ["llava", "bakllava", "moondream", "llava-llama3", "llava:13b", "llava:7b"];
+    let vision_models = [
+        "llava",
+        "bakllava",
+        "moondream",
+        "llava-llama3",
+        "llava:13b",
+        "llava:7b",
+    ];
 
     let client = match reqwest::Client::builder()
         .timeout(std::time::Duration::from_secs(5))
@@ -1056,9 +1154,13 @@ async fn detect_ollama_vision_model() -> Option<String> {
     };
 
     #[derive(Deserialize)]
-    struct OllamaModel { name: String }
+    struct OllamaModel {
+        name: String,
+    }
     #[derive(Deserialize)]
-    struct OllamaModelList { models: Vec<OllamaModel> }
+    struct OllamaModelList {
+        models: Vec<OllamaModel>,
+    }
 
     let model_list: OllamaModelList = match response.json().await {
         Ok(m) => m,
@@ -1083,21 +1185,36 @@ async fn get_default_ollama_model() -> String {
     match ollama.list_local_models().await {
         Ok(models) => {
             // Prefer smaller / faster models for short tasks
-            let preferred = ["llama3.2:1b", "llama3.2:3b", "llama3:8b", "mistral", "deepseek-r1:1.5b", "deepseek-r1:8b", "gemma"];
+            let preferred = [
+                "llama3.2:1b",
+                "llama3.2:3b",
+                "llama3:8b",
+                "mistral",
+                "deepseek-r1:1.5b",
+                "deepseek-r1:8b",
+                "gemma",
+            ];
             for pref in &preferred {
                 if let Some(m) = models.iter().find(|m| m.name.to_lowercase().contains(pref)) {
                     return m.name.clone();
                 }
             }
             // Fall back to the first available model
-            models.first().map(|m| m.name.clone()).unwrap_or_else(|| "llama3.2:1b".to_string())
+            models
+                .first()
+                .map(|m| m.name.clone())
+                .unwrap_or_else(|| "llama3.2:1b".to_string())
         }
         Err(_) => "llama3.2:1b".to_string(),
     }
 }
 
 /// Call Ollama vision API (async version for use in async commands)
-async fn call_ollama_vision_async(model: &str, prompt: &str, images: &[String]) -> Result<String, String> {
+async fn call_ollama_vision_async(
+    model: &str,
+    prompt: &str,
+    images: &[String],
+) -> Result<String, String> {
     #[derive(Serialize)]
     struct OllamaGenReq {
         model: String,
@@ -1135,7 +1252,9 @@ async fn call_ollama_vision_async(model: &str, prompt: &str, images: &[String]) 
         return Err(format!("Ollama API error ({}): {}", status, body));
     }
 
-    let result: OllamaGenResp = response.json().await
+    let result: OllamaGenResp = response
+        .json()
+        .await
         .map_err(|e| format!("Failed to parse Ollama response: {}", e))?;
 
     Ok(result.response)
@@ -1148,27 +1267,27 @@ async fn chat_with_ollama(
     file_context: Option<FileContext>,
 ) -> Result<String, String> {
     info!("Starting chat with Ollama using model: {}", model);
-    
+
     let ollama = Ollama::default();
-    
+
     // Build the prompt from messages
     let mut prompt = String::new();
-    
+
     // Add system context
     prompt.push_str("You are Copilot, an AI assistant integrated into the Xplorer file explorer. You help users with file management, code analysis, and development tasks. Be helpful, thorough, and practical. Provide detailed, comprehensive responses with specific examples and step-by-step guidance when appropriate. Include code examples, best practices, and additional context that would be valuable to the user.\n\n");
-    
+
     // Add file context if provided
     if let Some(context) = &file_context {
         prompt.push_str(&format!(
             "You are currently working with:\nFile: {}\nPath: {}\nType: {}\n",
             context.name, context.path, context.file_type
         ));
-        
+
         if let Some(content) = &context.content {
             prompt.push_str(&format!("Content:\n{}\n\n", content));
         }
     }
-    
+
     // Add conversation history
     for message in &messages {
         match message.role.as_str() {
@@ -1178,21 +1297,24 @@ async fn chat_with_ollama(
             _ => prompt.push_str(&format!("{}: {}\n", message.role, message.content)),
         }
     }
-    
+
     prompt.push_str("\nAssistant: ");
-    
-    info!("Sending prompt to Ollama: {}", &prompt[..prompt.len().min(200)]);
-    
+
+    info!(
+        "Sending prompt to Ollama: {}",
+        &prompt[..prompt.len().min(200)]
+    );
+
     let request = GenerationRequest::new(model.clone(), prompt);
-    
+
     match ollama.generate(request).await {
         Ok(response) => {
             info!("AI response completed successfully");
             let mut result = response.response;
-            
+
             // Clean up the response - remove any meta-commentary or thinking tags
             let original_response = result.clone();
-            
+
             // Remove common thinking patterns (compiled once via lazy_static-style approach)
             use std::sync::OnceLock;
             static CLEANUP_REGEXES: OnceLock<Vec<regex::Regex>> = OnceLock::new();
@@ -1203,18 +1325,21 @@ async fn chat_with_ollama(
                     r"I need to.*?\n",
                     r"First, I'll.*?\n",
                     r"Looking at this.*?\n",
-                ].iter().filter_map(|p| regex::Regex::new(p).ok()).collect()
+                ]
+                .iter()
+                .filter_map(|p| regex::Regex::new(p).ok())
+                .collect()
             });
 
             for re in regexes {
                 result = re.replace_all(&result, "").to_string();
             }
-            
+
             // If the result is empty after cleaning, return the original
             if result.trim().is_empty() {
                 result = original_response;
             }
-            
+
             Ok(result)
         }
         Err(e) => {

@@ -1,10 +1,10 @@
 use std::path::Path;
 use std::time::SystemTime;
 
-use tauri::command;
-use trash;
 use crate::operations::types::*;
 use crate::operations::validate_file_path;
+use tauri::command;
+use trash;
 
 #[command]
 pub async fn move_to_trash(path: String) -> Result<(), String> {
@@ -14,10 +14,9 @@ pub async fn move_to_trash(path: String) -> Result<(), String> {
     if !path_obj.exists() {
         return Err("File or directory does not exist".to_string());
     }
-    
-    trash::delete(path_obj)
-        .map_err(|e| format!("Failed to move to trash: {}", e))?;
-    
+
+    trash::delete(path_obj).map_err(|e| format!("Failed to move to trash: {}", e))?;
+
     Ok(())
 }
 
@@ -28,25 +27,26 @@ pub async fn get_trash_items() -> Result<Vec<TrashItem>, String> {
         // Use the Windows-specific recycle bin implementation
         crate::windows_recycle_bin::get_recycle_bin_items()
     }
-    
+
     #[cfg(target_os = "macos")]
     {
         // On macOS, trash items are in ~/.Trash
         use std::fs;
         let mut trash_items = Vec::new();
-        
+
         if let Some(home_dir) = dirs::home_dir() {
             let trash_path = home_dir.join(".Trash");
             if let Ok(entries) = fs::read_dir(trash_path) {
                 for entry in entries.flatten() {
                     if let Ok(metadata) = entry.metadata() {
                         let name = entry.file_name().to_string_lossy().to_string();
-                        let modified = metadata.modified()
+                        let modified = metadata
+                            .modified()
                             .unwrap_or(SystemTime::UNIX_EPOCH)
                             .duration_since(SystemTime::UNIX_EPOCH)
                             .unwrap_or_default()
                             .as_secs();
-                            
+
                         trash_items.push(TrashItem {
                             name: name.clone(),
                             original_path: entry.path().to_string_lossy().to_string(),
@@ -60,25 +60,26 @@ pub async fn get_trash_items() -> Result<Vec<TrashItem>, String> {
         }
         Ok(trash_items)
     }
-    
+
     #[cfg(target_os = "linux")]
     {
         // On Linux, trash items are typically in ~/.local/share/Trash
         use std::fs;
         let mut trash_items = Vec::new();
-        
+
         if let Some(home_dir) = dirs::home_dir() {
             let trash_files_path = home_dir.join(".local/share/Trash/files");
             if let Ok(entries) = fs::read_dir(trash_files_path) {
                 for entry in entries.flatten() {
                     if let Ok(metadata) = entry.metadata() {
                         let name = entry.file_name().to_string_lossy().to_string();
-                        let modified = metadata.modified()
+                        let modified = metadata
+                            .modified()
                             .unwrap_or(SystemTime::UNIX_EPOCH)
                             .duration_since(SystemTime::UNIX_EPOCH)
                             .unwrap_or_default()
                             .as_secs();
-                            
+
                         trash_items.push(TrashItem {
                             name: name.clone(),
                             original_path: entry.path().to_string_lossy().to_string(),
@@ -92,7 +93,7 @@ pub async fn get_trash_items() -> Result<Vec<TrashItem>, String> {
         }
         Ok(trash_items)
     }
-    
+
     #[cfg(not(any(windows, target_os = "macos", target_os = "linux")))]
     {
         Err("Trash listing not supported on this platform".to_string())
@@ -107,7 +108,7 @@ pub async fn restore_trash_item(item_path: String) -> Result<String, String> {
     }
     #[cfg(not(windows))]
     let _ = item_path;
-    
+
     #[cfg(not(windows))]
     {
         Err("Restore from trash is currently only supported on Windows".to_string())
@@ -120,7 +121,7 @@ pub async fn empty_recycle_bin() -> Result<usize, String> {
     {
         crate::windows_recycle_bin::empty_recycle_bin()
     }
-    
+
     #[cfg(not(windows))]
     {
         Err("Empty trash is currently only supported on Windows".to_string())
@@ -132,15 +133,15 @@ pub async fn permanently_delete_trash_item(item_path: String) -> Result<(), Stri
     validate_file_path(&item_path)?;
     // Permanently delete a file from the recycle bin
     let path = std::path::Path::new(&item_path);
-    
+
     if !path.exists() {
         return Err("File no longer exists".to_string());
     }
-    
+
     std::fs::remove_file(path)
         .or_else(|_| std::fs::remove_dir_all(path))
         .map_err(|e| format!("Failed to permanently delete item: {}", e))?;
-        
+
     // Also try to remove corresponding $I file if this is a $R file
     if let Some(filename) = path.file_name().and_then(|n| n.to_str()) {
         if filename.starts_with("$R") {
@@ -151,10 +152,9 @@ pub async fn permanently_delete_trash_item(item_path: String) -> Result<(), Stri
             }
         }
     }
-    
+
     Ok(())
 }
-
 
 #[command]
 pub async fn open_recycle_bin() -> Result<(), String> {
@@ -165,7 +165,7 @@ pub async fn open_recycle_bin() -> Result<(), String> {
             .spawn()
             .map_err(|e| format!("Failed to open Recycle Bin: {}", e))?;
     }
-    
+
     #[cfg(target_os = "macos")]
     {
         std::process::Command::new("open")
@@ -173,7 +173,7 @@ pub async fn open_recycle_bin() -> Result<(), String> {
             .spawn()
             .map_err(|e| format!("Failed to open Trash: {}", e))?;
     }
-    
+
     #[cfg(target_os = "linux")]
     {
         // Try to open with the default file manager
@@ -183,6 +183,6 @@ pub async fn open_recycle_bin() -> Result<(), String> {
             .spawn()
             .map_err(|e| format!("Failed to open Trash: {}", e))?;
     }
-    
+
     Ok(())
 }

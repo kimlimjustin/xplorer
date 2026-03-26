@@ -40,8 +40,8 @@ fn load_bookmarks_from_disk(app_handle: &tauri::AppHandle) -> Result<Vec<Bookmar
     if !path.exists() {
         return Ok(Vec::new());
     }
-    let data = std::fs::read_to_string(&path)
-        .map_err(|e| format!("Failed to read bookmarks: {}", e))?;
+    let data =
+        std::fs::read_to_string(&path).map_err(|e| format!("Failed to read bookmarks: {}", e))?;
     let bookmarks: Vec<BookmarkEntry> =
         serde_json::from_str(&data).map_err(|e| format!("Failed to parse bookmarks: {}", e))?;
     Ok(bookmarks)
@@ -64,10 +64,12 @@ fn flush_bookmarks_to_disk(
     app_handle: &tauri::AppHandle,
     guard: &MutexGuard<'static, Option<Vec<BookmarkEntry>>>,
 ) -> Result<(), String> {
-    let bookmarks = guard.as_ref().ok_or_else(|| "Storage cache not initialized".to_string())?;
+    let bookmarks = guard
+        .as_ref()
+        .ok_or_else(|| "Storage cache not initialized".to_string())?;
     let path = bookmarks_path(app_handle)?;
-    let data =
-        serde_json::to_string_pretty(bookmarks).map_err(|e| format!("Failed to serialize: {}", e))?;
+    let data = serde_json::to_string_pretty(bookmarks)
+        .map_err(|e| format!("Failed to serialize: {}", e))?;
     std::fs::write(&path, data).map_err(|e| format!("Failed to write bookmarks: {}", e))?;
     Ok(())
 }
@@ -101,7 +103,9 @@ pub async fn add_bookmark(
     };
 
     let mut guard = ensure_bookmarks_cache(&app_handle)?;
-    let bookmarks = guard.as_mut().ok_or_else(|| "Storage cache not initialized".to_string())?;
+    let bookmarks = guard
+        .as_mut()
+        .ok_or_else(|| "Storage cache not initialized".to_string())?;
     // Deduplicate by path -- remove any existing entry with the same path
     bookmarks.retain(|b| b.path != path);
     bookmarks.push(entry.clone());
@@ -113,7 +117,9 @@ pub async fn add_bookmark(
 #[tauri::command]
 pub async fn remove_bookmark(path: String, app_handle: tauri::AppHandle) -> Result<(), String> {
     let mut guard = ensure_bookmarks_cache(&app_handle)?;
-    let bookmarks = guard.as_mut().ok_or_else(|| "Storage cache not initialized".to_string())?;
+    let bookmarks = guard
+        .as_mut()
+        .ok_or_else(|| "Storage cache not initialized".to_string())?;
     bookmarks.retain(|b| b.path != path);
     flush_bookmarks_to_disk(&app_handle, &guard)?;
     Ok(())
@@ -127,7 +133,9 @@ pub async fn update_bookmark_name(
     app_handle: tauri::AppHandle,
 ) -> Result<(), String> {
     let mut guard = ensure_bookmarks_cache(&app_handle)?;
-    let bookmarks = guard.as_mut().ok_or_else(|| "Storage cache not initialized".to_string())?;
+    let bookmarks = guard
+        .as_mut()
+        .ok_or_else(|| "Storage cache not initialized".to_string())?;
     let found = bookmarks.iter_mut().find(|b| b.path == path);
     if let Some(bookmark) = found {
         bookmark.name = name;

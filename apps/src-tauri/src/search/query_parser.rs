@@ -24,7 +24,9 @@ pub enum SortHint {
 }
 
 impl Default for SortHint {
-    fn default() -> Self { SortHint::None }
+    fn default() -> Self {
+        SortHint::None
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -60,12 +62,11 @@ fn stop_words() -> &'static HashSet<&'static str> {
     static STOP: OnceLock<HashSet<&str>> = OnceLock::new();
     STOP.get_or_init(|| {
         [
-            "the", "be", "to", "of", "and", "a", "in", "that", "have", "i",
-            "it", "for", "not", "on", "with", "he", "as", "you", "do", "at",
-            "this", "but", "his", "by", "from", "they", "we", "her", "she",
-            "or", "an", "my", "all", "me", "is", "are", "was", "were", "been",
-            "will", "would", "could", "should", "can", "may", "might", "shall",
-            "find", "show", "get", "list", "files", "file",
+            "the", "be", "to", "of", "and", "a", "in", "that", "have", "i", "it", "for", "not",
+            "on", "with", "he", "as", "you", "do", "at", "this", "but", "his", "by", "from",
+            "they", "we", "her", "she", "or", "an", "my", "all", "me", "is", "are", "was", "were",
+            "been", "will", "would", "could", "should", "can", "may", "might", "shall", "find",
+            "show", "get", "list", "files", "file",
         ]
         .iter()
         .copied()
@@ -148,9 +149,9 @@ const INTENT_WORDS: &[(&str, &str)] = &[
     ("finden", "find"),
     ("zeigen", "show"),
     // Chinese
-    ("\u{641c}\u{7d22}", "search"),   // 搜索
-    ("\u{67e5}\u{627e}", "find"),     // 查找
-    ("\u{663e}\u{793a}", "show"),     // 显示
+    ("\u{641c}\u{7d22}", "search"), // 搜索
+    ("\u{67e5}\u{627e}", "find"),   // 查找
+    ("\u{663e}\u{793a}", "show"),   // 显示
 ];
 
 // ===== Time helpers =====
@@ -437,7 +438,11 @@ pub fn parse(input: &str) -> ParsedQuery {
             ("last month", Some(now - 30 * DAY), None),
             ("this month", Some(now - 30 * DAY), None),
             ("this year", Some(now - 365 * DAY), None),
-            ("last year", Some(now - 2 * 365 * DAY), Some(now - 365 * DAY)),
+            (
+                "last year",
+                Some(now - 2 * 365 * DAY),
+                Some(now - 365 * DAY),
+            ),
             ("recently", Some(now - 7 * DAY), None),
             ("recent", Some(now - 7 * DAY), None),
             ("old", None, Some(now - 365 * DAY)),
@@ -773,14 +778,21 @@ mod tests {
         let sz = q.metadata.size.as_ref().unwrap();
         assert_eq!(sz.min_bytes, Some(100 * 1024 * 1024));
         // file type = Images
-        assert_eq!(q.metadata.file_type, Some(super::super::FileTypeCategory::Images));
+        assert_eq!(
+            q.metadata.file_type,
+            Some(super::super::FileTypeCategory::Images)
+        );
         // date = last month
         assert!(q.metadata.date.is_some());
         assert!(q.metadata.date.as_ref().unwrap().after.is_some());
         // sort hint = SizeDesc (from "largest")
         assert_eq!(q.metadata.sort_hint, SortHint::SizeDesc);
         // No leftover keywords (all consumed by filters)
-        assert!(q.keywords.is_empty(), "expected no keywords, got: {:?}", q.keywords);
+        assert!(
+            q.keywords.is_empty(),
+            "expected no keywords, got: {:?}",
+            q.keywords
+        );
     }
 
     #[test]
@@ -789,7 +801,10 @@ mod tests {
         // "newest" → normalized to "recent" → date filter (last 7 days)
         assert!(q.metadata.date.is_some());
         // file type = Code
-        assert_eq!(q.metadata.file_type, Some(super::super::FileTypeCategory::Code));
+        assert_eq!(
+            q.metadata.file_type,
+            Some(super::super::FileTypeCategory::Code)
+        );
         // sort hint = DateDesc
         assert_eq!(q.metadata.sort_hint, SortHint::DateDesc);
     }
@@ -799,7 +814,10 @@ mod tests {
         // Words that don't need normalization should still set sort_hint
         let q = parse("large videos");
         assert_eq!(q.metadata.sort_hint, SortHint::SizeDesc);
-        assert_eq!(q.metadata.file_type, Some(super::super::FileTypeCategory::Videos));
+        assert_eq!(
+            q.metadata.file_type,
+            Some(super::super::FileTypeCategory::Videos)
+        );
 
         let q2 = parse("old documents");
         assert_eq!(q2.metadata.sort_hint, SortHint::DateAsc);
@@ -812,10 +830,17 @@ mod tests {
         assert!(q.metadata.date.is_some());
         assert!(q.metadata.date.as_ref().unwrap().after.is_some());
         // "picture" → file type Images
-        assert_eq!(q.metadata.file_type, Some(super::super::FileTypeCategory::Images));
+        assert_eq!(
+            q.metadata.file_type,
+            Some(super::super::FileTypeCategory::Images)
+        );
         // sort hint = DateDesc
         assert_eq!(q.metadata.sort_hint, SortHint::DateDesc);
         // No leftover keywords
-        assert!(q.keywords.is_empty(), "expected no keywords, got: {:?}", q.keywords);
+        assert!(
+            q.keywords.is_empty(),
+            "expected no keywords, got: {:?}",
+            q.keywords
+        );
     }
 }

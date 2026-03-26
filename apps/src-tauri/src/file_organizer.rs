@@ -1,18 +1,24 @@
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
 use std::time::{SystemTime, UNIX_EPOCH};
-use serde::{Deserialize, Serialize};
 use tauri::command;
 
 use crate::duplicate_finder::{DuplicateFinder, DuplicateGroup};
 
 // Extension category mappings
-const IMAGE_EXTENSIONS: &[&str] = &["jpg", "jpeg", "png", "gif", "bmp", "webp", "svg", "ico", "tiff", "raw"];
+const IMAGE_EXTENSIONS: &[&str] = &[
+    "jpg", "jpeg", "png", "gif", "bmp", "webp", "svg", "ico", "tiff", "raw",
+];
 const VIDEO_EXTENSIONS: &[&str] = &["mp4", "avi", "mkv", "mov", "wmv", "flv", "webm"];
 const AUDIO_EXTENSIONS: &[&str] = &["mp3", "wav", "flac", "aac", "ogg", "wma", "m4a"];
-const DOCUMENT_EXTENSIONS: &[&str] = &["pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "txt", "rtf", "odt"];
-const CODE_EXTENSIONS: &[&str] = &["rs", "js", "ts", "tsx", "jsx", "py", "java", "cpp", "c", "h", "go", "rb", "php", "css", "html"];
+const DOCUMENT_EXTENSIONS: &[&str] = &[
+    "pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "txt", "rtf", "odt",
+];
+const CODE_EXTENSIONS: &[&str] = &[
+    "rs", "js", "ts", "tsx", "jsx", "py", "java", "cpp", "c", "h", "go", "rb", "php", "css", "html",
+];
 const ARCHIVE_EXTENSIONS: &[&str] = &["zip", "tar", "gz", "7z", "rar", "bz2"];
 const DATA_EXTENSIONS: &[&str] = &["json", "xml", "csv", "yaml", "yml", "toml", "sql", "db"];
 
@@ -107,19 +113,27 @@ pub struct PlannedMove {
 fn categorize_extension(ext: &str) -> &'static str {
     let ext_lower = ext.to_lowercase();
     let ext_str = ext_lower.as_str();
-    if IMAGE_EXTENSIONS.contains(&ext_str) { "Images" }
-    else if VIDEO_EXTENSIONS.contains(&ext_str) { "Videos" }
-    else if AUDIO_EXTENSIONS.contains(&ext_str) { "Audio" }
-    else if DOCUMENT_EXTENSIONS.contains(&ext_str) { "Documents" }
-    else if CODE_EXTENSIONS.contains(&ext_str) { "Code" }
-    else if ARCHIVE_EXTENSIONS.contains(&ext_str) { "Archives" }
-    else if DATA_EXTENSIONS.contains(&ext_str) { "Data" }
-    else { "Other" }
+    if IMAGE_EXTENSIONS.contains(&ext_str) {
+        "Images"
+    } else if VIDEO_EXTENSIONS.contains(&ext_str) {
+        "Videos"
+    } else if AUDIO_EXTENSIONS.contains(&ext_str) {
+        "Audio"
+    } else if DOCUMENT_EXTENSIONS.contains(&ext_str) {
+        "Documents"
+    } else if CODE_EXTENSIONS.contains(&ext_str) {
+        "Code"
+    } else if ARCHIVE_EXTENSIONS.contains(&ext_str) {
+        "Archives"
+    } else if DATA_EXTENSIONS.contains(&ext_str) {
+        "Data"
+    } else {
+        "Other"
+    }
 }
 
 fn scan_directory_files(dir_path: &Path) -> Result<Vec<FileInfo>, String> {
-    let entries = fs::read_dir(dir_path)
-        .map_err(|e| format!("Failed to read directory: {}", e))?;
+    let entries = fs::read_dir(dir_path).map_err(|e| format!("Failed to read directory: {}", e))?;
 
     let mut files = Vec::new();
     for entry in entries {
@@ -133,7 +147,8 @@ fn scan_directory_files(dir_path: &Path) -> Result<Vec<FileInfo>, String> {
         };
         if metadata.is_file() {
             let path = entry.path();
-            let modified = metadata.modified()
+            let modified = metadata
+                .modified()
                 .unwrap_or(SystemTime::UNIX_EPOCH)
                 .duration_since(UNIX_EPOCH)
                 .unwrap_or_default()
@@ -159,7 +174,9 @@ fn build_categories(files: &[FileInfo]) -> Vec<FileCategory> {
             .unwrap_or_default();
         let category = categorize_extension(&ext).to_string();
 
-        let entry = category_map.entry(category).or_insert_with(|| (Vec::new(), Vec::new(), 0));
+        let entry = category_map
+            .entry(category)
+            .or_insert_with(|| (Vec::new(), Vec::new(), 0));
         if !entry.0.contains(&ext) && !ext.is_empty() {
             entry.0.push(ext);
         }
@@ -167,7 +184,8 @@ fn build_categories(files: &[FileInfo]) -> Vec<FileCategory> {
         entry.2 += file.size;
     }
 
-    let mut categories: Vec<FileCategory> = category_map.into_iter()
+    let mut categories: Vec<FileCategory> = category_map
+        .into_iter()
         .map(|(name, (extensions, example_files, total_size))| {
             let file_count = example_files.len();
             let examples: Vec<String> = example_files.into_iter().take(5).collect();
@@ -258,12 +276,48 @@ fn detect_project_directory(dir_path: &Path) -> (bool, Option<String>) {
 /// names it is almost certainly part of a software project and its contents
 /// should not be reorganized.
 const SOURCE_DIR_NAMES: &[&str] = &[
-    "src", "lib", "app", "components", "pages", "hooks", "utils", "helpers",
-    "services", "models", "controllers", "views", "routes", "middleware",
-    "modules", "packages", "tests", "test", "__tests__", "spec", "specs",
-    "fixtures", "mocks", "styles", "assets", "public", "static", "dist",
-    "build", "bin", "pkg", "internal", "cmd", "api", "core", "common",
-    "shared", "include", "vendor", "node_modules", "target", "out",
+    "src",
+    "lib",
+    "app",
+    "components",
+    "pages",
+    "hooks",
+    "utils",
+    "helpers",
+    "services",
+    "models",
+    "controllers",
+    "views",
+    "routes",
+    "middleware",
+    "modules",
+    "packages",
+    "tests",
+    "test",
+    "__tests__",
+    "spec",
+    "specs",
+    "fixtures",
+    "mocks",
+    "styles",
+    "assets",
+    "public",
+    "static",
+    "dist",
+    "build",
+    "bin",
+    "pkg",
+    "internal",
+    "cmd",
+    "api",
+    "core",
+    "common",
+    "shared",
+    "include",
+    "vendor",
+    "node_modules",
+    "target",
+    "out",
     "src-tauri",
 ];
 
@@ -358,7 +412,10 @@ fn build_suggestions(dir_path: &Path, files: &[FileInfo]) -> Vec<FolderSuggestio
             .unwrap_or_default();
         let category = categorize_extension(&ext).to_string();
         if category != "Other" {
-            category_files.entry(category).or_default().push(file.path.clone());
+            category_files
+                .entry(category)
+                .or_default()
+                .push(file.path.clone());
         }
     }
 
@@ -376,7 +433,11 @@ fn build_suggestions(dir_path: &Path, files: &[FileInfo]) -> Vec<FolderSuggestio
                     suggested_name: category.clone(),
                     target_path: target.to_string_lossy().to_string(),
                     files_to_move: file_paths.clone(),
-                    reason: format!("{} {} files found - group into dedicated folder", file_paths.len(), category),
+                    reason: format!(
+                        "{} {} files found - group into dedicated folder",
+                        file_paths.len(),
+                        category
+                    ),
                     category: "type".to_string(),
                 });
             }
@@ -390,7 +451,10 @@ fn build_suggestions(dir_path: &Path, files: &[FileInfo]) -> Vec<FolderSuggestio
             let dt = chrono::DateTime::from_timestamp(file.modified as i64, 0);
             if let Some(dt) = dt {
                 let month_key = dt.format("%Y-%m").to_string();
-                month_files.entry(month_key).or_default().push(file.path.clone());
+                month_files
+                    .entry(month_key)
+                    .or_default()
+                    .push(file.path.clone());
             }
         }
     }
@@ -417,29 +481,38 @@ fn build_suggestions(dir_path: &Path, files: &[FileInfo]) -> Vec<FolderSuggestio
         // Extract prefix: everything before the last _ or - or number sequence
         if let Some(prefix) = extract_prefix(name) {
             if prefix.len() >= 3 {
-                prefix_files.entry(prefix).or_default().push(file.path.clone());
+                prefix_files
+                    .entry(prefix)
+                    .or_default()
+                    .push(file.path.clone());
             }
         }
     }
 
     for (prefix, file_paths) in &prefix_files {
         if file_paths.len() >= 3 {
-            let folder_name = prefix.trim_end_matches(|c: char| c == '_' || c == '-').to_string();
+            let folder_name = prefix
+                .trim_end_matches(|c: char| c == '_' || c == '-')
+                .to_string();
             if folder_name.is_empty() {
                 continue;
             }
             let target = dir_path.join(&folder_name);
             if !target.exists() {
                 // Avoid duplicating a suggestion already covered by category
-                let already_suggested: bool = suggestions.iter().any(|s| {
-                    file_paths.iter().all(|f| s.files_to_move.contains(f))
-                });
+                let already_suggested: bool = suggestions
+                    .iter()
+                    .any(|s| file_paths.iter().all(|f| s.files_to_move.contains(f)));
                 if !already_suggested {
                     suggestions.push(FolderSuggestion {
                         suggested_name: folder_name,
                         target_path: target.to_string_lossy().to_string(),
                         files_to_move: file_paths.clone(),
-                        reason: format!("{} files with '{}' prefix - group by name pattern", file_paths.len(), prefix),
+                        reason: format!(
+                            "{} files with '{}' prefix - group by name pattern",
+                            file_paths.len(),
+                            prefix
+                        ),
                         category: "prefix".to_string(),
                     });
                 }
@@ -469,7 +542,11 @@ fn extract_prefix(filename: &str) -> Option<String> {
 fn build_insights(files: &[FileInfo]) -> DirectoryInsights {
     let total_files = files.len();
     let total_size: u64 = files.iter().map(|f| f.size).sum();
-    let avg_file_size = if total_files > 0 { total_size / total_files as u64 } else { 0 };
+    let avg_file_size = if total_files > 0 {
+        total_size / total_files as u64
+    } else {
+        0
+    };
 
     // Largest files
     let mut by_size = files.to_vec();
@@ -497,8 +574,13 @@ fn build_insights(files: &[FileInfo]) -> DirectoryInsights {
         entry.0 += 1;
         entry.1 += file.size;
     }
-    let mut type_distribution: Vec<CategoryDistribution> = type_map.into_iter()
-        .map(|(category, (count, total_size))| CategoryDistribution { category, count, total_size })
+    let mut type_distribution: Vec<CategoryDistribution> = type_map
+        .into_iter()
+        .map(|(category, (count, total_size))| CategoryDistribution {
+            category,
+            count,
+            total_size,
+        })
         .collect();
     type_distribution.sort_by(|a, b| b.count.cmp(&a.count));
 
@@ -513,7 +595,8 @@ fn build_insights(files: &[FileInfo]) -> DirectoryInsights {
             }
         }
     }
-    let mut files_by_month: Vec<MonthCount> = month_map.into_iter()
+    let mut files_by_month: Vec<MonthCount> = month_map
+        .into_iter()
         .map(|(month, count)| MonthCount { month, count })
         .collect();
     files_by_month.sort_by(|a, b| a.month.cmp(&b.month));
@@ -534,11 +617,9 @@ async fn build_duplicate_summary(dir_path: &str) -> Option<DuplicateCleanupRec> 
     let finder = DuplicateFinder::new();
     // Use scan_id 0 — the file organizer never cancels mid-scan
     let scan_id = 0u64;
-    let result = finder.find_duplicates(
-        Path::new(dir_path),
-        scan_id,
-        |_progress| {},
-    ).await;
+    let result = finder
+        .find_duplicates(Path::new(dir_path), scan_id, |_progress| {})
+        .await;
 
     match result {
         Ok(dup_result) if !dup_result.duplicate_groups.is_empty() => {
@@ -548,24 +629,32 @@ async fn build_duplicate_summary(dir_path: &str) -> Option<DuplicateCleanupRec> 
 
             let total_wasted = dup_result.total_wasted_space;
 
-            let recommendations: Vec<CleanupAction> = top_groups.iter().map(|group| {
-                // Recommend keeping the newest file, deleting the rest
-                let mut sorted_files = group.files.clone();
-                sorted_files.sort_by(|a, b| b.modified.cmp(&a.modified));
+            let recommendations: Vec<CleanupAction> = top_groups
+                .iter()
+                .map(|group| {
+                    // Recommend keeping the newest file, deleting the rest
+                    let mut sorted_files = group.files.clone();
+                    sorted_files.sort_by(|a, b| b.modified.cmp(&a.modified));
 
-                let files_to_delete: Vec<String> = sorted_files.iter()
-                    .skip(1) // keep newest
-                    .map(|f| f.path.clone())
-                    .collect();
+                    let files_to_delete: Vec<String> = sorted_files
+                        .iter()
+                        .skip(1) // keep newest
+                        .map(|f| f.path.clone())
+                        .collect();
 
-                let keep_file = &sorted_files[0].name;
+                    let keep_file = &sorted_files[0].name;
 
-                CleanupAction {
-                    action_type: "delete".to_string(),
-                    files: files_to_delete,
-                    reason: format!("Keep newest copy ({}), remove {} duplicates", keep_file, sorted_files.len() - 1),
-                }
-            }).collect();
+                    CleanupAction {
+                        action_type: "delete".to_string(),
+                        files: files_to_delete,
+                        reason: format!(
+                            "Keep newest copy ({}), remove {} duplicates",
+                            keep_file,
+                            sorted_files.len() - 1
+                        ),
+                    }
+                })
+                .collect();
 
             Some(DuplicateCleanupRec {
                 groups: top_groups,
@@ -614,7 +703,10 @@ pub async fn analyze_directory(path: String) -> Result<OrganizationAnalysis, Str
 }
 
 #[command]
-pub async fn preview_organization(path: String, suggestion_indices: Vec<usize>) -> Result<OrganizationPlan, String> {
+pub async fn preview_organization(
+    path: String,
+    suggestion_indices: Vec<usize>,
+) -> Result<OrganizationPlan, String> {
     let dir_path = Path::new(&path);
     if !dir_path.is_dir() {
         return Err("Path is not a directory".to_string());
@@ -622,12 +714,14 @@ pub async fn preview_organization(path: String, suggestion_indices: Vec<usize>) 
 
     // Respect the same project detection as analyze_directory
     let (is_project, _) = detect_project_directory(dir_path);
-    let is_project = is_project
-        || is_source_code_subdirectory(dir_path)
-        || parent_is_project(dir_path);
+    let is_project =
+        is_project || is_source_code_subdirectory(dir_path) || parent_is_project(dir_path);
 
     if is_project {
-        return Ok(OrganizationPlan { moves: Vec::new(), creates: Vec::new() });
+        return Ok(OrganizationPlan {
+            moves: Vec::new(),
+            creates: Vec::new(),
+        });
     }
 
     let files = scan_directory_files(dir_path)?;
@@ -692,8 +786,12 @@ pub async fn execute_organization(plan: OrganizationPlan) -> Result<usize, Strin
             continue;
         }
 
-        fs::rename(src, dst)
-            .map_err(|e| format!("Failed to move '{}' to '{}': {}", planned_move.from, planned_move.to, e))?;
+        fs::rename(src, dst).map_err(|e| {
+            format!(
+                "Failed to move '{}' to '{}': {}",
+                planned_move.from, planned_move.to, e
+            )
+        })?;
         moved_count += 1;
     }
 
@@ -901,7 +999,14 @@ mod tests {
         let tmp = TempDir::new().unwrap();
         let dir = tmp.path();
         // Create several .ts/.tsx files
-        for name in &["App.tsx", "main.tsx", "config.ts", "utils.ts", "index.css", "helpers.ts"] {
+        for name in &[
+            "App.tsx",
+            "main.tsx",
+            "config.ts",
+            "utils.ts",
+            "index.css",
+            "helpers.ts",
+        ] {
             touch(dir, name);
         }
         let files = scan_directory_files(dir).unwrap();
@@ -915,7 +1020,10 @@ mod tests {
         assert!(
             code_suggestions.is_empty(),
             "Should not suggest a Code/ folder when almost all files are code, got: {:?}",
-            code_suggestions.iter().map(|s| &s.reason).collect::<Vec<_>>()
+            code_suggestions
+                .iter()
+                .map(|s| &s.reason)
+                .collect::<Vec<_>>()
         );
     }
 
@@ -924,7 +1032,17 @@ mod tests {
         let tmp = TempDir::new().unwrap();
         let dir = tmp.path();
         // Mix of code and image files
-        for name in &["app.ts", "main.ts", "lib.ts", "photo1.jpg", "photo2.png", "photo3.gif", "video.mp4", "doc.pdf", "data.csv"] {
+        for name in &[
+            "app.ts",
+            "main.ts",
+            "lib.ts",
+            "photo1.jpg",
+            "photo2.png",
+            "photo3.gif",
+            "video.mp4",
+            "doc.pdf",
+            "data.csv",
+        ] {
             touch(dir, name);
         }
         let files = scan_directory_files(dir).unwrap();
@@ -1015,7 +1133,10 @@ mod tests {
     #[test]
     fn extracts_prefix_from_filename() {
         assert_eq!(extract_prefix("photo_001.jpg"), Some("photo_".to_string()));
-        assert_eq!(extract_prefix("report-final.pdf"), Some("report-".to_string()));
+        assert_eq!(
+            extract_prefix("report-final.pdf"),
+            Some("report-".to_string())
+        );
     }
 
     #[test]

@@ -129,12 +129,18 @@ pub fn detect_language(text: &str) -> &'static str {
     }
 
     // Quick script-level checks
-    let cyrillic_count = sample.chars().filter(|c| ('\u{0400}'..='\u{04FF}').contains(c)).count();
+    let cyrillic_count = sample
+        .chars()
+        .filter(|c| ('\u{0400}'..='\u{04FF}').contains(c))
+        .count();
     if cyrillic_count as f64 / sample.chars().count().max(1) as f64 > 0.3 {
         return "ru";
     }
 
-    let arabic_count = sample.chars().filter(|c| ('\u{0600}'..='\u{06FF}').contains(c)).count();
+    let arabic_count = sample
+        .chars()
+        .filter(|c| ('\u{0600}'..='\u{06FF}').contains(c))
+        .count();
     if arabic_count as f64 / sample.chars().count().max(1) as f64 > 0.3 {
         return "ar";
     }
@@ -203,9 +209,8 @@ fn build_language_profiles() -> HashMap<&'static str, HashMap<&'static str, f64>
     // English
     let mut en: HashMap<&str, f64> = HashMap::new();
     for &ng in &[
-        "th", "he", "in", "er", "an", "re", "on", "at", "en", "nd",
-        "the", "ing", "and", "ion", "tio", "ent", "for", "tion",
-        "her", "hat", "his", "tha", "ere", "ate", "ter", "ith",
+        "th", "he", "in", "er", "an", "re", "on", "at", "en", "nd", "the", "ing", "and", "ion",
+        "tio", "ent", "for", "tion", "her", "hat", "his", "tha", "ere", "ate", "ter", "ith",
     ] {
         en.insert(ng, 1.0);
     }
@@ -214,9 +219,8 @@ fn build_language_profiles() -> HashMap<&'static str, HashMap<&'static str, f64>
     // Spanish
     let mut es: HashMap<&str, f64> = HashMap::new();
     for &ng in &[
-        "de", "en", "el", "la", "os", "es", "ar", "ue", "ci", "on",
-        "que", "los", "del", "las", "por", "con", "una", "nte",
-        "ado", "est", "cion", "ment",
+        "de", "en", "el", "la", "os", "es", "ar", "ue", "ci", "on", "que", "los", "del", "las",
+        "por", "con", "una", "nte", "ado", "est", "cion", "ment",
     ] {
         es.insert(ng, 1.0);
     }
@@ -229,9 +233,8 @@ fn build_language_profiles() -> HashMap<&'static str, HashMap<&'static str, f64>
     // French
     let mut fr: HashMap<&str, f64> = HashMap::new();
     for &ng in &[
-        "le", "de", "es", "en", "ou", "ai", "qu", "nt", "re", "ur",
-        "les", "des", "que", "ent", "est", "ait", "une", "sur",
-        "ous", "eur", "aux", "eux", "tion", "ment",
+        "le", "de", "es", "en", "ou", "ai", "qu", "nt", "re", "ur", "les", "des", "que", "ent",
+        "est", "ait", "une", "sur", "ous", "eur", "aux", "eux", "tion", "ment",
     ] {
         fr.insert(ng, 1.0);
     }
@@ -244,9 +247,8 @@ fn build_language_profiles() -> HashMap<&'static str, HashMap<&'static str, f64>
     // German
     let mut de: HashMap<&str, f64> = HashMap::new();
     for &ng in &[
-        "er", "en", "ch", "ei", "ie", "de", "ge", "nd", "te", "un",
-        "ein", "ich", "die", "und", "der", "den", "sch", "ver",
-        "ung", "auf", "aus", "ber", "lich",
+        "er", "en", "ch", "ei", "ie", "de", "ge", "nd", "te", "un", "ein", "ich", "die", "und",
+        "der", "den", "sch", "ver", "ung", "auf", "aus", "ber", "lich",
     ] {
         de.insert(ng, 1.0);
     }
@@ -258,9 +260,8 @@ fn build_language_profiles() -> HashMap<&'static str, HashMap<&'static str, f64>
     // Italian
     let mut it: HashMap<&str, f64> = HashMap::new();
     for &ng in &[
-        "re", "er", "to", "la", "le", "di", "ta", "no", "ti", "co",
-        "che", "per", "del", "ell", "ato", "ita", "gli", "con",
-        "zione", "ment",
+        "re", "er", "to", "la", "le", "di", "ta", "no", "ti", "co", "che", "per", "del", "ell",
+        "ato", "ita", "gli", "con", "zione", "ment",
     ] {
         it.insert(ng, 1.0);
     }
@@ -272,9 +273,8 @@ fn build_language_profiles() -> HashMap<&'static str, HashMap<&'static str, f64>
     // Portuguese
     let mut pt: HashMap<&str, f64> = HashMap::new();
     for &ng in &[
-        "de", "os", "do", "da", "as", "em", "er", "ar", "es", "ra",
-        "que", "dos", "das", "uma", "com", "por", "par", "ent",
-        "\u{e3}o", "mente",
+        "de", "os", "do", "da", "as", "em", "er", "ar", "es", "ra", "que", "dos", "das", "uma",
+        "com", "por", "par", "ent", "\u{e3}o", "mente",
     ] {
         pt.insert(ng, 1.0);
     }
@@ -286,8 +286,8 @@ fn build_language_profiles() -> HashMap<&'static str, HashMap<&'static str, f64>
     // Dutch
     let mut nl: HashMap<&str, f64> = HashMap::new();
     for &ng in &[
-        "de", "en", "et", "ee", "an", "er", "ij", "aa", "ge", "va",
-        "van", "een", "het", "der", "oor", "aar", "ver", "ijk",
+        "de", "en", "et", "ee", "an", "er", "ij", "aa", "ge", "va", "van", "een", "het", "der",
+        "oor", "aar", "ver", "ijk",
     ] {
         nl.insert(ng, 1.0);
     }
@@ -299,8 +299,8 @@ fn build_language_profiles() -> HashMap<&'static str, HashMap<&'static str, f64>
     // Swedish
     let mut sv: HashMap<&str, f64> = HashMap::new();
     for &ng in &[
-        "en", "er", "de", "ar", "et", "an", "at", "or", "nd", "om",
-        "och", "som", "att", "det", "den", "med", "var", "ing",
+        "en", "er", "de", "ar", "et", "an", "at", "or", "nd", "om", "och", "som", "att", "det",
+        "den", "med", "var", "ing",
     ] {
         sv.insert(ng, 1.0);
     }
@@ -312,8 +312,8 @@ fn build_language_profiles() -> HashMap<&'static str, HashMap<&'static str, f64>
     // Norwegian
     let mut no: HashMap<&str, f64> = HashMap::new();
     for &ng in &[
-        "en", "er", "de", "et", "ar", "an", "or", "om", "me", "ti",
-        "det", "som", "den", "med", "var", "til", "kan", "for",
+        "en", "er", "de", "et", "ar", "an", "or", "om", "me", "ti", "det", "som", "den", "med",
+        "var", "til", "kan", "for",
     ] {
         no.insert(ng, 1.0);
     }
@@ -325,8 +325,8 @@ fn build_language_profiles() -> HashMap<&'static str, HashMap<&'static str, f64>
     // Danish
     let mut da: HashMap<&str, f64> = HashMap::new();
     for &ng in &[
-        "er", "en", "de", "et", "ar", "an", "or", "ge", "re", "me",
-        "det", "den", "som", "med", "har", "til", "var", "kan",
+        "er", "en", "de", "et", "ar", "an", "or", "ge", "re", "me", "det", "den", "som", "med",
+        "har", "til", "var", "kan",
     ] {
         da.insert(ng, 1.0);
     }
@@ -338,8 +338,8 @@ fn build_language_profiles() -> HashMap<&'static str, HashMap<&'static str, f64>
     // Turkish
     let mut tr: HashMap<&str, f64> = HashMap::new();
     for &ng in &[
-        "ar", "la", "er", "le", "in", "an", "en", "ir", "da", "bi",
-        "lar", "ler", "bir", "ile", "den", "ini", "yor", "dan",
+        "ar", "la", "er", "le", "in", "an", "en", "ir", "da", "bi", "lar", "ler", "bir", "ile",
+        "den", "ini", "yor", "dan",
     ] {
         tr.insert(ng, 1.0);
     }

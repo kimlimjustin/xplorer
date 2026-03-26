@@ -5,7 +5,8 @@ use std::path::PathBuf;
 use std::sync::{LazyLock, Mutex};
 use tauri::command;
 
-static SHORTCUTS_MANAGER: LazyLock<Mutex<Option<ShortcutsManager>>> = LazyLock::new(|| Mutex::new(None));
+static SHORTCUTS_MANAGER: LazyLock<Mutex<Option<ShortcutsManager>>> =
+    LazyLock::new(|| Mutex::new(None));
 
 #[derive(Debug, Clone)]
 pub struct ShortcutsManager {
@@ -53,7 +54,9 @@ impl ShortcutsManager {
 
         let settings = if settings_path.exists() {
             match fs::read_to_string(&settings_path) {
-                Ok(content) => serde_json::from_str(&content).unwrap_or_else(|_| Self::default_settings()),
+                Ok(content) => {
+                    serde_json::from_str(&content).unwrap_or_else(|_| Self::default_settings())
+                }
                 Err(_) => Self::default_settings(),
             }
         } else {
@@ -95,55 +98,345 @@ impl ShortcutsManager {
                 description: Some("Default shortcut profile".to_string()),
                 shortcuts: vec![
                     // ── File Operations ──
-                    sb("copy", &["ctrl", "c"], ShortcutAction::Copy, ctx.clone(), &profile, "Copy selected items", "ctrl+c"),
-                    sb("cut", &["ctrl", "x"], ShortcutAction::Cut, ctx.clone(), &profile, "Cut selected items", "ctrl+x"),
-                    sb("paste", &["ctrl", "v"], ShortcutAction::Paste, ctx.clone(), &profile, "Paste items", "ctrl+v"),
-                    sb("delete", &["del"], ShortcutAction::Delete, ctx.clone(), &profile, "Move to trash", "del"),
-                    sb("rename", &["f2"], ShortcutAction::Rename, ctx.clone(), &profile, "Rename selected item", "f2"),
-                    sb("new-folder", &["ctrl", "shift", "n"], ShortcutAction::NewFolder, ctx.clone(), &profile, "Create new folder", "ctrl+shift+n"),
-                    sb("new-file", &["ctrl", "n"], ShortcutAction::NewFile, ctx.clone(), &profile, "Create new file", "ctrl+n"),
-                    sb("duplicate", &["ctrl", "d"], ShortcutAction::Duplicate, ctx.clone(), &profile, "Duplicate selected files", "ctrl+d"),
-
+                    sb(
+                        "copy",
+                        &["ctrl", "c"],
+                        ShortcutAction::Copy,
+                        ctx.clone(),
+                        &profile,
+                        "Copy selected items",
+                        "ctrl+c",
+                    ),
+                    sb(
+                        "cut",
+                        &["ctrl", "x"],
+                        ShortcutAction::Cut,
+                        ctx.clone(),
+                        &profile,
+                        "Cut selected items",
+                        "ctrl+x",
+                    ),
+                    sb(
+                        "paste",
+                        &["ctrl", "v"],
+                        ShortcutAction::Paste,
+                        ctx.clone(),
+                        &profile,
+                        "Paste items",
+                        "ctrl+v",
+                    ),
+                    sb(
+                        "delete",
+                        &["del"],
+                        ShortcutAction::Delete,
+                        ctx.clone(),
+                        &profile,
+                        "Move to trash",
+                        "del",
+                    ),
+                    sb(
+                        "rename",
+                        &["f2"],
+                        ShortcutAction::Rename,
+                        ctx.clone(),
+                        &profile,
+                        "Rename selected item",
+                        "f2",
+                    ),
+                    sb(
+                        "new-folder",
+                        &["ctrl", "shift", "n"],
+                        ShortcutAction::NewFolder,
+                        ctx.clone(),
+                        &profile,
+                        "Create new folder",
+                        "ctrl+shift+n",
+                    ),
+                    sb(
+                        "new-file",
+                        &["ctrl", "n"],
+                        ShortcutAction::NewFile,
+                        ctx.clone(),
+                        &profile,
+                        "Create new file",
+                        "ctrl+n",
+                    ),
+                    sb(
+                        "duplicate",
+                        &["ctrl", "d"],
+                        ShortcutAction::Duplicate,
+                        ctx.clone(),
+                        &profile,
+                        "Duplicate selected files",
+                        "ctrl+d",
+                    ),
                     // ── Navigation ──
-                    sb("navigate-back", &["alt", "left"], ShortcutAction::NavigateBack, ctx.clone(), &profile, "Go back", "alt+left"),
-                    sb("navigate-forward", &["alt", "right"], ShortcutAction::NavigateForward, ctx.clone(), &profile, "Go forward", "alt+right"),
-                    sb("navigate-up", &["alt", "up"], ShortcutAction::NavigateUp, ctx.clone(), &profile, "Go to parent directory", "alt+up"),
-                    sb("go-home", &["ctrl", "h"], ShortcutAction::GoHome, ctx.clone(), &profile, "Go to home directory", "ctrl+h"),
-                    sb("go-to-path", &["ctrl", "l"], ShortcutAction::GoToPath, ctx.clone(), &profile, "Focus address bar", "ctrl+l"),
-
+                    sb(
+                        "navigate-back",
+                        &["alt", "left"],
+                        ShortcutAction::NavigateBack,
+                        ctx.clone(),
+                        &profile,
+                        "Go back",
+                        "alt+left",
+                    ),
+                    sb(
+                        "navigate-forward",
+                        &["alt", "right"],
+                        ShortcutAction::NavigateForward,
+                        ctx.clone(),
+                        &profile,
+                        "Go forward",
+                        "alt+right",
+                    ),
+                    sb(
+                        "navigate-up",
+                        &["alt", "up"],
+                        ShortcutAction::NavigateUp,
+                        ctx.clone(),
+                        &profile,
+                        "Go to parent directory",
+                        "alt+up",
+                    ),
+                    sb(
+                        "go-home",
+                        &["ctrl", "h"],
+                        ShortcutAction::GoHome,
+                        ctx.clone(),
+                        &profile,
+                        "Go to home directory",
+                        "ctrl+h",
+                    ),
+                    sb(
+                        "go-to-path",
+                        &["ctrl", "l"],
+                        ShortcutAction::GoToPath,
+                        ctx.clone(),
+                        &profile,
+                        "Focus address bar",
+                        "ctrl+l",
+                    ),
                     // ── Selection ──
-                    sb("select-all", &["ctrl", "a"], ShortcutAction::SelectAll, ctx.clone(), &profile, "Select all files", "ctrl+a"),
-                    sb("invert-selection", &["ctrl", "i"], ShortcutAction::InvertSelection, ctx.clone(), &profile, "Invert selection", "ctrl+i"),
-                    sb("clear-selection", &["esc"], ShortcutAction::ClearSelection, ctx.clone(), &profile, "Clear selection", "esc"),
-
+                    sb(
+                        "select-all",
+                        &["ctrl", "a"],
+                        ShortcutAction::SelectAll,
+                        ctx.clone(),
+                        &profile,
+                        "Select all files",
+                        "ctrl+a",
+                    ),
+                    sb(
+                        "invert-selection",
+                        &["ctrl", "i"],
+                        ShortcutAction::InvertSelection,
+                        ctx.clone(),
+                        &profile,
+                        "Invert selection",
+                        "ctrl+i",
+                    ),
+                    sb(
+                        "clear-selection",
+                        &["esc"],
+                        ShortcutAction::ClearSelection,
+                        ctx.clone(),
+                        &profile,
+                        "Clear selection",
+                        "esc",
+                    ),
                     // ── Search ──
-                    sb("search", &["ctrl", "f"], ShortcutAction::Search, ctx.clone(), &profile, "Open search", "ctrl+f"),
-                    sb("quick-search", &["ctrl", "p"], ShortcutAction::QuickSearch, ctx.clone(), &profile, "Quick search", "ctrl+p"),
-                    sb("natural-language-search", &["ctrl", "shift", "f"], ShortcutAction::NaturalLanguageSearch, ctx.clone(), &profile, "AI-powered search", "ctrl+shift+f"),
-                    sb("filter-files", &["ctrl", "shift", "p"], ShortcutAction::FilterFiles, ctx.clone(), &profile, "Filter files", "ctrl+shift+p"),
-
+                    sb(
+                        "search",
+                        &["ctrl", "f"],
+                        ShortcutAction::Search,
+                        ctx.clone(),
+                        &profile,
+                        "Open search",
+                        "ctrl+f",
+                    ),
+                    sb(
+                        "quick-search",
+                        &["ctrl", "p"],
+                        ShortcutAction::QuickSearch,
+                        ctx.clone(),
+                        &profile,
+                        "Quick search",
+                        "ctrl+p",
+                    ),
+                    sb(
+                        "natural-language-search",
+                        &["ctrl", "shift", "f"],
+                        ShortcutAction::NaturalLanguageSearch,
+                        ctx.clone(),
+                        &profile,
+                        "AI-powered search",
+                        "ctrl+shift+f",
+                    ),
+                    sb(
+                        "filter-files",
+                        &["ctrl", "shift", "p"],
+                        ShortcutAction::FilterFiles,
+                        ctx.clone(),
+                        &profile,
+                        "Filter files",
+                        "ctrl+shift+p",
+                    ),
                     // ── View ──
-                    sb("toggle-left-sidebar", &["ctrl", "b"], ShortcutAction::ToggleLeftSidebar, ctx.clone(), &profile, "Toggle left sidebar", "ctrl+b"),
-                    sb("toggle-right-sidebar", &["ctrl", "shift", "b"], ShortcutAction::ToggleRightSidebar, ctx.clone(), &profile, "Toggle right sidebar", "ctrl+shift+b"),
-                    sb("toggle-bottom-panel", &["ctrl", "j"], ShortcutAction::ToggleBottomPanel, ctx.clone(), &profile, "Toggle bottom panel", "ctrl+j"),
-                    sb("toggle-preview", &["ctrl", "shift", "v"], ShortcutAction::TogglePreview, ctx.clone(), &profile, "Toggle preview panel", "ctrl+shift+v"),
-                    sb("switch-view-mode", &["ctrl", "shift", "l"], ShortcutAction::SwitchViewMode, ctx.clone(), &profile, "Cycle view mode", "ctrl+shift+l"),
-                    sb("refresh", &["f5"], ShortcutAction::Refresh, ctx.clone(), &profile, "Refresh directory", "f5"),
-                    sb("toggle-hidden", &["ctrl", "."], ShortcutAction::ToggleHiddenFiles, ctx.clone(), &profile, "Toggle hidden files", "ctrl+."),
-                    sb("zoom-in", &["ctrl", "="], ShortcutAction::ZoomIn, ctx.clone(), &profile, "Zoom in", "ctrl+="),
-                    sb("zoom-out", &["ctrl", "-"], ShortcutAction::ZoomOut, ctx.clone(), &profile, "Zoom out", "ctrl+-"),
-
+                    sb(
+                        "toggle-left-sidebar",
+                        &["ctrl", "b"],
+                        ShortcutAction::ToggleLeftSidebar,
+                        ctx.clone(),
+                        &profile,
+                        "Toggle left sidebar",
+                        "ctrl+b",
+                    ),
+                    sb(
+                        "toggle-right-sidebar",
+                        &["ctrl", "shift", "b"],
+                        ShortcutAction::ToggleRightSidebar,
+                        ctx.clone(),
+                        &profile,
+                        "Toggle right sidebar",
+                        "ctrl+shift+b",
+                    ),
+                    sb(
+                        "toggle-bottom-panel",
+                        &["ctrl", "j"],
+                        ShortcutAction::ToggleBottomPanel,
+                        ctx.clone(),
+                        &profile,
+                        "Toggle bottom panel",
+                        "ctrl+j",
+                    ),
+                    sb(
+                        "toggle-preview",
+                        &["ctrl", "shift", "v"],
+                        ShortcutAction::TogglePreview,
+                        ctx.clone(),
+                        &profile,
+                        "Toggle preview panel",
+                        "ctrl+shift+v",
+                    ),
+                    sb(
+                        "switch-view-mode",
+                        &["ctrl", "shift", "l"],
+                        ShortcutAction::SwitchViewMode,
+                        ctx.clone(),
+                        &profile,
+                        "Cycle view mode",
+                        "ctrl+shift+l",
+                    ),
+                    sb(
+                        "refresh",
+                        &["f5"],
+                        ShortcutAction::Refresh,
+                        ctx.clone(),
+                        &profile,
+                        "Refresh directory",
+                        "f5",
+                    ),
+                    sb(
+                        "toggle-hidden",
+                        &["ctrl", "."],
+                        ShortcutAction::ToggleHiddenFiles,
+                        ctx.clone(),
+                        &profile,
+                        "Toggle hidden files",
+                        "ctrl+.",
+                    ),
+                    sb(
+                        "zoom-in",
+                        &["ctrl", "="],
+                        ShortcutAction::ZoomIn,
+                        ctx.clone(),
+                        &profile,
+                        "Zoom in",
+                        "ctrl+=",
+                    ),
+                    sb(
+                        "zoom-out",
+                        &["ctrl", "-"],
+                        ShortcutAction::ZoomOut,
+                        ctx.clone(),
+                        &profile,
+                        "Zoom out",
+                        "ctrl+-",
+                    ),
                     // ── Application ──
-                    sb("open-settings", &["ctrl", ","], ShortcutAction::OpenSettings, ctx.clone(), &profile, "Open settings", "ctrl+,"),
-                    sb("close-tab", &["ctrl", "w"], ShortcutAction::CloseTab, ctx.clone(), &profile, "Close current tab", "ctrl+w"),
-                    sb("next-tab", &["ctrl", "tab"], ShortcutAction::NextTab, ctx.clone(), &profile, "Switch to next tab", "ctrl+tab"),
-                    sb("prev-tab", &["ctrl", "shift", "tab"], ShortcutAction::PreviousTab, ctx.clone(), &profile, "Switch to previous tab", "ctrl+shift+tab"),
-                    sb("toggle-fullscreen", &["f11"], ShortcutAction::ToggleFullscreen, ctx.clone(), &profile, "Toggle fullscreen", "f11"),
-                    sb("new-window", &["ctrl", "shift", "w"], ShortcutAction::NewWindow, ctx.clone(), &profile, "Open new window", "ctrl+shift+w"),
-                    sb("quit", &["ctrl", "q"], ShortcutAction::Quit, ctx.clone(), &profile, "Quit application", "ctrl+q"),
-
+                    sb(
+                        "open-settings",
+                        &["ctrl", ","],
+                        ShortcutAction::OpenSettings,
+                        ctx.clone(),
+                        &profile,
+                        "Open settings",
+                        "ctrl+,",
+                    ),
+                    sb(
+                        "close-tab",
+                        &["ctrl", "w"],
+                        ShortcutAction::CloseTab,
+                        ctx.clone(),
+                        &profile,
+                        "Close current tab",
+                        "ctrl+w",
+                    ),
+                    sb(
+                        "next-tab",
+                        &["ctrl", "tab"],
+                        ShortcutAction::NextTab,
+                        ctx.clone(),
+                        &profile,
+                        "Switch to next tab",
+                        "ctrl+tab",
+                    ),
+                    sb(
+                        "prev-tab",
+                        &["ctrl", "shift", "tab"],
+                        ShortcutAction::PreviousTab,
+                        ctx.clone(),
+                        &profile,
+                        "Switch to previous tab",
+                        "ctrl+shift+tab",
+                    ),
+                    sb(
+                        "toggle-fullscreen",
+                        &["f11"],
+                        ShortcutAction::ToggleFullscreen,
+                        ctx.clone(),
+                        &profile,
+                        "Toggle fullscreen",
+                        "f11",
+                    ),
+                    sb(
+                        "new-window",
+                        &["ctrl", "shift", "w"],
+                        ShortcutAction::NewWindow,
+                        ctx.clone(),
+                        &profile,
+                        "Open new window",
+                        "ctrl+shift+w",
+                    ),
+                    sb(
+                        "quit",
+                        &["ctrl", "q"],
+                        ShortcutAction::Quit,
+                        ctx.clone(),
+                        &profile,
+                        "Quit application",
+                        "ctrl+q",
+                    ),
                     // ── Terminal ──
-                    sb("open-terminal", &["ctrl", "`"], ShortcutAction::OpenTerminal, ctx.clone(), &profile, "Open terminal", "ctrl+`"),
+                    sb(
+                        "open-terminal",
+                        &["ctrl", "`"],
+                        ShortcutAction::OpenTerminal,
+                        ctx.clone(),
+                        &profile,
+                        "Open terminal",
+                        "ctrl+`",
+                    ),
                 ],
             }],
         }
@@ -168,7 +461,9 @@ fn parse_action(action: &str, extension_id: Option<String>) -> ShortcutAction {
         "Refresh" => ShortcutAction::Refresh,
         "ToggleHiddenFiles" | "ToggleHidden" => ShortcutAction::ToggleHiddenFiles,
         "TogglePreview" => ShortcutAction::TogglePreview,
-        "ToggleLeftSidebar" | "ToggleSidebar" | "ToggleDetails" => ShortcutAction::ToggleLeftSidebar,
+        "ToggleLeftSidebar" | "ToggleSidebar" | "ToggleDetails" => {
+            ShortcutAction::ToggleLeftSidebar
+        }
         "ToggleRightSidebar" | "ToggleGrid" => ShortcutAction::ToggleRightSidebar,
         "ToggleBottomPanel" => ShortcutAction::ToggleBottomPanel,
         "SwitchViewMode" => ShortcutAction::SwitchViewMode,
@@ -247,7 +542,10 @@ pub fn add_shortcut(shortcut: ShortcutBinding) -> Result<(), String> {
             if profile.id == shortcut.profile {
                 for existing in &profile.shortcuts {
                     if existing.keys == shortcut.keys && existing.context == shortcut.context {
-                        return Err(format!("Shortcut conflict with existing binding: {}", existing.id));
+                        return Err(format!(
+                            "Shortcut conflict with existing binding: {}",
+                            existing.id
+                        ));
                     }
                 }
             }
@@ -315,7 +613,12 @@ pub fn remove_shortcut(shortcut_id: String) -> Result<(), String> {
 pub fn get_shortcut_profiles() -> Result<Vec<String>, String> {
     let manager_guard = SHORTCUTS_MANAGER.lock().map_err(|e| e.to_string())?;
     if let Some(manager) = manager_guard.as_ref() {
-        let profiles = manager.settings.profiles.iter().map(|p| p.id.clone()).collect();
+        let profiles = manager
+            .settings
+            .profiles
+            .iter()
+            .map(|p| p.id.clone())
+            .collect();
         Ok(profiles)
     } else {
         Err("Shortcuts manager not initialized".to_string())
@@ -359,7 +662,10 @@ pub fn update_shortcut_settings(settings: ShortcutSettings) -> Result<(), String
 }
 
 #[command]
-pub fn execute_shortcut_action(key_combination: String, context: String) -> Result<Option<ShortcutAction>, String> {
+pub fn execute_shortcut_action(
+    key_combination: String,
+    context: String,
+) -> Result<Option<ShortcutAction>, String> {
     let manager_guard = SHORTCUTS_MANAGER.lock().map_err(|e| e.to_string())?;
     if let Some(manager) = manager_guard.as_ref() {
         let action = manager
@@ -393,7 +699,12 @@ pub fn register_extension_shortcut(
     let mut manager_guard = SHORTCUTS_MANAGER.lock().map_err(|e| e.to_string())?;
     if let Some(manager) = manager_guard.as_mut() {
         let current_profile = manager.current_profile_id.clone();
-        let Some(profile) = manager.settings.profiles.iter_mut().find(|p| p.id == current_profile) else {
+        let Some(profile) = manager
+            .settings
+            .profiles
+            .iter_mut()
+            .find(|p| p.id == current_profile)
+        else {
             return Err("Current profile not found".to_string());
         };
 
@@ -439,7 +750,12 @@ pub fn reset_shortcuts(profile_id: Option<String>) -> Result<(), String> {
     if let Some(manager) = manager_guard.as_mut() {
         let defaults = ShortcutsManager::default_settings();
         let target_id = profile_id.unwrap_or_else(|| manager.current_profile_id.clone());
-        if let Some(profile) = manager.settings.profiles.iter_mut().find(|p| p.id == target_id) {
+        if let Some(profile) = manager
+            .settings
+            .profiles
+            .iter_mut()
+            .find(|p| p.id == target_id)
+        {
             // Keep extension shortcuts (ids contain a dot), reset only built-in ones
             let extension_shortcuts: Vec<ShortcutBinding> = profile
                 .shortcuts
@@ -470,7 +786,12 @@ pub fn reset_single_shortcut(shortcut_id: String) -> Result<ShortcutBinding, Str
             .ok_or_else(|| format!("No default found for shortcut '{}'", shortcut_id))?;
 
         let current_profile = manager.current_profile_id.clone();
-        if let Some(profile) = manager.settings.profiles.iter_mut().find(|p| p.id == current_profile) {
+        if let Some(profile) = manager
+            .settings
+            .profiles
+            .iter_mut()
+            .find(|p| p.id == current_profile)
+        {
             if let Some(existing) = profile.shortcuts.iter_mut().find(|s| s.id == shortcut_id) {
                 *existing = default_binding.clone();
             }

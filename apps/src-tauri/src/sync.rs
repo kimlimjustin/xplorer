@@ -206,7 +206,11 @@ pub async fn sync_tags_to_cloud(
     Ok(SyncResult {
         success: true,
         synced_at: result.synced_at,
-        message: format!("Synced {} tags across {} files", tag_count, result.tags.len()),
+        message: format!(
+            "Synced {} tags across {} files",
+            tag_count,
+            result.tags.len()
+        ),
     })
 }
 
@@ -321,8 +325,8 @@ pub async fn set_last_sync_time(
     std::fs::create_dir_all(&dir).map_err(|e| format!("Failed to create app data dir: {}", e))?;
     let path = dir.join("last_sync.json");
     let data = serde_json::json!({ "lastSyncTime": timestamp });
-    let json = serde_json::to_string_pretty(&data)
-        .map_err(|e| format!("Failed to serialize: {}", e))?;
+    let json =
+        serde_json::to_string_pretty(&data).map_err(|e| format!("Failed to serialize: {}", e))?;
     std::fs::write(&path, json).map_err(|e| format!("Failed to write sync time: {}", e))?;
     Ok(())
 }
@@ -339,8 +343,8 @@ pub async fn get_last_sync_time(app_handle: tauri::AppHandle) -> Result<Option<S
     if !path.exists() {
         return Ok(None);
     }
-    let data = std::fs::read_to_string(&path)
-        .map_err(|e| format!("Failed to read sync time: {}", e))?;
+    let data =
+        std::fs::read_to_string(&path).map_err(|e| format!("Failed to read sync time: {}", e))?;
     let parsed: serde_json::Value =
         serde_json::from_str(&data).map_err(|e| format!("Failed to parse sync time: {}", e))?;
     Ok(parsed
@@ -406,12 +410,8 @@ async fn run_sync_cycle(
     let merged_bookmarks =
         merge_bookmarks_last_write_wins(&local_bookmarks, cloud_bookmarks, last_sync.as_deref());
 
-    let bm_result = sync_bookmarks_to_cloud(
-        merged_bookmarks,
-        api_url.to_string(),
-        token.to_string(),
-    )
-    .await?;
+    let bm_result =
+        sync_bookmarks_to_cloud(merged_bookmarks, api_url.to_string(), token.to_string()).await?;
 
     let local_tags_map = get_all_tags_as_map(app_handle).await;
 
@@ -422,12 +422,7 @@ async fn run_sync_cycle(
     let merged_tags = merge_tags_last_write_wins(&local_tags_map, cloud_tags);
 
     if !merged_tags.is_empty() {
-        let _ = sync_tags_to_cloud(
-            merged_tags,
-            api_url.to_string(),
-            token.to_string(),
-        )
-        .await;
+        let _ = sync_tags_to_cloud(merged_tags, api_url.to_string(), token.to_string()).await;
     }
 
     let now = chrono::Utc::now().to_rfc3339();
@@ -442,11 +437,10 @@ async fn run_sync_cycle(
 
 async fn get_all_tags_as_map(app_handle: &tauri::AppHandle) -> HashMap<String, Vec<FileTag>> {
     use tauri::Manager;
-    let dir = app_handle
-        .path()
-        .app_data_dir()
-        .ok();
-    let Some(dir) = dir else { return HashMap::new() };
+    let dir = app_handle.path().app_data_dir().ok();
+    let Some(dir) = dir else {
+        return HashMap::new();
+    };
     let path = dir.join("file_tags.json");
     if !path.exists() {
         return HashMap::new();
@@ -482,7 +476,10 @@ pub async fn auto_sync_on_startup(
             Ok(result)
         }
         Err(e) => {
-            warn!("[sync] Startup sync failed (will retry on next cycle): {}", e);
+            warn!(
+                "[sync] Startup sync failed (will retry on next cycle): {}",
+                e
+            );
             Ok(SyncResult {
                 success: false,
                 synced_at: None,
@@ -539,7 +536,10 @@ pub async fn start_auto_sync(
     let handle = app_handle.clone();
 
     tokio::spawn(async move {
-        info!("[sync] Background sync started (interval: {}s)", interval.as_secs());
+        info!(
+            "[sync] Background sync started (interval: {}s)",
+            interval.as_secs()
+        );
         loop {
             tokio::time::sleep(interval).await;
 
@@ -561,18 +561,24 @@ pub async fn start_auto_sync(
             match run_sync_cycle(&cfg.api_url, &cfg.token, &handle).await {
                 Ok(result) => {
                     info!("[sync] Background sync completed: {}", result.message);
-                    let _ = handle.emit("cloud-sync-completed", serde_json::json!({
-                        "success": true,
-                        "message": result.message,
-                        "syncedAt": result.synced_at,
-                    }));
+                    let _ = handle.emit(
+                        "cloud-sync-completed",
+                        serde_json::json!({
+                            "success": true,
+                            "message": result.message,
+                            "syncedAt": result.synced_at,
+                        }),
+                    );
                 }
                 Err(e) => {
                     warn!("[sync] Background sync failed: {}", e);
-                    let _ = handle.emit("cloud-sync-completed", serde_json::json!({
-                        "success": false,
-                        "message": format!("Sync failed: {}", e),
-                    }));
+                    let _ = handle.emit(
+                        "cloud-sync-completed",
+                        serde_json::json!({
+                            "success": false,
+                            "message": format!("Sync failed: {}", e),
+                        }),
+                    );
                 }
             }
         }
