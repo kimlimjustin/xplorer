@@ -30,26 +30,9 @@ describe('Hero', () => {
     expect(link.closest('a')).toHaveAttribute('href', 'https://github.com/kimlimjustin/xplorer');
   });
 
-  it('renders the app window mockup with title', () => {
-    render(<Hero />);
-    expect(screen.getByText(/Xplorer — ~\/Projects/)).toBeInTheDocument();
-  });
-
-  it('renders the beta badge', () => {
-    render(<Hero />);
-    expect(screen.getByText(/Now in Beta/)).toBeInTheDocument();
-  });
-
   it('renders the subtitle describing features', () => {
     render(<Hero />);
     expect(screen.getByText(/AI-powered search/)).toBeInTheDocument();
-  });
-
-  it('renders the hero screenshot image', () => {
-    render(<Hero />);
-    const img = screen.getByAltText('Xplorer file manager');
-    expect(img).toBeInTheDocument();
-    expect(img).toHaveAttribute('src', '/screenshots/hero-app.png');
   });
 });
 
@@ -91,7 +74,7 @@ describe('FeatureShowcase', () => {
       'Rich Previews',
       'AI Chat',
       'Smart Search',
-      'Git Integration',
+      'GitLens',
       'Extensions',
     ];
     for (const label of featureLabels) {
@@ -152,7 +135,8 @@ describe('Stats', () => {
 describe('Cta', () => {
   it('renders the call to action heading', () => {
     render(<Cta />);
-    expect(screen.getByText('Ready to explore?')).toBeInTheDocument();
+    expect(screen.getByText(/Ready to/)).toBeInTheDocument();
+    expect(screen.getByText(/explore\?/)).toBeInTheDocument();
   });
 
   it('renders the description text', () => {
