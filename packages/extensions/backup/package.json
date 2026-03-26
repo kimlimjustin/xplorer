@@ -1,0 +1,27 @@
+{
+  "name": "xplorer-backup",
+  "version": "1.0.0",
+  "description": "Incremental backup system with change tracking",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/index.tsx --bundle --format=iife --outfile=dist/index.js --external:react --external:react-dom --external:@xplorer/extension-sdk --target=es2020 --jsx=transform"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.0",
+    "@types/react": "^18.2.0",
+    "typescript": "^5.2.0"
+  },
+  "xplorer": {
+    "id": "backup",
+    "name": "Backup",
+    "displayName": "Incremental Backup",
+    "description": "Create and manage incremental backups with change tracking",
+    "version": "1.0.0",
+    "author": "Xplorer Team",
+    "category": "panel",
+    "icon": "archive",
+    "permissions": ["file:read", "file:write", "ui:panels"],
+    "activationEvents": ["onStartup"]
+  }
+}

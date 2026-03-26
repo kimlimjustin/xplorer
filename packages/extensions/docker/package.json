@@ -1,0 +1,27 @@
+{
+  "name": "xplorer-docker",
+  "version": "1.0.0",
+  "description": "Manage Docker containers and images",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/index.tsx --bundle --format=iife --outfile=dist/index.js --external:react --external:react-dom --external:@xplorer/extension-sdk --target=es2020 --jsx=transform"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.0",
+    "@types/react": "^18.2.0",
+    "typescript": "^5.2.0"
+  },
+  "xplorer": {
+    "id": "docker-manager",
+    "name": "Docker Manager",
+    "displayName": "Docker Manager",
+    "description": "Manage Docker containers and images",
+    "version": "1.0.0",
+    "author": "Xplorer Team",
+    "category": "tool",
+    "icon": "package",
+    "permissions": ["system:commands"],
+    "activationEvents": ["onStartup"]
+  }
+}

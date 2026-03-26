@@ -1,0 +1,33 @@
+{
+  "name": "xplorer-software-finder",
+  "version": "1.0.0",
+  "description": "Find installation paths of popular software and navigate to them",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "esbuild src/index.tsx --bundle --format=iife --outfile=dist/index.js --external:react --external:react-dom --external:@xplorer/extension-sdk --target=es2020 --jsx=transform"
+  },
+  "xplorer": {
+    "id": "xplorer-software-finder",
+    "displayName": "Software Finder",
+    "description": "Search and navigate to installation paths of popular applications",
+    "category": "panel",
+    "icon": "search",
+    "keywords": ["software", "finder", "apps", "install", "path", "locate"],
+    "permissions": ["file:read", "directory:list", "ui:panels"],
+    "activationEvents": ["onStartup"],
+    "contributes": {
+      "panels": [
+        {
+          "id": "xplorer-software-finder",
+          "title": "Software Finder",
+          "location": "right",
+          "icon": "search"
+        }
+      ]
+    }
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.0"
+  }
+}

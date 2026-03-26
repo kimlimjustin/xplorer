@@ -1,0 +1,3 @@
+[submodule "packages/extensions"]
+	path = packages/extensions
+	url = https://github.com/kimlimjustin/xplorer-extensions.git

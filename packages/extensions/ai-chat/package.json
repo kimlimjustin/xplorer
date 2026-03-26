@@ -1,0 +1,27 @@
+{
+  "name": "xplorer-ai-chat",
+  "version": "1.0.0",
+  "description": "AI-powered chat assistant for file management",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/index.tsx --bundle --format=iife --outfile=dist/index.js --external:react --external:react-dom --external:@xplorer/extension-sdk --target=es2020 --jsx=transform"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.0",
+    "@types/react": "^18.2.0",
+    "typescript": "^5.2.0"
+  },
+  "xplorer": {
+    "id": "ai-chat",
+    "name": "AI Chat",
+    "displayName": "AI Chat Assistant",
+    "description": "Chat with AI about your files",
+    "version": "1.0.0",
+    "author": "Xplorer Team",
+    "category": "panel",
+    "icon": "message",
+    "permissions": ["ai:read", "ai:chat", "file:read", "ui:panels"],
+    "activationEvents": ["onStartup"]
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "xplorer-collaboration",
+  "name": "Xplorer Collaboration",
+  "displayName": "Collaboration",
+  "version": "1.0.0",
+  "author": "Xplorer Team",
+  "category": "tool",
+  "description": "Multi-user collaboration: shared file browsing, file transfer, chat, and team workspace with company/organization support.",
+  "icon": "users",
+  "permissions": [
+    "file:read",
+    "file:write",
+    "ui:panels",
+    "ui:notifications",
+    "ui:commands",
+    "native:invoke",
+    "system:network"
+  ],
+  "contributes": {
+    "panels": [
+      {
+        "id": "collab-panel",
+        "title": "Collaboration",
+        "location": "right",
+        "icon": "users"
+      }
+    ],
+    "commands": [
+      { "command": "collab.host", "title": "Host Collaboration Session" },
+      { "command": "collab.join", "title": "Join Collaboration Session" },
+      { "command": "collab.disconnect", "title": "Disconnect from Session" }
+    ]
+  },
+  "nativePlugin": "native",
+  "main": "dist/index.js"
+}

@@ -1,0 +1,27 @@
+{
+  "name": "xplorer-batch-image",
+  "version": "1.0.0",
+  "description": "Batch resize, convert, and compress images",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/index.tsx --bundle --format=iife --outfile=dist/index.js --external:react --external:react-dom --external:@xplorer/extension-sdk --target=es2020 --jsx=transform"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.0",
+    "@types/react": "^18.2.0",
+    "typescript": "^5.2.0"
+  },
+  "xplorer": {
+    "id": "batch-image",
+    "name": "Batch Image Processor",
+    "displayName": "Batch Image Processor",
+    "description": "Batch resize, convert, and compress images",
+    "version": "1.0.0",
+    "author": "Xplorer Team",
+    "category": "action",
+    "icon": "image",
+    "permissions": ["file:read", "file:write"],
+    "activationEvents": ["onStartup"]
+  }
+}
