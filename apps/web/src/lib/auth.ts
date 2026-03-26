@@ -18,6 +18,7 @@ export function getAuthOptions(): NextAuthOptions {
 
   _authOptions = {
     adapter: PrismaAdapter(prisma),
+    session: { strategy: 'jwt' },
     providers: [
       GithubProvider({
         clientId,
@@ -87,12 +88,21 @@ export function getAuthOptions(): NextAuthOptions {
         }
         return true;
       },
-      async session({ session, user }) {
-        if (session.user) {
-          session.user.id = user.id;
-          session.user.role = (user as any).role || 'USER';
-          session.user.username = (user as any).username || null;
-          session.user.subscriptionTier = (user as any).subscriptionTier || 'FREE';
+      async jwt({ token, user, profile }) {
+        if (user) {
+          token.id = user.id;
+          token.role = (user as any).role || 'USER';
+          token.username = (profile as any)?.login || (user as any).username || null;
+          token.subscriptionTier = (user as any).subscriptionTier || 'FREE';
+        }
+        return token;
+      },
+      async session({ session, token }) {
+        if (session.user && token) {
+          session.user.id = token.id as string;
+          session.user.role = (token.role as string) || 'USER';
+          session.user.username = (token.username as string) || null;
+          session.user.subscriptionTier = (token.subscriptionTier as string) || 'FREE';
         }
         return session;
       },
