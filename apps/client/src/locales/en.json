@@ -511,46 +511,6 @@
     "iconSizeLabel": "Adjust icon size ({{size}}px)"
   },
 
-  "architectView": {
-    "title": "Architecture View",
-    "analyzing": "Analyzing {{path}}...",
-    "backToFiles": "Back to Files",
-    "toggle": "Toggle Architecture Mode",
-    "label": "Architect",
-    "analysis": {
-      "title": "Analysis: {{name}}",
-      "analyze": "Analyze",
-      "loading": "AI is analyzing {{name}}...",
-      "retry": "Retry",
-      "askMore": "Ask AI more about this",
-      "aiError": "AI analysis failed",
-      "aiNotConfigured": "AI is not configured",
-      "aiNotConfiguredHint": "Please configure an AI model in settings (Ollama or API key) to use deep analysis."
-    },
-    "canvas": {
-      "zoomIn": "Zoom In",
-      "zoomOut": "Zoom Out",
-      "fitView": "Fit to View",
-      "nodeCount": "{{count}} nodes",
-      "noNodes": "No source files found",
-      "expandAll": "Expand All",
-      "collapseAll": "Collapse All"
-    },
-    "sidebar": {
-      "scanning": "Scanning project structure...",
-      "error": "Scan failed",
-      "retry": "Retry",
-      "empty": "Open a project folder to see its architecture",
-      "kinds": {
-        "project": "Project",
-        "area": "Area",
-        "module": "Module",
-        "directory": "Directory",
-        "file": "File"
-      }
-    }
-  },
-
   "navigation": {
     "home": "Home",
     "trash": "Trash",

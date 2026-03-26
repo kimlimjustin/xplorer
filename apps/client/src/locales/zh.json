@@ -504,46 +504,6 @@
     "iconSizeLabel": "调整图标大小 ({{size}}px)"
   },
 
-  "architectView": {
-    "title": "架构视图",
-    "analyzing": "正在分析 {{path}}...",
-    "backToFiles": "返回文件",
-    "toggle": "切换架构模式",
-    "label": "架构",
-    "analysis": {
-      "title": "分析: {{name}}",
-      "analyze": "分析",
-      "loading": "AI 正在分析 {{name}}...",
-      "retry": "重试",
-      "askMore": "向 AI 询问更多",
-      "aiError": "AI 分析失败",
-      "aiNotConfigured": "AI 未配置",
-      "aiNotConfiguredHint": "请在设置中配置 AI 模型（Ollama 或 API 密钥）以使用深度分析。"
-    },
-    "canvas": {
-      "zoomIn": "放大",
-      "zoomOut": "缩小",
-      "fitView": "适应视图",
-      "nodeCount": "{{count}} 个节点",
-      "noNodes": "未找到源文件",
-      "expandAll": "全部展开",
-      "collapseAll": "全部折叠"
-    },
-    "sidebar": {
-      "scanning": "正在扫描项目结构...",
-      "error": "扫描失败",
-      "retry": "重试",
-      "empty": "打开项目文件夹以查看其架构",
-      "kinds": {
-        "project": "项目",
-        "area": "区域",
-        "module": "模块",
-        "directory": "目录",
-        "file": "文件"
-      }
-    }
-  },
-
   "navigation": {
     "home": "主页",
     "trash": "回收站",

@@ -504,46 +504,6 @@
     "iconSizeLabel": "アイコンサイズを調整 ({{size}}px)"
   },
 
-  "architectView": {
-    "title": "アーキテクチャビュー",
-    "analyzing": "{{path}} を分析中...",
-    "backToFiles": "ファイルに戻る",
-    "toggle": "アーキテクチャモードの切り替え",
-    "label": "アーキテクト",
-    "analysis": {
-      "title": "分析: {{name}}",
-      "analyze": "分析する",
-      "loading": "AI が {{name}} を分析中...",
-      "retry": "再試行",
-      "askMore": "AI にもっと聞く",
-      "aiError": "AI 分析に失敗しました",
-      "aiNotConfigured": "AI が設定されていません",
-      "aiNotConfiguredHint": "ディープ分析を使用するには、設定で AI モデル（Ollama または API キー）を設定してください。"
-    },
-    "canvas": {
-      "zoomIn": "ズームイン",
-      "zoomOut": "ズームアウト",
-      "fitView": "ビューに合わせる",
-      "nodeCount": "{{count}} ノード",
-      "noNodes": "ソースファイルが見つかりません",
-      "expandAll": "すべて展開",
-      "collapseAll": "すべて折りたたむ"
-    },
-    "sidebar": {
-      "scanning": "プロジェクト構造をスキャン中...",
-      "error": "スキャンに失敗しました",
-      "retry": "再試行",
-      "empty": "プロジェクトフォルダを開いてアーキテクチャを表示",
-      "kinds": {
-        "project": "プロジェクト",
-        "area": "エリア",
-        "module": "モジュール",
-        "directory": "ディレクトリ",
-        "file": "ファイル"
-      }
-    }
-  },
-
   "navigation": {
     "home": "ホーム",
     "trash": "ごみ箱",

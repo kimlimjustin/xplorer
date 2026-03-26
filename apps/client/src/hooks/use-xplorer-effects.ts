@@ -122,9 +122,6 @@ export interface XplorerEffectsDeps {
   sortOrder: 'asc' | 'desc';
   theme: string;
 
-  // Architecture mode
-  setArchitectMode: React.Dispatch<React.SetStateAction<boolean>>;
-
   // Dialog state setters
   setCommandPaletteOpen: React.Dispatch<React.SetStateAction<boolean>>;
   commandPaletteOpen: boolean;
@@ -209,7 +206,6 @@ export const useXplorerEffects = (deps: XplorerEffectsDeps) => {
     sortBy,
     sortOrder,
     theme,
-    setArchitectMode,
     setCommandPaletteOpen,
     commandPaletteOpen,
     setWorkspaceLayoutDialogOpen,
@@ -465,11 +461,6 @@ export const useXplorerEffects = (deps: XplorerEffectsDeps) => {
         setWorkspaceLayoutDialogOpen((prev) => !prev);
         return;
       }
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'a') {
-        e.preventDefault();
-        setArchitectMode((prev) => !prev);
-        return;
-      }
       if ((e.ctrlKey || e.metaKey) && e.key === '/') {
         e.preventDefault();
         setShortcutsDialogOpen((prev) => !prev);
@@ -538,7 +529,6 @@ export const useXplorerEffects = (deps: XplorerEffectsDeps) => {
     setShortcutsDialogOpen,
     setRightSidebarCollapsed,
     setRightPanelTab,
-    setArchitectMode,
   ]);
 
   // ── Path Bookmarks keyboard shortcuts ─────────────────────────────────────

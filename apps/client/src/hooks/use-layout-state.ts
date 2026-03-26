@@ -70,10 +70,6 @@ export interface LayoutState {
   setSortBy: React.Dispatch<React.SetStateAction<SortField>>;
   sortOrder: 'asc' | 'desc';
   setSortOrder: React.Dispatch<React.SetStateAction<'asc' | 'desc'>>;
-
-  // Architecture mode
-  architectMode: boolean;
-  setArchitectMode: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 // ── Hook ─────────────────────────────────────────────────────────────────────
@@ -145,9 +141,6 @@ export const useLayoutState = (): LayoutState => {
   const [sortBy, setSortBy] = useState<SortField>(() => loadUiState<SortField>('sortBy', 'name'));
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>(() => loadUiState('sortOrder', 'asc'));
 
-  // Architecture mode
-  const [architectMode, setArchitectMode] = useState(false);
-
   return {
     leftSidebarCollapsed,
     setLeftSidebarCollapsed,
@@ -176,7 +169,5 @@ export const useLayoutState = (): LayoutState => {
     setSortBy,
     sortOrder,
     setSortOrder,
-    architectMode,
-    setArchitectMode,
   };
 };

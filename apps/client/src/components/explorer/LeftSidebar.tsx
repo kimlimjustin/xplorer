@@ -4,8 +4,6 @@ import SearchResultsPanel, {
   type SearchResultsPanelHandle,
 } from '@/components/explorer/SearchResultsPanel';
 import { extensionHost } from '@/lib/extension-host';
-import { useArchitectScanner } from '@/components/explorer/architect/use-architect-scanner';
-import ArchitectSidebarTree from '@/components/explorer/architect/ArchitectSidebarTree';
 import { type FileCollection } from '@/lib/collections';
 import { useSidebarResize } from '@/hooks/use-sidebar-resize';
 import SidebarTabBar from '@/components/explorer/sidebar/SidebarTabBar';
@@ -35,9 +33,6 @@ interface LeftSidebarProps {
   // Active collection filter (collection applied as filter on current directory)
   activeCollectionFilter?: FileCollection | null;
   onToggleCollectionFilter?: (collection: FileCollection) => void;
-  // Architect mode
-  architectMode?: boolean;
-  setArchitectMode?: React.Dispatch<React.SetStateAction<boolean>>;
   'data-tour'?: string;
 }
 
@@ -56,8 +51,6 @@ const LeftSidebar = forwardRef<LeftSidebarHandle, LeftSidebarProps>(function Lef
     onEditCollection,
     activeCollectionFilter,
     onToggleCollectionFilter,
-    architectMode = false,
-    setArchitectMode,
     'data-tour': dataTour,
   },
   ref,
@@ -75,9 +68,6 @@ const LeftSidebar = forwardRef<LeftSidebarHandle, LeftSidebarProps>(function Lef
     },
   }));
 
-  // ─── Architect scanner ─────────────────────────────────────────────────
-  const architectScanner = useArchitectScanner();
-
   // ─── Extension sidebar tabs ────────────────────────────────────────────
   const [activeExtensionTab, setActiveExtensionTab] = useState<string | null>(null);
 
@@ -92,8 +82,6 @@ const LeftSidebar = forwardRef<LeftSidebarHandle, LeftSidebarProps>(function Lef
   let activeTabId: string;
   if (activeExtensionTab) {
     activeTabId = activeExtensionTab;
-  } else if (architectMode) {
-    activeTabId = '__architect__';
   } else if (searchPanelOpen) {
     activeTabId = '__search__';
   } else {
@@ -104,18 +92,11 @@ const LeftSidebar = forwardRef<LeftSidebarHandle, LeftSidebarProps>(function Lef
     if (tabId === '__explorer__') {
       setActiveExtensionTab(null);
       if (searchPanelOpen && onToggleSearchPanel) onToggleSearchPanel();
-      if (architectMode && setArchitectMode) setArchitectMode(false);
     } else if (tabId === '__search__') {
       setActiveExtensionTab(null);
       if (!searchPanelOpen && onToggleSearchPanel) onToggleSearchPanel();
-      if (architectMode && setArchitectMode) setArchitectMode(false);
-    } else if (tabId === '__architect__') {
-      setActiveExtensionTab(null);
-      if (searchPanelOpen && onToggleSearchPanel) onToggleSearchPanel();
-      if (setArchitectMode) setArchitectMode(true);
     } else {
       if (searchPanelOpen && onToggleSearchPanel) onToggleSearchPanel();
-      if (architectMode && setArchitectMode) setArchitectMode(false);
       setActiveExtensionTab(tabId);
     }
   };
@@ -136,7 +117,6 @@ const LeftSidebar = forwardRef<LeftSidebarHandle, LeftSidebarProps>(function Lef
         <SidebarTabBar
           activeTabId={activeTabId}
           onTabClick={handleTabClick}
-          showArchitectTab={!!setArchitectMode}
           extensionTabs={extensionSidebarTabs}
         />
       )}
@@ -149,20 +129,6 @@ const LeftSidebar = forwardRef<LeftSidebarHandle, LeftSidebarProps>(function Lef
           navigateToPath={navigateToPath}
           onFileSelect={handleFileClick}
           onFileOpen={handleFileOpen}
-        />
-      )}
-
-      {/* Architect sidebar tree */}
-      {activeTabId === '__architect__' && (
-        <ArchitectSidebarTree
-          scannerState={{
-            scanning: architectScanner.scanning,
-            progress: architectScanner.progress,
-            result: architectScanner.result,
-            error: architectScanner.error,
-          }}
-          currentPath={currentPath}
-          onScan={architectScanner.scan}
         />
       )}
 
