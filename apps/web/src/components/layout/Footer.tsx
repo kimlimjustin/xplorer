@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useRef } from 'react';
 import Link from 'next/link';
 import { Github, Twitter } from 'lucide-react';
 import { SITE_NAME } from '@/lib/constants';
@@ -30,6 +31,75 @@ const COLUMNS = [
     ],
   },
 ];
+
+const NewsletterForm = () => {
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [message, setMessage] = useState('');
+  const renderTimeRef = useRef(Date.now());
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!email.trim()) return;
+
+    setStatus('loading');
+    try {
+      const form = e.currentTarget;
+      const honeypot = (form.elements.namedItem('website') as HTMLInputElement)?.value;
+
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+        body: JSON.stringify({ email: email.trim(), website: honeypot, _t: renderTimeRef.current }),
+      });
+
+      if (res.ok) {
+        setStatus('success');
+        setMessage('Subscribed!');
+        setEmail('');
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setStatus('error');
+        setMessage(data.error || 'Failed to subscribe');
+      }
+    } catch {
+      setStatus('error');
+      setMessage('Network error. Try again.');
+    }
+  };
+
+  return (
+    <div>
+      <h3 className="text-xs font-semibold text-gray-900 dark:text-white uppercase tracking-wider">
+        Stay updated
+      </h3>
+      <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+        Get release notes and tips in your inbox.
+      </p>
+      <form onSubmit={handleSubmit} className="mt-3 flex gap-2">
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => { setEmail(e.target.value); setStatus('idle'); }}
+          placeholder="you@example.com"
+          required
+          className="flex-1 min-w-0 px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500"
+        />
+        {/* Honeypot — hidden from humans, filled by bots */}
+        <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ position: 'absolute', left: '-9999px' }} />
+        <button
+          type="submit"
+          disabled={status === 'loading'}
+          className="px-4 py-2 text-sm font-medium rounded-lg bg-brand-600 text-white hover:bg-brand-700 transition-colors disabled:opacity-50 whitespace-nowrap"
+        >
+          {status === 'loading' ? '...' : 'Subscribe'}
+        </button>
+      </form>
+      {status === 'success' && <p className="mt-2 text-xs text-green-500">{message}</p>}
+      {status === 'error' && <p className="mt-2 text-xs text-red-500">{message}</p>}
+    </div>
+  );
+};
 
 export function Footer() {
   return (
@@ -98,7 +168,14 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="mt-10 pt-8 border-t border-gray-200 dark:border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-gray-400 dark:text-gray-500">
+        {/* Newsletter */}
+        <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-800">
+          <div className="max-w-md">
+            <NewsletterForm />
+          </div>
+        </div>
+
+        <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-gray-400 dark:text-gray-500">
           <span>&copy; {new Date().getFullYear()} {SITE_NAME}. All rights reserved.</span>
           <span>Built with Rust</span>
         </div>
