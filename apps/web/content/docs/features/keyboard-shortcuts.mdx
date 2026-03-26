@@ -1,0 +1,218 @@
+---
+id: keyboard-shortcuts
+title: Keyboard Shortcuts
+sidebar_position: 8
+---
+
+# Keyboard Shortcuts
+
+Xplorer is designed for keyboard-driven workflows with extensive, fully customizable shortcut support.
+
+## Default Shortcuts
+
+### File Operations
+
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+C` | Copy selected files |
+| `Ctrl+X` | Cut selected files |
+| `Ctrl+V` | Paste files |
+| `Delete` | Move to trash |
+| `F2` | Rename selected file |
+| `Ctrl+N` | New folder |
+| `Ctrl+Shift+N` | New file |
+
+### Navigation
+
+| Shortcut | Action |
+|----------|--------|
+| `Alt+Left` | Go back |
+| `Alt+Right` | Go forward |
+| `Alt+Up` | Go to parent directory |
+| `Ctrl+H` | Go to home directory |
+
+### Selection
+
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+A` | Select all files |
+| `Ctrl+I` | Invert selection |
+| `Escape` | Clear selection |
+
+### Search
+
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+F` | Open search |
+| `Ctrl+P` | Quick search |
+| `Ctrl+Shift+F` | AI-powered search |
+| `Ctrl+Shift+P` | Filter files |
+
+### View
+
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+B` | Toggle left sidebar |
+| `Ctrl+Shift+B` | Toggle right sidebar |
+| `Ctrl+J` | Toggle bottom panel |
+| `Ctrl+Shift+V` | Toggle preview panel |
+| `Ctrl+Shift+L` | Cycle view mode (grid / list / details) |
+| `F5` | Refresh current directory |
+| `Ctrl+.` | Toggle hidden files |
+| `Ctrl+=` | Zoom in |
+| `Ctrl+-` | Zoom out |
+
+### Application
+
+| Shortcut | Action |
+|----------|--------|
+| `Ctrl+,` | Open settings |
+| `Ctrl+W` | Close current tab |
+| `Ctrl+Tab` | Next tab |
+| `Ctrl+Shift+Tab` | Previous tab |
+| `F11` | Toggle fullscreen |
+| `Ctrl+Shift+W` | New window |
+| `Ctrl+Q` | Quit |
+
+### Terminal & SSH
+
+| Shortcut | Action |
+|----------|--------|
+| `` Ctrl+` `` | Open terminal |
+| `Ctrl+Shift+S` | Open SSH connections |
+
+---
+
+## Customizing Shortcuts
+
+Open **Settings > Shortcuts** (`Ctrl+,` then click the Shortcuts tab) to manage all key bindings.
+
+### Editing a Shortcut
+
+1. Find the shortcut you want to change (use the search bar to filter by name or key).
+2. Click the key badge to start editing.
+3. Press the new key combination — a preview appears in the badge.
+4. If the combination conflicts with another shortcut, a warning is displayed.
+5. Click **Save** to confirm, or press **Escape** to cancel.
+
+### Resetting Shortcuts
+
+- **Reset one shortcut:** Click the reset icon next to any individual shortcut to restore its default binding.
+- **Reset all:** Click the "Reset all shortcuts to defaults" button at the bottom of the page. Extension-registered shortcuts are preserved.
+
+### Shortcut Profiles
+
+Xplorer supports multiple shortcut profiles. Each profile contains a complete set of key bindings.
+
+- Switch between profiles via `TauriAPI.switchShortcutProfile(profileId)`
+- All profiles are persisted to `shortcuts.json` in the app data directory
+
+---
+
+## Extension Shortcuts
+
+Extensions can register keyboard shortcuts in two ways:
+
+### 1. Manifest Declaration (Recommended)
+
+Declare shortcuts statically in the extension's `package.json`:
+
+```json
+{
+  "xplorer": {
+    "contributes": {
+      "keybindings": [
+        {
+          "command": "scanWorkspace",
+          "key": "ctrl+shift+l",
+          "title": "Scan Workspace",
+          "when": "file-explorer"
+        }
+      ]
+    }
+  }
+}
+```
+
+These are automatically registered when the extension activates and removed when it deactivates.
+
+### 2. Runtime API
+
+Register shortcuts dynamically from extension code:
+
+```typescript
+async activate(context: ExtensionContext) {
+  const api = this.getAPI();
+
+  await api.shortcuts.register('runLint', {
+    key: 'ctrl+shift+l',
+    title: 'Run Lint Check',
+    when: 'file-explorer',
+  });
+
+  api.commands.register('runLint', () => {
+    // perform lint...
+  });
+}
+```
+
+Extension shortcuts appear in the Settings UI with a badge showing their source extension. Users can re-bind them like any other shortcut.
+
+---
+
+## Conflict Detection
+
+When adding or modifying a shortcut, Xplorer checks for conflicts:
+
+- Same key combination already bound to another action in the same context
+- Conflicts are shown inline in the settings UI with the name of the conflicting action
+- You can still save the binding — the new one takes priority
+
+---
+
+## Storage
+
+Shortcut configurations are persisted to `shortcuts.json` in the app data directory:
+
+```json
+{
+  "current_profile": "default",
+  "global_shortcuts_enabled": true,
+  "context_aware": true,
+  "profiles": [
+    {
+      "id": "default",
+      "name": "Default",
+      "shortcuts": [
+        {
+          "id": "copy",
+          "keys": ["ctrl", "c"],
+          "action": "Copy",
+          "context": "file-explorer",
+          "enabled": true,
+          "profile": "default",
+          "description": "Copy selected items",
+          "global": false,
+          "key_combination": "ctrl+c"
+        }
+      ]
+    }
+  ]
+}
+```
+
+## Implementation
+
+Shortcuts are handled by the `useShortcuts` hook in the frontend:
+
+```typescript
+useShortcuts({
+  onCopy: () => handleCopy(),
+  onPaste: () => handlePaste(),
+  onDelete: () => handleDelete(),
+  onRename: () => handleRename(),
+  // ... more handlers
+});
+```
+
+The hook registers a `keydown` event listener, normalizes the key combination, and calls the Tauri backend to match it against the active profile. If a match is found, the corresponding handler is invoked.

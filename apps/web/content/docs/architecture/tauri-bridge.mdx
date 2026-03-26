@@ -1,0 +1,138 @@
+---
+id: tauri-bridge
+title: Transport & IPC Bridge
+sidebar_position: 4
+---
+
+# Transport & IPC Bridge
+
+The bridge between the React frontend and the Rust backend is handled through a **transport abstraction layer** (`client/src/lib/transport.ts`). In desktop mode, calls are routed to Tauri's IPC (`invoke()`). In [web mode](/docs/architecture/web-mode), they become HTTP requests.
+
+## How It Works
+
+![IPC bridge flow](/diagrams/tauri-bridge.svg)
+
+## The Transport Layer
+
+All backend calls flow through `transport()`, which auto-detects the runtime:
+
+```typescript
+// In Tauri desktop mode → invoke('command', args)
+// In web/HTTP mode      → POST /api/command with JSON body
+const result = await transport<FileEntry[]>('read_directory', { path });
+```
+
+The detection is automatic via `window.__TAURI__`, or can be overridden with `VITE_API_MODE=http`.
+
+## The TauriAPI Object
+
+All backend calls are centralized in `client/src/lib/tauri-api.ts`. This provides:
+
+1. **Type safety** — Every method has typed parameters and return types
+2. **Single source of truth** — All 215 commands are in one file
+3. **Error handling** — Consistent error propagation
+4. **Mode-agnostic** — Works in both Tauri and web mode via the transport layer
+
+### Example
+
+```typescript
+// Frontend call
+const files: FileEntry[] = await TauriAPI.readDirectory("C:\\Users");
+
+// Which maps to:
+class TauriAPI {
+  static async readDirectory(path: string): Promise<FileEntry[]> {
+    return transport('read_directory', { path });
+  }
+  // ... 215 methods total
+}
+```
+
+## Event System
+
+For long-running operations, the backend emits events that the frontend listens to via `listenToEvent()`:
+
+### Progress Events
+
+```typescript
+import { listenToEvent } from '@/lib/transport';
+
+// In Tauri mode → native event listener
+// In HTTP mode  → Server-Sent Events (SSE)
+const unlisten = await listenToEvent<OperationProgress>(
+  'file-operation-progress',
+  (progress) => updateProgressBar(progress.percentage)
+);
+
+// Backend emission (Rust)
+app_handle.emit('file-operation-progress', &progress)?;
+```
+
+### Indexing Events
+
+```typescript
+const unlisten = await listenToEvent<IndexProgress>(
+  'indexing-progress',
+  ({ processed_files, total_files }) => {
+    // Update indexing indicator
+  }
+);
+```
+
+## Asset URLs
+
+File previews (images, videos, PDFs) use `convertAssetUrl()` to generate loadable URLs:
+
+```typescript
+import { convertAssetUrl } from '@/lib/transport';
+
+// Tauri mode → https://asset.localhost/{encoded_path}
+// HTTP mode  → {API_URL}/api/asset?path={encoded_path}
+const url = convertAssetUrl(file.path);
+```
+
+## Data Serialization
+
+All data crossing the bridge is serialized via `serde_json`:
+
+- Rust structs must derive `Serialize` and/or `Deserialize`
+- TypeScript interfaces must match the Rust struct fields exactly
+- Field names follow Rust's `snake_case` convention (Tauri handles this automatically)
+
+### Type Mapping
+
+| Rust Type | TypeScript Type |
+|-----------|----------------|
+| `String` | `string` |
+| `u64` | `number` |
+| `bool` | `boolean` |
+| `Vec<T>` | `T[]` |
+| `Option<T>` | `T \| null` |
+| `HashMap<K, V>` | `Record<K, V>` |
+| `Result<T, String>` | `Promise<T>` (rejects on Err) |
+
+## Security
+
+Tauri v2 uses a **capability-based security model**:
+
+- Commands must be explicitly allowed in `src-tauri/capabilities/default.json`
+- The CSP (Content Security Policy) restricts what the WebView can load
+- File system access goes through the Tauri FS plugin with scoped permissions
+
+### Capabilities Configuration
+
+```json
+{
+  "identifier": "default",
+  "description": "Default capabilities for Xplorer",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "fs:default",
+    "fs:allow-read",
+    "fs:allow-write",
+    "dialog:default",
+    "global-shortcut:default"
+  ]
+}
+```

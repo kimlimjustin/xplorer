@@ -1,0 +1,144 @@
+---
+id: tauri-commands
+title: Tauri Commands
+sidebar_position: 1
+---
+
+# Tauri Commands
+
+All backend functionality is exposed as Tauri commands. These are Rust functions annotated with `#[tauri::command]` that can be called from the frontend via `invoke()`.
+
+## File System Operations
+
+### Directory Operations
+
+| Command | Parameters | Returns | Description |
+|---------|-----------|---------|-------------|
+| `read_directory` | `path: String` | `Vec<FileEntry>` | List files in a directory |
+| `get_files_in_directory` | `path: String` | `Vec<FileEntry>` | Alias for read_directory |
+| `create_directory` | `path: String` | `()` | Create a new directory |
+| `get_home_directory` | — | `String` | Get user's home directory path |
+
+### File Operations
+
+| Command | Parameters | Returns | Description |
+|---------|-----------|---------|-------------|
+| `copy_with_progress` | `src, dst, operation_id` | `()` | Copy file with progress tracking |
+| `move_with_progress` | `src, dst, operation_id` | `()` | Move file with progress tracking |
+| `rename` | `old_path, new_path` | `()` | Rename a file or directory |
+| `delete_files` | `paths: Vec<String>` | `()` | Delete files permanently |
+| `open_file` | `path: String` | `()` | Open file with default application |
+
+### Metadata
+
+| Command | Parameters | Returns | Description |
+|---------|-----------|---------|-------------|
+| `get_file_metadata` | `path: String` | `FileMetadata` | Basic file metadata |
+| `get_detailed_file_properties` | `path: String` | `DetailedFileProperties` | Full properties with MIME, hash, etc. |
+| `calculate_folder_size` | `path: String` | `FolderSizeInfo` | Recursive directory size |
+
+### Trash Operations
+
+| Command | Parameters | Returns | Description |
+|---------|-----------|---------|-------------|
+| `get_trash_items` | — | `Vec<TrashItem>` | List recycle bin contents |
+| `move_to_trash` | `path: String` | `()` | Send file to recycle bin |
+| `restore_from_trash` | `item: TrashItem` | `()` | Restore from recycle bin |
+| `empty_trash` | — | `()` | Empty the recycle bin |
+
+### Compression
+
+| Command | Parameters | Returns | Description |
+|---------|-----------|---------|-------------|
+| `compress_files` | `paths, output, format, options` | `()` | Create an archive |
+| `extract_archive` | `archive, output, options` | `()` | Extract an archive |
+| `get_archive_info` | `path: String` | `ArchiveInfo` | Get archive metadata |
+
+## Search & Indexing
+
+| Command | Parameters | Returns | Description |
+|---------|-----------|---------|-------------|
+| `search_files` | `query, limit` | `Vec<SearchResult>` | Search the token index |
+| `add_path_to_tokenizer` | `path: String` | `()` | Add directory to index |
+| `rebuild_tokenizer_index` | — | `()` | Rebuild the full index |
+| `get_tokenizer_stats` | — | `TokenizerStats` | Index statistics |
+| `natural_language_search` | `query, limit` | `Vec<SearchResult>` | NLP-powered search |
+| `semantic_search` | `query, limit` | `Vec<SemanticResult>` | Vector similarity search |
+
+## AI Integration
+
+| Command | Parameters | Returns | Description |
+|---------|-----------|---------|-------------|
+| `chat_with_ollama` | `message, model, system_prompt, ...` | `String` | Chat with Ollama model |
+| `analyze_file_with_ai` | `path, model` | `String` | AI analysis of a file |
+| `analyze_directory_with_ai` | `path, model` | `String` | AI analysis of directory |
+| `get_available_models` | — | `Vec<String>` | List installed Ollama models |
+| `get_ollama_status` | — | `OllamaStatus` | Check if Ollama is running |
+
+## SSH Operations
+
+| Command | Parameters | Returns | Description |
+|---------|-----------|---------|-------------|
+| `ssh_connect` | `connection: SSHConnection` | `SSHConnectionResult` | Connect to SSH server |
+| `ssh_disconnect` | `connection_id: String` | `()` | Disconnect SSH session |
+| `ssh_list_directory` | `connection_id, path` | `Vec<FileEntry>` | List remote directory |
+| `ssh_read_file` | `connection_id, path` | `String` | Read remote file content |
+| `ssh_upload_file` | `connection_id, local, remote` | `()` | Upload file via SFTP |
+| `ssh_download_file` | `connection_id, remote, local` | `()` | Download file via SFTP |
+
+## Git Operations
+
+| Command | Parameters | Returns | Description |
+|---------|-----------|---------|-------------|
+| `get_commit_history` | `repo_path, limit, offset` | `Vec<CommitInfo>` | Commit log |
+| `get_file_history` | `repo_path, file_path` | `Vec<CommitInfo>` | File change history |
+| `get_file_blame` | `repo_path, file_path` | `Vec<BlameLine>` | Line-by-line blame |
+| `get_file_diff` | `repo_path, file_path, commit` | `DiffResult` | File diff |
+| `get_branches` | `repo_path` | `Vec<BranchInfo>` | List branches |
+| `switch_branch` | `repo_path, branch` | `()` | Checkout branch |
+| `get_git_status` | `repo_path` | `GitStatus` | Working tree status |
+| `git_pull` | `repo_path, remote?, branch?` | `String` | Pull from remote |
+| `git_push` | `repo_path, remote?, branch?` | `String` | Push to remote |
+| `git_fetch` | `repo_path, remote?` | `String` | Fetch from remote |
+| `git_get_remotes` | `repo_path` | `Vec<GitRemoteInfo>` | List configured remotes |
+
+## Undo/Redo
+
+| Command | Parameters | Returns | Description |
+|---------|-----------|---------|-------------|
+| `record_file_operation` | `operation: FileOperationRecord` | `()` | Record an operation for undo |
+| `get_undo_redo_state` | — | `UndoRedoState` | Get current undo/redo availability |
+
+## Google Drive
+
+| Command | Parameters | Returns | Description |
+|---------|-----------|---------|-------------|
+| `authenticate_gdrive` | — | `()` | Start OAuth authentication flow |
+| `list_gdrive_accounts` | — | `Vec<GoogleDriveAccount>` | List authenticated accounts |
+| `list_gdrive_files` | `account_id, folder_id?` | `Vec<FileEntry>` | List files in a Drive folder |
+| `download_gdrive_file` | `account_id, file_id, destination` | `()` | Download a file from Drive |
+| `upload_to_gdrive` | `account_id, local_path, folder_id?` | `()` | Upload a local file to Drive |
+| `delete_gdrive_file` | `account_id, file_id` | `()` | Delete a file from Drive |
+| `rename_gdrive_file` | `account_id, file_id, new_name` | `()` | Rename a file in Drive |
+| `move_gdrive_file` | `account_id, file_id, new_parent_id` | `()` | Move a file to another folder |
+| `create_gdrive_folder` | `account_id, name, parent_id?` | `()` | Create a new folder in Drive |
+| `get_gdrive_file_content` | `account_id, file_id` | `String` | Read file content from Drive |
+| `get_gdrive_settings` | — | `GdriveSettings` | Get Google Drive settings |
+| `update_gdrive_settings` | `settings: GdriveSettings` | `()` | Update Google Drive settings |
+
+## Extension Watcher
+
+| Command | Parameters | Returns | Description |
+|---------|-----------|---------|-------------|
+| `watch_extension_directories` | `paths: Vec<String>` | `()` | Start watching extension directories for changes |
+| `stop_extension_watcher` | — | `()` | Stop the extension file watcher |
+
+## Extension Management
+
+| Command | Parameters | Returns | Description |
+|---------|-----------|---------|-------------|
+| `install_extension` | `path: String` | `Extension` | Install an extension |
+| `activate_extension` | `id: String` | `()` | Activate an extension |
+| `deactivate_extension` | `id: String` | `()` | Deactivate an extension |
+| `list_extensions` | — | `Vec<Extension>` | List all extensions |
+| `uninstall_extension` | `id: String` | `()` | Remove an extension |

@@ -1,0 +1,16 @@
+[package]
+name = "ssh-plugin"
+version = "1.0.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+ssh2 = "0.9"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["full"] }
+lazy_static = "1.4"
+dirs = "5.0"
+hostname = "0.4"

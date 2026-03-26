@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 340" font-family="'Segoe UI', system-ui, -apple-system, sans-serif">
+  <defs>
+    <filter id="shadow" x="-4%" y="-4%" width="108%" height="112%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.2"/>
+    </filter>
+    <marker id="arrowR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#94a3b8"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="700" height="340" rx="12" fill="#0a0a1a"/>
+
+  <!-- Title -->
+  <text x="350" y="30" text-anchor="middle" fill="#e2e8f0" font-size="15" font-weight="600">Indexing &amp; Search Pipeline</text>
+
+  <!-- ═══ INDEXING PIPELINE (top) ═══ -->
+  <text x="30" y="62" fill="#fbbf24" font-size="12" font-weight="600">INDEXING</text>
+
+  <rect x="30" y="72" width="110" height="50" rx="8" fill="#172554" stroke="#3b82f6" stroke-width="1" filter="url(#shadow)"/>
+  <text x="85" y="94" text-anchor="middle" fill="#93c5fd" font-size="11" font-weight="500">File Scanner</text>
+  <text x="85" y="110" text-anchor="middle" fill="#64748b" font-size="9">walk directory</text>
+
+  <line x1="140" y1="97" x2="158" y2="97" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrowR)"/>
+
+  <rect x="160" y="72" width="110" height="50" rx="8" fill="#172554" stroke="#3b82f6" stroke-width="1" filter="url(#shadow)"/>
+  <text x="215" y="94" text-anchor="middle" fill="#93c5fd" font-size="11" font-weight="500">Tokenizer</text>
+  <text x="215" y="110" text-anchor="middle" fill="#64748b" font-size="9">split, normalize</text>
+
+  <line x1="270" y1="97" x2="288" y2="97" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrowR)"/>
+
+  <rect x="290" y="72" width="120" height="50" rx="8" fill="#172554" stroke="#3b82f6" stroke-width="1" filter="url(#shadow)"/>
+  <text x="350" y="94" text-anchor="middle" fill="#93c5fd" font-size="11" font-weight="500">Inverted Index</text>
+  <text x="350" y="110" text-anchor="middle" fill="#64748b" font-size="9">token → file paths</text>
+
+  <line x1="410" y1="97" x2="428" y2="97" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrowR)"/>
+
+  <rect x="430" y="72" width="120" height="50" rx="8" fill="#422006" stroke="#f59e0b" stroke-width="1" filter="url(#shadow)"/>
+  <text x="490" y="94" text-anchor="middle" fill="#fde68a" font-size="11" font-weight="500">AI Indexer</text>
+  <text x="490" y="110" text-anchor="middle" fill="#a8744f" font-size="9">Ollama vision/OCR</text>
+
+  <line x1="550" y1="97" x2="568" y2="97" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrowR)"/>
+
+  <rect x="570" y="72" width="110" height="50" rx="8" fill="#1a0a2e" stroke="#8b5cf6" stroke-width="1" filter="url(#shadow)"/>
+  <text x="625" y="94" text-anchor="middle" fill="#c4b5fd" font-size="11" font-weight="500">Vector Store</text>
+  <text x="625" y="110" text-anchor="middle" fill="#7c3aed" font-size="9">embeddings</text>
+
+  <!-- Divider -->
+  <line x1="30" y1="145" x2="670" y2="145" stroke="#1e293b" stroke-width="1" stroke-dasharray="4,4"/>
+
+  <!-- ═══ SEARCH PIPELINE (bottom) ═══ -->
+  <text x="30" y="170" fill="#22c55e" font-size="12" font-weight="600">SEARCH</text>
+
+  <rect x="30" y="180" width="120" height="50" rx="8" fill="#0f172a" stroke="#22c55e" stroke-width="1" filter="url(#shadow)"/>
+  <text x="90" y="200" text-anchor="middle" fill="#86efac" font-size="11" font-weight="500">User Query</text>
+  <text x="90" y="216" text-anchor="middle" fill="#64748b" font-size="9">"large pdfs today"</text>
+
+  <line x1="150" y1="205" x2="168" y2="205" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrowR)"/>
+
+  <rect x="170" y="180" width="120" height="50" rx="8" fill="#0f172a" stroke="#22c55e" stroke-width="1" filter="url(#shadow)"/>
+  <text x="230" y="200" text-anchor="middle" fill="#86efac" font-size="11" font-weight="500">NL Parser</text>
+  <text x="230" y="216" text-anchor="middle" fill="#64748b" font-size="9">StructuredQuery</text>
+
+  <line x1="290" y1="205" x2="308" y2="205" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrowR)"/>
+
+  <rect x="310" y="180" width="120" height="50" rx="8" fill="#0f172a" stroke="#22c55e" stroke-width="1" filter="url(#shadow)"/>
+  <text x="370" y="200" text-anchor="middle" fill="#86efac" font-size="11" font-weight="500">Index Lookup</text>
+  <text x="370" y="216" text-anchor="middle" fill="#64748b" font-size="9">token matching</text>
+
+  <line x1="430" y1="205" x2="448" y2="205" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrowR)"/>
+
+  <rect x="450" y="180" width="110" height="50" rx="8" fill="#0f172a" stroke="#22c55e" stroke-width="1" filter="url(#shadow)"/>
+  <text x="505" y="200" text-anchor="middle" fill="#86efac" font-size="11" font-weight="500">Scorer</text>
+  <text x="505" y="216" text-anchor="middle" fill="#64748b" font-size="9">rank + filter</text>
+
+  <line x1="560" y1="205" x2="578" y2="205" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrowR)"/>
+
+  <rect x="580" y="180" width="100" height="50" rx="8" fill="#052e16" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="630" y="200" text-anchor="middle" fill="#86efac" font-size="11" font-weight="600">Results</text>
+  <text x="630" y="216" text-anchor="middle" fill="#4ade80" font-size="9">SearchResult[]</text>
+
+  <!-- Semantic search branch -->
+  <line x1="230" y1="230" x2="230" y2="270" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="230" y1="270" x2="370" y2="270" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="4,3"/>
+
+  <rect x="310" y="256" width="120" height="36" rx="8" fill="#1a0a2e" stroke="#8b5cf6" stroke-width="1" filter="url(#shadow)"/>
+  <text x="370" y="279" text-anchor="middle" fill="#c4b5fd" font-size="10">Semantic Search</text>
+
+  <line x1="430" y1="274" x2="505" y2="230" stroke="#8b5cf6" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrowR)"/>
+
+  <!-- Labels -->
+  <rect x="310" y="300" width="80" height="20" rx="10" fill="#1a0a2e" stroke="#8b5cf6" stroke-width="0.5"/>
+  <text x="350" y="314" text-anchor="middle" fill="#a78bfa" font-size="9">optional</text>
+
+  <text x="350" y="336" text-anchor="middle" fill="#475569" font-size="10">Cosine similarity on Ollama embeddings for hybrid scoring</text>
+</svg>

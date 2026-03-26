@@ -1,0 +1,37 @@
+{
+  "name": "xplorer-image-editor",
+  "version": "1.0.0",
+  "description": "Simple image editor with rotate, flip, crop, brightness, contrast, and grayscale",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/index.tsx --bundle --format=iife --outfile=dist/index.js --external:react --external:react-dom --external:@xplorer/extension-sdk --target=es2020 --jsx=transform"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.0",
+    "@types/react": "^18.2.0",
+    "typescript": "^5.2.0"
+  },
+  "xplorer": {
+    "id": "image-editor",
+    "name": "Image Editor",
+    "displayName": "Image Editor",
+    "description": "Simple image editor with rotate, flip, crop, brightness, contrast, and grayscale adjustments.",
+    "version": "1.0.0",
+    "author": "Xplorer Team",
+    "category": "editor",
+    "icon": "image",
+    "keywords": ["editor", "image", "rotate", "flip", "crop", "brightness", "contrast", "grayscale"],
+    "permissions": ["file:read", "file:write"],
+    "activationEvents": ["onStartup"],
+    "contributes": {
+      "editors": [
+        {
+          "id": "image-editor",
+          "extensions": ["png", "jpg", "jpeg", "gif", "bmp", "webp"],
+          "priority": 15
+        }
+      ]
+    }
+  }
+}

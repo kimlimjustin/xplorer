@@ -1,0 +1,104 @@
+---
+id: accessibility
+title: Accessibility
+sidebar_position: 15
+---
+
+# Accessibility
+
+Xplorer is designed to be usable by everyone. This page documents the accessibility features available across the application.
+
+## High-Contrast Theme
+
+Enable the high-contrast theme from **Settings > Accessibility** for stronger color contrast between foreground and background elements. This improves readability for users with low vision or in bright environments.
+
+## Font Scaling
+
+Adjust the UI font size from **Settings > Accessibility**:
+
+| Size | Scale |
+|------|-------|
+| Small | Smaller than default |
+| Normal | Default size |
+| Large | 120% of default |
+| Extra Large | 140% of default |
+
+Font scaling applies globally to all text in the application, including sidebars, panels, dialogs, and the file grid.
+
+## Reduced Motion
+
+When enabled, all CSS animations and transitions are disabled. This respects the system-level `prefers-reduced-motion` setting and can also be toggled manually in **Settings > Accessibility**.
+
+## Enhanced Focus Indicators
+
+Focus indicators use a visible `var(--xp-blue)` outline so you can always see which element has keyboard focus. These indicators are styled with `:focus-visible` to appear only during keyboard navigation, not on mouse clicks.
+
+## Screen Reader Support
+
+### ARIA Roles
+
+Xplorer uses semantic ARIA roles throughout the UI:
+
+| Component | ARIA Role |
+|-----------|-----------|
+| Top bar tabs | `tablist`, `tab`, `tabpanel` |
+| Bottom panel tabs | `tablist`, `tab`, `tabpanel` |
+| Pane tab bar | `tablist`, `tab`, `tabpanel` |
+| File grid | `listbox` with `option` items |
+| Left sidebar items | `treeitem` |
+| Top bar toolbar | `toolbar` |
+
+### Live Announcements
+
+File operations are announced to screen readers so users receive confirmation of their actions:
+
+- Copy, cut, paste
+- Delete (trash and permanent)
+- Rename
+- Create file or folder
+
+## Keyboard Navigation
+
+### File Grid
+
+| Key | Action |
+|-----|--------|
+| Arrow keys | Move selection between files |
+| Home | Jump to first file |
+| End | Jump to last file |
+| Enter | Open selected file or folder |
+| Space | Toggle selection |
+
+### Bottom Panel Tabs
+
+| Key | Action |
+|-----|--------|
+| ArrowLeft | Move to previous tab |
+| ArrowRight | Move to next tab |
+
+### Top Bar Tabs
+
+| Key | Action |
+|-----|--------|
+| ArrowLeft | Move to previous tab |
+| ArrowRight | Move to next tab |
+
+### Pane Tab Bar
+
+| Key | Action |
+|-----|--------|
+| ArrowLeft | Move to previous pane tab |
+| ArrowRight | Move to next pane tab |
+
+### Left Sidebar
+
+| Key | Action |
+|-----|--------|
+| Enter / Space | Activate the focused item |
+| ArrowLeft | Collapse an expanded group |
+| ArrowRight | Expand a collapsed group |
+| ArrowUp / ArrowDown | Move between sidebar items |
+
+### Global Shortcuts
+
+Standard keyboard shortcuts (`Ctrl+C`, `Ctrl+V`, `Ctrl+X`, `Delete`, `F2`, `Ctrl+A`) work throughout the application. See the [Keyboard Shortcuts](/docs/features/keyboard-shortcuts) page for the full list.

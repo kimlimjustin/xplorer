@@ -1,0 +1,105 @@
+---
+id: overview
+title: Extension System
+sidebar_position: 1
+---
+
+# Extension System
+
+Xplorer's extension system lets you add custom panels, file preview handlers, context menu actions, themes, file decorators, and scoped commands — all driven by a manifest and a sandboxed runtime API.
+
+![Extensions panel](/screenshots/extensions-panel.png)
+
+## Architecture
+
+![Extension architecture](/diagrams/extension-architecture.svg)
+
+### Extension Host
+
+The **Extension Host** (`extension-host.ts`) is a singleton that manages the full lifecycle of every extension — both built-in and third-party. It maintains registries for:
+
+- **Panels** — custom sidebar/bottom UI rendered in the right sidebar
+- **Commands** — named functions extensions can register and invoke
+- **File decorators** — badges, colors, and tooltips on files in the grid
+- **Context menu items** — entries appended to the right-click menu
+
+### Sandboxed API
+
+Every extension receives a **XplorerAPI** object whose methods are gated by the permissions declared in the extension's manifest. Attempting to call `files.write()` without the `file:write` permission throws an error immediately.
+
+### Backend
+
+The Rust backend (`src-tauri/src/extensions/`) handles:
+
+- **Installation** — copies extension files into the extensions directory, validates the manifest
+- **Activation state** — persists which extensions are active across app restarts via `active_extensions.json`
+- **Extension-scoped storage** — per-extension key-value store persisted to `extension_storage.json`
+- **Permission validation** — checks that declared permissions are recognized
+
+## Extension Lifecycle
+
+```
+Install  →  Load  →  Activate  →  Running  →  Deactivate  →  Uninstall
+                          │                        ▲
+                          └── Hot Reload ──────────┘
+```
+
+1. **Install** — extension folder is copied into the app data extensions directory
+2. **Load** — the Extension Host reads the manifest and registers declared contributions (panels, commands, menus)
+3. **Activate** — the extension's code runs, receiving the sandboxed `XplorerAPI`
+4. **Running** — the extension's panels render, commands respond, decorators apply
+5. **Deactivate** — cleanup; panels and commands are hidden but not removed
+6. **Uninstall** — all files and registrations are permanently removed
+
+## What Extensions Can Do
+
+| Capability | Extension Type | Permission Required |
+|---|---|---|
+| Add a sidebar panel | `panel` | `ui:panels` |
+| Add context menu items | `action` | — |
+| Custom file previews | `preview` | `file:read` |
+| Custom themes | `theme` | `xplorer:themes` |
+| File decorators (badges) | any | — |
+| Register/execute commands | any | — |
+| Read/write files | any | `file:read`, `file:write` |
+| Scoped key-value storage | any | — |
+| Navigate the file explorer | any | — |
+
+## Built-in Extensions
+
+Xplorer ships with 8 built-in extensions that use the same extension APIs as third-party extensions. They are active by default but can be toggled on or off:
+
+| Extension | ID | Icon | Description |
+|---|---|---|---|
+| File Preview | `xplorer.preview` | 👁️ | Preview files in the sidebar |
+| AI Chat | `xplorer.ai-chat` | 💬 | Chat with AI about your files |
+| Similar Files | `xplorer.similar-files` | 🎯 | Find related files |
+| Content Search | `xplorer.content-search` | 🔍 | Search file contents |
+| File Organizer | `xplorer.organizer` | 📁 | AI-powered file organization |
+| Storage Analytics | `xplorer.analytics` | 📊 | Disk usage breakdown |
+| Duplicate Finder | `xplorer.duplicates` | 📋 | Find duplicate files |
+| Notes | `xplorer.notes` | 📝 | Attach notes to files and folders |
+
+## Extension Directory
+
+Extensions are stored in the app data directory:
+
+```
+{app_data}/extensions/
+├── my-extension/
+│   ├── package.json      ← manifest lives in "xplorer" field
+│   └── dist/
+│       └── index.js      ← compiled entry point
+└── another-extension/
+    ├── package.json
+    └── dist/
+        └── index.js
+```
+
+## Next Steps
+
+- [Getting Started](./getting-started) — scaffold and install your first extension
+- [Creating Extensions](./creating-extensions) — in-depth guide for each extension type
+- [SDK Reference](./sdk) — full API documentation
+- [Manifest Reference](./manifest) — `package.json` configuration
+- [Permissions](./permissions) — permission system reference

@@ -1,0 +1,5 @@
+{
+  "buildCommand": "bash scripts/prepare-client-components.sh && prisma generate && next build",
+  "installCommand": "cd ../.. && pnpm install",
+  "framework": "nextjs"
+}

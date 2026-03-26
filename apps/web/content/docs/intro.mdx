@@ -1,0 +1,75 @@
+---
+id: intro
+title: Introduction
+sidebar_position: 1
+slug: /
+---
+
+# Xplorer
+
+**Xplorer** is a modern, AI-powered desktop file explorer built with [Tauri v2](https://v2.tauri.app/). It combines the speed of a native application with the flexibility of a web-based UI, offering features far beyond traditional file managers.
+
+## What is Xplorer?
+
+Xplorer is a cross-platform desktop application that reimagines file management.
+
+![Xplorer main interface](/screenshots/main-interface.png)
+
+It provides:
+
+- **Native Performance** — Built on Rust with Tauri v2, file operations run at native speed
+- **Rich File Previews** — Preview PDFs, documents, images, code, spreadsheets, and more without leaving the app
+- **AI-Powered Features** — Local AI integration via Ollama for file analysis, smart organization, and natural language chat
+- **SSH Remote Browsing** — Connect to remote servers and browse files as if they were local
+- **Git Integration** — View git history, blame, diffs, branches, and stash directly in the explorer
+- **Smart Search** — Tokenized file search with content indexing across your entire filesystem
+- **Extension System** — Extend functionality with a plugin SDK and marketplace
+- **Keyboard-Driven** — Customizable keyboard shortcuts for power users
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Backend | Rust + Tauri v2 |
+| Frontend | React 18 + TypeScript |
+| Styling | Tailwind CSS + Custom Glassmorphic Theme |
+| Build | Vite 5 |
+| Routing | Wouter |
+| State | TanStack React Query |
+| AI | Ollama (local LLMs) |
+| Testing | Vitest + Testing Library |
+
+## Project Structure
+
+```
+xplorer/
+├── client/                  # React frontend (Vite SPA)
+│   └── src/
+│       ├── pages/           # Route pages (explorer, settings, SSH)
+│       ├── components/      # UI components
+│       ├── lib/             # Core libraries (transport, API bridge, AI)
+│       ├── hooks/           # Custom React hooks
+│       └── extensions/      # Client-side extension logic
+├── src-tauri/               # Rust backend (Tauri v2)
+│   └── src/
+│       ├── main.rs          # Entry point + Tauri commands
+│       ├── operations/      # File system operations
+│       ├── ai.rs            # Ollama AI integration
+│       ├── tokenizer.rs     # File search indexing
+│       ├── ssh.rs           # SSH remote filesystem
+│       ├── git_history.rs   # Git integration
+│       ├── extensions/      # Extension system
+│       └── shortcuts/       # Keyboard shortcuts
+├── extension-sdk/           # NPM package for building extensions
+├── web/                     # Documentation site (Next.js)
+├── docs/                    # Standalone docs
+└── xplorer-marketplace/     # Extension marketplace (Next.js)
+```
+
+## Quick Links
+
+- [Getting Started](/docs/getting-started) — Install and run Xplorer
+- [Architecture Overview](/docs/architecture/overview) — How the system works
+- [Features](/docs/category/features) — Detailed feature documentation
+- [API Reference](/docs/category/api-reference) — Tauri commands and frontend API
+- [Extension SDK](/docs/extensions/sdk) — Build your own extensions

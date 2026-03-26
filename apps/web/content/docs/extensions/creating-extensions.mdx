@@ -1,0 +1,613 @@
+---
+id: creating-extensions
+title: Creating Extensions
+sidebar_position: 3
+---
+
+# Creating Extensions
+
+Xplorer supports nine extension categories. This guide shows you how to build each one using the high-level registration APIs.
+
+## Extension Categories
+
+| Category | API | Purpose |
+|---|---|---|
+| `theme` | `Theme.register()` | Custom color schemes |
+| `panel` | `Sidebar.register()` | Sidebar panels with React UI |
+| `preview` | `Preview.register()` | Custom file preview renderers |
+| `command` | `Command.register()` | Commands with keyboard shortcuts |
+| `action` | `ContextMenu.register()` | Right-click context menu items |
+| `tab` | `Tab.register()` | Custom tab views in the main content area |
+| `navigation` | `Navigation.register()` | Left sidebar navigation entries |
+| `bottom-tab` | `BottomTab.register()` | Bottom panel tabs (alongside Terminal) |
+| `editor` | `Editor.register()` | Custom file editor handlers |
+
+---
+
+## Theme Extension
+
+The simplest extension type. Pass a colors object and the SDK generates all CSS variables automatically.
+
+### Example: Midnight Theme
+
+```typescript
+import { Theme } from '@xplorer/extension-sdk';
+
+Theme.register({
+  id: 'midnight',
+  name: 'Midnight',
+  colors: {
+    bg: '#0d1117',
+    surface: '#161b22',
+    surfaceLight: '#21262d',
+    border: '#30363d',
+    text: '#c9d1d9',
+    textMuted: '#8b949e',
+    blue: '#58a6ff',
+    green: '#3fb950',
+    red: '#f85149',
+    yellow: '#d29922',
+    orange: '#d29922',
+    pink: '#f778ba',
+    cyan: '#56d4dd',
+    purple: '#bc8cff',
+  },
+});
+```
+
+That's it — the theme appears in Settings > Themes automatically.
+
+### With Custom Background + Extra CSS
+
+```typescript
+Theme.register({
+  id: 'cyberpunk',
+  name: 'Cyberpunk',
+  background: 'linear-gradient(145deg, #0a0a0f, #130a18, #0a0a0f)',
+  colors: { bg: '#0a0a0f', surface: '#151520', /* ... */ },
+  css: `
+    .theme-cyberpunk ::selection { background-color: rgba(240, 225, 48, 0.3); }
+    .theme-cyberpunk ::-webkit-scrollbar-thumb { background: linear-gradient(#f0e130, #00fff0); }
+  `,
+});
+```
+
+### Key Points
+
+- The `id` becomes the CSS class name: `.theme-{id}`
+- The `colors` object auto-generates all `--xp-*` CSS variables
+- Optional `css` property for advanced customizations (scrollbar, selection, glow effects)
+- Optional `background` property for gradient HTML backgrounds
+
+---
+
+## Panel Extension (Sidebar)
+
+Panel extensions render React UI in the right sidebar.
+
+### Example: Bookmarks Panel
+
+```typescript
+import { Sidebar, type XplorerAPI } from '@xplorer/extension-sdk';
+
+declare const React: typeof import('react');
+const { useState, useEffect } = React;
+
+let api: XplorerAPI;
+
+function BookmarksPanel() {
+  const [bookmarks, setBookmarks] = useState<string[]>([]);
+
+  useEffect(() => {
+    api.settings.get<string[]>('bookmarks', []).then(saved => {
+      setBookmarks(saved ?? []);
+    });
+  }, []);
+
+  const addCurrent = async () => {
+    const path = api.navigation.getCurrentPath();
+    const updated = [...bookmarks, path];
+    setBookmarks(updated);
+    await api.settings.set('bookmarks', updated);
+  };
+
+  return React.createElement('div', { style: { padding: 12 } },
+    React.createElement('button', { onClick: addCurrent }, 'Bookmark Current'),
+    React.createElement('ul', null,
+      ...bookmarks.map(path =>
+        React.createElement('li', {
+          key: path,
+          onClick: () => api.navigation.navigateTo(path),
+          style: { cursor: 'pointer', fontSize: 12, padding: '4px 0' },
+        }, path)
+      )
+    ),
+  );
+}
+
+Sidebar.register({
+  id: 'bookmarks',
+  title: 'Bookmarks',
+  icon: 'star',
+  onActivate: (injectedApi) => { api = injectedApi; },
+  render: () => React.createElement(BookmarksPanel),
+});
+```
+
+### Key Points
+
+- Use `onActivate` to capture the `XplorerAPI` reference
+- The `render` function receives `{ currentPath, selectedFiles }` as props
+- The panel icon appears in the vertical extension bar
+
+---
+
+## Preview Extension
+
+Preview extensions render custom file previews. When a user selects a file, Xplorer asks each preview extension if it can handle it.
+
+### Example: CSV Preview
+
+```typescript
+import { Preview, type XplorerAPI } from '@xplorer/extension-sdk';
+
+declare const React: typeof import('react');
+const { useState, useEffect } = React;
+
+let api: XplorerAPI;
+
+function CsvViewer({ filePath }: { filePath: string }) {
+  const [rows, setRows] = useState<string[][]>([]);
+
+  useEffect(() => {
+    api.files.readText(filePath).then(text => {
+      setRows(text.split('\n').map(line => line.split(',')));
+    });
+  }, [filePath]);
+
+  return React.createElement('table', { style: { fontSize: 12, width: '100%' } },
+    ...rows.map((row, i) =>
+      React.createElement('tr', { key: i },
+        ...row.map((cell, j) =>
+          React.createElement(i === 0 ? 'th' : 'td', {
+            key: j,
+            style: { padding: '4px 8px', borderBottom: '1px solid var(--xp-border, #333)' },
+          }, cell)
+        )
+      )
+    )
+  );
+}
+
+Preview.register({
+  id: 'csv-preview',
+  title: 'CSV Preview',
+  permissions: ['file:read'],
+  canPreview: (file) => !file.is_dir && file.path.endsWith('.csv'),
+  priority: 10,
+  onActivate: (injectedApi) => { api = injectedApi; },
+  render: (props) => {
+    const files = (props.selectedFiles || []) as Array<{ path: string; name: string }>;
+    const csvFile = files.find(f => f.path.endsWith('.csv'));
+    if (!csvFile) return React.createElement('div', null, 'Select a CSV file');
+    return React.createElement(CsvViewer, { filePath: csvFile.path });
+  },
+});
+```
+
+### Key Points
+
+- `canPreview(file)` returns `true` for files this extension handles
+- `priority` controls which extension wins when multiple match (higher = preferred)
+- `render` receives `selectedFiles` — find your target file from the list
+
+---
+
+## Command Extension
+
+Commands are actions that can be triggered by keyboard shortcuts or programmatically.
+
+### Example: Word Counter
+
+```typescript
+import { Command, type XplorerAPI } from '@xplorer/extension-sdk';
+
+Command.register({
+  id: 'count-words',
+  title: 'Count Words in Selection',
+  shortcut: 'ctrl+shift+w',
+  action: async (api) => {
+    const state = (window as any).__xplorer_state__;
+    const files = state?.selectedFiles || [];
+    if (files.length === 0) {
+      api.ui.showMessage('No file selected', 'warning');
+      return;
+    }
+    const text = await api.files.readText(files[0].path);
+    const words = text.trim().split(/\s+/).filter(Boolean).length;
+    api.ui.showMessage(`${files[0].name}: ${words} words`, 'info');
+  },
+});
+```
+
+### Multiple Commands in One Extension
+
+You can call `Command.register()` multiple times in the same file:
+
+```typescript
+Command.register({ id: 'json.format', title: 'Format JSON', action: async (api) => { /* ... */ } });
+Command.register({ id: 'json.minify', title: 'Minify JSON', action: async (api) => { /* ... */ } });
+Command.register({ id: 'json.validate', title: 'Validate JSON', action: async (api) => { /* ... */ } });
+```
+
+---
+
+## Context Menu Extension
+
+Context menu extensions add items to the right-click menu.
+
+### Example: File Hasher
+
+```typescript
+import { ContextMenu, type XplorerAPI } from '@xplorer/extension-sdk';
+
+ContextMenu.register({
+  id: 'sha256-hash',
+  title: 'Calculate SHA-256',
+  when: 'singleFileSelected',
+  action: async (files, api) => {
+    const data = await api.files.read(files[0].path);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hex = Array.from(new Uint8Array(hashBuffer))
+      .map(b => b.toString(16).padStart(2, '0')).join('');
+    api.ui.showMessage(`SHA-256: ${hex}`, 'info');
+  },
+});
+```
+
+### `when` Conditions
+
+| Value | Files shown |
+|-------|-------------|
+| `'always'` | Always shown |
+| `'singleFileSelected'` | Exactly one file selected |
+| `'multipleFilesSelected'` | Two or more files selected |
+| `(files) => boolean` | Custom function receiving the selected files array |
+
+---
+
+## Tab Extension
+
+Tab extensions render a full custom view inside the main content area as a tab, similar to how the file explorer itself is a tab. This is ideal for cloud service browsers, dashboards, or any full-page UI.
+
+### Example: Google Drive File Browser
+
+```typescript
+import { Tab, type XplorerAPI } from '@xplorer/extension-sdk';
+import { Button, Spinner, Card } from '@xplorer/extension-sdk';
+
+declare const React: typeof import('react');
+const { useState, useEffect } = React;
+
+let api: XplorerAPI;
+
+function DriveBrowser({ tabData }: { tabData?: Record<string, any> }) {
+  const [files, setFiles] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const accountId = tabData?.accountId;
+
+  useEffect(() => {
+    if (!accountId) return;
+    setLoading(true);
+    api.gdrive.listFiles(accountId).then(items => {
+      setFiles(items);
+      setLoading(false);
+    });
+  }, [accountId]);
+
+  if (loading) return React.createElement(Spinner, { size: 24 });
+
+  return React.createElement('div', { style: { padding: 16 } },
+    ...files.map(f =>
+      React.createElement(Card, { key: f.id, title: f.name },
+        React.createElement('span', null, `${(f.size / 1024).toFixed(1)} KB`),
+        React.createElement(Button, {
+          label: 'Download',
+          variant: 'primary',
+          size: 'sm',
+          onClick: async () => {
+            const dest = await api.dialog.pickSaveFile(f.name);
+            if (dest) await api.gdrive.downloadFile(accountId, f.id, dest);
+          },
+        }),
+      )
+    ),
+  );
+}
+
+Tab.register({
+  id: 'gdrive-browser',
+  title: 'Google Drive',
+  icon: 'cloud',
+  tabType: 'gdrive',
+  permissions: ['gdrive:access'],
+  onActivate: (injectedApi) => { api = injectedApi; },
+  render: (props) => React.createElement(DriveBrowser, { tabData: props.tabData }),
+});
+```
+
+### Key Points
+
+- Use `tabType` to define a unique identifier for your tab kind
+- Open your tab programmatically with `api.navigation.openTab({ type: 'gdrive', name: 'Google Drive', data: { accountId } })`
+- The `render` function receives `tabData` containing whatever was passed in `data`
+
+---
+
+## Navigation Extension
+
+Navigation extensions add entries to the left sidebar. Clicking an entry can navigate to a path or open a custom tab.
+
+### Example: Cloud Storage Navigation
+
+```typescript
+import { Navigation, type XplorerAPI } from '@xplorer/extension-sdk';
+
+Navigation.register({
+  id: 'gdrive-nav',
+  title: 'Google Drive',
+  icon: 'cloud',
+  section: 'cloud',
+  order: 10,
+  onClick: (api) => {
+    api.navigation.openTab({ type: 'gdrive', name: 'Google Drive' });
+  },
+});
+
+Navigation.register({
+  id: 'dropbox-nav',
+  title: 'Dropbox',
+  icon: 'box',
+  section: 'cloud',
+  order: 20,
+  onClick: (api) => {
+    api.navigation.openTab({ type: 'dropbox', name: 'Dropbox' });
+  },
+});
+```
+
+### Key Points
+
+- `section` determines where the entry appears: `'favorites'`, `'cloud'`, `'devices'`, or `'custom'`
+- `order` controls sort position within the section (lower numbers appear first)
+- Multiple navigation entries can be registered from the same extension
+
+---
+
+## Bottom Tab Extension
+
+Bottom tab extensions render in the bottom panel alongside the built-in Terminal tab. Useful for persistent tool panels like version control, build output, or problem lists.
+
+### Example: Git Panel
+
+```typescript
+import { BottomTab, type XplorerAPI } from '@xplorer/extension-sdk';
+import { Button, Panel } from '@xplorer/extension-sdk';
+
+declare const React: typeof import('react');
+const { useState, useEffect } = React;
+
+let api: XplorerAPI;
+
+function GitPanel({ currentPath }: { currentPath?: string }) {
+  const [status, setStatus] = useState<Array<{ path: string; status: string }>>([]);
+  const [branch, setBranch] = useState('');
+
+  const refresh = async () => {
+    if (!currentPath) return;
+    const repo = await api.git.findRepository(currentPath);
+    if (!repo) return;
+    const info = await api.git.getGitRepoInfo(repo);
+    setBranch(info.branch);
+    const st = await api.git.getGitStatus(repo);
+    setStatus(st);
+  };
+
+  useEffect(() => { refresh(); }, [currentPath]);
+
+  return React.createElement(Panel, { title: `Git: ${branch}` },
+    React.createElement(Button, { label: 'Refresh', variant: 'ghost', size: 'sm', onClick: refresh }),
+    React.createElement('ul', { style: { fontSize: 12, listStyle: 'none', padding: 0 } },
+      ...status.map(f =>
+        React.createElement('li', { key: f.path, style: { padding: '2px 0' } },
+          React.createElement('span', {
+            style: { color: f.status === 'modified' ? 'var(--xp-orange)' : 'var(--xp-green)' },
+          }, `[${f.status}] `),
+          f.path,
+        )
+      ),
+    ),
+  );
+}
+
+BottomTab.register({
+  id: 'git-panel',
+  title: 'Git',
+  icon: 'git-branch',
+  permissions: ['git:read'],
+  onActivate: (injectedApi) => { api = injectedApi; },
+  render: (props) => React.createElement(GitPanel, { currentPath: props.currentPath }),
+});
+```
+
+### Key Points
+
+- Bottom tabs appear as clickable tabs in the bottom panel bar
+- The panel stays mounted while switching between bottom tabs (state is preserved)
+- `render` receives `currentPath` and `selectedFiles` like sidebar panels
+
+---
+
+## Editor Extension
+
+Editor extensions provide custom file editing experiences. When a user opens a file for editing, Xplorer checks registered editors for a match using `canEdit`.
+
+### Example: Markdown Editor
+
+```typescript
+import { Editor, type XplorerAPI } from '@xplorer/extension-sdk';
+import { Button, Panel } from '@xplorer/extension-sdk';
+
+declare const React: typeof import('react');
+const { useState, useEffect } = React;
+
+let api: XplorerAPI;
+
+function MarkdownEditor({ filePath }: { filePath: string }) {
+  const [content, setContent] = useState('');
+  const [dirty, setDirty] = useState(false);
+
+  useEffect(() => {
+    api.files.readText(filePath).then(text => setContent(text));
+  }, [filePath]);
+
+  const save = async () => {
+    await api.files.write(filePath, content);
+    setDirty(false);
+    api.ui.showMessage('File saved', 'info');
+  };
+
+  return React.createElement(Panel, { title: `Editing: ${filePath.split('/').pop()}` },
+    React.createElement('textarea', {
+      value: content,
+      onChange: (e: any) => { setContent(e.target.value); setDirty(true); },
+      style: {
+        width: '100%', height: '80%', fontFamily: 'monospace', fontSize: 14,
+        background: 'var(--xp-surface)', color: 'var(--xp-text)',
+        border: '1px solid var(--xp-border)', padding: 12, resize: 'none',
+      },
+    }),
+    React.createElement(Button, {
+      label: dirty ? 'Save *' : 'Save',
+      variant: 'primary',
+      onClick: save,
+      disabled: !dirty,
+    }),
+  );
+}
+
+Editor.register({
+  id: 'markdown-editor',
+  title: 'Markdown Editor',
+  icon: 'edit',
+  permissions: ['file:read', 'file:write'],
+  canEdit: (file) => !file.is_dir && /\.(md|mdx|markdown)$/.test(file.path),
+  priority: 10,
+  onActivate: (injectedApi) => { api = injectedApi; },
+  render: (props) => React.createElement(MarkdownEditor, { filePath: props.filePath }),
+});
+```
+
+### Key Points
+
+- `canEdit(file)` returns `true` for files this editor handles
+- `priority` controls which editor wins when multiple match (higher = preferred)
+- The editor opens in the main content area as a tab when the user triggers "Open in Editor"
+
+---
+
+## Using SDK Hooks
+
+Inside your extension's React components, you can use hooks to reactively read Xplorer state:
+
+```typescript
+import { useCurrentPath, useSelectedFiles } from '@xplorer/extension-sdk';
+
+function StatusBar() {
+  const path = useCurrentPath();
+  const files = useSelectedFiles();
+
+  return React.createElement('div', null,
+    `${path} — ${files.length} selected`
+  );
+}
+```
+
+These hooks listen for `xplorer-state-change` CustomEvents dispatched by the host, so they react instantly without polling.
+
+---
+
+## Using SDK UI Components
+
+The SDK provides pre-built components that match the active theme:
+
+```typescript
+import { Button, Input, Card, Spinner, Panel } from '@xplorer/extension-sdk';
+
+function MyPanel() {
+  return React.createElement(Panel, { title: 'My Tool' },
+    React.createElement(Card, { title: 'Search' },
+      React.createElement(Input, { placeholder: 'Search files...', onChange: handleSearch }),
+      React.createElement(Button, { label: 'Go', variant: 'primary', onClick: doSearch }),
+    ),
+    loading && React.createElement(Spinner, { size: 20 }),
+  );
+}
+```
+
+---
+
+## Extension Storage
+
+Extensions have access to scoped key-value storage that persists across sessions:
+
+```typescript
+// In onActivate or action callbacks:
+await api.settings.set('lastScan', new Date().toISOString());
+const lastScan = await api.settings.get<string>('lastScan');
+await api.settings.delete('oldKey');
+```
+
+Storage is scoped by extension ID — extensions cannot read each other's data.
+
+---
+
+## Advanced: Class-Based Extensions
+
+For complex extensions that need full lifecycle control, you can use the base classes:
+
+```typescript
+import { Extension, PanelExtension, registerExtension } from '@xplorer/extension-sdk';
+
+class MyExtension extends Extension {
+  async activate() { /* ... */ }
+  async deactivate() { /* ... */ }
+}
+
+registerExtension(new MyExtension({
+  id: 'my-ext', name: 'My Extension', version: '1.0.0',
+  author: 'You', category: 'tool',
+}));
+```
+
+Or use the factory function:
+
+```typescript
+import { createExtension, registerExtension } from '@xplorer/extension-sdk';
+
+const ext = createExtension({
+  type: 'panel',
+  manifest: { id: 'quick', name: 'Quick', version: '1.0.0', author: 'You' },
+  render: () => React.createElement('div', null, 'Hello!'),
+});
+
+registerExtension(ext);
+```
+
+---
+
+## Next Steps
+
+- [SDK Reference](./sdk) — complete API documentation
+- [Manifest Reference](./manifest) — `package.json` fields
+- [Permissions](./permissions) — what each permission grants

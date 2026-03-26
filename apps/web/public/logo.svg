@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg12" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#050412"/>
+      <stop offset="100%" style="stop-color:#0e0920"/>
+    </linearGradient>
+    <linearGradient id="fold12a" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1"/>
+      <stop offset="100%" style="stop-color:#4338ca"/>
+    </linearGradient>
+    <linearGradient id="fold12b" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#818cf8"/>
+      <stop offset="100%" style="stop-color:#6366f1"/>
+    </linearGradient>
+    <linearGradient id="fold12c" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#c7d2fe"/>
+      <stop offset="100%" style="stop-color:#a5b4fc"/>
+    </linearGradient>
+    <linearGradient id="accent12" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22d3ee"/>
+      <stop offset="100%" style="stop-color:#6366f1"/>
+    </linearGradient>
+    <filter id="warpglow">
+      <feDropShadow dx="0" dy="0" stdDeviation="12" flood-color="#6366f1" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="url(#bg12)"/>
+  <!-- Abstract folded planes — like pages/windows warping through space -->
+  <g filter="url(#warpglow)">
+    <!-- Back plane (largest, most transparent) -->
+    <polygon points="80,140 380,100 430,340 130,380" fill="url(#fold12a)" opacity="0.2"/>
+    <polygon points="80,140 380,100 430,340 130,380" fill="none" stroke="#6366f1" stroke-width="1.5" opacity="0.25"/>
+    <!-- Middle plane -->
+    <polygon points="120,180 370,150 400,350 150,370" fill="url(#fold12b)" opacity="0.35"/>
+    <polygon points="120,180 370,150 400,350 150,370" fill="none" stroke="#818cf8" stroke-width="1.5" opacity="0.35"/>
+    <!-- Top crease line on middle -->
+    <line x1="120" y1="180" x2="370" y2="150" stroke="white" stroke-width="0.5" opacity="0.2"/>
+    <!-- Front plane (brightest) -->
+    <polygon points="160,215 350,195 370,360 180,375" fill="url(#fold12c)" opacity="0.6"/>
+    <polygon points="160,215 350,195 370,360 180,375" fill="none" stroke="#c7d2fe" stroke-width="1.5" opacity="0.5"/>
+    <!-- Highlight edge -->
+    <line x1="160" y1="215" x2="350" y2="195" stroke="white" stroke-width="1" opacity="0.35"/>
+    <!-- Content lines on front plane -->
+    <line x1="190" y1="250" x2="310" y2="240" stroke="#4f46e5" stroke-width="3" opacity="0.4" stroke-linecap="round"/>
+    <line x1="195" y1="275" x2="280" y2="268" stroke="#4f46e5" stroke-width="3" opacity="0.3" stroke-linecap="round"/>
+    <line x1="200" y1="300" x2="330" y2="290" stroke="#4f46e5" stroke-width="3" opacity="0.25" stroke-linecap="round"/>
+  </g>
+  <!-- Floating accent — navigation cursor / pointer -->
+  <g opacity="0.8">
+    <polygon points="380,140 410,160 395,165 405,190 395,188 388,165 372,158" fill="url(#accent12)"/>
+  </g>
+  <!-- Subtle motion streaks -->
+  <line x1="70" y1="420" x2="140" y2="410" stroke="#6366f1" stroke-width="2" stroke-linecap="round" opacity="0.15"/>
+  <line x1="90" y1="440" x2="170" y2="432" stroke="#818cf8" stroke-width="1.5" stroke-linecap="round" opacity="0.1"/>
+  <line x1="360" y1="80" x2="420" y2="72" stroke="#22d3ee" stroke-width="1.5" stroke-linecap="round" opacity="0.15"/>
+</svg>

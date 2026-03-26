@@ -1,0 +1,58 @@
+---
+id: onboarding-tour
+title: Onboarding Tour
+sidebar_position: 9
+---
+
+# Onboarding Tour
+
+Xplorer includes an interactive guided tour that introduces new users to the key areas of the application.
+
+## Automatic First Launch
+
+The tour appears automatically the first time you open Xplorer. It walks you through 8 steps covering the sidebar, file browser, top bar, extensions, terminal, and keyboard shortcuts.
+
+## Replaying the Tour
+
+You can replay the tour at any time from **Settings > General > Replay Tour**.
+
+## Tour Steps
+
+| Step | Area | What You'll Learn |
+|------|------|-------------------|
+| 1 | Welcome | Introduction to Xplorer |
+| 2 | Sidebar | File tree, bookmarks, SSH connections |
+| 3 | File Browser | Grid/list/detail views, file operations |
+| 4 | Top Bar | Tabs, breadcrumbs, smart search |
+| 5 | Extensions Bar | Preview panel, AI chat, marketplace |
+| 6 | Terminal | Integrated terminal, Git, output logs |
+| 7 | Shortcuts | Keyboard-driven workflow tips |
+| 8 | Finish | Customization and next steps |
+
+## Keyboard Navigation
+
+The tour supports full keyboard navigation:
+
+| Key | Action |
+|-----|--------|
+| `→` or `Enter` | Next step |
+| `←` | Previous step |
+| `Escape` | Exit tour |
+
+You can also click the step dots at the bottom of the tooltip to jump to any step.
+
+## Accessibility
+
+- The tour respects the **Reduce Motion** setting (Settings > Accessibility). When enabled, all tour animations are disabled.
+- All tour controls are keyboard accessible.
+- Step indicators use ARIA labels for screen readers.
+
+## Implementation Details
+
+The tour uses a lightweight, zero-dependency overlay built with SVG masking for the spotlight effect. Tour state is stored in `localStorage` under the `xplorer:tour-completed` key. The tour overlay renders at `z-index: 60`, above all other UI layers.
+
+### Tour Targets
+
+Each highlighted area is identified by a `data-tour` attribute on the relevant DOM element. The tour overlay queries these elements and calculates spotlight and tooltip positions using `getBoundingClientRect()`.
+
+If a target element is not visible (e.g., the sidebar is collapsed), the step gracefully falls back to a centered presentation.

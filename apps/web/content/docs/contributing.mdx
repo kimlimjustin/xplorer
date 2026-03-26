@@ -1,0 +1,138 @@
+---
+id: contributing
+title: Contributing
+sidebar_position: 100
+---
+
+# Contributing to Xplorer
+
+Thank you for your interest in contributing to Xplorer! This guide will help you get started.
+
+## Development Setup
+
+See [Getting Started](/docs/getting-started) for full setup instructions. In short:
+
+```bash
+git clone https://github.com/xplorer/xplorer.git
+cd xplorer
+pnpm install
+pnpm dev
+```
+
+## Project Structure
+
+```
+xplorer/
+├── client/          # React frontend
+├── src-tauri/       # Rust backend
+├── extension-sdk/   # Extension SDK package
+├── web/             # Documentation site (Next.js)
+├── docs/            # Standalone docs
+└── package.json     # Root monorepo config
+```
+
+## Making Changes
+
+### Frontend Changes
+
+1. Edit files in `client/src/`
+2. Changes hot-reload automatically via Vite
+3. Run `pnpm check` to verify TypeScript types
+
+### Backend Changes
+
+1. Edit files in `src-tauri/src/`
+2. Run `cd src-tauri && cargo check` to verify compilation
+3. Restart the Tauri dev window to test (Ctrl+R to reload the WebView)
+
+### Documentation Changes
+
+1. Edit files in `docs/docs/`
+2. Run `cd docs && pnpm start` to preview locally
+3. Build with `cd docs && pnpm build`
+
+## Code Style
+
+### Rust
+- Follow standard Rust formatting (`cargo fmt`)
+- Use `Result<T, String>` for Tauri command return types
+- Keep functions focused — one operation per function
+- Use descriptive error messages in `Err()` values
+
+### TypeScript / React
+- Use TypeScript for all new files
+- Use functional components with hooks
+- Keep components under 300 lines — extract hooks for complex logic
+- Use `TauriAPI` for all backend calls (never call `invoke()` or `transport()` directly — `TauriAPI` wraps the transport layer)
+- Use `cn()` from `lib/utils.ts` for className merging
+
+### CSS / Styling
+- Use Tailwind CSS utility classes
+- Follow the glassmorphic theme patterns in existing components
+- Use CSS custom properties for theme-able values
+- Avoid inline styles
+
+## Testing
+
+### Frontend Tests
+
+```bash
+pnpm test          # Watch mode
+pnpm test:run      # Single run
+pnpm test:coverage # With coverage report
+```
+
+Tests use Vitest + Testing Library. Test files go in `client/src/__tests__/`.
+
+### Backend Tests
+
+```bash
+cd src-tauri && cargo test
+```
+
+## Adding a New Feature
+
+### 1. Backend Command
+
+Add your Tauri command in the appropriate module:
+
+```rust
+// src-tauri/src/operations/my_ops.rs
+#[tauri::command]
+pub async fn my_new_command(param: String) -> Result<MyResult, String> {
+    // Implementation
+}
+```
+
+Register it in `main.rs`:
+
+```rust
+.invoke_handler(tauri::generate_handler![
+    // ... existing commands
+    operations::my_ops::my_new_command,
+])
+```
+
+### 2. Frontend API
+
+Add the invoke wrapper in `client/src/lib/tauri-api.ts`:
+
+```typescript
+export const TauriAPI = {
+  // ... existing methods
+  myNewCommand: (param: string): Promise<MyResult> =>
+    invoke('my_new_command', { param }),
+};
+```
+
+### 3. UI Component
+
+Create or update components in `client/src/components/` to use the new API.
+
+## Reporting Issues
+
+Please report bugs and feature requests on the GitHub issue tracker. Include:
+- Steps to reproduce
+- Expected vs actual behavior
+- OS and Xplorer version
+- Error messages or screenshots

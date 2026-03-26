@@ -6,11 +6,14 @@ Tauri 2.x desktop file manager. React 18 + TypeScript frontend, Rust backend, pn
 
 - `apps/client/` -- React frontend (Vite + TypeScript + Tailwind CSS)
 - `apps/src-tauri/` -- Rust backend (Tauri 2.x commands + operations)
+- `apps/web/` -- Next.js marketplace server (Prisma, Stripe billing, admin dashboard)
 - `packages/sdk/` -- Internal service layer (`@xplorer/sdk`), wraps Tauri invoke()
 - `packages/extension-sdk/` -- Sandboxed extension SDK (`@xplorer/extension-sdk`)
 - `packages/create-extension/` -- Extension scaffolder CLI
 - `packages/extensions/` -- Built-in extension packages
 - `e2e/` -- Playwright end-to-end tests
+- `infra/` -- Docker Compose for local PostgreSQL
+- `scripts/` -- Extension signing and utility scripts
 
 ## Path aliases
 
@@ -31,6 +34,7 @@ pnpm run lint                    # ESLint
 pnpm run lint:fix                # ESLint autofix
 pnpm run format                  # Prettier
 npx tsc --noEmit                 # TypeScript type check
+cd apps/web && pnpm dev          # Marketplace dev server
 ```
 
 ## Verification

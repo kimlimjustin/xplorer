@@ -53,7 +53,6 @@ Complete ground-up rewrite of Xplorer.
 - Extension permission model
 - No telemetry or data collection
 
-### Open-Core Model
-- Core desktop app licensed under **AGPL-3.0**
-- Premium extensions and marketplace server in private submodule
-- Fully functional without premium components
+### Open Source
+- Fully open source under **AGPL-3.0** — desktop app, Extension SDK, and web marketplace (`apps/web/`)
+- Extensions are distributed through a separate public repository

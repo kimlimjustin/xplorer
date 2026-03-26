@@ -1,6 +1,7 @@
 // ── Platform constants ───────────────────────────────────────────────────────
 
 export const isWindows = navigator.platform.startsWith('Win');
+export const isMac = navigator.platform.startsWith('Mac');
 export const PATH_SEPARATOR = isWindows ? '\\' : '/';
 export const ROOT_PATH = isWindows ? 'C:\\' : '/';
 

@@ -1,0 +1,187 @@
+---
+id: audit
+title: Code Audit Report
+sidebar_position: 3
+---
+
+# Code Audit Report
+
+Comprehensive audit of the Xplorer codebase (March 2026). Covers security, code quality, performance, accessibility, and architecture across 40+ files.
+
+## Summary
+
+| Category | Critical | High | Medium | Low | Total |
+|----------|----------|------|--------|-----|-------|
+| Security | 1 | 3 | 3 | 0 | 7 |
+| Code Quality | 0 | 2 | 3 | 1 | 6 |
+| Performance | 0 | 0 | 3 | 1 | 4 |
+| TypeScript | 0 | 1 | 2 | 0 | 3 |
+| Error Handling | 0 | 2 | 1 | 0 | 3 |
+| Dependencies | 0 | 0 | 2 | 1 | 3 |
+| Architecture | 0 | 0 | 2 | 1 | 3 |
+| Accessibility | 0 | 0 | 2 | 1 | 3 |
+| Testing | 0 | 1 | 1 | 0 | 2 |
+| **TOTALS** | **1** | **11** | **19** | **5** | **36** |
+
+## Security
+
+### CRITICAL: Extension Sandbox Escape
+
+**Location**: `client/src/lib/extension-host.ts`
+
+The extension sandbox uses `new Function()` + Proxy, which is **not a secure isolation boundary**. Malicious extensions could escape and access native APIs.
+
+**Recommendation**: Migrate to iframe sandbox with `sandbox="allow-scripts"` (no `allow-same-origin`) + `postMessage` bridge, or use Web Workers.
+
+### HIGH: Markdown XSS Risk
+
+**Location**: `client/src/components/previews/MarkdownPreview.tsx`
+
+Naive regex-based markdown converter creates `<a>` tags with arbitrary `href` values. Despite DOMPurify sanitization, `javascript:` URLs could slip through.
+
+```typescript
+// Current (vulnerable)
+html = html.replace(/\[([^\]]*)\]\(([^)]*)\)/g, '<a href="$2">$1</a>');
+// Could create: <a href="javascript:alert('xss')">click</a>
+```
+
+**Fix**: Replace with remark or markdown-it library.
+
+### HIGH: Agent API Key Plaintext Fallback
+
+**Location**: `src-tauri/src/agent/mod.rs:103-120`
+
+If keychain storage fails, the API key is written to a plaintext JSON file on disk.
+
+**Fix**: Enforce keychain-only storage. Fail loudly if keychain is unavailable.
+
+### HIGH: DOMPurify on Document Preview
+
+**Location**: `client/src/components/previews/DocumentPreview.tsx`
+
+Uses DOMPurify with `FORBID_TAGS` and `FORBID_ATTR`, but relies on mammoth library output security.
+
+### MEDIUM: Path Traversal Guards
+
+**Status**: Implemented correctly in `operations/mod.rs` — `validate_file_path()` blocks system directories. Agent path validation (`agent/security.rs`) properly blocks null bytes and UNC paths.
+
+## Code Quality
+
+### HIGH: Excessive `any` Types
+
+**137 occurrences** across 38 files. Worst offenders:
+- Test files (expected, but still 32 occurrences)
+- `extension-host.ts` (4 occurrences)
+- `utils.ts` line 138-139: `(a as any).folder_size`
+
+**Fix**: Reduce to under 10 occurrences in production code.
+
+### HIGH: Console Statements
+
+**174 console statements** across 53 files.
+- `extension-host.ts`: 32 occurrences
+- `use-file-operations.ts`: 9 occurrences
+
+**Fix**: Replace with a proper logging system or strip in production builds.
+
+### MEDIUM: Silent Error Swallowing
+
+Multiple `.catch()` blocks that silently ignore errors:
+- `FileGrid.tsx:87-89` — git status errors ignored
+- `FileGrid.tsx:104-115` — tag loading errors ignored
+- `transport.ts:116-118` — EventSource parse errors ignored
+
+## Performance
+
+### MEDIUM: Batch Operations Without Debounce
+
+`FileGrid.tsx` loads git status and tags on every file change. Should add debounce/throttle or memo caching.
+
+### MEDIUM: Gallery and Tree Views Not Virtualized
+
+While FileGrid uses `@tanstack/react-virtual` for list views, Gallery and Tree views render all items. Could cause memory issues with 10k+ files.
+
+### MEDIUM: Console Logging Overhead
+
+174 console calls (including `console.error`, `console.warn`) can impact performance when logging large objects.
+
+## TypeScript
+
+### HIGH: Missing Proper Error Types
+
+Catch blocks use `catch (err)` without proper type assertions:
+```typescript
+// Current pattern
+try { ... } catch (err) {
+  return JSON.stringify(err); // May fail for non-serializable errors
+}
+```
+
+### MEDIUM: Incomplete Interface Definitions
+
+`RightSidebar.tsx` has optional properties that aren't consistently null-checked before use.
+
+## Error Handling
+
+### HIGH: Silent Failures
+
+- `transport.ts:116-118` — EventSource parse errors silently ignored
+- `extension-api-impl.ts:20-23` — all errors caught and rethrown as generic messages
+- `use-file-operations.ts:60` — error stringification can fail
+
+### MEDIUM: Inconsistent Error Reporting
+
+Mix of `console.error`, toast notifications, and event-based error signaling across different modules.
+
+## Architecture
+
+### MEDIUM: State Management Complexity
+
+`xplorer.tsx` has 200+ lines of state with deep prop drilling. Consider extracting to Context API or zustand.
+
+### MEDIUM: Event Emitter Pattern
+
+Uses `window.dispatchEvent('files-changed')` for refetch signaling. React Query's `queryClient.invalidateQueries()` would be cleaner.
+
+### LOW: Agent Service Coupling
+
+`agent-service.ts` mixes service logic with keychain storage management. Could extract into separate modules.
+
+## Accessibility
+
+### MEDIUM: Modal Focus Trapping
+
+Dialogs (FilePropertiesDialog, CompressDialog) may not properly trap focus.
+
+### MEDIUM: Tree View Semantics
+
+`TreeView.tsx` lacks `role="tree"` ARIA semantics.
+
+### LOW: Color Contrast
+
+Theme CSS variables (`--xp-*`) not verified for WCAG AA compliance across all themes.
+
+## Testing
+
+### HIGH: Coverage Gaps
+
+Critical paths not tested:
+- File copy/move operations (async, complex)
+- Extension security sandbox
+- Compression/extraction
+- Git integration
+
+### MEDIUM: Mock-Only Tests
+
+Tests use mock TauriAPI but don't verify error handling paths or edge cases.
+
+## Priority Actions
+
+1. **IMMEDIATE**: Replace extension sandbox with iframe sandbox
+2. **IMMEDIATE**: Fix markdown XSS via remark library
+3. **HIGH**: Remove/replace 174 console.log statements
+4. **HIGH**: Reduce `any` types from 137 to under 10
+5. **HIGH**: Add error logging for silent catch blocks
+6. **MEDIUM**: Implement proper state management
+7. **MEDIUM**: Add keyboard navigation + ARIA tests
+8. **MEDIUM**: Increase test coverage for critical operations
