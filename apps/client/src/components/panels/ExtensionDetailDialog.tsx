@@ -155,7 +155,7 @@ const ExtensionDetailDialog = ({
           <button
             onClick={() => {
               const baseUrl = (
-                localStorage.getItem(STORAGE_KEYS.MARKETPLACE_URL) || 'http://localhost:3000/api'
+                localStorage.getItem(STORAGE_KEYS.MARKETPLACE_URL) || 'https://xplorer.space/api'
               ).replace(/\/api$/, '');
               window.open(`${baseUrl}/extensions/${extension.slug || extension.id}`, '_blank');
             }}

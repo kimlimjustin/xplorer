@@ -322,7 +322,7 @@ describe('MarketplacePanel', () => {
       fireEvent.click(externalLinkButton);
     });
 
-    expect(window.open).toHaveBeenCalledWith('http://localhost:3000', '_blank');
+    expect(window.open).toHaveBeenCalledWith('https://xplorer.space', '_blank');
   });
 
   it('displays extension details correctly', async () => {
@@ -408,7 +408,7 @@ describe('MarketplacePanel', () => {
       });
     });
 
-    expect(window.open).toHaveBeenCalledWith('http://localhost:3000/publish', '_blank');
+    expect(window.open).toHaveBeenCalledWith('https://xplorer.space/publish', '_blank');
   });
 
   describe('Extension Packs', () => {
