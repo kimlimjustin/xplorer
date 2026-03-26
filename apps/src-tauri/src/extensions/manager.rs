@@ -103,6 +103,7 @@ impl ExtensionManager {
             is_installed: true,
             verified,
             has_wasm_backend,
+            is_dev: false,
         };
 
         let result = extension_package.clone();
@@ -297,6 +298,7 @@ impl ExtensionManager {
                                     is_installed: true,
                                     verified,
                                     has_wasm_backend,
+                                    is_dev: verified,
                                 };
                                 self.installed_extensions.push(extension_package);
                             }
@@ -408,7 +410,7 @@ impl ExtensionManager {
         if let Some(permissions) = &manifest.permissions {
             for perm_str in permissions {
                 if ExtensionPermission::from_string(perm_str).is_none() {
-                    return Err(format!("Invalid permission: {}", perm_str));
+                    tracing::warn!("[ExtensionManager] Unknown permission '{}' in {} — ignoring", perm_str, manifest.id);
                 }
             }
         }

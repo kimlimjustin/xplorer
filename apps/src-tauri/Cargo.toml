@@ -68,6 +68,7 @@ sevenz-rust2 = { version = "0.20", features = ["compress", "util"] }
 unrar = "0.5"
 wasmi = "0.40"
 ed25519-dalek = { version = "2.2.0", features = ["rand_core"] }
+portable-pty = "0.8"
 
 [dev-dependencies]
 tokio-test = "0.4"

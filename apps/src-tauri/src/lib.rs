@@ -17,6 +17,7 @@ pub mod git_history;
 pub mod git_integration;
 pub mod google_drive;
 pub mod operations;
+pub mod pty;
 pub mod search;
 pub mod secure_credentials;
 pub mod shortcuts;

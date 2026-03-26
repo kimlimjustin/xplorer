@@ -35,6 +35,10 @@ pub struct ExtensionContributes {
     #[serde(alias = "contextMenus")]
     pub context_menus: Option<Vec<ContextMenuContribution>>,
     pub keybindings: Option<Vec<serde_json::Value>>,
+    pub editors: Option<Vec<serde_json::Value>>,
+    pub tabs: Option<Vec<serde_json::Value>>,
+    #[serde(flatten)]
+    pub extra: Option<HashMap<String, serde_json::Value>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -48,10 +52,12 @@ pub struct PanelContribution {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CommandContribution {
+    #[serde(alias = "id")]
     pub command: String,
-    pub title: String,
+    pub title: Option<String>,
     pub category: Option<String>,
     pub icon: Option<String>,
+    pub shortcut: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -131,6 +137,8 @@ pub struct ExtensionPackage {
     /// Whether the extension has a `backend.wasm` file for WASM backend execution.
     #[serde(default)]
     pub has_wasm_backend: bool,
+    #[serde(default)]
+    pub is_dev: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
