@@ -38,7 +38,32 @@ export function getAuthOptions(): NextAuthOptions {
       }),
     ],
     callbacks: {
-      async signIn({ user, profile }) {
+      async signIn({ user, account, profile }) {
+        // Allow OAuth account linking when email matches an existing user
+        if (account && profile?.email) {
+          const existing = await prisma.user.findUnique({
+            where: { email: profile.email },
+            include: { accounts: true },
+          });
+          if (existing && !existing.accounts.some((a) => a.provider === account.provider)) {
+            await prisma.account.create({
+              data: {
+                userId: existing.id,
+                type: account.type,
+                provider: account.provider,
+                providerAccountId: account.providerAccountId,
+                access_token: account.access_token,
+                refresh_token: account.refresh_token,
+                expires_at: account.expires_at,
+                token_type: account.token_type,
+                scope: account.scope,
+                id_token: account.id_token,
+                session_state: account.session_state as string | null,
+              },
+            });
+          }
+        }
+
         // Auto-check GitHub Sponsors status on every sign-in
         const username = (profile as any)?.login || (user as any)?.username;
         if (username) {
