@@ -733,17 +733,16 @@ Command.register({
 // ── Tab template ─────────────────────────────────────────────────────────────
 
 const tabTemplate = (vars: TemplateVars): TemplateOutput => {
-  const schemeName = vars.name.replace(/-/g, '');
+  const componentName = vars.displayName.replace(/\s+/g, '');
   const source = `/**
  * ${vars.displayName} Extension
  *
- * A custom tab view for Xplorer.
- * Registers via Tab.register() with its own URL scheme (${schemeName}://).
- * Can be opened via api.navigation.navigateTo('${schemeName}://home').
+ * A sidebar tab for Xplorer. Appears in the left sidebar tab bar
+ * alongside Explorer and Search.
  */
 
-import React, { useState, useCallback, useEffect } from 'react';
-import { Tab, Command, type XplorerAPI, type TabRenderProps } from '@xplorer/extension-sdk';
+import React, { useState, useCallback } from 'react';
+import { SidebarTab, Command, useCurrentPath, type XplorerAPI } from '@xplorer/extension-sdk';
 
 // ── Styles ──────────────────────────────────────────────────────────────────
 
@@ -753,104 +752,69 @@ const s = {
     flexDirection: 'column' as const,
     height: '100%',
     color: 'var(--xp-text)',
-    backgroundColor: 'var(--xp-bg, #0a0a1a)',
   },
   header: {
-    padding: '16px 20px',
+    padding: '12px 12px 8px',
     borderBottom: '1px solid var(--xp-border, rgba(255,255,255,0.1))',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
   },
-  title: {
-    margin: 0,
-    fontSize: '14px',
+  label: {
+    fontSize: '11px',
     fontWeight: 600,
+    textTransform: 'uppercase' as const,
+    letterSpacing: '0.05em',
+    color: 'var(--xp-text-muted, #565f89)',
+    marginBottom: '8px',
   },
   content: {
     flex: 1,
-    padding: '20px',
+    padding: '8px 12px',
     overflowY: 'auto' as const,
   },
-  card: {
-    padding: '16px',
-    borderRadius: '8px',
-    backgroundColor: 'var(--xp-surface, rgba(255,255,255,0.05))',
-    border: '1px solid var(--xp-border, rgba(255,255,255,0.1))',
-    marginBottom: '12px',
-    cursor: 'pointer',
-  },
-  cardTitle: {
-    fontSize: '13px',
-    fontWeight: 600,
-    marginBottom: '4px',
-  },
-  cardDescription: {
-    fontSize: '12px',
-    color: 'var(--xp-text-secondary, var(--xp-text-muted))',
-  },
-  emptyState: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100%',
-    gap: '12px',
-    color: 'var(--xp-text-secondary, var(--xp-text-muted))',
-  },
-  button: {
-    padding: '8px 16px',
-    fontSize: '12px',
-    fontWeight: 500,
-    color: 'var(--xp-text)',
-    backgroundColor: 'var(--xp-blue, #7aa2f7)',
-    border: 'none',
+  item: {
+    padding: '8px 10px',
     borderRadius: '6px',
+    fontSize: '12px',
     cursor: 'pointer',
+    marginBottom: '2px',
+    transition: 'background-color 0.1s',
+  },
+  itemTitle: {
+    fontWeight: 500,
+  },
+  itemDescription: {
+    fontSize: '11px',
+    color: 'var(--xp-text-muted, #565f89)',
+    marginTop: '2px',
   },
 };
 
-// ── Tab Component ───────────────────────────────────────────────────────────
+// ── Component ───────────────────────────────────────────────────────────────
 
 let api: XplorerAPI;
 
-interface PageItem {
-  id: string;
-  title: string;
-  description: string;
-}
-
-function ${vars.displayName.replace(/\s+/g, '')}Tab({ path, onNavigate }: TabRenderProps) {
-  const [items, setItems] = useState<PageItem[]>([
+function ${componentName}Content() {
+  const currentPath = useCurrentPath();
+  const [items] = useState([
     { id: '1', title: 'Getting Started', description: 'Learn how to use ${vars.displayName}' },
-    { id: '2', title: 'Settings', description: 'Configure ${vars.displayName} options' },
+    { id: '2', title: 'Settings', description: 'Configure options' },
     { id: '3', title: 'About', description: 'Version and credits' },
   ]);
-
-  const handleItemClick = useCallback(
-    (item: PageItem) => {
-      if (onNavigate) {
-        onNavigate(\`${schemeName}://\${item.id}\`, item.title);
-      }
-    },
-    [onNavigate],
-  );
 
   return (
     <div style={s.container}>
       <div style={s.header}>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
-          <path d="M3 9h18" />
-        </svg>
-        <h2 style={s.title}>${vars.displayName}</h2>
+        <div style={s.label}>${vars.displayName}</div>
       </div>
-
       <div style={s.content}>
         {items.map((item) => (
-          <div key={item.id} style={s.card} onClick={() => handleItemClick(item)}>
-            <div style={s.cardTitle}>{item.title}</div>
-            <div style={s.cardDescription}>{item.description}</div>
+          <div
+            key={item.id}
+            style={s.item}
+            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.03)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+          >
+            <div style={s.itemTitle}>{item.title}</div>
+            <div style={s.itemDescription}>{item.description}</div>
           </div>
         ))}
       </div>
@@ -860,25 +824,14 @@ function ${vars.displayName.replace(/\s+/g, '')}Tab({ path, onNavigate }: TabRen
 
 // ── Registration ────────────────────────────────────────────────────────────
 
-Tab.register({
+SidebarTab.register({
   id: '${vars.name}',
   title: '${vars.displayName}',
   icon: '${vars.icon}',
-  urlScheme: '${schemeName}://',
   permissions: ${JSON.stringify(vars.permissions)},
-  render: (props) => <${vars.displayName.replace(/\s+/g, '')}Tab {...props} />,
+  render: () => <${componentName}Content />,
   onActivate: (xplorerApi) => {
     api = xplorerApi;
-  },
-});
-
-// Command to open this tab from the command palette
-Command.register({
-  id: '${vars.name}.open',
-  title: 'Open ${vars.displayName}',
-  permissions: ['ui:panels'],
-  action: async (cmdApi: XplorerAPI) => {
-    cmdApi.navigation.navigateTo('${schemeName}://home');
   },
 });
 `;
@@ -886,14 +839,6 @@ Command.register({
   return {
     packageJson: basePackageJson(vars, {
       contributes: {
-        tabs: [
-          {
-            id: vars.name,
-            title: vars.displayName,
-            icon: vars.icon,
-            urlScheme: `${schemeName}://`,
-          },
-        ],
         commands: [
           {
             command: 'open',
@@ -906,10 +851,9 @@ Command.register({
     tsconfig: baseTsconfig(),
     source,
     readme: baseReadme(vars, [
-      `Custom tab view with URL scheme (\`${schemeName}://\`)`,
-      'In-tab navigation between pages',
-      'Command palette integration to open the tab',
-      'Theme-aware card-based layout',
+      'Left sidebar tab (alongside Explorer and Search)',
+      'Theme-aware styling with CSS variables',
+      'Reactive to current path changes',
     ]),
   };
 };
