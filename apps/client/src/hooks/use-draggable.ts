@@ -1,5 +1,6 @@
 import { useCallback, useRef } from 'react';
 import { startDrag } from '@crabnebula/tauri-plugin-drag';
+import { resolveResource } from '@tauri-apps/api/path';
 import type { FileEntry } from '@/lib/tauri-api';
 import { useDragDropContext } from '@/contexts/DragDropContext';
 
@@ -10,6 +11,17 @@ interface UseDraggableOptions {
 }
 
 const DRAG_THRESHOLD = 5; // pixels before drag starts
+
+let _dragIconPath: string | null = null;
+const getDragIconPath = async (): Promise<string> => {
+  if (_dragIconPath) return _dragIconPath;
+  try {
+    _dragIconPath = await resolveResource('icons/icon.png');
+  } catch {
+    _dragIconPath = '';
+  }
+  return _dragIconPath;
+};
 
 /**
  * Native drag hook using tauri-plugin-drag.
@@ -53,8 +65,10 @@ export const useDraggable = ({ file, selectedFiles, allFiles }: UseDraggableOpti
       // Start native Tauri drag — OS handles visuals + drop
       // When dropped back in our window, onDragDropEvent fires
       // When dropped on desktop/another app, OS handles it
-      startDrag({ item: pathsToDrag, icon: pathsToDrag[0] }).catch((err) => {
-        console.error('startDrag failed:', err);
+      getDragIconPath().then((icon) => {
+        startDrag({ item: pathsToDrag, icon }).catch((err) => {
+          console.error('startDrag failed:', err);
+        });
       });
     },
     [file.path, selectedFiles, allFiles, startInternalDrag],

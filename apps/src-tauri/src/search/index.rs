@@ -121,6 +121,43 @@ fn word_regex() -> &'static Regex {
     RE.get_or_init(|| Regex::new(r"[\p{L}\p{N}_]{2,}").unwrap())
 }
 
+/// Check if a character is in a CJK Unicode block.
+fn is_cjk(c: char) -> bool {
+    matches!(c,
+        '\u{4E00}'..='\u{9FFF}'   // CJK Unified Ideographs
+        | '\u{3400}'..='\u{4DBF}' // CJK Extension A
+        | '\u{F900}'..='\u{FAFF}' // CJK Compatibility Ideographs
+        | '\u{3040}'..='\u{309F}' // Hiragana
+        | '\u{30A0}'..='\u{30FF}' // Katakana
+        | '\u{AC00}'..='\u{D7AF}' // Hangul Syllables
+        | '\u{1100}'..='\u{11FF}' // Hangul Jamo
+    )
+}
+
+/// Extract CJK unigrams and bigrams from text.
+/// "文件管理器" → ["文件", "件管", "管理", "理器"] (bigrams)
+/// plus each individual character: ["文", "件", "管", "理", "器"]
+fn extract_cjk_tokens(text: &str) -> Vec<String> {
+    let cjk_chars: Vec<char> = text.chars().filter(|c| is_cjk(*c)).collect();
+    if cjk_chars.is_empty() {
+        return Vec::new();
+    }
+    let mut tokens = Vec::new();
+
+    // Unigrams (single characters)
+    for &c in &cjk_chars {
+        tokens.push(c.to_string());
+    }
+
+    // Bigrams (overlapping pairs)
+    for pair in cjk_chars.windows(2) {
+        let s: String = pair.iter().collect();
+        tokens.push(s);
+    }
+
+    tokens
+}
+
 /// Split a word on CamelCase boundaries.
 ///
 /// ```text
@@ -211,6 +248,11 @@ fn tokenize_and_stem(text: &str) -> HashMap<String, u32> {
         }
     }
 
+    // CJK bigram/unigram tokenization (Chinese, Japanese, Korean)
+    for token in extract_cjk_tokens(text) {
+        *freq.entry(token).or_insert(0) += 1;
+    }
+
     freq
 }
 
@@ -269,6 +311,13 @@ fn tokenize_with_positions(text: &str) -> (HashMap<String, u32>, HashMap<String,
             }
         }
 
+        pos += 1;
+    }
+
+    // CJK bigram/unigram tokenization with positions
+    for token in extract_cjk_tokens(text) {
+        *freq.entry(token.clone()).or_insert(0) += 1;
+        positions.entry(token).or_default().push(pos);
         pos += 1;
     }
 
@@ -1406,6 +1455,11 @@ fn tokenize_exact(text: &str) -> HashMap<String, u32> {
                 }
             }
         }
+    }
+
+    // CJK bigram/unigram tokenization
+    for token in extract_cjk_tokens(text) {
+        *freq.entry(token).or_insert(0) += 1;
     }
 
     freq
