@@ -1,8 +1,10 @@
 import { PrismaClient } from '@prisma/client';
 import * as fs from 'fs';
 import * as path from 'path';
+import { extensionIcons } from './extension-icons';
 
 const prisma = new PrismaClient();
+const RESET = process.argv.includes('--reset');
 
 // ── Category definitions ────────────────────────────────────────────────────
 
@@ -91,6 +93,21 @@ function readExtensionManifests(): { dirName: string; manifest: ExtensionManifes
 async function main() {
   console.log('[seed] Starting database seed...\n');
 
+  // 0. Reset if --reset flag is passed
+  if (RESET) {
+    console.log('[seed] --reset flag detected. Clearing existing extension data...');
+    await prisma.extensionVersion.deleteMany({});
+    await prisma.download.deleteMany({});
+    await prisma.review.deleteMany({});
+    await prisma.purchase.deleteMany({});
+    await prisma.trial.deleteMany({});
+    await prisma.categoriesOnExtensions.deleteMany({});
+    await prisma.tagsOnExtensions.deleteMany({});
+    await prisma.extension.deleteMany({});
+    await prisma.tag.deleteMany({});
+    console.log('[seed] Cleared all extension data.\n');
+  }
+
   // 1. Upsert categories
   for (const cat of CATEGORIES) {
     await prisma.category.upsert({
@@ -102,16 +119,26 @@ async function main() {
   console.log(`[seed] Upserted ${CATEGORIES.length} categories.`);
 
   // 2. Upsert system user (Xplorer Team)
-  const systemUser = await prisma.user.upsert({
-    where: { email: 'team@xplorer.app' },
-    update: { name: 'Xplorer Team', username: 'xplorer-team', role: 'ADMIN' },
-    create: {
-      email: 'team@xplorer.app',
-      name: 'Xplorer Team',
-      username: 'xplorer-team',
-      role: 'ADMIN',
-    },
-  });
+  // Try by email first, then by username
+  let systemUser = await prisma.user.findUnique({ where: { email: 'team@xplorer.app' } });
+  if (!systemUser) {
+    systemUser = await prisma.user.findUnique({ where: { username: 'xplorer-team' } });
+  }
+  if (!systemUser) {
+    systemUser = await prisma.user.create({
+      data: {
+        email: 'team@xplorer.app',
+        name: 'Xplorer Team',
+        username: 'xplorer-team',
+        role: 'ADMIN',
+      },
+    });
+  } else {
+    systemUser = await prisma.user.update({
+      where: { id: systemUser.id },
+      data: { name: 'Xplorer Team', role: 'ADMIN' },
+    });
+  }
   console.log(`[seed] System user: ${systemUser.name} (${systemUser.id})`);
 
   // 3. Read all extension manifests from examples/
@@ -125,6 +152,7 @@ async function main() {
     const slug = slugify(manifest.id);
     const displayName = manifest.displayName || manifest.name || manifest.id;
     const categorySlug = CATEGORY_MAP[manifest.category] || 'utilities';
+    const svgIcon = extensionIcons[manifest.id] || null;
 
     // Look up the category
     const category = await prisma.category.findUnique({ where: { slug: categorySlug } });
@@ -140,7 +168,7 @@ async function main() {
             displayName,
             description: manifest.description,
             version: manifest.version || '1.0.0',
-            icon: manifest.icon || null,
+            icon: svgIcon || manifest.icon || null,
             status: 'APPROVED',
             isPublished: true,
             publishedAt: existing.publishedAt || new Date(),
@@ -159,7 +187,7 @@ async function main() {
               ? `**Keywords:** ${manifest.keywords.join(', ')}\n\n**Permissions:** ${(manifest.permissions || []).join(', ')}`
               : `**Permissions:** ${(manifest.permissions || []).join(', ')}`,
             version: manifest.version || '1.0.0',
-            icon: manifest.icon || null,
+            icon: svgIcon || manifest.icon || null,
             status: 'APPROVED',
             isPublished: true,
             isFeatured: ['ai-chat', 'code-editor', 'xplorer-dracula-theme', 'duplicate-finder', 'git'].includes(manifest.id),
