@@ -9,7 +9,7 @@ sidebar_position: 4
 The Xplorer Extension SDK (`@xplorer/extension-sdk`) provides high-level registration APIs, React hooks, UI components, base classes, and type definitions for building extensions.
 
 ```typescript
-import { Theme, Sidebar, Preview, Command, ContextMenu, Tab, Navigation, BottomTab, Editor } from '@xplorer/extension-sdk';
+import { Theme, Sidebar, SidebarTab, Preview, Command, ContextMenu, BottomTab, Editor } from '@xplorer/extension-sdk';
 ```
 
 ---
@@ -148,52 +148,34 @@ ContextMenu.register({
 });
 ```
 
-### Tab.register()
+### SidebarTab.register()
 
-Register a custom tab type that appears in the main content area. Ideal for extensions that need a full-page view, like cloud file browsers or dashboards.
+Register a tab in the left sidebar tab bar (alongside Explorer and Search). When the user clicks the tab icon, your component is rendered in the left sidebar area.
 
 ```typescript
-import { Tab, type XplorerAPI } from '@xplorer/extension-sdk';
+import { SidebarTab, useCurrentPath, type XplorerAPI } from '@xplorer/extension-sdk';
 
 let api: XplorerAPI;
 
-Tab.register({
-  id: 'gdrive-browser',
-  title: 'Google Drive',
-  icon: 'cloud',
-  tabType: 'gdrive',              // unique tab type identifier
+const MyTabContent = () => {
+  const currentPath = useCurrentPath();
+  return React.createElement('div', { style: { padding: 12, color: 'var(--xp-text)' } },
+    React.createElement('h3', null, `Current: ${currentPath}`),
+  );
+};
+
+SidebarTab.register({
+  id: 'my-sidebar-tab',
+  title: 'My Tab',
+  icon: 'layout',                  // lucide-react icon name
   onActivate: (injectedApi) => { api = injectedApi; },
-  render: (props) => {
-    // props.tabData contains data passed via api.navigation.openTab()
-    return React.createElement('div', { style: { padding: 16 } },
-      React.createElement('h2', null, 'Google Drive Browser'),
-    );
-  },
+  render: (props) => React.createElement(MyTabContent),
 });
 ```
 
 **Props received by `render`:**
-- `tabData?: Record<string, any>` — custom data passed when opening the tab
-- `currentPath?: string` — current directory (if applicable)
-
-### Navigation.register()
-
-Register a navigation entry in the left sidebar. Clicking the entry navigates to a path or opens a custom tab.
-
-```typescript
-import { Navigation, type XplorerAPI } from '@xplorer/extension-sdk';
-
-Navigation.register({
-  id: 'gdrive-nav',
-  title: 'Google Drive',
-  icon: 'cloud',
-  section: 'cloud',                // sidebar section: 'favorites', 'cloud', 'devices', 'custom'
-  order: 10,                       // sort order within section
-  onClick: (api) => {
-    api.navigation.openTab({ type: 'gdrive', name: 'Google Drive' });
-  },
-});
-```
+- `currentPath?: string` — current directory
+- `isActive?: boolean` — whether this tab is currently visible
 
 ### BottomTab.register()
 
@@ -675,8 +657,6 @@ For complex extensions needing full lifecycle control, use the base classes dire
 | `PreviewExtension` | preview | File previews with `canPreview()` + `render()` |
 | `ActionExtension` | action | Context menu items with `getActions()` |
 | `ThemeExtension` | theme | Color themes with `getTheme()` |
-| `TabExtension` | tab | Custom tab views with `render()` |
-| `NavigationExtension` | navigation | Left sidebar entries with `onClick()` |
 | `BottomTabExtension` | bottom-tab | Bottom panel tabs with `render()` |
 | `EditorExtension` | editor | File editors with `canEdit()` + `render()` |
 
@@ -718,7 +698,7 @@ interface ExtensionManifest {
   description?: string;
   version: string;
   author: string;
-  category: 'theme' | 'preview' | 'action' | 'panel' | 'tool' | 'tab' | 'navigation' | 'bottom-tab' | 'editor';
+  category: 'theme' | 'preview' | 'action' | 'panel' | 'tool' | 'bottom-tab' | 'editor';
   icon?: string;
   permissions?: string[];
   activationEvents?: string[];
