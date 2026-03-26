@@ -154,4 +154,11 @@ vi.mock('lucide-react', () => ({
   ToggleLeft: createIconMock('ToggleLeft'),
   ToggleRight: createIconMock('ToggleRight'),
   Copy: createIconMock('Copy'),
+  Twitter: createIconMock('Twitter'),
+  FileStack: createIconMock('FileStack'),
+  Cpu: createIconMock('Cpu'),
+  Layers: createIconMock('Layers'),
+  Blocks: createIconMock('Blocks'),
+  ChevronLeft: createIconMock('ChevronLeft'),
+  MessageSquarePlus: createIconMock('MessageSquarePlus'),
 }));
