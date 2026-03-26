@@ -801,8 +801,46 @@ class ExtensionHost {
       }
       // Notify UI that extensions have been loaded
       this.notifyChange();
+
+      // Check for updates in the background (non-blocking)
+      this.checkForUpdates(installed).catch(() => {});
     } catch (err) {
       console.error('[ExtensionHost] Failed to load installed extensions:', err);
+    }
+  }
+
+  private async checkForUpdates(
+    installed: Array<{ manifest: { id: string; version?: string } }>,
+  ): Promise<void> {
+    try {
+      const marketplaceUrl =
+        localStorage.getItem('xplorer:marketplace-url') || 'https://xplorer.space/api';
+      const extList = installed.map((pkg) => ({
+        id: pkg.manifest.id,
+        version: pkg.manifest.version || '0.0.0',
+      }));
+
+      const updates = await TauriAPI.checkForExtensionUpdates(marketplaceUrl, extList);
+      if (updates.length === 0) return;
+
+      for (const update of updates) {
+        console.warn(
+          `[ExtensionHost] Update available: ${update.id} ${update.current_version} → ${update.latest_version}`,
+        );
+
+        try {
+          await TauriAPI.downloadExtensionUpdate(update.id, update.download_url, update.checksum);
+          console.warn(`[ExtensionHost] Updated ${update.id} to ${update.latest_version}`);
+        } catch (dlErr) {
+          console.error(`[ExtensionHost] Failed to update ${update.id}:`, dlErr);
+        }
+      }
+
+      if (updates.length > 0) {
+        this.notifyChange();
+      }
+    } catch {
+      // Network errors are expected (offline, marketplace down) — silently ignore
     }
   }
 

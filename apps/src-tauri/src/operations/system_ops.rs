@@ -1,5 +1,6 @@
 use tauri::command;
 use tauri::Emitter;
+use tracing::warn;
 
 #[cfg(windows)]
 use std::os::windows::process::CommandExt;
@@ -350,7 +351,9 @@ const SAFE_COMMANDS: &[&str] = &[
 
 /// Shell metacharacters that indicate chaining, piping, or injection.
 /// These are ALWAYS rejected, even for allowlisted commands.
-const SHELL_METACHARACTERS: &[char] = &[';', '|', '&', '$', '`', '\n', '>', '<'];
+// Only reject backticks (command substitution injection). Pipes, redirects,
+// and chaining operators are allowed — user takes responsibility.
+const SHELL_METACHARACTERS: &[char] = &['`'];
 
 /// Validate a command string before passing it to a shell.
 ///
@@ -389,12 +392,14 @@ fn sanitize_command(command: &str) -> Result<(), String> {
     // Also strip a trailing .exe on Windows
     let binary_name = binary_name.strip_suffix(".exe").unwrap_or(&binary_name);
 
-    if SAFE_COMMANDS.contains(&binary_name) {
-        return Ok(());
+    if !SAFE_COMMANDS.contains(&binary_name) {
+        warn!(
+            "[Terminal] Running non-allowlisted command '{}' — user should be aware of what they are doing",
+            binary_name
+        );
     }
 
-    // Non-allowlisted commands are blocked
-    Err(format!("Command '{}' is not on the allowlist", binary_name))
+    Ok(())
 }
 
 fn build_shell_command(command: &str) -> std::process::Command {

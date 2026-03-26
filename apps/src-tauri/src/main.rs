@@ -17,6 +17,7 @@ use xplorer::file_watcher;
 use xplorer::git_history;
 use xplorer::google_drive;
 use xplorer::operations;
+use xplorer::pty;
 use xplorer::shortcuts;
 use xplorer::storage;
 use xplorer::watcher;
@@ -515,6 +516,12 @@ fn main() {
             file_versions::get_version_count,
             file_versions::delete_all_versions,
             file_versions::read_version_content,
+            // PTY (interactive terminal) operations
+            pty::pty_spawn,
+            pty::pty_write,
+            pty::pty_resize,
+            pty::pty_kill,
+            pty::pty_kill_all,
             // Cloud sync operations
             sync::sync_bookmarks_to_cloud,
             sync::sync_tags_to_cloud,
@@ -534,6 +541,7 @@ fn main() {
                 watcher::stop_watcher();
                 file_watcher::stop_all_watchers();
                 sync::stop_auto_sync_blocking();
+                let _ = pty::pty_kill_all();
             }
         })
         .run(tauri::generate_context!())
