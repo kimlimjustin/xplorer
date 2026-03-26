@@ -504,46 +504,6 @@
     "iconSizeLabel": "Sesuaikan ukuran ikon ({{size}}px)"
   },
 
-  "architectView": {
-    "title": "Tampilan Arsitektur",
-    "analyzing": "Menganalisis {{path}}...",
-    "backToFiles": "Kembali ke File",
-    "toggle": "Aktifkan Mode Arsitektur",
-    "label": "Arsitek",
-    "analysis": {
-      "title": "Analisis: {{name}}",
-      "analyze": "Analisis",
-      "loading": "AI sedang menganalisis {{name}}...",
-      "retry": "Coba lagi",
-      "askMore": "Tanyakan lebih lanjut ke AI",
-      "aiError": "Analisis AI gagal",
-      "aiNotConfigured": "AI belum dikonfigurasi",
-      "aiNotConfiguredHint": "Silakan konfigurasi model AI di pengaturan (Ollama atau kunci API) untuk menggunakan analisis mendalam."
-    },
-    "canvas": {
-      "zoomIn": "Perbesar",
-      "zoomOut": "Perkecil",
-      "fitView": "Sesuaikan Tampilan",
-      "nodeCount": "{{count}} node",
-      "noNodes": "File sumber tidak ditemukan",
-      "expandAll": "Buka Semua",
-      "collapseAll": "Tutup Semua"
-    },
-    "sidebar": {
-      "scanning": "Memindai struktur proyek...",
-      "error": "Pemindaian gagal",
-      "retry": "Coba lagi",
-      "empty": "Buka folder proyek untuk melihat arsitekturnya",
-      "kinds": {
-        "project": "Proyek",
-        "area": "Area",
-        "module": "Modul",
-        "directory": "Direktori",
-        "file": "File"
-      }
-    }
-  },
-
   "navigation": {
     "home": "Beranda",
     "trash": "Tempat Sampah",

@@ -35,7 +35,6 @@ import PanelToggleButtons from '@/components/explorer/PanelToggleButtons';
 import ResizeHandle from '@/components/ui/ResizeHandle';
 import StatusBar from '@/components/StatusBar';
 import SplitContainer from '@/components/split-view/SplitContainer';
-import ArchitectView from '@/components/explorer/ArchitectView';
 import { DragDropProvider } from '@/contexts/DragDropContext';
 import { CrossTabSelectionProvider } from '@/contexts/CrossTabSelectionContext';
 import { ExplorerProvider, type ExplorerContextValue } from '@/contexts/ExplorerContext';
@@ -90,10 +89,6 @@ export interface MainLayoutProps {
   setSortBy: React.Dispatch<React.SetStateAction<SortField>>;
   sortOrder: 'asc' | 'desc';
   setSortOrder: React.Dispatch<React.SetStateAction<'asc' | 'desc'>>;
-
-  // Architecture mode
-  architectMode: boolean;
-  setArchitectMode: React.Dispatch<React.SetStateAction<boolean>>;
 
   // Navigation
   navigateWithHistory: (path: string) => void;
@@ -247,8 +242,6 @@ const MainLayout = (props: MainLayoutProps) => {
     setSortBy,
     sortOrder,
     setSortOrder,
-    architectMode,
-    setArchitectMode,
     navigateWithHistory,
     navigateUp,
     navigateToPath,
@@ -489,52 +482,44 @@ const MainLayout = (props: MainLayoutProps) => {
                   onToggleCollectionFilter={(col) => {
                     setActiveCollectionFilter((prev) => (prev?.id === col.id ? null : col));
                   }}
-                  architectMode={architectMode}
-                  setArchitectMode={setArchitectMode}
                 />
                 <ResizeHandle direction="horizontal" onResize={handleLeftResize} />
               </>
             )}
 
-            {/* Center Content -- Split Panes or Architecture View */}
+            {/* Center Content -- Split Panes */}
             <div
               className="flex flex-1 flex-col overflow-hidden"
               style={{ minHeight: 0, position: 'relative' }}
               data-tour="file-grid"
             >
-              {architectMode ? (
-                <ArchitectView currentPath={currentPath} onClose={() => setArchitectMode(false)} />
-              ) : (
-                <>
-                  <ErrorBoundary>
-                    <ExplorerProvider value={explorerContextValue}>
-                      <SplitContainer
-                        node={layoutState.rootNode}
-                        groups={layoutState.groups}
-                        activeGroupId={layoutState.activeGroupId}
-                        path={[]}
-                      />
-                    </ExplorerProvider>
-                  </ErrorBoundary>
+              <ErrorBoundary>
+                <ExplorerProvider value={explorerContextValue}>
+                  <SplitContainer
+                    node={layoutState.rootNode}
+                    groups={layoutState.groups}
+                    activeGroupId={layoutState.activeGroupId}
+                    path={[]}
+                  />
+                </ExplorerProvider>
+              </ErrorBoundary>
 
-                  {/* Pane sync visual connector line */}
-                  {paneSync.enabled && Object.keys(layoutState.groups).length > 1 && (
-                    <div
-                      style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        pointerEvents: 'none',
-                        zIndex: 50,
-                        border: '2px solid var(--xp-blue)',
-                        opacity: 0.3,
-                        borderRadius: 4,
-                      }}
-                    />
-                  )}
-                </>
+              {/* Pane sync visual connector line */}
+              {paneSync.enabled && Object.keys(layoutState.groups).length > 1 && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    pointerEvents: 'none',
+                    zIndex: 50,
+                    border: '2px solid var(--xp-blue)',
+                    opacity: 0.3,
+                    borderRadius: 4,
+                  }}
+                />
               )}
             </div>
 

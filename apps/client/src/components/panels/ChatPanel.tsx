@@ -3,7 +3,6 @@ import { FolderOpen, FolderClosed, FileText } from 'lucide-react';
 import { AIService, type ChatMessage, type FileContext } from '@/lib/ai-service';
 import { AgentService, type AgentEvent } from '@/lib/agent-service';
 import { useChatState } from '@/hooks/use-chat-state';
-import { useArchitectContext } from '@/hooks/use-architect-context';
 import {
   MessageBubble,
   ToolCallsList,
@@ -14,7 +13,6 @@ import {
   EmptyState,
 } from '@/components/panels/ChatMessage';
 import ChatInput from '@/components/panels/ChatInput';
-import ArchitectContextBar from '@/components/panels/ArchitectContextBar';
 
 interface ChatSessionSummaryItem {
   id: string;
@@ -97,7 +95,6 @@ const ChatPanel = ({
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const chatPanelRef = useRef<HTMLDivElement>(null);
   const [showHistory, setShowHistory] = useState(false);
-  const architectContextPrefixRef = useRef<() => string>(() => '');
 
   useEffect(() => {
     if (!state.isModelDropdownOpen && !state.isContextDropdownOpen) return;
@@ -237,9 +234,7 @@ const ChatPanel = ({
     const userText = text ?? chatInput.trim();
     if (!userText) return;
 
-    // Prepend architect context if available (uses ref to avoid declaration-order issues)
-    const contextPrefix = architectContextPrefixRef.current();
-    const fullMessage = contextPrefix + userText;
+    const fullMessage = userText;
 
     // Add user message (show the original text in the UI, not the context prefix)
     const userMsg: ChatMessage = {
@@ -418,15 +413,6 @@ const ChatPanel = ({
       return '';
     }
   };
-
-  // Architect view integration — context, event listeners, quick actions
-  const {
-    architectContext,
-    clearArchitectContext,
-    handleQuickAction: handleArchitectQuickAction,
-    buildContextPrefix,
-  } = useArchitectContext(handleSendMessage, isAiLoading || state.isAgentRunning);
-  architectContextPrefixRef.current = buildContextPrefix;
 
   return (
     <div
@@ -905,16 +891,6 @@ const ChatPanel = ({
             {isAiLoading && !state.isAgentRunning && 'AI is generating a response'}
           </div>
         </div>
-      )}
-
-      {/* Architect Context Indicator */}
-      {architectContext && (
-        <ArchitectContextBar
-          context={architectContext}
-          onClear={clearArchitectContext}
-          onQuickAction={handleArchitectQuickAction}
-          disabled={isAiLoading || state.isAgentRunning}
-        />
       )}
 
       {/* Input Area */}

@@ -292,7 +292,6 @@ const ExplorerUnified = () => {
     sortBy: layout.sortBy,
     sortOrder: layout.sortOrder,
     theme,
-    setArchitectMode: layout.setArchitectMode,
     setCommandPaletteOpen: dialogManager.setCommandPaletteOpen,
     commandPaletteOpen: dialogManager.commandPaletteOpen,
     setWorkspaceLayoutDialogOpen: dialogManager.setWorkspaceLayoutDialogOpen,

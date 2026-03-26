@@ -10,19 +10,13 @@ interface SidebarTab {
 interface SidebarTabBarProps {
   activeTabId: string;
   onTabClick: (tabId: string) => void;
-  showArchitectTab: boolean;
   extensionTabs: SidebarTab[];
 }
 
 const TAB_CLASS_ACTIVE = 'bg-xp-blue/15 text-xp-blue';
 const TAB_CLASS_INACTIVE = 'text-xp-text-muted hover:bg-xp-surface-light hover:text-xp-text';
 
-const SidebarTabBar = ({
-  activeTabId,
-  onTabClick,
-  showArchitectTab,
-  extensionTabs,
-}: SidebarTabBarProps) => {
+const SidebarTabBar = ({ activeTabId, onTabClick, extensionTabs }: SidebarTabBarProps) => {
   const tabClass = (tabId: string) =>
     `flex items-center justify-center rounded transition-colors ${
       activeTabId === tabId ? TAB_CLASS_ACTIVE : TAB_CLASS_INACTIVE
@@ -66,27 +60,6 @@ const SidebarTabBar = ({
       >
         <Search size={15} />
       </button>
-
-      {/* Architect tab */}
-      {showArchitectTab && (
-        <button
-          role="tab"
-          onClick={() => onTabClick('__architect__')}
-          className={tabClass('__architect__')}
-          style={{ width: 28, height: 28, padding: 0 }}
-          aria-label="Architecture view"
-          aria-selected={activeTabId === '__architect__'}
-          title="Architecture View"
-        >
-          <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <circle cx="5" cy="5" r="2" />
-            <circle cx="15" cy="5" r="2" />
-            <circle cx="10" cy="15" r="2" />
-            <line x1="5" y1="7" x2="10" y2="13" stroke="currentColor" strokeWidth="1.5" />
-            <line x1="15" y1="7" x2="10" y2="13" stroke="currentColor" strokeWidth="1.5" />
-          </svg>
-        </button>
-      )}
 
       {/* Extension-registered sidebar tabs */}
       {extensionTabs.map((tab) => (
