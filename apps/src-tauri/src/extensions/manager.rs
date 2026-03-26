@@ -269,43 +269,83 @@ impl ExtensionManager {
     fn scan_installed_extensions(&mut self) {
         self.installed_extensions.clear();
 
-        if !self.extensions_dir.exists() {
-            return;
+        let mut seen_ids: std::collections::HashSet<String> = std::collections::HashSet::new();
+
+        let active = self.active_extensions.clone();
+
+        // In dev mode, load from local workspace first (takes priority)
+        #[cfg(debug_assertions)]
+        {
+            let workspace_ext_dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+                .join("../../packages/extensions");
+            if workspace_ext_dir.exists() {
+                Self::scan_extension_dir_into(
+                    &workspace_ext_dir, true, &active,
+                    &mut self.installed_extensions, &mut seen_ids,
+                );
+            }
         }
 
-        if let Ok(entries) = fs::read_dir(&self.extensions_dir) {
-            for entry in entries.flatten() {
-                let path = entry.path();
-                if path.is_dir() {
-                    let manifest_path = path.join("package.json");
-                    if manifest_path.exists() {
-                        if let Ok(manifest_content) = fs::read_to_string(&manifest_path) {
-                            if let Ok(manifest) =
-                                super::types::parse_manifest_from_package_json(&manifest_content)
-                            {
-                                let is_active = self.active_extensions.contains(&manifest.id);
+        // Then scan the user data extensions dir (marketplace installs)
+        if self.extensions_dir.exists() {
+            Self::scan_extension_dir_into(
+                &self.extensions_dir, false, &active,
+                &mut self.installed_extensions, &mut seen_ids,
+            );
+        }
+    }
 
-                                // Verify extension signature on load
-                                let verified =
-                                    signing::verify_extension_integrity(&path, &manifest.id);
+    fn scan_extension_dir_into(
+        dir: &std::path::Path,
+        is_dev: bool,
+        active: &[String],
+        out: &mut Vec<ExtensionPackage>,
+        seen_ids: &mut std::collections::HashSet<String>,
+    ) {
+        let entries = match fs::read_dir(dir) {
+            Ok(e) => e,
+            Err(_) => return,
+        };
 
-                                let has_wasm_backend = path.join("backend.wasm").exists();
-
-                                let extension_package = ExtensionPackage {
-                                    manifest,
-                                    path: path.to_string_lossy().to_string(),
-                                    is_active,
-                                    is_installed: true,
-                                    verified,
-                                    has_wasm_backend,
-                                    is_dev: cfg!(debug_assertions),
-                                };
-                                self.installed_extensions.push(extension_package);
-                            }
-                        }
-                    }
-                }
+        for entry in entries.flatten() {
+            let path = entry.path();
+            if !path.is_dir() {
+                continue;
             }
+
+            let manifest_path = path.join("package.json");
+            if !manifest_path.exists() {
+                continue;
+            }
+
+            let manifest_content = match fs::read_to_string(&manifest_path) {
+                Ok(c) => c,
+                Err(_) => continue,
+            };
+
+            let manifest = match super::types::parse_manifest_from_package_json(&manifest_content) {
+                Ok(m) => m,
+                Err(_) => continue,
+            };
+
+            if seen_ids.contains(&manifest.id) {
+                continue;
+            }
+            seen_ids.insert(manifest.id.clone());
+
+            let is_active = active.contains(&manifest.id);
+            let verified = signing::verify_extension_integrity(&path, &manifest.id);
+            let has_wasm_backend = path.join("backend.wasm").exists();
+
+            out.push(ExtensionPackage {
+                manifest,
+                path: path.to_string_lossy().to_string(),
+                is_active,
+                is_installed: true,
+                verified,
+                has_wasm_backend,
+                is_dev,
+            });
         }
     }
 
