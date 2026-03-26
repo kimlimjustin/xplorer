@@ -301,10 +301,40 @@ export async function GET(request: NextRequest, context: RouteContext) {
       }
     }
 
-    // Free extensions: redirect to the public blob URL
-    return NextResponse.redirect(extension.downloadUrl, {
-      headers: corsHeaders(request),
-    });
+    // Proxy the blob content through this API route (blob store is private)
+    try {
+      const blobResponse = await fetch(extension.downloadUrl, {
+        headers: {
+          Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}`,
+        },
+      });
+
+      if (!blobResponse.ok) {
+        return NextResponse.json(
+          { error: 'Failed to retrieve extension file' },
+          { status: 502, headers: corsHeaders(request) }
+        );
+      }
+
+      const headers = new Headers(corsHeaders(request));
+      headers.set('Content-Type', blobResponse.headers.get('content-type') || 'application/javascript');
+      headers.set(
+        'Content-Disposition',
+        `attachment; filename="${extension.slug}-${extension.version}.js"`
+      );
+      const contentLength = blobResponse.headers.get('content-length');
+      if (contentLength) {
+        headers.set('Content-Length', contentLength);
+      }
+
+      return new NextResponse(blobResponse.body, { headers });
+    } catch (err) {
+      console.error('Failed to proxy extension download:', err);
+      return NextResponse.json(
+        { error: 'Failed to retrieve extension file' },
+        { status: 502, headers: corsHeaders(request) }
+      );
+    }
   } catch (error) {
     console.error('GET /api/extensions/[id]/download error:', error);
     return NextResponse.json(

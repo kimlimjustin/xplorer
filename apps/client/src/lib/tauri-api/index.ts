@@ -11,6 +11,7 @@ import * as extensions from './extensions';
 import * as ai from './ai';
 import * as storage from './storage';
 import * as system from './system';
+import * as pty from './pty';
 
 // Re-export all types so `import { FileEntry } from '@/lib/tauri-api'` keeps working
 export * from '../tauri-api-types';
@@ -23,6 +24,7 @@ export * from './extensions';
 export * from './ai';
 export * from './storage';
 export * from './system';
+export * from './pty';
 
 // ---------------------------------------------------------------------------
 // Backward-compatible static class
@@ -257,6 +259,15 @@ export class TauriAPI {
   static getSqliteTableColumns = storage.getSqliteTableColumns;
   static querySqliteTable = storage.querySqliteTable;
   static executeSqliteQuery = storage.executeSqliteQuery;
+
+  // ── PTY (interactive terminal) ──────────────────────────────────────────
+  static ptySpawn = pty.ptySpawn;
+  static ptyWrite = pty.ptyWrite;
+  static ptyResize = pty.ptyResize;
+  static ptyKill = pty.ptyKill;
+  static ptyKillAll = pty.ptyKillAll;
+  static listenToPtyOutput = pty.listenToPtyOutput;
+  static listenToPtyExit = pty.listenToPtyExit;
 
   // ── System ──────────────────────────────────────────────────────────────
   static executeCommand = system.executeCommand;
