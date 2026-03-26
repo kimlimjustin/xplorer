@@ -298,7 +298,7 @@ impl ExtensionManager {
                                     is_installed: true,
                                     verified,
                                     has_wasm_backend,
-                                    is_dev: verified,
+                                    is_dev: cfg!(debug_assertions),
                                 };
                                 self.installed_extensions.push(extension_package);
                             }
