@@ -266,9 +266,13 @@ const MarketplacePanel = () => {
     try {
       const installed = await TauriAPI.getInstalledExtensions();
       setInstalledExtensions(installed.map((ext) => ext.manifest.id));
-      setDevExtensions(new Set(
-        installed.filter((ext) => (ext as { is_dev?: boolean }).is_dev).map((ext) => ext.manifest.id)
-      ));
+      setDevExtensions(
+        new Set(
+          installed
+            .filter((ext) => (ext as { is_dev?: boolean }).is_dev)
+            .map((ext) => ext.manifest.id),
+        ),
+      );
     } catch (err) {
       console.error('Failed to load installed extensions:', err);
     }

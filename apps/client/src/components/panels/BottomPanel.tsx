@@ -67,11 +67,11 @@ const BottomPanel = ({
   bottomPanelTab,
   setBottomPanelTab,
   height,
-  terminalHistory,
-  terminalInput,
-  setTerminalInput,
+  terminalHistory: _terminalHistory,
+  terminalInput: _terminalInput,
+  setTerminalInput: _setTerminalInput,
   terminalCwd,
-  executeTerminalCommand,
+  executeTerminalCommand: _executeTerminalCommand,
   files,
   currentPath,
   themes,
@@ -223,10 +223,7 @@ const BottomPanel = ({
               }
             >
               {bottomPanelTab === 'terminal' && (
-                <XTermPanel
-                  cwd={terminalCwd}
-                  collapsed={bottomPanelCollapsed}
-                />
+                <XTermPanel cwd={terminalCwd} collapsed={bottomPanelCollapsed} />
               )}
 
               {bottomPanelTab === 'activity-log' && (
