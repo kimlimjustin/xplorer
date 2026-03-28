@@ -1116,8 +1116,7 @@ async fn get_zip_info(archive_path: &Path) -> Result<ArchiveInfo, String> {
         let entry_name = file
             .name()
             .split('/')
-            .filter(|s| !s.is_empty())
-            .next_back()
+            .rfind(|s| !s.is_empty())
             .unwrap_or("")
             .to_string();
         files.push(ArchiveEntry {
@@ -1242,8 +1241,7 @@ fn get_tar_info_from_reader<R: Read>(
 
         let entry_name = path
             .split('/')
-            .filter(|s| !s.is_empty())
-            .next_back()
+            .rfind(|s| !s.is_empty())
             .unwrap_or("")
             .to_string();
         files.push(ArchiveEntry {
@@ -1691,8 +1689,7 @@ async fn get_7z_info(archive_path: &Path) -> Result<ArchiveInfo, String> {
 
                 let entry_name = name_str
                     .split('/')
-                    .filter(|s| !s.is_empty())
-                    .next_back()
+                    .rfind(|s| !s.is_empty())
                     .unwrap_or("")
                     .to_string();
 
@@ -1958,8 +1955,7 @@ async fn get_rar_info(archive_path: &Path) -> Result<ArchiveInfo, String> {
                 let entry_name = full_path
                     .split('/')
                     .chain(full_path.split('\\'))
-                    .filter(|s| !s.is_empty())
-                    .next_back()
+                    .rfind(|s| !s.is_empty())
                     .unwrap_or("")
                     .to_string();
 

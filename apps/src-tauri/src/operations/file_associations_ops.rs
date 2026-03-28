@@ -64,7 +64,7 @@ pub async fn open_file_with_application(file_path: String, app_path: String) -> 
 
     #[cfg(windows)]
     {
-        let output = Command::new(&app_path).arg(&file_path).spawn();
+        let output = Command::new(app_path).arg(file_path).spawn();
 
         match output {
             Ok(_) => Ok(()),
@@ -74,7 +74,7 @@ pub async fn open_file_with_application(file_path: String, app_path: String) -> 
 
     #[cfg(all(unix, not(target_os = "macos")))]
     {
-        let output = Command::new(&app_path).arg(&file_path).spawn();
+        let output = Command::new(app_path).arg(file_path).spawn();
 
         match output {
             Ok(_) => Ok(()),

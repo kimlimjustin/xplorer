@@ -88,14 +88,13 @@ pub async fn list_drives() -> Result<Vec<DriveInfo>, String> {
 
     #[cfg(target_os = "linux")]
     {
-        let mut drives = Vec::new();
-        drives.push(DriveInfo {
+        let drives = vec![DriveInfo {
             letter: String::new(),
             label: "Root".to_string(),
             path: "/".to_string(),
             total_space: 0,
             free_space: 0,
-        });
+        }];
         Ok(drives)
     }
 }
@@ -462,7 +461,7 @@ pub async fn open_file(path: String) -> Result<(), String> {
     #[cfg(target_os = "linux")]
     {
         std::process::Command::new("xdg-open")
-            .arg(&path)
+            .arg(path)
             .spawn()
             .map_err(|e| format!("Failed to open file: {}", e))?;
     }
@@ -510,10 +509,11 @@ pub async fn open_in_terminal(path: String) -> Result<(), String> {
         let mut success = false;
 
         for terminal in &terminals {
-            if let Ok(_) = std::process::Command::new(terminal)
+            if std::process::Command::new(terminal)
                 .arg("--working-directory")
-                .arg(&dir_path)
+                .arg(dir_path)
                 .spawn()
+                .is_ok()
             {
                 success = true;
                 break;
