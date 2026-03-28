@@ -496,9 +496,7 @@ fn process_single_image(
     operations: &ImageOperations,
     output_dir: &str,
 ) -> Result<String, String> {
-    if let Err(e) = validate_file_path(path) {
-        return Err(e);
-    }
+    validate_file_path(path)?;
 
     let img = image::open(path).map_err(|e| format!("Failed to open image '{}': {}", path, e))?;
 

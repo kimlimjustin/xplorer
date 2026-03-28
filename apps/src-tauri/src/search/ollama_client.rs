@@ -256,7 +256,7 @@ impl OllamaClient {
             .timeout(Duration::from_millis(AVAILABILITY_PROBE_TIMEOUT_MS))
             .build()
             .ok()
-            .and_then(|c| c.get(&format!("{}/api/tags", OLLAMA_BASE_URL)).send().ok())
+            .and_then(|c| c.get(format!("{}/api/tags", OLLAMA_BASE_URL)).send().ok())
             .map(|r| r.status().is_success())
             .unwrap_or(false);
 

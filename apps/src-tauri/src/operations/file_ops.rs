@@ -174,9 +174,9 @@ pub async fn copy_with_progress(
         let dst = Path::new(&destination_clone);
 
         let result = if src.is_file() {
-            copy_file_with_progress(&src, &dst, &progress_manager, &operation_id_clone)
+            copy_file_with_progress(src, dst, &progress_manager, &operation_id_clone)
         } else if src.is_dir() {
-            copy_directory_with_progress(&src, &dst, &progress_manager, &operation_id_clone)
+            copy_directory_with_progress(src, dst, &progress_manager, &operation_id_clone)
         } else {
             Err("Invalid source type".to_string())
         };
@@ -233,7 +233,7 @@ pub async fn move_with_progress(
         let src = Path::new(&source_clone);
         let dst = Path::new(&destination_clone);
 
-        let result = move_with_progress_impl(&src, &dst, &progress_manager, &operation_id_clone);
+        let result = move_with_progress_impl(src, dst, &progress_manager, &operation_id_clone);
 
         match result {
             Ok(_) => {
@@ -550,7 +550,7 @@ pub async fn move_file(source: String, destination: String) -> Result<(), String
     }
 
     // Try rename first (most efficient for same filesystem)
-    if let Err(_) = fs::rename(src, dst) {
+    if fs::rename(src, dst).is_err() {
         // If rename fails (different filesystems), fall back to copy + delete
         if src.is_file() {
             fs::copy(src, dst).map_err(|e| format!("Failed to copy file: {}", e))?;

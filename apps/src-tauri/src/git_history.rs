@@ -334,6 +334,12 @@ fn validate_git_path(value: &str, label: &str) -> Result<(), String> {
     Ok(())
 }
 
+impl Default for GitService {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl GitService {
     pub fn new() -> Self {
         Self
@@ -763,9 +769,9 @@ impl GitService {
         let mut line_number = 1;
 
         for line in blame_output.lines() {
-            if line.starts_with('\t') {
+            if let Some(stripped) = line.strip_prefix('\t') {
                 // This is the actual code line
-                let content = line[1..].to_string(); // Remove the tab
+                let content = stripped.to_string(); // Remove the tab
 
                 let commit_hash = current_commit_info
                     .get("hash")
@@ -873,11 +879,11 @@ impl GitService {
                         new_line_number: None,
                     });
                 }
-            } else if line.starts_with(' ') {
+            } else if let Some(stripped) = line.strip_prefix(' ') {
                 if let Some(ref mut hunk) = current_hunk {
                     hunk.lines.push(GitDiffLine {
                         line_type: "context".to_string(),
-                        content: line[1..].to_string(),
+                        content: stripped.to_string(),
                         old_line_number: Some(hunk.old_start + hunk.lines.len() as u32),
                         new_line_number: Some(hunk.new_start + hunk.lines.len() as u32),
                     });
@@ -1183,7 +1189,7 @@ impl GitService {
         }
 
         let stash_output = String::from_utf8_lossy(&output.stdout);
-        Ok(self.parse_stashes(&stash_output)?)
+        self.parse_stashes(&stash_output)
     }
 
     pub fn create_stash(

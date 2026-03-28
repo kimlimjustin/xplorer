@@ -134,6 +134,12 @@ pub struct OperationHistory {
     redo_stack: Vec<TimestampedOperation>,
 }
 
+impl Default for OperationHistory {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl OperationHistory {
     pub fn new() -> Self {
         Self {
@@ -185,7 +191,7 @@ pub static OPERATION_HISTORY: LazyLock<Mutex<OperationHistory>> =
 #[allow(dead_code)]
 fn get_staging_dir() -> Result<PathBuf, String> {
     let base = dirs::data_local_dir()
-        .or_else(|| dirs::home_dir())
+        .or_else(dirs::home_dir)
         .ok_or_else(|| "Cannot determine user data directory".to_string())?;
     let staging = base.join(".xplorer_trash");
     if !staging.exists() {
@@ -1198,10 +1204,8 @@ mod tests {
         let popped = history.pop_undo();
         // We may or may not get our specific operation (other tests may have added too),
         // but the call should not panic.
-        assert!(
-            popped.is_some() || true,
-            "pop may or may not return our op due to global state"
-        );
+        // popped may or may not contain our op due to global state — just ensure no panic
+        let _ = popped;
     }
 
     // ─── Error case tests ───────────────────────────────────────────────

@@ -68,10 +68,7 @@ fn build_file_tree(
     if metadata.is_file() {
         // Handle file
         let content = if read_content {
-            match read_file_content_safe(path) {
-                Ok(content) => Some(content),
-                Err(_) => None, // Don't fail on content errors, just skip content
-            }
+            read_file_content_safe(path).ok()
         } else {
             None
         };
@@ -112,21 +109,19 @@ fn build_file_tree(
         let children = match fs::read_dir(path) {
             Ok(entries) => {
                 let mut children_nodes = Vec::new();
-                for entry in entries {
-                    if let Ok(entry) = entry {
-                        let child_path = entry.path().to_string_lossy().to_string();
-                        match build_file_tree(
-                            &child_path,
-                            current_depth + 1,
-                            max_depth,
-                            read_content,
-                            progress_log,
-                        ) {
-                            Ok(child_node) => children_nodes.push(child_node),
-                            Err(_) => {
-                                // Skip files that cause errors instead of failing the whole operation
-                                continue;
-                            }
+                for entry in entries.flatten() {
+                    let child_path = entry.path().to_string_lossy().to_string();
+                    match build_file_tree(
+                        &child_path,
+                        current_depth + 1,
+                        max_depth,
+                        read_content,
+                        progress_log,
+                    ) {
+                        Ok(child_node) => children_nodes.push(child_node),
+                        Err(_) => {
+                            // Skip files that cause errors instead of failing the whole operation
+                            continue;
                         }
                     }
                 }

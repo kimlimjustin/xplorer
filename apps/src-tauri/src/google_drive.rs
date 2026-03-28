@@ -116,7 +116,7 @@ impl GoogleDrivePool {
     }
 }
 
-static GDRIVE_POOL: LazyLock<GoogleDrivePool> = LazyLock::new(|| GoogleDrivePool::new());
+static GDRIVE_POOL: LazyLock<GoogleDrivePool> = LazyLock::new(GoogleDrivePool::new);
 
 // ---------------------------------------------------------------------------
 // Token Persistence
@@ -288,7 +288,7 @@ fn save_gdrive_settings(settings: &GoogleDriveSettings) -> Result<(), String> {
 fn generate_code_verifier() -> String {
     use rand::Rng;
     let bytes: [u8; 32] = rand::thread_rng().gen();
-    URL_SAFE_NO_PAD.encode(&bytes)
+    URL_SAFE_NO_PAD.encode(bytes)
 }
 
 fn generate_code_challenge(verifier: &str) -> String {
@@ -304,7 +304,7 @@ fn generate_code_challenge(verifier: &str) -> String {
 fn generate_oauth_state() -> String {
     use rand::Rng;
     let bytes: [u8; 32] = rand::thread_rng().gen();
-    URL_SAFE_NO_PAD.encode(&bytes)
+    URL_SAFE_NO_PAD.encode(bytes)
 }
 
 // ---------------------------------------------------------------------------
@@ -740,7 +740,7 @@ pub async fn gdrive_upload_file(
     let boundary = {
         use rand::Rng;
         let rand_bytes: [u8; 16] = rand::thread_rng().gen();
-        format!("xplorer_{}", URL_SAFE_NO_PAD.encode(&rand_bytes))
+        format!("xplorer_{}", URL_SAFE_NO_PAD.encode(rand_bytes))
     };
 
     let mut body = Vec::new();

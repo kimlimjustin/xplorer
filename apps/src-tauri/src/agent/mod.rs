@@ -728,7 +728,7 @@ pub async fn agent_chat(
     let permissions = load_permissions();
     let agent_tools = tools::build_agent_tools(&permissions.disabled_tools);
     let mut conversation: Vec<Value> = messages;
-    let max_turns = settings.max_turns.min(50).max(1);
+    let max_turns = settings.max_turns.clamp(1, 50);
     let mut final_text = String::new();
 
     for _turn in 0..max_turns {

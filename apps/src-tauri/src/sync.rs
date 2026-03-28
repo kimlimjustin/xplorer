@@ -29,6 +29,7 @@ struct SyncConfig {
 // ─── Cloud response types ───────────────────────────────────────────────────
 
 #[derive(Deserialize, Debug)]
+#[allow(dead_code)]
 struct CloudBookmark {
     pub path: String,
     pub name: String,

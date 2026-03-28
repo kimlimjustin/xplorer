@@ -385,7 +385,7 @@ fn sanitize_command(command: &str) -> Result<(), String> {
     // ── STEP 2: Check the allowlist ─────────────────────────────────────
     // Strip any path prefix so "C:\Windows\system32\whoami" matches "whoami"
     let binary_name = first_token
-        .rsplit(|c: char| c == '/' || c == '\\')
+        .rsplit(['/', '\\'])
         .next()
         .unwrap_or(first_token)
         .to_lowercase();
@@ -414,7 +414,7 @@ fn build_shell_command(command: &str) -> std::process::Command {
     {
         let mut cmd = std::process::Command::new("sh");
         cmd.args(["-c", command]);
-        return cmd;
+        cmd
     }
 }
 
@@ -454,7 +454,7 @@ pub async fn open_file(path: String) -> Result<(), String> {
     #[cfg(target_os = "macos")]
     {
         std::process::Command::new("open")
-            .arg(&path)
+            .arg(path)
             .spawn()
             .map_err(|e| format!("Failed to open file: {}", e))?;
     }
@@ -1123,13 +1123,12 @@ pub async fn diagnose_directory(
                 .unwrap_or_default();
 
             // Leading or trailing spaces/dots
-            if name != name.trim()
+            if (name != name.trim()
                 || stem.ends_with('.')
                 || stem.starts_with('.')
                     && stem.len() > 1
-                    && stem.chars().nth(1).map_or(false, |c| c == ' ')
-            {
-                if name != name.trim() {
+                    && (stem.chars().nth(1) == Some(' ')))
+                && name != name.trim() {
                     problems.push(DirectoryProblem {
                         path: p.clone(),
                         name: name.clone(),
@@ -1139,7 +1138,6 @@ pub async fn diagnose_directory(
                         size: Some(size),
                     });
                 }
-            }
 
             // Consecutive spaces
             if name.contains("  ") {

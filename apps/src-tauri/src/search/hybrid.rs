@@ -79,6 +79,12 @@ pub struct HybridSearcher {
     pub reranker: super::reranker::Reranker,
 }
 
+impl Default for HybridSearcher {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl HybridSearcher {
     pub fn new() -> Self {
         Self {
@@ -332,7 +338,7 @@ pub fn load_embeddings_from_disk() -> Vec<EmbeddingEntry> {
 ///
 /// Then add `0.2 * overlap_score` to the result's score and re-sort descending.
 pub fn late_interaction_rescore(
-    results: &mut Vec<super::SearchResult>,
+    results: &mut [super::SearchResult],
     query_tokens: &[String],
     doc_content: &HashMap<String, String>,
 ) {

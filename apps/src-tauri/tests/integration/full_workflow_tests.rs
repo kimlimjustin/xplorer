@@ -39,9 +39,10 @@ fn test_complete_extension_manifest_workflow() {
             }]),
             commands: Some(vec![CommandContribution {
                 command: "workflow.analyze".to_string(),
-                title: "Analyze Workflow".to_string(),
+                title: Some("Analyze Workflow".to_string()),
                 category: Some("Workflow".to_string()),
                 icon: Some("analyze.svg".to_string()),
+                shortcut: None,
             }]),
             themes: None,
             file_types: None,
@@ -51,6 +52,9 @@ fn test_complete_extension_manifest_workflow() {
                 group: Some("workflow".to_string()),
             }]),
             keybindings: None,
+            editors: None,
+            tabs: None,
+            extra: None,
         }),
     };
 

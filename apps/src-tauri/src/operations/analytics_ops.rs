@@ -272,11 +272,7 @@ pub async fn analyze_storage(
         // Get disk-level space info
         let root_path = Path::new(&path);
         let (disk_total, disk_free) = get_disk_space(root_path).unwrap_or((0, 0));
-        let disk_used = if disk_total > disk_free {
-            disk_total - disk_free
-        } else {
-            0
-        };
+        let disk_used = disk_total.saturating_sub(disk_free);
 
         StorageAnalytics {
             total_size: if disk_total > 0 {

@@ -36,6 +36,12 @@ const CALL_FUEL_LIMIT: u64 = 1_000_000;
 /// Maximum linear memory pages an extension may use (64KB per page).
 const MAX_MEMORY_PAGES: u32 = 1024; // 64MB
 
+impl Default for WasmRuntime {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl WasmRuntime {
     /// Create a new runtime with fuel-metered engine.
     pub fn new() -> Self {

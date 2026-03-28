@@ -608,14 +608,10 @@ pub async fn download_and_install_extension(
     // Verify constructed paths are contained within the temp directory
     // (defense in depth — even after validate_extension_id, verify the result)
     if !zip_path.starts_with(&canonical_temp) {
-        return Err(format!(
-            "Path traversal detected: zip path escapes temp directory"
-        ));
+        return Err("Path traversal detected: zip path escapes temp directory".to_string());
     }
     if !extract_dir.starts_with(&canonical_temp) {
-        return Err(format!(
-            "Path traversal detected: extract dir escapes temp directory"
-        ));
+        return Err("Path traversal detected: extract dir escapes temp directory".to_string());
     }
 
     std::fs::write(&zip_path, &bytes).map_err(|e| e.to_string())?;
@@ -647,7 +643,7 @@ pub async fn check_for_extension_updates(
 
     let client = reqwest::Client::new();
     let resp = client
-        .post(&format!("{}/extensions/check-updates", marketplace_url))
+        .post(format!("{}/extensions/check-updates", marketplace_url))
         .json(&installed_extensions)
         .send()
         .await
@@ -777,10 +773,9 @@ pub async fn download_extension(
     })?;
 
     let manifest = crate::extensions::types::parse_manifest_from_package_json(&manifest_content)
-        .map_err(|e| {
+        .inspect_err(|_e| {
             let _ = std::fs::remove_file(&zip_path);
             let _ = std::fs::remove_dir_all(&extract_dir);
-            e
         })?;
 
     let extension_id = manifest.id.clone();
@@ -845,7 +840,7 @@ pub async fn check_extension_updates(
 
     let client = reqwest::Client::new();
     let resp = client
-        .post(&format!("{}/api/extensions/check-updates", marketplace_url))
+        .post(format!("{}/api/extensions/check-updates", marketplace_url))
         .json(&body)
         .send()
         .await
@@ -1141,7 +1136,7 @@ pub async fn install_xtension_file(xtension_path: String) -> Result<ExtensionPac
     }
 
     // Extract the ZIP safely (Zip Slip protection)
-    safe_extract_zip(&file_path, &extract_dir)?;
+    safe_extract_zip(file_path, &extract_dir)?;
 
     // Install via the extension manager
     let mut manager_guard = EXTENSION_MANAGER.lock().map_err(|e| e.to_string())?;

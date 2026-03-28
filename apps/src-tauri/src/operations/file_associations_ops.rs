@@ -86,8 +86,8 @@ pub async fn open_file_with_application(file_path: String, app_path: String) -> 
     {
         let output = Command::new("open")
             .arg("-a")
-            .arg(&app_path)
-            .arg(&file_path)
+            .arg(app_path)
+            .arg(file_path)
             .spawn();
 
         match output {
@@ -253,6 +253,7 @@ fn get_windows_applications() -> Result<Vec<Application>, String> {
 }
 
 #[cfg(unix)]
+#[allow(dead_code)]
 fn get_unix_applications() -> Result<Vec<Application>, String> {
     let mut applications = Vec::new();
 
@@ -313,6 +314,7 @@ fn get_macos_applications() -> Result<Vec<Application>, String> {
 }
 
 #[cfg(unix)]
+#[allow(dead_code)]
 fn parse_desktop_file(path: &Path) -> Result<Application, String> {
     let content =
         std::fs::read_to_string(path).map_err(|e| format!("Failed to read desktop file: {}", e))?;
@@ -412,6 +414,7 @@ fn set_windows_default_application(_extension: &str, _app_path: &str) -> Result<
 }
 
 #[cfg(unix)]
+#[allow(dead_code)]
 fn set_unix_default_application(_extension: &str, _app_path: &str) -> Result<(), String> {
     // This would require updating .desktop associations
     // For security reasons, we'll return an error for now

@@ -209,6 +209,7 @@ impl DuplicateFinder {
         let scan_handle = tokio::task::spawn_blocking(move || {
             let mut processed = 0;
 
+            #[allow(clippy::too_many_arguments)]
             fn scan_dir_recursive(
                 path: &Path,
                 sender: &Sender<DuplicateFile>,
@@ -305,7 +306,7 @@ impl DuplicateFinder {
                         }
 
                         *processed += 1;
-                        if *processed % 100 == 0 {
+                        if (*processed).is_multiple_of(100) {
                             progress_callback(DuplicateFinderProgress {
                                 current_file: entry_path.to_string_lossy().to_string(),
                                 processed_files: *processed,
@@ -362,7 +363,7 @@ impl DuplicateFinder {
         for file in files {
             size_groups
                 .entry(file.size)
-                .or_insert_with(Vec::new)
+                .or_default()
                 .push(file);
         }
 
@@ -404,7 +405,7 @@ impl DuplicateFinder {
 
                             let current_processed =
                                 processed_count.fetch_add(1, Ordering::SeqCst) + 1;
-                            if current_processed % 10 == 0 || current_processed == total_files {
+                            if current_processed.is_multiple_of(10) || current_processed == total_files {
                                 progress_callback(DuplicateFinderProgress {
                                     current_file: file.name.clone(),
                                     processed_files: current_processed,
@@ -426,7 +427,7 @@ impl DuplicateFinder {
                     for file in hashed_files {
                         hash_groups
                             .entry(file.hash.clone())
-                            .or_insert_with(Vec::new)
+                            .or_default()
                             .push(file);
                     }
 
@@ -441,7 +442,7 @@ impl DuplicateFinder {
                                 total_wasted_space,
                             };
 
-                            if let Err(_) = sender_clone.try_send(duplicate_group) {
+                            if sender_clone.try_send(duplicate_group).is_err() {
                                 return Err("Failed to send duplicate group".to_string());
                             }
                         }

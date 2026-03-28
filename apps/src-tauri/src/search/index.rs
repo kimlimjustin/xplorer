@@ -817,7 +817,7 @@ impl SearchIndex {
                 for entry in entries.value() {
                     let ftf = doc_ftfs
                         .entry(entry.doc_id)
-                        .or_insert_with(FieldTermFreqs::new);
+                        .or_default();
                     let field_len = self
                         .doc_field_lengths
                         .get(&entry.doc_id)
@@ -914,7 +914,7 @@ impl SearchIndex {
                             }
                             let ftf = doc_ftfs
                                 .entry(entry.doc_id)
-                                .or_insert_with(FieldTermFreqs::new);
+                                .or_default();
                             let field_len = self
                                 .doc_field_lengths
                                 .get(&entry.doc_id)
@@ -987,7 +987,7 @@ impl SearchIndex {
         if !no_hit_terms.is_empty() {
             let fuzzy_matches = self.fst_index.fuzzy_search_multi(&no_hit_terms, 1);
 
-            for (_query_word, matched_terms) in &fuzzy_matches {
+            for matched_terms in fuzzy_matches.values() {
                 for (matched_term, _offset) in matched_terms {
                     if let Some(entries) = self.postings.get(matched_term) {
                         let df = self.document_frequency(matched_term);
@@ -996,7 +996,7 @@ impl SearchIndex {
                         for entry in entries.value() {
                             let ftf = doc_ftfs
                                 .entry(entry.doc_id)
-                                .or_insert_with(FieldTermFreqs::new);
+                                .or_default();
                             let field_len = self
                                 .doc_field_lengths
                                 .get(&entry.doc_id)
