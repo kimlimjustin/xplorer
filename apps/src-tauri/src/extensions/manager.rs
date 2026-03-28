@@ -154,17 +154,24 @@ impl ExtensionManager {
             if !ext.verified {
                 let ext_path = Path::new(&ext.path);
                 let is_builtin = !ext_path.starts_with(&self.extensions_dir);
-                if !is_builtin {
+                if !is_builtin && !ext.is_dev {
                     return Err(format!(
                         "Extension '{}' failed signature verification and cannot be activated. \
                          Re-install from a trusted source.",
                         extension_id
                     ));
                 }
-                warn!(
-                    "[ExtensionManager] Activating UNVERIFIED built-in extension '{}'",
-                    extension_id
-                );
+                if ext.is_dev {
+                    warn!(
+                        "[ExtensionManager] Activating UNVERIFIED dev extension '{}'",
+                        extension_id
+                    );
+                } else {
+                    warn!(
+                        "[ExtensionManager] Activating UNVERIFIED built-in extension '{}'",
+                        extension_id
+                    );
+                }
             }
         }
 
