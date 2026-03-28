@@ -224,7 +224,7 @@ impl Reranker {
     ///
     /// The tuple layout is `(id, score, signals)`. After this call the `score`
     /// field of each entry is replaced with the reranked score.
-    pub fn rerank(&self, results: &mut Vec<(String, f64, RankingSignals)>) {
+    pub fn rerank(&self, results: &mut [(String, f64, RankingSignals)]) {
         for entry in results.iter_mut() {
             entry.1 = self.compute_rerank_score(&entry.2);
         }

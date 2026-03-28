@@ -231,9 +231,9 @@ fn detect_project_directory(dir_path: &Path) -> (bool, Option<String>) {
     ];
 
     for (marker, project_type) in markers {
-        if marker.starts_with('*') {
+        if let Some(ext) = marker.strip_prefix('*') {
             // Glob-style: check if any file matches the extension
-            let ext = &marker[1..]; // e.g. ".sln"
+            // e.g. ".sln"
             if let Ok(entries) = fs::read_dir(dir_path) {
                 for entry in entries.flatten() {
                     let name = entry.file_name().to_string_lossy().to_string();
@@ -492,7 +492,7 @@ fn build_suggestions(dir_path: &Path, files: &[FileInfo]) -> Vec<FolderSuggestio
     for (prefix, file_paths) in &prefix_files {
         if file_paths.len() >= 3 {
             let folder_name = prefix
-                .trim_end_matches(|c: char| c == '_' || c == '-')
+                .trim_end_matches(['_', '-'])
                 .to_string();
             if folder_name.is_empty() {
                 continue;
@@ -531,7 +531,7 @@ fn extract_prefix(filename: &str) -> Option<String> {
         .unwrap_or_default();
 
     // Find prefix before last separator (_ or -)
-    if let Some(pos) = name.rfind(|c: char| c == '_' || c == '-') {
+    if let Some(pos) = name.rfind(['_', '-']) {
         if pos >= 3 {
             return Some(name[..=pos].to_string());
         }

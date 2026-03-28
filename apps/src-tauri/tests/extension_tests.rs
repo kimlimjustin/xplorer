@@ -74,14 +74,18 @@ fn test_extension_contributes() {
         }]),
         commands: Some(vec![CommandContribution {
             command: "test.command".to_string(),
-            title: "Test Command".to_string(),
+            title: Some("Test Command".to_string()),
             category: Some("Test".to_string()),
             icon: None,
+            shortcut: None,
         }]),
         themes: Some(vec!["dark-theme.json".to_string()]),
         file_types: None,
         context_menus: None,
         keybindings: None,
+        editors: None,
+        tabs: None,
+        extra: None,
     };
 
     assert!(contributes.panels.is_some());

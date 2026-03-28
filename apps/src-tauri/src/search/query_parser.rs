@@ -15,7 +15,9 @@ use serde::{Deserialize, Serialize};
 
 /// Hint for how search results should be sorted when a NL query implies ordering.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Default)]
 pub enum SortHint {
+    #[default]
     None,
     SizeDesc,
     SizeAsc,
@@ -23,11 +25,6 @@ pub enum SortHint {
     DateAsc,
 }
 
-impl Default for SortHint {
-    fn default() -> Self {
-        SortHint::None
-    }
-}
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ParsedQuery {
@@ -170,7 +167,7 @@ fn parse_date(s: &str) -> Option<u64> {
     let year: i64 = parts[0].parse().ok()?;
     let month: u64 = parts[1].parse().ok()?;
     let day: u64 = parts[2].parse().ok()?;
-    if month < 1 || month > 12 || day < 1 || day > 31 {
+    if !(1..=12).contains(&month) || !(1..=31).contains(&day) {
         return None;
     }
     // Simple days-from-epoch calculation (good enough for filter purposes).
@@ -322,12 +319,11 @@ pub fn parse(input: &str) -> ParsedQuery {
         // Try multi-word intents first ("look for"), then single-word.
         let mut matched_len = 0usize;
         for &(pattern, canonical) in INTENT_WORDS {
-            if lower.starts_with(pattern) {
+            if let Some(after) = lower.strip_prefix(pattern) {
                 // Ensure it's a word boundary (followed by whitespace, end, or for CJK just match).
-                let after = &lower[pattern.len()..];
                 let is_boundary = after.is_empty()
                     || after.starts_with(' ')
-                    || pattern.chars().next().map_or(false, |c| c > '\u{2E7F}');
+                    || pattern.chars().next().is_some_and(|c| c > '\u{2E7F}');
                 if is_boundary && pattern.len() > matched_len {
                     intent = Some(canonical.to_string());
                     matched_len = pattern.len();
@@ -490,7 +486,7 @@ pub fn parse(input: &str) -> ParsedQuery {
         'outer: for &(patterns, ref category) in type_keywords {
             for &pat in patterns {
                 if contains_word(&lr, pat) {
-                    file_type = Some(category.clone());
+                    file_type = Some(*category);
                     remaining = remove_word(&remaining, pat);
                     break 'outer;
                 }

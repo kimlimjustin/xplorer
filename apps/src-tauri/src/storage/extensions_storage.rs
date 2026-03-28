@@ -11,9 +11,10 @@ use tauri::Manager;
 
 // ─── In-memory cache ─────────────────────────────────────────────────────────
 
-static EXTENSION_STORAGE_CACHE: LazyLock<
-    Mutex<Option<HashMap<String, HashMap<String, serde_json::Value>>>>,
-> = LazyLock::new(|| Mutex::new(None));
+type ExtensionStorageMap = HashMap<String, HashMap<String, serde_json::Value>>;
+
+static EXTENSION_STORAGE_CACHE: LazyLock<Mutex<Option<ExtensionStorageMap>>> =
+    LazyLock::new(|| Mutex::new(None));
 
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -52,14 +53,14 @@ fn extension_storage_path(app_handle: &tauri::AppHandle) -> Result<std::path::Pa
 /// Load extension storage from disk (no cache).
 fn load_extension_storage_from_disk(
     app_handle: &tauri::AppHandle,
-) -> Result<HashMap<String, HashMap<String, serde_json::Value>>, String> {
+) -> Result<ExtensionStorageMap, String> {
     let path = extension_storage_path(app_handle)?;
     if !path.exists() {
         return Ok(HashMap::new());
     }
     let data = std::fs::read_to_string(&path)
         .map_err(|e| format!("Failed to read extension storage: {}", e))?;
-    let map: HashMap<String, HashMap<String, serde_json::Value>> = serde_json::from_str(&data)
+    let map: ExtensionStorageMap = serde_json::from_str(&data)
         .map_err(|e| format!("Failed to parse extension storage: {}", e))?;
     Ok(map)
 }
@@ -67,8 +68,7 @@ fn load_extension_storage_from_disk(
 /// Acquire the cache lock and ensure it is populated from disk.
 fn ensure_extension_storage_cache(
     app_handle: &tauri::AppHandle,
-) -> Result<MutexGuard<'static, Option<HashMap<String, HashMap<String, serde_json::Value>>>>, String>
-{
+) -> Result<MutexGuard<'static, Option<ExtensionStorageMap>>, String> {
     let mut guard = EXTENSION_STORAGE_CACHE
         .lock()
         .unwrap_or_else(|e| e.into_inner());

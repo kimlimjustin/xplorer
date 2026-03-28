@@ -339,7 +339,7 @@ pub async fn get_archive_info(archive_path: String) -> Result<ArchiveInfo, Strin
         return Err("Archive file does not exist".to_string());
     }
 
-    let format = detect_archive_format(&archive_path)?;
+    let format = detect_archive_format(archive_path)?;
 
     match format {
         CompressionFormat::Zip => get_zip_info(archive_path).await,
@@ -1117,7 +1117,7 @@ async fn get_zip_info(archive_path: &Path) -> Result<ArchiveInfo, String> {
             .name()
             .split('/')
             .filter(|s| !s.is_empty())
-            .last()
+            .next_back()
             .unwrap_or("")
             .to_string();
         files.push(ArchiveEntry {
@@ -1243,7 +1243,7 @@ fn get_tar_info_from_reader<R: Read>(
         let entry_name = path
             .split('/')
             .filter(|s| !s.is_empty())
-            .last()
+            .next_back()
             .unwrap_or("")
             .to_string();
         files.push(ArchiveEntry {
@@ -1321,7 +1321,7 @@ fn add_file_to_zip<W: Write + io::Seek>(
     } else {
         file_path
             .file_name()
-            .map(|name| Path::new(name))
+            .map(Path::new)
             .unwrap_or(file_path)
     };
 
@@ -1414,7 +1414,7 @@ async fn compress_to_tar_gz(
     let compression_level = options
         .compression_level
         .map(|l| Compression::new(l.clamp(0, 9)))
-        .unwrap_or(Compression::default());
+        .unwrap_or_default();
 
     let gz_encoder = GzEncoder::new(file, compression_level);
     let mut builder = tar::Builder::new(gz_encoder);
@@ -1460,7 +1460,7 @@ async fn compress_to_tar_bz2(
     let compression_level = options
         .compression_level
         .map(|l| Compression::new(l.clamp(1, 9)))
-        .unwrap_or(Compression::default());
+        .unwrap_or_default();
 
     let bz_encoder = BzEncoder::new(file, compression_level);
     let mut builder = tar::Builder::new(bz_encoder);
@@ -1692,7 +1692,7 @@ async fn get_7z_info(archive_path: &Path) -> Result<ArchiveInfo, String> {
                 let entry_name = name_str
                     .split('/')
                     .filter(|s| !s.is_empty())
-                    .last()
+                    .next_back()
                     .unwrap_or("")
                     .to_string();
 
@@ -1938,7 +1938,7 @@ async fn get_rar_info(archive_path: &Path) -> Result<ArchiveInfo, String> {
                 let entry = entry_result.map_err(|e| format!("Failed to read RAR entry: {}", e))?;
 
                 let is_dir = entry.is_directory();
-                let size = entry.unpacked_size as u64;
+                let size = entry.unpacked_size;
                 let entry_compressed_size = 0u64;
                 let full_path = entry.filename.to_string_lossy().to_string();
 
@@ -1959,7 +1959,7 @@ async fn get_rar_info(archive_path: &Path) -> Result<ArchiveInfo, String> {
                     .split('/')
                     .chain(full_path.split('\\'))
                     .filter(|s| !s.is_empty())
-                    .last()
+                    .next_back()
                     .unwrap_or("")
                     .to_string();
 

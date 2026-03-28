@@ -126,9 +126,9 @@ pub async fn compare_files(
     });
 
     // Get file metadata
-    let metadata1 = fs::metadata(&path1)
+    let metadata1 = fs::metadata(path1)
         .map_err(|e| format!("Failed to get metadata for {}: {}", file1_path, e))?;
-    let metadata2 = fs::metadata(&path2)
+    let metadata2 = fs::metadata(path2)
         .map_err(|e| format!("Failed to get metadata for {}: {}", file2_path, e))?;
 
     let mut file1 = FileComparisonFile {

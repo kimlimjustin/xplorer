@@ -135,6 +135,12 @@ pub struct Storage {
     current_chat_id: i32,
 }
 
+impl Default for Storage {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Storage {
     pub fn new() -> Self {
         let mut storage = Self {

@@ -97,7 +97,7 @@ fn load_latest_manifest(backup_dir: &str, name: &str) -> Option<BackupManifest> 
         .filter_map(|e| e.ok())
         .filter(|e| e.path().is_dir())
         .collect();
-    entries.sort_by(|a, b| b.file_name().cmp(&a.file_name()));
+    entries.sort_by_key(|b| std::cmp::Reverse(b.file_name()));
     for entry in entries {
         let manifest_path = entry.path().join("manifest.json");
         if manifest_path.exists() {
@@ -255,16 +255,14 @@ pub async fn create_backup(
         let hash = if needs_copy {
             let dest = backup_path.join(&relative);
             compute_sha256(&dest).unwrap_or_default()
+        } else if let Some(ref prev) = previous_manifest {
+            prev.files
+                .iter()
+                .find(|f| f.path == relative)
+                .map(|f| f.hash.clone())
+                .unwrap_or_default()
         } else {
-            if let Some(ref prev) = previous_manifest {
-                prev.files
-                    .iter()
-                    .find(|f| f.path == relative)
-                    .map(|f| f.hash.clone())
-                    .unwrap_or_default()
-            } else {
-                String::new()
-            }
+            String::new()
         };
 
         total_size += size;
@@ -319,7 +317,7 @@ pub async fn list_backups(backup_dir: String, name: String) -> Result<Vec<Backup
         .filter_map(|e| e.ok())
         .filter(|e| e.path().is_dir())
         .collect();
-    entries.sort_by(|a, b| b.file_name().cmp(&a.file_name()));
+    entries.sort_by_key(|b| std::cmp::Reverse(b.file_name()));
 
     let mut manifests = Vec::new();
     for entry in entries {
@@ -398,7 +396,7 @@ pub async fn restore_backup(
             .map_err(|e| format!("Failed to restore {}: {e}", relative_path))?;
 
         count += 1;
-        if count % 10 == 0 || count == total {
+        if count.is_multiple_of(10) || count == total {
             emit_progress(&app, "restoring", count, total, relative_path);
         }
     }
@@ -423,7 +421,7 @@ fn build_restore_chain(
         .filter_map(|e| e.ok())
         .filter(|e| e.path().is_dir())
         .collect();
-    entries.sort_by(|a, b| a.file_name().cmp(&b.file_name()));
+    entries.sort_by_key(|a| a.file_name());
 
     for entry in entries {
         let manifest_path = entry.path().join("manifest.json");

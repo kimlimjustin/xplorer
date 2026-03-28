@@ -126,7 +126,7 @@ impl ContextualRanker {
     /// score, then re-sort descending by the updated score.
     pub fn apply_context_ranking(
         &self,
-        results: &mut Vec<super::SearchResult>,
+        results: &mut [super::SearchResult],
         context: &UserContext,
     ) {
         for result in results.iter_mut() {
@@ -157,7 +157,7 @@ impl ContextualRanker {
         }
 
         UserContext {
-            current_directory: current_dir.map(|s| normalize_path(s)),
+            current_directory: current_dir.map(normalize_path),
             recent_files: deduped,
             access_counts,
         }
@@ -250,7 +250,7 @@ fn is_sibling(path_a: &str, path_b: &str) -> bool {
     let grandparent_a = parent_dir(&parent_a);
     let grandparent_b = parent_dir(&parent_b);
     match (grandparent_a, grandparent_b) {
-        (Some(ga), Some(gb)) => ga.to_ascii_lowercase() == gb.to_ascii_lowercase(),
+        (Some(ga), Some(gb)) => ga.eq_ignore_ascii_case(&gb),
         _ => false,
     }
 }

@@ -11,6 +11,7 @@ pub struct StreamResult {
 
 /// Calls Claude API with streaming enabled. Emits text deltas in real-time
 /// via Tauri events, and returns the fully assembled content blocks when done.
+#[allow(clippy::too_many_arguments)]
 pub async fn call_claude_api_streaming(
     api_key: &str,
     model: &str,
@@ -366,6 +367,7 @@ fn claude_messages_to_openai(system: &str, messages: &[Value]) -> Vec<Value> {
 /// Calls an OpenAI-compatible API (OpenAI or Ollama /v1/) with streaming.
 /// Converts between Claude and OpenAI message formats transparently.
 /// Returns StreamResult in Claude content-block format for the agent loop.
+#[allow(clippy::too_many_arguments)]
 pub async fn call_openai_compatible_streaming(
     api_key: &str,
     model: &str,
@@ -542,7 +544,7 @@ pub async fn call_openai_compatible_streaming(
                     if let Some(args_chunk) = tc["function"]["arguments"].as_str() {
                         tool_call_args
                             .entry(idx)
-                            .or_insert_with(String::new)
+                            .or_default()
                             .push_str(args_chunk);
                     }
                 }

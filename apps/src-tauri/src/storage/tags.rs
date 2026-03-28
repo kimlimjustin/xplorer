@@ -14,7 +14,9 @@ use super::generate_id;
 
 // ─── In-memory caches ────────────────────────────────────────────────────────
 
-static FILE_TAGS_CACHE: LazyLock<Mutex<Option<HashMap<String, Vec<FileTag>>>>> =
+type FileTagsMap = HashMap<String, Vec<FileTag>>;
+
+static FILE_TAGS_CACHE: LazyLock<Mutex<Option<FileTagsMap>>> =
     LazyLock::new(|| Mutex::new(None));
 
 static TAG_CATEGORIES_CACHE: LazyLock<Mutex<Option<Vec<TagCategory>>>> =
@@ -41,14 +43,14 @@ fn file_tags_path(app_handle: &tauri::AppHandle) -> Result<std::path::PathBuf, S
 /// Load the tags map from disk (no cache).
 fn load_file_tags_from_disk(
     app_handle: &tauri::AppHandle,
-) -> Result<HashMap<String, Vec<FileTag>>, String> {
+) -> Result<FileTagsMap, String> {
     let path = file_tags_path(app_handle)?;
     if !path.exists() {
         return Ok(HashMap::new());
     }
     let data =
         std::fs::read_to_string(&path).map_err(|e| format!("Failed to read file tags: {}", e))?;
-    let map: HashMap<String, Vec<FileTag>> =
+    let map: FileTagsMap =
         serde_json::from_str(&data).map_err(|e| format!("Failed to parse file tags: {}", e))?;
     Ok(map)
 }
@@ -57,7 +59,7 @@ fn load_file_tags_from_disk(
 /// Returns the held MutexGuard so callers can read/mutate without extra cloning.
 fn ensure_file_tags_cache(
     app_handle: &tauri::AppHandle,
-) -> Result<MutexGuard<'static, Option<HashMap<String, Vec<FileTag>>>>, String> {
+) -> Result<MutexGuard<'static, Option<FileTagsMap>>, String> {
     let mut guard = FILE_TAGS_CACHE.lock().unwrap_or_else(|e| e.into_inner());
     if guard.is_none() {
         let data = load_file_tags_from_disk(app_handle)?;
@@ -70,7 +72,7 @@ fn ensure_file_tags_cache(
 /// so we serialise directly from the cache without an extra clone.
 fn flush_file_tags_to_disk(
     app_handle: &tauri::AppHandle,
-    guard: &MutexGuard<'static, Option<HashMap<String, Vec<FileTag>>>>,
+    guard: &MutexGuard<'static, Option<FileTagsMap>>,
 ) -> Result<(), String> {
     let map = guard
         .as_ref()

@@ -469,12 +469,11 @@ impl ExtensionManager {
     }
 
     fn scan_directory(&self, dir: &Path) -> Result<(), String> {
-        if let Some(name) = dir.file_name().and_then(|n| n.to_str()) {
+        if let Some("native" | "node_modules" | ".git" | "src" | ".github" | "target") =
+            dir.file_name().and_then(|n| n.to_str())
+        {
             // Skip directories that are not part of the extension's distribution
-            match name {
-                "native" | "node_modules" | ".git" | "src" | ".github" | "target" => return Ok(()),
-                _ => {}
-            }
+            return Ok(());
         }
 
         for entry in fs::read_dir(dir).map_err(|e| format!("Failed to read directory: {}", e))? {
@@ -536,6 +535,7 @@ impl ExtensionManager {
         Ok(())
     }
 
+    #[allow(clippy::only_used_in_recursion)]
     fn copy_dir_all(&self, src: &Path, dst: &Path) -> Result<(), String> {
         fs::create_dir_all(dst).map_err(|e| format!("Failed to create directory: {}", e))?;
 

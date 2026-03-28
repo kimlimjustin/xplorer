@@ -116,13 +116,11 @@ pub fn execute_search_files(input: &Value) -> Result<String, String> {
     );
 
     let mut results: Vec<String> = Vec::new();
-    for entry in glob::glob(&full_pattern).map_err(|e| format!("Invalid glob: {}", e))? {
-        if let Ok(path) = entry {
-            results.push(path.display().to_string());
-            if results.len() >= GLOB_RESULT_LIMIT {
-                results.push(format!("[...truncated at {} results]", GLOB_RESULT_LIMIT));
-                break;
-            }
+    for path in (glob::glob(&full_pattern).map_err(|e| format!("Invalid glob: {}", e))?).flatten() {
+        results.push(path.display().to_string());
+        if results.len() >= GLOB_RESULT_LIMIT {
+            results.push(format!("[...truncated at {} results]", GLOB_RESULT_LIMIT));
+            break;
         }
     }
     Ok(results.join("\n"))

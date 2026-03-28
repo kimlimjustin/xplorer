@@ -49,7 +49,7 @@ fn hex_encode(bytes: &[u8]) -> String {
 }
 
 fn hex_decode(hex: &str) -> Result<Vec<u8>, String> {
-    if hex.len() % 2 != 0 {
+    if !hex.len().is_multiple_of(2) {
         return Err("Hex string has odd length".to_string());
     }
     (0..hex.len())
@@ -99,11 +99,10 @@ fn collect_files(base: &Path, dir: &Path, out: &mut Vec<(String, Vec<u8>)>) -> R
 
         // Skip non-distribution directories
         if path.is_dir() {
-            if let Some(name) = path.file_name().and_then(|n| n.to_str()) {
-                match name {
-                    "node_modules" | ".git" | "src" | ".github" | "target" => continue,
-                    _ => {}
-                }
+            if let Some("node_modules" | ".git" | "src" | ".github" | "target") =
+                path.file_name().and_then(|n| n.to_str())
+            {
+                continue;
             }
             collect_files(base, &path, out)?;
             continue;

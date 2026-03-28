@@ -14,6 +14,12 @@ pub struct ProgressManager {
     callbacks: Arc<Mutex<HashMap<String, ProgressCallback>>>,
 }
 
+impl Default for ProgressManager {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ProgressManager {
     pub fn new() -> Self {
         Self {
@@ -187,6 +193,7 @@ impl ProgressManager {
         operation_id
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub fn update_file_progress(
         &self,
         operation_id: &str,

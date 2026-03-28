@@ -428,7 +428,7 @@ impl BitmapFilterIndex {
         if let Some(cat) = classify_extension(&entry.extension) {
             self.type_bitmaps
                 .entry(cat)
-                .or_insert_with(RoaringBitmap::new)
+                .or_default()
                 .insert(id);
         }
 
@@ -455,7 +455,7 @@ impl BitmapFilterIndex {
         if !ext.is_empty() {
             self.extension_bitmaps
                 .entry(ext)
-                .or_insert_with(RoaringBitmap::new)
+                .or_default()
                 .insert(id);
         }
     }

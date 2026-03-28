@@ -107,6 +107,12 @@ pub struct AIPipeline {
     auto_index_enabled: Arc<AtomicBool>,
 }
 
+impl Default for AIPipeline {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl AIPipeline {
     // -- Construction -------------------------------------------------------
 

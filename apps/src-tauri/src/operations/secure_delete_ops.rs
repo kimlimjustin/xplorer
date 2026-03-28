@@ -186,14 +186,12 @@ pub async fn secure_delete(
 
                 // Remove empty directories bottom-up
                 let mut dirs: Vec<std::path::PathBuf> = Vec::new();
-                for entry in WalkDir::new(path).contents_first(false) {
-                    if let Ok(e) = entry {
-                        if e.file_type().is_dir() {
-                            dirs.push(e.into_path());
-                        }
+                for e in WalkDir::new(path).contents_first(false).into_iter().flatten() {
+                    if e.file_type().is_dir() {
+                        dirs.push(e.into_path());
                     }
                 }
-                dirs.sort_by(|a, b| b.components().count().cmp(&a.components().count()));
+                dirs.sort_by_key(|b| std::cmp::Reverse(b.components().count()));
                 for dir in dirs {
                     let _ = fs::remove_dir(&dir);
                 }
@@ -228,9 +226,7 @@ pub async fn secure_delete(
     match result {
         Ok((files_processed, errors)) => {
             let success = errors.is_empty();
-            if errors.is_empty() {
-                progress_manager.complete_file_operation(&op_id);
-            } else if files_processed > 0 {
+            if errors.is_empty() || files_processed > 0 {
                 progress_manager.complete_file_operation(&op_id);
             } else {
                 progress_manager.fail_file_operation(&op_id, errors.join("; "));
@@ -277,11 +273,9 @@ fn count_files(paths: &[String]) -> u64 {
     for path_str in paths {
         let path = Path::new(path_str);
         if path.is_dir() {
-            for entry in WalkDir::new(path) {
-                if let Ok(e) = entry {
-                    if e.file_type().is_file() {
-                        count += 1;
-                    }
+            for e in WalkDir::new(path).into_iter().flatten() {
+                if e.file_type().is_file() {
+                    count += 1;
                 }
             }
         } else if path.is_file() {
@@ -296,11 +290,9 @@ fn calculate_total_bytes(paths: &[String]) -> u64 {
     for path_str in paths {
         let path = Path::new(path_str);
         if path.is_dir() {
-            for entry in WalkDir::new(path) {
-                if let Ok(e) = entry {
-                    if e.file_type().is_file() {
-                        total += fs::metadata(e.path()).map(|m| m.len()).unwrap_or(0);
-                    }
+            for e in WalkDir::new(path).into_iter().flatten() {
+                if e.file_type().is_file() {
+                    total += fs::metadata(e.path()).map(|m| m.len()).unwrap_or(0);
                 }
             }
         } else if path.is_file() {

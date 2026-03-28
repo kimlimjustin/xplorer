@@ -168,11 +168,10 @@ fn save_settings(settings: &TokenizerSettings) {
     if let Ok(json) = serde_json::to_string_pretty(settings) {
         let target = settings_path();
         let tmp = target.with_extension("json.tmp");
-        if fs::write(&tmp, &json).is_ok() {
-            if fs::rename(&tmp, &target).is_err() {
+        if fs::write(&tmp, &json).is_ok()
+            && fs::rename(&tmp, &target).is_err() {
                 let _ = fs::remove_file(&tmp);
             }
-        }
     }
 }
 
@@ -854,7 +853,7 @@ impl SearchEngine {
                                 let matches_type = p
                                     .extension()
                                     .and_then(|e| e.to_str())
-                                    .and_then(|e| super::classify_extension(e))
+                                    .and_then(super::classify_extension)
                                     .map(|c| c == cat)
                                     .unwrap_or(false);
                                 if !matches_type {
@@ -1590,7 +1589,7 @@ impl SearchEngine {
     // -- 18. search_with_context_boost() -------------------------------------
 
     /// Apply context-path proximity boost to search results.
-    fn apply_context_boost(&self, results: &mut Vec<SearchResult>) {
+    fn apply_context_boost(&self, results: &mut [SearchResult]) {
         let ctx = self.get_context_path();
         let ctx_path = match ctx {
             Some(ref p) if !p.is_empty() => p,
@@ -1604,7 +1603,7 @@ impl SearchEngine {
             let result_normalized = result.path.replace('\\', "/").to_lowercase();
 
             // File is directly in context directory → 1.3x boost.
-            let result_parent = result_normalized.rsplitn(2, '/').nth(1).unwrap_or("");
+            let result_parent = result_normalized.rsplit_once('/').map(|x| x.0).unwrap_or("");
             let ctx_trimmed = ctx_normalized.trim_end_matches('/');
 
             if result_parent == ctx_trimmed {
@@ -2129,10 +2128,9 @@ pub async fn hybrid_search(
     let text_results = engine.search(&query, lim * 2);
 
     // Semantic search (best effort — returns empty if no embeddings/model)
-    let semantic_results = match semantic_search(query.clone(), Some(lim * 2)).await {
-        Ok(r) => r,
-        Err(_) => Vec::new(),
-    };
+    let semantic_results = semantic_search(query.clone(), Some(lim * 2))
+        .await
+        .unwrap_or_default();
 
     // Hybrid fusion
     let searcher = HybridSearcher::new();

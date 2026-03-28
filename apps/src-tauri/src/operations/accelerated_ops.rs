@@ -69,6 +69,12 @@ pub struct AcceleratedFileOps {
     hardware_info: HardwareInfo,
 }
 
+impl Default for AcceleratedFileOps {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl AcceleratedFileOps {
     pub fn new() -> Self {
         Self {
@@ -196,9 +202,9 @@ pub async fn accelerated_copy_file(
                     &progress_manager_ref,
                     &operation_id_clone,
                 )
-                .or_else(|e| {
+                .map_err(|e| {
                     last_error = format!("Memory-mapped copy failed: {}", e);
-                    Err(e)
+                    e
                 }),
                 CopyStrategy::ParallelChunked => parallel_chunked_copy(
                     &source_clone,
@@ -207,9 +213,9 @@ pub async fn accelerated_copy_file(
                     &operation_id_clone,
                     &accelerated_ops.hardware_info,
                 )
-                .or_else(|e| {
+                .map_err(|e| {
                     last_error = format!("Parallel copy failed: {}", e);
-                    Err(e)
+                    e
                 }),
                 CopyStrategy::BufferedSIMD => simd_buffered_copy(
                     &source_clone,
@@ -217,9 +223,9 @@ pub async fn accelerated_copy_file(
                     &progress_manager_ref,
                     &operation_id_clone,
                 )
-                .or_else(|e| {
+                .map_err(|e| {
                     last_error = format!("SIMD copy failed: {}", e);
-                    Err(e)
+                    e
                 }),
                 CopyStrategy::StandardBuffered => optimized_buffered_copy(
                     &source_clone,
@@ -227,9 +233,9 @@ pub async fn accelerated_copy_file(
                     &progress_manager_ref,
                     &operation_id_clone,
                 )
-                .or_else(|e| {
+                .map_err(|e| {
                     last_error = format!("Standard copy failed: {}", e);
-                    Err(e)
+                    e
                 }),
             };
 
@@ -293,7 +299,7 @@ fn memory_mapped_copy(
 
     // Copy in large chunks with progress updates
     const MMAP_CHUNK_SIZE: usize = 16 * 1024 * 1024; // 16MB chunks
-    let total_chunks = (file_size as usize + MMAP_CHUNK_SIZE - 1) / MMAP_CHUNK_SIZE;
+    let total_chunks = (file_size as usize).div_ceil(MMAP_CHUNK_SIZE);
 
     for (chunk_idx, chunk) in mmap.chunks(MMAP_CHUNK_SIZE).enumerate() {
         dst_file
@@ -391,7 +397,7 @@ fn parallel_chunked_copy(
 
     thread::spawn(move || {
         let start_time = std::time::Instant::now();
-        while let Ok(_) = progress_rx.recv() {
+        while progress_rx.recv().is_ok() {
             let processed = bytes_processed_clone.load(Ordering::Relaxed);
             let elapsed_secs = start_time.elapsed().as_secs_f64();
             let speed = if elapsed_secs > 0.0 {
@@ -703,12 +709,14 @@ fn simd_copy_sse2(dst: &mut [u8], src: &[u8]) {
 }
 
 #[cfg(not(target_arch = "x86_64"))]
+#[allow(dead_code)]
 fn simd_copy_avx2(dst: &mut [u8], src: &[u8]) {
     // Fallback for non-x86_64 architectures
     dst.copy_from_slice(src);
 }
 
 #[cfg(not(target_arch = "x86_64"))]
+#[allow(dead_code)]
 fn simd_copy_sse2(dst: &mut [u8], src: &[u8]) {
     // Fallback for non-x86_64 architectures
     dst.copy_from_slice(src);
@@ -725,8 +733,7 @@ fn simd_process_buffer(buffer: &mut [u8], _hardware_info: &HardwareInfo) {
     // - Prefetching optimization
     // For file copying, we mainly use it for cache-friendly access patterns
 
-    if buffer.len() < 64 {
-        return; // Too small for SIMD optimization
+    if buffer.len() < 64 {// Too small for SIMD optimization
     }
 
     #[cfg(target_arch = "x86_64")]
@@ -774,11 +781,13 @@ fn simd_prefetch_sse2(buffer: &[u8]) {
 }
 
 #[cfg(not(target_arch = "x86_64"))]
+#[allow(dead_code)]
 fn simd_prefetch_avx2(_buffer: &[u8]) {
     // No-op for non-x86_64 architectures
 }
 
 #[cfg(not(target_arch = "x86_64"))]
+#[allow(dead_code)]
 fn simd_prefetch_sse2(_buffer: &[u8]) {
     // No-op for non-x86_64 architectures
 }

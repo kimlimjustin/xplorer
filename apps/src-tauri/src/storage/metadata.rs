@@ -12,7 +12,9 @@ use tauri::Manager;
 
 // ─── In-memory cache ─────────────────────────────────────────────────────────
 
-static METADATA_CACHE: LazyLock<Mutex<Option<HashMap<String, Vec<CustomMetadataField>>>>> =
+type MetadataMap = HashMap<String, Vec<CustomMetadataField>>;
+
+static METADATA_CACHE: LazyLock<Mutex<Option<MetadataMap>>> =
     LazyLock::new(|| Mutex::new(None));
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -36,14 +38,14 @@ fn file_metadata_path(app_handle: &tauri::AppHandle) -> Result<std::path::PathBu
 /// Load metadata from disk (no cache).
 fn load_file_metadata_from_disk(
     app_handle: &tauri::AppHandle,
-) -> Result<HashMap<String, Vec<CustomMetadataField>>, String> {
+) -> Result<MetadataMap, String> {
     let path = file_metadata_path(app_handle)?;
     if !path.exists() {
         return Ok(HashMap::new());
     }
     let data = std::fs::read_to_string(&path)
         .map_err(|e| format!("Failed to read file metadata: {}", e))?;
-    let map: HashMap<String, Vec<CustomMetadataField>> =
+    let map: MetadataMap =
         serde_json::from_str(&data).map_err(|e| format!("Failed to parse file metadata: {}", e))?;
     Ok(map)
 }
@@ -51,7 +53,7 @@ fn load_file_metadata_from_disk(
 /// Acquire the cache lock and ensure it is populated from disk.
 fn ensure_metadata_cache(
     app_handle: &tauri::AppHandle,
-) -> Result<MutexGuard<'static, Option<HashMap<String, Vec<CustomMetadataField>>>>, String> {
+) -> Result<MutexGuard<'static, Option<MetadataMap>>, String> {
     let mut guard = METADATA_CACHE.lock().unwrap_or_else(|e| e.into_inner());
     if guard.is_none() {
         let data = load_file_metadata_from_disk(app_handle)?;
@@ -63,7 +65,7 @@ fn ensure_metadata_cache(
 /// Persist metadata to disk directly from the cache guard (no extra clone).
 fn flush_metadata_to_disk(
     app_handle: &tauri::AppHandle,
-    guard: &MutexGuard<'static, Option<HashMap<String, Vec<CustomMetadataField>>>>,
+    guard: &MutexGuard<'static, Option<MetadataMap>>,
 ) -> Result<(), String> {
     let map = guard
         .as_ref()

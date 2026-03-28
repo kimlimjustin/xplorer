@@ -300,14 +300,14 @@ fn extract_rtf_text(file_path: &str) -> Result<String, String> {
                         chars.next();
                         chars.next();
                     } else if next.is_alphabetic() {
-                        while chars.peek().map_or(false, |c| c.is_alphabetic()) {
+                        while chars.peek().is_some_and(|c| c.is_alphabetic()) {
                             chars.next();
                         }
                         // Skip optional numeric parameter
                         if chars.peek() == Some(&'-') {
                             chars.next();
                         }
-                        while chars.peek().map_or(false, |c| c.is_ascii_digit()) {
+                        while chars.peek().is_some_and(|c| c.is_ascii_digit()) {
                             chars.next();
                         }
                         // Skip trailing space
@@ -352,10 +352,10 @@ fn extract_utf16le_runs(bytes: &[u8]) -> String {
                 || ch == '!' || ch == '?' || ch == '-' || ch == '_'
                 || ch == '(' || ch == ')' || ch == '[' || ch == ']'
                 || ch == '/' || ch == '\'' || ch == '"'
-                || (code_unit >= 0x2000 && code_unit <= 0x9FFF)   // CJK + symbols
-                || (code_unit >= 0xAC00 && code_unit <= 0xD7AF)   // Korean
-                || (code_unit >= 0x3000 && code_unit <= 0x30FF)   // CJK punctuation + Katakana
-                || (code_unit >= 0xFF00 && code_unit <= 0xFFEF); // Fullwidth forms
+                || (0x2000..=0x9FFF).contains(&code_unit)   // CJK + symbols
+                || (0xAC00..=0xD7AF).contains(&code_unit)   // Korean
+                || (0x3000..=0x30FF).contains(&code_unit)   // CJK punctuation + Katakana
+                || (0xFF00..=0xFFEF).contains(&code_unit); // Fullwidth forms
 
             if is_text && code_unit != 0 {
                 current_run.push(ch);
@@ -403,7 +403,7 @@ fn extract_ascii_runs(bytes: &[u8]) -> String {
     let min_run_length = 12; // minimum bytes for a meaningful run
 
     for &b in bytes {
-        if (b >= 0x20 && b <= 0x7E) || b == b'\t' || b == b'\n' || b == b'\r' {
+        if (0x20..=0x7E).contains(&b) || b == b'\t' || b == b'\n' || b == b'\r' {
             current_run.push(b);
         } else {
             if current_run.len() >= min_run_length {

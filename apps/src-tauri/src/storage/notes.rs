@@ -14,10 +14,13 @@ use super::generate_id;
 
 // ─── In-memory caches ────────────────────────────────────────────────────────
 
-static FILE_NOTES_CACHE: LazyLock<Mutex<Option<HashMap<String, Vec<FileNote>>>>> =
+type FileNotesMap = HashMap<String, Vec<FileNote>>;
+type FileAnnotationsMap = HashMap<String, Vec<FileAnnotation>>;
+
+static FILE_NOTES_CACHE: LazyLock<Mutex<Option<FileNotesMap>>> =
     LazyLock::new(|| Mutex::new(None));
 
-static FILE_ANNOTATIONS_CACHE: LazyLock<Mutex<Option<HashMap<String, Vec<FileAnnotation>>>>> =
+static FILE_ANNOTATIONS_CACHE: LazyLock<Mutex<Option<FileAnnotationsMap>>> =
     LazyLock::new(|| Mutex::new(None));
 
 // ─── File Notes ──────────────────────────────────────────────────────────────
@@ -49,14 +52,14 @@ fn file_notes_path(app_handle: &tauri::AppHandle) -> Result<std::path::PathBuf, 
 /// Load notes from disk (no cache).
 fn load_file_notes_from_disk(
     app_handle: &tauri::AppHandle,
-) -> Result<HashMap<String, Vec<FileNote>>, String> {
+) -> Result<FileNotesMap, String> {
     let path = file_notes_path(app_handle)?;
     if !path.exists() {
         return Ok(HashMap::new());
     }
     let data =
         std::fs::read_to_string(&path).map_err(|e| format!("Failed to read file notes: {}", e))?;
-    let map: HashMap<String, Vec<FileNote>> =
+    let map: FileNotesMap =
         serde_json::from_str(&data).map_err(|e| format!("Failed to parse file notes: {}", e))?;
     Ok(map)
 }
@@ -64,7 +67,7 @@ fn load_file_notes_from_disk(
 /// Acquire the cache lock and ensure it is populated from disk.
 fn ensure_file_notes_cache(
     app_handle: &tauri::AppHandle,
-) -> Result<MutexGuard<'static, Option<HashMap<String, Vec<FileNote>>>>, String> {
+) -> Result<MutexGuard<'static, Option<FileNotesMap>>, String> {
     let mut guard = FILE_NOTES_CACHE.lock().unwrap_or_else(|e| e.into_inner());
     if guard.is_none() {
         let data = load_file_notes_from_disk(app_handle)?;
@@ -76,7 +79,7 @@ fn ensure_file_notes_cache(
 /// Persist notes to disk directly from the cache guard (no extra clone).
 fn flush_file_notes_to_disk(
     app_handle: &tauri::AppHandle,
-    guard: &MutexGuard<'static, Option<HashMap<String, Vec<FileNote>>>>,
+    guard: &MutexGuard<'static, Option<FileNotesMap>>,
 ) -> Result<(), String> {
     let map = guard
         .as_ref()
@@ -287,14 +290,14 @@ fn file_annotations_path(app_handle: &tauri::AppHandle) -> Result<std::path::Pat
 /// Load annotations from disk (no cache).
 fn load_file_annotations_from_disk(
     app_handle: &tauri::AppHandle,
-) -> Result<HashMap<String, Vec<FileAnnotation>>, String> {
+) -> Result<FileAnnotationsMap, String> {
     let path = file_annotations_path(app_handle)?;
     if !path.exists() {
         return Ok(HashMap::new());
     }
     let data = std::fs::read_to_string(&path)
         .map_err(|e| format!("Failed to read file annotations: {}", e))?;
-    let map: HashMap<String, Vec<FileAnnotation>> = serde_json::from_str(&data)
+    let map: FileAnnotationsMap = serde_json::from_str(&data)
         .map_err(|e| format!("Failed to parse file annotations: {}", e))?;
     Ok(map)
 }
@@ -302,7 +305,7 @@ fn load_file_annotations_from_disk(
 /// Acquire the annotations cache lock and ensure it is populated from disk.
 fn ensure_file_annotations_cache(
     app_handle: &tauri::AppHandle,
-) -> Result<MutexGuard<'static, Option<HashMap<String, Vec<FileAnnotation>>>>, String> {
+) -> Result<MutexGuard<'static, Option<FileAnnotationsMap>>, String> {
     let mut guard = FILE_ANNOTATIONS_CACHE
         .lock()
         .unwrap_or_else(|e| e.into_inner());
@@ -316,7 +319,7 @@ fn ensure_file_annotations_cache(
 /// Persist annotations to disk directly from the cache guard.
 fn flush_file_annotations_to_disk(
     app_handle: &tauri::AppHandle,
-    guard: &MutexGuard<'static, Option<HashMap<String, Vec<FileAnnotation>>>>,
+    guard: &MutexGuard<'static, Option<FileAnnotationsMap>>,
 ) -> Result<(), String> {
     let map = guard
         .as_ref()

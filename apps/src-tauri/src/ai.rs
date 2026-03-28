@@ -193,15 +193,13 @@ pub async fn analyze_file_with_ai(
     // Create a message for analysis
     let analysis_message = ChatMessage {
         role: "user".to_string(),
-        content: format!(
-            "Please analyze this file and provide helpful insights:\n\n\
+        content: "Please analyze this file and provide helpful insights:\n\n\
             Please provide:\n\
             1. What this file is for\n\
             2. Key features or functionality (if code)\n\
             3. Any suggestions for improvement\n\
             4. Related files that might be needed\n\n\
-            Be concise and practical."
-        ),
+            Be concise and practical.".to_string(),
     };
 
     // Route to appropriate AI service
@@ -378,7 +376,7 @@ async fn calculate_directory_size_recursive(
                 Err(e) => {
                     // Log error but continue with other directories
                     send_terminal_output(
-                        &app_handle,
+                        app_handle,
                         &format!(
                             "Warning: Failed to calculate size for subdirectory {}: {}",
                             path.display(),
