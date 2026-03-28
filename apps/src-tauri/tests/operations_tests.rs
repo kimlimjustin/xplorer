@@ -1,7 +1,7 @@
-use xplorer::operations::*;
 use std::fs::{self, File};
 use std::io::Write;
 use tempfile::tempdir;
+use xplorer::operations::*;
 
 #[tokio::test]
 async fn test_read_directory() {
@@ -111,7 +111,8 @@ async fn test_copy_file() {
     let copy_result = copy(
         source_file.to_string_lossy().to_string(),
         dest_file.to_string_lossy().to_string(),
-    ).await;
+    )
+    .await;
 
     assert!(copy_result.is_ok());
     assert!(dest_file.exists());
@@ -134,7 +135,8 @@ async fn test_move_file() {
     let move_result = move_file(
         source_file.to_string_lossy().to_string(),
         dest_file.to_string_lossy().to_string(),
-    ).await;
+    )
+    .await;
 
     assert!(move_result.is_ok());
     assert!(!source_file.exists());
@@ -153,7 +155,8 @@ async fn test_rename() {
     let rename_result = rename(
         old_file.to_string_lossy().to_string(),
         new_file.to_string_lossy().to_string(),
-    ).await;
+    )
+    .await;
 
     assert!(rename_result.is_ok());
     assert!(!old_file.exists());

@@ -1,5 +1,5 @@
-use xplorer::extensions::types::*;
 use xplorer::extensions::permissions::*;
+use xplorer::extensions::types::*;
 
 #[test]
 fn test_extension_manifest_parsing() {
@@ -27,9 +27,18 @@ fn test_extension_manifest_parsing() {
 
 #[test]
 fn test_permission_from_string() {
-    assert_eq!(ExtensionPermission::from_string("file:read"), Some(ExtensionPermission::FileRead));
-    assert_eq!(ExtensionPermission::from_string("file:write"), Some(ExtensionPermission::FileWrite));
-    assert_eq!(ExtensionPermission::from_string("system:commands"), Some(ExtensionPermission::ExecuteCommands));
+    assert_eq!(
+        ExtensionPermission::from_string("file:read"),
+        Some(ExtensionPermission::FileRead)
+    );
+    assert_eq!(
+        ExtensionPermission::from_string("file:write"),
+        Some(ExtensionPermission::FileWrite)
+    );
+    assert_eq!(
+        ExtensionPermission::from_string("system:commands"),
+        Some(ExtensionPermission::ExecuteCommands)
+    );
     assert_eq!(ExtensionPermission::from_string("invalid:permission"), None);
 }
 
@@ -81,7 +90,10 @@ fn test_extension_contributes() {
 
     assert!(contributes.commands.is_some());
     assert_eq!(contributes.commands.as_ref().unwrap().len(), 1);
-    assert_eq!(contributes.commands.as_ref().unwrap()[0].command, "test.command");
+    assert_eq!(
+        contributes.commands.as_ref().unwrap()[0].command,
+        "test.command"
+    );
 }
 
 #[test]
@@ -99,7 +111,10 @@ fn test_parse_manifest_from_package_json_flat() {
     let manifest = parse_manifest_from_package_json(json).unwrap();
     assert_eq!(manifest.id, "flat-ext");
     assert_eq!(manifest.version, "2.0.0");
-    assert_eq!(manifest.description, Some("A flat extension manifest".to_string()));
+    assert_eq!(
+        manifest.description,
+        Some("A flat extension manifest".to_string())
+    );
 }
 
 #[test]
@@ -123,7 +138,10 @@ fn test_parse_manifest_from_package_json_nested() {
     // main should be inherited from top level
     assert_eq!(manifest.main, Some("dist/index.js".to_string()));
     // description should be inherited from top level
-    assert_eq!(manifest.description, Some("Top-level description".to_string()));
+    assert_eq!(
+        manifest.description,
+        Some("Top-level description".to_string())
+    );
 }
 
 #[test]
@@ -166,7 +184,10 @@ fn test_context_menu_contribution() {
 
     let contribution: ContextMenuContribution = serde_json::from_str(json).unwrap();
     assert_eq!(contribution.command, "ext.doSomething");
-    assert_eq!(contribution.when, Some("resourceExtname == .json".to_string()));
+    assert_eq!(
+        contribution.when,
+        Some("resourceExtname == .json".to_string())
+    );
     assert_eq!(contribution.group, Some("mygroup".to_string()));
 }
 

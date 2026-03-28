@@ -1,7 +1,7 @@
-use xplorer::shortcuts::types::*;
-use xplorer::shortcuts::manager::*;
 use std::collections::HashMap;
 use tempfile::TempDir;
+use xplorer::shortcuts::manager::*;
+use xplorer::shortcuts::types::*;
 
 #[test]
 fn test_shortcut_action_serialization() {
@@ -26,7 +26,11 @@ fn test_shortcut_action_extension_action() {
     let deserialized: ShortcutAction = serde_json::from_str(&json).unwrap();
 
     match deserialized {
-        ShortcutAction::ExtensionAction { extension_id, action_id, params } => {
+        ShortcutAction::ExtensionAction {
+            extension_id,
+            action_id,
+            params,
+        } => {
             assert_eq!(extension_id, "theme-switcher");
             assert_eq!(action_id, "toggle");
             assert!(params.is_some());
@@ -114,7 +118,10 @@ fn test_shortcuts_manager_persistence() {
 
     // Create a second manager from the same directory -- it should load saved settings
     let manager2 = ShortcutsManager::new(data_dir);
-    assert_eq!(manager2.settings.profiles[0].shortcuts.len(), shortcut_count);
+    assert_eq!(
+        manager2.settings.profiles[0].shortcuts.len(),
+        shortcut_count
+    );
 }
 
 #[test]

@@ -1,5 +1,5 @@
-use xplorer::duplicate_finder::*;
 use std::path::PathBuf;
+use xplorer::duplicate_finder::*;
 
 /// Integration tests for the DuplicateFinder module.
 ///
@@ -77,8 +77,20 @@ fn test_duplicate_group_serialization() {
         hash: "abc123".to_string(),
         size: 1024,
         files: vec![
-            DuplicateFile { path: "a".into(), name: "a".into(), size: 1024, hash: "abc123".into(), modified: 100 },
-            DuplicateFile { path: "b".into(), name: "b".into(), size: 1024, hash: "abc123".into(), modified: 200 },
+            DuplicateFile {
+                path: "a".into(),
+                name: "a".into(),
+                size: 1024,
+                hash: "abc123".into(),
+                modified: 100,
+            },
+            DuplicateFile {
+                path: "b".into(),
+                name: "b".into(),
+                size: 1024,
+                hash: "abc123".into(),
+                modified: 200,
+            },
         ],
         total_wasted_space: 1024,
     };
@@ -96,14 +108,35 @@ fn test_duplicate_group_wasted_space_calculation() {
         hash: "def456".to_string(),
         size: 500,
         files: vec![
-            DuplicateFile { path: "a".into(), name: "a".into(), size: 500, hash: "def456".into(), modified: 0 },
-            DuplicateFile { path: "b".into(), name: "b".into(), size: 500, hash: "def456".into(), modified: 0 },
-            DuplicateFile { path: "c".into(), name: "c".into(), size: 500, hash: "def456".into(), modified: 0 },
+            DuplicateFile {
+                path: "a".into(),
+                name: "a".into(),
+                size: 500,
+                hash: "def456".into(),
+                modified: 0,
+            },
+            DuplicateFile {
+                path: "b".into(),
+                name: "b".into(),
+                size: 500,
+                hash: "def456".into(),
+                modified: 0,
+            },
+            DuplicateFile {
+                path: "c".into(),
+                name: "c".into(),
+                size: 500,
+                hash: "def456".into(),
+                modified: 0,
+            },
         ],
         total_wasted_space: 1000, // (3 - 1) * 500
     };
 
-    assert_eq!(group.total_wasted_space, (group.files.len() as u64 - 1) * group.size);
+    assert_eq!(
+        group.total_wasted_space,
+        (group.files.len() as u64 - 1) * group.size
+    );
 }
 
 #[test]
@@ -125,17 +158,27 @@ fn test_duplicate_finder_result_serialization() {
 #[test]
 fn test_duplicate_finder_result_with_groups() {
     let result = DuplicateFinderResult {
-        duplicate_groups: vec![
-            DuplicateGroup {
-                hash: "hash1".to_string(),
-                size: 100,
-                files: vec![
-                    DuplicateFile { path: "a".into(), name: "a".into(), size: 100, hash: "hash1".into(), modified: 0 },
-                    DuplicateFile { path: "b".into(), name: "b".into(), size: 100, hash: "hash1".into(), modified: 0 },
-                ],
-                total_wasted_space: 100,
-            },
-        ],
+        duplicate_groups: vec![DuplicateGroup {
+            hash: "hash1".to_string(),
+            size: 100,
+            files: vec![
+                DuplicateFile {
+                    path: "a".into(),
+                    name: "a".into(),
+                    size: 100,
+                    hash: "hash1".into(),
+                    modified: 0,
+                },
+                DuplicateFile {
+                    path: "b".into(),
+                    name: "b".into(),
+                    size: 100,
+                    hash: "hash1".into(),
+                    modified: 0,
+                },
+            ],
+            total_wasted_space: 100,
+        }],
         total_duplicates: 2,
         total_wasted_space: 100,
         scan_time_ms: 10,

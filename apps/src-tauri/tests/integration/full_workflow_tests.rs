@@ -1,11 +1,11 @@
-use xplorer::shortcuts::types::*;
-use xplorer::shortcuts::manager::*;
-use xplorer::extensions::types::*;
-use xplorer::extensions::permissions::*;
-use xplorer::duplicate_finder::*;
-use xplorer::git_history::*;
 use std::fs;
 use tempfile::TempDir;
+use xplorer::duplicate_finder::*;
+use xplorer::extensions::permissions::*;
+use xplorer::extensions::types::*;
+use xplorer::git_history::*;
+use xplorer::shortcuts::manager::*;
+use xplorer::shortcuts::types::*;
 
 /// Test that extension manifest parsing works with contributes, context menus, etc.
 #[test]
@@ -66,10 +66,15 @@ fn test_complete_extension_manifest_workflow() {
     assert!(contributes.panels.is_some());
     assert!(contributes.commands.is_some());
     assert!(contributes.context_menus.is_some());
-    assert_eq!(contributes.context_menus.unwrap()[0].command, "workflow.analyze");
+    assert_eq!(
+        contributes.context_menus.unwrap()[0].command,
+        "workflow.analyze"
+    );
 
     // Verify permissions parse correctly
-    let parsed_perms: Vec<ExtensionPermission> = deserialized.permissions.unwrap()
+    let parsed_perms: Vec<ExtensionPermission> = deserialized
+        .permissions
+        .unwrap()
         .iter()
         .filter_map(|p| ExtensionPermission::from_string(p))
         .collect();
@@ -115,7 +120,11 @@ fn test_shortcut_binding_with_extension_action_workflow() {
     let deserialized: ShortcutBinding = serde_json::from_str(&json).unwrap();
     assert_eq!(deserialized.id, "workflow_analyze");
     match &deserialized.action {
-        ShortcutAction::ExtensionAction { extension_id, action_id, .. } => {
+        ShortcutAction::ExtensionAction {
+            extension_id,
+            action_id,
+            ..
+        } => {
             assert_eq!(extension_id, "workflow-test");
             assert_eq!(action_id, "analyze");
         }
@@ -135,17 +144,27 @@ fn test_duplicate_finder_integration() {
 
     // Test that result types serialize/deserialize correctly in a workflow context
     let result = DuplicateFinderResult {
-        duplicate_groups: vec![
-            DuplicateGroup {
-                hash: "workflow_hash".to_string(),
-                size: 2048,
-                files: vec![
-                    DuplicateFile { path: "file1.txt".into(), name: "file1.txt".into(), size: 2048, hash: "workflow_hash".into(), modified: 100 },
-                    DuplicateFile { path: "file2.txt".into(), name: "file2.txt".into(), size: 2048, hash: "workflow_hash".into(), modified: 200 },
-                ],
-                total_wasted_space: 2048,
-            },
-        ],
+        duplicate_groups: vec![DuplicateGroup {
+            hash: "workflow_hash".to_string(),
+            size: 2048,
+            files: vec![
+                DuplicateFile {
+                    path: "file1.txt".into(),
+                    name: "file1.txt".into(),
+                    size: 2048,
+                    hash: "workflow_hash".into(),
+                    modified: 100,
+                },
+                DuplicateFile {
+                    path: "file2.txt".into(),
+                    name: "file2.txt".into(),
+                    size: 2048,
+                    hash: "workflow_hash".into(),
+                    modified: 200,
+                },
+            ],
+            total_wasted_space: 2048,
+        }],
         total_duplicates: 2,
         total_wasted_space: 2048,
         scan_time_ms: 15,

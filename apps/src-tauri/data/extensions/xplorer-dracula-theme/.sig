@@ -1,6 +1,7 @@
 {
-  "hash": "c12e2a529c70dd1e8b8c3df27960ebe4c6b98e3d72cd199453c6ab9ec5cead2f",
+  "hash": "1d0e6b07c187a8e4301c29b904160122ee7a81dee9a374a7794a6907795260da",
   "signer": "Xplorer Team",
-  "timestamp": "2026-03-16T03:38:04.894104200+00:00",
-  "verified": true
+  "timestamp": "2026-03-25T02:38:32.720353+00:00",
+  "verified": true,
+  "ed25519_signature": "05206509ead27441f01b42e0b2e11deb9df12183f57011638b3d8dcc0d176c715c2ddc88a286bb37dd310ad5ecdb0eba56b4d7f4d7385720b5d2f265512b050a"
 }

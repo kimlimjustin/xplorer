@@ -55,15 +55,7 @@ const getTermTheme = () => ({
 
 // ── Single terminal instance ─────────────────────────────────────────────────
 
-const TermInstance = ({
-  tab,
-  cwd,
-  isActive,
-}: {
-  tab: TermTab;
-  cwd: string;
-  isActive: boolean;
-}) => {
+const TermInstance = ({ tab, cwd, isActive }: { tab: TermTab; cwd: string; isActive: boolean }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const spawnedRef = useRef(false);
 
@@ -113,7 +105,9 @@ const TermInstance = ({
       try {
         tab.fitAddon.fit();
         TauriAPI.ptyResize(tab.id, tab.terminal.cols, tab.terminal.rows).catch(() => {});
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
     });
     observer.observe(containerRef.current);
     return () => observer.disconnect();
@@ -166,9 +160,13 @@ const XTermPanel = ({ cwd, collapsed }: XTermPanelProps) => {
         if (tab) tab.terminal.write(payload.data);
         return prev;
       });
-    }).then((fn) => { unlisten = fn; });
+    }).then((fn) => {
+      unlisten = fn;
+    });
 
-    return () => { unlisten?.(); };
+    return () => {
+      unlisten?.();
+    };
   }, []);
 
   // Listen to PTY exit — mark tab as exited
@@ -180,9 +178,13 @@ const XTermPanel = ({ cwd, collapsed }: XTermPanelProps) => {
         if (tab) tab.terminal.writeln('\r\n[Process exited]');
         return prev;
       });
-    }).then((fn) => { unlisten = fn; });
+    }).then((fn) => {
+      unlisten = fn;
+    });
 
-    return () => { unlisten?.(); };
+    return () => {
+      unlisten?.();
+    };
   }, []);
 
   // Update theme when CSS variables change (theme switch)
@@ -193,7 +195,10 @@ const XTermPanel = ({ cwd, collapsed }: XTermPanelProps) => {
         tab.terminal.options.theme = theme;
       });
     });
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'style'] });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class', 'style'],
+    });
     return () => observer.disconnect();
   }, [tabs]);
 
@@ -203,55 +208,71 @@ const XTermPanel = ({ cwd, collapsed }: XTermPanelProps) => {
     setActiveTabId(tab.id);
   }, []);
 
-  const handleCloseTab = useCallback((id: string) => {
-    TauriAPI.ptyKill(id).catch(() => {});
-    setTabs((prev) => {
-      const next = prev.filter((t) => t.id !== id);
-      if (next.length === 0) {
-        const tab = createTab();
-        setActiveTabId(tab.id);
-        return [tab];
-      }
-      if (id === activeTabId) {
-        setActiveTabId(next[next.length - 1].id);
-      }
-      return next;
-    });
-  }, [activeTabId]);
+  const handleCloseTab = useCallback(
+    (id: string) => {
+      TauriAPI.ptyKill(id).catch(() => {});
+      setTabs((prev) => {
+        const next = prev.filter((t) => t.id !== id);
+        if (next.length === 0) {
+          const tab = createTab();
+          setActiveTabId(tab.id);
+          return [tab];
+        }
+        if (id === activeTabId) {
+          setActiveTabId(next[next.length - 1].id);
+        }
+        return next;
+      });
+    },
+    [activeTabId],
+  );
 
   if (collapsed) return null;
 
   return (
-    <div style={{
-      display: 'flex', flexDirection: 'column', height: '100%',
-      backgroundColor: getCssVar('--xp-bg', '#1a1b26'),
-    }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        backgroundColor: getCssVar('--xp-bg', '#1a1b26'),
+      }}
+    >
       {/* Tab bar */}
-      <div style={{
-        display: 'flex', alignItems: 'center',
-        height: 32, minHeight: 32,
-        borderBottom: `1px solid ${getCssVar('--xp-border', 'rgba(41,46,66,0.5)')}`,
-        backgroundColor: getCssVar('--xp-surface', 'rgba(26,27,38,0.8)'),
-        overflow: 'hidden',
-      }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          height: 32,
+          minHeight: 32,
+          borderBottom: `1px solid ${getCssVar('--xp-border', 'rgba(41,46,66,0.5)')}`,
+          backgroundColor: getCssVar('--xp-surface', 'rgba(26,27,38,0.8)'),
+          overflow: 'hidden',
+        }}
+      >
         <div style={{ display: 'flex', flex: 1, overflow: 'auto', gap: 1 }}>
           {tabs.map((tab) => (
             <div
               key={tab.id}
               onClick={() => setActiveTabId(tab.id)}
               style={{
-                display: 'flex', alignItems: 'center', gap: 6,
-                padding: '0 10px', height: 32,
-                fontSize: 11, cursor: 'pointer',
-                color: tab.id === activeTabId
-                  ? getCssVar('--xp-text', '#c0caf5')
-                  : getCssVar('--xp-text-muted', '#565f89'),
-                backgroundColor: tab.id === activeTabId
-                  ? getCssVar('--xp-bg', '#1a1b26')
-                  : 'transparent',
-                borderBottom: tab.id === activeTabId
-                  ? `1px solid ${getCssVar('--xp-blue', '#7aa2f7')}`
-                  : '1px solid transparent',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '0 10px',
+                height: 32,
+                fontSize: 11,
+                cursor: 'pointer',
+                color:
+                  tab.id === activeTabId
+                    ? getCssVar('--xp-text', '#c0caf5')
+                    : getCssVar('--xp-text-muted', '#565f89'),
+                backgroundColor:
+                  tab.id === activeTabId ? getCssVar('--xp-bg', '#1a1b26') : 'transparent',
+                borderBottom:
+                  tab.id === activeTabId
+                    ? `1px solid ${getCssVar('--xp-blue', '#7aa2f7')}`
+                    : '1px solid transparent',
                 whiteSpace: 'nowrap',
                 transition: 'all 0.1s',
               }}
@@ -260,16 +281,32 @@ const XTermPanel = ({ cwd, collapsed }: XTermPanelProps) => {
               <span>{tab.label}</span>
               {tabs.length > 1 && (
                 <button
-                  onClick={(e) => { e.stopPropagation(); handleCloseTab(tab.id); }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCloseTab(tab.id);
+                  }}
                   style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    width: 14, height: 14, borderRadius: 3,
-                    border: 'none', background: 'transparent',
-                    color: 'inherit', cursor: 'pointer', opacity: 0.5,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: 14,
+                    height: 14,
+                    borderRadius: 3,
+                    border: 'none',
+                    background: 'transparent',
+                    color: 'inherit',
+                    cursor: 'pointer',
+                    opacity: 0.5,
                     padding: 0,
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.opacity = '0.5'; e.currentTarget.style.backgroundColor = 'transparent'; }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.opacity = '1';
+                    e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.opacity = '0.5';
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }}
                 >
                   <X size={10} />
                 </button>
@@ -282,14 +319,25 @@ const XTermPanel = ({ cwd, collapsed }: XTermPanelProps) => {
         <button
           onClick={handleAddTab}
           style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            width: 28, height: 28, marginRight: 4,
-            border: 'none', borderRadius: 4, background: 'transparent',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 28,
+            height: 28,
+            marginRight: 4,
+            border: 'none',
+            borderRadius: 4,
+            background: 'transparent',
             color: getCssVar('--xp-text-muted', '#565f89'),
-            cursor: 'pointer', flexShrink: 0,
+            cursor: 'pointer',
+            flexShrink: 0,
           }}
-          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.06)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.06)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'transparent';
+          }}
           title="New Terminal"
         >
           <Plus size={14} />
@@ -299,12 +347,7 @@ const XTermPanel = ({ cwd, collapsed }: XTermPanelProps) => {
       {/* Terminal instances */}
       <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
         {tabs.map((tab) => (
-          <TermInstance
-            key={tab.id}
-            tab={tab}
-            cwd={cwd}
-            isActive={tab.id === activeTabId}
-          />
+          <TermInstance key={tab.id} tab={tab} cwd={cwd} isActive={tab.id === activeTabId} />
         ))}
       </div>
     </div>
