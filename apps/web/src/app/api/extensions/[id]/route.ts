@@ -21,7 +21,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     } catch {
       return NextResponse.json(
         { error: 'Too many requests. Please try again later.' },
-        { status: 429, headers: corsHeaders(request) }
+        { status: 429, headers: corsHeaders(request) },
       );
     }
 
@@ -50,7 +50,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     if (!extension) {
       return NextResponse.json(
         { error: 'Extension not found' },
-        { status: 404, headers: corsHeaders(request) }
+        { status: 404, headers: corsHeaders(request) },
       );
     }
 
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       if (!isOwner && !isAdmin) {
         return NextResponse.json(
           { error: 'Extension not found' },
-          { status: 404, headers: corsHeaders(request) }
+          { status: 404, headers: corsHeaders(request) },
         );
       }
     }
@@ -73,7 +73,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     console.error('GET /api/extensions/[id] error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch extension' },
-      { status: 500, headers: corsHeaders(request) }
+      { status: 500, headers: corsHeaders(request) },
     );
   }
 }
@@ -90,7 +90,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Authentication required' },
-        { status: 401, headers: corsHeaders(request) }
+        { status: 401, headers: corsHeaders(request) },
       );
     }
 
@@ -104,7 +104,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     if (!extension) {
       return NextResponse.json(
         { error: 'Extension not found' },
-        { status: 404, headers: corsHeaders(request) }
+        { status: 404, headers: corsHeaders(request) },
       );
     }
 
@@ -114,7 +114,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     if (!isOwner && !isAdmin) {
       return NextResponse.json(
         { error: 'Forbidden' },
-        { status: 403, headers: corsHeaders(request) }
+        { status: 403, headers: corsHeaders(request) },
       );
     }
 
@@ -124,7 +124,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     if (!parsed.success) {
       return NextResponse.json(
         { error: 'Validation failed', details: parsed.error.flatten() },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
@@ -139,9 +139,10 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       if (purchaseCount > 0) {
         return NextResponse.json(
           {
-            error: 'Cannot change pricing for an extension that has existing purchases. Please create a new extension listing instead.',
+            error:
+              'Cannot change pricing for an extension that has existing purchases. Please create a new extension listing instead.',
           },
-          { status: 400, headers: corsHeaders(request) }
+          { status: 400, headers: corsHeaders(request) },
         );
       }
     }
@@ -149,9 +150,18 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     // Build update payload
     const updateData: Record<string, any> = {};
     const allowedFields = [
-      'displayName', 'description', 'longDescription', 'icon', 'screenshots',
-      'licenseType', 'repositoryUrl', 'homepageUrl', 'bugReportUrl',
-      'pricingType', 'price', 'currency',
+      'displayName',
+      'description',
+      'longDescription',
+      'icon',
+      'screenshots',
+      'licenseType',
+      'repositoryUrl',
+      'homepageUrl',
+      'bugReportUrl',
+      'pricingType',
+      'price',
+      'currency',
     ];
 
     for (const field of allowedFields) {
@@ -187,8 +197,8 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
               slug: tagName.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
             },
             select: { id: true },
-          })
-        )
+          }),
+        ),
       );
       if (upsertedTags.length > 0) {
         await prisma.tagsOnExtensions.createMany({
@@ -212,7 +222,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     console.error('PATCH /api/extensions/[id] error:', error);
     return NextResponse.json(
       { error: 'Failed to update extension' },
-      { status: 500, headers: corsHeaders(request) }
+      { status: 500, headers: corsHeaders(request) },
     );
   }
 }
@@ -229,7 +239,7 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Authentication required' },
-        { status: 401, headers: corsHeaders(request) }
+        { status: 401, headers: corsHeaders(request) },
       );
     }
 
@@ -243,7 +253,7 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
     if (!extension) {
       return NextResponse.json(
         { error: 'Extension not found' },
-        { status: 404, headers: corsHeaders(request) }
+        { status: 404, headers: corsHeaders(request) },
       );
     }
 
@@ -253,7 +263,7 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
     if (!isOwner && !isAdmin) {
       return NextResponse.json(
         { error: 'Forbidden' },
-        { status: 403, headers: corsHeaders(request) }
+        { status: 403, headers: corsHeaders(request) },
       );
     }
 
@@ -267,13 +277,13 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
 
     return NextResponse.json(
       { message: 'Extension archived successfully' },
-      { headers: corsHeaders(request) }
+      { headers: corsHeaders(request) },
     );
   } catch (error) {
     console.error('DELETE /api/extensions/[id] error:', error);
     return NextResponse.json(
       { error: 'Failed to archive extension' },
-      { status: 500, headers: corsHeaders(request) }
+      { status: 500, headers: corsHeaders(request) },
     );
   }
 }

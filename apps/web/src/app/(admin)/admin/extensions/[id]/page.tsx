@@ -122,7 +122,7 @@ export default function AdminExtensionReviewPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[50vh]">
+      <div className="flex min-h-[50vh] items-center justify-center">
         <Spinner className="h-8 w-8 text-brand-500" />
       </div>
     );
@@ -131,7 +131,7 @@ export default function AdminExtensionReviewPage() {
   if (error && !extension) {
     return (
       <div className="mx-auto max-w-4xl px-4 py-8 text-center">
-        <AlertCircle className="h-10 w-10 text-red-400 mx-auto mb-3" />
+        <AlertCircle className="mx-auto mb-3 h-10 w-10 text-red-400" />
         <p className="text-gray-500 dark:text-gray-400">{error}</p>
         <Link href="/admin" className="mt-4 inline-block">
           <Button variant="secondary">Back to Admin</Button>
@@ -143,17 +143,17 @@ export default function AdminExtensionReviewPage() {
   if (!extension) return null;
 
   return (
-    <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
+    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
       <Link
         href="/admin"
-        className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 mb-6"
+        className="mb-6 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
       >
         <ArrowLeft className="h-4 w-4" />
         Back to Admin
       </Link>
 
       {/* Header */}
-      <div className="flex items-start justify-between gap-4 mb-8">
+      <div className="mb-8 flex items-start justify-between gap-4">
         <div>
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -166,7 +166,7 @@ export default function AdminExtensionReviewPage() {
         </div>
 
         {extension.status === 'PENDING' && !actionDone && (
-          <div className="flex gap-2 shrink-0">
+          <div className="flex shrink-0 gap-2">
             <Button
               variant="primary"
               onClick={() => handleAction('approve')}
@@ -196,21 +196,25 @@ export default function AdminExtensionReviewPage() {
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 p-3 bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400 rounded-lg text-sm mb-6">
+        <div className="mb-6 flex items-center gap-2 rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-400">
           <AlertCircle className="h-4 w-4 shrink-0" />
           {error}
         </div>
       )}
 
       {/* Details grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="border border-gray-200 dark:border-gray-800 rounded-xl p-5 space-y-4">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <div className="space-y-4 rounded-xl border border-gray-200 p-5 dark:border-gray-800">
           <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Extension Details</h2>
           <dl className="space-y-3 text-sm">
             <DetailRow icon={Package} label="Name" value={extension.name} />
             <DetailRow icon={FileText} label="Version" value={extension.version} />
             <DetailRow icon={FileText} label="License" value={extension.licenseType} />
-            <DetailRow icon={Download} label="File Size" value={formatFileSize(extension.fileSize)} />
+            <DetailRow
+              icon={Download}
+              label="File Size"
+              value={formatFileSize(extension.fileSize)}
+            />
             <DetailRow icon={Calendar} label="Submitted" value={formatDate(extension.createdAt)} />
             {extension.pricingType === 'PAID' && extension.price && (
               <DetailRow icon={FileText} label="Price" value={formatPrice(extension.price)} />
@@ -227,7 +231,7 @@ export default function AdminExtensionReviewPage() {
           )}
         </div>
 
-        <div className="border border-gray-200 dark:border-gray-800 rounded-xl p-5 space-y-4">
+        <div className="space-y-4 rounded-xl border border-gray-200 p-5 dark:border-gray-800">
           <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Author</h2>
           <dl className="space-y-3 text-sm">
             <DetailRow icon={User} label="Username" value={extension.author.username} />
@@ -245,7 +249,7 @@ export default function AdminExtensionReviewPage() {
                 href={extension.repositoryUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-brand-600 hover:text-brand-700 underline"
+                className="text-sm text-brand-600 underline hover:text-brand-700"
               >
                 View Repository
               </a>
@@ -256,11 +260,11 @@ export default function AdminExtensionReviewPage() {
 
       {/* Long description */}
       {extension.longDescription && (
-        <div className="mt-6 border border-gray-200 dark:border-gray-800 rounded-xl p-5">
-          <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
+        <div className="mt-6 rounded-xl border border-gray-200 p-5 dark:border-gray-800">
+          <h2 className="mb-3 text-sm font-semibold text-gray-900 dark:text-white">
             Long Description
           </h2>
-          <div className="prose prose-sm prose-gray dark:prose-invert max-w-none">
+          <div className="prose prose-sm prose-gray max-w-none dark:prose-invert">
             <p className="whitespace-pre-wrap text-gray-600 dark:text-gray-400">
               {extension.longDescription}
             </p>
@@ -269,11 +273,9 @@ export default function AdminExtensionReviewPage() {
       )}
 
       {/* Checksum */}
-      <div className="mt-6 border border-gray-200 dark:border-gray-800 rounded-xl p-5">
-        <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">
-          File Integrity
-        </h2>
-        <p className="text-xs font-mono text-gray-500 dark:text-gray-400 break-all">
+      <div className="mt-6 rounded-xl border border-gray-200 p-5 dark:border-gray-800">
+        <h2 className="mb-2 text-sm font-semibold text-gray-900 dark:text-white">File Integrity</h2>
+        <p className="break-all font-mono text-xs text-gray-500 dark:text-gray-400">
           SHA-256: {extension.checksum || 'N/A'}
         </p>
       </div>
@@ -281,15 +283,7 @@ export default function AdminExtensionReviewPage() {
   );
 }
 
-function DetailRow({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: any;
-  label: string;
-  value: string;
-}) {
+function DetailRow({ icon: Icon, label, value }: { icon: any; label: string; value: string }) {
   return (
     <div className="flex items-center justify-between">
       <dt className="flex items-center gap-2 text-gray-500 dark:text-gray-400">

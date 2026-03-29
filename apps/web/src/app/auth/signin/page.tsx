@@ -18,15 +18,15 @@ export default async function SignInPage() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-[60vh] px-4">
+    <div className="flex min-h-[60vh] items-center justify-center px-4">
       <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
+        <div className="mb-8 text-center">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
             Sign in to {SITE_NAME}
           </h1>
           <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-            Sign in with your GitHub account to publish extensions, leave
-            reviews, and manage your subscriptions.
+            Sign in with your GitHub account to publish extensions, leave reviews, and manage your
+            subscriptions.
           </p>
         </div>
 

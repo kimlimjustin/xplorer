@@ -9,9 +9,15 @@ export interface GoogleDriveAccount {
 }
 
 class GDriveManager {
-  getAllAccounts(): GoogleDriveAccount[] { return []; }
-  getAccounts(): GoogleDriveAccount[] { return []; }
-  isConnected(): boolean { return false; }
+  getAllAccounts(): GoogleDriveAccount[] {
+    return [];
+  }
+  getAccounts(): GoogleDriveAccount[] {
+    return [];
+  }
+  isConnected(): boolean {
+    return false;
+  }
   addEventListener(_event: string, _handler: () => void) {}
   removeEventListener(_event: string, _handler: () => void) {}
 }

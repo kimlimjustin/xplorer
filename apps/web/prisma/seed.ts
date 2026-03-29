@@ -9,28 +9,68 @@ const RESET = process.argv.includes('--reset');
 // ── Category definitions ────────────────────────────────────────────────────
 
 const CATEGORIES = [
-  { name: 'Themes', slug: 'themes', description: 'Visual themes and color schemes for Xplorer', icon: 'palette' },
-  { name: 'Previews', slug: 'previews', description: 'File preview extensions for various formats', icon: 'eye' },
-  { name: 'Productivity', slug: 'productivity', description: 'Extensions to boost your productivity', icon: 'zap' },
-  { name: 'Developer Tools', slug: 'developer-tools', description: 'Tools and utilities for developers', icon: 'wrench' },
-  { name: 'Cloud Storage', slug: 'cloud-storage', description: 'Cloud storage integrations and connectors', icon: 'cloud' },
-  { name: 'Security', slug: 'security', description: 'Security and privacy extensions', icon: 'shield' },
-  { name: 'Media', slug: 'media', description: 'Media playback and editing extensions', icon: 'film' },
-  { name: 'Utilities', slug: 'utilities', description: 'General-purpose utility extensions', icon: 'settings' },
+  {
+    name: 'Themes',
+    slug: 'themes',
+    description: 'Visual themes and color schemes for Xplorer',
+    icon: 'palette',
+  },
+  {
+    name: 'Previews',
+    slug: 'previews',
+    description: 'File preview extensions for various formats',
+    icon: 'eye',
+  },
+  {
+    name: 'Productivity',
+    slug: 'productivity',
+    description: 'Extensions to boost your productivity',
+    icon: 'zap',
+  },
+  {
+    name: 'Developer Tools',
+    slug: 'developer-tools',
+    description: 'Tools and utilities for developers',
+    icon: 'wrench',
+  },
+  {
+    name: 'Cloud Storage',
+    slug: 'cloud-storage',
+    description: 'Cloud storage integrations and connectors',
+    icon: 'cloud',
+  },
+  {
+    name: 'Security',
+    slug: 'security',
+    description: 'Security and privacy extensions',
+    icon: 'shield',
+  },
+  {
+    name: 'Media',
+    slug: 'media',
+    description: 'Media playback and editing extensions',
+    icon: 'film',
+  },
+  {
+    name: 'Utilities',
+    slug: 'utilities',
+    description: 'General-purpose utility extensions',
+    icon: 'settings',
+  },
 ];
 
 // Map extension manifest category → marketplace category slug
 const CATEGORY_MAP: Record<string, string> = {
-  'panel': 'productivity',
-  'theme': 'themes',
-  'preview': 'previews',
-  'action': 'utilities',
-  'tool': 'utilities',
-  'editor': 'developer-tools',
+  panel: 'productivity',
+  theme: 'themes',
+  preview: 'previews',
+  action: 'utilities',
+  tool: 'utilities',
+  editor: 'developer-tools',
   'bottom-tab': 'developer-tools',
-  'remote': 'cloud-storage',
-  'tab': 'cloud-storage',
-  'navigation': 'cloud-storage',
+  remote: 'cloud-storage',
+  tab: 'cloud-storage',
+  navigation: 'cloud-storage',
 };
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -49,7 +89,10 @@ interface ExtensionManifest {
 }
 
 function slugify(text: string): string {
-  return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
 }
 
 function readExtensionManifests(): { dirName: string; manifest: ExtensionManifest }[] {
@@ -66,9 +109,10 @@ function readExtensionManifests(): { dirName: string; manifest: ExtensionManifes
       continue;
     }
 
-    const dirs = fs.readdirSync(examplesDir, { withFileTypes: true })
-      .filter(d => d.isDirectory())
-      .map(d => d.name);
+    const dirs = fs
+      .readdirSync(examplesDir, { withFileTypes: true })
+      .filter((d) => d.isDirectory())
+      .map((d) => d.name);
 
     for (const dir of dirs) {
       const pkgPath = path.join(examplesDir, dir, 'package.json');
@@ -190,7 +234,13 @@ async function main() {
             icon: svgIcon || manifest.icon || null,
             status: 'APPROVED',
             isPublished: true,
-            isFeatured: ['ai-chat', 'code-editor', 'xplorer-dracula-theme', 'duplicate-finder', 'git'].includes(manifest.id),
+            isFeatured: [
+              'ai-chat',
+              'code-editor',
+              'xplorer-dracula-theme',
+              'duplicate-finder',
+              'git',
+            ].includes(manifest.id),
             publishedAt: new Date(),
             authorId: systemUser.id,
             categories: category
@@ -198,7 +248,7 @@ async function main() {
               : undefined,
             tags: manifest.keywords
               ? {
-                  create: manifest.keywords.slice(0, 5).map(kw => ({
+                  create: manifest.keywords.slice(0, 5).map((kw) => ({
                     tag: {
                       connectOrCreate: {
                         where: { name: kw },
@@ -225,13 +275,17 @@ async function main() {
         created++;
       }
 
-      console.log(`  [${existing ? 'updated' : 'created'}] ${displayName} (${slug}) → ${categorySlug}`);
+      console.log(
+        `  [${existing ? 'updated' : 'created'}] ${displayName} (${slug}) → ${categorySlug}`,
+      );
     } catch (err) {
       console.error(`  [error] ${displayName} (${slug}):`, err);
     }
   }
 
-  console.log(`\n[seed] Done. Created: ${created}, Updated: ${updated}, Total: ${extensions.length}`);
+  console.log(
+    `\n[seed] Done. Created: ${created}, Updated: ${updated}, Total: ${extensions.length}`,
+  );
 }
 
 main()

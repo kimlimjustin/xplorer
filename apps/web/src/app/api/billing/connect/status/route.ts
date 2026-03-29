@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Authentication required' },
-        { status: 401, headers: corsHeaders(request) }
+        { status: 401, headers: corsHeaders(request) },
       );
     }
 
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: 'User not found' },
-        { status: 404, headers: corsHeaders(request) }
+        { status: 404, headers: corsHeaders(request) },
       );
     }
 
@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
           isOnboarded: false,
           accountId: null,
         },
-        { headers: corsHeaders(request) }
+        { headers: corsHeaders(request) },
       );
     }
 
@@ -64,13 +64,13 @@ export async function GET(request: NextRequest) {
         isOnboarded,
         accountId: user.stripeConnectAccountId,
       },
-      { headers: corsHeaders(request) }
+      { headers: corsHeaders(request) },
     );
   } catch (error) {
     console.error('GET /api/billing/connect/status error:', error);
     return NextResponse.json(
       { error: 'Failed to check Connect status' },
-      { status: 500, headers: corsHeaders(request) }
+      { status: 500, headers: corsHeaders(request) },
     );
   }
 }

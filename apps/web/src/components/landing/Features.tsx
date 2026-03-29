@@ -1,11 +1,4 @@
-import {
-  Zap,
-  Brain,
-  Eye,
-  Globe,
-  GitBranch,
-  Puzzle,
-} from 'lucide-react';
+import { Zap, Brain, Eye, Globe, GitBranch, Puzzle } from 'lucide-react';
 
 const FEATURES = [
   {
@@ -54,33 +47,32 @@ const FEATURES = [
 
 export function Features() {
   return (
-    <section className="py-20 sm:py-28 bg-white dark:bg-gray-950">
+    <section className="bg-white py-20 dark:bg-gray-950 sm:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">
+        <div className="mx-auto mb-16 max-w-2xl text-center">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white sm:text-4xl">
             Everything you need in a file manager
           </h2>
           <p className="mt-4 text-lg text-gray-500 dark:text-gray-400">
-            Powerful features designed for developers, power users, and everyone
-            in between.
+            Powerful features designed for developers, power users, and everyone in between.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map((feature) => (
             <div
               key={feature.title}
-              className="group p-6 rounded-xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-lg dark:hover:shadow-gray-900/50 transition-all duration-200"
+              className="group rounded-xl border border-gray-100 p-6 transition-all duration-200 hover:border-gray-200 hover:shadow-lg dark:border-gray-800 dark:hover:border-gray-700 dark:hover:shadow-gray-900/50"
             >
               <div
-                className={`inline-flex items-center justify-center h-12 w-12 rounded-lg ${feature.color}`}
+                className={`inline-flex h-12 w-12 items-center justify-center rounded-lg ${feature.color}`}
               >
                 <feature.icon className="h-6 w-6" />
               </div>
               <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-white">
                 {feature.title}
               </h3>
-              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+              <p className="mt-2 text-sm leading-relaxed text-gray-500 dark:text-gray-400">
                 {feature.description}
               </p>
             </div>

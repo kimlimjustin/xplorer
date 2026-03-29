@@ -34,7 +34,9 @@ const loadToken = () => {
       const data = JSON.parse(readFileSync(TOKEN_FILE, 'utf-8'));
       return data.token || null;
     }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   return null;
 };
 
@@ -61,7 +63,10 @@ const apiFetch = async (path, options = {}) => {
 };
 
 const print = (msg) => process.stdout.write(msg + '\n');
-const error = (msg) => { process.stderr.write(`Error: ${msg}\n`); process.exit(1); };
+const error = (msg) => {
+  process.stderr.write(`Error: ${msg}\n`);
+  process.exit(1);
+};
 
 // ── Commands ─────────────────────────────────────────────────────────────────
 
@@ -171,7 +176,9 @@ const whoami = () => {
         return;
       }
     }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   print('Not logged in. Run: xplorer login');
 };
 

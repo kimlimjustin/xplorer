@@ -25,18 +25,14 @@ export function ExtensionCard({ extension }: { extension: ExtensionCardData }) {
   return (
     <Link
       href={`/extensions/${extension.slug}`}
-      className="group block border border-gray-200 rounded-xl p-5 hover:shadow-lg hover:border-gray-300 transition-all duration-200 dark:border-gray-800 dark:hover:border-gray-700"
+      className="group block rounded-xl border border-gray-200 p-5 transition-all duration-200 hover:border-gray-300 hover:shadow-lg dark:border-gray-800 dark:hover:border-gray-700"
     >
       <div className="flex items-start gap-4">
         {/* Icon */}
-        <div className="h-12 w-12 rounded-lg bg-brand-50 flex items-center justify-center shrink-0 text-brand-600 font-bold text-lg group-hover:bg-brand-100 transition-colors dark:bg-brand-500/10 dark:text-brand-400 dark:group-hover:bg-brand-500/20">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-lg font-bold text-brand-600 transition-colors group-hover:bg-brand-100 dark:bg-brand-500/10 dark:text-brand-400 dark:group-hover:bg-brand-500/20">
           {extension.icon ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={safeImageUrl(extension.icon)}
-              alt=""
-              className="h-8 w-8 rounded"
-            />
+            <img src={safeImageUrl(extension.icon)} alt="" className="h-8 w-8 rounded" />
           ) : (
             extension.displayName.charAt(0).toUpperCase()
           )}
@@ -44,21 +40,18 @@ export function ExtensionCard({ extension }: { extension: ExtensionCardData }) {
 
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <h3 className="text-sm font-semibold text-gray-900 truncate group-hover:text-brand-700 transition-colors dark:text-white dark:group-hover:text-brand-400">
+            <h3 className="truncate text-sm font-semibold text-gray-900 transition-colors group-hover:text-brand-700 dark:text-white dark:group-hover:text-brand-400">
               {extension.displayName}
             </h3>
-            <PriceBadge
-              pricingType={extension.pricingType}
-              price={extension.price}
-            />
+            <PriceBadge pricingType={extension.pricingType} price={extension.price} />
           </div>
-          <p className="text-xs text-gray-500 mt-0.5 dark:text-gray-400">
+          <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
             by {extension.author.name || extension.author.username}
           </p>
         </div>
       </div>
 
-      <p className="mt-3 text-sm text-gray-600 line-clamp-2 leading-relaxed dark:text-gray-400">
+      <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
         {extension.description}
       </p>
 

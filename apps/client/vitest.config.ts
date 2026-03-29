@@ -18,5 +18,5 @@ export default defineConfig({
     // Define globals that help prevent Tauri calls during tests
     'import.meta.env.TAURI_FAMILY': '"test"',
     'window.__TAURI__': 'undefined',
-  }
+  },
 });

@@ -34,10 +34,7 @@ export const createBackup = async (
   return await transport('create_backup', { sourceDir, backupDir, name });
 };
 
-export const listBackups = async (
-  backupDir: string,
-  name: string,
-): Promise<BackupManifest[]> => {
+export const listBackups = async (backupDir: string, name: string): Promise<BackupManifest[]> => {
   return await transport('list_backups', { backupDir, name });
 };
 

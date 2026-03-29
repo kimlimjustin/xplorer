@@ -19,7 +19,11 @@ declare module '@tanstack/react-virtual' {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export function useVirtualizer<TScrollElement extends Element, TItemElement extends Element>(options: any): Virtualizer<TScrollElement, TItemElement>;
+  export function useVirtualizer<TScrollElement extends Element, TItemElement extends Element>(
+    options: any,
+  ): Virtualizer<TScrollElement, TItemElement>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  export function useWindowVirtualizer<TItemElement extends Element>(options: any): Virtualizer<Window, TItemElement>;
+  export function useWindowVirtualizer<TItemElement extends Element>(
+    options: any,
+  ): Virtualizer<Window, TItemElement>;
 }

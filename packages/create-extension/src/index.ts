@@ -90,183 +90,188 @@ program
   .argument('[extension-name]', 'extension name')
   .option('-t, --type <type>', 'extension type (panel|theme|action|preview|command|tab)')
   .option('--skip-install', 'skip npm install')
-  .action(async (extensionName: string | undefined, options: { type?: string; skipInstall?: boolean }) => {
-    console.log(chalk.blue.bold('\n  Create Xplorer Extension\n'));
+  .action(
+    async (
+      extensionName: string | undefined,
+      options: { type?: string; skipInstall?: boolean },
+    ) => {
+      console.log(chalk.blue.bold('\n  Create Xplorer Extension\n'));
 
-    // ── Name ──────────────────────────────────────────────────────────────
+      // ── Name ──────────────────────────────────────────────────────────────
 
-    let name = extensionName;
-    if (!name) {
-      const answers = await inquirer.prompt([
+      let name = extensionName;
+      if (!name) {
+        const answers = await inquirer.prompt([
+          {
+            type: 'input',
+            name: 'extensionName',
+            message: 'Extension name:',
+            validate: (input: string) => {
+              if (!input.trim()) return 'Extension name is required';
+              if (!/^[a-z0-9-]+$/.test(input.trim())) {
+                return 'Name must contain only lowercase letters, numbers, and dashes';
+              }
+              return true;
+            },
+          },
+        ]);
+        name = answers.extensionName;
+      }
+
+      // ── Details ───────────────────────────────────────────────────────────
+
+      const defaultDisplayName = name!
+        .split('-')
+        .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+
+      const details = await inquirer.prompt([
         {
           type: 'input',
-          name: 'extensionName',
-          message: 'Extension name:',
-          validate: (input: string) => {
-            if (!input.trim()) return 'Extension name is required';
-            if (!/^[a-z0-9-]+$/.test(input.trim())) {
-              return 'Name must contain only lowercase letters, numbers, and dashes';
-            }
-            return true;
-          },
+          name: 'displayName',
+          message: 'Display name:',
+          default: defaultDisplayName,
         },
-      ]);
-      name = answers.extensionName;
-    }
-
-    // ── Details ───────────────────────────────────────────────────────────
-
-    const defaultDisplayName = name!
-      .split('-')
-      .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-
-    const details = await inquirer.prompt([
-      {
-        type: 'input',
-        name: 'displayName',
-        message: 'Display name:',
-        default: defaultDisplayName,
-      },
-      {
-        type: 'input',
-        name: 'description',
-        message: 'Description:',
-        default: `An Xplorer extension`,
-      },
-      {
-        type: 'input',
-        name: 'author',
-        message: 'Author:',
-        default: 'Your Name',
-      },
-      {
-        type: 'list',
-        name: 'type',
-        message: 'Extension type:',
-        choices: EXTENSION_TYPES.map((t) => ({ name: t.name, value: t.value })),
-        default: options.type || 'panel',
-        when: () => !options.type,
-      },
-      {
-        type: 'confirm',
-        name: 'installDeps',
-        message: 'Install dependencies?',
-        default: !options.skipInstall,
-      },
-    ]);
-
-    const extType = options.type || details.type || 'panel';
-    const typeInfo = EXTENSION_TYPES.find((t) => t.value === extType) || EXTENSION_TYPES[0];
-
-    const vars = {
-      name: name!,
-      displayName: details.displayName,
-      description: details.description,
-      author: details.author,
-      type: extType,
-      category: typeInfo.category,
-      icon: typeInfo.icon,
-      permissions: typeInfo.permissions,
-      keywords: typeInfo.keywords,
-    };
-
-    // ── Check target directory ────────────────────────────────────────────
-
-    const targetDir = path.resolve(process.cwd(), name!);
-
-    if (await fs.pathExists(targetDir)) {
-      const { overwrite } = await inquirer.prompt([
+        {
+          type: 'input',
+          name: 'description',
+          message: 'Description:',
+          default: `An Xplorer extension`,
+        },
+        {
+          type: 'input',
+          name: 'author',
+          message: 'Author:',
+          default: 'Your Name',
+        },
+        {
+          type: 'list',
+          name: 'type',
+          message: 'Extension type:',
+          choices: EXTENSION_TYPES.map((t) => ({ name: t.name, value: t.value })),
+          default: options.type || 'panel',
+          when: () => !options.type,
+        },
         {
           type: 'confirm',
-          name: 'overwrite',
-          message: `Directory ${name} already exists. Overwrite?`,
-          default: false,
+          name: 'installDeps',
+          message: 'Install dependencies?',
+          default: !options.skipInstall,
         },
       ]);
 
-      if (!overwrite) {
-        console.log(chalk.yellow('\n  Extension creation cancelled.\n'));
-        process.exit(0);
-      }
+      const extType = options.type || details.type || 'panel';
+      const typeInfo = EXTENSION_TYPES.find((t) => t.value === extType) || EXTENSION_TYPES[0];
 
-      await fs.remove(targetDir);
-    }
+      const vars = {
+        name: name!,
+        displayName: details.displayName,
+        description: details.description,
+        author: details.author,
+        type: extType,
+        category: typeInfo.category,
+        icon: typeInfo.icon,
+        permissions: typeInfo.permissions,
+        keywords: typeInfo.keywords,
+      };
 
-    // ── Scaffold ──────────────────────────────────────────────────────────
+      // ── Check target directory ────────────────────────────────────────────
 
-    const spinner = ora('Scaffolding extension...').start();
+      const targetDir = path.resolve(process.cwd(), name!);
 
-    try {
-      await fs.ensureDir(targetDir);
-      await fs.ensureDir(path.join(targetDir, 'src'));
-      await fs.ensureDir(path.join(targetDir, 'dist'));
+      if (await fs.pathExists(targetDir)) {
+        const { overwrite } = await inquirer.prompt([
+          {
+            type: 'confirm',
+            name: 'overwrite',
+            message: `Directory ${name} already exists. Overwrite?`,
+            default: false,
+          },
+        ]);
 
-      const template = getTemplate(extType, vars);
-
-      // Write package.json
-      await fs.writeFile(
-        path.join(targetDir, 'package.json'),
-        JSON.stringify(template.packageJson, null, 2) + '\n',
-      );
-
-      // Write tsconfig.json
-      await fs.writeFile(
-        path.join(targetDir, 'tsconfig.json'),
-        JSON.stringify(template.tsconfig, null, 2) + '\n',
-      );
-
-      // Write src/index.tsx
-      await fs.writeFile(path.join(targetDir, 'src', 'index.tsx'), template.source);
-
-      // Write README.md
-      await fs.writeFile(path.join(targetDir, 'README.md'), template.readme);
-
-      // Write .gitignore
-      await fs.writeFile(
-        path.join(targetDir, '.gitignore'),
-        ['node_modules/', 'dist/', '*.spx', ''].join('\n'),
-      );
-
-      spinner.succeed('Extension scaffolded!');
-
-      // ── Install deps ────────────────────────────────────────────────────
-
-      if (details.installDeps) {
-        const installSpinner = ora('Installing dependencies...').start();
-        const { execSync } = await import('child_process');
-
-        try {
-          execSync('npm install', { cwd: targetDir, stdio: 'pipe' });
-          installSpinner.succeed('Dependencies installed!');
-        } catch {
-          installSpinner.fail('Failed to install dependencies');
-          console.log(chalk.yellow('  You can install them manually with: npm install'));
+        if (!overwrite) {
+          console.log(chalk.yellow('\n  Extension creation cancelled.\n'));
+          process.exit(0);
         }
+
+        await fs.remove(targetDir);
       }
 
-      // ── Summary ─────────────────────────────────────────────────────────
+      // ── Scaffold ──────────────────────────────────────────────────────────
 
-      console.log();
-      console.log(chalk.green.bold('  Extension created successfully!'));
-      console.log();
-      console.log(chalk.cyan('  Next steps:'));
-      console.log(`    cd ${name}`);
-      if (!details.installDeps) {
-        console.log('    npm install');
+      const spinner = ora('Scaffolding extension...').start();
+
+      try {
+        await fs.ensureDir(targetDir);
+        await fs.ensureDir(path.join(targetDir, 'src'));
+        await fs.ensureDir(path.join(targetDir, 'dist'));
+
+        const template = getTemplate(extType, vars);
+
+        // Write package.json
+        await fs.writeFile(
+          path.join(targetDir, 'package.json'),
+          JSON.stringify(template.packageJson, null, 2) + '\n',
+        );
+
+        // Write tsconfig.json
+        await fs.writeFile(
+          path.join(targetDir, 'tsconfig.json'),
+          JSON.stringify(template.tsconfig, null, 2) + '\n',
+        );
+
+        // Write src/index.tsx
+        await fs.writeFile(path.join(targetDir, 'src', 'index.tsx'), template.source);
+
+        // Write README.md
+        await fs.writeFile(path.join(targetDir, 'README.md'), template.readme);
+
+        // Write .gitignore
+        await fs.writeFile(
+          path.join(targetDir, '.gitignore'),
+          ['node_modules/', 'dist/', '*.spx', ''].join('\n'),
+        );
+
+        spinner.succeed('Extension scaffolded!');
+
+        // ── Install deps ────────────────────────────────────────────────────
+
+        if (details.installDeps) {
+          const installSpinner = ora('Installing dependencies...').start();
+          const { execSync } = await import('child_process');
+
+          try {
+            execSync('npm install', { cwd: targetDir, stdio: 'pipe' });
+            installSpinner.succeed('Dependencies installed!');
+          } catch {
+            installSpinner.fail('Failed to install dependencies');
+            console.log(chalk.yellow('  You can install them manually with: npm install'));
+          }
+        }
+
+        // ── Summary ─────────────────────────────────────────────────────────
+
+        console.log();
+        console.log(chalk.green.bold('  Extension created successfully!'));
+        console.log();
+        console.log(chalk.cyan('  Next steps:'));
+        console.log(`    cd ${name}`);
+        if (!details.installDeps) {
+          console.log('    npm install');
+        }
+        console.log('    npm run build');
+        console.log('    npm run watch     # for development');
+        console.log();
+        console.log(chalk.gray('  Then load the extension in Xplorer:'));
+        console.log(chalk.gray('    Settings > Extensions > Install from Folder'));
+        console.log();
+      } catch (error: unknown) {
+        spinner.fail('Failed to create extension');
+        const message = error instanceof Error ? error.message : String(error);
+        console.error(chalk.red(`  ${message}`));
+        process.exit(1);
       }
-      console.log('    npm run build');
-      console.log('    npm run watch     # for development');
-      console.log();
-      console.log(chalk.gray('  Then load the extension in Xplorer:'));
-      console.log(chalk.gray('    Settings > Extensions > Install from Folder'));
-      console.log();
-    } catch (error: unknown) {
-      spinner.fail('Failed to create extension');
-      const message = error instanceof Error ? error.message : String(error);
-      console.error(chalk.red(`  ${message}`));
-      process.exit(1);
-    }
-  });
+    },
+  );
 
 program.parse();

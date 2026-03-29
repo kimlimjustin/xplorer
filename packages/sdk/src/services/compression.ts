@@ -1,10 +1,5 @@
 import { transport } from '../transport';
-import type {
-  CompressionOptions,
-  CompressionInfo,
-  ExtractionOptions,
-  ArchiveInfo,
-} from '../types';
+import type { CompressionOptions, CompressionInfo, ExtractionOptions, ArchiveInfo } from '../types';
 
 export const compressFiles = async (
   filePaths: string[],
@@ -18,7 +13,10 @@ export const getCompressionInfo = async (filePaths: string[]): Promise<Compressi
   return await transport('get_compression_info', { filePaths });
 };
 
-export const extractArchive = async (archivePath: string, options: ExtractionOptions): Promise<string> => {
+export const extractArchive = async (
+  archivePath: string,
+  options: ExtractionOptions,
+): Promise<string> => {
   return await transport('extract_archive', { archivePath, options });
 };
 
@@ -32,7 +30,12 @@ export const extractSelectedEntries = async (
   outputDir: string,
   overwrite: boolean,
 ): Promise<string> => {
-  return await transport('extract_selected_entries', { archivePath, entries, outputDir, overwrite });
+  return await transport('extract_selected_entries', {
+    archivePath,
+    entries,
+    outputDir,
+    overwrite,
+  });
 };
 
 export const isArchive = async (filePath: string): Promise<boolean> => {

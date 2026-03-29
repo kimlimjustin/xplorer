@@ -550,7 +550,6 @@ describe('XplorerAPI', () => {
     expect(disposable).toHaveProperty('dispose');
     expect(typeof disposable.dispose).toBe('function');
   });
-
 });
 
 // ---------------------------------------------------------------------------

@@ -2,43 +2,27 @@
 
 import React from 'react';
 import dynamic from 'next/dynamic';
-import {
-  FolderOpen,
-  Eye,
-  Brain,
-  Search,
-  GitBranch,
-  Puzzle,
-  type LucideIcon,
-} from 'lucide-react';
+import { FolderOpen, Eye, Brain, Search, GitBranch, Puzzle, type LucideIcon } from 'lucide-react';
 import { useInView } from '@/hooks/useInView';
 import { cn } from '@/lib/utils';
 
 // All demos are dynamic (ssr: false) because FeatureDemos imports @client/ components
-const FileBrowserDemo = dynamic(
-  () => import('./FeatureDemos').then(m => m.FileBrowserDemo),
-  { ssr: false },
-);
-const PreviewDemo = dynamic(
-  () => import('./FeatureDemos').then(m => m.PreviewDemo),
-  { ssr: false },
-);
-const AIChatDemo = dynamic(
-  () => import('./FeatureDemos').then(m => m.AIChatDemo),
-  { ssr: false },
-);
-const SearchDemo = dynamic(
-  () => import('./FeatureDemos').then(m => m.SearchDemo),
-  { ssr: false },
-);
-const GitDemo = dynamic(
-  () => import('./FeatureDemos').then(m => m.GitDemo),
-  { ssr: false },
-);
-const ExtensionsDemo = dynamic(
-  () => import('./FeatureDemos').then(m => m.ExtensionsDemo),
-  { ssr: false },
-);
+const FileBrowserDemo = dynamic(() => import('./FeatureDemos').then((m) => m.FileBrowserDemo), {
+  ssr: false,
+});
+const PreviewDemo = dynamic(() => import('./FeatureDemos').then((m) => m.PreviewDemo), {
+  ssr: false,
+});
+const AIChatDemo = dynamic(() => import('./FeatureDemos').then((m) => m.AIChatDemo), {
+  ssr: false,
+});
+const SearchDemo = dynamic(() => import('./FeatureDemos').then((m) => m.SearchDemo), {
+  ssr: false,
+});
+const GitDemo = dynamic(() => import('./FeatureDemos').then((m) => m.GitDemo), { ssr: false });
+const ExtensionsDemo = dynamic(() => import('./FeatureDemos').then((m) => m.ExtensionsDemo), {
+  ssr: false,
+});
 
 interface Feature {
   icon: LucideIcon;
@@ -106,36 +90,45 @@ const FEATURES: Feature[] = [
   },
 ];
 
-function FeatureSection({ feature, reversed, index }: { feature: Feature; reversed: boolean; index: number }) {
+function FeatureSection({
+  feature,
+  reversed,
+  index,
+}: {
+  feature: Feature;
+  reversed: boolean;
+  index: number;
+}) {
   const { ref, inView } = useInView();
   const step = String(index + 1).padStart(2, '0');
 
   return (
-    <div
-      ref={ref}
-      className={cn(
-        'grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center',
-      )}
-    >
+    <div ref={ref} className={cn('grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20')}>
       {/* Text side */}
       <div className={cn(reversed && 'lg:order-2')}>
         <div className={`reveal ${inView ? 'visible' : ''}`}>
-          <span className="block text-5xl sm:text-6xl font-black text-gray-100 dark:text-gray-800/60 select-none mb-3">
+          <span className="mb-3 block select-none text-5xl font-black text-gray-100 dark:text-gray-800/60 sm:text-6xl">
             {step}
           </span>
-          <div className="inline-flex items-center gap-2 mb-4 pl-3 border-l-2 border-brand-500 dark:border-brand-400">
-            <div className={cn('flex items-center justify-center h-8 w-8 rounded-lg', feature.iconBg)}>
+          <div className="mb-4 inline-flex items-center gap-2 border-l-2 border-brand-500 pl-3 dark:border-brand-400">
+            <div
+              className={cn('flex h-8 w-8 items-center justify-center rounded-lg', feature.iconBg)}
+            >
               <feature.icon className="h-4 w-4" />
             </div>
-            <span className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+            <span className="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
               {feature.label}
             </span>
           </div>
         </div>
-        <h3 className={`reveal ${inView ? 'visible' : ''} reveal-delay-1 text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white leading-tight`}>
+        <h3
+          className={`reveal ${inView ? 'visible' : ''} reveal-delay-1 text-3xl font-bold leading-tight text-gray-900 dark:text-white sm:text-4xl`}
+        >
           {feature.title}
         </h3>
-        <p className={`reveal ${inView ? 'visible' : ''} reveal-delay-2 mt-4 text-lg text-gray-500 dark:text-gray-400 leading-relaxed`}>
+        <p
+          className={`reveal ${inView ? 'visible' : ''} reveal-delay-2 mt-4 text-lg leading-relaxed text-gray-500 dark:text-gray-400`}
+        >
           {feature.description}
         </p>
       </div>
@@ -143,15 +136,19 @@ function FeatureSection({ feature, reversed, index }: { feature: Feature; revers
       {/* Visual side */}
       <div className={cn(reversed && 'lg:order-1')}>
         <div className={`reveal ${inView ? 'visible' : ''} reveal-delay-2`}>
-          <div className="relative rounded-xl overflow-hidden window-glow ring-1 ring-white/[0.08]"
-            style={{ background: 'linear-gradient(135deg, #0a0a1a 0%, #0f0f2e 25%, #1a0a2e 50%, #0a1a2e 75%, #0a0a1a 100%)' }}
+          <div
+            className="window-glow relative overflow-hidden rounded-xl ring-1 ring-white/[0.08]"
+            style={{
+              background:
+                'linear-gradient(135deg, #0a0a1a 0%, #0f0f2e 25%, #1a0a2e 50%, #0a1a2e 75%, #0a0a1a 100%)',
+            }}
           >
             {/* macOS-style title bar */}
-            <div className="flex items-center gap-1.5 px-3 py-2 bg-[#111122]/80 border-b border-white/[0.06]">
-              <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
-              <div className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
-              <div className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
-              <span className="ml-2 text-[11px] text-white/40 font-medium">Xplorer</span>
+            <div className="flex items-center gap-1.5 border-b border-white/[0.06] bg-[#111122]/80 px-3 py-2">
+              <div className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
+              <div className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
+              <div className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
+              <span className="ml-2 text-[11px] font-medium text-white/40">Xplorer</span>
             </div>
             {/* Interactive demo */}
             <div className="relative aspect-[16/10]">
@@ -168,21 +165,27 @@ export function FeatureShowcase() {
   const { ref: headerRef, inView: headerVisible } = useInView();
 
   return (
-    <section className="py-24 sm:py-32 bg-white dark:bg-gray-950">
+    <section className="bg-white py-24 dark:bg-gray-950 sm:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section header */}
-        <div ref={headerRef} className="text-center max-w-3xl mx-auto mb-20 sm:mb-28">
-          <p className={`reveal ${headerVisible ? 'visible' : ''} text-sm font-semibold text-brand-600 dark:text-brand-400 uppercase tracking-wider mb-3`}>
+        <div ref={headerRef} className="mx-auto mb-20 max-w-3xl text-center sm:mb-28">
+          <p
+            className={`reveal ${headerVisible ? 'visible' : ''} mb-3 text-sm font-semibold uppercase tracking-wider text-brand-600 dark:text-brand-400`}
+          >
             Features
           </p>
-          <h2 className={`reveal ${headerVisible ? 'visible' : ''} reveal-delay-1 text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white`}>
+          <h2
+            className={`reveal ${headerVisible ? 'visible' : ''} reveal-delay-1 text-3xl font-bold text-gray-900 dark:text-white sm:text-4xl lg:text-5xl`}
+          >
             Everything you need.
             <br />
             Nothing you don&apos;t.
           </h2>
-          <p className={`reveal ${headerVisible ? 'visible' : ''} reveal-delay-2 mt-5 text-lg text-gray-500 dark:text-gray-400`}>
-            Powerful features designed for developers and power users, wrapped in a
-            clean interface that stays out of your way.
+          <p
+            className={`reveal ${headerVisible ? 'visible' : ''} reveal-delay-2 mt-5 text-lg text-gray-500 dark:text-gray-400`}
+          >
+            Powerful features designed for developers and power users, wrapped in a clean interface
+            that stays out of your way.
           </p>
         </div>
 

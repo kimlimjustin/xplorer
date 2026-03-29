@@ -13,7 +13,7 @@ export interface DocMeta {
 
 export function getDocBySlug(slugParts: string[]): { meta: DocMeta; content: string } | null {
   // Validate no path traversal
-  if (slugParts.some(part => part === '..' || part === '.' || part.includes('/'))) return null;
+  if (slugParts.some((part) => part === '..' || part === '.' || part.includes('/'))) return null;
 
   const filePath = path.join(DOCS_DIR, ...slugParts) + '.mdx';
   if (!fs.existsSync(filePath)) return null;

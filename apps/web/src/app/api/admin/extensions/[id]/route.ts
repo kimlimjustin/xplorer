@@ -17,7 +17,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
   } catch {
     return NextResponse.json(
       { error: 'Admin access required' },
-      { status: 403, headers: corsHeaders(request) }
+      { status: 403, headers: corsHeaders(request) },
     );
   }
 
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     if (!extension) {
       return NextResponse.json(
         { error: 'Extension not found' },
-        { status: 404, headers: corsHeaders(request) }
+        { status: 404, headers: corsHeaders(request) },
       );
     }
 
@@ -61,7 +61,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     console.error('GET /api/admin/extensions/[id] error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch extension' },
-      { status: 500, headers: corsHeaders(request) }
+      { status: 500, headers: corsHeaders(request) },
     );
   }
 }
@@ -89,7 +89,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
   } catch {
     return NextResponse.json(
       { error: 'Admin access required' },
-      { status: 403, headers: corsHeaders(request) }
+      { status: 403, headers: corsHeaders(request) },
     );
   }
 
@@ -107,7 +107,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     if (!action || !['approve', 'reject'].includes(action)) {
       return NextResponse.json(
         { error: 'Invalid action. Must be "approve" or "reject".' },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
@@ -119,7 +119,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     if (!extension) {
       return NextResponse.json(
         { error: 'Extension not found' },
-        { status: 404, headers: corsHeaders(request) }
+        { status: 404, headers: corsHeaders(request) },
       );
     }
 
@@ -150,7 +150,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     console.error('POST /api/admin/extensions/[id] error:', error);
     return NextResponse.json(
       { error: 'Failed to update extension' },
-      { status: 500, headers: corsHeaders(request) }
+      { status: 500, headers: corsHeaders(request) },
     );
   }
 }

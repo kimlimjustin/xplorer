@@ -161,7 +161,7 @@ describe('Footer', () => {
   it('renders the brand description', () => {
     render(<Footer />);
     expect(
-      screen.getByText(/A modern, AI-powered file explorer built with Rust and React./)
+      screen.getByText(/A modern, AI-powered file explorer built with Rust and React./),
     ).toBeInTheDocument();
   });
 

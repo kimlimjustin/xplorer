@@ -25,10 +25,10 @@ function SidebarLink({ item }: { item: SidebarItem }) {
     <Link
       href={href}
       className={cn(
-        'block px-3 py-1.5 text-sm rounded-md transition-colors',
+        'block rounded-md px-3 py-1.5 text-sm transition-colors',
         isActive
-          ? 'bg-brand-50 text-brand-700 font-medium dark:bg-brand-500/10 dark:text-brand-400'
-          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800',
+          ? 'bg-brand-50 font-medium text-brand-700 dark:bg-brand-500/10 dark:text-brand-400'
+          : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white',
       )}
     >
       {item.title}
@@ -38,9 +38,7 @@ function SidebarLink({ item }: { item: SidebarItem }) {
 
 function CategorySection({ category }: { category: SidebarCategory }) {
   const pathname = usePathname();
-  const isAnyActive = category.items.some(
-    (item) => pathname === `/docs/${item.slug}`,
-  );
+  const isAnyActive = category.items.some((item) => pathname === `/docs/${item.slug}`);
   const [open, setOpen] = useState(isAnyActive);
 
   return (
@@ -48,7 +46,7 @@ function CategorySection({ category }: { category: SidebarCategory }) {
       <button
         onClick={() => setOpen(!open)}
         aria-expanded={open}
-        className="flex w-full items-center justify-between px-3 py-1.5 text-sm font-semibold text-gray-900 hover:bg-gray-50 rounded-md transition-colors dark:text-white dark:hover:bg-gray-800"
+        className="flex w-full items-center justify-between rounded-md px-3 py-1.5 text-sm font-semibold text-gray-900 transition-colors hover:bg-gray-50 dark:text-white dark:hover:bg-gray-800"
       >
         {category.label}
         <ChevronRight

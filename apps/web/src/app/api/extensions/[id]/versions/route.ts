@@ -26,7 +26,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     if (!extension) {
       return NextResponse.json(
         { error: 'Extension not found' },
-        { status: 404, headers: corsHeaders(request) }
+        { status: 404, headers: corsHeaders(request) },
       );
     }
 
@@ -55,13 +55,13 @@ export async function GET(request: NextRequest, context: RouteContext) {
           totalPages: Math.ceil(total / limit),
         },
       },
-      { headers: corsHeaders(request) }
+      { headers: corsHeaders(request) },
     );
   } catch (error) {
     console.error('GET /api/extensions/[id]/versions error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch versions' },
-      { status: 500, headers: corsHeaders(request) }
+      { status: 500, headers: corsHeaders(request) },
     );
   }
 }
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Authentication required' },
-        { status: 401, headers: corsHeaders(request) }
+        { status: 401, headers: corsHeaders(request) },
       );
     }
 
@@ -92,14 +92,14 @@ export async function POST(request: NextRequest, context: RouteContext) {
     if (!extension) {
       return NextResponse.json(
         { error: 'Extension not found' },
-        { status: 404, headers: corsHeaders(request) }
+        { status: 404, headers: corsHeaders(request) },
       );
     }
 
     if (extension.authorId !== session.user.id) {
       return NextResponse.json(
         { error: 'Only the extension author can publish new versions' },
-        { status: 403, headers: corsHeaders(request) }
+        { status: 403, headers: corsHeaders(request) },
       );
     }
 
@@ -109,21 +109,21 @@ export async function POST(request: NextRequest, context: RouteContext) {
     if (!file) {
       return NextResponse.json(
         { error: 'Extension file (ZIP) is required' },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
     if (file.size > MAX_UPLOAD_SIZE) {
       return NextResponse.json(
         { error: 'File exceeds 50MB limit' },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
     if (!file.name.endsWith('.zip')) {
       return NextResponse.json(
         { error: 'Only ZIP files are accepted' },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
@@ -131,16 +131,21 @@ export async function POST(request: NextRequest, context: RouteContext) {
     if (file.type !== 'application/zip' && file.type !== 'application/x-zip-compressed') {
       return NextResponse.json(
         { error: 'Invalid file type. Only ZIP files are accepted.' },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
     // Validate ZIP magic bytes
     const magicBuffer = Buffer.from(await file.slice(0, 4).arrayBuffer());
-    if (magicBuffer[0] !== 0x50 || magicBuffer[1] !== 0x4B || magicBuffer[2] !== 0x03 || magicBuffer[3] !== 0x04) {
+    if (
+      magicBuffer[0] !== 0x50 ||
+      magicBuffer[1] !== 0x4b ||
+      magicBuffer[2] !== 0x03 ||
+      magicBuffer[3] !== 0x04
+    ) {
       return NextResponse.json(
         { error: 'Invalid ZIP file' },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
@@ -152,7 +157,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     if (!parsed.success) {
       return NextResponse.json(
         { error: 'Validation failed', details: parsed.error.flatten() },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
@@ -169,7 +174,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     if (existingVersion) {
       return NextResponse.json(
         { error: `Version ${parsed.data.version} already exists` },
-        { status: 409, headers: corsHeaders(request) }
+        { status: 409, headers: corsHeaders(request) },
       );
     }
 
@@ -226,7 +231,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     console.error('POST /api/extensions/[id]/versions error:', error);
     return NextResponse.json(
       { error: 'Failed to create version' },
-      { status: 500, headers: corsHeaders(request) }
+      { status: 500, headers: corsHeaders(request) },
     );
   }
 }

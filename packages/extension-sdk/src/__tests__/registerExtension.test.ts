@@ -38,41 +38,41 @@ const createMockContext = (): ExtensionContext => ({
 });
 
 const createMockApi = (): XplorerAPI => ({
-    files: {
-      read: jest.fn(),
-      readText: jest.fn(),
-      write: jest.fn(),
-      exists: jest.fn(),
-      list: jest.fn(),
-      watch: jest.fn(() => ({ dispose: jest.fn() })),
-    },
-    ui: {
-      showMessage: jest.fn(),
-      showProgress: jest.fn(),
-      showInputBox: jest.fn(),
-      showQuickPick: jest.fn(),
-    },
-    navigation: {
-      getCurrentPath: jest.fn(() => '/home'),
-      navigateTo: jest.fn(),
-      openFile: jest.fn(),
-      openInNewTab: jest.fn(),
-      openInEditor: jest.fn(),
-    },
-    settings: {
-      get: jest.fn(),
-      set: jest.fn(),
-      delete: jest.fn(),
-    },
-    commands: {
-      register: jest.fn(() => ({ dispose: jest.fn() })),
-      execute: jest.fn(),
-    },
-    shortcuts: {
-      register: jest.fn(),
-      unregisterAll: jest.fn(),
-    },
-  });
+  files: {
+    read: jest.fn(),
+    readText: jest.fn(),
+    write: jest.fn(),
+    exists: jest.fn(),
+    list: jest.fn(),
+    watch: jest.fn(() => ({ dispose: jest.fn() })),
+  },
+  ui: {
+    showMessage: jest.fn(),
+    showProgress: jest.fn(),
+    showInputBox: jest.fn(),
+    showQuickPick: jest.fn(),
+  },
+  navigation: {
+    getCurrentPath: jest.fn(() => '/home'),
+    navigateTo: jest.fn(),
+    openFile: jest.fn(),
+    openInNewTab: jest.fn(),
+    openInEditor: jest.fn(),
+  },
+  settings: {
+    get: jest.fn(),
+    set: jest.fn(),
+    delete: jest.fn(),
+  },
+  commands: {
+    register: jest.fn(() => ({ dispose: jest.fn() })),
+    execute: jest.fn(),
+  },
+  shortcuts: {
+    register: jest.fn(),
+    unregisterAll: jest.fn(),
+  },
+});
 
 /** Concrete subclass of Extension for testing (since Extension is abstract). */
 class TestExtension extends Extension {

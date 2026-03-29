@@ -102,18 +102,15 @@ function ScreenshotGallery({ screenshots }: { screenshots: string[] }) {
   return (
     <>
       <div className="mb-8">
-        <h3 className="text-sm font-semibold text-gray-900 mb-3 dark:text-white">Screenshots</h3>
-        <div className="relative group">
+        <h3 className="mb-3 text-sm font-semibold text-gray-900 dark:text-white">Screenshots</h3>
+        <div className="group relative">
           <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800">
-            <button
-              onClick={() => setLightboxOpen(true)}
-              className="block w-full cursor-zoom-in"
-            >
+            <button onClick={() => setLightboxOpen(true)} className="block w-full cursor-zoom-in">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={safeImageUrl(screenshots[activeIndex])}
                 alt={`Screenshot ${activeIndex + 1}`}
-                className="w-full h-auto max-h-[420px] object-contain bg-gray-50 dark:bg-gray-900"
+                className="h-auto max-h-[420px] w-full bg-gray-50 object-contain dark:bg-gray-900"
               />
             </button>
           </div>
@@ -123,16 +120,14 @@ function ScreenshotGallery({ screenshots }: { screenshots: string[] }) {
                 onClick={() =>
                   setActiveIndex((prev) => (prev - 1 + screenshots.length) % screenshots.length)
                 }
-                className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-white/90 dark:bg-gray-800/90 flex items-center justify-center shadow opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute left-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 opacity-0 shadow transition-opacity group-hover:opacity-100 dark:bg-gray-800/90"
                 aria-label="Previous screenshot"
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
               <button
-                onClick={() =>
-                  setActiveIndex((prev) => (prev + 1) % screenshots.length)
-                }
-                className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-white/90 dark:bg-gray-800/90 flex items-center justify-center shadow opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={() => setActiveIndex((prev) => (prev + 1) % screenshots.length)}
+                className="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 opacity-0 shadow transition-opacity group-hover:opacity-100 dark:bg-gray-800/90"
                 aria-label="Next screenshot"
               >
                 <ChevronRight className="h-4 w-4" />
@@ -141,13 +136,13 @@ function ScreenshotGallery({ screenshots }: { screenshots: string[] }) {
           )}
         </div>
         {screenshots.length > 1 && (
-          <div className="flex gap-2 mt-3 overflow-x-auto pb-1">
+          <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
             {screenshots.map((url, i) => (
               <button
                 key={i}
                 onClick={() => setActiveIndex(i)}
                 className={cn(
-                  'shrink-0 w-20 h-14 rounded-lg overflow-hidden border-2 transition-all',
+                  'h-14 w-20 shrink-0 overflow-hidden rounded-lg border-2 transition-all',
                   i === activeIndex
                     ? 'border-brand-500 ring-1 ring-brand-500/30'
                     : 'border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600',
@@ -157,7 +152,7 @@ function ScreenshotGallery({ screenshots }: { screenshots: string[] }) {
                 <img
                   src={safeImageUrl(url)}
                   alt={`Thumbnail ${i + 1}`}
-                  className="w-full h-full object-cover"
+                  className="h-full w-full object-cover"
                 />
               </button>
             ))}
@@ -172,7 +167,7 @@ function ScreenshotGallery({ screenshots }: { screenshots: string[] }) {
         >
           <button
             onClick={() => setLightboxOpen(false)}
-            className="absolute top-4 right-4 h-10 w-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors"
+            className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
             aria-label="Close lightbox"
           >
             <X className="h-5 w-5" />
@@ -182,11 +177,9 @@ function ScreenshotGallery({ screenshots }: { screenshots: string[] }) {
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  setActiveIndex(
-                    (prev) => (prev - 1 + screenshots.length) % screenshots.length,
-                  );
+                  setActiveIndex((prev) => (prev - 1 + screenshots.length) % screenshots.length);
                 }}
-                className="absolute left-4 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors"
+                className="absolute left-4 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
                 aria-label="Previous screenshot"
               >
                 <ChevronLeft className="h-6 w-6" />
@@ -196,7 +189,7 @@ function ScreenshotGallery({ screenshots }: { screenshots: string[] }) {
                   e.stopPropagation();
                   setActiveIndex((prev) => (prev + 1) % screenshots.length);
                 }}
-                className="absolute right-4 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors"
+                className="absolute right-4 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
                 aria-label="Next screenshot"
               >
                 <ChevronRight className="h-6 w-6" />
@@ -207,10 +200,10 @@ function ScreenshotGallery({ screenshots }: { screenshots: string[] }) {
           <img
             src={safeImageUrl(screenshots[activeIndex])}
             alt={`Screenshot ${activeIndex + 1}`}
-            className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg"
+            className="max-h-[90vh] max-w-[90vw] rounded-lg object-contain"
             onClick={(e) => e.stopPropagation()}
           />
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
+          <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-1.5">
             {screenshots.map((_, i) => (
               <button
                 key={i}
@@ -244,12 +237,12 @@ export function ExtensionDetail({ extension }: ExtensionDetailProps) {
   ];
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Breadcrumb */}
       <nav className="mb-6">
         <Link
           href="/extensions"
-          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors dark:text-gray-400 dark:hover:text-gray-300"
+          className="inline-flex items-center gap-1.5 text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
         >
           <ChevronLeft className="h-4 w-4" />
           Back to Marketplace
@@ -257,9 +250,9 @@ export function ExtensionDetail({ extension }: ExtensionDetailProps) {
       </nav>
 
       {/* Header */}
-      <div className="flex flex-col md:flex-row gap-6 mb-8">
-        <div className="flex items-start gap-5 flex-1">
-          <div className="h-20 w-20 rounded-2xl bg-gradient-to-br from-brand-50 to-brand-100 flex items-center justify-center shrink-0 text-brand-600 font-bold text-3xl shadow-sm dark:from-brand-500/10 dark:to-brand-500/20">
+      <div className="mb-8 flex flex-col gap-6 md:flex-row">
+        <div className="flex flex-1 items-start gap-5">
+          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-50 to-brand-100 text-3xl font-bold text-brand-600 shadow-sm dark:from-brand-500/10 dark:to-brand-500/20">
             {extension.icon ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -272,13 +265,13 @@ export function ExtensionDetail({ extension }: ExtensionDetailProps) {
             )}
           </div>
           <div className="min-w-0">
-            <div className="flex items-center gap-3 flex-wrap">
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+            <div className="flex flex-wrap items-center gap-3">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white sm:text-3xl">
                 {extension.displayName}
               </h1>
               <PriceBadge pricingType={extension.pricingType} price={extension.price} />
             </div>
-            <p className="text-sm text-gray-500 mt-1 dark:text-gray-400">
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               by{' '}
               <span className="font-medium text-gray-700 dark:text-gray-300">
                 {extension.author.name || extension.author.username}
@@ -289,15 +282,15 @@ export function ExtensionDetail({ extension }: ExtensionDetailProps) {
                   alt=""
                   width={18}
                   height={18}
-                  className="inline-block rounded-full ml-1.5 -mt-0.5"
+                  className="-mt-0.5 ml-1.5 inline-block rounded-full"
                 />
               )}
             </p>
-            <p className="text-gray-600 mt-2 max-w-2xl leading-relaxed dark:text-gray-400">
+            <p className="mt-2 max-w-2xl leading-relaxed text-gray-600 dark:text-gray-400">
               {extension.description}
             </p>
 
-            <div className="flex items-center gap-5 mt-4 text-sm text-gray-500 dark:text-gray-400 flex-wrap">
+            <div className="mt-4 flex flex-wrap items-center gap-5 text-sm text-gray-500 dark:text-gray-400">
               <span className="flex items-center gap-1.5">
                 <Download className="h-4 w-4" />
                 {formatDownloadCount(extension.downloadCount)} downloads
@@ -311,13 +304,16 @@ export function ExtensionDetail({ extension }: ExtensionDetailProps) {
                 </span>
               )}
               {extension.categories.length > 0 && (
-                <div className="flex items-center gap-1.5 flex-wrap">
+                <div className="flex flex-wrap items-center gap-1.5">
                   {extension.categories.map((c: any) => (
                     <Link
                       key={c.category?.slug || c.slug}
                       href={`/extensions?category=${c.category?.slug || c.slug}`}
                     >
-                      <Badge variant="default" className="hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer">
+                      <Badge
+                        variant="default"
+                        className="cursor-pointer transition-colors hover:bg-gray-200 dark:hover:bg-gray-700"
+                      >
                         {c.category?.name || c.name}
                       </Badge>
                     </Link>
@@ -328,7 +324,7 @@ export function ExtensionDetail({ extension }: ExtensionDetailProps) {
           </div>
         </div>
 
-        <div className="shrink-0 flex flex-col gap-2">
+        <div className="flex shrink-0 flex-col gap-2">
           <a href={deepLink}>
             <Button size="lg" className="w-full">
               <Monitor className="h-4 w-4" />
@@ -337,27 +333,27 @@ export function ExtensionDetail({ extension }: ExtensionDetailProps) {
                 : 'Install in Xplorer'}
             </Button>
           </a>
-          <p className="text-xs text-center text-gray-400 dark:text-gray-500">
+          <p className="text-center text-xs text-gray-400 dark:text-gray-500">
             Opens in Xplorer desktop app
           </p>
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-8">
+      <div className="flex flex-col gap-8 lg:flex-row">
         {/* Main content */}
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex-1">
           {/* Tabs */}
-          <div className="border-b border-gray-200 mb-6 dark:border-gray-800">
+          <div className="mb-6 border-b border-gray-200 dark:border-gray-800">
             <nav className="flex gap-6">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={cn(
-                    'pb-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap',
+                    'whitespace-nowrap border-b-2 pb-3 text-sm font-medium transition-colors',
                     activeTab === tab.id
                       ? 'border-brand-600 text-brand-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300',
+                      : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300',
                   )}
                 >
                   {tab.label}
@@ -378,7 +374,7 @@ export function ExtensionDetail({ extension }: ExtensionDetailProps) {
               <ScreenshotGallery screenshots={screenshots} />
 
               {/* Long description */}
-              <div className="prose prose-gray dark:prose-invert prose-sm max-w-none">
+              <div className="prose prose-sm prose-gray max-w-none dark:prose-invert">
                 {extension.longDescription ? (
                   <div className="whitespace-pre-wrap">{extension.longDescription}</div>
                 ) : (
@@ -393,21 +389,19 @@ export function ExtensionDetail({ extension }: ExtensionDetailProps) {
           {activeTab === 'versions' && (
             <div className="space-y-3">
               {extension.versions.length === 0 ? (
-                <p className="text-gray-500 dark:text-gray-400">
-                  No version history available.
-                </p>
+                <p className="text-gray-500 dark:text-gray-400">No version history available.</p>
               ) : (
                 extension.versions.map((ver, idx) => (
                   <div
                     key={ver.id}
                     className={cn(
-                      'border rounded-xl p-5 transition-colors',
+                      'rounded-xl border p-5 transition-colors',
                       idx === 0
                         ? 'border-brand-200 bg-brand-50/50 dark:border-brand-500/30 dark:bg-brand-500/5'
                         : 'border-gray-200 dark:border-gray-800',
                     )}
                   >
-                    <div className="flex items-center gap-3 flex-wrap">
+                    <div className="flex flex-wrap items-center gap-3">
                       <span className="font-mono text-sm font-semibold text-gray-900 dark:text-white">
                         v{ver.version}
                       </span>
@@ -421,7 +415,7 @@ export function ExtensionDetail({ extension }: ExtensionDetailProps) {
                       </span>
                     </div>
                     {ver.changeLog && (
-                      <p className="mt-2.5 text-sm text-gray-600 leading-relaxed dark:text-gray-400">
+                      <p className="mt-2.5 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
                         {ver.changeLog}
                       </p>
                     )}
@@ -443,11 +437,11 @@ export function ExtensionDetail({ extension }: ExtensionDetailProps) {
         </div>
 
         {/* Sidebar */}
-        <aside className="lg:w-72 shrink-0 space-y-4">
+        <aside className="shrink-0 space-y-4 lg:w-72">
           {/* Details card */}
-          <div className="border border-gray-200 rounded-xl p-5 space-y-5 dark:border-gray-800">
+          <div className="space-y-5 rounded-xl border border-gray-200 p-5 dark:border-gray-800">
             <div>
-              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 dark:text-gray-400">
+              <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                 Details
               </h3>
               <dl className="space-y-2.5 text-sm">
@@ -495,7 +489,7 @@ export function ExtensionDetail({ extension }: ExtensionDetailProps) {
             {/* Categories */}
             {extension.categories.length > 0 && (
               <div>
-                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 dark:text-gray-400">
+                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                   Categories
                 </h3>
                 <div className="flex flex-wrap gap-1.5">
@@ -506,7 +500,7 @@ export function ExtensionDetail({ extension }: ExtensionDetailProps) {
                     >
                       <Badge
                         variant="default"
-                        className="hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                        className="cursor-pointer transition-colors hover:bg-gray-200 dark:hover:bg-gray-700"
                       >
                         {c.category?.name || c.name}
                       </Badge>
@@ -518,7 +512,7 @@ export function ExtensionDetail({ extension }: ExtensionDetailProps) {
 
             {/* Links */}
             <div>
-              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 dark:text-gray-400">
+              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                 Links
               </h3>
               <div className="space-y-2">
@@ -527,7 +521,7 @@ export function ExtensionDetail({ extension }: ExtensionDetailProps) {
                     href={extension.repositoryUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-sm text-gray-600 hover:text-brand-600 transition-colors dark:text-gray-400 dark:hover:text-brand-400"
+                    className="flex items-center gap-2 text-sm text-gray-600 transition-colors hover:text-brand-600 dark:text-gray-400 dark:hover:text-brand-400"
                   >
                     <Github className="h-4 w-4" />
                     Repository
@@ -538,7 +532,7 @@ export function ExtensionDetail({ extension }: ExtensionDetailProps) {
                     href={extension.homepageUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-sm text-gray-600 hover:text-brand-600 transition-colors dark:text-gray-400 dark:hover:text-brand-400"
+                    className="flex items-center gap-2 text-sm text-gray-600 transition-colors hover:text-brand-600 dark:text-gray-400 dark:hover:text-brand-400"
                   >
                     <ExternalLink className="h-4 w-4" />
                     Homepage
@@ -549,7 +543,7 @@ export function ExtensionDetail({ extension }: ExtensionDetailProps) {
                     href={extension.bugReportUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-sm text-gray-600 hover:text-brand-600 transition-colors dark:text-gray-400 dark:hover:text-brand-400"
+                    className="flex items-center gap-2 text-sm text-gray-600 transition-colors hover:text-brand-600 dark:text-gray-400 dark:hover:text-brand-400"
                   >
                     <Bug className="h-4 w-4" />
                     Report Bug
@@ -560,8 +554,8 @@ export function ExtensionDetail({ extension }: ExtensionDetailProps) {
           </div>
 
           {/* Quick stats card */}
-          <div className="border border-gray-200 rounded-xl p-5 dark:border-gray-800">
-            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 dark:text-gray-400">
+          <div className="rounded-xl border border-gray-200 p-5 dark:border-gray-800">
+            <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
               Stats
             </h3>
             <div className="grid grid-cols-2 gap-4">

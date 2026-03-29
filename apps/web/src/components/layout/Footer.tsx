@@ -70,7 +70,7 @@ const NewsletterForm = () => {
 
   return (
     <div>
-      <h3 className="text-xs font-semibold text-gray-900 dark:text-white uppercase tracking-wider">
+      <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-900 dark:text-white">
         Stay updated
       </h3>
       <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
@@ -80,17 +80,27 @@ const NewsletterForm = () => {
         <input
           type="email"
           value={email}
-          onChange={(e) => { setEmail(e.target.value); setStatus('idle'); }}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            setStatus('idle');
+          }}
           placeholder="you@example.com"
           required
-          className="flex-1 min-w-0 px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500"
+          className="min-w-0 flex-1 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/50 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
         />
         {/* Honeypot — hidden from humans, filled by bots */}
-        <input type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ position: 'absolute', left: '-9999px' }} />
+        <input
+          type="text"
+          name="website"
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+          style={{ position: 'absolute', left: '-9999px' }}
+        />
         <button
           type="submit"
           disabled={status === 'loading'}
-          className="px-4 py-2 text-sm font-medium rounded-lg bg-brand-600 text-white hover:bg-brand-700 transition-colors disabled:opacity-50 whitespace-nowrap"
+          className="whitespace-nowrap rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-700 disabled:opacity-50"
         >
           {status === 'loading' ? '...' : 'Subscribe'}
         </button>
@@ -107,17 +117,15 @@ export function Footer() {
       {/* Gradient top border */}
       <div className="h-px bg-gradient-to-r from-transparent via-brand-500/50 to-transparent" />
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="flex items-center gap-2">
               <img src="/logo.svg" alt="Xplorer" className="h-8 w-8 rounded-lg" />
-              <span className="text-lg font-bold text-gray-900 dark:text-white">
-                {SITE_NAME}
-              </span>
+              <span className="text-lg font-bold text-gray-900 dark:text-white">{SITE_NAME}</span>
             </Link>
-            <p className="mt-3 text-sm text-gray-500 dark:text-gray-400 max-w-xs">
+            <p className="mt-3 max-w-xs text-sm text-gray-500 dark:text-gray-400">
               A modern, AI-powered file explorer built with Rust and React.
             </p>
             {/* Social icons */}
@@ -126,7 +134,7 @@ export function Footer() {
                 href="https://github.com/kimlimjustin/xplorer"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300"
                 aria-label="GitHub"
               >
                 <Github className="h-4 w-4" />
@@ -135,7 +143,7 @@ export function Footer() {
                 href="https://twitter.com/xplorer_app"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300"
                 aria-label="Twitter"
               >
                 <Twitter className="h-4 w-4" />
@@ -146,7 +154,7 @@ export function Footer() {
           {/* Link columns */}
           {COLUMNS.map((col) => (
             <div key={col.title}>
-              <h3 className="text-xs font-semibold text-gray-900 dark:text-white uppercase tracking-wider">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-900 dark:text-white">
                 {col.title}
               </h3>
               <ul className="mt-4 space-y-2.5">
@@ -154,7 +162,7 @@ export function Footer() {
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+                      className="text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                       {...(link.href.startsWith('http')
                         ? { target: '_blank', rel: 'noopener noreferrer' }
                         : {})}
@@ -169,14 +177,16 @@ export function Footer() {
         </div>
 
         {/* Newsletter */}
-        <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-800">
+        <div className="mt-8 border-t border-gray-200 pt-8 dark:border-gray-800">
           <div className="max-w-md">
             <NewsletterForm />
           </div>
         </div>
 
-        <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-gray-400 dark:text-gray-500">
-          <span>&copy; {new Date().getFullYear()} {SITE_NAME}. All rights reserved.</span>
+        <div className="mt-8 flex flex-col items-center justify-between gap-2 border-t border-gray-200 pt-8 text-sm text-gray-400 dark:border-gray-800 dark:text-gray-500 sm:flex-row">
+          <span>
+            &copy; {new Date().getFullYear()} {SITE_NAME}. All rights reserved.
+          </span>
           <span>Built with Rust</span>
         </div>
       </div>

@@ -2,9 +2,20 @@ import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import React from 'react';
 import {
-  FolderClosed, FileText, FileCode, Globe, FileJson,
-  Image as ImageIcon, Film, Music, BookOpen, Package,
-  Settings, File as FileIcon, FileSpreadsheet, Presentation,
+  FolderClosed,
+  FileText,
+  FileCode,
+  Globe,
+  FileJson,
+  Image as ImageIcon,
+  Film,
+  Music,
+  BookOpen,
+  Package,
+  Settings,
+  File as FileIcon,
+  FileSpreadsheet,
+  Presentation,
   type LucideIcon,
 } from 'lucide-react';
 import type { FileEntry, FolderSizeInfo } from '@/lib/tauri-api';
@@ -57,26 +68,82 @@ export const getFileIcon = (fileEntry: FileEntry): any => {
   if (fileEntry.is_dir) return icon(FolderClosed, 'text-xp-blue');
   const ext = fileEntry.name.split('.').pop()?.toLowerCase();
   switch (ext) {
-    case 'txt': case 'md': case 'log': return icon(FileText, 'text-xp-text-muted');
-    case 'ts': case 'tsx': case 'js': case 'jsx': case 'py': case 'rs': case 'go':
-    case 'java': case 'c': case 'cpp': case 'h': case 'css': case 'scss': case 'html':
+    case 'txt':
+    case 'md':
+    case 'log':
+      return icon(FileText, 'text-xp-text-muted');
+    case 'ts':
+    case 'tsx':
+    case 'js':
+    case 'jsx':
+    case 'py':
+    case 'rs':
+    case 'go':
+    case 'java':
+    case 'c':
+    case 'cpp':
+    case 'h':
+    case 'css':
+    case 'scss':
+    case 'html':
       return icon(FileCode, 'text-xp-cyan');
-    case 'json': case 'yaml': case 'yml': case 'toml': return icon(FileJson, 'text-xp-green');
-    case 'jpg': case 'jpeg': case 'png': case 'gif': case 'webp': case 'svg': case 'bmp':
+    case 'json':
+    case 'yaml':
+    case 'yml':
+    case 'toml':
+      return icon(FileJson, 'text-xp-green');
+    case 'jpg':
+    case 'jpeg':
+    case 'png':
+    case 'gif':
+    case 'webp':
+    case 'svg':
+    case 'bmp':
       return icon(ImageIcon, 'text-xp-purple');
-    case 'mp4': case 'mov': case 'avi': case 'mkv': case 'webm': return icon(Film, 'text-xp-pink');
-    case 'mp3': case 'wav': case 'ogg': case 'flac': return icon(Music, 'text-xp-yellow');
-    case 'pdf': case 'doc': case 'docx': return icon(BookOpen, 'text-xp-blue');
-    case 'xls': case 'xlsx': case 'csv': return icon(FileSpreadsheet, 'text-xp-green');
-    case 'ppt': case 'pptx': return icon(Presentation, 'text-xp-orange');
-    case 'zip': case 'tar': case 'gz': case '7z': case 'rar': return icon(Package, 'text-xp-orange');
-    case 'xml': case 'htm': return icon(Globe, 'text-xp-orange');
-    case 'ini': case 'cfg': case 'conf': return icon(Settings, 'text-xp-text-muted');
-    default: return icon(FileIcon, 'text-xp-text-muted');
+    case 'mp4':
+    case 'mov':
+    case 'avi':
+    case 'mkv':
+    case 'webm':
+      return icon(Film, 'text-xp-pink');
+    case 'mp3':
+    case 'wav':
+    case 'ogg':
+    case 'flac':
+      return icon(Music, 'text-xp-yellow');
+    case 'pdf':
+    case 'doc':
+    case 'docx':
+      return icon(BookOpen, 'text-xp-blue');
+    case 'xls':
+    case 'xlsx':
+    case 'csv':
+      return icon(FileSpreadsheet, 'text-xp-green');
+    case 'ppt':
+    case 'pptx':
+      return icon(Presentation, 'text-xp-orange');
+    case 'zip':
+    case 'tar':
+    case 'gz':
+    case '7z':
+    case 'rar':
+      return icon(Package, 'text-xp-orange');
+    case 'xml':
+    case 'htm':
+      return icon(Globe, 'text-xp-orange');
+    case 'ini':
+    case 'cfg':
+    case 'conf':
+      return icon(Settings, 'text-xp-text-muted');
+    default:
+      return icon(FileIcon, 'text-xp-text-muted');
   }
 };
 
-export function formatFolderSize(info: FolderSizeInfo | null | undefined, isCalculating?: boolean): string {
+export function formatFolderSize(
+  info: FolderSizeInfo | null | undefined,
+  isCalculating?: boolean,
+): string {
   if (isCalculating) return 'Calculating...';
   if (!info) return '';
   return formatFileSize(info.total_size);

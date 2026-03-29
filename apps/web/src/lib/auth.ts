@@ -104,7 +104,9 @@ export function getAuthOptions(): NextAuthOptions {
           session.user.id = token.id as string;
           session.user.role = (token.role as string) || 'USER';
           session.user.username = (token.username as string) || null;
-          session.user.subscriptionTier = ((token.subscriptionTier as string) || 'FREE') as 'FREE' | 'PRO';
+          session.user.subscriptionTier = ((token.subscriptionTier as string) || 'FREE') as
+            | 'FREE'
+            | 'PRO';
         }
         return session;
       },

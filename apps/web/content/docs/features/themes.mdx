@@ -10,14 +10,14 @@ Xplorer ships with several built-in themes and supports custom themes through bo
 
 ## Built-in Themes
 
-| Theme | Description |
-|-------|-------------|
-| Glass | Default. Semi-transparent surfaces with backdrop-filter blur, glassmorphic aesthetic |
-| Tokyo Night | Dark theme inspired by the Tokyo Night color palette |
-| Dracula | Popular dark theme with vivid accent colors |
-| Nord | Arctic, north-bluish color palette |
-| Catppuccin | Warm pastel tones on a dark background |
-| Light | Clean light theme for daytime use |
+| Theme       | Description                                                                          |
+| ----------- | ------------------------------------------------------------------------------------ |
+| Glass       | Default. Semi-transparent surfaces with backdrop-filter blur, glassmorphic aesthetic |
+| Tokyo Night | Dark theme inspired by the Tokyo Night color palette                                 |
+| Dracula     | Popular dark theme with vivid accent colors                                          |
+| Nord        | Arctic, north-bluish color palette                                                   |
+| Catppuccin  | Warm pastel tones on a dark background                                               |
+| Light       | Clean light theme for daytime use                                                    |
 
 Switch themes in **Settings > Themes** or via the Command Palette.
 
@@ -26,7 +26,7 @@ Switch themes in **Settings > Themes** or via the Command Palette.
 The default Glass theme uses semi-transparent RGBA surfaces combined with `backdrop-filter: blur()` to create a layered, frosted-glass look. The background is a subtle gradient:
 
 ```css
-background: linear-gradient(135deg, #0a0a1a ... #0a0a1a);
+background: linear-gradient(135deg, #0a0a1a... #0a0a1a);
 ```
 
 Panels, sidebars, and dialogs sit on top with varying levels of transparency, giving a sense of depth without sacrificing readability.
@@ -37,15 +37,15 @@ All themes are built on the `--xp-*` CSS variable system. Theme classes (`.theme
 
 Key variable groups:
 
-| Variable Prefix | Controls |
-|----------------|----------|
-| `--xp-bg-*` | Background colors (primary, secondary, tertiary) |
-| `--xp-text-*` | Text colors (primary, secondary, muted) |
-| `--xp-border-*` | Border colors |
-| `--xp-blue` | Primary accent color |
-| `--xp-accent-*` | Accent variants (hover, active) |
-| `--xp-sidebar-*` | Sidebar-specific colors |
-| `--xp-panel-*` | Panel-specific colors |
+| Variable Prefix  | Controls                                         |
+| ---------------- | ------------------------------------------------ |
+| `--xp-bg-*`      | Background colors (primary, secondary, tertiary) |
+| `--xp-text-*`    | Text colors (primary, secondary, muted)          |
+| `--xp-border-*`  | Border colors                                    |
+| `--xp-blue`      | Primary accent color                             |
+| `--xp-accent-*`  | Accent variants (hover, active)                  |
+| `--xp-sidebar-*` | Sidebar-specific colors                          |
+| `--xp-panel-*`   | Panel-specific colors                            |
 
 Corresponding Tailwind utility classes are available: `.bg-xp-*`, `.text-xp-*`, `.border-xp-*`.
 
@@ -75,7 +75,7 @@ Theme.register({
     '--xp-text-primary': '#c0caf5',
     '--xp-blue': '#7aa2f7',
     // ... other variables
-  }
+  },
 });
 ```
 

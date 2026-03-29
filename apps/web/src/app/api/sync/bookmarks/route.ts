@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Authentication required' },
-        { status: 401, headers: corsHeaders(request) }
+        { status: 401, headers: corsHeaders(request) },
       );
     }
 
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
     console.error('GET /api/sync/bookmarks error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch synced bookmarks' },
-      { status: 500, headers: corsHeaders(request) }
+      { status: 500, headers: corsHeaders(request) },
     );
   }
 }
@@ -48,7 +48,7 @@ export async function PUT(request: NextRequest) {
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Authentication required' },
-        { status: 401, headers: corsHeaders(request) }
+        { status: 401, headers: corsHeaders(request) },
       );
     }
 
@@ -65,7 +65,7 @@ export async function PUT(request: NextRequest) {
     if (!Array.isArray(incoming)) {
       return NextResponse.json(
         { error: 'Invalid body: bookmarks must be an array' },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
@@ -94,13 +94,13 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json(
       { bookmarks: result, syncedAt: new Date().toISOString() },
-      { headers: corsHeaders(request) }
+      { headers: corsHeaders(request) },
     );
   } catch (error) {
     console.error('PUT /api/sync/bookmarks error:', error);
     return NextResponse.json(
       { error: 'Failed to sync bookmarks' },
-      { status: 500, headers: corsHeaders(request) }
+      { status: 500, headers: corsHeaders(request) },
     );
   }
 }
@@ -119,7 +119,7 @@ export async function PATCH(request: NextRequest) {
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Authentication required' },
-        { status: 401, headers: corsHeaders(request) }
+        { status: 401, headers: corsHeaders(request) },
       );
     }
 
@@ -177,13 +177,13 @@ export async function PATCH(request: NextRequest) {
 
     return NextResponse.json(
       { bookmarks, syncedAt: new Date().toISOString() },
-      { headers: corsHeaders(request) }
+      { headers: corsHeaders(request) },
     );
   } catch (error) {
     console.error('PATCH /api/sync/bookmarks error:', error);
     return NextResponse.json(
       { error: 'Failed to sync bookmarks' },
-      { status: 500, headers: corsHeaders(request) }
+      { status: 500, headers: corsHeaders(request) },
     );
   }
 }
@@ -192,5 +192,7 @@ export async function PATCH(request: NextRequest) {
  * OPTIONS — CORS preflight
  */
 export async function OPTIONS(request: NextRequest) {
-  return handleCors(request) ?? new NextResponse(null, { status: 200, headers: corsHeaders(request) });
+  return (
+    handleCors(request) ?? new NextResponse(null, { status: 200, headers: corsHeaders(request) })
+  );
 }

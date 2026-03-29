@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
   } catch {
     return NextResponse.json(
       { error: 'Admin access required' },
-      { status: 403, headers: corsHeaders(request) }
+      { status: 403, headers: corsHeaders(request) },
     );
   }
 
@@ -34,13 +34,13 @@ export async function GET(request: NextRequest) {
         totalDownloads,
         pendingReviews,
       },
-      { headers: corsHeaders(request) }
+      { headers: corsHeaders(request) },
     );
   } catch (error) {
     console.error('GET /api/admin/stats error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch stats' },
-      { status: 500, headers: corsHeaders(request) }
+      { status: 500, headers: corsHeaders(request) },
     );
   }
 }

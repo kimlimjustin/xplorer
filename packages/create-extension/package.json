@@ -7,7 +7,12 @@
   },
   "type": "module",
   "license": "MIT",
-  "keywords": ["xplorer", "extension", "cli", "template"],
+  "keywords": [
+    "xplorer",
+    "extension",
+    "cli",
+    "template"
+  ],
   "author": "Xplorer Team",
   "repository": {
     "type": "git",

@@ -60,7 +60,11 @@ export const getFileNotes = async (path: string): Promise<FileNote[]> => {
   return await transport('get_file_notes', { path });
 };
 
-export const addFileNote = async (path: string, title: string, content: string): Promise<FileNote> => {
+export const addFileNote = async (
+  path: string,
+  title: string,
+  content: string,
+): Promise<FileNote> => {
   return await transport('add_file_note', { path, title, content });
 };
 
@@ -95,7 +99,10 @@ export const addFileAnnotation = async (path: string, text: string): Promise<Fil
   return await transport('add_file_annotation', { path, text });
 };
 
-export const toggleAnnotationResolved = async (path: string, annotationId: string): Promise<void> => {
+export const toggleAnnotationResolved = async (
+  path: string,
+  annotationId: string,
+): Promise<void> => {
   return await transport('toggle_annotation_resolved', { path, annotationId });
 };
 
@@ -113,7 +120,11 @@ export const getTagCategories = async (): Promise<TagCategory[]> => {
   return await transport('get_tag_categories');
 };
 
-export const addTagCategory = async (name: string, color: string, parentId?: string): Promise<TagCategory> => {
+export const addTagCategory = async (
+  name: string,
+  color: string,
+  parentId?: string,
+): Promise<TagCategory> => {
   return await transport('add_tag_category', { name, color, parentId: parentId ?? null });
 };
 
@@ -141,7 +152,10 @@ export const getFileMetadata = async (path: string): Promise<CustomMetadataField
   return await transport('get_file_metadata', { path });
 };
 
-export const setFileMetadata = async (path: string, fields: CustomMetadataField[]): Promise<void> => {
+export const setFileMetadata = async (
+  path: string,
+  fields: CustomMetadataField[],
+): Promise<void> => {
   return await transport('set_file_metadata', { path, fields });
 };
 
@@ -181,7 +195,11 @@ export const getExtensionStorage = async (extensionId: string, key: string): Pro
   return await transport('get_extension_storage', { extensionId, key });
 };
 
-export const setExtensionStorage = async (extensionId: string, key: string, value: unknown): Promise<void> => {
+export const setExtensionStorage = async (
+  extensionId: string,
+  key: string,
+  value: unknown,
+): Promise<void> => {
   return await transport('set_extension_storage', { extensionId, key, value });
 };
 

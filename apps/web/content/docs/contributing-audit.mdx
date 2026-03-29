@@ -10,18 +10,18 @@ Comprehensive audit of the Xplorer codebase (March 2026). Covers security, code 
 
 ## Summary
 
-| Category | Critical | High | Medium | Low | Total |
-|----------|----------|------|--------|-----|-------|
-| Security | 1 | 3 | 3 | 0 | 7 |
-| Code Quality | 0 | 2 | 3 | 1 | 6 |
-| Performance | 0 | 0 | 3 | 1 | 4 |
-| TypeScript | 0 | 1 | 2 | 0 | 3 |
-| Error Handling | 0 | 2 | 1 | 0 | 3 |
-| Dependencies | 0 | 0 | 2 | 1 | 3 |
-| Architecture | 0 | 0 | 2 | 1 | 3 |
-| Accessibility | 0 | 0 | 2 | 1 | 3 |
-| Testing | 0 | 1 | 1 | 0 | 2 |
-| **TOTALS** | **1** | **11** | **19** | **5** | **36** |
+| Category       | Critical | High   | Medium | Low   | Total  |
+| -------------- | -------- | ------ | ------ | ----- | ------ |
+| Security       | 1        | 3      | 3      | 0     | 7      |
+| Code Quality   | 0        | 2      | 3      | 1     | 6      |
+| Performance    | 0        | 0      | 3      | 1     | 4      |
+| TypeScript     | 0        | 1      | 2      | 0     | 3      |
+| Error Handling | 0        | 2      | 1      | 0     | 3      |
+| Dependencies   | 0        | 0      | 2      | 1     | 3      |
+| Architecture   | 0        | 0      | 2      | 1     | 3      |
+| Accessibility  | 0        | 0      | 2      | 1     | 3      |
+| Testing        | 0        | 1      | 1      | 0     | 2      |
+| **TOTALS**     | **1**    | **11** | **19** | **5** | **36** |
 
 ## Security
 
@@ -70,6 +70,7 @@ Uses DOMPurify with `FORBID_TAGS` and `FORBID_ATTR`, but relies on mammoth libra
 ### HIGH: Excessive `any` Types
 
 **137 occurrences** across 38 files. Worst offenders:
+
 - Test files (expected, but still 32 occurrences)
 - `extension-host.ts` (4 occurrences)
 - `utils.ts` line 138-139: `(a as any).folder_size`
@@ -79,6 +80,7 @@ Uses DOMPurify with `FORBID_TAGS` and `FORBID_ATTR`, but relies on mammoth libra
 ### HIGH: Console Statements
 
 **174 console statements** across 53 files.
+
 - `extension-host.ts`: 32 occurrences
 - `use-file-operations.ts`: 9 occurrences
 
@@ -87,6 +89,7 @@ Uses DOMPurify with `FORBID_TAGS` and `FORBID_ATTR`, but relies on mammoth libra
 ### MEDIUM: Silent Error Swallowing
 
 Multiple `.catch()` blocks that silently ignore errors:
+
 - `FileGrid.tsx:87-89` — git status errors ignored
 - `FileGrid.tsx:104-115` — tag loading errors ignored
 - `transport.ts:116-118` — EventSource parse errors ignored
@@ -110,6 +113,7 @@ While FileGrid uses `@tanstack/react-virtual` for list views, Gallery and Tree v
 ### HIGH: Missing Proper Error Types
 
 Catch blocks use `catch (err)` without proper type assertions:
+
 ```typescript
 // Current pattern
 try { ... } catch (err) {
@@ -166,6 +170,7 @@ Theme CSS variables (`--xp-*`) not verified for WCAG AA compliance across all th
 ### HIGH: Coverage Gaps
 
 Critical paths not tested:
+
 - File copy/move operations (async, complex)
 - Extension security sandbox
 - Compression/extraction

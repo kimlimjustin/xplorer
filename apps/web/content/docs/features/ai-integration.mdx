@@ -39,6 +39,7 @@ The bottom panel includes an AI chat interface where you can:
 ### Context-Aware Chat
 
 When chatting, Xplorer automatically provides context about:
+
 - Current directory path and contents
 - Selected file(s) metadata
 - Recent navigation history
@@ -48,16 +49,17 @@ When chatting, Xplorer automatically provides context about:
 
 Xplorer queries Ollama for available models. Common choices:
 
-| Model | Size | Best For |
-|-------|------|----------|
-| llama3.2 | 2GB | General chat, fast responses |
-| llama3.1 | 4.7GB | Higher quality reasoning |
-| codellama | 3.8GB | Code-related questions |
-| mistral | 4.1GB | Balanced performance |
+| Model     | Size  | Best For                     |
+| --------- | ----- | ---------------------------- |
+| llama3.2  | 2GB   | General chat, fast responses |
+| llama3.1  | 4.7GB | Higher quality reasoning     |
+| codellama | 3.8GB | Code-related questions       |
+| mistral   | 4.1GB | Balanced performance         |
 
 ## File Analysis
 
 Right-click a file > **Analyze with AI** to get:
+
 - Content summary
 - Key topics and themes
 - File type-specific insights
@@ -87,9 +89,10 @@ The File Organizer panel uses AI to analyze a directory and suggest organization
 ### Smart Suggestions
 
 The organizer generates suggestions like:
+
 - "Create an 'Images' folder for 15 PNG and JPG files"
 - "Group 8 files from January 2024 into a '2024-01' folder"
-- "3 files share the prefix 'report_' — create a 'Reports' folder"
+- "3 files share the prefix 'report\_' — create a 'Reports' folder"
 
 ## Claude AI Agent
 
@@ -121,6 +124,7 @@ Results: files about AI, neural networks, data science
 ```
 
 This works by:
+
 1. Converting file content into vector embeddings
 2. Converting the search query into a vector
 3. Finding files with the highest cosine similarity

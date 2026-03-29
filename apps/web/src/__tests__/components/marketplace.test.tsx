@@ -61,7 +61,7 @@ describe('ExtensionCard', () => {
         extension={createExtension({
           author: { name: null, username: 'devuser' },
         })}
-      />
+      />,
     );
     expect(screen.getByText('by devuser')).toBeInTheDocument();
   });
@@ -92,7 +92,7 @@ describe('ExtensionCard', () => {
             { category: { name: 'Utilities', slug: 'utilities' } },
           ],
         })}
-      />
+      />,
     );
     expect(screen.getByText('Themes, Utilities')).toBeInTheDocument();
   });
@@ -104,9 +104,7 @@ describe('ExtensionCard', () => {
 
   it('renders an image when icon URL is provided', () => {
     const { container } = render(
-      <ExtensionCard
-        extension={createExtension({ icon: 'https://example.com/icon.png' })}
-      />
+      <ExtensionCard extension={createExtension({ icon: 'https://example.com/icon.png' })} />,
     );
     const img = container.querySelector('img');
     expect(img).toBeInTheDocument();
@@ -115,9 +113,7 @@ describe('ExtensionCard', () => {
 
   it('renders safe icon URL - rejects javascript: URLs', () => {
     const { container } = render(
-      <ExtensionCard
-        extension={createExtension({ icon: 'javascript:alert(1)' })}
-      />
+      <ExtensionCard extension={createExtension({ icon: 'javascript:alert(1)' })} />,
     );
     const img = container.querySelector('img');
     expect(img).toBeInTheDocument();
@@ -128,7 +124,7 @@ describe('ExtensionCard', () => {
     const { container } = render(
       <ExtensionCard
         extension={createExtension({ icon: 'data:text/html,<script>alert(1)</script>' })}
-      />
+      />,
     );
     const img = container.querySelector('img');
     expect(img).toBeInTheDocument();
@@ -136,11 +132,7 @@ describe('ExtensionCard', () => {
   });
 
   it('does not render categories section when categories is empty', () => {
-    render(
-      <ExtensionCard
-        extension={createExtension({ categories: [] })}
-      />
-    );
+    render(<ExtensionCard extension={createExtension({ categories: [] })} />);
     // No category text should be present
     expect(screen.queryByText('Themes')).not.toBeInTheDocument();
   });
@@ -151,20 +143,12 @@ describe('ExtensionCard', () => {
   });
 
   it('renders price for paid extensions', () => {
-    render(
-      <ExtensionCard
-        extension={createExtension({ pricingType: 'PAID', price: 999 })}
-      />
-    );
+    render(<ExtensionCard extension={createExtension({ pricingType: 'PAID', price: 999 })} />);
     expect(screen.getByText('$9.99')).toBeInTheDocument();
   });
 
   it('renders "Paid" label when price is null for paid extensions', () => {
-    render(
-      <ExtensionCard
-        extension={createExtension({ pricingType: 'PAID', price: null })}
-      />
-    );
+    render(<ExtensionCard extension={createExtension({ pricingType: 'PAID', price: null })} />);
     expect(screen.getByText('Paid')).toBeInTheDocument();
   });
 });

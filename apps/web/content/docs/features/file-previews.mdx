@@ -17,16 +17,19 @@ The right sidebar shows an inline preview when a file is selected. The preview c
 ## Supported Formats
 
 ### Images
+
 - **Formats**: PNG, JPG, JPEG, GIF, SVG, WebP, BMP, ICO, TIFF
 - **Features**: Full resolution display, zoom, metadata display
 - Uses Tauri's `convertFileSrc()` for secure local file access
 
 ### PDF Documents
+
 - **Library**: `react-pdf` with `pdfjs-dist`
 - **Features**: Multi-page navigation, zoom, page thumbnails
 - PDF text is also extracted for search indexing
 
 ### Office Documents
+
 - **DOCX**: Rendered to HTML using `mammoth.js`
 - **XLSX**: Parsed with the `xlsx` library, displayed as interactive tables
 - **PPTX**: Text content extracted for preview
@@ -40,14 +43,17 @@ The right sidebar shows an inline preview when a file is selected. The preview c
 - **Features**: Line numbers, syntax highlighting with Tokyo Night theme
 
 ### Plain Text
+
 - **Formats**: TXT, LOG, MD, JSON, XML, YAML, TOML, INI, CFG, ENV
 - **Markdown**: Rendered as formatted HTML with heading, list, and code block support
 
 ### Spreadsheets & Data
+
 - **CSV**: Parsed with `papaparse`, displayed as a sortable table
 - **JSON**: Syntax-highlighted with collapsible tree view
 
 ### Media
+
 - **Video**: MP4, WebM, AVI, MKV — Native browser video player
 - **Audio**: MP3, WAV, FLAC, OGG, AAC — Native browser audio player
 
@@ -70,19 +76,19 @@ class PreviewFactory {
 
 ### Preview Types
 
-| Type | Extensions |
-|------|-----------|
-| `image` | png, jpg, gif, svg, webp, bmp, ico |
-| `pdf` | pdf |
-| `document` | docx |
-| `spreadsheet` | xlsx |
-| `code` | js, ts, py, rs, go, java, cpp, + 90 more |
-| `text` | txt, log, md |
-| `csv` | csv |
-| `json` | json |
-| `markdown` | md, mdx |
-| `video` | mp4, webm, avi, mkv |
-| `audio` | mp3, wav, flac, ogg, aac |
+| Type          | Extensions                               |
+| ------------- | ---------------------------------------- |
+| `image`       | png, jpg, gif, svg, webp, bmp, ico       |
+| `pdf`         | pdf                                      |
+| `document`    | docx                                     |
+| `spreadsheet` | xlsx                                     |
+| `code`        | js, ts, py, rs, go, java, cpp, + 90 more |
+| `text`        | txt, log, md                             |
+| `csv`         | csv                                      |
+| `json`        | json                                     |
+| `markdown`    | md, mdx                                  |
+| `video`       | mp4, webm, avi, mkv                      |
+| `audio`       | mp3, wav, flac, ogg, aac                 |
 
 ## Adding New Preview Types
 

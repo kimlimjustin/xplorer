@@ -24,23 +24,23 @@ npx create-xplorer-extension my-first-extension
 
 The interactive wizard prompts you for:
 
-| Prompt | Description |
-|---|---|
-| **Extension name** | lowercase, dashes only (`my-first-extension`) |
-| **Display name** | human-readable name shown in the UI |
-| **Description** | one-line summary |
-| **Author** | your name |
-| **Template** | `basic`, `ui`, `processor`, or `theme` |
-| **Install dependencies?** | runs `npm install` automatically |
+| Prompt                    | Description                                   |
+| ------------------------- | --------------------------------------------- |
+| **Extension name**        | lowercase, dashes only (`my-first-extension`) |
+| **Display name**          | human-readable name shown in the UI           |
+| **Description**           | one-line summary                              |
+| **Author**                | your name                                     |
+| **Template**              | `basic`, `ui`, `processor`, or `theme`        |
+| **Install dependencies?** | runs `npm install` automatically              |
 
 ### Template Types
 
-| Template | Best For |
-|---|---|
-| **Basic** | file operations, commands, context menu items |
-| **UI** | custom sidebar panels with React components |
-| **Processor** | file transformation and batch processing |
-| **Theme** | custom color schemes and styling |
+| Template      | Best For                                      |
+| ------------- | --------------------------------------------- |
+| **Basic**     | file operations, commands, context menu items |
+| **UI**        | custom sidebar panels with React components   |
+| **Processor** | file transformation and batch processing      |
+| **Theme**     | custom color schemes and styling              |
 
 ## Project Structure
 
@@ -75,10 +75,7 @@ Extension metadata lives in the `xplorer` field of `package.json`:
     "author": "Your Name",
     "description": "A simple Xplorer extension",
     "icon": "🔧",
-    "permissions": [
-      "file:read",
-      "ui:notifications"
-    ]
+    "permissions": ["file:read", "ui:notifications"]
   }
 }
 ```

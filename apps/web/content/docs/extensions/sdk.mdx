@@ -9,7 +9,16 @@ sidebar_position: 4
 The Xplorer Extension SDK (`@xplorer/extension-sdk`) provides high-level registration APIs, React hooks, UI components, base classes, and type definitions for building extensions.
 
 ```typescript
-import { Theme, Sidebar, SidebarTab, Preview, Command, ContextMenu, BottomTab, Editor } from '@xplorer/extension-sdk';
+import {
+  Theme,
+  Sidebar,
+  SidebarTab,
+  Preview,
+  Command,
+  ContextMenu,
+  BottomTab,
+  Editor,
+} from '@xplorer/extension-sdk';
 ```
 
 ---
@@ -26,30 +35,31 @@ Create a custom color theme. Pass a `colors` object and the SDK auto-generates a
 import { Theme } from '@xplorer/extension-sdk';
 
 Theme.register({
-  id: 'my-theme',            // CSS class: .theme-my-theme
-  name: 'My Theme',          // shown in theme picker
+  id: 'my-theme', // CSS class: .theme-my-theme
+  name: 'My Theme', // shown in theme picker
   colors: {
-    bg: '#1a1a2e',           // background color
-    surface: '#16213e',      // panel/card backgrounds
+    bg: '#1a1a2e', // background color
+    surface: '#16213e', // panel/card backgrounds
     surfaceLight: '#1e2a4a', // lighter surface variant
-    border: '#2a3a5a',       // border color
-    text: '#eee',            // primary text
-    textMuted: '#888',       // muted text
-    blue: '#e94560',         // accent / primary
-    green: '#50fa7b',        // success
-    red: '#ff5555',          // destructive
-    orange: '#ffb86c',       // warning
+    border: '#2a3a5a', // border color
+    text: '#eee', // primary text
+    textMuted: '#888', // muted text
+    blue: '#e94560', // accent / primary
+    green: '#50fa7b', // success
+    red: '#ff5555', // destructive
+    orange: '#ffb86c', // warning
     pink: '#ff79c6',
     yellow: '#f1fa8c',
     cyan: '#8be9fd',
     purple: '#bd93f9',
   },
   background: 'linear-gradient(...)', // optional gradient
-  css: '...',                // optional extra CSS
+  css: '...', // optional extra CSS
 });
 ```
 
 **What it does internally:**
+
 1. Generates all `--xp-*` and standard CSS variables from `colors`
 2. Injects a `<style>` element with the generated CSS + any extra `css`
 3. Dispatches `xplorer-theme-register` CustomEvent
@@ -67,17 +77,22 @@ let api: XplorerAPI;
 Sidebar.register({
   id: 'my-panel',
   title: 'My Panel',
-  icon: 'star',               // icon name or emoji
-  onActivate: (injectedApi) => { api = injectedApi; },
+  icon: 'star', // icon name or emoji
+  onActivate: (injectedApi) => {
+    api = injectedApi;
+  },
   render: (props) => {
-    return React.createElement('div', { style: { padding: 16 } },
-      React.createElement('h3', null, 'Hello!')
+    return React.createElement(
+      'div',
+      { style: { padding: 16 } },
+      React.createElement('h3', null, 'Hello!'),
     );
   },
 });
 ```
 
 **Props received by `render`:**
+
 - `currentPath?: string` — current directory
 - `selectedFiles?: FileEntry[]` — currently selected files
 
@@ -97,9 +112,11 @@ Preview.register({
   permissions: ['file:read'],
 
   canPreview: (file) => file.path.endsWith('.csv') && !file.is_dir,
-  priority: 10,               // higher = preferred when multiple match
+  priority: 10, // higher = preferred when multiple match
 
-  onActivate: (injectedApi) => { api = injectedApi; },
+  onActivate: (injectedApi) => {
+    api = injectedApi;
+  },
   render: (props) => {
     const files = props.selectedFiles || [];
     // ... render preview UI
@@ -117,7 +134,7 @@ import { Command, type XplorerAPI } from '@xplorer/extension-sdk';
 Command.register({
   id: 'word-count',
   title: 'Count Words in File',
-  shortcut: 'ctrl+shift+w',   // optional
+  shortcut: 'ctrl+shift+w', // optional
   action: async (api) => {
     const path = api.navigation.getCurrentPath();
     const text = await api.files.readText(path);
@@ -137,12 +154,13 @@ import { ContextMenu, type XplorerAPI } from '@xplorer/extension-sdk';
 ContextMenu.register({
   id: 'calculate-hash',
   title: 'Calculate SHA-256',
-  when: 'singleFileSelected',  // 'always' | 'singleFileSelected' | 'multipleFilesSelected' | ((files) => boolean)
+  when: 'singleFileSelected', // 'always' | 'singleFileSelected' | 'multipleFilesSelected' | ((files) => boolean)
   action: async (files, api) => {
     const data = await api.files.read(files[0].path);
     const hash = await crypto.subtle.digest('SHA-256', data);
     const hex = Array.from(new Uint8Array(hash))
-      .map(b => b.toString(16).padStart(2, '0')).join('');
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('');
     api.ui.showMessage(`SHA-256: ${hex}`, 'info');
   },
 });
@@ -159,7 +177,9 @@ let api: XplorerAPI;
 
 const MyTabContent = () => {
   const currentPath = useCurrentPath();
-  return React.createElement('div', { style: { padding: 12, color: 'var(--xp-text)' } },
+  return React.createElement(
+    'div',
+    { style: { padding: 12, color: 'var(--xp-text)' } },
     React.createElement('h3', null, `Current: ${currentPath}`),
   );
 };
@@ -167,13 +187,16 @@ const MyTabContent = () => {
 SidebarTab.register({
   id: 'my-sidebar-tab',
   title: 'My Tab',
-  icon: 'layout',                  // lucide-react icon name
-  onActivate: (injectedApi) => { api = injectedApi; },
+  icon: 'layout', // lucide-react icon name
+  onActivate: (injectedApi) => {
+    api = injectedApi;
+  },
   render: (props) => React.createElement(MyTabContent),
 });
 ```
 
 **Props received by `render`:**
+
 - `currentPath?: string` — current directory
 - `isActive?: boolean` — whether this tab is currently visible
 
@@ -190,9 +213,13 @@ BottomTab.register({
   id: 'git-panel',
   title: 'Git',
   icon: 'git-branch',
-  onActivate: (injectedApi) => { api = injectedApi; },
+  onActivate: (injectedApi) => {
+    api = injectedApi;
+  },
   render: (props) => {
-    return React.createElement('div', { style: { padding: 12 } },
+    return React.createElement(
+      'div',
+      { style: { padding: 12 } },
       React.createElement('h3', null, 'Git Status'),
     );
   },
@@ -200,6 +227,7 @@ BottomTab.register({
 ```
 
 **Props received by `render`:**
+
 - `currentPath?: string` — current directory
 - `selectedFiles?: FileEntry[]` — currently selected files
 
@@ -219,12 +247,16 @@ Editor.register({
   permissions: ['file:read', 'file:write'],
 
   canEdit: (file) => !file.is_dir && /\.(md|mdx|markdown)$/.test(file.path),
-  priority: 10,                    // higher = preferred when multiple match
+  priority: 10, // higher = preferred when multiple match
 
-  onActivate: (injectedApi) => { api = injectedApi; },
+  onActivate: (injectedApi) => {
+    api = injectedApi;
+  },
   render: (props) => {
     // props.filePath contains the file being edited
-    return React.createElement('div', { style: { padding: 16 } },
+    return React.createElement(
+      'div',
+      { style: { padding: 16 } },
       React.createElement('h3', null, 'Editing: ' + props.filePath),
     );
   },
@@ -232,6 +264,7 @@ Editor.register({
 ```
 
 **Props received by `render`:**
+
 - `filePath: string` — path of the file being edited
 - `currentPath?: string` — current directory
 
@@ -292,8 +325,8 @@ import { Button } from '@xplorer/extension-sdk';
 React.createElement(Button, {
   label: 'Click me',
   onClick: () => console.log('clicked'),
-  variant: 'primary',    // 'primary' | 'secondary' | 'ghost' | 'danger'
-  size: 'md',            // 'sm' | 'md' | 'lg'
+  variant: 'primary', // 'primary' | 'secondary' | 'ghost' | 'danger'
+  size: 'md', // 'sm' | 'md' | 'lg'
   disabled: false,
 });
 ```
@@ -307,7 +340,7 @@ React.createElement(Input, {
   value: text,
   onChange: (value) => setText(value),
   placeholder: 'Search...',
-  type: 'text',          // any HTML input type
+  type: 'text', // any HTML input type
 });
 ```
 
@@ -357,8 +390,10 @@ Full-height layout wrapper with optional title header.
 ```typescript
 import { Panel } from '@xplorer/extension-sdk';
 
-React.createElement(Panel, { title: 'My Panel' },
-  React.createElement('p', null, 'Panel content here')
+React.createElement(
+  Panel,
+  { title: 'My Panel' },
+  React.createElement('p', null, 'Panel content here'),
 );
 ```
 
@@ -369,9 +404,7 @@ Surface box with optional title.
 ```typescript
 import { Card } from '@xplorer/extension-sdk';
 
-React.createElement(Card, { title: 'Stats' },
-  React.createElement('p', null, '42 files')
-);
+React.createElement(Card, { title: 'Stats' }, React.createElement('p', null, '42 files'));
 ```
 
 ---
@@ -650,25 +683,37 @@ interface {
 
 For complex extensions needing full lifecycle control, use the base classes directly:
 
-| Class | Category | Purpose |
-|-------|----------|---------|
-| `Extension` | any | Root base class |
-| `PanelExtension` | panel | Sidebar panels with `render()` |
-| `PreviewExtension` | preview | File previews with `canPreview()` + `render()` |
-| `ActionExtension` | action | Context menu items with `getActions()` |
-| `ThemeExtension` | theme | Color themes with `getTheme()` |
-| `BottomTabExtension` | bottom-tab | Bottom panel tabs with `render()` |
-| `EditorExtension` | editor | File editors with `canEdit()` + `render()` |
+| Class                | Category   | Purpose                                        |
+| -------------------- | ---------- | ---------------------------------------------- |
+| `Extension`          | any        | Root base class                                |
+| `PanelExtension`     | panel      | Sidebar panels with `render()`                 |
+| `PreviewExtension`   | preview    | File previews with `canPreview()` + `render()` |
+| `ActionExtension`    | action     | Context menu items with `getActions()`         |
+| `ThemeExtension`     | theme      | Color themes with `getTheme()`                 |
+| `BottomTabExtension` | bottom-tab | Bottom panel tabs with `render()`              |
+| `EditorExtension`    | editor     | File editors with `canEdit()` + `render()`     |
 
 ```typescript
 import { Extension, registerExtension } from '@xplorer/extension-sdk';
 
 class MyExtension extends Extension {
-  async activate() { /* ... */ }
-  async deactivate() { /* ... */ }
+  async activate() {
+    /* ... */
+  }
+  async deactivate() {
+    /* ... */
+  }
 }
 
-registerExtension(new MyExtension({ id: 'my-ext', name: 'My Ext', version: '1.0.0', author: 'Me', category: 'tool' }));
+registerExtension(
+  new MyExtension({
+    id: 'my-ext',
+    name: 'My Ext',
+    version: '1.0.0',
+    author: 'Me',
+    category: 'tool',
+  }),
+);
 ```
 
 ---
@@ -711,12 +756,12 @@ interface ExtensionManifest {
 
 Extensions run in a sandboxed environment. Dangerous globals are blocked:
 
-| Blocked | Reason |
-|---------|--------|
-| `fetch`, `XMLHttpRequest`, `WebSocket` | Prevent unauthorized network access |
-| `localStorage`, `sessionStorage`, `indexedDB` | Use `api.settings` instead |
-| `eval` | Prevent arbitrary code execution |
-| `__TAURI__`, `__TAURI_INTERNALS__`, `__TAURI_IPC__` | Prevent Tauri IPC bypass |
+| Blocked                                             | Reason                              |
+| --------------------------------------------------- | ----------------------------------- |
+| `fetch`, `XMLHttpRequest`, `WebSocket`              | Prevent unauthorized network access |
+| `localStorage`, `sessionStorage`, `indexedDB`       | Use `api.settings` instead          |
+| `eval`                                              | Prevent arbitrary code execution    |
+| `__TAURI__`, `__TAURI_INTERNALS__`, `__TAURI_IPC__` | Prevent Tauri IPC bypass            |
 
 **Allowed:** `React`, `ReactDOM`, `XplorerSDK`, `document`, `console`, `crypto.subtle`, `setTimeout`/`setInterval`, `CustomEvent`, `CSS`.
 
@@ -730,15 +775,15 @@ The Extension Host is available at runtime for advanced use cases:
 import { extensionHost } from '@/lib/extension-host';
 ```
 
-| Method | Description |
-|---|---|
-| `loadExtension(pkg)` | Load an extension package |
-| `activateExtension(id)` | Activate a loaded extension |
-| `deactivateExtension(id)` | Deactivate an extension |
-| `reloadExtension(id)` | Hot reload an extension |
-| `getRegisteredPanels()` | Get all active panel registrations |
-| `getAllExtensions()` | List all loaded extensions |
-| `registerCommand(command, handler)` | Register a global command |
-| `executeCommand(command, ...args)` | Execute a registered command |
-| `registerContextMenuItems(extensionId, items)` | Register context menu items |
-| `getContextMenuItems(context)` | Get menu items for a context |
+| Method                                         | Description                        |
+| ---------------------------------------------- | ---------------------------------- |
+| `loadExtension(pkg)`                           | Load an extension package          |
+| `activateExtension(id)`                        | Activate a loaded extension        |
+| `deactivateExtension(id)`                      | Deactivate an extension            |
+| `reloadExtension(id)`                          | Hot reload an extension            |
+| `getRegisteredPanels()`                        | Get all active panel registrations |
+| `getAllExtensions()`                           | List all loaded extensions         |
+| `registerCommand(command, handler)`            | Register a global command          |
+| `executeCommand(command, ...args)`             | Execute a registered command       |
+| `registerContextMenuItems(extensionId, items)` | Register context menu items        |
+| `getContextMenuItems(context)`                 | Get menu items for a context       |

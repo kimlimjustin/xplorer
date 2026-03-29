@@ -11,11 +11,7 @@ interface ReviewFormProps {
   onCancel?: () => void;
 }
 
-export function ReviewForm({
-  extensionId,
-  onSubmitted,
-  onCancel,
-}: ReviewFormProps) {
+export function ReviewForm({ extensionId, onSubmitted, onCancel }: ReviewFormProps) {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [title, setTitle] = useState('');
@@ -70,17 +66,15 @@ export function ReviewForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="border border-gray-200 rounded-xl p-6 dark:border-gray-800"
+      className="rounded-xl border border-gray-200 p-6 dark:border-gray-800"
     >
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
-          Write a Review
-        </h3>
+      <div className="mb-4 flex items-center justify-between">
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Write a Review</h3>
         {onCancel && (
           <button
             type="button"
             onClick={onCancel}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+            className="text-gray-400 transition-colors hover:text-gray-600 dark:hover:text-gray-300"
             aria-label="Close review form"
           >
             <X className="h-4 w-4" />
@@ -96,7 +90,7 @@ export function ReviewForm({
 
       {/* Star rating selector */}
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2 dark:text-gray-300">
+        <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
           Rating
         </label>
         <div className="flex items-center gap-1">
@@ -115,15 +109,13 @@ export function ReviewForm({
                   'h-7 w-7 transition-colors',
                   star <= displayRating
                     ? 'fill-yellow-400 text-yellow-400'
-                    : 'fill-gray-200 text-gray-200 dark:fill-gray-700 dark:text-gray-700'
+                    : 'fill-gray-200 text-gray-200 dark:fill-gray-700 dark:text-gray-700',
                 )}
               />
             </button>
           ))}
           {rating > 0 && (
-            <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
-              {rating} of 5
-            </span>
+            <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">{rating} of 5</span>
           )}
         </div>
       </div>
@@ -132,12 +124,9 @@ export function ReviewForm({
       <div className="mb-4">
         <label
           htmlFor="review-title"
-          className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300"
+          className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
         >
-          Title{' '}
-          <span className="text-gray-400 font-normal dark:text-gray-500">
-            (optional)
-          </span>
+          Title <span className="font-normal text-gray-400 dark:text-gray-500">(optional)</span>
         </label>
         <input
           id="review-title"
@@ -146,7 +135,7 @@ export function ReviewForm({
           onChange={(e) => setTitle(e.target.value)}
           maxLength={128}
           placeholder="Summarize your experience"
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+          className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-brand-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
         />
       </div>
 
@@ -154,7 +143,7 @@ export function ReviewForm({
       <div className="mb-4">
         <label
           htmlFor="review-content"
-          className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300"
+          className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
         >
           Review
         </label>
@@ -166,14 +155,14 @@ export function ReviewForm({
           maxLength={5000}
           rows={4}
           placeholder="Share your experience with this extension..."
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-y dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+          className="w-full resize-y rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-brand-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
         />
         <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
           {content.length}/5000 characters (minimum 10)
         </p>
       </div>
 
-      <div className="flex items-center gap-3 justify-end">
+      <div className="flex items-center justify-end gap-3">
         {onCancel && (
           <Button type="button" variant="ghost" size="sm" onClick={onCancel}>
             Cancel

@@ -12,10 +12,10 @@ Xplorer includes an AI-powered file management agent that can read, write, searc
 
 The agent supports both cloud and local models:
 
-| Provider | Models | Requirements |
-|----------|--------|--------------|
-| Claude | Sonnet, Haiku, Opus | API key in Settings |
-| Ollama | Any installed model | Ollama running locally |
+| Provider | Models              | Requirements           |
+| -------- | ------------------- | ---------------------- |
+| Claude   | Sonnet, Haiku, Opus | API key in Settings    |
+| Ollama   | Any installed model | Ollama running locally |
 
 Configure your preferred model in **Settings > AI Agent**.
 
@@ -23,13 +23,13 @@ Configure your preferred model in **Settings > AI Agent**.
 
 The AI agent operates in **tool-use mode**, meaning it can call file operation tools to accomplish tasks. Available tools:
 
-| Tool | Description |
-|------|-------------|
-| Read File | Read the contents of a file |
-| Write File | Create or overwrite a file |
-| Search | Search for files by name or content |
-| List Directory | List files in a directory |
-| Organize | Move and rename files based on rules |
+| Tool           | Description                          |
+| -------------- | ------------------------------------ |
+| Read File      | Read the contents of a file          |
+| Write File     | Create or overwrite a file           |
+| Search         | Search for files by name or content  |
+| List Directory | List files in a directory            |
+| Organize       | Move and rename files based on rules |
 
 ### Example Requests
 
@@ -77,11 +77,11 @@ You can reference files by name in your messages and the agent will resolve them
 
 Open **Settings > AI Agent** to configure:
 
-| Setting | Description |
-|---------|-------------|
-| Model | Select Claude model or Ollama model |
-| Auto-Approve | Skip confirmation for file modifications |
-| Thinking Mode | Show the model's reasoning process |
-| API Key | Claude API key (for cloud models) |
+| Setting       | Description                              |
+| ------------- | ---------------------------------------- |
+| Model         | Select Claude model or Ollama model      |
+| Auto-Approve  | Skip confirmation for file modifications |
+| Thinking Mode | Show the model's reasoning process       |
+| API Key       | Claude API key (for cloud models)        |
 
 For Ollama, make sure the Ollama server is running on `http://localhost:11434` before starting a conversation.

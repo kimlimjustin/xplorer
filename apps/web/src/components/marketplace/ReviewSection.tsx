@@ -35,32 +35,28 @@ function RatingBreakdown({
   });
 
   return (
-    <div className="flex items-start gap-8 p-6 border border-gray-200 rounded-xl mb-6 dark:border-gray-800">
-      <div className="text-center shrink-0">
+    <div className="mb-6 flex items-start gap-8 rounded-xl border border-gray-200 p-6 dark:border-gray-800">
+      <div className="shrink-0 text-center">
         <p className="text-5xl font-bold text-gray-900 dark:text-white">
           {averageRating > 0 ? averageRating.toFixed(1) : '--'}
         </p>
         <StarRating rating={Math.round(averageRating)} size="md" />
-        <p className="text-sm text-gray-500 mt-1 dark:text-gray-400">
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
           {reviewCount} {reviewCount === 1 ? 'review' : 'reviews'}
         </p>
       </div>
       <div className="flex-1 space-y-1.5">
         {breakdown.map(({ star, count, pct }) => (
           <div key={star} className="flex items-center gap-2 text-sm">
-            <span className="w-4 text-right text-gray-500 dark:text-gray-400">
-              {star}
-            </span>
-            <Star className="h-3.5 w-3.5 text-yellow-400 fill-yellow-400 shrink-0" />
-            <div className="flex-1 h-2 rounded-full bg-gray-100 overflow-hidden dark:bg-gray-800">
+            <span className="w-4 text-right text-gray-500 dark:text-gray-400">{star}</span>
+            <Star className="h-3.5 w-3.5 shrink-0 fill-yellow-400 text-yellow-400" />
+            <div className="h-2 flex-1 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
               <div
                 className="h-full rounded-full bg-yellow-400 transition-all"
                 style={{ width: `${pct}%` }}
               />
             </div>
-            <span className="w-8 text-right text-gray-400 dark:text-gray-500">
-              {count}
-            </span>
+            <span className="w-8 text-right text-gray-400 dark:text-gray-500">{count}</span>
           </div>
         ))}
       </div>
@@ -82,11 +78,9 @@ export function ReviewSection({
   const [showForm, setShowForm] = useState(false);
 
   const isAuthenticated = authStatus === 'authenticated' && !!session?.user;
-  const isAuthor =
-    isAuthenticated && session.user.username === authorUsername;
+  const isAuthor = isAuthenticated && session.user.username === authorUsername;
   const hasReviewed =
-    isAuthenticated &&
-    reviews.some((r) => r.user.username === session.user.username);
+    isAuthenticated && reviews.some((r) => r.user.username === session.user.username);
   const canReview = isAuthenticated && !isAuthor && !hasReviewed;
 
   function handleReviewSubmitted(review: ReviewData) {
@@ -95,28 +89,19 @@ export function ReviewSection({
     const newCount = reviewCount + 1;
     setReviewCount(newCount);
     const totalRating =
-      updatedReviews.reduce((sum, r) => sum + r.rating, 0) /
-      updatedReviews.length;
+      updatedReviews.reduce((sum, r) => sum + r.rating, 0) / updatedReviews.length;
     setAverageRating(totalRating);
     setShowForm(false);
   }
 
   return (
     <div>
-      <RatingBreakdown
-        reviews={reviews}
-        averageRating={averageRating}
-        reviewCount={reviewCount}
-      />
+      <RatingBreakdown reviews={reviews} averageRating={averageRating} reviewCount={reviewCount} />
 
       {/* Write a review button / form */}
       {canReview && !showForm && (
         <div className="mb-6">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => setShowForm(true)}
-          >
+          <Button variant="secondary" size="sm" onClick={() => setShowForm(true)}>
             <MessageSquarePlus className="h-4 w-4" />
             Write a Review
           </Button>
@@ -166,16 +151,14 @@ export function ReviewSection({
       {/* Reviews list */}
       <div className="space-y-4">
         {reviews.length === 0 ? (
-          <div className="text-center py-12">
-            <Star className="h-10 w-10 text-gray-300 mx-auto mb-3 dark:text-gray-600" />
+          <div className="py-12 text-center">
+            <Star className="mx-auto mb-3 h-10 w-10 text-gray-300 dark:text-gray-600" />
             <p className="text-gray-500 dark:text-gray-400">
               No reviews yet. Be the first to review!
             </p>
           </div>
         ) : (
-          reviews.map((review) => (
-            <ReviewCard key={review.id} review={review} />
-          ))
+          reviews.map((review) => <ReviewCard key={review.id} review={review} />)
         )}
       </div>
     </div>

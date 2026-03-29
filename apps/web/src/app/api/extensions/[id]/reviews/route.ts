@@ -29,7 +29,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     if (!extension) {
       return NextResponse.json(
         { error: 'Extension not found' },
-        { status: 404, headers: corsHeaders(request) }
+        { status: 404, headers: corsHeaders(request) },
       );
     }
 
@@ -58,13 +58,13 @@ export async function GET(request: NextRequest, context: RouteContext) {
           totalPages: Math.ceil(total / limit),
         },
       },
-      { headers: corsHeaders(request) }
+      { headers: corsHeaders(request) },
     );
   } catch (error) {
     console.error('GET /api/extensions/[id]/reviews error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch reviews' },
-      { status: 500, headers: corsHeaders(request) }
+      { status: 500, headers: corsHeaders(request) },
     );
   }
 }
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     } catch {
       return NextResponse.json(
         { error: 'Too many requests. Please try again later.' },
-        { status: 429, headers: corsHeaders(request) }
+        { status: 429, headers: corsHeaders(request) },
       );
     }
 
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Authentication required' },
-        { status: 401, headers: corsHeaders(request) }
+        { status: 401, headers: corsHeaders(request) },
       );
     }
 
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     if (!extension) {
       return NextResponse.json(
         { error: 'Extension not found' },
-        { status: 404, headers: corsHeaders(request) }
+        { status: 404, headers: corsHeaders(request) },
       );
     }
 
@@ -113,7 +113,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     if (extension.authorId === session.user.id) {
       return NextResponse.json(
         { error: 'You cannot review your own extension' },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
@@ -130,7 +130,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     if (existingReview) {
       return NextResponse.json(
         { error: 'You have already reviewed this extension' },
-        { status: 409, headers: corsHeaders(request) }
+        { status: 409, headers: corsHeaders(request) },
       );
     }
 
@@ -140,7 +140,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     if (!parsed.success) {
       return NextResponse.json(
         { error: 'Validation failed', details: parsed.error.flatten() },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
@@ -183,7 +183,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     console.error('POST /api/extensions/[id]/reviews error:', error);
     return NextResponse.json(
       { error: 'Failed to create review' },
-      { status: 500, headers: corsHeaders(request) }
+      { status: 500, headers: corsHeaders(request) },
     );
   }
 }

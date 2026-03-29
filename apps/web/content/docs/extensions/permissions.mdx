@@ -23,156 +23,156 @@ Error: Extension "my-extension" lacks permission "file:write"
 
 ### File System
 
-| Permission | String | Access | Description |
-|---|---|---|---|
-| File Read | `file:read` | Read | Read file contents |
-| File Write | `file:write` | Write | Create and modify files |
-| File Delete | `file:delete` | Delete | Delete files |
-| File Execute | `file:execute` | Execute | Run executable files |
-| Directory Create | `directory:create` | Write | Create directories |
-| Directory Delete | `directory:delete` | Delete | Remove directories |
-| Directory List | `directory:list` | Read | List directory contents |
+| Permission       | String             | Access  | Description             |
+| ---------------- | ------------------ | ------- | ----------------------- |
+| File Read        | `file:read`        | Read    | Read file contents      |
+| File Write       | `file:write`       | Write   | Create and modify files |
+| File Delete      | `file:delete`      | Delete  | Delete files            |
+| File Execute     | `file:execute`     | Execute | Run executable files    |
+| Directory Create | `directory:create` | Write   | Create directories      |
+| Directory Delete | `directory:delete` | Delete  | Remove directories      |
+| Directory List   | `directory:list`   | Read    | List directory contents |
 
 ### UI
 
-| Permission | String | Access | Description |
-|---|---|---|---|
-| Show Notifications | `ui:notifications` | Display | Show toast notifications and messages |
-| Create Panels | `ui:panels` | Display | Register custom sidebar/bottom panels |
-| Modify UI | `ui:modify` | Modify | Modify existing UI elements |
-| Clipboard | `ui:clipboard` | Read/Write | Access the system clipboard |
+| Permission         | String             | Access     | Description                           |
+| ------------------ | ------------------ | ---------- | ------------------------------------- |
+| Show Notifications | `ui:notifications` | Display    | Show toast notifications and messages |
+| Create Panels      | `ui:panels`        | Display    | Register custom sidebar/bottom panels |
+| Modify UI          | `ui:modify`        | Modify     | Modify existing UI elements           |
+| Clipboard          | `ui:clipboard`     | Read/Write | Access the system clipboard           |
 
 ### System
 
-| Permission | String | Access | Description |
-|---|---|---|---|
-| Execute Commands | `system:commands` | Execute | Run system commands and processes |
-| Network Access | `system:network` | Network | Make HTTP/HTTPS requests |
-| System Info | `system:info` | Read | Access system information (OS, drives, memory) |
+| Permission       | String            | Access  | Description                                    |
+| ---------------- | ----------------- | ------- | ---------------------------------------------- |
+| Execute Commands | `system:commands` | Execute | Run system commands and processes              |
+| Network Access   | `system:network`  | Network | Make HTTP/HTTPS requests                       |
+| System Info      | `system:info`     | Read    | Access system information (OS, drives, memory) |
 
 ### Xplorer-Specific
 
-| Permission | String | Access | Description |
-|---|---|---|---|
-| Settings | `xplorer:settings` | Read/Write | Access Xplorer application settings |
-| Themes | `xplorer:themes` | Modify | Register and modify themes |
-| History | `xplorer:history` | Read | Access navigation and file history |
-| Extensions | `xplorer:extensions` | Read | Query other installed extensions |
+| Permission | String               | Access     | Description                         |
+| ---------- | -------------------- | ---------- | ----------------------------------- |
+| Settings   | `xplorer:settings`   | Read/Write | Access Xplorer application settings |
+| Themes     | `xplorer:themes`     | Modify     | Register and modify themes          |
+| History    | `xplorer:history`    | Read       | Access navigation and file history  |
+| Extensions | `xplorer:extensions` | Read       | Query other installed extensions    |
 
 ### AI
 
-| Permission | String | Access | Description |
-|---|---|---|---|
-| AI Read | `ai:read` | Read | Access AI model listing and status |
-| AI Chat | `ai:chat` | Execute | Send messages to AI models |
+| Permission | String    | Access  | Description                        |
+| ---------- | --------- | ------- | ---------------------------------- |
+| AI Read    | `ai:read` | Read    | Access AI model listing and status |
+| AI Chat    | `ai:chat` | Execute | Send messages to AI models         |
 
 ### Search
 
-| Permission | String | Access | Description |
-|---|---|---|---|
-| Search Read | `search:read` | Read | Search the file index and semantic search |
-| Search Duplicates | `search:duplicates` | Read | Find duplicate files |
+| Permission        | String              | Access | Description                               |
+| ----------------- | ------------------- | ------ | ----------------------------------------- |
+| Search Read       | `search:read`       | Read   | Search the file index and semantic search |
+| Search Duplicates | `search:duplicates` | Read   | Find duplicate files                      |
 
 ### Google Drive
 
-| Permission | String | Access | Description |
-|---|---|---|---|
+| Permission          | String          | Access     | Description                                            |
+| ------------------- | --------------- | ---------- | ------------------------------------------------------ |
 | Google Drive Access | `gdrive:access` | Read/Write | Access Google Drive integration (auth, files, folders) |
 
 ### Git
 
-| Permission | String | Access | Description |
-|---|---|---|---|
-| Git Read | `git:read` | Read | Read git repository info, status, branches, history, blame, diff |
-| Git Write | `git:write` | Write | Modify git state (commit, stage, unstage, branch create/delete, push, pull, stash) |
+| Permission | String      | Access | Description                                                                        |
+| ---------- | ----------- | ------ | ---------------------------------------------------------------------------------- |
+| Git Read   | `git:read`  | Read   | Read git repository info, status, branches, history, blame, diff                   |
+| Git Write  | `git:write` | Write  | Modify git state (commit, stage, unstage, branch create/delete, push, pull, stash) |
 
 ## Permission → API Mapping
 
 This table shows which API methods require which permissions:
 
-| API Method | Required Permission |
-|---|---|
-| `files.read(path)` | `file:read` |
-| `files.readText(path)` | `file:read` |
-| `files.write(path, content)` | `file:write` |
-| `files.exists(path)` | `file:read` |
-| `files.list(path)` | `directory:list` |
-| `files.watch(path, callback)` | `file:read` |
-| `ui.showMessage(msg)` | *(none)* |
-| `ui.showProgress(title, task)` | *(none)* |
-| `ui.showInputBox(options)` | *(none)* |
-| `ui.showQuickPick(items, options)` | *(none)* |
-| `navigation.getCurrentPath()` | *(none)* |
-| `navigation.navigateTo(path)` | *(none)* |
-| `navigation.openFile(path)` | *(none)* |
-| `navigation.openInNewTab(path)` | *(none)* |
-| `navigation.openInEditor(path)` | *(none)* |
-| `navigation.openTab(options)` | *(none)* |
-| `settings.get(key)` | *(none)* |
-| `settings.set(key, value)` | *(none)* |
-| `settings.delete(key)` | *(none)* |
-| `storage.get(key)` | *(none)* |
-| `storage.set(key, value)` | *(none)* |
-| `storage.delete(key)` | *(none)* |
-| `commands.register(cmd, cb)` | *(none)* |
-| `commands.execute(cmd, ...args)` | *(none)* |
-| `dialog.confirm(message, title)` | *(none)* |
-| `dialog.alert(message, title)` | *(none)* |
-| `dialog.pickSaveFile(defaultPath)` | *(none)* |
-| `dialog.pickFile(options)` | *(none)* |
-| `ai.getModels()` | `ai:read` |
-| `ai.checkOllamaStatus()` | `ai:read` |
-| `ai.chat(model, messages, fileContext)` | `ai:chat` |
-| `search.query(query, limit)` | `search:read` |
-| `search.semantic(query, limit)` | `search:read` |
-| `search.findDuplicates(rootPath, options)` | `search:duplicates` |
-| `analytics.analyzeStorage(path)` | `file:read` |
-| `comparison.compareFiles(file1, file2, options)` | `file:read` |
-| `organizer.analyzeDirectory(path)` | `file:read` |
-| `organizer.previewOrganization(path, indices)` | `file:read` |
-| `organizer.executeOrganization(plan)` | `file:write` |
-| `gdrive.authenticate()` | `gdrive:access` |
-| `gdrive.disconnect(accountId)` | `gdrive:access` |
-| `gdrive.listAccounts()` | `gdrive:access` |
-| `gdrive.listFiles(accountId, folderId)` | `gdrive:access` |
-| `gdrive.downloadFile(accountId, fileId, dest)` | `gdrive:access` |
-| `gdrive.uploadFile(accountId, path, folderId)` | `gdrive:access` |
-| `gdrive.deleteFile(accountId, fileId)` | `gdrive:access` |
-| `gdrive.renameFile(accountId, fileId, name)` | `gdrive:access` |
-| `gdrive.moveFile(accountId, fileId, parentId)` | `gdrive:access` |
-| `gdrive.createFolder(accountId, name, parentId)` | `gdrive:access` |
-| `gdrive.getFileContent(accountId, fileId)` | `gdrive:access` |
-| `gdrive.getSettings()` | `gdrive:access` |
-| `gdrive.updateSettings(settings)` | `gdrive:access` |
-| `git.findRepository(path)` | `git:read` |
-| `git.getRepositoryInfo(repoPath)` | `git:read` |
-| `git.getGitStatus(repoPath)` | `git:read` |
-| `git.getGitRepoInfo(repoPath)` | `git:read` |
-| `git.getFileHistory(repoPath, filePath)` | `git:read` |
-| `git.getFileBlame(repoPath, filePath)` | `git:read` |
-| `git.getFileDiff(repoPath, filePath)` | `git:read` |
-| `git.getFileStatus(repoPath, filePath)` | `git:read` |
-| `git.getCommitDiff(repoPath, commitHash)` | `git:read` |
-| `git.getAllCommits(repoPath, options)` | `git:read` |
-| `git.getBranches(repoPath)` | `git:read` |
-| `git.getStashes(repoPath)` | `git:read` |
-| `git.getRemotes(dir)` | `git:read` |
-| `git.stageFile(repoPath, filePath)` | `git:write` |
-| `git.unstageFile(repoPath, filePath)` | `git:write` |
-| `git.commitChanges(repoPath, message)` | `git:write` |
-| `git.createBranch(repoPath, name)` | `git:write` |
-| `git.switchBranch(repoPath, name)` | `git:write` |
-| `git.deleteBranch(repoPath, name)` | `git:write` |
-| `git.createStash(repoPath, message)` | `git:write` |
-| `git.applyStash(repoPath, index)` | `git:write` |
-| `git.dropStash(repoPath, index)` | `git:write` |
-| `git.pull(dir)` | `git:write` |
-| `git.push(dir, force)` | `git:write` |
-| `git.fetch(dir)` | `git:read` |
-| `dev.isDevMode()` | *(none)* |
-| `dev.reload()` | *(none)* |
-| `dev.getLoadedExtensions()` | *(none)* |
-| `dev.isHotReloadActive()` | *(none)* |
+| API Method                                       | Required Permission |
+| ------------------------------------------------ | ------------------- |
+| `files.read(path)`                               | `file:read`         |
+| `files.readText(path)`                           | `file:read`         |
+| `files.write(path, content)`                     | `file:write`        |
+| `files.exists(path)`                             | `file:read`         |
+| `files.list(path)`                               | `directory:list`    |
+| `files.watch(path, callback)`                    | `file:read`         |
+| `ui.showMessage(msg)`                            | _(none)_            |
+| `ui.showProgress(title, task)`                   | _(none)_            |
+| `ui.showInputBox(options)`                       | _(none)_            |
+| `ui.showQuickPick(items, options)`               | _(none)_            |
+| `navigation.getCurrentPath()`                    | _(none)_            |
+| `navigation.navigateTo(path)`                    | _(none)_            |
+| `navigation.openFile(path)`                      | _(none)_            |
+| `navigation.openInNewTab(path)`                  | _(none)_            |
+| `navigation.openInEditor(path)`                  | _(none)_            |
+| `navigation.openTab(options)`                    | _(none)_            |
+| `settings.get(key)`                              | _(none)_            |
+| `settings.set(key, value)`                       | _(none)_            |
+| `settings.delete(key)`                           | _(none)_            |
+| `storage.get(key)`                               | _(none)_            |
+| `storage.set(key, value)`                        | _(none)_            |
+| `storage.delete(key)`                            | _(none)_            |
+| `commands.register(cmd, cb)`                     | _(none)_            |
+| `commands.execute(cmd, ...args)`                 | _(none)_            |
+| `dialog.confirm(message, title)`                 | _(none)_            |
+| `dialog.alert(message, title)`                   | _(none)_            |
+| `dialog.pickSaveFile(defaultPath)`               | _(none)_            |
+| `dialog.pickFile(options)`                       | _(none)_            |
+| `ai.getModels()`                                 | `ai:read`           |
+| `ai.checkOllamaStatus()`                         | `ai:read`           |
+| `ai.chat(model, messages, fileContext)`          | `ai:chat`           |
+| `search.query(query, limit)`                     | `search:read`       |
+| `search.semantic(query, limit)`                  | `search:read`       |
+| `search.findDuplicates(rootPath, options)`       | `search:duplicates` |
+| `analytics.analyzeStorage(path)`                 | `file:read`         |
+| `comparison.compareFiles(file1, file2, options)` | `file:read`         |
+| `organizer.analyzeDirectory(path)`               | `file:read`         |
+| `organizer.previewOrganization(path, indices)`   | `file:read`         |
+| `organizer.executeOrganization(plan)`            | `file:write`        |
+| `gdrive.authenticate()`                          | `gdrive:access`     |
+| `gdrive.disconnect(accountId)`                   | `gdrive:access`     |
+| `gdrive.listAccounts()`                          | `gdrive:access`     |
+| `gdrive.listFiles(accountId, folderId)`          | `gdrive:access`     |
+| `gdrive.downloadFile(accountId, fileId, dest)`   | `gdrive:access`     |
+| `gdrive.uploadFile(accountId, path, folderId)`   | `gdrive:access`     |
+| `gdrive.deleteFile(accountId, fileId)`           | `gdrive:access`     |
+| `gdrive.renameFile(accountId, fileId, name)`     | `gdrive:access`     |
+| `gdrive.moveFile(accountId, fileId, parentId)`   | `gdrive:access`     |
+| `gdrive.createFolder(accountId, name, parentId)` | `gdrive:access`     |
+| `gdrive.getFileContent(accountId, fileId)`       | `gdrive:access`     |
+| `gdrive.getSettings()`                           | `gdrive:access`     |
+| `gdrive.updateSettings(settings)`                | `gdrive:access`     |
+| `git.findRepository(path)`                       | `git:read`          |
+| `git.getRepositoryInfo(repoPath)`                | `git:read`          |
+| `git.getGitStatus(repoPath)`                     | `git:read`          |
+| `git.getGitRepoInfo(repoPath)`                   | `git:read`          |
+| `git.getFileHistory(repoPath, filePath)`         | `git:read`          |
+| `git.getFileBlame(repoPath, filePath)`           | `git:read`          |
+| `git.getFileDiff(repoPath, filePath)`            | `git:read`          |
+| `git.getFileStatus(repoPath, filePath)`          | `git:read`          |
+| `git.getCommitDiff(repoPath, commitHash)`        | `git:read`          |
+| `git.getAllCommits(repoPath, options)`           | `git:read`          |
+| `git.getBranches(repoPath)`                      | `git:read`          |
+| `git.getStashes(repoPath)`                       | `git:read`          |
+| `git.getRemotes(dir)`                            | `git:read`          |
+| `git.stageFile(repoPath, filePath)`              | `git:write`         |
+| `git.unstageFile(repoPath, filePath)`            | `git:write`         |
+| `git.commitChanges(repoPath, message)`           | `git:write`         |
+| `git.createBranch(repoPath, name)`               | `git:write`         |
+| `git.switchBranch(repoPath, name)`               | `git:write`         |
+| `git.deleteBranch(repoPath, name)`               | `git:write`         |
+| `git.createStash(repoPath, message)`             | `git:write`         |
+| `git.applyStash(repoPath, index)`                | `git:write`         |
+| `git.dropStash(repoPath, index)`                 | `git:write`         |
+| `git.pull(dir)`                                  | `git:write`         |
+| `git.push(dir, force)`                           | `git:write`         |
+| `git.fetch(dir)`                                 | `git:read`          |
+| `dev.isDevMode()`                                | _(none)_            |
+| `dev.reload()`                                   | _(none)_            |
+| `dev.getLoadedExtensions()`                      | _(none)_            |
+| `dev.isHotReloadActive()`                        | _(none)_            |
 
 Settings (extension-scoped storage), storage, commands, navigation, dialog, dev utilities, and basic UI messages are available to all extensions without any permissions.
 
@@ -181,11 +181,13 @@ Settings (extension-scoped storage), storage, commands, navigation, dialog, dev 
 ### Principle of Least Privilege
 
 Only request permissions your extension actually needs. Extensions with fewer permissions are:
+
 - More trustworthy to users
 - Less likely to cause unintended side effects
 - Easier to audit
 
 **Good:**
+
 ```json
 {
   "permissions": ["file:read", "directory:list"]
@@ -193,12 +195,19 @@ Only request permissions your extension actually needs. Extensions with fewer pe
 ```
 
 **Bad (overly broad):**
+
 ```json
 {
   "permissions": [
-    "file:read", "file:write", "file:delete", "file:execute",
-    "directory:create", "directory:delete", "directory:list",
-    "system:commands", "system:network"
+    "file:read",
+    "file:write",
+    "file:delete",
+    "file:execute",
+    "directory:create",
+    "directory:delete",
+    "directory:list",
+    "system:commands",
+    "system:network"
   ]
 }
 ```
@@ -223,18 +232,18 @@ async activate(context: ExtensionContext): Promise<void> {
 
 ### Common Permission Sets
 
-| Extension Type | Typical Permissions |
-|---|---|
-| File viewer | `file:read` |
-| File editor | `file:read`, `file:write` |
-| Panel extension | `ui:panels` |
-| Workspace scanner | `file:read`, `directory:list`, `ui:notifications` |
-| Theme extension | `xplorer:themes` |
-| Full-featured tool | `file:read`, `directory:list`, `ui:notifications`, `ui:panels` |
-| AI-powered extension | `ai:read`, `ai:chat`, `file:read` |
-| Search extension | `search:read`, `search:duplicates` |
-| Cloud storage tab | `gdrive:access` |
-| Git integration | `git:read`, `git:write` |
+| Extension Type       | Typical Permissions                                            |
+| -------------------- | -------------------------------------------------------------- |
+| File viewer          | `file:read`                                                    |
+| File editor          | `file:read`, `file:write`                                      |
+| Panel extension      | `ui:panels`                                                    |
+| Workspace scanner    | `file:read`, `directory:list`, `ui:notifications`              |
+| Theme extension      | `xplorer:themes`                                               |
+| Full-featured tool   | `file:read`, `directory:list`, `ui:notifications`, `ui:panels` |
+| AI-powered extension | `ai:read`, `ai:chat`, `file:read`                              |
+| Search extension     | `search:read`, `search:duplicates`                             |
+| Cloud storage tab    | `gdrive:access`                                                |
+| Git integration      | `git:read`, `git:write`                                        |
 
 ## Security Model
 

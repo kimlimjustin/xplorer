@@ -29,7 +29,7 @@ export class WorkflowAutomationExtension extends Extension {
       version: '1.0.0',
       author: 'Xplorer Team',
       category: 'tool',
-      description: 'Automated workflow checks and warnings for development issues'
+      description: 'Automated workflow checks and warnings for development issues',
     });
   }
 
@@ -52,7 +52,7 @@ export class WorkflowAutomationExtension extends Extension {
     // Auto-scan when directory changes
     const navigation = this.getAPI().navigation;
     let currentPath = navigation.getCurrentPath();
-    
+
     // Set up periodic scanning
     this.scanInterval = setInterval(async () => {
       const newPath = navigation.getCurrentPath();
@@ -90,16 +90,15 @@ export class WorkflowAutomationExtension extends Extension {
 
       // Update UI
       this.updateWorkflowPanel();
-      
+
       // Show notifications for critical issues
-      const criticalIssues = this.issues.filter(issue => issue.severity === 'error');
+      const criticalIssues = this.issues.filter((issue) => issue.severity === 'error');
       if (criticalIssues.length > 0) {
         this.showMessage(
           `Found ${criticalIssues.length} critical workflow issue${criticalIssues.length > 1 ? 's' : ''}`,
-          'error'
+          'error',
         );
       }
-
     } catch (error) {
       this.logError(`Failed to scan workspace: ${error}`);
     }
@@ -139,7 +138,7 @@ export class WorkflowAutomationExtension extends Extension {
       const lockFiles = [
         packageFiles.packageLock,
         packageFiles.yarnLock,
-        packageFiles.pnpmLock
+        packageFiles.pnpmLock,
       ].filter(Boolean);
 
       if (lockFiles.length > 1) {
@@ -150,7 +149,7 @@ export class WorkflowAutomationExtension extends Extension {
           description: `Found ${lockFiles.length} different package manager lock files. This can cause dependency conflicts and build issues. Consider using only one package manager.`,
           path: rootPath,
           fixable: true,
-          category: 'package-manager'
+          category: 'package-manager',
         });
       }
 
@@ -160,10 +159,11 @@ export class WorkflowAutomationExtension extends Extension {
           id: 'missing-package-json',
           severity: 'warning',
           title: 'Node Modules Without Package.json',
-          description: 'Found node_modules directory but no package.json file. This may indicate an incomplete project setup.',
+          description:
+            'Found node_modules directory but no package.json file. This may indicate an incomplete project setup.',
           path: rootPath,
           fixable: false,
-          category: 'package-manager'
+          category: 'package-manager',
         });
       }
 
@@ -171,7 +171,6 @@ export class WorkflowAutomationExtension extends Extension {
       if (packageFiles.packageJson && packageFiles.packageLock) {
         await this.checkLockFileSync(packageFiles.packageJson, packageFiles.packageLock);
       }
-
     } catch (error) {
       this.logError(`Package manager conflict check failed: ${error}`);
     }
@@ -181,11 +180,11 @@ export class WorkflowAutomationExtension extends Extension {
     try {
       const packageJsonContent = await this.getAPI().files.readText(packageJsonPath);
       const packageJson = JSON.parse(packageJsonContent);
-      
+
       // Check if package-lock.json is newer than package.json
       // This is a simplified check - in a real implementation, you'd compare file timestamps
       // and dependency versions
-      
+
       if (packageJson.dependencies || packageJson.devDependencies) {
         // Could add more sophisticated checks here
         this.log('Package.json and lock file sync check completed');
@@ -198,7 +197,7 @@ export class WorkflowAutomationExtension extends Extension {
         description: 'Could not verify if package-lock.json is in sync with package.json',
         path: packageJsonPath,
         fixable: false,
-        category: 'package-manager'
+        category: 'package-manager',
       });
     }
   }
@@ -221,17 +220,17 @@ export class WorkflowAutomationExtension extends Extension {
           id: 'missing-gitignore',
           severity: 'warning',
           title: 'Missing .gitignore File',
-          description: 'Found a Git repository with node_modules but no .gitignore file. This may lead to committing dependencies.',
+          description:
+            'Found a Git repository with node_modules but no .gitignore file. This may lead to committing dependencies.',
           path: rootPath,
           fixable: true,
-          category: 'git'
+          category: 'git',
         });
       }
 
       if (hasGitIgnore) {
         await this.checkGitIgnoreContent(rootPath + '/.gitignore');
       }
-
     } catch (error) {
       this.logError(`Git ignore check failed: ${error}`);
     }
@@ -240,18 +239,13 @@ export class WorkflowAutomationExtension extends Extension {
   private async checkGitIgnoreContent(gitIgnorePath: string): Promise<void> {
     try {
       const content = await this.getAPI().files.readText(gitIgnorePath);
-      const lines = content.split('\n').map(line => line.trim());
+      const lines = content.split('\n').map((line) => line.trim());
 
-      const requiredPatterns = [
-        'node_modules/',
-        '.env',
-        '*.log',
-        'dist/',
-        'build/'
-      ];
+      const requiredPatterns = ['node_modules/', '.env', '*.log', 'dist/', 'build/'];
 
-      const missingPatterns = requiredPatterns.filter(pattern => 
-        !lines.some(line => line.includes(pattern.replace('*', '')) || line === pattern)
+      const missingPatterns = requiredPatterns.filter(
+        (pattern) =>
+          !lines.some((line) => line.includes(pattern.replace('*', '')) || line === pattern),
       );
 
       if (missingPatterns.length > 0) {
@@ -262,10 +256,9 @@ export class WorkflowAutomationExtension extends Extension {
           description: `Missing recommended patterns in .gitignore: ${missingPatterns.join(', ')}`,
           path: gitIgnorePath,
           fixable: true,
-          category: 'git'
+          category: 'git',
         });
       }
-
     } catch (error) {
       this.logError(`Git ignore content check failed: ${error}`);
     }
@@ -274,7 +267,7 @@ export class WorkflowAutomationExtension extends Extension {
   private async checkDependencyIssues(rootPath: string): Promise<void> {
     try {
       const packageJsonPath = `${rootPath}/package.json`;
-      
+
       if (await this.getAPI().files.exists(packageJsonPath)) {
         const content = await this.getAPI().files.readText(packageJsonPath);
         const packageJson = JSON.parse(content);
@@ -283,7 +276,7 @@ export class WorkflowAutomationExtension extends Extension {
         if (packageJson.dependencies && packageJson.devDependencies) {
           const deps = Object.keys(packageJson.dependencies);
           const devDeps = Object.keys(packageJson.devDependencies);
-          const duplicates = deps.filter(dep => devDeps.includes(dep));
+          const duplicates = deps.filter((dep) => devDeps.includes(dep));
 
           if (duplicates.length > 0) {
             this.addIssue({
@@ -293,7 +286,7 @@ export class WorkflowAutomationExtension extends Extension {
               description: `Found dependencies in both dependencies and devDependencies: ${duplicates.join(', ')}`,
               path: packageJsonPath,
               fixable: true,
-              category: 'dependencies'
+              category: 'dependencies',
             });
           }
         }
@@ -307,11 +300,10 @@ export class WorkflowAutomationExtension extends Extension {
             description: 'Consider adding scripts for common tasks like build, test, and dev',
             path: packageJsonPath,
             fixable: true,
-            category: 'dependencies'
+            category: 'dependencies',
           });
         }
       }
-
     } catch (error) {
       this.logError(`Dependency issues check failed: ${error}`);
     }
@@ -320,7 +312,7 @@ export class WorkflowAutomationExtension extends Extension {
   private async checkSecurityIssues(rootPath: string): Promise<void> {
     try {
       const files = await this.getAPI().files.list(rootPath);
-      
+
       for (const file of files) {
         if (file.name === '.env' && !file.isDirectory) {
           // Check if .env file is not in .gitignore
@@ -328,14 +320,18 @@ export class WorkflowAutomationExtension extends Extension {
             id: 'env-file-found',
             severity: 'warning',
             title: 'Environment File Detected',
-            description: 'Found .env file. Make sure it\'s listed in .gitignore to avoid committing secrets',
+            description:
+              "Found .env file. Make sure it's listed in .gitignore to avoid committing secrets",
             path: file.path,
             fixable: false,
-            category: 'security'
+            category: 'security',
           });
         }
 
-        if (file.name.toLowerCase().includes('password') || file.name.toLowerCase().includes('secret')) {
+        if (
+          file.name.toLowerCase().includes('password') ||
+          file.name.toLowerCase().includes('secret')
+        ) {
           this.addIssue({
             id: 'potential-secret-file',
             severity: 'error',
@@ -343,11 +339,10 @@ export class WorkflowAutomationExtension extends Extension {
             description: `File name suggests it may contain secrets: ${file.name}`,
             path: file.path,
             fixable: false,
-            category: 'security'
+            category: 'security',
           });
         }
       }
-
     } catch (error) {
       this.logError(`Security issues check failed: ${error}`);
     }
@@ -362,7 +357,8 @@ export class WorkflowAutomationExtension extends Extension {
       for (const file of files) {
         if (!file.isDirectory && file.size) {
           totalSize += file.size;
-          if (file.size > 10 * 1024 * 1024) { // 10MB
+          if (file.size > 10 * 1024 * 1024) {
+            // 10MB
             largeFiles++;
           }
         }
@@ -376,11 +372,12 @@ export class WorkflowAutomationExtension extends Extension {
           description: `Found ${largeFiles} files larger than 10MB. Consider using Git LFS for large binary files.`,
           path: rootPath,
           fixable: false,
-          category: 'performance'
+          category: 'performance',
         });
       }
 
-      if (totalSize > 100 * 1024 * 1024) { // 100MB
+      if (totalSize > 100 * 1024 * 1024) {
+        // 100MB
         this.addIssue({
           id: 'large-directory',
           severity: 'info',
@@ -388,10 +385,9 @@ export class WorkflowAutomationExtension extends Extension {
           description: 'Directory size is quite large. Consider cleaning up unnecessary files.',
           path: rootPath,
           fixable: false,
-          category: 'performance'
+          category: 'performance',
         });
       }
-
     } catch (error) {
       this.logError(`Performance issues check failed: ${error}`);
     }
@@ -403,7 +399,7 @@ export class WorkflowAutomationExtension extends Extension {
   }
 
   private async fixIssue(issueId: string): Promise<void> {
-    const issue = this.issues.find(i => i.id === issueId);
+    const issue = this.issues.find((i) => i.id === issueId);
     if (!issue || !issue.fixable) {
       this.showMessage('This issue cannot be automatically fixed', 'warning');
       return;
@@ -426,10 +422,9 @@ export class WorkflowAutomationExtension extends Extension {
       }
 
       // Remove the fixed issue
-      this.issues = this.issues.filter(i => i.id !== issueId);
+      this.issues = this.issues.filter((i) => i.id !== issueId);
       this.updateWorkflowPanel();
       this.showMessage(`Fixed: ${issue.title}`, 'info');
-
     } catch (error) {
       this.logError(`Failed to fix issue ${issueId}: ${error}`);
       this.showMessage(`Failed to fix issue: ${error}`, 'error');
@@ -489,7 +484,7 @@ build/
   }
 
   private dismissIssue(issueId: string): void {
-    this.issues = this.issues.filter(i => i.id !== issueId);
+    this.issues = this.issues.filter((i) => i.id !== issueId);
     this.updateWorkflowPanel();
   }
 
@@ -497,7 +492,7 @@ build/
     // This would update the custom panel UI
     // In a real implementation, this would emit events to update the React component
     this.log(`Updated workflow panel with ${this.issues.length} issues`);
-    
+
     // Store issues in extension state so the UI can access them
     this.setWorkspaceState('workflow-issues', this.issues);
   }

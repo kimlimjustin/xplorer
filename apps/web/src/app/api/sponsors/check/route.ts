@@ -44,9 +44,6 @@ export async function POST(request: Request) {
     });
   } catch (err) {
     console.error('POST /api/sponsors/check error:', err);
-    return NextResponse.json(
-      { error: 'Failed to check sponsor status' },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: 'Failed to check sponsor status' }, { status: 500 });
   }
 }

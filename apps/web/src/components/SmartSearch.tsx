@@ -24,12 +24,12 @@ const SmartSearch = forwardRef<SmartSearchHandle, SmartSearchProps>(
     }));
 
     return (
-      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-xp-surface-light border border-xp-border text-xp-text-muted text-xs">
+      <div className="flex items-center gap-1.5 rounded-md border border-xp-border bg-xp-surface-light px-2.5 py-1 text-xs text-xp-text-muted">
         <Search size={13} />
         <span className="whitespace-nowrap">Search</span>
       </div>
     );
-  }
+  },
 );
 
 export default SmartSearch;

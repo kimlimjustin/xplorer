@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     } catch {
       return NextResponse.json(
         { error: 'Too many requests. Please try again later.' },
-        { status: 429, headers: corsHeaders(request) }
+        { status: 429, headers: corsHeaders(request) },
       );
     }
 
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Authentication required' },
-        { status: 401, headers: corsHeaders(request) }
+        { status: 401, headers: corsHeaders(request) },
       );
     }
 
@@ -39,21 +39,21 @@ export async function POST(request: NextRequest) {
     if (!file) {
       return NextResponse.json(
         { error: 'Extension file (ZIP) is required' },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
     if (file.size > MAX_UPLOAD_SIZE) {
       return NextResponse.json(
         { error: 'File exceeds 50MB limit' },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
     if (!file.name.endsWith('.zip')) {
       return NextResponse.json(
         { error: 'Only ZIP files are accepted' },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
@@ -61,25 +61,40 @@ export async function POST(request: NextRequest) {
     if (file.type !== 'application/zip' && file.type !== 'application/x-zip-compressed') {
       return NextResponse.json(
         { error: 'Invalid file type. Only ZIP files are accepted.' },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
     // Validate ZIP magic bytes
     const magicBuffer = Buffer.from(await file.slice(0, 4).arrayBuffer());
-    if (magicBuffer[0] !== 0x50 || magicBuffer[1] !== 0x4B || magicBuffer[2] !== 0x03 || magicBuffer[3] !== 0x04) {
+    if (
+      magicBuffer[0] !== 0x50 ||
+      magicBuffer[1] !== 0x4b ||
+      magicBuffer[2] !== 0x03 ||
+      magicBuffer[3] !== 0x04
+    ) {
       return NextResponse.json(
         { error: 'Invalid ZIP file' },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
     // Extract metadata from form fields
     const metadata: Record<string, any> = {};
     for (const key of [
-      'name', 'displayName', 'description', 'longDescription', 'version',
-      'minimumXplorerVersion', 'licenseType', 'repositoryUrl', 'homepageUrl',
-      'bugReportUrl', 'pricingType', 'price', 'currency',
+      'name',
+      'displayName',
+      'description',
+      'longDescription',
+      'version',
+      'minimumXplorerVersion',
+      'licenseType',
+      'repositoryUrl',
+      'homepageUrl',
+      'bugReportUrl',
+      'pricingType',
+      'price',
+      'currency',
     ]) {
       const val = formData.get(key);
       if (val !== null) metadata[key] = val.toString();
@@ -114,21 +129,24 @@ export async function POST(request: NextRequest) {
     if (!parsed.success) {
       return NextResponse.json(
         { error: 'Validation failed', details: parsed.error.flatten() },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
     const data = parsed.data;
 
     // Generate slug
-    const slug = data.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const slug = data.name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
 
     // Validate paid extension requirements (outside transaction as it doesn't need atomicity)
     if (data.pricingType === 'PAID') {
       if (!data.price || data.price < 99) {
         return NextResponse.json(
           { error: 'Paid extensions must have a price of at least $0.99' },
-          { status: 400, headers: corsHeaders(request) }
+          { status: 400, headers: corsHeaders(request) },
         );
       }
 
@@ -139,8 +157,10 @@ export async function POST(request: NextRequest) {
 
       if (!author?.stripeConnectOnboarded) {
         return NextResponse.json(
-          { error: 'You must complete Stripe Connect onboarding before publishing paid extensions' },
-          { status: 400, headers: corsHeaders(request) }
+          {
+            error: 'You must complete Stripe Connect onboarding before publishing paid extensions',
+          },
+          { status: 400, headers: corsHeaders(request) },
         );
       }
     }
@@ -161,7 +181,12 @@ export async function POST(request: NextRequest) {
       if (existing) {
         // If same author, treat as version update
         if (existing.authorId === session.user.id) {
-          const { url, downloadUrl } = await uploadExtensionFile(file, existing.id, data.version, slug);
+          const { url, downloadUrl } = await uploadExtensionFile(
+            file,
+            existing.id,
+            data.version,
+            slug,
+          );
 
           await tx.extension.update({
             where: { id: existing.id },
@@ -286,14 +311,14 @@ export async function POST(request: NextRequest) {
     if (error instanceof Error && error.message === 'DUPLICATE_EXTENSION') {
       return NextResponse.json(
         { error: 'An extension with this name already exists' },
-        { status: 409, headers: corsHeaders(request) }
+        { status: 409, headers: corsHeaders(request) },
       );
     }
 
     console.error('POST /api/extensions/publish error:', error);
     return NextResponse.json(
       { error: 'Failed to publish extension' },
-      { status: 500, headers: corsHeaders(request) }
+      { status: 500, headers: corsHeaders(request) },
     );
   }
 }

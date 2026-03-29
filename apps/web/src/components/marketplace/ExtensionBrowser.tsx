@@ -1,7 +1,14 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Search, SlidersHorizontal, LayoutGrid, List, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  Search,
+  SlidersHorizontal,
+  LayoutGrid,
+  List,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
 import { ExtensionCard, type ExtensionCardData } from './ExtensionCard';
 import { ExtensionListItem } from './ExtensionListItem';
 import { CategoryFilter } from './CategoryFilter';
@@ -16,10 +23,7 @@ type ViewMode = 'grid' | 'list';
 
 const PAGE_SIZE = 12;
 
-export function ExtensionBrowser({
-  extensions,
-  categories,
-}: ExtensionBrowserProps) {
+export function ExtensionBrowser({ extensions, categories }: ExtensionBrowserProps) {
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [sort, setSort] = useState<SortOption>('popular');
@@ -58,9 +62,7 @@ export function ExtensionBrowser({
         result = [...result].sort((a, b) => b.downloadCount - a.downloadCount);
         break;
       case 'name':
-        result = [...result].sort((a, b) =>
-          a.displayName.localeCompare(b.displayName),
-        );
+        result = [...result].sort((a, b) => a.displayName.localeCompare(b.displayName));
         break;
     }
 
@@ -89,23 +91,23 @@ export function ExtensionBrowser({
   return (
     <div>
       {/* Search and controls row */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
           <input
             type="text"
             placeholder="Search extensions..."
             value={search}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent dark:border-gray-800 dark:bg-gray-900 dark:text-white"
+            className="w-full rounded-lg border border-gray-200 py-2.5 pl-10 pr-4 text-sm focus:border-transparent focus:outline-none focus:ring-2 focus:ring-brand-500 dark:border-gray-800 dark:bg-gray-900 dark:text-white"
           />
         </div>
         <div className="flex items-center gap-2">
-          <SlidersHorizontal className="h-4 w-4 text-gray-400 dark:text-gray-500 shrink-0" />
+          <SlidersHorizontal className="h-4 w-4 shrink-0 text-gray-400 dark:text-gray-500" />
           <select
             value={sort}
             onChange={(e) => handleSortChange(e.target.value as SortOption)}
-            className="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white dark:border-gray-800 dark:bg-gray-900 dark:text-white"
+            className="rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:border-gray-800 dark:bg-gray-900 dark:text-white"
           >
             <option value="popular">Most Popular</option>
             <option value="newest">Newest</option>
@@ -114,13 +116,13 @@ export function ExtensionBrowser({
             <option value="name">Name A-Z</option>
           </select>
 
-          <div className="flex border border-gray-200 rounded-lg overflow-hidden dark:border-gray-800">
+          <div className="flex overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800">
             <button
               onClick={() => setViewMode('grid')}
               className={`p-2.5 transition-colors ${
                 viewMode === 'grid'
                   ? 'bg-brand-50 text-brand-600 dark:bg-brand-500/10 dark:text-brand-400'
-                  : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300'
+                  : 'text-gray-400 hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
               }`}
               aria-label="Grid view"
             >
@@ -131,7 +133,7 @@ export function ExtensionBrowser({
               className={`p-2.5 transition-colors ${
                 viewMode === 'list'
                   ? 'bg-brand-50 text-brand-600 dark:bg-brand-500/10 dark:text-brand-400'
-                  : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300'
+                  : 'text-gray-400 hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300'
               }`}
               aria-label="List view"
             >
@@ -151,7 +153,7 @@ export function ExtensionBrowser({
       </div>
 
       {/* Results count */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="mb-4 flex items-center justify-between">
         <p className="text-sm text-gray-500 dark:text-gray-400">
           {filtered.length} {filtered.length === 1 ? 'extension' : 'extensions'} found
         </p>
@@ -159,20 +161,26 @@ export function ExtensionBrowser({
 
       {/* Content */}
       {filtered.length === 0 ? (
-        <div className="text-center py-16 border border-dashed border-gray-200 rounded-xl dark:border-gray-800">
-          <Search className="h-10 w-10 text-gray-300 mx-auto mb-3 dark:text-gray-600" />
-          <p className="text-gray-500 dark:text-gray-400">No extensions found matching your search.</p>
+        <div className="rounded-xl border border-dashed border-gray-200 py-16 text-center dark:border-gray-800">
+          <Search className="mx-auto mb-3 h-10 w-10 text-gray-300 dark:text-gray-600" />
+          <p className="text-gray-500 dark:text-gray-400">
+            No extensions found matching your search.
+          </p>
           {(search || selectedCategory) && (
             <button
-              onClick={() => { setSearch(''); setSelectedCategory(null); setPage(1); }}
-              className="mt-3 text-sm text-brand-600 hover:text-brand-700 font-medium dark:text-brand-400 dark:hover:text-brand-300"
+              onClick={() => {
+                setSearch('');
+                setSelectedCategory(null);
+                setPage(1);
+              }}
+              className="mt-3 text-sm font-medium text-brand-600 hover:text-brand-700 dark:text-brand-400 dark:hover:text-brand-300"
             >
               Clear all filters
             </button>
           )}
         </div>
       ) : viewMode === 'grid' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {paginated.map((ext) => (
             <ExtensionCard key={ext.id} extension={ext} />
           ))}
@@ -187,11 +195,11 @@ export function ExtensionBrowser({
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-8">
+        <div className="mt-8 flex items-center justify-center gap-2">
           <button
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={safePage <= 1}
-            className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:pointer-events-none transition-colors dark:border-gray-800 dark:text-gray-400 dark:hover:bg-gray-800"
+            className="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 disabled:pointer-events-none disabled:opacity-40 dark:border-gray-800 dark:text-gray-400 dark:hover:bg-gray-800"
           >
             <ChevronLeft className="h-4 w-4" />
             Prev
@@ -236,7 +244,7 @@ export function ExtensionBrowser({
           <button
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={safePage >= totalPages}
-            className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:pointer-events-none transition-colors dark:border-gray-800 dark:text-gray-400 dark:hover:bg-gray-800"
+            className="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 disabled:pointer-events-none disabled:opacity-40 dark:border-gray-800 dark:text-gray-400 dark:hover:bg-gray-800"
           >
             Next
             <ChevronRight className="h-4 w-4" />

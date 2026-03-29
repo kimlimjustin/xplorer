@@ -24,10 +24,7 @@ export const listTables = async (path: string): Promise<TableInfo[]> => {
   return await transport('list_sqlite_tables', { path });
 };
 
-export const getTableColumns = async (
-  path: string,
-  table: string,
-): Promise<ColumnInfo[]> => {
+export const getTableColumns = async (path: string, table: string): Promise<ColumnInfo[]> => {
   return await transport('get_sqlite_table_columns', { path, table });
 };
 
@@ -40,9 +37,6 @@ export const queryTable = async (
   return await transport('query_sqlite_table', { path, table, limit, offset });
 };
 
-export const executeQuery = async (
-  path: string,
-  query: string,
-): Promise<QueryResult> => {
+export const executeQuery = async (path: string, query: string): Promise<QueryResult> => {
   return await transport('execute_sqlite_query', { path, query });
 };

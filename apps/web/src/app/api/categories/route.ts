@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     } catch {
       return NextResponse.json(
         { error: 'Too many requests. Please try again later.' },
-        { status: 429, headers: corsHeaders(request) }
+        { status: 429, headers: corsHeaders(request) },
       );
     }
 
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
     console.error('GET /api/categories error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch categories' },
-      { status: 500, headers: corsHeaders(request) }
+      { status: 500, headers: corsHeaders(request) },
     );
   }
 }

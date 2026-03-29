@@ -6,12 +6,7 @@ export default defineConfig({
   plugins: [
     react({
       babel: {
-        plugins: [
-          [
-            'babel-plugin-react-compiler',
-            { target: '18' },
-          ],
-        ],
+        plugins: [['babel-plugin-react-compiler', { target: '18' }]],
       },
     }),
   ],
@@ -44,11 +39,17 @@ export default defineConfig({
         manualChunks(id) {
           // Split heavy vendor libraries into their own cacheable chunks
           if (id.includes('node_modules')) {
-            if (id.includes('react-dom') || (id.includes('/react/') && !id.includes('react-i18next')))
+            if (
+              id.includes('react-dom') ||
+              (id.includes('/react/') && !id.includes('react-i18next'))
+            )
               return 'vendor-react';
-            if (id.includes('i18next') || id.includes('react-i18next'))
-              return 'vendor-i18n';
-            if (id.includes('react-syntax-highlighter') || id.includes('refractor') || id.includes('prismjs')) {
+            if (id.includes('i18next') || id.includes('react-i18next')) return 'vendor-i18n';
+            if (
+              id.includes('react-syntax-highlighter') ||
+              id.includes('refractor') ||
+              id.includes('prismjs')
+            ) {
               return 'vendor-syntax-highlight';
             }
             if (id.includes('lucide-react')) {

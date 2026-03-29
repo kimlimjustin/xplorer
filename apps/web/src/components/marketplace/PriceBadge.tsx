@@ -12,7 +12,7 @@ export function PriceBadge({ pricingType, price, className }: PriceBadgeProps) {
     return (
       <span
         className={cn(
-          'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400',
+          'inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700 dark:bg-green-500/10 dark:text-green-400',
           className,
         )}
       >
@@ -24,7 +24,7 @@ export function PriceBadge({ pricingType, price, className }: PriceBadgeProps) {
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400',
+        'inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-500/10 dark:text-blue-400',
         className,
       )}
     >

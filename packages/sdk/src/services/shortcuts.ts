@@ -1,9 +1,5 @@
 import { transport } from '../transport';
-import type {
-  ShortcutBinding,
-  ShortcutSettings,
-  ShortcutAction,
-} from '../types';
+import type { ShortcutBinding, ShortcutSettings, ShortcutAction } from '../types';
 
 export const getShortcuts = async (): Promise<ShortcutBinding[]> => {
   return await transport('get_shortcuts');

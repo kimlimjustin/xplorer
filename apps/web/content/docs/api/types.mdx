@@ -80,7 +80,7 @@ interface OperationProgress {
   files_done: number;
   files_total: number;
   percentage: number;
-  speed: number;            // bytes per second
+  speed: number; // bytes per second
   estimated_remaining: number; // seconds
   status: string;
 }
@@ -198,8 +198,8 @@ interface Extension {
   author: string;
   status: 'active' | 'inactive' | 'error';
   permissions: string[];
-  sourcePath: string;      // Filesystem path to extension source
-  loadedAt: number;        // Unix timestamp when extension was loaded
+  sourcePath: string; // Filesystem path to extension source
+  loadedAt: number; // Unix timestamp when extension was loaded
 }
 
 interface ExtensionManifest {
@@ -221,7 +221,7 @@ interface TokenizerStats {
   total_files: number;
   total_tokens: number;
   indexed_paths: string[];
-  last_indexed: number;    // Unix timestamp
+  last_indexed: number; // Unix timestamp
 }
 ```
 
@@ -244,8 +244,8 @@ Returned by `get_undo_redo_state` to indicate what operations can be undone or r
 interface UndoRedoState {
   can_undo: boolean;
   can_redo: boolean;
-  undo_description: string;  // Human-readable description of the undoable operation
-  redo_description: string;  // Human-readable description of the redoable operation
+  undo_description: string; // Human-readable description of the undoable operation
+  redo_description: string; // Human-readable description of the redoable operation
 }
 ```
 

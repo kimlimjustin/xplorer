@@ -41,7 +41,17 @@ export interface MemoryEntry {
 }
 
 export interface AgentEvent {
-  event_type: 'text' | 'text_delta' | 'thinking_delta' | 'tool_call' | 'tool_result' | 'approval_request' | 'plan_created' | 'plan_progress' | 'complete' | 'error';
+  event_type:
+    | 'text'
+    | 'text_delta'
+    | 'thinking_delta'
+    | 'tool_call'
+    | 'tool_result'
+    | 'approval_request'
+    | 'plan_created'
+    | 'plan_progress'
+    | 'complete'
+    | 'error';
   session_id: string;
   tool_call?: AgentToolCall;
   text?: string;

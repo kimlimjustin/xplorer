@@ -19,7 +19,12 @@
     "version": "1.0.0",
     "author": "Xplorer Team",
     "description": "A beautiful dark theme inspired by Tokyo Night",
-    "keywords": ["theme", "dark", "tokyo", "night"],
+    "keywords": [
+      "theme",
+      "dark",
+      "tokyo",
+      "night"
+    ],
     "icon": "🌃"
   }
 }

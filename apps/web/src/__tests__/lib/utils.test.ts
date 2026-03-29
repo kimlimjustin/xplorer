@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { cn, safeImageUrl, formatFileSize, formatDate, formatDownloadCount, formatPrice } from '@/lib/utils';
+import {
+  cn,
+  safeImageUrl,
+  formatFileSize,
+  formatDate,
+  formatDownloadCount,
+  formatPrice,
+} from '@/lib/utils';
 
 // ---------------------------------------------------------------------------
 // safeImageUrl

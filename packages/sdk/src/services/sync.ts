@@ -65,10 +65,7 @@ export const getLastSyncTime = async (): Promise<string | null> => {
  * Full bidirectional sync: pulls cloud data, merges with local using
  * last-write-wins, then pushes the merged result back to the cloud.
  */
-export const syncAll = async (
-  apiUrl: string,
-  token: string,
-): Promise<SyncResult> => {
+export const syncAll = async (apiUrl: string, token: string): Promise<SyncResult> => {
   return await transport('sync_all', { apiUrl, token });
 };
 
@@ -76,10 +73,7 @@ export const syncAll = async (
  * Run a one-time startup sync (pulls + merges + pushes).
  * Returns a success result even if the network is offline.
  */
-export const autoSyncOnStartup = async (
-  apiUrl: string,
-  token: string,
-): Promise<SyncResult> => {
+export const autoSyncOnStartup = async (apiUrl: string, token: string): Promise<SyncResult> => {
   return await transport('auto_sync_on_startup', { apiUrl, token });
 };
 

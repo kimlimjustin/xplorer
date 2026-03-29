@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     } catch {
       return NextResponse.json(
         { error: 'Too many requests. Please try again later.' },
-        { status: 429, headers: corsHeaders(request) }
+        { status: 429, headers: corsHeaders(request) },
       );
     }
 
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Authentication required' },
-        { status: 401, headers: corsHeaders(request) }
+        { status: 401, headers: corsHeaders(request) },
       );
     }
 
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     if (!parsed.success) {
       return NextResponse.json(
         { error: 'Validation failed', details: parsed.error.flatten() },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     if (!extensionId) {
       return NextResponse.json(
         { error: 'extensionId is required. Pro upgrades are handled via GitHub Sponsors.' },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: 'User not found' },
-        { status: 404, headers: corsHeaders(request) }
+        { status: 404, headers: corsHeaders(request) },
       );
     }
 
@@ -103,30 +103,31 @@ export async function POST(request: NextRequest) {
     if (!extension) {
       return NextResponse.json(
         { error: 'Extension not found' },
-        { status: 404, headers: corsHeaders(request) }
+        { status: 404, headers: corsHeaders(request) },
       );
     }
 
     if (extension.pricingType !== 'PAID' || !extension.price) {
       return NextResponse.json(
         { error: 'This extension is free' },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
     if (!extension.author.stripeConnectAccountId || !extension.author.stripeConnectOnboarded) {
       return NextResponse.json(
         { error: 'Extension author has not completed payment setup' },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
     // HIGH-W04: Use upsert with a 'pending' status to atomically claim the purchase slot.
     // This prevents race conditions where concurrent requests both pass the "already purchased" check.
     // The unique constraint on userId_extensionId ensures only one request wins.
-    const feePercent = user.subscriptionTier === 'PRO'
-      ? PLANS.PRO.platformFeePercent
-      : PLANS.FREE.platformFeePercent;
+    const feePercent =
+      user.subscriptionTier === 'PRO'
+        ? PLANS.PRO.platformFeePercent
+        : PLANS.FREE.platformFeePercent;
     const applicationFeeAmount = Math.round(extension.price * (feePercent / 100));
 
     try {
@@ -152,7 +153,7 @@ export async function POST(request: NextRequest) {
       if (purchase.status === 'completed') {
         return NextResponse.json(
           { error: 'You have already purchased this extension' },
-          { status: 400, headers: corsHeaders(request) }
+          { status: 400, headers: corsHeaders(request) },
         );
       }
     } catch (err: any) {
@@ -160,7 +161,7 @@ export async function POST(request: NextRequest) {
       if (err?.code === 'P2002') {
         return NextResponse.json(
           { error: 'A checkout is already in progress for this extension' },
-          { status: 409, headers: corsHeaders(request) }
+          { status: 409, headers: corsHeaders(request) },
         );
       }
       throw err;
@@ -213,15 +214,12 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(
-      { url: checkoutSession.url },
-      { headers: corsHeaders(request) }
-    );
+    return NextResponse.json({ url: checkoutSession.url }, { headers: corsHeaders(request) });
   } catch (error) {
     console.error('POST /api/billing/checkout error:', error);
     return NextResponse.json(
       { error: 'Failed to create checkout session' },
-      { status: 500, headers: corsHeaders(request) }
+      { status: 500, headers: corsHeaders(request) },
     );
   }
 }

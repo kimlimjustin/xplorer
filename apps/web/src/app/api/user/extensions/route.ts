@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Authentication required' },
-        { status: 401, headers: corsHeaders(request) }
+        { status: 401, headers: corsHeaders(request) },
       );
     }
 
@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
     console.error('GET /api/user/extensions error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch user extensions' },
-      { status: 500, headers: corsHeaders(request) }
+      { status: 500, headers: corsHeaders(request) },
     );
   }
 }

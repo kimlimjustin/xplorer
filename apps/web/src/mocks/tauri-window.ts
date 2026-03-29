@@ -1,8 +1,12 @@
 // Mock @tauri-apps/api/window for web context
 
 class MockWindow {
-  async isMaximized() { return false; }
-  async onResized(_handler: () => void) { return { unsubscribe: () => {} }; }
+  async isMaximized() {
+    return false;
+  }
+  async onResized(_handler: () => void) {
+    return { unsubscribe: () => {} };
+  }
   async startDragging() {}
   async toggleMaximize() {}
   async minimize() {}

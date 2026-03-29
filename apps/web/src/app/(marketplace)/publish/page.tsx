@@ -45,7 +45,7 @@ export default function PublishPage() {
   // Redirect if not authenticated
   if (status === 'loading') {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="flex min-h-[60vh] items-center justify-center">
         <div className="animate-pulse text-gray-400">Loading...</div>
       </div>
     );
@@ -56,19 +56,16 @@ export default function PublishPage() {
     return null;
   }
 
-  const handleDrop = useCallback(
-    (e: React.DragEvent) => {
-      e.preventDefault();
-      setDragOver(false);
-      const dropped = e.dataTransfer.files[0];
-      if (dropped && dropped.name.endsWith('.zip')) {
-        setFile(dropped);
-      } else {
-        setError('Please upload a .zip file');
-      }
-    },
-    [],
-  );
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setDragOver(false);
+    const dropped = e.dataTransfer.files[0];
+    if (dropped && dropped.name.endsWith('.zip')) {
+      setFile(dropped);
+    } else {
+      setError('Please upload a .zip file');
+    }
+  }, []);
 
   const onSubmit = async (data: PublishExtensionInput) => {
     if (!file) {
@@ -117,8 +114,8 @@ export default function PublishPage() {
 
   if (success) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh]">
-        <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
+      <div className="flex min-h-[60vh] flex-col items-center justify-center">
+        <CheckCircle className="mb-4 h-16 w-16 text-green-500" />
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Extension Submitted!</h2>
         <p className="mt-2 text-gray-500 dark:text-gray-400">
           Your extension is pending review. We will notify you once it is approved.
@@ -128,7 +125,7 @@ export default function PublishPage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-8">
+    <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
       <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Publish Extension</h1>
       <p className="mt-2 text-gray-500 dark:text-gray-400">
         Upload and submit your extension for review.
@@ -137,7 +134,7 @@ export default function PublishPage() {
       <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
         {/* File upload */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
             Extension Package (.zip)
           </label>
           <div
@@ -147,7 +144,7 @@ export default function PublishPage() {
             }}
             onDragLeave={() => setDragOver(false)}
             onDrop={handleDrop}
-            className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors cursor-pointer ${
+            className={`cursor-pointer rounded-xl border-2 border-dashed p-8 text-center transition-colors ${
               dragOver
                 ? 'border-brand-500 bg-brand-50 dark:bg-brand-500/10'
                 : file
@@ -169,9 +166,7 @@ export default function PublishPage() {
               <div className="flex items-center justify-center gap-3">
                 <Package className="h-8 w-8 text-green-600" />
                 <div className="text-left">
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">
-                    {file.name}
-                  </p>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">{file.name}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
                     {(file.size / 1024 / 1024).toFixed(2)} MB
                   </p>
@@ -179,11 +174,11 @@ export default function PublishPage() {
               </div>
             ) : (
               <>
-                <Upload className="h-10 w-10 text-gray-400 mx-auto mb-3" />
+                <Upload className="mx-auto mb-3 h-10 w-10 text-gray-400" />
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Drag and drop your extension .zip here, or click to browse
                 </p>
-                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
                   Maximum file size: 50MB
                 </p>
               </>
@@ -192,85 +187,77 @@ export default function PublishPage() {
         </div>
 
         {/* Basic fields */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Name (slug)
             </label>
             <input
               {...register('name')}
               placeholder="my-extension"
-              className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-900 dark:text-white"
+              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
             />
-            {errors.name && (
-              <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>
-            )}
+            {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Display Name
             </label>
             <input
               {...register('displayName')}
               placeholder="My Extension"
-              className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-900 dark:text-white"
+              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
             />
             {errors.displayName && (
-              <p className="text-xs text-red-500 mt-1">
-                {errors.displayName.message}
-              </p>
+              <p className="mt-1 text-xs text-red-500">{errors.displayName.message}</p>
             )}
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
             Description
           </label>
           <textarea
             {...register('description')}
             rows={3}
             placeholder="A brief description of your extension..."
-            className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-900 dark:text-white resize-none [&::placeholder]:dark:text-gray-500"
+            className="w-full resize-none rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white [&::placeholder]:dark:text-gray-500"
           />
           {errors.description && (
-            <p className="text-xs text-red-500 mt-1">
-              {errors.description.message}
-            </p>
+            <p className="mt-1 text-xs text-red-500">{errors.description.message}</p>
           )}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Version
             </label>
             <input
               {...register('version')}
               placeholder="1.0.0"
-              className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-900 dark:text-white"
+              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
             />
             {errors.version && (
-              <p className="text-xs text-red-500 mt-1">
-                {errors.version.message}
-              </p>
+              <p className="mt-1 text-xs text-red-500">{errors.version.message}</p>
             )}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               License
             </label>
             <input
               {...register('licenseType')}
               placeholder="MIT"
-              className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-900 dark:text-white"
+              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
             />
           </div>
         </div>
 
         {/* Categories */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
             Categories (up to 3)
           </label>
           <div className="flex flex-wrap gap-2">
@@ -281,7 +268,7 @@ export default function PublishPage() {
                   key={cat}
                   type="button"
                   onClick={() => toggleCategory(cat)}
-                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                  className={`rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
                     isSelected
                       ? 'bg-brand-600 text-white'
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700'
@@ -293,19 +280,17 @@ export default function PublishPage() {
             })}
           </div>
           {errors.categories && (
-            <p className="text-xs text-red-500 mt-1">
-              {errors.categories.message}
-            </p>
+            <p className="mt-1 text-xs text-red-500">{errors.categories.message}</p>
           )}
         </div>
 
         {/* Pricing */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
             Pricing
           </label>
           <div className="flex gap-4">
-            <label className="flex items-center gap-2 cursor-pointer">
+            <label className="flex cursor-pointer items-center gap-2">
               <input
                 type="radio"
                 value="FREE"
@@ -314,7 +299,7 @@ export default function PublishPage() {
               />
               <span className="text-sm text-gray-700 dark:text-gray-300">Free</span>
             </label>
-            <label className="flex items-center gap-2 cursor-pointer">
+            <label className="flex cursor-pointer items-center gap-2">
               <input
                 type="radio"
                 value="PAID"
@@ -327,54 +312,49 @@ export default function PublishPage() {
 
           {pricingType === 'PAID' && (
             <div className="mt-3">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                 Price (in cents, e.g., 499 = $4.99)
               </label>
               <input
                 type="number"
                 {...register('price', { valueAsNumber: true })}
                 placeholder="499"
-                className="w-48 px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-900 dark:text-white"
+                className="w-48 rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
               />
-              {errors.price && (
-                <p className="text-xs text-red-500 mt-1">
-                  {errors.price.message}
-                </p>
-              )}
-              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                You will need to set up Stripe Connect payouts in your dashboard
-                to receive funds.
+              {errors.price && <p className="mt-1 text-xs text-red-500">{errors.price.message}</p>}
+              <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+                You will need to set up Stripe Connect payouts in your dashboard to receive funds.
               </p>
             </div>
           )}
         </div>
 
         {/* Optional URLs */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Repository URL (optional)
             </label>
             <input
               {...register('repositoryUrl')}
               placeholder="https://github.com/..."
-              className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-900 dark:text-white"
+              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Homepage URL (optional)
             </label>
             <input
               {...register('homepageUrl')}
               placeholder="https://..."
-              className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:bg-gray-900 dark:text-white"
+              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
             />
           </div>
         </div>
 
         {error && (
-          <div className="flex items-center gap-2 p-3 bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400 rounded-lg text-sm">
+          <div className="flex items-center gap-2 rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-400">
             <AlertCircle className="h-4 w-4 shrink-0" />
             {error}
           </div>

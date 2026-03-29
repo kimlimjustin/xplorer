@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
   } catch {
     return NextResponse.json(
       { error: 'Admin access required' },
-      { status: 403, headers: corsHeaders(request) }
+      { status: 403, headers: corsHeaders(request) },
     );
   }
 
@@ -68,13 +68,13 @@ export async function GET(request: NextRequest) {
           totalPages: Math.ceil(total / limit),
         },
       },
-      { headers: corsHeaders(request) }
+      { headers: corsHeaders(request) },
     );
   } catch (error) {
     console.error('GET /api/admin/extensions error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch extensions' },
-      { status: 500, headers: corsHeaders(request) }
+      { status: 500, headers: corsHeaders(request) },
     );
   }
 }
@@ -91,7 +91,7 @@ export async function PATCH(request: NextRequest) {
   } catch {
     return NextResponse.json(
       { error: 'Admin access required' },
-      { status: 403, headers: corsHeaders(request) }
+      { status: 403, headers: corsHeaders(request) },
     );
   }
 
@@ -102,7 +102,7 @@ export async function PATCH(request: NextRequest) {
     if (!extensionId) {
       return NextResponse.json(
         { error: 'extensionId is required' },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
@@ -110,7 +110,7 @@ export async function PATCH(request: NextRequest) {
     if (!parsed.success) {
       return NextResponse.json(
         { error: 'Validation failed', details: parsed.error.flatten() },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
@@ -122,7 +122,7 @@ export async function PATCH(request: NextRequest) {
     if (!extension) {
       return NextResponse.json(
         { error: 'Extension not found' },
-        { status: 404, headers: corsHeaders(request) }
+        { status: 404, headers: corsHeaders(request) },
       );
     }
 
@@ -158,7 +158,7 @@ export async function PATCH(request: NextRequest) {
     console.error('PATCH /api/admin/extensions error:', error);
     return NextResponse.json(
       { error: 'Failed to update extension' },
-      { status: 500, headers: corsHeaders(request) }
+      { status: 500, headers: corsHeaders(request) },
     );
   }
 }

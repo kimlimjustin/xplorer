@@ -10,16 +10,16 @@ Xplorer supports eight extension categories. This guide shows you how to build e
 
 ## Extension Categories
 
-| Category | API | Purpose |
-|---|---|---|
-| `theme` | `Theme.register()` | Custom color schemes |
-| `panel` | `Sidebar.register()` | Right sidebar panels with React UI |
-| `panel` | `SidebarTab.register()` | Left sidebar tabs (alongside Explorer/Search) |
-| `preview` | `Preview.register()` | Custom file preview renderers |
-| `command` | `Command.register()` | Commands with keyboard shortcuts |
-| `action` | `ContextMenu.register()` | Right-click context menu items |
-| `bottom-tab` | `BottomTab.register()` | Bottom panel tabs (alongside Terminal) |
-| `editor` | `Editor.register()` | Custom file editor handlers |
+| Category     | API                      | Purpose                                       |
+| ------------ | ------------------------ | --------------------------------------------- |
+| `theme`      | `Theme.register()`       | Custom color schemes                          |
+| `panel`      | `Sidebar.register()`     | Right sidebar panels with React UI            |
+| `panel`      | `SidebarTab.register()`  | Left sidebar tabs (alongside Explorer/Search) |
+| `preview`    | `Preview.register()`     | Custom file preview renderers                 |
+| `command`    | `Command.register()`     | Commands with keyboard shortcuts              |
+| `action`     | `ContextMenu.register()` | Right-click context menu items                |
+| `bottom-tab` | `BottomTab.register()`   | Bottom panel tabs (alongside Terminal)        |
+| `editor`     | `Editor.register()`      | Custom file editor handlers                   |
 
 ---
 
@@ -63,7 +63,7 @@ Theme.register({
   id: 'cyberpunk',
   name: 'Cyberpunk',
   background: 'linear-gradient(145deg, #0a0a0f, #130a18, #0a0a0f)',
-  colors: { bg: '#0a0a0f', surface: '#151520', /* ... */ },
+  colors: { bg: '#0a0a0f', surface: '#151520' /* ... */ },
   css: `
     .theme-cyberpunk ::selection { background-color: rgba(240, 225, 48, 0.3); }
     .theme-cyberpunk ::-webkit-scrollbar-thumb { background: linear-gradient(#f0e130, #00fff0); }
@@ -98,7 +98,7 @@ function BookmarksPanel() {
   const [bookmarks, setBookmarks] = useState<string[]>([]);
 
   useEffect(() => {
-    api.settings.get<string[]>('bookmarks', []).then(saved => {
+    api.settings.get<string[]>('bookmarks', []).then((saved) => {
       setBookmarks(saved ?? []);
     });
   }, []);
@@ -110,16 +110,24 @@ function BookmarksPanel() {
     await api.settings.set('bookmarks', updated);
   };
 
-  return React.createElement('div', { style: { padding: 12 } },
+  return React.createElement(
+    'div',
+    { style: { padding: 12 } },
     React.createElement('button', { onClick: addCurrent }, 'Bookmark Current'),
-    React.createElement('ul', null,
-      ...bookmarks.map(path =>
-        React.createElement('li', {
-          key: path,
-          onClick: () => api.navigation.navigateTo(path),
-          style: { cursor: 'pointer', fontSize: 12, padding: '4px 0' },
-        }, path)
-      )
+    React.createElement(
+      'ul',
+      null,
+      ...bookmarks.map((path) =>
+        React.createElement(
+          'li',
+          {
+            key: path,
+            onClick: () => api.navigation.navigateTo(path),
+            style: { cursor: 'pointer', fontSize: 12, padding: '4px 0' },
+          },
+          path,
+        ),
+      ),
     ),
   );
 }
@@ -128,7 +136,9 @@ Sidebar.register({
   id: 'bookmarks',
   title: 'Bookmarks',
   icon: 'star',
-  onActivate: (injectedApi) => { api = injectedApi; },
+  onActivate: (injectedApi) => {
+    api = injectedApi;
+  },
   render: () => React.createElement(BookmarksPanel),
 });
 ```
@@ -159,22 +169,30 @@ function CsvViewer({ filePath }: { filePath: string }) {
   const [rows, setRows] = useState<string[][]>([]);
 
   useEffect(() => {
-    api.files.readText(filePath).then(text => {
-      setRows(text.split('\n').map(line => line.split(',')));
+    api.files.readText(filePath).then((text) => {
+      setRows(text.split('\n').map((line) => line.split(',')));
     });
   }, [filePath]);
 
-  return React.createElement('table', { style: { fontSize: 12, width: '100%' } },
+  return React.createElement(
+    'table',
+    { style: { fontSize: 12, width: '100%' } },
     ...rows.map((row, i) =>
-      React.createElement('tr', { key: i },
+      React.createElement(
+        'tr',
+        { key: i },
         ...row.map((cell, j) =>
-          React.createElement(i === 0 ? 'th' : 'td', {
-            key: j,
-            style: { padding: '4px 8px', borderBottom: '1px solid var(--xp-border, #333)' },
-          }, cell)
-        )
-      )
-    )
+          React.createElement(
+            i === 0 ? 'th' : 'td',
+            {
+              key: j,
+              style: { padding: '4px 8px', borderBottom: '1px solid var(--xp-border, #333)' },
+            },
+            cell,
+          ),
+        ),
+      ),
+    ),
   );
 }
 
@@ -184,10 +202,12 @@ Preview.register({
   permissions: ['file:read'],
   canPreview: (file) => !file.is_dir && file.path.endsWith('.csv'),
   priority: 10,
-  onActivate: (injectedApi) => { api = injectedApi; },
+  onActivate: (injectedApi) => {
+    api = injectedApi;
+  },
   render: (props) => {
     const files = (props.selectedFiles || []) as Array<{ path: string; name: string }>;
-    const csvFile = files.find(f => f.path.endsWith('.csv'));
+    const csvFile = files.find((f) => f.path.endsWith('.csv'));
     if (!csvFile) return React.createElement('div', null, 'Select a CSV file');
     return React.createElement(CsvViewer, { filePath: csvFile.path });
   },
@@ -234,9 +254,27 @@ Command.register({
 You can call `Command.register()` multiple times in the same file:
 
 ```typescript
-Command.register({ id: 'json.format', title: 'Format JSON', action: async (api) => { /* ... */ } });
-Command.register({ id: 'json.minify', title: 'Minify JSON', action: async (api) => { /* ... */ } });
-Command.register({ id: 'json.validate', title: 'Validate JSON', action: async (api) => { /* ... */ } });
+Command.register({
+  id: 'json.format',
+  title: 'Format JSON',
+  action: async (api) => {
+    /* ... */
+  },
+});
+Command.register({
+  id: 'json.minify',
+  title: 'Minify JSON',
+  action: async (api) => {
+    /* ... */
+  },
+});
+Command.register({
+  id: 'json.validate',
+  title: 'Validate JSON',
+  action: async (api) => {
+    /* ... */
+  },
+});
 ```
 
 ---
@@ -258,7 +296,8 @@ ContextMenu.register({
     const data = await api.files.read(files[0].path);
     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
     const hex = Array.from(new Uint8Array(hashBuffer))
-      .map(b => b.toString(16).padStart(2, '0')).join('');
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('');
     api.ui.showMessage(`SHA-256: ${hex}`, 'info');
   },
 });
@@ -266,12 +305,12 @@ ContextMenu.register({
 
 ### `when` Conditions
 
-| Value | Files shown |
-|-------|-------------|
-| `'always'` | Always shown |
-| `'singleFileSelected'` | Exactly one file selected |
-| `'multipleFilesSelected'` | Two or more files selected |
-| `(files) => boolean` | Custom function receiving the selected files array |
+| Value                     | Files shown                                        |
+| ------------------------- | -------------------------------------------------- |
+| `'always'`                | Always shown                                       |
+| `'singleFileSelected'`    | Exactly one file selected                          |
+| `'multipleFilesSelected'` | Two or more files selected                         |
+| `(files) => boolean`      | Custom function receiving the selected files array |
 
 ---
 
@@ -298,7 +337,7 @@ function DriveBrowser({ tabData }: { tabData?: Record<string, any> }) {
   useEffect(() => {
     if (!accountId) return;
     setLoading(true);
-    api.gdrive.listFiles(accountId).then(items => {
+    api.gdrive.listFiles(accountId).then((items) => {
       setFiles(items);
       setLoading(false);
     });
@@ -306,9 +345,13 @@ function DriveBrowser({ tabData }: { tabData?: Record<string, any> }) {
 
   if (loading) return React.createElement(Spinner, { size: 24 });
 
-  return React.createElement('div', { style: { padding: 16 } },
-    ...files.map(f =>
-      React.createElement(Card, { key: f.id, title: f.name },
+  return React.createElement(
+    'div',
+    { style: { padding: 16 } },
+    ...files.map((f) =>
+      React.createElement(
+        Card,
+        { key: f.id, title: f.name },
         React.createElement('span', null, `${(f.size / 1024).toFixed(1)} KB`),
         React.createElement(Button, {
           label: 'Download',
@@ -319,7 +362,7 @@ function DriveBrowser({ tabData }: { tabData?: Record<string, any> }) {
             if (dest) await api.gdrive.downloadFile(accountId, f.id, dest);
           },
         }),
-      )
+      ),
     ),
   );
 }
@@ -329,7 +372,9 @@ SidebarTab.register({
   title: 'Google Drive',
   icon: 'cloud',
   permissions: ['gdrive:access'],
-  onActivate: (injectedApi) => { api = injectedApi; },
+  onActivate: (injectedApi) => {
+    api = injectedApi;
+  },
   render: (props) => React.createElement(DriveBrowser, { currentPath: props.currentPath }),
 });
 ```
@@ -372,18 +417,35 @@ function GitPanel({ currentPath }: { currentPath?: string }) {
     setStatus(st);
   };
 
-  useEffect(() => { refresh(); }, [currentPath]);
+  useEffect(() => {
+    refresh();
+  }, [currentPath]);
 
-  return React.createElement(Panel, { title: `Git: ${branch}` },
-    React.createElement(Button, { label: 'Refresh', variant: 'ghost', size: 'sm', onClick: refresh }),
-    React.createElement('ul', { style: { fontSize: 12, listStyle: 'none', padding: 0 } },
-      ...status.map(f =>
-        React.createElement('li', { key: f.path, style: { padding: '2px 0' } },
-          React.createElement('span', {
-            style: { color: f.status === 'modified' ? 'var(--xp-orange)' : 'var(--xp-green)' },
-          }, `[${f.status}] `),
+  return React.createElement(
+    Panel,
+    { title: `Git: ${branch}` },
+    React.createElement(Button, {
+      label: 'Refresh',
+      variant: 'ghost',
+      size: 'sm',
+      onClick: refresh,
+    }),
+    React.createElement(
+      'ul',
+      { style: { fontSize: 12, listStyle: 'none', padding: 0 } },
+      ...status.map((f) =>
+        React.createElement(
+          'li',
+          { key: f.path, style: { padding: '2px 0' } },
+          React.createElement(
+            'span',
+            {
+              style: { color: f.status === 'modified' ? 'var(--xp-orange)' : 'var(--xp-green)' },
+            },
+            `[${f.status}] `,
+          ),
           f.path,
-        )
+        ),
       ),
     ),
   );
@@ -394,7 +456,9 @@ BottomTab.register({
   title: 'Git',
   icon: 'git-branch',
   permissions: ['git:read'],
-  onActivate: (injectedApi) => { api = injectedApi; },
+  onActivate: (injectedApi) => {
+    api = injectedApi;
+  },
   render: (props) => React.createElement(GitPanel, { currentPath: props.currentPath }),
 });
 ```
@@ -427,7 +491,7 @@ function MarkdownEditor({ filePath }: { filePath: string }) {
   const [dirty, setDirty] = useState(false);
 
   useEffect(() => {
-    api.files.readText(filePath).then(text => setContent(text));
+    api.files.readText(filePath).then((text) => setContent(text));
   }, [filePath]);
 
   const save = async () => {
@@ -436,14 +500,25 @@ function MarkdownEditor({ filePath }: { filePath: string }) {
     api.ui.showMessage('File saved', 'info');
   };
 
-  return React.createElement(Panel, { title: `Editing: ${filePath.split('/').pop()}` },
+  return React.createElement(
+    Panel,
+    { title: `Editing: ${filePath.split('/').pop()}` },
     React.createElement('textarea', {
       value: content,
-      onChange: (e: any) => { setContent(e.target.value); setDirty(true); },
+      onChange: (e: any) => {
+        setContent(e.target.value);
+        setDirty(true);
+      },
       style: {
-        width: '100%', height: '80%', fontFamily: 'monospace', fontSize: 14,
-        background: 'var(--xp-surface)', color: 'var(--xp-text)',
-        border: '1px solid var(--xp-border)', padding: 12, resize: 'none',
+        width: '100%',
+        height: '80%',
+        fontFamily: 'monospace',
+        fontSize: 14,
+        background: 'var(--xp-surface)',
+        color: 'var(--xp-text)',
+        border: '1px solid var(--xp-border)',
+        padding: 12,
+        resize: 'none',
       },
     }),
     React.createElement(Button, {
@@ -462,7 +537,9 @@ Editor.register({
   permissions: ['file:read', 'file:write'],
   canEdit: (file) => !file.is_dir && /\.(md|mdx|markdown)$/.test(file.path),
   priority: 10,
-  onActivate: (injectedApi) => { api = injectedApi; },
+  onActivate: (injectedApi) => {
+    api = injectedApi;
+  },
   render: (props) => React.createElement(MarkdownEditor, { filePath: props.filePath }),
 });
 ```
@@ -486,9 +563,7 @@ function StatusBar() {
   const path = useCurrentPath();
   const files = useSelectedFiles();
 
-  return React.createElement('div', null,
-    `${path} — ${files.length} selected`
-  );
+  return React.createElement('div', null, `${path} — ${files.length} selected`);
 }
 ```
 
@@ -504,8 +579,12 @@ The SDK provides pre-built components that match the active theme:
 import { Button, Input, Card, Spinner, Panel } from '@xplorer/extension-sdk';
 
 function MyPanel() {
-  return React.createElement(Panel, { title: 'My Tool' },
-    React.createElement(Card, { title: 'Search' },
+  return React.createElement(
+    Panel,
+    { title: 'My Tool' },
+    React.createElement(
+      Card,
+      { title: 'Search' },
       React.createElement(Input, { placeholder: 'Search files...', onChange: handleSearch }),
       React.createElement(Button, { label: 'Go', variant: 'primary', onClick: doSearch }),
     ),
@@ -539,14 +618,23 @@ For complex extensions that need full lifecycle control, you can use the base cl
 import { Extension, PanelExtension, registerExtension } from '@xplorer/extension-sdk';
 
 class MyExtension extends Extension {
-  async activate() { /* ... */ }
-  async deactivate() { /* ... */ }
+  async activate() {
+    /* ... */
+  }
+  async deactivate() {
+    /* ... */
+  }
 }
 
-registerExtension(new MyExtension({
-  id: 'my-ext', name: 'My Extension', version: '1.0.0',
-  author: 'You', category: 'tool',
-}));
+registerExtension(
+  new MyExtension({
+    id: 'my-ext',
+    name: 'My Extension',
+    version: '1.0.0',
+    author: 'You',
+    category: 'tool',
+  }),
+);
 ```
 
 Or use the factory function:

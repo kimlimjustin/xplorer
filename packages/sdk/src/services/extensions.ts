@@ -1,15 +1,13 @@
 import { transport } from '../transport';
-import type {
-  ExtensionPackageInfo,
-  ExtensionManifestInfo,
-  ShortcutKey,
-} from '../types';
+import type { ExtensionPackageInfo, ExtensionManifestInfo, ShortcutKey } from '../types';
 
 export const getInstalledExtensions = async (): Promise<ExtensionPackageInfo[]> => {
   return await transport('get_installed_extensions');
 };
 
-export const installExtensionFromPath = async (extensionPath: string): Promise<ExtensionPackageInfo> => {
+export const installExtensionFromPath = async (
+  extensionPath: string,
+): Promise<ExtensionPackageInfo> => {
   return await transport('install_extension_from_path', { extensionPath });
 };
 
@@ -33,7 +31,9 @@ export const getExtensionPermissions = async (extensionId: string): Promise<stri
   return await transport('get_extension_permissions', { extensionId });
 };
 
-export const validateExtensionPath = async (extensionPath: string): Promise<ExtensionManifestInfo> => {
+export const validateExtensionPath = async (
+  extensionPath: string,
+): Promise<ExtensionManifestInfo> => {
   return await transport('validate_extension_path', { extensionPath });
 };
 

@@ -20,14 +20,15 @@ Xplorer includes a powerful search engine that tokenizes file contents and build
 
 Xplorer can parse natural language queries and extract structured filters:
 
-| Query | Interpretation |
-|-------|---------------|
+| Query                          | Interpretation                                        |
+| ------------------------------ | ----------------------------------------------------- |
 | "large videos from last month" | Filter: size > 100MB, type: video, date: last 30 days |
-| "python files in documents" | Filter: extension: .py, path contains: documents |
-| "photos from 2024" | Filter: type: image, date: year 2024 |
-| "small text files" | Filter: size < 1MB, type: text |
+| "python files in documents"    | Filter: extension: .py, path contains: documents      |
+| "photos from 2024"             | Filter: type: image, date: year 2024                  |
+| "small text files"             | Filter: size < 1MB, type: text                        |
 
 The NLP parser (`enhanced_natural_language_search`) supports:
+
 - **Size filters**: "large", "small", "tiny", "huge"
 - **Type filters**: "images", "videos", "documents", "code", "audio"
 - **Date filters**: "today", "this week", "last month", "from 2024"
@@ -39,13 +40,17 @@ The NLP parser (`enhanced_natural_language_search`) supports:
 When Ollama is available, Xplorer can generate AI descriptions for files that don't contain searchable text:
 
 ### Image Indexing
+
 Uses vision models (LLaVA, bakllava, moondream) to:
+
 - Generate natural language descriptions of images
 - Extract tags and categories
 - These descriptions become searchable tokens
 
 ### Semantic Search
+
 Uses embedding models (nomic-embed-text, all-minilm) to:
+
 - Create vector embeddings of file content
 - Find semantically similar files (not just keyword matches)
 - "Find files related to machine learning" finds relevant files even without exact keyword matches
@@ -54,16 +59,17 @@ Uses embedding models (nomic-embed-text, all-minilm) to:
 
 Configure via the Settings page or the `TokenizerSettings` API:
 
-| Setting | Default | Description |
-|---------|---------|-------------|
-| `enabled` | `true` | Enable/disable the tokenizer |
-| `max_file_size` | 10 MB | Skip files larger than this |
-| `blacklisted_extensions` | exe, dll, bin, etc. | Skip these file types |
-| `indexed_paths` | [] | Directories to index |
+| Setting                  | Default             | Description                  |
+| ------------------------ | ------------------- | ---------------------------- |
+| `enabled`                | `true`              | Enable/disable the tokenizer |
+| `max_file_size`          | 10 MB               | Skip files larger than this  |
+| `blacklisted_extensions` | exe, dll, bin, etc. | Skip these file types        |
+| `indexed_paths`          | []                  | Directories to index         |
 
 ## Index Persistence
 
 The token index is saved to `token_index.json` in the app data directory. On startup:
+
 1. Load the existing index from disk
 2. When `rebuild_index` is called, reuse cached tokens for unchanged files
 3. Only re-extract content for new or modified files

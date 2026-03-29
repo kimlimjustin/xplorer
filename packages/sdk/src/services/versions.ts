@@ -58,6 +58,9 @@ export const deleteAllVersions = async (filePath: string): Promise<number> => {
   return await transport('delete_all_versions', { filePath });
 };
 
-export const readVersionContent = async (filePath: string, versionNumber: number): Promise<string> => {
+export const readVersionContent = async (
+  filePath: string,
+  versionNumber: number,
+): Promise<string> => {
   return await transport('read_version_content', { filePath, versionNumber });
 };

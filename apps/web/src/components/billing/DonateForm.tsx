@@ -14,9 +14,7 @@ export function DonateForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const amountCents = isCustom
-    ? Math.round(parseFloat(customAmount || '0') * 100)
-    : selectedAmount;
+  const amountCents = isCustom ? Math.round(parseFloat(customAmount || '0') * 100) : selectedAmount;
 
   const handleDonate = async () => {
     if (amountCents < 100) {
@@ -49,7 +47,7 @@ export function DonateForm() {
   };
 
   return (
-    <div className="max-w-md mx-auto">
+    <div className="mx-auto max-w-md">
       <div className="space-y-4">
         {/* Preset amounts */}
         <div className="grid grid-cols-4 gap-3">
@@ -61,10 +59,10 @@ export function DonateForm() {
                 setIsCustom(false);
               }}
               className={cn(
-                'py-3 rounded-lg text-sm font-semibold transition-colors border',
+                'rounded-lg border py-3 text-sm font-semibold transition-colors',
                 !isCustom && selectedAmount === amount
-                  ? 'bg-brand-600 text-white border-brand-600'
-                  : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700 dark:hover:border-gray-600',
+                  ? 'border-brand-600 bg-brand-600 text-white'
+                  : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-gray-600',
               )}
             >
               ${(amount / 100).toFixed(0)}
@@ -77,17 +75,17 @@ export function DonateForm() {
           <button
             onClick={() => setIsCustom(true)}
             className={cn(
-              'w-full py-3 rounded-lg text-sm font-semibold transition-colors border mb-2',
+              'mb-2 w-full rounded-lg border py-3 text-sm font-semibold transition-colors',
               isCustom
-                ? 'bg-brand-600 text-white border-brand-600'
-                : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700 dark:hover:border-gray-600',
+                ? 'border-brand-600 bg-brand-600 text-white'
+                : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-gray-600',
             )}
           >
             Custom Amount
           </button>
           {isCustom && (
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 font-medium">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 font-medium text-gray-400 dark:text-gray-500">
                 $
               </span>
               <input
@@ -97,14 +95,14 @@ export function DonateForm() {
                 value={customAmount}
                 onChange={(e) => setCustomAmount(e.target.value)}
                 placeholder="10.00"
-                className="w-full pl-8 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+                className="w-full rounded-lg border border-gray-200 py-2.5 pl-8 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
               />
             </div>
           )}
         </div>
 
         {error && (
-          <div className="flex items-center gap-2 p-3 bg-red-50 text-red-700 dark:bg-red-500/10 dark:text-red-400 rounded-lg text-sm">
+          <div className="flex items-center gap-2 rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-400">
             <AlertCircle className="h-4 w-4 shrink-0" />
             {error}
           </div>

@@ -45,7 +45,12 @@ export type { AgentProgress as AgentProgressType };
 export class AIService {
   static async getAvailableModels(): Promise<AIModel[]> {
     return [
-      { id: 'claude-sonnet-4-6', name: 'Claude Sonnet 4.6', provider: 'anthropic', available: true },
+      {
+        id: 'claude-sonnet-4-6',
+        name: 'Claude Sonnet 4.6',
+        provider: 'anthropic',
+        available: true,
+      },
       { id: 'llama3.2', name: 'Llama 3.2', provider: 'ollama', available: true },
     ];
   }
@@ -54,7 +59,11 @@ export class AIService {
     return true;
   }
 
-  static async chatWithAI(_model: string, _messages: ChatMessage[], _fileContext?: FileContext): Promise<string> {
+  static async chatWithAI(
+    _model: string,
+    _messages: ChatMessage[],
+    _fileContext?: FileContext,
+  ): Promise<string> {
     return 'This is a demo response.';
   }
 
@@ -75,14 +84,37 @@ export class AIService {
     return { response: 'Demo agent analysis.', actions: [] };
   }
 
-  static async requestWritePermission(_filePath: string, _content: string, _reason: string): Promise<boolean> {
+  static async requestWritePermission(
+    _filePath: string,
+    _content: string,
+    _reason: string,
+  ): Promise<boolean> {
     return false;
   }
 
   static async respondToWriteRequest(_requestId: string, _granted: boolean): Promise<void> {}
 
-  static async analyzeContextItem(_filePath: string, _maxRecursion?: number): Promise<{ path: string; name: string; is_dir: boolean; size: number; modified: number; content?: string; children?: unknown; error?: string }> {
-    return { path: _filePath, name: 'demo', is_dir: false, size: 0, modified: Date.now(), content: '' };
+  static async analyzeContextItem(
+    _filePath: string,
+    _maxRecursion?: number,
+  ): Promise<{
+    path: string;
+    name: string;
+    is_dir: boolean;
+    size: number;
+    modified: number;
+    content?: string;
+    children?: unknown;
+    error?: string;
+  }> {
+    return {
+      path: _filePath,
+      name: 'demo',
+      is_dir: false,
+      size: 0,
+      modified: Date.now(),
+      content: '',
+    };
   }
 
   static buildAgentContext(_tree: unknown): string {

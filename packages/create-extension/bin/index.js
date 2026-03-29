@@ -37,8 +37,8 @@ program
               return 'Extension name must contain only lowercase letters, numbers, and dashes';
             }
             return true;
-          }
-        }
+          },
+        },
       ]);
       name = answers.extensionName;
     }
@@ -49,21 +49,22 @@ program
         type: 'input',
         name: 'displayName',
         message: 'Display name:',
-        default: name.split('-').map(word => 
-          word.charAt(0).toUpperCase() + word.slice(1)
-        ).join(' ')
+        default: name
+          .split('-')
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' '),
       },
       {
         type: 'input',
         name: 'description',
         message: 'Description:',
-        default: `A Xplorer extension for ${name}`
+        default: `A Xplorer extension for ${name}`,
       },
       {
         type: 'input',
         name: 'author',
         message: 'Author:',
-        default: 'Your Name'
+        default: 'Your Name',
       },
       {
         type: 'list',
@@ -73,20 +74,20 @@ program
           { name: 'Basic Extension - Simple file operations', value: 'basic' },
           { name: 'UI Extension - Custom panels and components', value: 'ui' },
           { name: 'File Processor - Process and transform files', value: 'processor' },
-          { name: 'Theme Extension - Custom themes and styling', value: 'theme' }
+          { name: 'Theme Extension - Custom themes and styling', value: 'theme' },
         ],
-        default: options.template
+        default: options.template,
       },
       {
         type: 'confirm',
         name: 'installDeps',
         message: 'Install dependencies?',
-        default: !options.skipInstall
-      }
+        default: !options.skipInstall,
+      },
     ]);
 
     const targetDir = path.join(process.cwd(), name);
-    
+
     // Check if directory already exists
     if (await fs.pathExists(targetDir)) {
       const { overwrite } = await inquirer.prompt([
@@ -94,15 +95,15 @@ program
           type: 'confirm',
           name: 'overwrite',
           message: `Directory ${name} already exists. Overwrite?`,
-          default: false
-        }
+          default: false,
+        },
       ]);
-      
+
       if (!overwrite) {
         console.log(chalk.yellow('🚫 Extension creation cancelled'));
         process.exit(0);
       }
-      
+
       await fs.remove(targetDir);
     }
 
@@ -110,23 +111,19 @@ program
 
     try {
       // Create extension from template
-      await createExtensionFromTemplate(
-        extensionDetails.template,
-        targetDir,
-        {
-          name,
-          displayName: extensionDetails.displayName,
-          description: extensionDetails.description,
-          author: extensionDetails.author
-        }
-      );
+      await createExtensionFromTemplate(extensionDetails.template, targetDir, {
+        name,
+        displayName: extensionDetails.displayName,
+        description: extensionDetails.description,
+        author: extensionDetails.author,
+      });
 
       spinner.succeed('Extension created successfully!');
 
       if (extensionDetails.installDeps) {
         const installSpinner = ora('Installing dependencies...').start();
         const { execSync } = await import('child_process');
-        
+
         try {
           process.chdir(targetDir);
           execSync('npm install', { stdio: 'pipe' });
@@ -148,7 +145,6 @@ program
       console.log('  npm run dev');
       console.log();
       console.log(chalk.gray('For more information, visit: https://docs.xplorer.com/extensions'));
-
     } catch (error) {
       spinner.fail('Failed to create extension');
       console.error(chalk.red(error.message));
@@ -160,7 +156,7 @@ async function createExtensionFromTemplate(template, targetDir, variables) {
   const templatesDir = path.join(__dirname, '..', 'templates');
   const templateDir = path.join(templatesDir, template);
 
-  if (!await fs.pathExists(templateDir)) {
+  if (!(await fs.pathExists(templateDir))) {
     throw new Error(`Template '${template}' not found`);
   }
 
@@ -183,7 +179,7 @@ async function processTemplateFiles(dir, variables) {
       // Process template file
       const content = await fs.readFile(filePath, 'utf-8');
       const processedContent = processTemplate(content, variables);
-      
+
       // Write processed content to new file (remove .template extension)
       const newFilePath = filePath.replace('.template', '');
       await fs.writeFile(newFilePath, processedContent);

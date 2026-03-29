@@ -67,42 +67,42 @@ const PLANS: Plan[] = [
 
 export function PricingCards() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+    <div className="mx-auto grid max-w-4xl grid-cols-1 gap-8 md:grid-cols-2">
       {PLANS.map((plan) => (
         <div
           key={plan.name}
           className={cn(
-            'rounded-2xl border p-8 flex flex-col',
+            'flex flex-col rounded-2xl border p-8',
             plan.highlight
               ? 'border-brand-300 shadow-lg shadow-brand-100 ring-1 ring-brand-200 dark:border-brand-500 dark:shadow-brand-900/20 dark:ring-brand-500/30'
               : 'border-gray-200 dark:border-gray-800',
           )}
         >
-          <div className="flex items-center gap-3 mb-2">
+          <div className="mb-2 flex items-center gap-3">
             <h3 className="text-xl font-bold text-gray-900 dark:text-white">{plan.name}</h3>
           </div>
 
-          <div className="flex items-baseline gap-1 mb-2">
-            <span className="text-4xl font-bold text-gray-900 dark:text-white">
-              {plan.price}
-            </span>
+          <div className="mb-2 flex items-baseline gap-1">
+            <span className="text-4xl font-bold text-gray-900 dark:text-white">{plan.price}</span>
             <span className="text-gray-500 dark:text-gray-400">{plan.period}</span>
           </div>
 
-          <p className="text-sm text-gray-500 mb-6 dark:text-gray-400">{plan.description}</p>
+          <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">{plan.description}</p>
 
-          <ul className="space-y-3 mb-8 flex-1">
+          <ul className="mb-8 flex-1 space-y-3">
             {plan.features.map((feat) => (
               <li key={feat.text} className="flex items-start gap-2.5">
                 {feat.included ? (
-                  <Check className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
+                  <Check className="mt-0.5 h-5 w-5 shrink-0 text-green-500" />
                 ) : (
-                  <X className="h-5 w-5 text-gray-300 shrink-0 mt-0.5 dark:text-gray-600" />
+                  <X className="mt-0.5 h-5 w-5 shrink-0 text-gray-300 dark:text-gray-600" />
                 )}
                 <span
                   className={cn(
                     'text-sm',
-                    feat.included ? 'text-gray-700 dark:text-gray-300' : 'text-gray-400 dark:text-gray-600',
+                    feat.included
+                      ? 'text-gray-700 dark:text-gray-300'
+                      : 'text-gray-400 dark:text-gray-600',
                   )}
                 >
                   {feat.text}
@@ -113,22 +113,14 @@ export function PricingCards() {
 
           {plan.external ? (
             <a href={plan.href} target="_blank" rel="noopener noreferrer">
-              <Button
-                variant="primary"
-                className="w-full"
-                size="lg"
-              >
+              <Button variant="primary" className="w-full" size="lg">
                 <Heart className="h-4 w-4" />
                 {plan.cta}
               </Button>
             </a>
           ) : (
             <Link href={plan.href}>
-              <Button
-                variant="secondary"
-                className="w-full"
-                size="lg"
-              >
+              <Button variant="secondary" className="w-full" size="lg">
                 {plan.cta}
               </Button>
             </Link>

@@ -35,61 +35,61 @@ fn main() {
 
 The largest module, handling all filesystem interactions:
 
-| File | Responsibility |
-|------|---------------|
-| `types.rs` | Shared types (`FileEntry`, `FileProperties`, `OperationProgress`) |
-| `directory_ops.rs` | `read_directory`, `create_directory`, `get_files_in_directory` |
-| `file_ops.rs` | `copy_with_progress`, `move_with_progress`, `rename`, `delete_files` |
-| `trash_ops.rs` | `get_trash_items`, `restore_from_trash`, `empty_trash` |
-| `metadata_ops.rs` | `get_file_metadata`, file size/date retrieval |
-| `properties_ops.rs` | `get_detailed_file_properties` (MIME type, dimensions, hashes) |
-| `compression_ops.rs` | ZIP/TAR/GZ/BZ2/XZ compress and extract |
-| `accelerated_ops.rs` | SIMD-optimized and memory-mapped file copy |
-| `comparison_ops.rs` | Text and binary file comparison/diff |
-| `system_ops.rs` | Drive listing, system information |
-| `progress.rs` | Operation progress tracking with event emission |
-| `agent_ops.rs` | AI agent file read/write operations |
-| `file_associations_ops.rs` | OS file associations and default apps |
-| `undo_redo_ops.rs` | Undo/redo operation recording and replay |
-| `analytics_ops.rs` | Storage analytics and usage statistics |
+| File                       | Responsibility                                                       |
+| -------------------------- | -------------------------------------------------------------------- |
+| `types.rs`                 | Shared types (`FileEntry`, `FileProperties`, `OperationProgress`)    |
+| `directory_ops.rs`         | `read_directory`, `create_directory`, `get_files_in_directory`       |
+| `file_ops.rs`              | `copy_with_progress`, `move_with_progress`, `rename`, `delete_files` |
+| `trash_ops.rs`             | `get_trash_items`, `restore_from_trash`, `empty_trash`               |
+| `metadata_ops.rs`          | `get_file_metadata`, file size/date retrieval                        |
+| `properties_ops.rs`        | `get_detailed_file_properties` (MIME type, dimensions, hashes)       |
+| `compression_ops.rs`       | ZIP/TAR/GZ/BZ2/XZ compress and extract                               |
+| `accelerated_ops.rs`       | SIMD-optimized and memory-mapped file copy                           |
+| `comparison_ops.rs`        | Text and binary file comparison/diff                                 |
+| `system_ops.rs`            | Drive listing, system information                                    |
+| `progress.rs`              | Operation progress tracking with event emission                      |
+| `agent_ops.rs`             | AI agent file read/write operations                                  |
+| `file_associations_ops.rs` | OS file associations and default apps                                |
+| `undo_redo_ops.rs`         | Undo/redo operation recording and replay                             |
+| `analytics_ops.rs`         | Storage analytics and usage statistics                               |
 
 ### AI Integration
 
-| File | Responsibility |
-|------|---------------|
-| `ai.rs` | Ollama chat API, file analysis, directory analysis |
-| `agent/mod.rs` | Claude AI agent entry point |
-| `agent/tools.rs` | Agent tool definitions (file read, write, search, etc.) |
-| `agent/tool_executor.rs` | Tool invocation and result handling |
-| `agent/streaming.rs` | Streaming response handling for real-time output |
-| `agent/planner.rs` | Multi-step task planning and decomposition |
-| `agent/memory.rs` | Conversation memory and context management |
-| `agent/security.rs` | Path traversal guards and system directory blocking |
-| `file_organizer.rs` | AI-powered file categorization and organization suggestions |
+| File                     | Responsibility                                              |
+| ------------------------ | ----------------------------------------------------------- |
+| `ai.rs`                  | Ollama chat API, file analysis, directory analysis          |
+| `agent/mod.rs`           | Claude AI agent entry point                                 |
+| `agent/tools.rs`         | Agent tool definitions (file read, write, search, etc.)     |
+| `agent/tool_executor.rs` | Tool invocation and result handling                         |
+| `agent/streaming.rs`     | Streaming response handling for real-time output            |
+| `agent/planner.rs`       | Multi-step task planning and decomposition                  |
+| `agent/memory.rs`        | Conversation memory and context management                  |
+| `agent/security.rs`      | Path traversal guards and system directory blocking         |
+| `file_organizer.rs`      | AI-powered file categorization and organization suggestions |
 
 ### Search & Indexing (`search/`)
 
 The search engine is a full module with multiple specialized sub-components:
 
-| File | Responsibility |
-|------|---------------|
-| `mod.rs` | Search module entry point, public API |
-| `index.rs` | Inverted index construction and management |
-| `query_parser.rs` | Query parsing, structured queries with filters (file_type, size, date, extension) |
-| `fuzzy.rs` | Fuzzy matching for typo-tolerant search |
-| `stemmer.rs` | Word stemming for root-form matching |
-| `synonyms.rs` | Synonym expansion for broader recall |
-| `hybrid.rs` | Hybrid keyword + semantic search combining BM25F and embeddings |
-| `bm25f.rs` | BM25F field-weighted scoring algorithm |
-| `fst_index.rs` | FST-based fast prefix/substring lookup |
-| `segment.rs` | Index segmentation for large datasets |
-| `bitmap_filters.rs` | Bitmap-based metadata filtering (type, size, date) |
-| `context_ranker.rs` | Context-aware result ranking |
-| `reranker.rs` | Result reranking with multiple signals |
-| `ai_pipeline.rs` | AI-augmented search (vision descriptions, embeddings) |
-| `ollama_client.rs` | Ollama embedding API client for semantic search |
-| `watcher.rs` | File system watcher for automatic index updates |
-| `compat.rs` | Backward compatibility with legacy tokenizer API |
+| File                | Responsibility                                                                    |
+| ------------------- | --------------------------------------------------------------------------------- |
+| `mod.rs`            | Search module entry point, public API                                             |
+| `index.rs`          | Inverted index construction and management                                        |
+| `query_parser.rs`   | Query parsing, structured queries with filters (file_type, size, date, extension) |
+| `fuzzy.rs`          | Fuzzy matching for typo-tolerant search                                           |
+| `stemmer.rs`        | Word stemming for root-form matching                                              |
+| `synonyms.rs`       | Synonym expansion for broader recall                                              |
+| `hybrid.rs`         | Hybrid keyword + semantic search combining BM25F and embeddings                   |
+| `bm25f.rs`          | BM25F field-weighted scoring algorithm                                            |
+| `fst_index.rs`      | FST-based fast prefix/substring lookup                                            |
+| `segment.rs`        | Index segmentation for large datasets                                             |
+| `bitmap_filters.rs` | Bitmap-based metadata filtering (type, size, date)                                |
+| `context_ranker.rs` | Context-aware result ranking                                                      |
+| `reranker.rs`       | Result reranking with multiple signals                                            |
+| `ai_pipeline.rs`    | AI-augmented search (vision descriptions, embeddings)                             |
+| `ollama_client.rs`  | Ollama embedding API client for semantic search                                   |
+| `watcher.rs`        | File system watcher for automatic index updates                                   |
+| `compat.rs`         | Backward compatibility with legacy tokenizer API                                  |
 
 ```
 Search Pipeline:
@@ -106,6 +106,7 @@ Search Pipeline:
 ```
 
 Features:
+
 - **Incremental indexing** — Only re-indexes changed files (by timestamp + size)
 - **Document extraction** — Extracts text from PDF, DOCX, XLSX, PPTX (via `document_extractor.rs`)
 - **Natural language search** — Parses queries like "large videos from last month"
@@ -139,6 +140,7 @@ Uses the `ssh2` crate with a connection pool and session caching.
 Interfaces with git repositories using the `git2` crate for native libgit2 bindings:
 
 **`git_history.rs`** — History, blame, and branch operations:
+
 - `get_commit_history` — Full commit log with pagination
 - `get_file_history` — History of a specific file
 - `get_file_blame` — Line-by-line blame annotations
@@ -148,6 +150,7 @@ Interfaces with git repositories using the `git2` crate for native libgit2 bindi
 - `get_git_status` — Working tree status
 
 **`git_integration.rs`** — Remote operations:
+
 - `git_pull` — Pull from remote with merge
 - `git_push` — Push local commits to remote
 - `git_fetch` — Fetch from remote without merge
@@ -157,15 +160,15 @@ Interfaces with git repositories using the `git2` crate for native libgit2 bindi
 
 Persistent local data storage, split into focused sub-modules:
 
-| File | Responsibility |
-|------|---------------|
-| `mod.rs` | Storage module entry point and shared utilities |
-| `bookmarks.rs` | Bookmark/favorites management (`BookmarkEntry`, add/remove/update) |
-| `tags.rs` | File tagging system (`FileTag`, get/set/remove tags) |
-| `notes.rs` | File notes and annotations |
-| `metadata.rs` | Custom metadata storage per file |
-| `recent.rs` | Recent files and directories tracking |
-| `extensions_storage.rs` | Key-value storage for extension data persistence |
+| File                    | Responsibility                                                     |
+| ----------------------- | ------------------------------------------------------------------ |
+| `mod.rs`                | Storage module entry point and shared utilities                    |
+| `bookmarks.rs`          | Bookmark/favorites management (`BookmarkEntry`, add/remove/update) |
+| `tags.rs`               | File tagging system (`FileTag`, get/set/remove tags)               |
+| `notes.rs`              | File notes and annotations                                         |
+| `metadata.rs`           | Custom metadata storage per file                                   |
+| `recent.rs`             | Recent files and directories tracking                              |
+| `extensions_storage.rs` | Key-value storage for extension data persistence                   |
 
 ### Google Drive (`google_drive.rs` + `secure_credentials.rs`)
 
@@ -176,14 +179,14 @@ Google Drive cloud storage integration:
 
 ### Extension System (`extensions/`)
 
-| File | Responsibility |
-|------|---------------|
-| `types.rs` | `ExtensionManifest`, `Extension`, `ExtensionStatus` |
-| `manager.rs` | Install, activate, deactivate, uninstall extensions |
-| `permissions.rs` | Permission definitions and validation |
-| `commands.rs` | Tauri commands for extension management |
-| `signing.rs` | Extension code signing and signature verification |
-| `native_plugin.rs` | Native plugin loading and execution |
+| File               | Responsibility                                      |
+| ------------------ | --------------------------------------------------- |
+| `types.rs`         | `ExtensionManifest`, `Extension`, `ExtensionStatus` |
+| `manager.rs`       | Install, activate, deactivate, uninstall extensions |
+| `permissions.rs`   | Permission definitions and validation               |
+| `commands.rs`      | Tauri commands for extension management             |
+| `signing.rs`       | Extension code signing and signature verification   |
+| `native_plugin.rs` | Native plugin loading and execution                 |
 
 ### Extension Watcher (`extension_watcher.rs`)
 
@@ -191,9 +194,9 @@ Uses the `notify` crate for file system watching to enable hot-reload of extensi
 
 ### Keyboard Shortcuts (`shortcuts/`)
 
-| File | Responsibility |
-|------|---------------|
-| `types.rs` | `ShortcutProfile`, `Shortcut`, `ShortcutAction` |
+| File         | Responsibility                                      |
+| ------------ | --------------------------------------------------- |
+| `types.rs`   | `ShortcutProfile`, `Shortcut`, `ShortcutAction`     |
 | `manager.rs` | Profile management, conflict detection, persistence |
 
 ## Key Design Patterns

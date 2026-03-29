@@ -25,7 +25,9 @@ export const getFileMetaData = async (path: string): Promise<FileProperties> => 
   return await transport('get_file_meta_data', { path });
 };
 
-export const getDetailedFileProperties = async (filePath: string): Promise<DetailedFileProperties> => {
+export const getDetailedFileProperties = async (
+  filePath: string,
+): Promise<DetailedFileProperties> => {
   return await transport('get_detailed_file_properties', { filePath });
 };
 
@@ -123,11 +125,17 @@ export const acceleratedCopyFile = async (source: string, destination: string): 
   return await transport('accelerated_copy_file', { source, destination });
 };
 
-export const acceleratedCopyDirectory = async (source: string, destination: string): Promise<string> => {
+export const acceleratedCopyDirectory = async (
+  source: string,
+  destination: string,
+): Promise<string> => {
   return await transport('accelerated_copy_directory', { source, destination });
 };
 
-export const computeFileHash = async (path: string, algorithm: string = 'sha256'): Promise<string> => {
+export const computeFileHash = async (
+  path: string,
+  algorithm: string = 'sha256',
+): Promise<string> => {
   return await transport('compute_file_hash', { path, algorithm });
 };
 
@@ -143,7 +151,10 @@ export const getSystemApplications = async (): Promise<Application[]> => {
   return await transport('get_system_applications');
 };
 
-export const setDefaultApplication = async (fileExtension: string, appPath: string): Promise<void> => {
+export const setDefaultApplication = async (
+  fileExtension: string,
+  appPath: string,
+): Promise<void> => {
   return await transport('set_default_application', { fileExtension, appPath });
 };
 
@@ -224,11 +235,19 @@ export const createFromTemplate = async (
   return await transport('create_from_template', { directory, templateId, filename });
 };
 
-export const undoOperation = async (): Promise<{ success: boolean; message: string; operation_type: string }> => {
+export const undoOperation = async (): Promise<{
+  success: boolean;
+  message: string;
+  operation_type: string;
+}> => {
   return await transport('undo_operation');
 };
 
-export const redoOperation = async (): Promise<{ success: boolean; message: string; operation_type: string }> => {
+export const redoOperation = async (): Promise<{
+  success: boolean;
+  message: string;
+  operation_type: string;
+}> => {
   return await transport('redo_operation');
 };
 
@@ -248,7 +267,10 @@ export interface UndoRedoState {
   redo_description: string | null;
 }
 
-export const recordFileOperation = async (operation: FileOperationRecord, description: string): Promise<void> => {
+export const recordFileOperation = async (
+  operation: FileOperationRecord,
+  description: string,
+): Promise<void> => {
   return await transport('record_file_operation', { operation, description });
 };
 
@@ -284,7 +306,9 @@ export const calculateFolderSize = async (folderPath: string): Promise<FolderSiz
   return await transport('calculate_folder_size', { folderPath });
 };
 
-export const getCachedFolderSizes = async (folderPaths: string[]): Promise<Record<string, FolderSizeInfo>> => {
+export const getCachedFolderSizes = async (
+  folderPaths: string[],
+): Promise<Record<string, FolderSizeInfo>> => {
   return await transport('get_cached_folder_sizes', { folderPaths });
 };
 
@@ -294,7 +318,9 @@ export const clearFolderSizeCache = async (): Promise<void> => {
 
 export const getDirectorySizes = async (
   dirPath: string,
-): Promise<{ name: string; path: string; size: number; is_dir: boolean; children_count: number }[]> => {
+): Promise<
+  { name: string; path: string; size: number; is_dir: boolean; children_count: number }[]
+> => {
   return await transport('get_directory_sizes', { dirPath });
 };
 
@@ -305,10 +331,7 @@ export const checkConflicts = async (
   return await transport('check_conflicts', { sources, destinationDir });
 };
 
-export const getRenameDest = async (
-  destinationDir: string,
-  fileName: string,
-): Promise<string> => {
+export const getRenameDest = async (destinationDir: string, fileName: string): Promise<string> => {
   return await transport('get_rename_destination', { destinationDir, fileName });
 };
 

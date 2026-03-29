@@ -14,6 +14,11 @@
     "bin/",
     "src/"
   ],
-  "keywords": ["xplorer", "file-manager", "cli", "marketplace"],
+  "keywords": [
+    "xplorer",
+    "file-manager",
+    "cli",
+    "marketplace"
+  ],
   "license": "AGPL-3.0"
 }

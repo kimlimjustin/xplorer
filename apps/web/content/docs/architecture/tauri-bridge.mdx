@@ -37,7 +37,7 @@ All backend calls are centralized in `client/src/lib/tauri-api.ts`. This provide
 
 ```typescript
 // Frontend call
-const files: FileEntry[] = await TauriAPI.readDirectory("C:\\Users");
+const files: FileEntry[] = await TauriAPI.readDirectory('C:\\Users');
 
 // Which maps to:
 class TauriAPI {
@@ -75,7 +75,7 @@ const unlisten = await listenToEvent<IndexProgress>(
   'indexing-progress',
   ({ processed_files, total_files }) => {
     // Update indexing indicator
-  }
+  },
 );
 ```
 
@@ -101,14 +101,14 @@ All data crossing the bridge is serialized via `serde_json`:
 
 ### Type Mapping
 
-| Rust Type | TypeScript Type |
-|-----------|----------------|
-| `String` | `string` |
-| `u64` | `number` |
-| `bool` | `boolean` |
-| `Vec<T>` | `T[]` |
-| `Option<T>` | `T \| null` |
-| `HashMap<K, V>` | `Record<K, V>` |
+| Rust Type           | TypeScript Type               |
+| ------------------- | ----------------------------- |
+| `String`            | `string`                      |
+| `u64`               | `number`                      |
+| `bool`              | `boolean`                     |
+| `Vec<T>`            | `T[]`                         |
+| `Option<T>`         | `T \| null`                   |
+| `HashMap<K, V>`     | `Record<K, V>`                |
 | `Result<T, String>` | `Promise<T>` (rejects on Err) |
 
 ## Security

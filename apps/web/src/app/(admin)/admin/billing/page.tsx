@@ -4,13 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import {
-  ArrowLeft,
-  DollarSign,
-  ShoppingCart,
-  Heart,
-  TrendingUp,
-} from 'lucide-react';
+import { ArrowLeft, DollarSign, ShoppingCart, Heart, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Spinner } from '@/components/ui/Spinner';
 import { formatPrice, formatDate } from '@/lib/utils';
@@ -73,20 +67,24 @@ export default function AdminBillingPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[50vh]">
+      <div className="flex min-h-[50vh] items-center justify-center">
         <Spinner className="h-8 w-8 text-brand-500" />
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      {error && <div className="rounded-lg bg-red-50 p-4 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-400">{error}</div>}
+    <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
+      {error && (
+        <div className="rounded-lg bg-red-50 p-4 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-400">
+          {error}
+        </div>
+      )}
 
       <div>
         <Link
           href="/admin"
-          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 mb-4"
+          className="mb-4 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Admin
@@ -99,7 +97,7 @@ export default function AdminBillingPage() {
 
       {/* Stats cards */}
       {stats && (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           <RevenueStatCard
             icon={DollarSign}
             label="Total Revenue"
@@ -128,11 +126,11 @@ export default function AdminBillingPage() {
       )}
 
       {/* Monthly chart placeholder */}
-      <div className="border border-gray-200 dark:border-gray-800 rounded-xl p-6">
-        <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">
+      <div className="rounded-xl border border-gray-200 p-6 dark:border-gray-800">
+        <h2 className="mb-4 text-sm font-semibold text-gray-900 dark:text-white">
           Monthly Revenue
         </h2>
-        <div className="h-48 flex items-center justify-center bg-gray-50 dark:bg-gray-900 rounded-lg border border-dashed border-gray-200 dark:border-gray-700">
+        <div className="flex h-48 items-center justify-center rounded-lg border border-dashed border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-900">
           <p className="text-sm text-gray-400 dark:text-gray-500">
             Chart visualization coming soon
           </p>
@@ -140,8 +138,8 @@ export default function AdminBillingPage() {
       </div>
 
       {/* Recent transactions */}
-      <div className="border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
+      <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800">
+        <div className="border-b border-gray-100 bg-gray-50 px-6 py-4 dark:border-gray-800 dark:bg-gray-900">
           <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
             Recent Transactions
           </h2>
@@ -155,7 +153,7 @@ export default function AdminBillingPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-gray-500 dark:text-gray-400 border-b border-gray-100 dark:border-gray-800">
+                <tr className="border-b border-gray-100 text-left text-gray-500 dark:border-gray-800 dark:text-gray-400">
                   <th className="px-6 py-3 font-medium">Type</th>
                   <th className="px-6 py-3 font-medium">User</th>
                   <th className="px-6 py-3 font-medium">Extension</th>
@@ -165,7 +163,10 @@ export default function AdminBillingPage() {
               </thead>
               <tbody>
                 {transactions.map((tx) => (
-                  <tr key={tx.id} className="border-b border-gray-50 hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800">
+                  <tr
+                    key={tx.id}
+                    className="border-b border-gray-50 hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800"
+                  >
                     <td className="px-6 py-3">
                       <span
                         className={`inline-flex items-center gap-1.5 text-xs font-medium ${
@@ -217,8 +218,8 @@ function RevenueStatCard({
   color: string;
 }) {
   return (
-    <div className="border border-gray-200 dark:border-gray-800 rounded-xl p-5">
-      <div className={`inline-flex items-center justify-center h-10 w-10 rounded-lg ${color} mb-3`}>
+    <div className="rounded-xl border border-gray-200 p-5 dark:border-gray-800">
+      <div className={`inline-flex h-10 w-10 items-center justify-center rounded-lg ${color} mb-3`}>
         <Icon className="h-5 w-5" />
       </div>
       <p className="text-2xl font-bold text-gray-900 dark:text-white">{value}</p>

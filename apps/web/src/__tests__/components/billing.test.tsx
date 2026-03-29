@@ -39,15 +39,13 @@ describe('PricingCards', () => {
   it('renders Free tier description', () => {
     render(<PricingCards />);
     expect(
-      screen.getByText('Everything you need to get started with Xplorer.')
+      screen.getByText('Everything you need to get started with Xplorer.'),
     ).toBeInTheDocument();
   });
 
   it('renders Pro tier description', () => {
     render(<PricingCards />);
-    expect(
-      screen.getByText(/Sponsor us on GitHub to unlock Pro/)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Sponsor us on GitHub to unlock Pro/)).toBeInTheDocument();
   });
 
   it('renders Free tier CTA button "Get Started"', () => {

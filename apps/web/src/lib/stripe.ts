@@ -39,4 +39,3 @@ export const PLANS = {
     trialDurationMs: 0,
   },
 } as const;
-

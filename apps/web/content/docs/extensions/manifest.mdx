@@ -31,14 +31,8 @@ Every Xplorer extension declares its metadata, permissions, and contributions in
     "homepage": "https://github.com/you/my-extension",
     "repository": "https://github.com/you/my-extension",
     "license": "MIT",
-    "permissions": [
-      "file:read",
-      "ui:notifications"
-    ],
-    "activationEvents": [
-      "onDirectoryOpen",
-      "onFileChange"
-    ],
+    "permissions": ["file:read", "ui:notifications"],
+    "activationEvents": ["onDirectoryOpen", "onFileChange"],
     "contributes": {
       "panels": [
         {
@@ -81,45 +75,45 @@ Every Xplorer extension declares its metadata, permissions, and contributions in
 
 ### Required
 
-| Field | Type | Description |
-|---|---|---|
-| `id` | `string` | Unique extension identifier. Lowercase, dashes only. Must be globally unique. |
-| `version` | `string` | Semantic version (e.g. `1.0.0`, `2.1.0-beta.1`). |
-| `author` | `string` | Author name. |
+| Field      | Type     | Description                                                                                         |
+| ---------- | -------- | --------------------------------------------------------------------------------------------------- |
+| `id`       | `string` | Unique extension identifier. Lowercase, dashes only. Must be globally unique.                       |
+| `version`  | `string` | Semantic version (e.g. `1.0.0`, `2.1.0-beta.1`).                                                    |
+| `author`   | `string` | Author name.                                                                                        |
 | `category` | `string` | One of: `theme`, `preview`, `action`, `panel`, `tool`, `tab`, `navigation`, `bottom-tab`, `editor`. |
 
 The `name` field serves as the display name if `displayName` is not set.
 
 ### Optional
 
-| Field | Type | Default | Description |
-|---|---|---|---|
-| `displayName` | `string` | `name` | Human-readable name shown in the Extensions panel. |
-| `description` | `string` | — | One-line description. |
-| `icon` | `string` | `🧩` | Emoji shown in the extension bar and panel headers. |
-| `keywords` | `string[]` | `[]` | Search keywords for the marketplace. |
-| `homepage` | `string` | — | Project homepage URL. |
-| `repository` | `string` | — | Source code URL. |
-| `license` | `string` | — | SPDX license identifier (e.g. `MIT`, `Apache-2.0`). |
-| `permissions` | `string[]` | `[]` | Required permissions. See [Permissions](./permissions). |
-| `activationEvents` | `string[]` | `[]` | Events that trigger activation. |
-| `contributes` | `object` | — | Declared contributions. See below. |
+| Field              | Type       | Default | Description                                             |
+| ------------------ | ---------- | ------- | ------------------------------------------------------- |
+| `displayName`      | `string`   | `name`  | Human-readable name shown in the Extensions panel.      |
+| `description`      | `string`   | —       | One-line description.                                   |
+| `icon`             | `string`   | `🧩`    | Emoji shown in the extension bar and panel headers.     |
+| `keywords`         | `string[]` | `[]`    | Search keywords for the marketplace.                    |
+| `homepage`         | `string`   | —       | Project homepage URL.                                   |
+| `repository`       | `string`   | —       | Source code URL.                                        |
+| `license`          | `string`   | —       | SPDX license identifier (e.g. `MIT`, `Apache-2.0`).     |
+| `permissions`      | `string[]` | `[]`    | Required permissions. See [Permissions](./permissions). |
+| `activationEvents` | `string[]` | `[]`    | Events that trigger activation.                         |
+| `contributes`      | `object`   | —       | Declared contributions. See below.                      |
 
 ### category
 
 Determines the extension's base class and what it can contribute:
 
-| Category | Base Class | Can Contribute |
-|---|---|---|
-| `panel` | `PanelExtension` | Sidebar panels, commands |
-| `preview` | `PreviewExtension` | File preview handlers |
-| `action` | `ActionExtension` | Context menu items, commands |
-| `theme` | `ThemeExtension` | Color themes, CSS |
-| `tool` | `Extension` | Commands, decorators, automation |
-| `tab` | `TabExtension` | Custom tab views in the main content area |
-| `navigation` | `NavigationExtension` | Left sidebar navigation entries |
-| `bottom-tab` | `BottomTabExtension` | Bottom panel tabs |
-| `editor` | `EditorExtension` | File editor handlers |
+| Category     | Base Class            | Can Contribute                            |
+| ------------ | --------------------- | ----------------------------------------- |
+| `panel`      | `PanelExtension`      | Sidebar panels, commands                  |
+| `preview`    | `PreviewExtension`    | File preview handlers                     |
+| `action`     | `ActionExtension`     | Context menu items, commands              |
+| `theme`      | `ThemeExtension`      | Color themes, CSS                         |
+| `tool`       | `Extension`           | Commands, decorators, automation          |
+| `tab`        | `TabExtension`        | Custom tab views in the main content area |
+| `navigation` | `NavigationExtension` | Left sidebar navigation entries           |
+| `bottom-tab` | `BottomTabExtension`  | Bottom panel tabs                         |
+| `editor`     | `EditorExtension`     | File editor handlers                      |
 
 ---
 
@@ -145,13 +139,13 @@ Register sidebar panels.
 }
 ```
 
-| Field | Type | Required | Description |
-|---|---|---|---|
-| `id` | `string` | Yes | Unique panel identifier. |
-| `title` | `string` | Yes | Display title in the panel header. |
-| `location` | `string` | No | Where to render: `right` (default), `sidebar`, `bottom`. |
-| `icon` | `string` | No | Emoji or icon for the extension bar button. |
-| `when` | `string` | No | Condition for showing the panel (e.g. `always`, `hasFiles`). |
+| Field      | Type     | Required | Description                                                  |
+| ---------- | -------- | -------- | ------------------------------------------------------------ |
+| `id`       | `string` | Yes      | Unique panel identifier.                                     |
+| `title`    | `string` | Yes      | Display title in the panel header.                           |
+| `location` | `string` | No       | Where to render: `right` (default), `sidebar`, `bottom`.     |
+| `icon`     | `string` | No       | Emoji or icon for the extension bar button.                  |
+| `when`     | `string` | No       | Condition for showing the panel (e.g. `always`, `hasFiles`). |
 
 ### contributes.commands
 
@@ -170,12 +164,12 @@ Register named commands.
 }
 ```
 
-| Field | Type | Required | Description |
-|---|---|---|---|
-| `command` | `string` | Yes | Command name (auto-prefixed with extension ID at runtime). |
-| `title` | `string` | Yes | Human-readable title for command palette. |
-| `category` | `string` | No | Grouping in the command palette. |
-| `icon` | `string` | No | Icon shown next to the command. |
+| Field      | Type     | Required | Description                                                |
+| ---------- | -------- | -------- | ---------------------------------------------------------- |
+| `command`  | `string` | Yes      | Command name (auto-prefixed with extension ID at runtime). |
+| `title`    | `string` | Yes      | Human-readable title for command palette.                  |
+| `category` | `string` | No       | Grouping in the command palette.                           |
+| `icon`     | `string` | No       | Icon shown next to the command.                            |
 
 ### contributes.context_menus
 
@@ -193,11 +187,11 @@ Add items to the file context menu.
 }
 ```
 
-| Field | Type | Required | Description |
-|---|---|---|---|
-| `command` | `string` | Yes | Fully qualified command name to invoke. |
-| `when` | `string` | No | Condition: `always`, `singleFileSelected`, `multipleFilesSelected`. |
-| `group` | `string` | No | Menu group for ordering. |
+| Field     | Type     | Required | Description                                                         |
+| --------- | -------- | -------- | ------------------------------------------------------------------- |
+| `command` | `string` | Yes      | Fully qualified command name to invoke.                             |
+| `when`    | `string` | No       | Condition: `always`, `singleFileSelected`, `multipleFilesSelected`. |
+| `group`   | `string` | No       | Menu group for ordering.                                            |
 
 ### contributes.keybindings
 
@@ -216,12 +210,12 @@ Register keyboard shortcuts that invoke commands.
 }
 ```
 
-| Field | Type | Required | Description |
-|---|---|---|---|
-| `command` | `string` | Yes | Command name to invoke (auto-prefixed with extension ID). |
-| `key` | `string` | Yes | Default key combination (e.g. `ctrl+shift+t`, `alt+k`). Format: modifier keys joined by `+`, lowercase. Valid modifiers: `ctrl`, `alt`, `shift`, `meta`. |
-| `when` | `string` | No | Context where the shortcut is active. Default: `file-explorer`. |
-| `title` | `string` | No | Human-readable description shown in the shortcuts settings UI. |
+| Field     | Type     | Required | Description                                                                                                                                              |
+| --------- | -------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `command` | `string` | Yes      | Command name to invoke (auto-prefixed with extension ID).                                                                                                |
+| `key`     | `string` | Yes      | Default key combination (e.g. `ctrl+shift+t`, `alt+k`). Format: modifier keys joined by `+`, lowercase. Valid modifiers: `ctrl`, `alt`, `shift`, `meta`. |
+| `when`    | `string` | No       | Context where the shortcut is active. Default: `file-explorer`.                                                                                          |
+| `title`   | `string` | No       | Human-readable description shown in the shortcuts settings UI.                                                                                           |
 
 Keybindings are automatically registered when the extension activates and unregistered when it deactivates. Users can re-bind extension shortcuts in **Settings > Shortcuts**.
 
@@ -241,13 +235,13 @@ Declare theme IDs this extension provides.
 
 Control when your extension is activated. If empty, the extension activates immediately.
 
-| Event | Trigger |
-|---|---|
-| `onDirectoryOpen` | User opens or navigates to a directory |
-| `onFileChange` | A file in the current directory changes |
-| `onCommand:{command}` | A specific command is invoked |
-| `onStartup` | App starts (same as no activation events) |
-| `*` | Always activate immediately |
+| Event                 | Trigger                                   |
+| --------------------- | ----------------------------------------- |
+| `onDirectoryOpen`     | User opens or navigates to a directory    |
+| `onFileChange`        | A file in the current directory changes   |
+| `onCommand:{command}` | A specific command is invoked             |
+| `onStartup`           | App starts (same as no activation events) |
+| `*`                   | Always activate immediately               |
 
 ---
 
@@ -262,6 +256,7 @@ The `main` field in the top-level `package.json` (not inside `xplorer`) specifie
 ```
 
 This file must be an ES module that either:
+
 1. Calls `registerExtension()` with an extension instance, or
 2. Exports a default Extension instance
 
@@ -295,12 +290,14 @@ This file must be an ES module that either:
     "author": "Developer",
     "icon": "👋",
     "contributes": {
-      "panels": [{
-        "id": "hello-panel",
-        "title": "Hello",
-        "location": "right",
-        "icon": "👋"
-      }]
+      "panels": [
+        {
+          "id": "hello-panel",
+          "title": "Hello",
+          "location": "right",
+          "icon": "👋"
+        }
+      ]
     }
   }
 }
@@ -327,20 +324,17 @@ This file must be an ES module that either:
     "icon": "⚡",
     "keywords": ["lint", "workspace", "automation"],
     "license": "MIT",
-    "permissions": [
-      "file:read",
-      "directory:list",
-      "ui:notifications",
-      "ui:panels"
-    ],
+    "permissions": ["file:read", "directory:list", "ui:notifications", "ui:panels"],
     "activationEvents": ["onDirectoryOpen"],
     "contributes": {
-      "panels": [{
-        "id": "workspace-linter-issues",
-        "title": "Lint Issues",
-        "location": "right",
-        "icon": "⚠️"
-      }],
+      "panels": [
+        {
+          "id": "workspace-linter-issues",
+          "title": "Lint Issues",
+          "location": "right",
+          "icon": "⚠️"
+        }
+      ],
       "commands": [
         {
           "command": "scan",
@@ -353,11 +347,13 @@ This file must be an ES module that either:
           "category": "Linter"
         }
       ],
-      "context_menus": [{
-        "command": "workspace-linter.scan",
-        "when": "singleFileSelected",
-        "group": "tools"
-      }]
+      "context_menus": [
+        {
+          "command": "workspace-linter.scan",
+          "when": "singleFileSelected",
+          "group": "tools"
+        }
+      ]
     }
   }
 }

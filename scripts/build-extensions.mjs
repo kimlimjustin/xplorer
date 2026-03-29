@@ -105,7 +105,9 @@ const buildExtension = async (dir) => {
                     mkdirSync(join(target, 'dist'), { recursive: true });
                     cpSync(srcDist, dstDist);
                     console.log(`  [hot] ${dir} → ${manifestId}/dist/index.js`);
-                  } catch { /* ignore copy errors */ }
+                  } catch {
+                    /* ignore copy errors */
+                  }
                 }
               }
             });

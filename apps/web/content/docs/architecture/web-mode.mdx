@@ -105,15 +105,15 @@ data: {"progress": 50, "message": "Copying files..."}
 
 #### Event names used by the frontend
 
-| Event | Payload | Used by |
-|-------|---------|---------|
-| `terminal-output` | `string` | Terminal panel |
-| `file-operation-progress` | `{ operation, progress, message }` | File operations |
-| `agent-event` | `AgentEvent` object | AI agent chat |
-| `global_shortcut_triggered` | `ShortcutAction` | Keyboard shortcuts |
-| `duplicate-scan-progress` | `{ phase, progress, message, ... }` | Duplicate finder |
-| `recommendations-progress` | `{ phase, progress, message }` | Recommendations panel |
-| `storage-analytics-progress` | `{ phase, progress, message }` | Storage analytics |
+| Event                        | Payload                             | Used by               |
+| ---------------------------- | ----------------------------------- | --------------------- |
+| `terminal-output`            | `string`                            | Terminal panel        |
+| `file-operation-progress`    | `{ operation, progress, message }`  | File operations       |
+| `agent-event`                | `AgentEvent` object                 | AI agent chat         |
+| `global_shortcut_triggered`  | `ShortcutAction`                    | Keyboard shortcuts    |
+| `duplicate-scan-progress`    | `{ phase, progress, message, ... }` | Duplicate finder      |
+| `recommendations-progress`   | `{ phase, progress, message }`      | Recommendations panel |
+| `storage-analytics-progress` | `{ phase, progress, message }`      | Storage analytics     |
 
 ## Command Reference
 
@@ -123,66 +123,66 @@ Below are the most commonly used commands grouped by category. Refer to `tauri-a
 
 ### File Operations
 
-| Command | Parameters | Returns | Description |
-|---------|-----------|---------|-------------|
-| `list_directory` | `path`, `showHidden` | `FileEntry[]` | List directory contents |
-| `read_text_file` | `path` | `string` | Read file as text |
-| `agent_write_file_with_permission` | `filePath`, `content`, `permissionGranted` | `void` | Write text file |
-| `create_directory` | `path` | `void` | Create a directory |
-| `delete_items` | `paths` | `void` | Delete files/directories |
-| `rename_item` | `oldPath`, `newPath` | `void` | Rename/move item |
-| `copy_items` | `sources`, `destination` | `void` | Copy files |
-| `move_items` | `sources`, `destination` | `void` | Move files |
-| `get_file_metadata` | `path` | `FileMetadata` | Get size, dates, permissions |
+| Command                            | Parameters                                 | Returns        | Description                  |
+| ---------------------------------- | ------------------------------------------ | -------------- | ---------------------------- |
+| `list_directory`                   | `path`, `showHidden`                       | `FileEntry[]`  | List directory contents      |
+| `read_text_file`                   | `path`                                     | `string`       | Read file as text            |
+| `agent_write_file_with_permission` | `filePath`, `content`, `permissionGranted` | `void`         | Write text file              |
+| `create_directory`                 | `path`                                     | `void`         | Create a directory           |
+| `delete_items`                     | `paths`                                    | `void`         | Delete files/directories     |
+| `rename_item`                      | `oldPath`, `newPath`                       | `void`         | Rename/move item             |
+| `copy_items`                       | `sources`, `destination`                   | `void`         | Copy files                   |
+| `move_items`                       | `sources`, `destination`                   | `void`         | Move files                   |
+| `get_file_metadata`                | `path`                                     | `FileMetadata` | Get size, dates, permissions |
 
 ### Search
 
-| Command | Parameters | Returns | Description |
-|---------|-----------|---------|-------------|
-| `search_files` | `query`, `searchPath`, `maxResults` | `SearchResult[]` | Search by filename |
-| `search_file_contents` | `query`, `searchPath`, `maxResults` | `ContentSearchResult[]` | Search within file contents |
-| `enhanced_search` | `query`, `searchPath`, `maxResults` | `SearchResult[]` | AI-enhanced search |
-| `parse_search_query` | `query` | `StructuredQuery` | Parse NL query to structured |
+| Command                | Parameters                          | Returns                 | Description                  |
+| ---------------------- | ----------------------------------- | ----------------------- | ---------------------------- |
+| `search_files`         | `query`, `searchPath`, `maxResults` | `SearchResult[]`        | Search by filename           |
+| `search_file_contents` | `query`, `searchPath`, `maxResults` | `ContentSearchResult[]` | Search within file contents  |
+| `enhanced_search`      | `query`, `searchPath`, `maxResults` | `SearchResult[]`        | AI-enhanced search           |
+| `parse_search_query`   | `query`                             | `StructuredQuery`       | Parse NL query to structured |
 
 ### System
 
-| Command | Parameters | Returns | Description |
-|---------|-----------|---------|-------------|
-| `get_drives` | — | `DriveInfo[]` | List mounted drives |
-| `get_home_dir` | — | `string` | User home directory path |
-| `open_in_default` | `path` | `void` | Open file with OS default app |
-| `open_in_terminal` | `path` | `void` | Open terminal at path |
-| `get_system_info` | — | `SystemInfo` | OS, CPU, RAM info |
+| Command            | Parameters | Returns       | Description                   |
+| ------------------ | ---------- | ------------- | ----------------------------- |
+| `get_drives`       | —          | `DriveInfo[]` | List mounted drives           |
+| `get_home_dir`     | —          | `string`      | User home directory path      |
+| `open_in_default`  | `path`     | `void`        | Open file with OS default app |
+| `open_in_terminal` | `path`     | `void`        | Open terminal at path         |
+| `get_system_info`  | —          | `SystemInfo`  | OS, CPU, RAM info             |
 
 ### Bookmarks & Tags
 
-| Command | Parameters | Returns | Description |
-|---------|-----------|---------|-------------|
-| `get_bookmarks` | — | `BookmarkEntry[]` | List bookmarks |
-| `add_bookmark` | `path`, `name`, `icon` | `void` | Add bookmark |
-| `remove_bookmark` | `path` | `void` | Remove bookmark |
-| `get_file_tags` | `path` | `FileTag[]` | Get tags for a file |
-| `set_file_tag` | `path`, `tag` | `void` | Set tag on file |
+| Command           | Parameters             | Returns           | Description         |
+| ----------------- | ---------------------- | ----------------- | ------------------- |
+| `get_bookmarks`   | —                      | `BookmarkEntry[]` | List bookmarks      |
+| `add_bookmark`    | `path`, `name`, `icon` | `void`            | Add bookmark        |
+| `remove_bookmark` | `path`                 | `void`            | Remove bookmark     |
+| `get_file_tags`   | `path`                 | `FileTag[]`       | Get tags for a file |
+| `set_file_tag`    | `path`, `tag`          | `void`            | Set tag on file     |
 
 ### Archive Operations
 
-| Command | Parameters | Returns | Description |
-|---------|-----------|---------|-------------|
-| `compress_files` | `sources`, `destination`, `format` | `void` | Create archive |
-| `extract_archive` | `archivePath`, `destination` | `void` | Extract archive |
-| `get_archive_info` | `path` | `ArchiveInfo` | List archive contents |
+| Command            | Parameters                         | Returns       | Description           |
+| ------------------ | ---------------------------------- | ------------- | --------------------- |
+| `compress_files`   | `sources`, `destination`, `format` | `void`        | Create archive        |
+| `extract_archive`  | `archivePath`, `destination`       | `void`        | Extract archive       |
+| `get_archive_info` | `path`                             | `ArchiveInfo` | List archive contents |
 
 ## Web Mode Limitations
 
-| Feature | Desktop (Tauri) | Web Mode |
-|---------|----------------|----------|
-| Window controls (min/max/close) | Native controls | Hidden — browser handles this |
-| Native drag & drop | Tauri DnD events with file paths | HTML5 DnD only (no file path access from OS) |
-| Global keyboard shortcuts | Registered via OS | Browser shortcuts only |
-| File dialogs (open/save) | Native OS dialogs | Must use `<input type="file">` or custom UI |
-| System tray | Supported | Not available |
-| Auto-updater | Built-in | Not available |
-| Asset protocol | `https://asset.localhost/` | Must proxy through `/api/asset` |
+| Feature                         | Desktop (Tauri)                  | Web Mode                                     |
+| ------------------------------- | -------------------------------- | -------------------------------------------- |
+| Window controls (min/max/close) | Native controls                  | Hidden — browser handles this                |
+| Native drag & drop              | Tauri DnD events with file paths | HTML5 DnD only (no file path access from OS) |
+| Global keyboard shortcuts       | Registered via OS                | Browser shortcuts only                       |
+| File dialogs (open/save)        | Native OS dialogs                | Must use `<input type="file">` or custom UI  |
+| System tray                     | Supported                        | Not available                                |
+| Auto-updater                    | Built-in                         | Not available                                |
+| Asset protocol                  | `https://asset.localhost/`       | Must proxy through `/api/asset`              |
 
 ## Implementing a Compatible Backend
 

@@ -65,9 +65,7 @@ async function getExtension(slug: string) {
   };
 }
 
-export async function generateMetadata({
-  params,
-}: ExtensionPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: ExtensionPageProps): Promise<Metadata> {
   const { slug } = await params;
   const extension = await getExtension(slug);
   if (!extension) return { title: 'Not Found' };

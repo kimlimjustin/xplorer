@@ -27,7 +27,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     } catch {
       return NextResponse.json(
         { error: 'Too many requests. Please try again later.' },
-        { status: 429, headers: corsHeaders(request) }
+        { status: 429, headers: corsHeaders(request) },
       );
     }
 
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     if (!userId) {
       return NextResponse.json(
         { error: 'userId query parameter is required' },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     if (!extension) {
       return NextResponse.json(
         { error: 'Extension not found' },
-        { status: 404, headers: corsHeaders(request) }
+        { status: 404, headers: corsHeaders(request) },
       );
     }
 
@@ -67,7 +67,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
           purchasedAt: null,
           reason: 'free_extension',
         },
-        { headers: corsHeaders(request) }
+        { headers: corsHeaders(request) },
       );
     }
 
@@ -79,7 +79,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
           purchasedAt: null,
           reason: 'author',
         },
-        { headers: corsHeaders(request) }
+        { headers: corsHeaders(request) },
       );
     }
 
@@ -100,7 +100,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
           purchased: true,
           purchasedAt: purchase.createdAt.toISOString(),
         },
-        { headers: corsHeaders(request) }
+        { headers: corsHeaders(request) },
       );
     }
 
@@ -125,7 +125,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
           trial: true,
           trialExpiresAt: activeTrial.expiresAt.toISOString(),
         },
-        { headers: corsHeaders(request) }
+        { headers: corsHeaders(request) },
       );
     }
 
@@ -134,13 +134,13 @@ export async function GET(request: NextRequest, context: RouteContext) {
         purchased: false,
         purchasedAt: null,
       },
-      { headers: corsHeaders(request) }
+      { headers: corsHeaders(request) },
     );
   } catch (error) {
     console.error('GET /api/extensions/[id]/verify error:', error);
     return NextResponse.json(
       { error: 'Failed to verify purchase' },
-      { status: 500, headers: corsHeaders(request) }
+      { status: 500, headers: corsHeaders(request) },
     );
   }
 }

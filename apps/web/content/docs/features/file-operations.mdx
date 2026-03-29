@@ -13,25 +13,30 @@ Xplorer provides a full suite of file operations with progress tracking and hard
 ## Basic Operations
 
 ### Copy & Paste
+
 - **Copy**: `Ctrl+C` or right-click > Copy
 - **Cut**: `Ctrl+X` or right-click > Cut
 - **Paste**: `Ctrl+V` or right-click > Paste
 
 All copy/move operations include real-time progress tracking with:
+
 - Current file being processed
 - Bytes transferred / total bytes
 - Estimated time remaining
 - Transfer speed
 
 ### Rename
+
 - **F2** key or right-click > Rename
 - Inline editing in the file grid
 
 ### Delete
+
 - **Delete** — Move to recycle bin / trash
 - **Shift+Delete** — Permanent deletion (with confirmation)
 
 ### Create
+
 - **New Folder**: Right-click > New Folder
 - **New File**: Right-click > New File
 
@@ -41,18 +46,19 @@ Xplorer supports multiple archive formats:
 
 ### Supported Formats
 
-| Format | Compress | Extract |
-|--------|----------|---------|
-| ZIP | Yes | Yes |
-| TAR | Yes | Yes |
-| TAR.GZ | Yes | Yes |
-| TAR.BZ2 | Yes | Yes |
-| TAR.XZ | Yes | Yes |
-| 7z | Planned | Planned |
+| Format  | Compress | Extract |
+| ------- | -------- | ------- |
+| ZIP     | Yes      | Yes     |
+| TAR     | Yes      | Yes     |
+| TAR.GZ  | Yes      | Yes     |
+| TAR.BZ2 | Yes      | Yes     |
+| TAR.XZ  | Yes      | Yes     |
+| 7z      | Planned  | Planned |
 
 ### Compression
 
 Right-click a file or folder > **Compress** to create an archive. Options include:
+
 - Archive format selection
 - Compression level
 - Output path
@@ -60,6 +66,7 @@ Right-click a file or folder > **Compress** to create an archive. Options includ
 ### Extraction
 
 Right-click an archive > **Extract** to decompress. Options include:
+
 - Extract to current directory
 - Extract to new folder
 - Extract to custom path
@@ -68,12 +75,12 @@ Right-click an archive > **Extract** to decompress. Options include:
 
 For large files and directories, Xplorer automatically selects the optimal copy strategy:
 
-| File Size | Strategy | Description |
-|-----------|----------|-------------|
-| < 1 MB | Standard | `std::fs::copy` |
-| 1-100 MB | Buffered | Optimized buffer sizes for the filesystem |
-| > 100 MB | Memory-mapped | Uses `mmap` for zero-copy transfers |
-| Directories | Parallel | Multi-threaded copy with rayon |
+| File Size   | Strategy      | Description                               |
+| ----------- | ------------- | ----------------------------------------- |
+| < 1 MB      | Standard      | `std::fs::copy`                           |
+| 1-100 MB    | Buffered      | Optimized buffer sizes for the filesystem |
+| > 100 MB    | Memory-mapped | Uses `mmap` for zero-copy transfers       |
+| Directories | Parallel      | Multi-threaded copy with rayon            |
 
 The accelerated copy system also detects CPU features (AVX2, SSE2) to use SIMD-optimized memory operations where available.
 
@@ -90,6 +97,7 @@ Find duplicate files across your filesystem:
 5. Choose which copies to keep and which to remove
 
 Features:
+
 - Parallel hashing with `rayon` for maximum speed
 - Progress tracking with cancellation support
 - Size-based pre-filtering (only files with identical sizes are hashed)
@@ -103,6 +111,7 @@ Compare two files side-by-side:
 3. View differences in a unified diff view
 
 Supports:
+
 - **Text comparison** — Line-by-line diff with added/removed/changed highlighting
 - **Binary comparison** — Byte-level comparison for non-text files
 - Options to ignore whitespace, case, and line endings

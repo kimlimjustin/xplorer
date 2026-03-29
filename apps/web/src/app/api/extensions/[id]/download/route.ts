@@ -16,7 +16,7 @@ type RouteContext = { params: Promise<{ id: string }> };
  */
 function getDownloadIdentifier(
   session: { user?: { id: string } } | null,
-  request: NextRequest
+  request: NextRequest,
 ): string {
   if (session?.user?.id) {
     return session.user.id;
@@ -41,7 +41,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     } catch {
       return NextResponse.json(
         { error: 'Too many requests. Please try again later.' },
-        { status: 429, headers: corsHeaders(request) }
+        { status: 429, headers: corsHeaders(request) },
       );
     }
 
@@ -67,14 +67,14 @@ export async function GET(request: NextRequest, context: RouteContext) {
     if (!extension) {
       return NextResponse.json(
         { error: 'Extension not found' },
-        { status: 404, headers: corsHeaders(request) }
+        { status: 404, headers: corsHeaders(request) },
       );
     }
 
     if (!extension.isPublished || extension.status !== 'APPROVED') {
       return NextResponse.json(
         { error: 'Extension is not available for download' },
-        { status: 403, headers: corsHeaders(request) }
+        { status: 403, headers: corsHeaders(request) },
       );
     }
 
@@ -90,7 +90,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     if (extension.pricingType === 'PAID' && !session?.user) {
       return NextResponse.json(
         { error: 'Authentication required to download paid extensions' },
-        { status: 401, headers: corsHeaders(request) }
+        { status: 401, headers: corsHeaders(request) },
       );
     }
 
@@ -129,7 +129,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
                 upgradeRequired: true,
                 trialAvailable: true,
               },
-              { status: 403, headers: corsHeaders(request) }
+              { status: 403, headers: corsHeaders(request) },
             );
           }
         }
@@ -164,7 +164,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
                 message: 'You must purchase this extension before downloading.',
                 purchaseRequired: true,
               },
-              { status: 403, headers: corsHeaders(request) }
+              { status: 403, headers: corsHeaders(request) },
             );
           }
         }
@@ -235,7 +235,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       if (!extDir) {
         return NextResponse.json(
           { error: 'Extension not found locally', slug: extension.slug },
-          { status: 404, headers: corsHeaders(request) }
+          { status: 404, headers: corsHeaders(request) },
         );
       }
 
@@ -276,7 +276,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
         if (!blobResponse.ok) {
           return NextResponse.json(
             { error: 'Failed to retrieve extension file' },
-            { status: 502, headers: corsHeaders(request) }
+            { status: 502, headers: corsHeaders(request) },
           );
         }
 
@@ -284,7 +284,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
         headers.set('Content-Type', 'application/zip');
         headers.set(
           'Content-Disposition',
-          `attachment; filename="${extension.slug}-${extension.version}.zip"`
+          `attachment; filename="${extension.slug}-${extension.version}.zip"`,
         );
         const contentLength = blobResponse.headers.get('content-length');
         if (contentLength) {
@@ -296,7 +296,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
         console.error('Failed to proxy paid extension download:', err);
         return NextResponse.json(
           { error: 'Failed to retrieve extension file' },
-          { status: 502, headers: corsHeaders(request) }
+          { status: 502, headers: corsHeaders(request) },
         );
       }
     }
@@ -312,15 +312,18 @@ export async function GET(request: NextRequest, context: RouteContext) {
       if (!blobResponse.ok) {
         return NextResponse.json(
           { error: 'Failed to retrieve extension file' },
-          { status: 502, headers: corsHeaders(request) }
+          { status: 502, headers: corsHeaders(request) },
         );
       }
 
       const headers = new Headers(corsHeaders(request));
-      headers.set('Content-Type', blobResponse.headers.get('content-type') || 'application/javascript');
+      headers.set(
+        'Content-Type',
+        blobResponse.headers.get('content-type') || 'application/javascript',
+      );
       headers.set(
         'Content-Disposition',
-        `attachment; filename="${extension.slug}-${extension.version}.js"`
+        `attachment; filename="${extension.slug}-${extension.version}.js"`,
       );
       const contentLength = blobResponse.headers.get('content-length');
       if (contentLength) {
@@ -332,14 +335,14 @@ export async function GET(request: NextRequest, context: RouteContext) {
       console.error('Failed to proxy extension download:', err);
       return NextResponse.json(
         { error: 'Failed to retrieve extension file' },
-        { status: 502, headers: corsHeaders(request) }
+        { status: 502, headers: corsHeaders(request) },
       );
     }
   } catch (error) {
     console.error('GET /api/extensions/[id]/download error:', error);
     return NextResponse.json(
       { error: 'Failed to download extension' },
-      { status: 500, headers: corsHeaders(request) }
+      { status: 500, headers: corsHeaders(request) },
     );
   }
 }
@@ -363,7 +366,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     if (!extension) {
       return NextResponse.json(
         { error: 'Extension not found' },
-        { status: 404, headers: corsHeaders(request) }
+        { status: 404, headers: corsHeaders(request) },
       );
     }
 
@@ -386,10 +389,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     });
 
     if (recentDownload) {
-      return NextResponse.json(
-        { ok: true },
-        { headers: corsHeaders(request) }
-      );
+      return NextResponse.json({ ok: true }, { headers: corsHeaders(request) });
     }
 
     await prisma.download.create({
@@ -405,15 +405,12 @@ export async function POST(request: NextRequest, context: RouteContext) {
       data: { downloadCount: { increment: 1 } },
     });
 
-    return NextResponse.json(
-      { message: 'Download tracked' },
-      { headers: corsHeaders(request) }
-    );
+    return NextResponse.json({ message: 'Download tracked' }, { headers: corsHeaders(request) });
   } catch (error) {
     console.error('POST /api/extensions/[id]/download error:', error);
     return NextResponse.json(
       { error: 'Failed to track download' },
-      { status: 500, headers: corsHeaders(request) }
+      { status: 500, headers: corsHeaders(request) },
     );
   }
 }

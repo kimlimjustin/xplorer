@@ -35,10 +35,8 @@ export default async function DocPage({ params }: DocPageProps) {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">{doc.meta.title}</h1>
-      {doc.meta.description && (
-        <p className="text-lg text-gray-500 mb-8">{doc.meta.description}</p>
-      )}
+      <h1 className="mb-2 text-3xl font-bold text-gray-900">{doc.meta.title}</h1>
+      {doc.meta.description && <p className="mb-8 text-lg text-gray-500">{doc.meta.description}</p>}
       <MDXRemote source={doc.content} components={useMDXComponents({})} />
     </div>
   );

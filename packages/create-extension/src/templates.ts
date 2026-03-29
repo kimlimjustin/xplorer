@@ -28,7 +28,10 @@ export interface TemplateOutput {
 
 // ── Shared helpers ───────────────────────────────────────────────────────────
 
-const basePackageJson = (vars: TemplateVars, extra?: Record<string, unknown>): Record<string, unknown> => {
+const basePackageJson = (
+  vars: TemplateVars,
+  extra?: Record<string, unknown>,
+): Record<string, unknown> => {
   const needsReact = ['panel', 'preview', 'tab'].includes(vars.type);
 
   return {
@@ -872,7 +875,9 @@ const generators: Record<string, (vars: TemplateVars) => TemplateOutput> = {
 export const getTemplate = (type: string, vars: TemplateVars): TemplateOutput => {
   const gen = generators[type];
   if (!gen) {
-    throw new Error(`Unknown extension type: "${type}". Valid types: ${Object.keys(generators).join(', ')}`);
+    throw new Error(
+      `Unknown extension type: "${type}". Valid types: ${Object.keys(generators).join(', ')}`,
+    );
   }
   return gen(vars);
 };

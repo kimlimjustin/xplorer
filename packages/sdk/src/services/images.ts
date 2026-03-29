@@ -115,9 +115,6 @@ export const adjustContrast = async (
   return await transport('adjust_contrast', { path, value, outputPath });
 };
 
-export const grayscaleImage = async (
-  path: string,
-  outputPath: string,
-): Promise<string> => {
+export const grayscaleImage = async (path: string, outputPath: string): Promise<string> => {
   return await transport('grayscale_image', { path, outputPath });
 };

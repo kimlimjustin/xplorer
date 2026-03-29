@@ -97,7 +97,7 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[50vh]">
+      <div className="flex min-h-[50vh] items-center justify-center">
         <Spinner className="h-8 w-8 text-brand-500" />
       </div>
     );
@@ -128,7 +128,7 @@ export default function DashboardPage() {
 
       {/* Stats cards */}
       {stats && (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           <StatCard
             icon={Package}
             label="Extensions"
@@ -159,8 +159,8 @@ export default function DashboardPage() {
 
       {/* Download chart */}
       {downloadChart.length > 0 && stats && stats.totalDownloads > 0 && (
-        <div className="border border-gray-200 rounded-xl p-6 dark:border-gray-800">
-          <div className="flex items-center justify-between mb-4">
+        <div className="rounded-xl border border-gray-200 p-6 dark:border-gray-800">
+          <div className="mb-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <BarChart3 className="h-5 w-5 text-gray-400 dark:text-gray-500" />
               <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
@@ -179,20 +179,18 @@ export default function DashboardPage() {
       {session?.user && <ConnectPrompt />}
 
       {/* Extensions table */}
-      <div className="border border-gray-200 rounded-xl overflow-hidden dark:border-gray-800">
-        <div className="px-6 py-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between gap-4 dark:border-gray-800 dark:bg-gray-900">
-          <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
-            Your Extensions
-          </h2>
+      <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800">
+        <div className="flex items-center justify-between gap-4 border-b border-gray-100 bg-gray-50 px-6 py-4 dark:border-gray-800 dark:bg-gray-900">
+          <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Your Extensions</h2>
           {extensions.length > 3 && (
             <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 dark:text-gray-500" />
+              <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
               <input
                 type="text"
                 placeholder="Filter..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8 pr-3 py-1.5 w-48 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                className="w-48 rounded-lg border border-gray-200 py-1.5 pl-8 pr-3 text-xs focus:outline-none focus:ring-2 focus:ring-brand-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
               />
             </div>
           )}
@@ -200,7 +198,7 @@ export default function DashboardPage() {
 
         {extensions.length === 0 ? (
           <div className="px-6 py-12 text-center">
-            <Package className="h-10 w-10 text-gray-300 mx-auto mb-3 dark:text-gray-600" />
+            <Package className="mx-auto mb-3 h-10 w-10 text-gray-300 dark:text-gray-600" />
             <p className="text-gray-500 dark:text-gray-400">
               You have not published any extensions yet.
             </p>
@@ -215,7 +213,7 @@ export default function DashboardPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-gray-500 border-b border-gray-100 dark:text-gray-400 dark:border-gray-800">
+                <tr className="border-b border-gray-100 text-left text-gray-500 dark:border-gray-800 dark:text-gray-400">
                   <th className="px-6 py-3 font-medium">Extension</th>
                   <th className="px-6 py-3 font-medium">Version</th>
                   <th className="px-6 py-3 font-medium">Status</th>
@@ -229,20 +227,17 @@ export default function DashboardPage() {
                 {filteredExtensions.map((ext) => (
                   <tr
                     key={ext.id}
-                    className="border-b border-gray-50 hover:bg-gray-50 transition-colors dark:border-gray-800 dark:hover:bg-gray-800/50"
+                    className="border-b border-gray-50 transition-colors hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800/50"
                   >
                     <td className="px-6 py-3.5">
                       <div className="flex items-center gap-2">
                         <div className="font-medium text-gray-900 dark:text-white">
                           {ext.displayName}
                         </div>
-                        <PriceBadge
-                          pricingType={ext.pricingType}
-                          price={ext.price}
-                        />
+                        <PriceBadge pricingType={ext.pricingType} price={ext.price} />
                       </div>
                       {ext.categories.length > 0 && (
-                        <p className="text-xs text-gray-400 mt-0.5 dark:text-gray-500">
+                        <p className="mt-0.5 text-xs text-gray-400 dark:text-gray-500">
                           {ext.categories.map((c) => c.category.name).join(', ')}
                         </p>
                       )}
@@ -272,21 +267,21 @@ export default function DashboardPage() {
                         <span className="text-gray-400 dark:text-gray-500">--</span>
                       )}
                     </td>
-                    <td className="px-6 py-3.5 text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                    <td className="whitespace-nowrap px-6 py-3.5 text-gray-500 dark:text-gray-400">
                       {formatDate(ext.updatedAt)}
                     </td>
                     <td className="px-6 py-3.5">
                       <div className="flex items-center gap-2">
                         <Link
                           href={`/extensions/${ext.slug}`}
-                          className="text-gray-400 hover:text-brand-600 transition-colors dark:hover:text-brand-400"
+                          className="text-gray-400 transition-colors hover:text-brand-600 dark:hover:text-brand-400"
                           aria-label="View extension"
                         >
                           <Eye className="h-4 w-4" />
                         </Link>
                         <Link
                           href={`/extensions/${ext.slug}`}
-                          className="text-gray-400 hover:text-brand-600 transition-colors dark:hover:text-brand-400"
+                          className="text-gray-400 transition-colors hover:text-brand-600 dark:hover:text-brand-400"
                           aria-label="Open extension page"
                         >
                           <ArrowUpRight className="h-4 w-4" />
@@ -325,17 +320,13 @@ function StatCard({
   color: string;
 }) {
   return (
-    <div className="border border-gray-200 rounded-xl p-5 hover:shadow-sm transition-shadow dark:border-gray-800">
-      <div
-        className={`inline-flex items-center justify-center h-10 w-10 rounded-lg ${color} mb-3`}
-      >
+    <div className="rounded-xl border border-gray-200 p-5 transition-shadow hover:shadow-sm dark:border-gray-800">
+      <div className={`inline-flex h-10 w-10 items-center justify-center rounded-lg ${color} mb-3`}>
         <Icon className="h-5 w-5" />
       </div>
       <p className="text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
       <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
-      {subtitle && (
-        <p className="text-xs text-gray-400 mt-0.5 dark:text-gray-500">{subtitle}</p>
-      )}
+      {subtitle && <p className="mt-0.5 text-xs text-gray-400 dark:text-gray-500">{subtitle}</p>}
     </div>
   );
 }
@@ -344,7 +335,7 @@ function MiniBarChart({ data }: { data: DownloadPoint[] }) {
   const maxCount = Math.max(...data.map((d) => d.count), 1);
 
   return (
-    <div className="flex items-end gap-[3px] h-24">
+    <div className="flex h-24 items-end gap-[3px]">
       {data.map((d, i) => {
         const heightPct = Math.max((d.count / maxCount) * 100, 2);
         const label = new Date(d.date + 'T00:00:00').toLocaleDateString('en-US', {
@@ -353,13 +344,13 @@ function MiniBarChart({ data }: { data: DownloadPoint[] }) {
         });
 
         return (
-          <div key={d.date} className="flex-1 group relative">
+          <div key={d.date} className="group relative flex-1">
             <div
-              className="w-full rounded-t bg-brand-500/80 hover:bg-brand-500 transition-colors cursor-default"
+              className="w-full cursor-default rounded-t bg-brand-500/80 transition-colors hover:bg-brand-500"
               style={{ height: `${heightPct}%` }}
             />
-            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block z-10">
-              <div className="bg-gray-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap dark:bg-gray-700">
+            <div className="absolute bottom-full left-1/2 z-10 mb-1 hidden -translate-x-1/2 group-hover:block">
+              <div className="whitespace-nowrap rounded bg-gray-900 px-2 py-1 text-xs text-white dark:bg-gray-700">
                 {d.count} downloads
                 <br />
                 {label}
@@ -403,12 +394,12 @@ function ConnectPrompt() {
   }
 
   return (
-    <div className="border border-yellow-200 bg-yellow-50 rounded-xl p-5 flex items-center justify-between gap-4 dark:border-yellow-500/30 dark:bg-yellow-500/10">
+    <div className="flex items-center justify-between gap-4 rounded-xl border border-yellow-200 bg-yellow-50 p-5 dark:border-yellow-500/30 dark:bg-yellow-500/10">
       <div>
         <p className="text-sm font-semibold text-yellow-800 dark:text-yellow-300">
           Set up payouts to receive revenue from paid extensions
         </p>
-        <p className="text-sm text-yellow-700 mt-0.5 dark:text-yellow-400">
+        <p className="mt-0.5 text-sm text-yellow-700 dark:text-yellow-400">
           Connect your Stripe account to start receiving payments.
         </p>
       </div>

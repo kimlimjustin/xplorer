@@ -65,21 +65,18 @@ async function getCategories() {
 }
 
 export default async function ExtensionsPage() {
-  const [extensions, categories] = await Promise.all([
-    getExtensions(),
-    getCategories(),
-  ]);
+  const [extensions, categories] = await Promise.all([getExtensions(), getCategories()]);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Hero banner */}
-      <div className="text-center mb-10">
-        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white">
+      <div className="mb-10 text-center">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white sm:text-4xl">
           Extension Marketplace
         </h1>
-        <p className="mt-3 text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
-          Discover themes, previews, and tools built by the community to customize
-          and extend your Xplorer experience.
+        <p className="mx-auto mt-3 max-w-2xl text-lg text-gray-500 dark:text-gray-400">
+          Discover themes, previews, and tools built by the community to customize and extend your
+          Xplorer experience.
         </p>
         <div className="mt-4 flex items-center justify-center gap-6 text-sm text-gray-400 dark:text-gray-500">
           <span>{extensions.length} extensions</span>

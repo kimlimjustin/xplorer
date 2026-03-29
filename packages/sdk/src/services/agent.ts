@@ -34,10 +34,17 @@ export const agentWriteFileWithPermission = async (
   content: string,
   permissionGranted: boolean,
 ): Promise<void> => {
-  return await transport('agent_write_file_with_permission', { filePath, content, permissionGranted });
+  return await transport('agent_write_file_with_permission', {
+    filePath,
+    content,
+    permissionGranted,
+  });
 };
 
-export const agentRespondApproval = async (toolCallId: string, approved: boolean): Promise<void> => {
+export const agentRespondApproval = async (
+  toolCallId: string,
+  approved: boolean,
+): Promise<void> => {
   return await transport('agent_respond_approval', { toolCallId, approved });
 };
 

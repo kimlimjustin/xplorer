@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
   } catch {
     return NextResponse.json(
       { error: 'Admin access required' },
-      { status: 403, headers: corsHeaders(request) }
+      { status: 403, headers: corsHeaders(request) },
     );
   }
 
@@ -63,18 +63,25 @@ export async function GET(request: NextRequest) {
     });
 
     // Build monthly breakdown
-    const monthlyMap = new Map<string, {
-      purchases: number;
-      purchaseRevenue: number;
-      platformFees: number;
-      donations: number;
-      donationRevenue: number;
-    }>();
+    const monthlyMap = new Map<
+      string,
+      {
+        purchases: number;
+        purchaseRevenue: number;
+        platformFees: number;
+        donations: number;
+        donationRevenue: number;
+      }
+    >();
 
     for (const p of recentPurchases) {
       const key = `${p.createdAt.getFullYear()}-${String(p.createdAt.getMonth() + 1).padStart(2, '0')}`;
       const entry = monthlyMap.get(key) || {
-        purchases: 0, purchaseRevenue: 0, platformFees: 0, donations: 0, donationRevenue: 0,
+        purchases: 0,
+        purchaseRevenue: 0,
+        platformFees: 0,
+        donations: 0,
+        donationRevenue: 0,
       };
       entry.purchases++;
       entry.purchaseRevenue += p.amount;
@@ -85,7 +92,11 @@ export async function GET(request: NextRequest) {
     for (const d of recentDonations) {
       const key = `${d.createdAt.getFullYear()}-${String(d.createdAt.getMonth() + 1).padStart(2, '0')}`;
       const entry = monthlyMap.get(key) || {
-        purchases: 0, purchaseRevenue: 0, platformFees: 0, donations: 0, donationRevenue: 0,
+        purchases: 0,
+        purchaseRevenue: 0,
+        platformFees: 0,
+        donations: 0,
+        donationRevenue: 0,
       };
       entry.donations++;
       entry.donationRevenue += d.amount;
@@ -106,13 +117,13 @@ export async function GET(request: NextRequest) {
         totalDonationRevenue: donationStats._sum.amount || 0,
         monthlyBreakdown,
       },
-      { headers: corsHeaders(request) }
+      { headers: corsHeaders(request) },
     );
   } catch (error) {
     console.error('GET /api/admin/billing error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch billing stats' },
-      { status: 500, headers: corsHeaders(request) }
+      { status: 500, headers: corsHeaders(request) },
     );
   }
 }

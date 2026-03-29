@@ -19,7 +19,10 @@ export const gdriveListAccounts = async (): Promise<
   return await transport('gdrive_list_accounts');
 };
 
-export const gdriveListFiles = async (accountId: string, folderId: string): Promise<FileEntry[]> => {
+export const gdriveListFiles = async (
+  accountId: string,
+  folderId: string,
+): Promise<FileEntry[]> => {
   return await transport('gdrive_list_files', { accountId, folderId });
 };
 
@@ -72,10 +75,16 @@ export const gdriveGetFileContent = async (accountId: string, fileId: string): P
   return await transport('gdrive_get_file_content', { accountId, fileId });
 };
 
-export const getGdriveSettings = async (): Promise<{ client_id: string; client_secret: string }> => {
+export const getGdriveSettings = async (): Promise<{
+  client_id: string;
+  client_secret: string;
+}> => {
   return await transport('get_gdrive_settings');
 };
 
-export const updateGdriveSettings = async (clientId: string, clientSecret: string): Promise<void> => {
+export const updateGdriveSettings = async (
+  clientId: string,
+  clientSecret: string,
+): Promise<void> => {
   return await transport('update_gdrive_settings', { clientId, clientSecret });
 };

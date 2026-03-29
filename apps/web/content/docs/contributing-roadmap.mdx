@@ -12,173 +12,173 @@ Structured feature plan based on current codebase analysis. Each item includes e
 
 ### Bug Fixes & Edge Cases
 
-| Feature | Description | Effort | Priority |
-|---------|-------------|--------|----------|
-| Split view persistence | Save/restore split pane layout on restart | S | P1 |
-| Git status caching | Optimize expensive git status calls | S | P1 |
-| Archive password handling | Consistent error handling for encrypted archives | S | P1 |
-| Search index crash prevention | Graceful handling of corrupted index files | M | P1 |
-| Terminal encoding fix | Handle non-UTF8 output from commands | M | P1 |
-| Memory leak in AI indexing | Cancel pending indexing tasks on dir switch | M | P1 |
+| Feature                       | Description                                      | Effort | Priority |
+| ----------------------------- | ------------------------------------------------ | ------ | -------- |
+| Split view persistence        | Save/restore split pane layout on restart        | S      | P1       |
+| Git status caching            | Optimize expensive git status calls              | S      | P1       |
+| Archive password handling     | Consistent error handling for encrypted archives | S      | P1       |
+| Search index crash prevention | Graceful handling of corrupted index files       | M      | P1       |
+| Terminal encoding fix         | Handle non-UTF8 output from commands             | M      | P1       |
+| Memory leak in AI indexing    | Cancel pending indexing tasks on dir switch      | M      | P1       |
 
 ### Performance
 
-| Feature | Description | Effort | Priority |
-|---------|-------------|--------|----------|
-| Batch file metadata requests | Group metadata IPC calls to reduce overhead | M | P0 |
-| Virtual scrolling for 100k+ files | Optimize existing virtualization | M | P1 |
-| Lazy-load theme definitions | Load non-default themes on demand | S | P1 |
-| Search result deduplication | Remove duplicates in hybrid search | S | P1 |
+| Feature                           | Description                                 | Effort | Priority |
+| --------------------------------- | ------------------------------------------- | ------ | -------- |
+| Batch file metadata requests      | Group metadata IPC calls to reduce overhead | M      | P0       |
+| Virtual scrolling for 100k+ files | Optimize existing virtualization            | M      | P1       |
+| Lazy-load theme definitions       | Load non-default themes on demand           | S      | P1       |
+| Search result deduplication       | Remove duplicates in hybrid search          | S      | P1       |
 
 ### UX Polish
 
-| Feature | Description | Effort | Priority |
-|---------|-------------|--------|----------|
-| Keyboard shortcut hints | Discoverable tooltips on first launch | S | P2 |
-| Drag & drop feedback | Visual feedback during file drags | S | P2 |
-| Progress indicator for async ops | Cancellable progress for long operations | M | P2 |
-| Context menu accessibility | ARIA labels + keyboard nav for menus | M | P2 |
+| Feature                          | Description                              | Effort | Priority |
+| -------------------------------- | ---------------------------------------- | ------ | -------- |
+| Keyboard shortcut hints          | Discoverable tooltips on first launch    | S      | P2       |
+| Drag & drop feedback             | Visual feedback during file drags        | S      | P2       |
+| Progress indicator for async ops | Cancellable progress for long operations | M      | P2       |
+| Context menu accessibility       | ARIA labels + keyboard nav for menus     | M      | P2       |
 
 ## Phase 2: Core Features (v0.3.0)
 
 ### File Operations
 
-| Feature | Description | Effort | Priority |
-|---------|-------------|--------|----------|
-| Batch tag/annotation | Apply tags to multiple files at once | M | P1 |
-| Symlink support | Create, resolve, and visualize symlinks | M | P1 |
-| File locking detection | Warn when modifying locked files | S | P1 |
-| Undo/Redo history UI | Persistent undo/redo list (backend exists) | M | P2 |
-| Batch move with conflict UI | Multi-file moves with preview | M | P2 |
+| Feature                     | Description                                | Effort | Priority |
+| --------------------------- | ------------------------------------------ | ------ | -------- |
+| Batch tag/annotation        | Apply tags to multiple files at once       | M      | P1       |
+| Symlink support             | Create, resolve, and visualize symlinks    | M      | P1       |
+| File locking detection      | Warn when modifying locked files           | S      | P1       |
+| Undo/Redo history UI        | Persistent undo/redo list (backend exists) | M      | P2       |
+| Batch move with conflict UI | Multi-file moves with preview              | M      | P2       |
 
 ### Search & Indexing
 
-| Feature | Description | Effort | Priority |
-|---------|-------------|--------|----------|
-| Scheduled background indexing | Auto-index on timer (configurable) | M | P1 |
-| Search result preview window | Quick preview on hover | M | P1 |
-| Saved search queries | User-named persistent searches | M | P2 |
-| Search filters UI polish | Better date/size/type filter UX | M | P1 |
-| OCR for scanned images | Ollama vision API (infrastructure ready) | L | P2 |
+| Feature                       | Description                              | Effort | Priority |
+| ----------------------------- | ---------------------------------------- | ------ | -------- |
+| Scheduled background indexing | Auto-index on timer (configurable)       | M      | P1       |
+| Search result preview window  | Quick preview on hover                   | M      | P1       |
+| Saved search queries          | User-named persistent searches           | M      | P2       |
+| Search filters UI polish      | Better date/size/type filter UX          | M      | P1       |
+| OCR for scanned images        | Ollama vision API (infrastructure ready) | L      | P2       |
 
 ### Preview & Display
 
-| Feature | Description | Effort | Priority |
-|---------|-------------|--------|----------|
-| Archive preview | Browse inside archives without extraction | M | P1 |
-| Raw image metadata | EXIF, IPTC, XMP parsing for photos | M | P2 |
-| 3D model preview | .glb, .obj support with three.js | L | P3 |
-| Spreadsheet formula preview | Show formula in cell tooltip | S | P2 |
+| Feature                     | Description                               | Effort | Priority |
+| --------------------------- | ----------------------------------------- | ------ | -------- |
+| Archive preview             | Browse inside archives without extraction | M      | P1       |
+| Raw image metadata          | EXIF, IPTC, XMP parsing for photos        | M      | P2       |
+| 3D model preview            | .glb, .obj support with three.js          | L      | P3       |
+| Spreadsheet formula preview | Show formula in cell tooltip              | S      | P2       |
 
 ### Terminal
 
-| Feature | Description | Effort | Priority |
-|---------|-------------|--------|----------|
-| Terminal tab color coding | Color tabs by exit code/status | S | P2 |
-| Command history search | fzf-like history search | M | P2 |
-| Drag & drop to terminal | Paste file paths by dragging | M | P2 |
+| Feature                   | Description                    | Effort | Priority |
+| ------------------------- | ------------------------------ | ------ | -------- |
+| Terminal tab color coding | Color tabs by exit code/status | S      | P2       |
+| Command history search    | fzf-like history search        | M      | P2       |
+| Drag & drop to terminal   | Paste file paths by dragging   | M      | P2       |
 
 ### Git Integration
 
-| Feature | Description | Effort | Priority |
-|---------|-------------|--------|----------|
-| Git blame inline | Show blame info in code preview | M | P2 |
-| Merge conflict resolution UI | Visual merge conflict resolver | L | P2 |
-| Stash management UI | Improved stash list with preview | M | P2 |
-| Branch protection warnings | Warn before force pushes | S | P2 |
+| Feature                      | Description                      | Effort | Priority |
+| ---------------------------- | -------------------------------- | ------ | -------- |
+| Git blame inline             | Show blame info in code preview  | M      | P2       |
+| Merge conflict resolution UI | Visual merge conflict resolver   | L      | P2       |
+| Stash management UI          | Improved stash list with preview | M      | P2       |
+| Branch protection warnings   | Warn before force pushes         | S      | P2       |
 
 ## Phase 3: Advanced Features (v0.4.0)
 
 ### Claude Agent
 
-| Feature | Description | Effort | Priority |
-|---------|-------------|--------|----------|
-| Multi-turn context awareness | Better context window management | M | P1 |
-| Batch operations planning | Agent suggests optimized batch ops | M | P2 |
-| Agent learning from edits | Track corrections to improve suggestions | M | P3 |
-| Vision analysis for folders | Ollama vision to describe image folders | L | P2 |
+| Feature                      | Description                              | Effort | Priority |
+| ---------------------------- | ---------------------------------------- | ------ | -------- |
+| Multi-turn context awareness | Better context window management         | M      | P1       |
+| Batch operations planning    | Agent suggests optimized batch ops       | M      | P2       |
+| Agent learning from edits    | Track corrections to improve suggestions | M      | P3       |
+| Vision analysis for folders  | Ollama vision to describe image folders  | L      | P2       |
 
 ### File Organization & Cleanup
 
-| Feature | Description | Effort | Priority |
-|---------|-------------|--------|----------|
-| Smart folder creation | AI suggests folder structure | M | P1 |
-| Duplicate finder refinement | Perceptual hash for images | L | P2 |
-| Cleanup rules engine | User-defined auto-organize rules | M | P2 |
-| Storage analytics dashboard | Heat map, time-series trends | M | P2 |
+| Feature                     | Description                      | Effort | Priority |
+| --------------------------- | -------------------------------- | ------ | -------- |
+| Smart folder creation       | AI suggests folder structure     | M      | P1       |
+| Duplicate finder refinement | Perceptual hash for images       | L      | P2       |
+| Cleanup rules engine        | User-defined auto-organize rules | M      | P2       |
+| Storage analytics dashboard | Heat map, time-series trends     | M      | P2       |
 
 ### Collaboration
 
-| Feature | Description | Effort | Priority |
-|---------|-------------|--------|----------|
-| Google Drive sync | Two-way selective sync (infrastructure exists) | L | P1 |
-| WebDAV support | Mount WebDAV shares as virtual drives | L | P2 |
-| S3/Cloud storage browser | Browse S3, Azure Blob | L | P2 |
-| Share link generation | Temporary share links for files | M | P3 |
+| Feature                  | Description                                    | Effort | Priority |
+| ------------------------ | ---------------------------------------------- | ------ | -------- |
+| Google Drive sync        | Two-way selective sync (infrastructure exists) | L      | P1       |
+| WebDAV support           | Mount WebDAV shares as virtual drives          | L      | P2       |
+| S3/Cloud storage browser | Browse S3, Azure Blob                          | L      | P2       |
+| Share link generation    | Temporary share links for files                | M      | P3       |
 
 ### Extension Ecosystem
 
-| Feature | Description | Effort | Priority |
-|---------|-------------|--------|----------|
-| Extension hot reload | Reload without app restart (dev mode) | M | P2 |
-| Extension marketplace UI | Better browsing/install UX | M | P2 |
-| Extension permission UI | Granular, user-friendly approvals | M | P2 |
-| Extension debugging tools | DevTools-like panel for ext dev | L | P3 |
+| Feature                   | Description                           | Effort | Priority |
+| ------------------------- | ------------------------------------- | ------ | -------- |
+| Extension hot reload      | Reload without app restart (dev mode) | M      | P2       |
+| Extension marketplace UI  | Better browsing/install UX            | M      | P2       |
+| Extension permission UI   | Granular, user-friendly approvals     | M      | P2       |
+| Extension debugging tools | DevTools-like panel for ext dev       | L      | P3       |
 
 ### AI/NLP
 
-| Feature | Description | Effort | Priority |
-|---------|-------------|--------|----------|
-| Multi-language search | Non-ASCII filename support | M | P2 |
-| Context-aware recommendations | Smarter recs based on activity | M | P2 |
-| AI-powered rename suggestions | Context-aware filename suggestions | M | P2 |
-| Semantic file clustering | Group similar files via embeddings | L | P3 |
+| Feature                       | Description                        | Effort | Priority |
+| ----------------------------- | ---------------------------------- | ------ | -------- |
+| Multi-language search         | Non-ASCII filename support         | M      | P2       |
+| Context-aware recommendations | Smarter recs based on activity     | M      | P2       |
+| AI-powered rename suggestions | Context-aware filename suggestions | M      | P2       |
+| Semantic file clustering      | Group similar files via embeddings | L      | P3       |
 
 ## Phase 4: Ecosystem (v0.5.0+)
 
 ### Native Integration
 
-| Feature | Description | Effort | Priority |
-|---------|-------------|--------|----------|
-| Default file manager | Set Xplorer as system default | M | P2 |
-| Desktop context menu | "Open with Xplorer" right-click | M | P2 |
-| System thumbnail cache | OS-level thumbnail caching | L | P3 |
-| Native notifications | OS notifications for operations | S | P3 |
+| Feature                | Description                     | Effort | Priority |
+| ---------------------- | ------------------------------- | ------ | -------- |
+| Default file manager   | Set Xplorer as system default   | M      | P2       |
+| Desktop context menu   | "Open with Xplorer" right-click | M      | P2       |
+| System thumbnail cache | OS-level thumbnail caching      | L      | P3       |
+| Native notifications   | OS notifications for operations | S      | P3       |
 
 ### Remote/Cloud
 
-| Feature | Description | Effort | Priority |
-|---------|-------------|--------|----------|
-| SSH file browser | Full remote browsing (infra exists) | L | P1 |
-| SFTP protocol | Full SFTP integration | L | P2 |
-| Remote AI analysis | Run Ollama on remote servers | L | P3 |
+| Feature            | Description                         | Effort | Priority |
+| ------------------ | ----------------------------------- | ------ | -------- |
+| SSH file browser   | Full remote browsing (infra exists) | L      | P1       |
+| SFTP protocol      | Full SFTP integration               | L      | P2       |
+| Remote AI analysis | Run Ollama on remote servers        | L      | P3       |
 
 ### Cross-Platform
 
-| Feature | Description | Effort | Priority |
-|---------|-------------|--------|----------|
-| Mobile companion app | React Native file browser | XL | P2 |
-| Web interface | Browser-based access via web mode | L | P2 |
-| Companion CLI | Command-line tool for automation | M | P2 |
+| Feature              | Description                       | Effort | Priority |
+| -------------------- | --------------------------------- | ------ | -------- |
+| Mobile companion app | React Native file browser         | XL     | P2       |
+| Web interface        | Browser-based access via web mode | L      | P2       |
+| Companion CLI        | Command-line tool for automation  | M      | P2       |
 
 ## Phase 5: Ongoing
 
 ### Accessibility
 
-| Feature | Description | Effort | Priority |
-|---------|-------------|--------|----------|
-| Screen reader optimization | Full ARIA across all components | M | P1 |
-| Keyboard-only mode | Complete nav without mouse | M | P1 |
-| High contrast themes | Additional HC theme options | S | P2 |
+| Feature                    | Description                     | Effort | Priority |
+| -------------------------- | ------------------------------- | ------ | -------- |
+| Screen reader optimization | Full ARIA across all components | M      | P1       |
+| Keyboard-only mode         | Complete nav without mouse      | M      | P1       |
+| High contrast themes       | Additional HC theme options     | S      | P2       |
 
 ### Security Hardening
 
-| Feature | Description | Effort | Priority |
-|---------|-------------|--------|----------|
-| Secure credential storage | Full keychain integration | M | P1 |
-| Encrypted annotations | E2E encryption for metadata | M | P2 |
-| Audit logging | Log sensitive operations | M | P2 |
-| Stricter extension sandbox | iframe-based isolation | M | P2 |
+| Feature                    | Description                 | Effort | Priority |
+| -------------------------- | --------------------------- | ------ | -------- |
+| Secure credential storage  | Full keychain integration   | M      | P1       |
+| Encrypted annotations      | E2E encryption for metadata | M      | P2       |
+| Audit logging              | Log sensitive operations    | M      | P2       |
+| Stricter extension sandbox | iframe-based isolation      | M      | P2       |
 
 ## Tech Debt
 

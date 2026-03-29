@@ -34,7 +34,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     } catch {
       return NextResponse.json(
         { error: 'Too many requests. Please try again later.' },
-        { status: 429, headers: corsHeaders(request) }
+        { status: 429, headers: corsHeaders(request) },
       );
     }
 
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Authentication required' },
-        { status: 401, headers: corsHeaders(request) }
+        { status: 401, headers: corsHeaders(request) },
       );
     }
 
@@ -82,7 +82,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     if (!extension) {
       return NextResponse.json(
         { error: 'Extension not found' },
-        { status: 404, headers: corsHeaders(request) }
+        { status: 404, headers: corsHeaders(request) },
       );
     }
 
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     if (!extension.isPublished || extension.status !== 'APPROVED') {
       return NextResponse.json(
         { error: 'Extension is not available for purchase' },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     if (extension.pricingType !== 'PAID' || !extension.price) {
       return NextResponse.json(
         { error: 'This extension is free and does not require purchase' },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
@@ -106,7 +106,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     if (extension.authorId === session.user.id) {
       return NextResponse.json(
         { error: 'You cannot purchase your own extension' },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
@@ -114,7 +114,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     if (!extension.author.stripeConnectAccountId || !extension.author.stripeConnectOnboarded) {
       return NextResponse.json(
         { error: 'Extension author has not completed payment setup' },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
@@ -132,7 +132,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     if (!user) {
       return NextResponse.json(
         { error: 'User not found' },
-        { status: 404, headers: corsHeaders(request) }
+        { status: 404, headers: corsHeaders(request) },
       );
     }
 
@@ -178,14 +178,14 @@ export async function POST(request: NextRequest, context: RouteContext) {
       if (purchase.status === 'completed') {
         return NextResponse.json(
           { error: 'You have already purchased this extension' },
-          { status: 400, headers: corsHeaders(request) }
+          { status: 400, headers: corsHeaders(request) },
         );
       }
     } catch (err: any) {
       if (err?.code === 'P2002') {
         return NextResponse.json(
           { error: 'A checkout is already in progress for this extension' },
-          { status: 409, headers: corsHeaders(request) }
+          { status: 409, headers: corsHeaders(request) },
         );
       }
       throw err;
@@ -244,15 +244,12 @@ export async function POST(request: NextRequest, context: RouteContext) {
       },
     });
 
-    return NextResponse.json(
-      { url: checkoutSession.url },
-      { headers: corsHeaders(request) }
-    );
+    return NextResponse.json({ url: checkoutSession.url }, { headers: corsHeaders(request) });
   } catch (error) {
     console.error('POST /api/extensions/[id]/purchase error:', error);
     return NextResponse.json(
       { error: 'Failed to create checkout session' },
-      { status: 500, headers: corsHeaders(request) }
+      { status: 500, headers: corsHeaders(request) },
     );
   }
 }

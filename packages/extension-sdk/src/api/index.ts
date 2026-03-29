@@ -396,13 +396,17 @@ export const Command = {
       },
 
       async activate() {
-        const cmd = api.commands.register(config.id, async () => {
-          try {
-            await config.action(api);
-          } catch (err) {
-            console.error(`[ExtensionHost] Command action failed for "${config.id}":`, err);
-          }
-        }, { title: config.title, shortcut: config.shortcut });
+        const cmd = api.commands.register(
+          config.id,
+          async () => {
+            try {
+              await config.action(api);
+            } catch (err) {
+              console.error(`[ExtensionHost] Command action failed for "${config.id}":`, err);
+            }
+          },
+          { title: config.title, shortcut: config.shortcut },
+        );
         disposables.push(cmd);
 
         if (config.shortcut) {

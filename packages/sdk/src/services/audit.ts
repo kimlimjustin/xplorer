@@ -6,7 +6,7 @@ export const getAuditLog = async (
   offset?: number,
   operationFilter?: string,
   dateFrom?: string,
-  dateTo?: string
+  dateTo?: string,
 ): Promise<AuditLogQuery> => {
   return await transport('get_audit_log', { limit, offset, operationFilter, dateFrom, dateTo });
 };

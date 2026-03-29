@@ -21,6 +21,10 @@ export const useToast = () => {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const toast = (_opts: { title?: string; description?: any; variant?: string }): { id: string; dismiss: () => void } => {
+export const toast = (_opts: {
+  title?: string;
+  description?: any;
+  variant?: string;
+}): { id: string; dismiss: () => void } => {
   return { id: 'mock-toast', dismiss: () => {} };
 };

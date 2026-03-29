@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
     if (!parsed.success) {
       return NextResponse.json(
         { error: 'Validation failed', details: parsed.error.flatten() },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
@@ -110,7 +110,7 @@ export async function POST(request: NextRequest) {
       .map((dbExt) => {
         // Match by id, name, or slug
         const clientExt = extensions.find(
-          (e) => e.id === dbExt.id || e.id === dbExt.name || e.id === dbExt.slug
+          (e) => e.id === dbExt.id || e.id === dbExt.name || e.id === dbExt.slug,
         );
         if (!clientExt) return null;
 
@@ -141,7 +141,7 @@ export async function POST(request: NextRequest) {
     console.error('POST /api/extensions/check-updates error:', error);
     return NextResponse.json(
       { error: 'Failed to check updates' },
-      { status: 500, headers: corsHeaders(request) }
+      { status: 500, headers: corsHeaders(request) },
     );
   }
 }

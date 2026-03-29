@@ -106,15 +106,19 @@ export default function AdminPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[50vh]">
+      <div className="flex min-h-[50vh] items-center justify-center">
         <Spinner className="h-8 w-8 text-brand-500" />
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      {error && <div className="rounded-lg bg-red-50 p-4 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-400">{error}</div>}
+    <div className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
+      {error && (
+        <div className="rounded-lg bg-red-50 p-4 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-400">
+          {error}
+        </div>
+      )}
 
       <div className="flex items-center gap-3">
         <ShieldAlert className="h-6 w-6 text-brand-600" />
@@ -123,7 +127,7 @@ export default function AdminPage() {
 
       {/* Stats */}
       {stats && (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
           <AdminStatCard
             icon={Users}
             label="Total Users"
@@ -162,8 +166,8 @@ export default function AdminPage() {
       </div>
 
       {/* Pending extensions table */}
-      <div className="border border-gray-200 rounded-xl overflow-hidden dark:border-gray-800">
-        <div className="px-6 py-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between dark:border-gray-800 dark:bg-gray-900">
+      <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800">
+        <div className="flex items-center justify-between border-b border-gray-100 bg-gray-50 px-6 py-4 dark:border-gray-800 dark:bg-gray-900">
           <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
             Pending Extensions
           </h2>
@@ -172,14 +176,16 @@ export default function AdminPage() {
 
         {pending.length === 0 ? (
           <div className="px-6 py-12 text-center">
-            <CheckCircle className="h-10 w-10 text-green-400 mx-auto mb-3" />
-            <p className="text-gray-500 dark:text-gray-400">All caught up! No extensions pending review.</p>
+            <CheckCircle className="mx-auto mb-3 h-10 w-10 text-green-400" />
+            <p className="text-gray-500 dark:text-gray-400">
+              All caught up! No extensions pending review.
+            </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-gray-500 border-b border-gray-100 dark:text-gray-400 dark:border-gray-800">
+                <tr className="border-b border-gray-100 text-left text-gray-500 dark:border-gray-800 dark:text-gray-400">
                   <th className="px-6 py-3 font-medium">Extension</th>
                   <th className="px-6 py-3 font-medium">Author</th>
                   <th className="px-6 py-3 font-medium">Version</th>
@@ -189,7 +195,10 @@ export default function AdminPage() {
               </thead>
               <tbody>
                 {pending.map((ext) => (
-                  <tr key={ext.id} className="border-b border-gray-50 hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800">
+                  <tr
+                    key={ext.id}
+                    className="border-b border-gray-50 hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800"
+                  >
                     <td className="px-6 py-3">
                       <div>
                         <Link
@@ -198,7 +207,7 @@ export default function AdminPage() {
                         >
                           {ext.displayName}
                         </Link>
-                        <p className="text-xs text-gray-500 mt-0.5 line-clamp-1 dark:text-gray-400">
+                        <p className="mt-0.5 line-clamp-1 text-xs text-gray-500 dark:text-gray-400">
                           {ext.description}
                         </p>
                       </div>
@@ -264,8 +273,8 @@ function AdminStatCard({
   color: string;
 }) {
   return (
-    <div className="border border-gray-200 rounded-xl p-5 dark:border-gray-800">
-      <div className={`inline-flex items-center justify-center h-10 w-10 rounded-lg ${color} mb-3`}>
+    <div className="rounded-xl border border-gray-200 p-5 dark:border-gray-800">
+      <div className={`inline-flex h-10 w-10 items-center justify-center rounded-lg ${color} mb-3`}>
         <Icon className="h-5 w-5" />
       </div>
       <p className="text-2xl font-bold text-gray-900 dark:text-white">{value}</p>

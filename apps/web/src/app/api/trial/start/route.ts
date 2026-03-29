@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     } catch {
       return NextResponse.json(
         { error: 'Too many requests. Please try again later.' },
-        { status: 429, headers: corsHeaders(request) }
+        { status: 429, headers: corsHeaders(request) },
       );
     }
 
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Authentication required' },
-        { status: 401, headers: corsHeaders(request) }
+        { status: 401, headers: corsHeaders(request) },
       );
     }
 
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
     if (!parsed.success) {
       return NextResponse.json(
         { error: 'Validation failed', details: parsed.error.flatten() },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
@@ -53,22 +53,25 @@ export async function POST(request: NextRequest) {
     if (!extension) {
       return NextResponse.json(
         { error: 'Extension not found' },
-        { status: 404, headers: corsHeaders(request) }
+        { status: 404, headers: corsHeaders(request) },
       );
     }
 
     if (!extension.isPublished || extension.status !== 'APPROVED') {
       return NextResponse.json(
         { error: 'Extension is not available' },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
     // HIGH-06: Reject trial creation for FREE extensions — trials only apply to paid or tier-limited extensions
     if (extension.pricingType === 'FREE') {
       return NextResponse.json(
-        { error: 'Trials are not available for free extensions. You can download this extension directly.' },
-        { status: 400, headers: corsHeaders(request) }
+        {
+          error:
+            'Trials are not available for free extensions. You can download this extension directly.',
+        },
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
@@ -107,20 +110,20 @@ export async function POST(request: NextRequest) {
             ? `Trial started for ${extension.displayName}. Expires in 30 minutes.`
             : 'Trial is already active',
         },
-        { status: isNew ? 201 : 200, headers: corsHeaders(request) }
+        { status: isNew ? 201 : 200, headers: corsHeaders(request) },
       );
     }
 
     // Trial already used and expired
     return NextResponse.json(
       { error: 'Trial already used for this extension. Please purchase or upgrade to Pro.' },
-      { status: 400, headers: corsHeaders(request) }
+      { status: 400, headers: corsHeaders(request) },
     );
   } catch (error) {
     console.error('POST /api/trial/start error:', error);
     return NextResponse.json(
       { error: 'Failed to start trial' },
-      { status: 500, headers: corsHeaders(request) }
+      { status: 500, headers: corsHeaders(request) },
     );
   }
 }

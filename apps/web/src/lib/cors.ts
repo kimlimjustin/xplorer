@@ -3,7 +3,14 @@ import { NextRequest, NextResponse } from 'next/server';
 const ALLOWED_ORIGINS = [
   'tauri://localhost',
   'https://tauri.localhost',
-  ...(process.env.NODE_ENV === 'development' ? ['http://localhost:1420', 'http://localhost:3000', 'http://localhost:5173', 'http://localhost:5174'] : []),
+  ...(process.env.NODE_ENV === 'development'
+    ? [
+        'http://localhost:1420',
+        'http://localhost:3000',
+        'http://localhost:5173',
+        'http://localhost:5174',
+      ]
+    : []),
   ...(process.env.NEXT_PUBLIC_APP_URL ? [process.env.NEXT_PUBLIC_APP_URL] : []),
 ];
 

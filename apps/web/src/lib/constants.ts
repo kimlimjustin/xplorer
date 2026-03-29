@@ -1,5 +1,6 @@
 // Platform constants (mock for web — used by imported client components)
-export const isWindows = typeof navigator !== 'undefined' ? navigator.platform?.startsWith('Win') ?? true : true;
+export const isWindows =
+  typeof navigator !== 'undefined' ? (navigator.platform?.startsWith('Win') ?? true) : true;
 export const PATH_SEPARATOR = isWindows ? '\\' : '/';
 export const ROOT_PATH = isWindows ? 'C:\\' : '/';
 

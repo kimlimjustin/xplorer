@@ -1,10 +1,5 @@
 import { transport } from '../transport';
-import type {
-  ChatSessionSummary,
-  ChatSession,
-  ChatFileData,
-  ChatFileSummary,
-} from '../types';
+import type { ChatSessionSummary, ChatSession, ChatFileData, ChatFileSummary } from '../types';
 
 export const getChatSessions = async (): Promise<ChatSessionSummary[]> => {
   return await transport('get_chat_sessions');

@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     } catch {
       return NextResponse.json(
         { error: 'Too many requests. Please try again later.' },
-        { status: 429, headers: corsHeaders(request) }
+        { status: 429, headers: corsHeaders(request) },
       );
     }
 
@@ -111,13 +111,13 @@ export async function GET(request: NextRequest) {
           totalPages: Math.ceil(total / limit),
         },
       },
-      { headers: corsHeaders(request) }
+      { headers: corsHeaders(request) },
     );
   } catch (error) {
     console.error('GET /api/extensions error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch extensions' },
-      { status: 500, headers: corsHeaders(request) }
+      { status: 500, headers: corsHeaders(request) },
     );
   }
 }
@@ -134,7 +134,7 @@ export async function POST(request: NextRequest) {
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Authentication required' },
-        { status: 401, headers: corsHeaders(request) }
+        { status: 401, headers: corsHeaders(request) },
       );
     }
 
@@ -143,21 +143,24 @@ export async function POST(request: NextRequest) {
     if (!parsed.success) {
       return NextResponse.json(
         { error: 'Validation failed', details: parsed.error.flatten() },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
     const data = parsed.data;
 
     // Generate slug from name
-    const slug = data.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const slug = data.name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
 
     // Validate paid extension requirements (outside transaction — read-only checks)
     if (data.pricingType === 'PAID') {
       if (!data.price || data.price < 99) {
         return NextResponse.json(
           { error: 'Paid extensions must have a price of at least $0.99' },
-          { status: 400, headers: corsHeaders(request) }
+          { status: 400, headers: corsHeaders(request) },
         );
       }
 
@@ -168,8 +171,10 @@ export async function POST(request: NextRequest) {
 
       if (!author?.stripeConnectOnboarded) {
         return NextResponse.json(
-          { error: 'You must complete Stripe Connect onboarding before publishing paid extensions' },
-          { status: 400, headers: corsHeaders(request) }
+          {
+            error: 'You must complete Stripe Connect onboarding before publishing paid extensions',
+          },
+          { status: 400, headers: corsHeaders(request) },
         );
       }
     }
@@ -240,13 +245,13 @@ export async function POST(request: NextRequest) {
     if (error instanceof Error && error.message === 'DUPLICATE_EXTENSION') {
       return NextResponse.json(
         { error: 'An extension with this name already exists' },
-        { status: 409, headers: corsHeaders(request) }
+        { status: 409, headers: corsHeaders(request) },
       );
     }
     console.error('POST /api/extensions error:', error);
     return NextResponse.json(
       { error: 'Failed to create extension' },
-      { status: 500, headers: corsHeaders(request) }
+      { status: 500, headers: corsHeaders(request) },
     );
   }
 }

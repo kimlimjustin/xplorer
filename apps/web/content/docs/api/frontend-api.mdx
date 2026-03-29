@@ -18,13 +18,13 @@ As of the two-layer SDK architecture, `TauriAPI` is a thin facade that delegates
 import { TauriAPI } from '@/lib/tauri-api';
 
 // Read a directory
-const files = await TauriAPI.readDirectory("C:\\Users\\username\\Documents");
+const files = await TauriAPI.readDirectory('C:\\Users\\username\\Documents');
 
 // Copy a file with progress
 await TauriAPI.copyWithProgress(source, destination, operationId);
 
 // Search files
-const results = await TauriAPI.searchFiles("quarterly report", 20);
+const results = await TauriAPI.searchFiles('quarterly report', 20);
 ```
 
 ## TauriAPI Methods
@@ -135,9 +135,9 @@ import { AIService } from '@/lib/ai-service';
 const ai = new AIService();
 
 // Send a chat message
-const response = await ai.sendMessage("Summarize files in this folder", {
-  model: "llama3.2",
-  context: { currentPath: "/Users/docs" }
+const response = await ai.sendMessage('Summarize files in this folder', {
+  model: 'llama3.2',
+  context: { currentPath: '/Users/docs' },
 });
 ```
 
@@ -152,8 +152,8 @@ const agent = new AgentService();
 
 // Execute an agent action
 const result = await agent.execute({
-  action: "analyze",
-  target: "/path/to/file.txt"
+  action: 'analyze',
+  target: '/path/to/file.txt',
 });
 ```
 

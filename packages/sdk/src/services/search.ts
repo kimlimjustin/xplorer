@@ -20,7 +20,10 @@ export const searchInFiles = async (
   return await transport('search_in_files', { pattern, searchPath });
 };
 
-export const parseSearchQuery = async (query: string, language?: string): Promise<StructuredQuery> => {
+export const parseSearchQuery = async (
+  query: string,
+  language?: string,
+): Promise<StructuredQuery> => {
   return await transport('parse_search_query', { query, language: language || null });
 };
 
@@ -29,7 +32,11 @@ export const enhancedSearch = async (
   language?: string,
   limit?: number,
 ): Promise<EnhancedSearchResult> => {
-  return await transport('enhanced_search', { query, language: language || null, limit: limit || null });
+  return await transport('enhanced_search', {
+    query,
+    language: language || null,
+    limit: limit || null,
+  });
 };
 
 export const aiSearch = async (
@@ -52,7 +59,10 @@ export const semanticSearch = async (query: string, limit?: number): Promise<Sea
   return await transport('semantic_search', { query, limit: limit || null });
 };
 
-export const findSimilarFiles = async (filePath: string, limit?: number): Promise<SearchResult[]> => {
+export const findSimilarFiles = async (
+  filePath: string,
+  limit?: number,
+): Promise<SearchResult[]> => {
   return await transport('find_similar_files', { filePath, limit: limit || null });
 };
 
@@ -96,7 +106,10 @@ export const addPathToTokenizer = async (path: string): Promise<void> => {
   return await transport('add_path_to_tokenizer', { path });
 };
 
-export const getFileRecommendations = async (filePath: string, limit?: number): Promise<SearchResult[]> => {
+export const getFileRecommendations = async (
+  filePath: string,
+  limit?: number,
+): Promise<SearchResult[]> => {
   return await transport('get_file_recommendations', { filePath, limit });
 };
 
@@ -120,6 +133,9 @@ export const stopSearchWatcher = async (path?: string): Promise<void> => {
   return await transport('stop_search_watcher', { path: path || null });
 };
 
-export const getSearchWatcherStatus = async (): Promise<{ running: boolean; watched_paths: string[] }> => {
+export const getSearchWatcherStatus = async (): Promise<{
+  running: boolean;
+  watched_paths: string[];
+}> => {
   return await transport('get_search_watcher_status');
 };

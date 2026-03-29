@@ -79,6 +79,8 @@ export const showOpenDialog = async (options: {
   }
 };
 
-export const listenToTerminalOutput = (callback: (message: string) => void): Promise<() => void> => {
+export const listenToTerminalOutput = (
+  callback: (message: string) => void,
+): Promise<() => void> => {
   return listenToEvent<string>('terminal-output', callback);
 };

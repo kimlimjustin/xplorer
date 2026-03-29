@@ -1,5 +1,14 @@
 // ── High-level APIs (recommended for extension authors) ────────────────────
-export { Sidebar, SidebarTab, Theme, Command, ContextMenu, Preview, Editor, BottomTab } from './api';
+export {
+  Sidebar,
+  SidebarTab,
+  Theme,
+  Command,
+  ContextMenu,
+  Preview,
+  Editor,
+  BottomTab,
+} from './api';
 export type {
   ThemeConfig,
   ThemeColors,

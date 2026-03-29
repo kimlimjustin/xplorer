@@ -10,26 +10,26 @@ The Xplorer frontend is a React 18 single-page application bundled with Vite and
 
 ## Technology Stack
 
-| Technology | Purpose |
-|-----------|---------|
-| React 18 | UI framework |
-| TypeScript 5.6 | Type safety |
-| Vite 5 | Build tool and dev server |
-| Wouter | Lightweight client-side routing |
-| TanStack React Query | Server state management |
-| Tailwind CSS 3 | Utility-first styling |
-| Lucide React | Icon library |
+| Technology           | Purpose                         |
+| -------------------- | ------------------------------- |
+| React 18             | UI framework                    |
+| TypeScript 5.6       | Type safety                     |
+| Vite 5               | Build tool and dev server       |
+| Wouter               | Lightweight client-side routing |
+| TanStack React Query | Server state management         |
+| Tailwind CSS 3       | Utility-first styling           |
+| Lucide React         | Icon library                    |
 
 ## Routing
 
 Xplorer uses [Wouter](https://github.com/molefrog/wouter) for routing, defined in `App.tsx`:
 
-| Route | Component | Description |
-|-------|-----------|-------------|
-| `/` | `ExplorerUnified` | Main file explorer |
+| Route       | Component         | Description             |
+| ----------- | ----------------- | ----------------------- |
+| `/`         | `ExplorerUnified` | Main file explorer      |
 | `/explorer` | `ExplorerUnified` | Alias for main explorer |
-| `/settings` | `Settings` | Application settings |
-| `*` | `NotFound` | 404 fallback |
+| `/settings` | `Settings`        | Application settings    |
+| `*`         | `NotFound`        | 404 fallback            |
 
 ## Component Hierarchy
 
@@ -40,9 +40,11 @@ Xplorer uses [Wouter](https://github.com/molefrog/wouter) for routing, defined i
 Xplorer uses a combination of:
 
 ### Local State (useState)
+
 The main `xplorer.tsx` component manages ~40 state variables for UI state like current path, selected files, sidebar visibility, etc. UI state is persisted to `localStorage` across sessions.
 
 ### TanStack React Query
+
 Used for caching and managing async data from the Tauri backend:
 
 ```typescript
@@ -59,20 +61,20 @@ const queryClient = new QueryClient({
 
 ### Custom Hooks
 
-| Hook | File | Purpose |
-|------|------|---------|
-| `useShortcuts` | `hooks/use-shortcuts.ts` | Global keyboard shortcut handling |
-| `useToast` | `hooks/use-toast.ts` | Toast notification system |
-| `useFolderSizes` | `hooks/use-folder-sizes.ts` | Async folder size calculation |
-| `useSplitLayout` | `hooks/use-split-layout.ts` | Split view layout management |
-| `useVimMode` | `hooks/use-vim-mode.ts` | Vim-style keyboard navigation |
-| `useDraggable` | `hooks/use-draggable.ts` | Drag source behavior for files |
-| `useDroppable` | `hooks/use-droppable.ts` | Drop target behavior for files |
-| `useExternalDrop` | `hooks/use-external-drop.ts` | External file drop handling |
-| `useFileComparison` | `hooks/use-file-comparison.ts` | File comparison utilities |
-| `useTour` | `hooks/use-tour.ts` | Guided tour overlay state |
-| `useDialogs` | `hooks/use-dialogs.ts` | Dialog management |
-| `useClipboard` | `hooks/use-clipboard.ts` | Clipboard operations (cut/copy/paste) |
+| Hook                | File                           | Purpose                               |
+| ------------------- | ------------------------------ | ------------------------------------- |
+| `useShortcuts`      | `hooks/use-shortcuts.ts`       | Global keyboard shortcut handling     |
+| `useToast`          | `hooks/use-toast.ts`           | Toast notification system             |
+| `useFolderSizes`    | `hooks/use-folder-sizes.ts`    | Async folder size calculation         |
+| `useSplitLayout`    | `hooks/use-split-layout.ts`    | Split view layout management          |
+| `useVimMode`        | `hooks/use-vim-mode.ts`        | Vim-style keyboard navigation         |
+| `useDraggable`      | `hooks/use-draggable.ts`       | Drag source behavior for files        |
+| `useDroppable`      | `hooks/use-droppable.ts`       | Drop target behavior for files        |
+| `useExternalDrop`   | `hooks/use-external-drop.ts`   | External file drop handling           |
+| `useFileComparison` | `hooks/use-file-comparison.ts` | File comparison utilities             |
+| `useTour`           | `hooks/use-tour.ts`            | Guided tour overlay state             |
+| `useDialogs`        | `hooks/use-dialogs.ts`         | Dialog management                     |
+| `useClipboard`      | `hooks/use-clipboard.ts`       | Clipboard operations (cut/copy/paste) |
 
 ## Tauri API Bridge
 
@@ -80,10 +82,10 @@ All communication with the Rust backend goes through `lib/tauri-api.ts`. This fi
 
 ```typescript
 // Example: Reading a directory
-const files = await TauriAPI.readDirectory("C:\\Users");
+const files = await TauriAPI.readDirectory('C:\\Users');
 
 // Under the hood:
-invoke('read_directory', { path: "C:\\Users" });
+invoke('read_directory', { path: 'C:\\Users' });
 ```
 
 See [Frontend API Reference](/docs/api/frontend-api) for the complete list.
@@ -128,9 +130,9 @@ Right-click menus are generated dynamically using a factory pattern:
 ```typescript
 // context-menu-factory.ts
 class ContextMenuFactory {
-  getFileContextMenu(file, options)      // Single file menu
-  getMultiFileContextMenu(files, options) // Multi-selection menu
-  getEmptySpaceContextMenu(options)      // Background click menu
+  getFileContextMenu(file, options); // Single file menu
+  getMultiFileContextMenu(files, options); // Multi-selection menu
+  getEmptySpaceContextMenu(options); // Background click menu
 }
 ```
 

@@ -3,13 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import {
-  Heart,
-  ArrowUpRight,
-  CheckCircle,
-  RefreshCw,
-  ExternalLink,
-} from 'lucide-react';
+import { Heart, ArrowUpRight, CheckCircle, RefreshCw, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Spinner } from '@/components/ui/Spinner';
@@ -76,9 +70,7 @@ export default function BillingPage() {
       const res = await fetch('/api/sponsors/check', { method: 'POST' });
       if (res.ok) {
         const data = await res.json();
-        setSubscription((prev) =>
-          prev ? { ...prev, tier: data.subscriptionTier } : prev,
-        );
+        setSubscription((prev) => (prev ? { ...prev, tier: data.subscriptionTier } : prev));
         setRefreshMessage(
           data.isSponsor
             ? 'Sponsor status confirmed! You have Pro access.'
@@ -113,7 +105,7 @@ export default function BillingPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[50vh]">
+      <div className="flex min-h-[50vh] items-center justify-center">
         <Spinner className="h-8 w-8 text-brand-500" />
       </div>
     );
@@ -121,9 +113,15 @@ export default function BillingPage() {
 
   return (
     <div className="space-y-8">
-      {error && <div className="rounded-lg bg-red-50 p-4 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-400">{error}</div>}
+      {error && (
+        <div className="rounded-lg bg-red-50 p-4 text-sm text-red-700 dark:bg-red-500/10 dark:text-red-400">
+          {error}
+        </div>
+      )}
       {refreshMessage && (
-        <div className="rounded-lg bg-blue-50 p-4 text-sm text-blue-700 dark:bg-blue-500/10 dark:text-blue-400">{refreshMessage}</div>
+        <div className="rounded-lg bg-blue-50 p-4 text-sm text-blue-700 dark:bg-blue-500/10 dark:text-blue-400">
+          {refreshMessage}
+        </div>
       )}
 
       <div>
@@ -134,8 +132,8 @@ export default function BillingPage() {
       </div>
 
       {/* Subscription card */}
-      <div className="border border-gray-200 rounded-xl p-6 dark:border-gray-800">
-        <div className="flex items-center justify-between mb-4">
+      <div className="rounded-xl border border-gray-200 p-6 dark:border-gray-800">
+        <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Current Plan</h2>
           <Badge variant={subscription?.tier === 'PRO' ? 'brand' : 'default'}>
             {subscription?.tier || 'FREE'}
@@ -149,8 +147,8 @@ export default function BillingPage() {
               Active — thank you for sponsoring Xplorer!
             </div>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Your Pro access is linked to your GitHub Sponsors subscription.
-              Manage it directly on GitHub.
+              Your Pro access is linked to your GitHub Sponsors subscription. Manage it directly on
+              GitHub.
             </p>
             <div className="flex gap-3">
               <a href={SPONSOR_URL} target="_blank" rel="noopener noreferrer">
@@ -159,11 +157,7 @@ export default function BillingPage() {
                   Manage on GitHub
                 </Button>
               </a>
-              <Button
-                variant="ghost"
-                onClick={handleRefreshSponsor}
-                disabled={refreshing}
-              >
+              <Button variant="ghost" onClick={handleRefreshSponsor} disabled={refreshing}>
                 <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
                 Refresh Status
               </Button>
@@ -172,8 +166,8 @@ export default function BillingPage() {
         ) : (
           <div className="space-y-3">
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              You are on the Free plan. Become a GitHub Sponsor to unlock Pro —
-              unlimited extensions, reduced platform fees, and priority support.
+              You are on the Free plan. Become a GitHub Sponsor to unlock Pro — unlimited
+              extensions, reduced platform fees, and priority support.
             </p>
             <div className="flex gap-3">
               <a href={SPONSOR_URL} target="_blank" rel="noopener noreferrer">
@@ -182,29 +176,25 @@ export default function BillingPage() {
                   Become a Sponsor
                 </Button>
               </a>
-              <Button
-                variant="ghost"
-                onClick={handleRefreshSponsor}
-                disabled={refreshing}
-              >
+              <Button variant="ghost" onClick={handleRefreshSponsor} disabled={refreshing}>
                 <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
                 Refresh Status
               </Button>
             </div>
             <p className="text-xs text-gray-400 dark:text-gray-500">
-              Already sponsoring? Click &quot;Refresh Status&quot; to sync your account.
-              Status is also automatically checked each time you sign in.
+              Already sponsoring? Click &quot;Refresh Status&quot; to sync your account. Status is
+              also automatically checked each time you sign in.
             </p>
           </div>
         )}
       </div>
 
       {/* Connect for authors */}
-      <div className="border border-gray-200 rounded-xl p-6 dark:border-gray-800">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2 dark:text-white">
+      <div className="rounded-xl border border-gray-200 p-6 dark:border-gray-800">
+        <h2 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
           Payouts (Extension Authors)
         </h2>
-        <p className="text-sm text-gray-500 mb-4 dark:text-gray-400">
+        <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
           Set up Stripe Connect to receive payouts from paid extension sales.
         </p>
 
@@ -226,8 +216,8 @@ export default function BillingPage() {
       </div>
 
       {/* Purchase history */}
-      <div className="border border-gray-200 rounded-xl p-6 dark:border-gray-800">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4 dark:text-white">
+      <div className="rounded-xl border border-gray-200 p-6 dark:border-gray-800">
+        <h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
           Purchase History
         </h2>
 
@@ -237,7 +227,7 @@ export default function BillingPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-left text-gray-500 border-b border-gray-100 dark:text-gray-400 dark:border-gray-800">
+                <tr className="border-b border-gray-100 text-left text-gray-500 dark:border-gray-800 dark:text-gray-400">
                   <th className="pb-2 font-medium">Extension</th>
                   <th className="pb-2 font-medium">Amount</th>
                   <th className="pb-2 font-medium">Date</th>
@@ -246,7 +236,7 @@ export default function BillingPage() {
               <tbody>
                 {purchases.map((p) => (
                   <tr key={p.id} className="border-b border-gray-50 dark:border-gray-800">
-                    <td className="py-3 text-gray-900 font-medium dark:text-white">
+                    <td className="py-3 font-medium text-gray-900 dark:text-white">
                       {p.extension.displayName}
                     </td>
                     <td className="py-3 text-gray-600 dark:text-gray-400">

@@ -248,7 +248,11 @@ export interface XplorerAPI {
 
   // Commands
   commands: {
-    register(command: string, callback: (...args: any[]) => any, metadata?: { title?: string; shortcut?: string; category?: string }): { dispose(): void };
+    register(
+      command: string,
+      callback: (...args: any[]) => any,
+      metadata?: { title?: string; shortcut?: string; category?: string },
+    ): { dispose(): void };
     execute(command: string, ...args: any[]): Promise<any>;
   };
 

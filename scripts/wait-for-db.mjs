@@ -16,7 +16,7 @@ for (let i = 0; i < MAX_RETRIES; i++) {
   } catch {
     if (i === 0) process.stdout.write('[db] Waiting for PostgreSQL');
     process.stdout.write('.');
-    await new Promise(r => setTimeout(r, RETRY_INTERVAL_MS));
+    await new Promise((r) => setTimeout(r, RETRY_INTERVAL_MS));
   }
 }
 

@@ -47,10 +47,7 @@ function csrfCheck(req: NextRequest): NextResponse | null {
   }
 
   // If neither check passed, reject the request
-  return NextResponse.json(
-    { error: 'CSRF validation failed' },
-    { status: 403 }
-  );
+  return NextResponse.json({ error: 'CSRF validation failed' }, { status: 403 });
 }
 
 // Paths that require authentication checks (handled by withAuth)
@@ -80,7 +77,11 @@ const authMiddleware = withAuth({
       }
 
       // Dashboard and billing routes require auth
-      if (path.startsWith('/dashboard') || path.startsWith('/billing') || path.startsWith('/publish')) {
+      if (
+        path.startsWith('/dashboard') ||
+        path.startsWith('/billing') ||
+        path.startsWith('/publish')
+      ) {
         return !!token;
       }
 
@@ -99,7 +100,12 @@ const CORS_ORIGINS = [
   'tauri://localhost',
   'https://tauri.localhost',
   ...(process.env.NODE_ENV === 'development'
-    ? ['http://localhost:1420', 'http://localhost:3000', 'http://localhost:5173', 'http://localhost:5174']
+    ? [
+        'http://localhost:1420',
+        'http://localhost:3000',
+        'http://localhost:5173',
+        'http://localhost:5174',
+      ]
     : []),
   ...(process.env.NEXT_PUBLIC_APP_URL ? [process.env.NEXT_PUBLIC_APP_URL] : []),
 ];

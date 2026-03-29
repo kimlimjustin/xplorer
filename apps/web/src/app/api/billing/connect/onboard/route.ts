@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Authentication required' },
-        { status: 401, headers: corsHeaders(request) }
+        { status: 401, headers: corsHeaders(request) },
       );
     }
 
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: 'User not found' },
-        { status: 404, headers: corsHeaders(request) }
+        { status: 404, headers: corsHeaders(request) },
       );
     }
 
@@ -66,15 +66,12 @@ export async function POST(request: NextRequest) {
       type: 'account_onboarding',
     });
 
-    return NextResponse.json(
-      { url: accountLink.url },
-      { headers: corsHeaders(request) }
-    );
+    return NextResponse.json({ url: accountLink.url }, { headers: corsHeaders(request) });
   } catch (error) {
     console.error('POST /api/billing/connect/onboard error:', error);
     return NextResponse.json(
       { error: 'Failed to create onboarding link' },
-      { status: 500, headers: corsHeaders(request) }
+      { status: 500, headers: corsHeaders(request) },
     );
   }
 }

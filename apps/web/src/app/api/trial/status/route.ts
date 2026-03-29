@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Authentication required' },
-        { status: 401, headers: corsHeaders(request) }
+        { status: 401, headers: corsHeaders(request) },
       );
     }
 
@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     if (!extensionId) {
       return NextResponse.json(
         { error: 'extensionId query parameter is required' },
-        { status: 400, headers: corsHeaders(request) }
+        { status: 400, headers: corsHeaders(request) },
       );
     }
 
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
           remainingMs: 0,
           hasUsedTrial: false,
         },
-        { headers: corsHeaders(request) }
+        { headers: corsHeaders(request) },
       );
     }
 
@@ -69,13 +69,13 @@ export async function GET(request: NextRequest) {
         remainingMs,
         hasUsedTrial: true,
       },
-      { headers: corsHeaders(request) }
+      { headers: corsHeaders(request) },
     );
   } catch (error) {
     console.error('GET /api/trial/status error:', error);
     return NextResponse.json(
       { error: 'Failed to check trial status' },
-      { status: 500, headers: corsHeaders(request) }
+      { status: 500, headers: corsHeaders(request) },
     );
   }
 }

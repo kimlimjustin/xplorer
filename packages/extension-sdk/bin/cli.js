@@ -8,28 +8,28 @@ const commands = {
   create: {
     description: 'Create a new extension',
     usage: 'create <name> --template=<template>',
-    action: createExtension
+    action: createExtension,
   },
   build: {
     description: 'Build the extension',
     usage: 'build [options]',
-    action: buildExtension
+    action: buildExtension,
   },
   package: {
     description: 'Package the extension for distribution',
     usage: 'package [options]',
-    action: packageExtension
+    action: packageExtension,
   },
   install: {
     description: 'Install extension locally for testing',
     usage: 'install [--dev]',
-    action: installExtension
+    action: installExtension,
   },
   help: {
     description: 'Show help',
     usage: 'help [command]',
-    action: showHelp
-  }
+    action: showHelp,
+  },
 };
 
 function main() {
@@ -63,13 +63,13 @@ function createExtension(args) {
     process.exit(1);
   }
 
-  const templateArg = args.find(arg => arg.startsWith('--template='));
+  const templateArg = args.find((arg) => arg.startsWith('--template='));
   const template = templateArg ? templateArg.split('=')[1] : 'basic';
 
   console.log(`Creating extension "${name}" with template "${template}"...`);
 
   const extensionDir = path.join(process.cwd(), name);
-  
+
   if (fs.existsSync(extensionDir)) {
     throw new Error(`Directory "${name}" already exists`);
   }
@@ -78,7 +78,7 @@ function createExtension(args) {
   fs.mkdirSync(extensionDir);
   fs.mkdirSync(path.join(extensionDir, 'src'));
   fs.mkdirSync(path.join(extensionDir, 'assets'));
-  
+
   // Create package.json
   const packageJson = {
     name: name,
@@ -88,26 +88,23 @@ function createExtension(args) {
     scripts: {
       build: 'tsc',
       dev: 'tsc --watch',
-      package: 'xplorer-sdk package'
+      package: 'xplorer-sdk package',
     },
     devDependencies: {
       '@xplorer/extension-sdk': 'latest',
-      'typescript': '^5.0.0'
+      typescript: '^5.0.0',
     },
     xplorer: {
       id: name,
-      displayName: name.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+      displayName: name.replace(/-/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
       category: template,
       version: '1.0.0',
       author: 'Your Name',
-      description: `A ${template} extension for Xplorer`
-    }
+      description: `A ${template} extension for Xplorer`,
+    },
   };
 
-  fs.writeFileSync(
-    path.join(extensionDir, 'package.json'),
-    JSON.stringify(packageJson, null, 2)
-  );
+  fs.writeFileSync(path.join(extensionDir, 'package.json'), JSON.stringify(packageJson, null, 2));
 
   // Create tsconfig.json
   const tsConfig = {
@@ -123,16 +120,13 @@ function createExtension(args) {
       forceConsistentCasingInFileNames: true,
       declaration: true,
       declarationMap: true,
-      sourceMap: true
+      sourceMap: true,
     },
     include: ['src/**/*'],
-    exclude: ['node_modules', 'dist']
+    exclude: ['node_modules', 'dist'],
   };
 
-  fs.writeFileSync(
-    path.join(extensionDir, 'tsconfig.json'),
-    JSON.stringify(tsConfig, null, 2)
-  );
+  fs.writeFileSync(path.join(extensionDir, 'tsconfig.json'), JSON.stringify(tsConfig, null, 2));
 
   // Create template files
   createTemplateFiles(extensionDir, name, template);
@@ -148,7 +142,7 @@ function createExtension(args) {
 
 function createTemplateFiles(extensionDir, name, template) {
   const srcDir = path.join(extensionDir, 'src');
-  
+
   if (template === 'theme') {
     // Create theme extension template
     const themeTemplate = `import { ThemeExtension } from '@xplorer/extension-sdk';
@@ -157,7 +151,7 @@ export class ${toPascalCase(name)} extends ThemeExtension {
   constructor() {
     super({
       id: '${name}',
-      name: '${name.replace(/-/g, ' ').replace(/\\b\\w/g, l => l.toUpperCase())}',
+      name: '${name.replace(/-/g, ' ').replace(/\\b\\w/g, (l) => l.toUpperCase())}',
       version: '1.0.0',
       author: 'Your Name',
       description: 'A custom theme for Xplorer'
@@ -166,7 +160,7 @@ export class ${toPascalCase(name)} extends ThemeExtension {
 
   getTheme() {
     return {
-      name: '${name.replace(/-/g, ' ').replace(/\\b\\w/g, l => l.toUpperCase())}',
+      name: '${name.replace(/-/g, ' ').replace(/\\b\\w/g, (l) => l.toUpperCase())}',
       type: 'dark' as const,
       colors: {
         primary: '#007acc',
@@ -209,7 +203,7 @@ export class ${toPascalCase(name)} extends Extension {
   constructor() {
     super({
       id: '${name}',
-      name: '${name.replace(/-/g, ' ').replace(/\\b\\w/g, l => l.toUpperCase())}',
+      name: '${name.replace(/-/g, ' ').replace(/\\b\\w/g, (l) => l.toUpperCase())}',
       version: '1.0.0',
       author: 'Your Name',
       category: 'tool',
@@ -235,7 +229,7 @@ export class ${toPascalCase(name)} extends Extension {
   }
 
   // Create README
-  const readme = `# ${name.replace(/-/g, ' ').replace(/\\b\\w/g, l => l.toUpperCase())}
+  const readme = `# ${name.replace(/-/g, ' ').replace(/\\b\\w/g, (l) => l.toUpperCase())}
 
 A Xplorer extension.
 
@@ -259,8 +253,9 @@ Then install the generated \`.zip\` file in Xplorer.
 }
 
 function toPascalCase(str) {
-  return str.replace(/-([a-z])/g, (g) => g[1].toUpperCase())
-           .replace(/^[a-z]/, (g) => g.toUpperCase());
+  return str
+    .replace(/-([a-z])/g, (g) => g[1].toUpperCase())
+    .replace(/^[a-z]/, (g) => g.toUpperCase());
 }
 
 function buildExtension(args) {
@@ -276,7 +271,7 @@ function buildExtension(args) {
 
 function packageExtension(args) {
   console.log('Packaging extension...');
-  
+
   if (!fs.existsSync('dist')) {
     console.log('Building extension first...');
     buildExtension([]);
@@ -285,7 +280,7 @@ function packageExtension(args) {
   const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
   const extensionName = packageJson.xplorer?.id || packageJson.name;
   const version = packageJson.version;
-  
+
   const archiver = require('archiver');
   const output = fs.createWriteStream(`${extensionName}-${version}.zip`);
   const archive = archiver('zip', { zlib: { level: 9 } });
@@ -300,7 +295,7 @@ function packageExtension(args) {
   });
 
   archive.pipe(output);
-  
+
   // Add files to archive
   archive.file('package.json', { name: 'package.json' });
   archive.directory('dist/', 'dist/');
@@ -315,7 +310,7 @@ function packageExtension(args) {
 function installExtension(args) {
   const isDev = args.includes('--dev');
   console.log(`Installing extension ${isDev ? 'in development mode' : 'locally'}...`);
-  
+
   if (!isDev && !fs.existsSync('dist')) {
     buildExtension([]);
   }
@@ -386,11 +381,11 @@ function showHelp(commandName) {
   console.log('Usage: xplorer-sdk <command> [options]');
   console.log('');
   console.log('Commands:');
-  
+
   Object.entries(commands).forEach(([name, cmd]) => {
     console.log(`  ${name.padEnd(12)} ${cmd.description}`);
   });
-  
+
   console.log('');
   console.log('Examples:');
   console.log('  xplorer-sdk create my-theme --template=theme');

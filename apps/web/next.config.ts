@@ -11,9 +11,7 @@ const nextConfig: NextConfig = {
   },
   outputFileTracingRoot: path.join(__dirname, '../../'),
   images: {
-    remotePatterns: [
-      { protocol: 'https', hostname: 'avatars.githubusercontent.com' },
-    ],
+    remotePatterns: [{ protocol: 'https', hostname: 'avatars.githubusercontent.com' }],
   },
   experimental: {
     serverActions: {
@@ -36,9 +34,7 @@ const nextConfig: NextConfig = {
     const fs = require('fs');
     const clientDir = path.resolve(__dirname, '.client-components');
     const monorepoClientDir = path.resolve(__dirname, '../client/src');
-    config.resolve.alias['@client'] = fs.existsSync(clientDir)
-      ? clientDir
-      : monorepoClientDir;
+    config.resolve.alias['@client'] = fs.existsSync(clientDir) ? clientDir : monorepoClientDir;
 
     // The @/ alias inside copied components must resolve to .client-components/
     // (the real components use @/ to reference other Xplorer files)
@@ -59,7 +55,10 @@ const nextConfig: NextConfig = {
     config.resolve.alias['@tauri-apps/api/window'] = path.resolve(webMocksDir, 'tauri-window.ts');
     config.resolve.alias['@tauri-apps/api/core'] = path.resolve(webMocksDir, 'tauri-core.ts');
     config.resolve.alias['@tauri-apps/api/event'] = path.resolve(webMocksDir, 'tauri-core.ts');
-    config.resolve.alias['@crabnebula/tauri-plugin-drag'] = path.resolve(webMocksDir, 'tauri-drag.ts');
+    config.resolve.alias['@crabnebula/tauri-plugin-drag'] = path.resolve(
+      webMocksDir,
+      'tauri-drag.ts',
+    );
 
     return config;
   },
