@@ -1,5 +1,3 @@
-import React from 'react';
-
 // Base extension manifest
 export interface ExtensionManifest {
   id: string;
@@ -250,10 +248,10 @@ export interface XplorerAPI {
   commands: {
     register(
       command: string,
-      callback: (...args: any[]) => any,
+      callback: (...args: unknown[]) => unknown,
       metadata?: { title?: string; shortcut?: string; category?: string },
     ): { dispose(): void };
-    execute(command: string, ...args: any[]): Promise<any>;
+    execute(command: string, ...args: unknown[]): Promise<unknown>;
   };
 
   // Keyboard shortcuts

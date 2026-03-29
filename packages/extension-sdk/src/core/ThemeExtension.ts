@@ -1,4 +1,3 @@
-import React from 'react';
 import { Extension } from './Extension';
 import { ExtensionManifest, ExtensionContext, Theme } from '../types';
 
@@ -32,7 +31,7 @@ export abstract class ThemeExtension extends Extension {
    */
   getThemeAssets?(): { [key: string]: string };
 
-  async activate(context: ExtensionContext): Promise<void> {
+  async activate(_context: ExtensionContext): Promise<void> {
     this.theme = this.getTheme();
 
     // Register the theme with Xplorer
