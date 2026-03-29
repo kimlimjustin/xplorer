@@ -350,9 +350,7 @@ const SAFE_COMMANDS: &[&str] = &[
 
 /// Shell metacharacters that indicate chaining, piping, or injection.
 /// These are ALWAYS rejected, even for allowlisted commands.
-// Only reject backticks (command substitution injection). Pipes, redirects,
-// and chaining operators are allowed — user takes responsibility.
-const SHELL_METACHARACTERS: &[char] = &['`'];
+const SHELL_METACHARACTERS: &[char] = &['`', ';', '|', '&', '$', '>', '<', '\n'];
 
 /// Validate a command string before passing it to a shell.
 ///
@@ -424,7 +422,6 @@ fn walk_files(root: &PathBuf, out: &mut Vec<PathBuf>) -> Result<(), String> {
         let entry = entry.map_err(|e| format!("Failed to read directory entry: {}", e))?;
         let path = entry.path();
         if path.is_dir() {
-            out.push(path.clone());
             walk_files(&path, out)?;
         } else if path.is_file() {
             out.push(path);

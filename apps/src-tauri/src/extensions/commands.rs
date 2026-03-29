@@ -86,18 +86,12 @@ fn validate_extension_id(id: &str) -> Result<(), String> {
 fn validate_url_security(url: &str) -> Result<(), String> {
     let parsed = reqwest::Url::parse(url).map_err(|e| format!("Invalid URL '{}': {}", url, e))?;
 
-    // Check if this is a localhost URL (allowed with HTTP for local dev)
     let host_str = parsed
         .host_str()
         .ok_or_else(|| "URL has no host".to_string())?;
-    let host_lower = host_str.to_lowercase();
-    let is_localhost = host_lower == "localhost"
-        || host_lower == "127.0.0.1"
-        || host_lower == "::1"
-        || host_lower == "[::1]";
 
-    // Enforce HTTPS for remote URLs (localhost is exempt for local dev)
-    if parsed.scheme() != "https" && !is_localhost {
+    // Enforce HTTPS for all URLs
+    if parsed.scheme() != "https" {
         return Err(format!(
             "URL must use HTTPS protocol, got '{}'",
             parsed.scheme()
@@ -109,21 +103,24 @@ fn validate_url_security(url: &str) -> Result<(), String> {
         return Err("URL must not contain credentials".to_string());
     }
 
-    // For non-localhost URLs, reject non-standard ports
-    if !is_localhost {
-        if let Some(port) = parsed.port() {
-            if port != 443 {
-                return Err(format!(
-                    "URL must use the default HTTPS port (443), got port {}",
-                    port
-                ));
-            }
+    // Reject non-standard ports
+    if let Some(port) = parsed.port() {
+        if port != 443 {
+            return Err(format!(
+                "URL must use the default HTTPS port (443), got port {}",
+                port
+            ));
         }
     }
 
-    // Skip private IP / internal hostname checks for localhost
-    if is_localhost {
-        return Ok(());
+    // Reject localhost
+    let host_lower = host_str.to_lowercase();
+    if host_lower == "localhost"
+        || host_lower == "127.0.0.1"
+        || host_lower == "::1"
+        || host_lower == "[::1]"
+    {
+        return Err(format!("URL must not target localhost, got '{}'", host_str));
     }
 
     // Resolve the host and check for private/internal IPs

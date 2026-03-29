@@ -132,9 +132,20 @@ pub fn validate_file_path(path: &str) -> Result<(), String> {
     // --- Unix-specific blocked directories ---
     #[cfg(not(target_os = "windows"))]
     {
-        let blocked_prefixes = ["/etc", "/usr", "/bin", "/sbin", "/boot"];
+        let blocked_prefixes = ["/etc", "/usr", "/bin", "/sbin", "/boot", "/private/etc"];
         for prefix in &blocked_prefixes {
             if path_normalized == *prefix || path_normalized.starts_with(&format!("{}/", prefix)) {
+                return Err(format!(
+                    "Access denied: path '{}' is in a protected system directory",
+                    path
+                ));
+            }
+        }
+        // Also check the original (non-canonicalized) path for symlinks like /etc -> /private/etc
+        let orig_lower = path.to_lowercase().replace('\\', "/");
+        let orig_blocked = ["/etc", "/usr", "/bin", "/sbin", "/boot"];
+        for prefix in &orig_blocked {
+            if orig_lower == *prefix || orig_lower.starts_with(&format!("{}/", prefix)) {
                 return Err(format!(
                     "Access denied: path '{}' is in a protected system directory",
                     path
