@@ -37,20 +37,31 @@ pub async fn pty_spawn(
 
     let pty_system = native_pty_system();
     let pair = pty_system
-        .openpty(PtySize { rows, cols, pixel_width: 0, pixel_height: 0 })
+        .openpty(PtySize {
+            rows,
+            cols,
+            pixel_width: 0,
+            pixel_height: 0,
+        })
         .map_err(|e| format!("Failed to open PTY: {}", e))?;
 
     let mut cmd = CommandBuilder::new(default_shell());
     cmd.cwd(&cwd);
     cmd.env("TERM", "xterm-256color");
 
-    let child = pair.slave.spawn_command(cmd)
+    let child = pair
+        .slave
+        .spawn_command(cmd)
         .map_err(|e| format!("Failed to spawn shell: {}", e))?;
 
-    let writer = pair.master.take_writer()
+    let writer = pair
+        .master
+        .take_writer()
         .map_err(|e| format!("Failed to take PTY writer: {}", e))?;
 
-    let mut reader = pair.master.try_clone_reader()
+    let mut reader = pair
+        .master
+        .try_clone_reader()
         .map_err(|e| format!("Failed to clone PTY reader: {}", e))?;
 
     let handle = app_handle.clone();
@@ -86,12 +97,15 @@ pub async fn pty_spawn(
 
     let mut guard = sessions();
     let map = guard.as_mut().unwrap();
-    map.insert(session_id, PtySession {
-        master: pair.master,
-        writer,
-        _reader_handle: reader_handle,
-        child,
-    });
+    map.insert(
+        session_id,
+        PtySession {
+            master: pair.master,
+            writer,
+            _reader_handle: reader_handle,
+            child,
+        },
+    );
 
     Ok(())
 }
@@ -101,9 +115,13 @@ pub fn pty_write(session_id: String, data: String) -> Result<(), String> {
     let mut guard = sessions();
     let map = guard.as_mut().unwrap();
     if let Some(session) = map.get_mut(&session_id) {
-        session.writer.write_all(data.as_bytes())
+        session
+            .writer
+            .write_all(data.as_bytes())
             .map_err(|e| format!("PTY write error: {}", e))?;
-        session.writer.flush()
+        session
+            .writer
+            .flush()
             .map_err(|e| format!("PTY flush error: {}", e))?;
         Ok(())
     } else {
@@ -116,8 +134,14 @@ pub fn pty_resize(session_id: String, cols: u16, rows: u16) -> Result<(), String
     let guard = sessions();
     let map = guard.as_ref().unwrap();
     if let Some(session) = map.get(&session_id) {
-        session.master
-            .resize(PtySize { rows, cols, pixel_width: 0, pixel_height: 0 })
+        session
+            .master
+            .resize(PtySize {
+                rows,
+                cols,
+                pixel_width: 0,
+                pixel_height: 0,
+            })
             .map_err(|e| format!("PTY resize error: {}", e))?;
         Ok(())
     } else {
@@ -155,11 +179,19 @@ fn kill_session(session_id: &str) {
 
 fn default_shell() -> &'static str {
     #[cfg(target_os = "windows")]
-    { "cmd.exe" }
+    {
+        "cmd.exe"
+    }
     #[cfg(target_os = "macos")]
-    { "zsh" }
+    {
+        "zsh"
+    }
     #[cfg(target_os = "linux")]
-    { "bash" }
+    {
+        "bash"
+    }
     #[cfg(not(any(target_os = "windows", target_os = "macos", target_os = "linux")))]
-    { "sh" }
+    {
+        "sh"
+    }
 }

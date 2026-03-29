@@ -2,6 +2,6 @@
 
 import { useRef } from 'react';
 
-export function useDroppable(_targetPath: string, _disabled?: boolean) {
+export function useDroppable(_targetPath: string, _disabled?: boolean, _isFolder?: boolean) {
   return useRef<HTMLDivElement>(null);
 }

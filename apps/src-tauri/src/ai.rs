@@ -199,7 +199,8 @@ pub async fn analyze_file_with_ai(
             2. Key features or functionality (if code)\n\
             3. Any suggestions for improvement\n\
             4. Related files that might be needed\n\n\
-            Be concise and practical.".to_string(),
+            Be concise and practical."
+            .to_string(),
     };
 
     // Route to appropriate AI service

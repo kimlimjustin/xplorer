@@ -14,8 +14,7 @@ use serde::{Deserialize, Serialize};
 // ===== Public types =====
 
 /// Hint for how search results should be sorted when a NL query implies ordering.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[derive(Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
 pub enum SortHint {
     #[default]
     None,
@@ -24,7 +23,6 @@ pub enum SortHint {
     DateDesc,
     DateAsc,
 }
-
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ParsedQuery {

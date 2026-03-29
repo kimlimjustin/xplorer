@@ -491,9 +491,7 @@ fn build_suggestions(dir_path: &Path, files: &[FileInfo]) -> Vec<FolderSuggestio
 
     for (prefix, file_paths) in &prefix_files {
         if file_paths.len() >= 3 {
-            let folder_name = prefix
-                .trim_end_matches(['_', '-'])
-                .to_string();
+            let folder_name = prefix.trim_end_matches(['_', '-']).to_string();
             if folder_name.is_empty() {
                 continue;
             }

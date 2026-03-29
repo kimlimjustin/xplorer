@@ -98,14 +98,17 @@ export function safeImageUrl(url: string | null | undefined): string {
 }
 
 // Stub for renderIcon used by copied Xplorer components
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const renderIcon = (
   name: string,
   size: number | string = '1em',
   className?: string,
-): React.ReactNode => {
+): any => {
   const React = require('react');
   const { FileIcon } = require('lucide-react');
   return React.createElement(FileIcon, { size, className: className ?? 'inline-block' });
 };
 
 export const isValidIconName = (_name: string): boolean => false;
+
+export type SortField = 'name' | 'dateModified' | 'size' | 'dateCreated' | 'type' | 'extension';

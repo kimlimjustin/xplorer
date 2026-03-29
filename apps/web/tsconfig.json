@@ -16,11 +16,11 @@
     "preserveSymlinks": true,
     "plugins": [{ "name": "next" }],
     "paths": {
-      "@/*": ["./src/*"],
+      "@/*": ["./src/*", "../client/src/*"],
       "@/content/*": ["./content/*"],
       "@client/*": ["./.client-components/*", "../client/src/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "src/__tests__"]
 }

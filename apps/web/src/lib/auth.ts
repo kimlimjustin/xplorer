@@ -47,19 +47,21 @@ export function getAuthOptions(): NextAuthOptions {
             include: { accounts: true },
           });
           if (existing && !existing.accounts.some((a) => a.provider === account.provider)) {
+            // Cast to access standard OAuth token fields from Partial<TokenSet>
+            const oauthAccount = account as unknown as Record<string, unknown>;
             await prisma.account.create({
               data: {
                 userId: existing.id,
                 type: account.type,
                 provider: account.provider,
                 providerAccountId: account.providerAccountId,
-                access_token: account.access_token,
-                refresh_token: account.refresh_token,
-                expires_at: account.expires_at,
-                token_type: account.token_type,
-                scope: account.scope,
-                id_token: account.id_token,
-                session_state: account.session_state as string | null,
+                access_token: (oauthAccount.access_token as string) ?? null,
+                refresh_token: (oauthAccount.refresh_token as string) ?? null,
+                expires_at: (oauthAccount.expires_at as number) ?? null,
+                token_type: (oauthAccount.token_type as string) ?? null,
+                scope: (oauthAccount.scope as string) ?? null,
+                id_token: (oauthAccount.id_token as string) ?? null,
+                session_state: (oauthAccount.session_state as string) ?? null,
               },
             });
           }
@@ -102,7 +104,7 @@ export function getAuthOptions(): NextAuthOptions {
           session.user.id = token.id as string;
           session.user.role = (token.role as string) || 'USER';
           session.user.username = (token.username as string) || null;
-          session.user.subscriptionTier = (token.subscriptionTier as string) || 'FREE';
+          session.user.subscriptionTier = ((token.subscriptionTier as string) || 'FREE') as 'FREE' | 'PRO';
         }
         return session;
       },

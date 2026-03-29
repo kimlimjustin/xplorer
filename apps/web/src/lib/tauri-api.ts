@@ -9,6 +9,28 @@ export interface FileEntry {
   modified: number;
   file_type: string;
   mime_type?: string;
+  is_readonly: boolean;
+}
+
+export interface SearchResult {
+  path: string;
+  name: string;
+  filename: string;
+  is_dir: boolean;
+  size: number;
+  modified: number;
+  file_type: string;
+  mime_type?: string;
+  is_readonly: boolean;
+  score?: number;
+  snippet?: string;
+  relevance_type?: string;
+  matches?: Array<{
+    field: string;
+    indices: Array<[number, number]>;
+    token?: string;
+    context?: string;
+  }>;
 }
 
 export interface FolderSizeInfo {
@@ -263,6 +285,16 @@ export class TauriAPI {
   static async agentWriteFileWithPermission(_filePath: string, _content: string, _approved: boolean) {}
   static async isDir(_path: string) { return false; }
   static async readTextFile(_path: string) { return ''; }
+  static async readBinaryFile(_path: string): Promise<Uint8Array> { return new Uint8Array(); }
+  static async createChatFile(_dir: string, _name?: string): Promise<string> { return ''; }
+  static async copy(_source: string | string[], _destination: string): Promise<void> {}
+  static async rename(_oldPath: string, _newPath: string): Promise<void> {}
+  static async moveToTrash(_paths: string | string[]): Promise<void> {}
+  static async fileExists(_path: string): Promise<boolean> { return false; }
+  static async ejectVolume(_path: string): Promise<void> {}
+  static async enhancedSearch(_query: string, _path?: string, _limit?: number, _options?: unknown): Promise<{ results: SearchResult[]; parsed_query?: { file_type_filter?: string; sort_hint?: string; keywords?: string[] } }> { return { results: [] }; }
+  static async searchTokens(_query: string, _limit?: number): Promise<SearchResult[]> { return []; }
+  static async semanticSearch(_query: string, _limit?: number): Promise<SearchResult[]> { return []; }
 
   // Extension methods
   static async uninstallExtensionById(_id: string) {}

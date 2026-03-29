@@ -426,10 +426,7 @@ impl BitmapFilterIndex {
 
         // --- Type bitmap ---
         if let Some(cat) = classify_extension(&entry.extension) {
-            self.type_bitmaps
-                .entry(cat)
-                .or_default()
-                .insert(id);
+            self.type_bitmaps.entry(cat).or_default().insert(id);
         }
 
         // --- Size bitmap ---
@@ -453,10 +450,7 @@ impl BitmapFilterIndex {
         // --- Extension bitmap ---
         let ext = entry.extension.to_lowercase();
         if !ext.is_empty() {
-            self.extension_bitmaps
-                .entry(ext)
-                .or_default()
-                .insert(id);
+            self.extension_bitmaps.entry(ext).or_default().insert(id);
         }
     }
 }

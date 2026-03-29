@@ -361,10 +361,7 @@ impl DuplicateFinder {
         let mut size_groups: HashMap<u64, Vec<DuplicateFile>> = HashMap::new();
 
         for file in files {
-            size_groups
-                .entry(file.size)
-                .or_default()
-                .push(file);
+            size_groups.entry(file.size).or_default().push(file);
         }
 
         // Filter out single files (no potential duplicates)
@@ -405,7 +402,9 @@ impl DuplicateFinder {
 
                             let current_processed =
                                 processed_count.fetch_add(1, Ordering::SeqCst) + 1;
-                            if current_processed.is_multiple_of(10) || current_processed == total_files {
+                            if current_processed.is_multiple_of(10)
+                                || current_processed == total_files
+                            {
                                 progress_callback(DuplicateFinderProgress {
                                     current_file: file.name.clone(),
                                     processed_files: current_processed,
@@ -425,10 +424,7 @@ impl DuplicateFinder {
                     // Group by hash
                     let mut hash_groups: HashMap<String, Vec<DuplicateFile>> = HashMap::new();
                     for file in hashed_files {
-                        hash_groups
-                            .entry(file.hash.clone())
-                            .or_default()
-                            .push(file);
+                        hash_groups.entry(file.hash.clone()).or_default().push(file);
                     }
 
                     // Create duplicate groups

@@ -733,7 +733,7 @@ fn simd_process_buffer(buffer: &mut [u8], _hardware_info: &HardwareInfo) {
     // - Prefetching optimization
     // For file copying, we mainly use it for cache-friendly access patterns
 
-    if buffer.len() < 64 {// Too small for SIMD optimization
+    if buffer.len() < 64 { // Too small for SIMD optimization
     }
 
     #[cfg(target_arch = "x86_64")]

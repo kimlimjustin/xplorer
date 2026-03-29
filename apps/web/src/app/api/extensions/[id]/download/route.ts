@@ -241,7 +241,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
       // Create a zip of the extension directory (package.json + dist/)
       const zip = new JSZip();
-      const addDir = (dirPath: string, zipFolder: JSZip) => {
+      const addDir = (dirPath: string, zipFolder: InstanceType<typeof JSZip>) => {
         for (const entry of readdirSync(dirPath)) {
           if (entry === 'node_modules' || entry === '.git') continue;
           const fullPath = join(dirPath, entry);

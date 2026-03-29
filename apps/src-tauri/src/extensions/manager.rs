@@ -283,12 +283,15 @@ impl ExtensionManager {
         // In dev mode, load from local workspace first (takes priority)
         #[cfg(debug_assertions)]
         {
-            let workspace_ext_dir = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-                .join("../../packages/extensions");
+            let workspace_ext_dir =
+                std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../packages/extensions");
             if workspace_ext_dir.exists() {
                 Self::scan_extension_dir_into(
-                    &workspace_ext_dir, true, &active,
-                    &mut self.installed_extensions, &mut seen_ids,
+                    &workspace_ext_dir,
+                    true,
+                    &active,
+                    &mut self.installed_extensions,
+                    &mut seen_ids,
                 );
             }
         }
@@ -296,8 +299,11 @@ impl ExtensionManager {
         // Then scan the user data extensions dir (marketplace installs)
         if self.extensions_dir.exists() {
             Self::scan_extension_dir_into(
-                &self.extensions_dir, false, &active,
-                &mut self.installed_extensions, &mut seen_ids,
+                &self.extensions_dir,
+                false,
+                &active,
+                &mut self.installed_extensions,
+                &mut seen_ids,
             );
         }
     }
@@ -457,7 +463,11 @@ impl ExtensionManager {
         if let Some(permissions) = &manifest.permissions {
             for perm_str in permissions {
                 if ExtensionPermission::from_string(perm_str).is_none() {
-                    tracing::warn!("[ExtensionManager] Unknown permission '{}' in {} — ignoring", perm_str, manifest.id);
+                    tracing::warn!(
+                        "[ExtensionManager] Unknown permission '{}' in {} — ignoring",
+                        perm_str,
+                        manifest.id
+                    );
                 }
             }
         }

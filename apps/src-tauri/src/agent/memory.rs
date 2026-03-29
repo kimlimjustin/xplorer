@@ -45,10 +45,9 @@ fn save_memory_to_disk(store: &MemoryStore) {
     let path = memory_path();
     if let Ok(json) = serde_json::to_string_pretty(store) {
         let tmp = path.with_extension("json.tmp");
-        if std::fs::write(&tmp, &json).is_ok()
-            && std::fs::rename(&tmp, &path).is_err() {
-                let _ = std::fs::remove_file(&tmp);
-            }
+        if std::fs::write(&tmp, &json).is_ok() && std::fs::rename(&tmp, &path).is_err() {
+            let _ = std::fs::remove_file(&tmp);
+        }
     }
 }
 

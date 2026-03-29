@@ -144,7 +144,7 @@ const ChatPanel = ({
         const settings = await AgentService.getSettings();
         setAgentEnabled(settings.enabled);
         setAutoApprove(settings.auto_approve);
-        setThinkingEnabled(settings.thinking_enabled);
+        setThinkingEnabled(settings.thinking_enabled ?? false);
         if (settings.model) {
           setSelectedModel(settings.model);
         }

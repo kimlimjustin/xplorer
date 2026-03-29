@@ -4,6 +4,8 @@ export interface ChatMessage {
   role: 'user' | 'assistant' | 'system';
   content: string;
   timestamp?: number;
+  model?: string;
+  thinking?: string;
   fileContext?: FileContext;
   agentActions?: AgentAction[];
 }

@@ -168,10 +168,9 @@ fn save_settings(settings: &TokenizerSettings) {
     if let Ok(json) = serde_json::to_string_pretty(settings) {
         let target = settings_path();
         let tmp = target.with_extension("json.tmp");
-        if fs::write(&tmp, &json).is_ok()
-            && fs::rename(&tmp, &target).is_err() {
-                let _ = fs::remove_file(&tmp);
-            }
+        if fs::write(&tmp, &json).is_ok() && fs::rename(&tmp, &target).is_err() {
+            let _ = fs::remove_file(&tmp);
+        }
     }
 }
 
@@ -1603,7 +1602,10 @@ impl SearchEngine {
             let result_normalized = result.path.replace('\\', "/").to_lowercase();
 
             // File is directly in context directory → 1.3x boost.
-            let result_parent = result_normalized.rsplit_once('/').map(|x| x.0).unwrap_or("");
+            let result_parent = result_normalized
+                .rsplit_once('/')
+                .map(|x| x.0)
+                .unwrap_or("");
             let ctx_trimmed = ctx_normalized.trim_end_matches('/');
 
             if result_parent == ctx_trimmed {

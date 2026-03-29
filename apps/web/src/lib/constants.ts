@@ -36,3 +36,4 @@ export const EXTENSION_CATEGORIES = [
 
 export type ExtensionCategory = (typeof EXTENSION_CATEGORIES)[number];
 export const isMac = typeof navigator !== 'undefined' && navigator.userAgent.includes('Mac');
+export const SEARCH_DEBOUNCE_MS = 300;

@@ -8,8 +8,10 @@ use std::time::Duration;
 use tauri::{command, AppHandle, Emitter};
 use tracing::{error, info, warn};
 
-type WatcherHandle =
-    notify_debouncer_full::Debouncer<notify::RecommendedWatcher, notify_debouncer_full::RecommendedCache>;
+type WatcherHandle = notify_debouncer_full::Debouncer<
+    notify::RecommendedWatcher,
+    notify_debouncer_full::RecommendedCache,
+>;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct FileChangeEvent {

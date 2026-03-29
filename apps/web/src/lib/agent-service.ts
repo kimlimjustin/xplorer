@@ -41,7 +41,7 @@ export interface MemoryEntry {
 }
 
 export interface AgentEvent {
-  event_type: 'text' | 'text_delta' | 'tool_call' | 'tool_result' | 'approval_request' | 'plan_created' | 'plan_progress' | 'complete' | 'error';
+  event_type: 'text' | 'text_delta' | 'thinking_delta' | 'tool_call' | 'tool_result' | 'approval_request' | 'plan_created' | 'plan_progress' | 'complete' | 'error';
   session_id: string;
   tool_call?: AgentToolCall;
   text?: string;
@@ -55,6 +55,7 @@ export interface AgentSettings {
   model: string;
   max_turns: number;
   auto_approve: boolean;
+  thinking_enabled?: boolean;
 }
 
 export class AgentService {
@@ -67,11 +68,12 @@ export class AgentService {
     _currentPath: string,
     _onEvent: (event: AgentEvent) => void,
     _filesystemContext?: string,
+    _model?: string,
   ): Promise<string> {
     return this.generateSessionId();
   }
 
-  static async respondToApproval(_toolCallId: string, _approved: boolean): Promise<void> {}
+  static async respondToApproval(_toolCallId: string, _response: string | boolean): Promise<void> {}
 
   static async cancelSession(): Promise<void> {}
 

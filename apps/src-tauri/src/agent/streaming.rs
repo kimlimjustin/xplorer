@@ -542,10 +542,7 @@ pub async fn call_openai_compatible_streaming(
                         tool_call_names.insert(idx, name.to_string());
                     }
                     if let Some(args_chunk) = tc["function"]["arguments"].as_str() {
-                        tool_call_args
-                            .entry(idx)
-                            .or_default()
-                            .push_str(args_chunk);
+                        tool_call_args.entry(idx).or_default().push_str(args_chunk);
                     }
                 }
             }

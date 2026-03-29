@@ -4,7 +4,7 @@ export interface TabItem {
   id: string;
   name: string;
   path: string;
-  type: 'file' | 'folder' | 'comparison' | 'gdrive' | 'gdrive-manager';
+  type: 'file' | 'folder' | 'editor' | 'comparison' | 'gdrive' | 'gdrive-manager';
   isPinned?: boolean;
   pathHistory?: string[];
   historyIndex?: number;

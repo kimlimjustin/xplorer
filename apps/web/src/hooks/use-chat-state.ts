@@ -15,6 +15,10 @@ export interface ToolCallDisplay {
   expanded: boolean;
 }
 
+export type StreamItem =
+  | { kind: 'text'; content: string }
+  | { kind: 'tool_call'; toolCallId: string };
+
 export interface ChatState {
   availableModels: AIModel[];
   selectedModel: string;
@@ -27,10 +31,13 @@ export interface ChatState {
   includeCurrentFolder: boolean;
   agentEnabled: boolean;
   autoApprove: boolean;
+  thinkingEnabled: boolean;
   isAgentRunning: boolean;
   toolCalls: ToolCallDisplay[];
   pendingApprovals: AgentToolCall[];
   streamingText: string;
+  streamingThinking: string;
+  streamItems: StreamItem[];
   activePlan: OperationPlan | null;
 }
 
@@ -48,6 +55,7 @@ export type ChatAction =
   | { type: 'SET_INCLUDE_CURRENT_FOLDER'; include: boolean }
   | { type: 'SET_AGENT_ENABLED'; enabled: boolean }
   | { type: 'SET_AUTO_APPROVE'; autoApprove: boolean }
+  | { type: 'SET_THINKING_ENABLED'; enabled: boolean }
   | { type: 'SET_AGENT_RUNNING'; running: boolean }
   | { type: 'SET_TOOL_CALLS'; toolCalls: ToolCallDisplay[] }
   | { type: 'UPSERT_TOOL_CALL'; toolCall: ToolCallDisplay }
@@ -57,6 +65,9 @@ export type ChatAction =
   | { type: 'ADD_PENDING_APPROVAL'; approval: AgentToolCall }
   | { type: 'REMOVE_PENDING_APPROVAL'; id: string }
   | { type: 'SET_STREAMING_TEXT'; text: string }
+  | { type: 'SET_STREAMING_THINKING'; text: string }
+  | { type: 'SET_STREAM_ITEMS'; items: StreamItem[] }
+  | { type: 'ADD_STREAM_ITEM'; item: StreamItem }
   | { type: 'SET_ACTIVE_PLAN'; plan: OperationPlan | null }
   | { type: 'CLOSE_ALL_DROPDOWNS' }
   | { type: 'AGENT_SEND_START' }
@@ -76,10 +87,13 @@ const initialState: ChatState = {
   includeCurrentFolder: true,
   agentEnabled: true,
   autoApprove: false,
+  thinkingEnabled: false,
   isAgentRunning: false,
   toolCalls: [],
   pendingApprovals: [],
   streamingText: '',
+  streamingThinking: '',
+  streamItems: [],
   activePlan: null,
 };
 
@@ -100,6 +114,7 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
     case 'SET_INCLUDE_CURRENT_FOLDER': return { ...state, includeCurrentFolder: action.include };
     case 'SET_AGENT_ENABLED': return { ...state, agentEnabled: action.enabled };
     case 'SET_AUTO_APPROVE': return { ...state, autoApprove: action.autoApprove };
+    case 'SET_THINKING_ENABLED': return { ...state, thinkingEnabled: action.enabled };
     case 'SET_AGENT_RUNNING': return { ...state, isAgentRunning: action.running };
     case 'SET_TOOL_CALLS': return { ...state, toolCalls: action.toolCalls };
     case 'UPSERT_TOOL_CALL': {
@@ -112,6 +127,9 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
     case 'ADD_PENDING_APPROVAL': return { ...state, pendingApprovals: [...state.pendingApprovals, action.approval] };
     case 'REMOVE_PENDING_APPROVAL': return { ...state, pendingApprovals: state.pendingApprovals.filter(p => p.id !== action.id) };
     case 'SET_STREAMING_TEXT': return { ...state, streamingText: action.text };
+    case 'SET_STREAMING_THINKING': return { ...state, streamingThinking: action.text };
+    case 'SET_STREAM_ITEMS': return { ...state, streamItems: action.items };
+    case 'ADD_STREAM_ITEM': return { ...state, streamItems: [...state.streamItems, action.item] };
     case 'SET_ACTIVE_PLAN': return { ...state, activePlan: action.plan };
     case 'CLOSE_ALL_DROPDOWNS': return { ...state, isModelDropdownOpen: false, isContextDropdownOpen: false };
     case 'AGENT_SEND_START': return { ...state, isAgentRunning: true, toolCalls: [], pendingApprovals: [], streamingText: '' };
@@ -138,8 +156,10 @@ export function useChatState() {
   const setIncludeCurrentFolder = useCallback((include: boolean) => dispatch({ type: 'SET_INCLUDE_CURRENT_FOLDER', include }), []);
   const setAgentEnabled = useCallback((enabled: boolean) => dispatch({ type: 'SET_AGENT_ENABLED', enabled }), []);
   const setAutoApprove = useCallback((autoApprove: boolean) => dispatch({ type: 'SET_AUTO_APPROVE', autoApprove }), []);
+  const setThinkingEnabled = useCallback((enabled: boolean) => dispatch({ type: 'SET_THINKING_ENABLED', enabled }), []);
   const setIsAgentRunning = useCallback((running: boolean) => dispatch({ type: 'SET_AGENT_RUNNING', running }), []);
   const setStreamingText = useCallback((text: string) => dispatch({ type: 'SET_STREAMING_TEXT', text }), []);
+  const setStreamingThinking = useCallback((text: string) => dispatch({ type: 'SET_STREAMING_THINKING', text }), []);
   const setActivePlan = useCallback((plan: OperationPlan | null) => dispatch({ type: 'SET_ACTIVE_PLAN', plan }), []);
   const toggleToolCallExpand = useCallback((id: string) => dispatch({ type: 'TOGGLE_TOOL_CALL_EXPAND', id }), []);
   const upsertToolCall = useCallback((toolCall: ToolCallDisplay) => dispatch({ type: 'UPSERT_TOOL_CALL', toolCall }), []);
@@ -157,8 +177,8 @@ export function useChatState() {
     setAvailableModels, setSelectedModel, setOllamaStatus,
     setIsModelDropdownOpen, setIsContextDropdownOpen, setIsSettingsMinimized,
     setContextSearchQuery, setContextFiles, addContextFile, removeContextFile,
-    setIncludeCurrentFolder, setAgentEnabled, setAutoApprove, setIsAgentRunning,
-    setStreamingText, setActivePlan, toggleToolCallExpand, upsertToolCall, updateToolCall,
+    setIncludeCurrentFolder, setAgentEnabled, setAutoApprove, setThinkingEnabled, setIsAgentRunning,
+    setStreamingText, setStreamingThinking, setActivePlan, toggleToolCallExpand, upsertToolCall, updateToolCall,
     addPendingApproval, removePendingApproval, closeAllDropdowns,
     agentSendStart, agentSendComplete, agentSendError, resetContext,
   };

@@ -186,7 +186,11 @@ pub async fn secure_delete(
 
                 // Remove empty directories bottom-up
                 let mut dirs: Vec<std::path::PathBuf> = Vec::new();
-                for e in WalkDir::new(path).contents_first(false).into_iter().flatten() {
+                for e in WalkDir::new(path)
+                    .contents_first(false)
+                    .into_iter()
+                    .flatten()
+                {
                     if e.file_type().is_dir() {
                         dirs.push(e.into_path());
                     }

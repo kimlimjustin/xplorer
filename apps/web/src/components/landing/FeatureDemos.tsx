@@ -12,7 +12,7 @@ import NavigationBar from '@client/components/explorer/NavigationBar';
 
 // ── Utils & types from the mock layer ───────────────────────────────────────
 import type { FileEntry, FileTag } from '@/lib/tauri-api';
-import { getFileIcon, formatFileSize, formatFolderSize } from '@/lib/utils';
+import { getFileIcon, formatFileSize, formatFolderSize, type SortField } from '@/lib/utils';
 import {
   LayoutGrid, List, Grid3X3, Table,
   ArrowDownAZ, Calendar, HardDrive, Tag,
@@ -26,18 +26,18 @@ import {
 const DEMO_PATH = 'C:\\Users\\User\\Projects\\xplorer';
 
 const DEMO_FILES: FileEntry[] = [
-  { name: 'src', path: `${DEMO_PATH}\\src`, is_dir: true, size: 0, modified: Date.now() / 1000 - 86400, file_type: 'directory' },
-  { name: 'public', path: `${DEMO_PATH}\\public`, is_dir: true, size: 0, modified: Date.now() / 1000 - 172800, file_type: 'directory' },
-  { name: 'node_modules', path: `${DEMO_PATH}\\node_modules`, is_dir: true, size: 0, modified: Date.now() / 1000 - 259200, file_type: 'directory' },
-  { name: 'package.json', path: `${DEMO_PATH}\\package.json`, is_dir: false, size: 2100, modified: Date.now() / 1000 - 3600, file_type: 'json' },
-  { name: 'tsconfig.json', path: `${DEMO_PATH}\\tsconfig.json`, is_dir: false, size: 845, modified: Date.now() / 1000 - 604800, file_type: 'json' },
-  { name: 'README.md', path: `${DEMO_PATH}\\README.md`, is_dir: false, size: 4300, modified: Date.now() / 1000 - 172800, file_type: 'md' },
-  { name: 'vite.config.ts', path: `${DEMO_PATH}\\vite.config.ts`, is_dir: false, size: 1200, modified: Date.now() / 1000 - 43200, file_type: 'ts' },
-  { name: '.gitignore', path: `${DEMO_PATH}\\.gitignore`, is_dir: false, size: 312, modified: Date.now() / 1000 - 2592000, file_type: 'text' },
-  { name: 'index.html', path: `${DEMO_PATH}\\index.html`, is_dir: false, size: 1800, modified: Date.now() / 1000 - 1209600, file_type: 'html' },
-  { name: 'hero.png', path: `${DEMO_PATH}\\hero.png`, is_dir: false, size: 2457600, modified: Date.now() / 1000 - 259200, file_type: 'png' },
-  { name: 'styles.css', path: `${DEMO_PATH}\\styles.css`, is_dir: false, size: 5600, modified: Date.now() / 1000 - 7200, file_type: 'css' },
-  { name: '.env.local', path: `${DEMO_PATH}\\.env.local`, is_dir: false, size: 128, modified: Date.now() / 1000 - 2592000, file_type: 'text' },
+  { name: 'src', path: `${DEMO_PATH}\\src`, is_dir: true, size: 0, modified: Date.now() / 1000 - 86400, file_type: 'directory', is_readonly: false },
+  { name: 'public', path: `${DEMO_PATH}\\public`, is_dir: true, size: 0, modified: Date.now() / 1000 - 172800, file_type: 'directory', is_readonly: false },
+  { name: 'node_modules', path: `${DEMO_PATH}\\node_modules`, is_dir: true, size: 0, modified: Date.now() / 1000 - 259200, file_type: 'directory', is_readonly: false },
+  { name: 'package.json', path: `${DEMO_PATH}\\package.json`, is_dir: false, size: 2100, modified: Date.now() / 1000 - 3600, file_type: 'json', is_readonly: false },
+  { name: 'tsconfig.json', path: `${DEMO_PATH}\\tsconfig.json`, is_dir: false, size: 845, modified: Date.now() / 1000 - 604800, file_type: 'json', is_readonly: false },
+  { name: 'README.md', path: `${DEMO_PATH}\\README.md`, is_dir: false, size: 4300, modified: Date.now() / 1000 - 172800, file_type: 'md', is_readonly: false },
+  { name: 'vite.config.ts', path: `${DEMO_PATH}\\vite.config.ts`, is_dir: false, size: 1200, modified: Date.now() / 1000 - 43200, file_type: 'ts', is_readonly: false },
+  { name: '.gitignore', path: `${DEMO_PATH}\\.gitignore`, is_dir: false, size: 312, modified: Date.now() / 1000 - 2592000, file_type: 'text', is_readonly: false },
+  { name: 'index.html', path: `${DEMO_PATH}\\index.html`, is_dir: false, size: 1800, modified: Date.now() / 1000 - 1209600, file_type: 'html', is_readonly: false },
+  { name: 'hero.png', path: `${DEMO_PATH}\\hero.png`, is_dir: false, size: 2457600, modified: Date.now() / 1000 - 259200, file_type: 'png', is_readonly: false },
+  { name: 'styles.css', path: `${DEMO_PATH}\\styles.css`, is_dir: false, size: 5600, modified: Date.now() / 1000 - 7200, file_type: 'css', is_readonly: false },
+  { name: '.env.local', path: `${DEMO_PATH}\\.env.local`, is_dir: false, size: 128, modified: Date.now() / 1000 - 2592000, file_type: 'text', is_readonly: false },
 ];
 
 const DEMO_TAGS: Record<string, FileTag[]> = {
@@ -84,7 +84,7 @@ const DEMO_TABS = [
 export function FileBrowserDemo({ compact }: { compact?: boolean }) {
   const [selected, setSelected] = useState<Set<string>>(new Set([DEMO_FILES[3].path]));
   const [viewMode, setViewMode] = useState('grid');
-  const [sortBy, setSortBy] = useState('name');
+  const [sortBy, setSortBy] = useState<SortField>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   const isGridView = viewMode === 'grid' || viewMode === 'small-grid';
@@ -122,12 +122,9 @@ export function FileBrowserDemo({ compact }: { compact?: boolean }) {
           {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           <LeftSidebar
             currentPath={DEMO_PATH}
-            files={DEMO_FILES}
             navigateToPath={() => {}}
             handleFileClick={() => {}}
             getFileIcon={getFileIcon as any}
-            sortBy={sortBy}
-            sortOrder={sortOrder}
             width={200}
           />
 
@@ -239,7 +236,7 @@ const B = 'border-white/[0.06]';
 
 /* ─── 2. PreviewDemo — Real PreviewPanel with fake file ─── */
 
-const PREVIEW_FILE = { name: 'App.tsx', path: `${DEMO_PATH}\\src\\App.tsx`, is_dir: false, size: 1200, modified: Date.now() / 1000 - 3600, file_type: 'tsx' };
+const PREVIEW_FILE = { name: 'App.tsx', path: `${DEMO_PATH}\\src\\App.tsx`, is_dir: false, size: 1200, modified: Date.now() / 1000 - 3600, file_type: 'tsx', is_readonly: false };
 
 export function PreviewDemo() {
   return (
@@ -464,8 +461,6 @@ export function ExtensionsDemo() {
         themes={DEMO_THEMES}
         theme={demoTheme}
         applyTheme={setDemoTheme}
-        agentEnabled={true}
-        toggleAgent={() => {}}
       />
     </div>
   );

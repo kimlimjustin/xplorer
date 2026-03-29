@@ -165,9 +165,13 @@ class ExtensionHost {
     return this.getExtension(id)?.isActive ?? false;
   }
 
-  getSidebarTabs(): Array<{ id: string; title: string; icon?: unknown }> { return []; }
-  getBottomTabs(): Array<{ id: string; title: string; icon?: unknown }> { return []; }
-  getSidebarTabRenderer(_id: string): unknown { return null; }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  getSidebarTabs(): any[] { return []; }
+  getBottomTabs(): Array<{ id: string; title: string; icon?: React.ReactNode }> { return []; }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  getSidebarTabRenderer(_id: string): ((props: { currentPath: string; isActive?: boolean }) => any) | null { return null; }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  queryPreview(_file: { name: string; path: string; is_dir: boolean; size: number }): { render: (props: any) => any } | null { return null; }
   getBottomTabRenderer(_id: string): unknown { return null; }
   getEditors(): Array<unknown> { return []; }
   getLoadedExtensions(): Array<unknown> { return this.getAllExtensions(); }

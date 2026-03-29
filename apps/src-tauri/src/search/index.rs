@@ -815,9 +815,7 @@ impl SearchIndex {
                 // Accumulate FieldTermFreqs per document for this term
                 let mut doc_ftfs: HashMap<DocId, FieldTermFreqs> = HashMap::new();
                 for entry in entries.value() {
-                    let ftf = doc_ftfs
-                        .entry(entry.doc_id)
-                        .or_default();
+                    let ftf = doc_ftfs.entry(entry.doc_id).or_default();
                     let field_len = self
                         .doc_field_lengths
                         .get(&entry.doc_id)
@@ -912,9 +910,7 @@ impl SearchIndex {
                             if !doc_scores.contains_key(&entry.doc_id) {
                                 continue;
                             }
-                            let ftf = doc_ftfs
-                                .entry(entry.doc_id)
-                                .or_default();
+                            let ftf = doc_ftfs.entry(entry.doc_id).or_default();
                             let field_len = self
                                 .doc_field_lengths
                                 .get(&entry.doc_id)
@@ -994,9 +990,7 @@ impl SearchIndex {
 
                         let mut doc_ftfs: HashMap<DocId, FieldTermFreqs> = HashMap::new();
                         for entry in entries.value() {
-                            let ftf = doc_ftfs
-                                .entry(entry.doc_id)
-                                .or_default();
+                            let ftf = doc_ftfs.entry(entry.doc_id).or_default();
                             let field_len = self
                                 .doc_field_lengths
                                 .get(&entry.doc_id)

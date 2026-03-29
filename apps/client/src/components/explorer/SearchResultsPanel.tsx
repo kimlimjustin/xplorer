@@ -222,7 +222,7 @@ const AIResultRow = React.memo(({ result, query, onSelect }: AIResultRowProps) =
             fontWeight: 600,
           }}
         >
-          {result.score.toFixed(1)}
+          {(result.score ?? 0).toFixed(1)}
         </span>
       </div>
       <div
@@ -252,7 +252,7 @@ const AIResultRow = React.memo(({ result, query, onSelect }: AIResultRowProps) =
           {result.snippet}
         </div>
       )}
-      {result.matches.length > 0 && (
+      {result.matches && result.matches.length > 0 && (
         <div style={{ marginTop: '2px', display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
           {result.matches.slice(0, 3).map((match) => (
             <span
@@ -553,7 +553,7 @@ const SearchResultsPanel = React.forwardRef<SearchResultsPanelHandle, SearchResu
     const virtualizer = useVirtualizer({
       count: searchMode === 'local' ? flatItems.length + (hasMore ? 1 : 0) : 0,
       getScrollElement: () => scrollContainerRef.current,
-      estimateSize: (index) => {
+      estimateSize: (index: number) => {
         if (index >= flatItems.length) return 32;
         const item = flatItems[index];
         return item.type === 'group-header' ? 28 : 26;
