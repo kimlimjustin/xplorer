@@ -14,8 +14,7 @@ use tauri::Manager;
 
 type MetadataMap = HashMap<String, Vec<CustomMetadataField>>;
 
-static METADATA_CACHE: LazyLock<Mutex<Option<MetadataMap>>> =
-    LazyLock::new(|| Mutex::new(None));
+static METADATA_CACHE: LazyLock<Mutex<Option<MetadataMap>>> = LazyLock::new(|| Mutex::new(None));
 
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -36,9 +35,7 @@ fn file_metadata_path(app_handle: &tauri::AppHandle) -> Result<std::path::PathBu
 }
 
 /// Load metadata from disk (no cache).
-fn load_file_metadata_from_disk(
-    app_handle: &tauri::AppHandle,
-) -> Result<MetadataMap, String> {
+fn load_file_metadata_from_disk(app_handle: &tauri::AppHandle) -> Result<MetadataMap, String> {
     let path = file_metadata_path(app_handle)?;
     if !path.exists() {
         return Ok(HashMap::new());

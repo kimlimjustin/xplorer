@@ -1317,10 +1317,7 @@ fn add_file_to_zip<W: Write + io::Seek>(
     let relative_path = if let Some(base) = base_path {
         file_path.strip_prefix(base).unwrap_or(file_path)
     } else {
-        file_path
-            .file_name()
-            .map(Path::new)
-            .unwrap_or(file_path)
+        file_path.file_name().map(Path::new).unwrap_or(file_path)
     };
 
     // Skip hidden files if not requested

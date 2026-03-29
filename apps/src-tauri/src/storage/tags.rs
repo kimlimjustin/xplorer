@@ -16,8 +16,7 @@ use super::generate_id;
 
 type FileTagsMap = HashMap<String, Vec<FileTag>>;
 
-static FILE_TAGS_CACHE: LazyLock<Mutex<Option<FileTagsMap>>> =
-    LazyLock::new(|| Mutex::new(None));
+static FILE_TAGS_CACHE: LazyLock<Mutex<Option<FileTagsMap>>> = LazyLock::new(|| Mutex::new(None));
 
 static TAG_CATEGORIES_CACHE: LazyLock<Mutex<Option<Vec<TagCategory>>>> =
     LazyLock::new(|| Mutex::new(None));
@@ -41,9 +40,7 @@ fn file_tags_path(app_handle: &tauri::AppHandle) -> Result<std::path::PathBuf, S
 }
 
 /// Load the tags map from disk (no cache).
-fn load_file_tags_from_disk(
-    app_handle: &tauri::AppHandle,
-) -> Result<FileTagsMap, String> {
+fn load_file_tags_from_disk(app_handle: &tauri::AppHandle) -> Result<FileTagsMap, String> {
     let path = file_tags_path(app_handle)?;
     if !path.exists() {
         return Ok(HashMap::new());

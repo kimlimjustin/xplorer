@@ -17,8 +17,7 @@ use super::generate_id;
 type FileNotesMap = HashMap<String, Vec<FileNote>>;
 type FileAnnotationsMap = HashMap<String, Vec<FileAnnotation>>;
 
-static FILE_NOTES_CACHE: LazyLock<Mutex<Option<FileNotesMap>>> =
-    LazyLock::new(|| Mutex::new(None));
+static FILE_NOTES_CACHE: LazyLock<Mutex<Option<FileNotesMap>>> = LazyLock::new(|| Mutex::new(None));
 
 static FILE_ANNOTATIONS_CACHE: LazyLock<Mutex<Option<FileAnnotationsMap>>> =
     LazyLock::new(|| Mutex::new(None));
@@ -50,9 +49,7 @@ fn file_notes_path(app_handle: &tauri::AppHandle) -> Result<std::path::PathBuf, 
 }
 
 /// Load notes from disk (no cache).
-fn load_file_notes_from_disk(
-    app_handle: &tauri::AppHandle,
-) -> Result<FileNotesMap, String> {
+fn load_file_notes_from_disk(app_handle: &tauri::AppHandle) -> Result<FileNotesMap, String> {
     let path = file_notes_path(app_handle)?;
     if !path.exists() {
         return Ok(HashMap::new());

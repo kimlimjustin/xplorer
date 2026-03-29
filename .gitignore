@@ -40,4 +40,5 @@ e2e/screenshots/
 *.bak
 *.swp
 
-CLAUDE.md.orchestrate/
+CLAUDE.md
+.orchestrate/

@@ -1125,19 +1125,18 @@ pub async fn diagnose_directory(
             // Leading or trailing spaces/dots
             if (name != name.trim()
                 || stem.ends_with('.')
-                || stem.starts_with('.')
-                    && stem.len() > 1
-                    && (stem.chars().nth(1) == Some(' ')))
-                && name != name.trim() {
-                    problems.push(DirectoryProblem {
-                        path: p.clone(),
-                        name: name.clone(),
-                        severity: "warning".to_string(),
-                        category: "naming".to_string(),
-                        message: "Filename has leading or trailing spaces".to_string(),
-                        size: Some(size),
-                    });
-                }
+                || stem.starts_with('.') && stem.len() > 1 && (stem.chars().nth(1) == Some(' ')))
+                && name != name.trim()
+            {
+                problems.push(DirectoryProblem {
+                    path: p.clone(),
+                    name: name.clone(),
+                    severity: "warning".to_string(),
+                    category: "naming".to_string(),
+                    message: "Filename has leading or trailing spaces".to_string(),
+                    size: Some(size),
+                });
+            }
 
             // Consecutive spaces
             if name.contains("  ") {
