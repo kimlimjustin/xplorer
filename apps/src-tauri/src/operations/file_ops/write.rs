@@ -144,15 +144,22 @@ pub async fn create_from_template(
     filename: String,
 ) -> Result<String, String> {
     let content = get_template_content(&template_id)?;
-    let file_path = Path::new(&directory).join(&filename);
-    if file_path.exists() {
-        return Err(format!("File already exists: {}", file_path.display()));
-    }
-    if let Some(parent) = file_path.parent() {
-        fs::create_dir_all(parent).map_err(|e| format!("Failed to create directory: {}", e))?;
-    }
-    fs::write(&file_path, content).map_err(|e| format!("Failed to create file: {}", e))?;
-    Ok(file_path.to_string_lossy().to_string())
+
+    tokio::task::spawn_blocking(move || {
+        let file_path = Path::new(&directory).join(&filename);
+        if file_path.exists() {
+            return Err(format!("File already exists: {}", file_path.display()));
+        }
+        if let Some(parent) = file_path.parent() {
+            fs::create_dir_all(parent)
+                .map_err(|e| format!("Failed to create directory: {}", e))?;
+        }
+        fs::write(&file_path, content)
+            .map_err(|e| format!("Failed to create file: {}", e))?;
+        Ok(file_path.to_string_lossy().to_string())
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 // ─── Symbolic Link Creation ──────────────────────────────────────────────────
@@ -163,63 +170,72 @@ pub async fn create_symlink(target: String, link_path: String) -> Result<(), Str
     validate_file_path(&target)?;
     validate_file_path(&link_path)?;
 
-    let target_path = Path::new(&target);
-    let link = Path::new(&link_path);
+    tokio::task::spawn_blocking(move || {
+        let target_path = Path::new(&target);
+        let link = Path::new(&link_path);
 
-    // Ensure target exists
-    if !target_path.exists() {
-        return Err(format!("Target does not exist: {}", target));
-    }
-
-    // Ensure link does not already exist
-    if link.exists() || link.symlink_metadata().is_ok() {
-        return Err(format!("A file or link already exists at: {}", link_path));
-    }
-
-    // Ensure parent directory of the link exists
-    if let Some(parent) = link.parent() {
-        if !parent.exists() {
-            return Err(format!(
-                "Parent directory does not exist: {}",
-                parent.display()
-            ));
+        // Ensure target exists
+        if !target_path.exists() {
+            return Err(format!("Target does not exist: {}", target));
         }
-    }
 
-    #[cfg(unix)]
-    {
-        std::os::unix::fs::symlink(target_path, link)
-            .map_err(|e| format!("Failed to create symlink: {}", e))?;
-    }
-
-    #[cfg(windows)]
-    {
-        if target_path.is_dir() {
-            std::os::windows::fs::symlink_dir(target_path, link).map_err(|e| {
-                if e.raw_os_error() == Some(1314) {
-                    "Failed to create symlink: administrator privileges are required. \
-                     Enable Developer Mode in Windows Settings or run as administrator."
-                        .to_string()
-                } else {
-                    format!("Failed to create symlink: {}", e)
-                }
-            })?;
-        } else {
-            std::os::windows::fs::symlink_file(target_path, link).map_err(|e| {
-                if e.raw_os_error() == Some(1314) {
-                    "Failed to create symlink: administrator privileges are required. \
-                     Enable Developer Mode in Windows Settings or run as administrator."
-                        .to_string()
-                } else {
-                    format!("Failed to create symlink: {}", e)
-                }
-            })?;
+        // Ensure link does not already exist
+        if link.exists() || link.symlink_metadata().is_ok() {
+            return Err(format!("A file or link already exists at: {}", link_path));
         }
-    }
 
-    crate::audit_log::log_operation("create_symlink", vec![link_path, target], None, true);
+        // Ensure parent directory of the link exists
+        if let Some(parent) = link.parent() {
+            if !parent.exists() {
+                return Err(format!(
+                    "Parent directory does not exist: {}",
+                    parent.display()
+                ));
+            }
+        }
 
-    Ok(())
+        #[cfg(unix)]
+        {
+            std::os::unix::fs::symlink(target_path, link)
+                .map_err(|e| format!("Failed to create symlink: {}", e))?;
+        }
+
+        #[cfg(windows)]
+        {
+            if target_path.is_dir() {
+                std::os::windows::fs::symlink_dir(target_path, link).map_err(|e| {
+                    if e.raw_os_error() == Some(1314) {
+                        "Failed to create symlink: administrator privileges are required. \
+                         Enable Developer Mode in Windows Settings or run as administrator."
+                            .to_string()
+                    } else {
+                        format!("Failed to create symlink: {}", e)
+                    }
+                })?;
+            } else {
+                std::os::windows::fs::symlink_file(target_path, link).map_err(|e| {
+                    if e.raw_os_error() == Some(1314) {
+                        "Failed to create symlink: administrator privileges are required. \
+                         Enable Developer Mode in Windows Settings or run as administrator."
+                            .to_string()
+                    } else {
+                        format!("Failed to create symlink: {}", e)
+                    }
+                })?;
+            }
+        }
+
+        crate::audit_log::log_operation(
+            "create_symlink",
+            vec![link_path, target],
+            None,
+            true,
+        );
+
+        Ok(())
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[cfg(test)]

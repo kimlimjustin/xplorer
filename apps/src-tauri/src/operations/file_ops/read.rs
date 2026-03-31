@@ -35,6 +35,7 @@ pub async fn read_binary_file(path: String) -> Result<Vec<u8>, String> {
 
 #[command]
 pub async fn file_exist(path: String) -> Result<bool, String> {
+    validate_file_path(&path)?;
     let path = Path::new(&path);
     Ok(path.exists())
 }

@@ -305,7 +305,7 @@ pub async fn get_rename_destination(
     if !dir.exists() {
         return Err(format!("Directory does not exist: {}", destination_dir));
     }
-    Ok(generate_rename_destination(dir, &file_name))
+    generate_rename_destination(dir, &file_name)
 }
 
 #[cfg(test)]

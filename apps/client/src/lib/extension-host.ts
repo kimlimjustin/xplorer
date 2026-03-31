@@ -871,6 +871,9 @@ class ExtensionHost {
             );
             return;
           }
+
+          // Persist consent so the user is not prompted again on next activation
+          localStorage.setItem(consentKey, 'granted');
         }
       }
     }

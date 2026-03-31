@@ -76,7 +76,7 @@ fn dir_total_size(dir: &Path) -> u64 {
     total
 }
 
-pub(crate) fn generate_rename_destination(dir: &Path, name: &str) -> String {
+pub(crate) fn generate_rename_destination(dir: &Path, name: &str) -> Result<String, String> {
     let dot = name.rfind('.');
     let (base, ext) = match dot {
         Some(i) if i > 0 => (&name[..i], &name[i..]),
@@ -84,14 +84,14 @@ pub(crate) fn generate_rename_destination(dir: &Path, name: &str) -> String {
     };
     let mut n = 1u32;
     loop {
+        if n > 9999 {
+            return Err("Could not generate unique filename".to_string());
+        }
         let candidate_name = format!("{} ({}){}", base, n, ext);
         let candidate = dir.join(&candidate_name);
         if !candidate.exists() {
-            return candidate.to_string_lossy().to_string();
+            return Ok(candidate.to_string_lossy().to_string());
         }
         n += 1;
-        if n > 9999 {
-            return candidate.to_string_lossy().to_string();
-        }
     }
 }

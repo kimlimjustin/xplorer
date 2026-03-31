@@ -190,16 +190,19 @@ pub(crate) async fn compress_to_tar_generic(
             }
         }
 
-        // Finish the tar layer, then finish the compression layer (if any).
-        let writer = builder
+        // Finish the tar layer, then flush the compression layer.
+        let mut writer = builder
             .into_inner()
             .map_err(|e| format!("Failed to finalize {} archive: {}", label, e))?;
 
-        // The underlying writer is a Box<dyn Write>. For compressed formats the
-        // encoder's `finish()` is called via the `Drop` impl, but we need to
-        // ensure any errors surface. We explicitly drop here so that any
-        // buffered data is flushed.
-        drop(writer);
+        // The underlying writer may be a GzEncoder/BzEncoder/XzEncoder wrapped
+        // in Box<dyn Write>. We cannot call finish() through the trait object,
+        // but flush() will push buffered data to the underlying stream. The
+        // encoder's Drop impl then calls finish() on an already-flushed stream,
+        // reducing the chance of silent data loss.
+        writer
+            .flush()
+            .map_err(|e| format!("Failed to flush {} archive: {}", label, e))?;
 
         Ok(output_path.to_string_lossy().to_string())
     })

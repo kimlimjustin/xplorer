@@ -86,6 +86,10 @@ pub async fn move_with_progress(
         return Err("Source file does not exist".to_string());
     }
 
+    if Path::new(&destination).exists() {
+        return Err(format!("Destination already exists: {}", destination));
+    }
+
     let progress_manager = progress_manager.inner().clone();
     let operation_id_clone = operation_id.clone();
     let source_clone = source.clone();
@@ -268,6 +272,10 @@ fn move_with_progress_impl(
     progress_manager: &ProgressManager,
     operation_id: &str,
 ) -> Result<(), String> {
+    if dst.exists() {
+        return Err(format!("Destination already exists: {}", dst.display()));
+    }
+
     // Try rename first (most efficient for same filesystem)
     if fs::rename(src, dst).is_ok() {
         let file_size = fs::metadata(dst).map(|m| m.len()).unwrap_or(0);
@@ -445,6 +453,10 @@ pub async fn move_file(source: String, destination: String) -> Result<(), String
 
         if !src.exists() {
             return Err("Source file does not exist".to_string());
+        }
+
+        if dst.exists() {
+            return Err(format!("Destination already exists: {}", destination));
         }
 
         // Try rename first (most efficient for same filesystem)
