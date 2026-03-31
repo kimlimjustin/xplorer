@@ -102,7 +102,7 @@ const CommandPaletteInner = ({
 
   const favoriteSet = useMemo(() => new Set(favorites), [favorites]);
 
-  const toggleFavorite = useCallback((commandId: string, e: React.MouseEvent) => {
+  const toggleFavorite = useCallback((commandId: string, e: React.SyntheticEvent) => {
     e.stopPropagation();
     e.preventDefault();
     setFavorites((prev) => {
@@ -581,18 +581,26 @@ const CommandPaletteInner = ({
             {/* Shortcut badge */}
             {row.command.shortcut && <span style={shortcutStyle}>{row.command.shortcut}</span>}
             {/* Star toggle */}
-            <button
+            <span
+              role="button"
+              tabIndex={0}
               style={{
                 ...starBtnBaseStyle,
                 opacity: starOpacity,
               }}
               onClick={(e) => toggleFavorite(row.command.id, e)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  toggleFavorite(row.command.id, e);
+                }
+              }}
               title={
                 isFav ? t('commandPalette.removeFromFavorites') : t('commandPalette.addToFavorites')
               }
             >
               <StarIcon filled={isFav} size={13} />
-            </button>
+            </span>
           </button>
         );
       }

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { FolderOpen, FolderClosed, FileText, X } from 'lucide-react';
+import { FolderOpen, FolderClosed, FileText, X, Settings, ChevronDown } from 'lucide-react';
 import { AIService, type ChatMessage, type FileContext } from '@/lib/ai-service';
 import { AgentService, type AgentEvent } from '@/lib/agent-service';
 import { TauriAPI } from '@/lib/tauri-api';
@@ -523,7 +523,7 @@ const ChatPanel = ({
               }
               aria-expanded={!state.isSettingsMinimized}
             >
-              {state.isSettingsMinimized ? '\u2699\uFE0F' : '\u25BC'}
+              {state.isSettingsMinimized ? <Settings size={14} /> : <ChevronDown size={14} />}
             </button>
             {(() => {
               let dotClass = 'bg-xp-red';
@@ -819,7 +819,7 @@ const ChatPanel = ({
                 .map((session) => (
                   <div
                     key={session.id}
-                    className={`hover:bg-xp-bg-hover group flex cursor-pointer items-center gap-2 px-3 py-2 text-xs transition-colors ${
+                    className={`hover:bg-xp-surface-light group flex cursor-pointer items-center gap-2 px-3 py-2 text-xs transition-colors ${
                       currentSessionId === session.id
                         ? 'bg-xp-blue/10 border-xp-blue border-l-2'
                         : ''

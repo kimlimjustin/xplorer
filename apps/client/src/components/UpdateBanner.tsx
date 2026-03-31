@@ -40,7 +40,8 @@ const UpdateBanner = () => {
               onClick={installUpdate}
               className="rounded px-3 py-1 text-xs font-medium"
               style={{
-                backgroundColor: 'rgba(255,255,255,0.2)',
+                backgroundColor: 'rgba(255,255,255,0.3)',
+                border: '1px solid rgba(255,255,255,0.4)',
                 color: 'white',
               }}
             >

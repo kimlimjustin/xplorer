@@ -111,7 +111,7 @@ const VerticalExtensionsBar = ({
       <div className="border-xp-border border-t p-2">
         <button
           onClick={() => setLocation('/settings')}
-          className="hover:bg-xp-surface-light flex h-8 w-8 items-center justify-center rounded"
+          className="hover:bg-xp-surface-light mx-1 mb-1 flex h-10 w-10 items-center justify-center rounded"
           title="Settings"
         >
           <Settings size={18} />

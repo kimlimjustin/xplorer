@@ -121,14 +121,15 @@ const BottomPanel = ({
   const isExtensionTab = !CORE_TABS.includes(bottomPanelTab);
 
   const getTabLabel = (tab: BottomPanelTab): string => {
-    if (tab === 'activity-log') return 'ACTIVITY LOG';
+    if (tab === 'activity-log') return 'Activity Log';
     if (tab === 'properties' && propertiesFilePath) {
-      return `PROPERTIES: ${propertiesFilePath.replace(/^.*[\\/]/, '')}`;
+      return `Properties: ${propertiesFilePath.replace(/^.*[\\/]/, '')}`;
     }
     // Extension tab label
     const extTab = extensionBottomTabs.find((bt) => bt.id === tab);
     if (extTab) return extTab.title;
-    return tab.toUpperCase();
+    // Title case: "terminal" -> "Terminal", "clipboard" -> "Clipboard"
+    return tab.charAt(0).toUpperCase() + tab.slice(1);
   };
 
   return (
@@ -147,7 +148,7 @@ const BottomPanel = ({
             aria-controls={`bottom-panel-${tab}`}
             id={`bottom-tab-${tab}`}
             onClick={() => setBottomPanelTab(tab)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium capitalize ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium ${
               bottomPanelTab === tab
                 ? 'bg-xp-bg border-xp-blue text-xp-blue border-b-2'
                 : 'hover:bg-xp-surface-light'

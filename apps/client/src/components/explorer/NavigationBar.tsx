@@ -35,7 +35,7 @@ const MAX_VISIBLE_SUGGESTIONS = 8;
 /** Cache the home directory so we only fetch it once. */
 let cachedHomeDir: string | null = null;
 
-async function getHomeDir(): Promise<string> {
+const getHomeDir = async (): Promise<string> => {
   if (cachedHomeDir) return cachedHomeDir;
   try {
     const dirs = await TauriAPI.getUserDirectories();
@@ -45,13 +45,13 @@ async function getHomeDir(): Promise<string> {
     // Fallback
     return isWindows ? 'C:\\Users' : '/home';
   }
-}
+};
 
 /**
  * Expand `~` or `~/...` to the user's home directory.
  * Returns the expanded path, or the original if no tilde.
  */
-async function expandTilde(inputPath: string): Promise<string> {
+const expandTilde = async (inputPath: string): Promise<string> => {
   if (!inputPath.startsWith('~')) return inputPath;
   const home = await getHomeDir();
   if (inputPath === '~') return home;
@@ -59,7 +59,7 @@ async function expandTilde(inputPath: string): Promise<string> {
     return home + inputPath.slice(1);
   }
   return inputPath;
-}
+};
 
 /**
  * Extract the parent directory and the typed prefix from an input path.
@@ -640,11 +640,11 @@ const NavigationBar = ({ currentPath, navigateToPath, refetch: _refetch }: Navig
                   e.stopPropagation();
                   setIsEditingPath(true);
                 }}
-                className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text ml-1 flex-shrink-0 rounded p-0.5 transition-colors"
+                className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text ml-1 flex-shrink-0 rounded p-0.5 opacity-60 transition-all hover:opacity-100"
                 title={t('navigation.editPath')}
                 aria-label={t('navigation.editPath')}
               >
-                <Pencil size={12} />
+                <Pencil size={13} />
               </button>
             </nav>
           );
