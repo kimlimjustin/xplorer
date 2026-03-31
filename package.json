@@ -52,7 +52,7 @@
     "@xterm/xterm": "^6.0.0",
     "clsx": "^2.1.1",
     "diff": "^8.0.3",
-    "dompurify": "^3.3.1",
+    "dompurify": "^3.3.3",
     "i18next": "^25.8.20",
     "i18next-browser-languagedetector": "^8.2.1",
     "lucide-react": "^0.542.0",
