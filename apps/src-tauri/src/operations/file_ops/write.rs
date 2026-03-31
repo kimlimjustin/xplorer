@@ -20,6 +20,10 @@ pub async fn create_file(path: String) -> Result<(), String> {
     tokio::task::spawn_blocking(move || {
         let path = Path::new(&path);
 
+        if path.exists() {
+            return Err(format!("File already exists: {}", path.display()));
+        }
+
         if let Some(parent) = path.parent() {
             fs::create_dir_all(parent)
                 .map_err(|e| format!("Failed to create parent directory: {}", e))?;

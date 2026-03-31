@@ -35,99 +35,98 @@ pub async fn pty_spawn(
     rows: u16,
 ) -> Result<(), String> {
     // Validate session_id format
-    if !session_id
-        .chars()
-        .all(|c| c.is_alphanumeric() || c == '-' || c == '_')
-        || session_id.len() > 64
-    {
-        return Err("Invalid session ID format".to_string());
-    }
+    validate_session_id(&session_id)?;
 
     // Validate cwd path
     validate_file_path(&cwd)?;
 
-    kill_session(&session_id);
+    tokio::task::spawn_blocking(move || {
+        kill_session(&session_id);
 
-    let pty_system = native_pty_system();
-    let pair = pty_system
-        .openpty(PtySize {
-            rows,
-            cols,
-            pixel_width: 0,
-            pixel_height: 0,
-        })
-        .map_err(|e| format!("Failed to open PTY: {}", e))?;
+        let pty_system = native_pty_system();
+        let pair = pty_system
+            .openpty(PtySize {
+                rows,
+                cols,
+                pixel_width: 0,
+                pixel_height: 0,
+            })
+            .map_err(|e| format!("Failed to open PTY: {}", e))?;
 
-    let mut cmd = CommandBuilder::new(default_shell());
-    cmd.cwd(&cwd);
-    cmd.env("TERM", "xterm-256color");
+        let mut cmd = CommandBuilder::new(default_shell());
+        cmd.cwd(&cwd);
+        cmd.env("TERM", "xterm-256color");
 
-    let child = pair
-        .slave
-        .spawn_command(cmd)
-        .map_err(|e| format!("Failed to spawn shell: {}", e))?;
+        let child = pair
+            .slave
+            .spawn_command(cmd)
+            .map_err(|e| format!("Failed to spawn shell: {}", e))?;
 
-    let writer = pair
-        .master
-        .take_writer()
-        .map_err(|e| format!("Failed to take PTY writer: {}", e))?;
+        let writer = pair
+            .master
+            .take_writer()
+            .map_err(|e| format!("Failed to take PTY writer: {}", e))?;
 
-    let mut reader = pair
-        .master
-        .try_clone_reader()
-        .map_err(|e| format!("Failed to clone PTY reader: {}", e))?;
+        let mut reader = pair
+            .master
+            .try_clone_reader()
+            .map_err(|e| format!("Failed to clone PTY reader: {}", e))?;
 
-    let handle = app_handle.clone();
-    let sid = session_id.clone();
-    let reader_handle = std::thread::spawn(move || {
-        let mut buf = [0u8; 4096];
-        loop {
-            match reader.read(&mut buf) {
-                Ok(0) => break,
-                Ok(n) => {
-                    let data = String::from_utf8_lossy(&buf[..n]).to_string();
-                    let payload = serde_json::json!({ "session_id": sid, "data": data });
-                    if let Err(e) = handle.emit("pty-output", &payload) {
-                        warn!("Failed to emit pty-output: {}", e);
+        let handle = app_handle.clone();
+        let sid = session_id.clone();
+        let reader_handle = std::thread::spawn(move || {
+            let mut buf = [0u8; 4096];
+            loop {
+                match reader.read(&mut buf) {
+                    Ok(0) => break,
+                    Ok(n) => {
+                        let data = String::from_utf8_lossy(&buf[..n]).to_string();
+                        let payload = serde_json::json!({ "session_id": sid, "data": data });
+                        if let Err(e) = handle.emit("pty-output", &payload) {
+                            warn!("Failed to emit pty-output: {}", e);
+                            break;
+                        }
+                    }
+                    Err(e) => {
+                        let kind = e.kind();
+                        if kind == std::io::ErrorKind::Other
+                            || kind == std::io::ErrorKind::BrokenPipe
+                            || kind == std::io::ErrorKind::UnexpectedEof
+                        {
+                            break;
+                        }
+                        warn!("PTY read error ({}): {}", sid, e);
                         break;
                     }
-                }
-                Err(e) => {
-                    let kind = e.kind();
-                    if kind == std::io::ErrorKind::Other
-                        || kind == std::io::ErrorKind::BrokenPipe
-                        || kind == std::io::ErrorKind::UnexpectedEof
-                    {
-                        break;
-                    }
-                    warn!("PTY read error ({}): {}", sid, e);
-                    break;
                 }
             }
-        }
-        let _ = handle.emit("pty-exit", &sid);
-    });
+            let _ = handle.emit("pty-exit", &sid);
+        });
 
-    let mut guard = sessions();
-    let map = guard
-        .as_mut()
-        .ok_or("PTY session map not initialized")
-        .map_err(|e| e.to_string())?;
-    map.insert(
-        session_id,
-        PtySession {
-            master: pair.master,
-            writer,
-            _reader_handle: reader_handle,
-            child,
-        },
-    );
+        let mut guard = sessions();
+        let map = guard
+            .as_mut()
+            .ok_or("PTY session map not initialized")
+            .map_err(|e| e.to_string())?;
+        map.insert(
+            session_id,
+            PtySession {
+                master: pair.master,
+                writer,
+                _reader_handle: reader_handle,
+                child,
+            },
+        );
 
-    Ok(())
+        Ok(())
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[command]
 pub fn pty_write(session_id: String, data: String) -> Result<(), String> {
+    validate_session_id(&session_id)?;
     let mut guard = sessions();
     let map = guard
         .as_mut()
@@ -150,6 +149,7 @@ pub fn pty_write(session_id: String, data: String) -> Result<(), String> {
 
 #[command]
 pub fn pty_resize(session_id: String, cols: u16, rows: u16) -> Result<(), String> {
+    validate_session_id(&session_id)?;
     let guard = sessions();
     let map = guard
         .as_ref()
@@ -173,6 +173,7 @@ pub fn pty_resize(session_id: String, cols: u16, rows: u16) -> Result<(), String
 
 #[command]
 pub fn pty_kill(session_id: String) -> Result<(), String> {
+    validate_session_id(&session_id)?;
     kill_session(&session_id);
     Ok(())
 }
@@ -197,6 +198,18 @@ fn kill_session(session_id: &str) {
             drop(session.writer);
         }
     }
+}
+
+fn validate_session_id(session_id: &str) -> Result<(), String> {
+    if session_id.is_empty()
+        || !session_id
+            .chars()
+            .all(|c| c.is_alphanumeric() || c == '-' || c == '_')
+        || session_id.len() > 64
+    {
+        return Err("Invalid session ID format".to_string());
+    }
+    Ok(())
 }
 
 fn default_shell() -> &'static str {

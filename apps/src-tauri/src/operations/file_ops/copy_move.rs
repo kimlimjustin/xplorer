@@ -22,6 +22,10 @@ pub async fn copy_with_progress(
         return Err("Source file does not exist".to_string());
     }
 
+    if Path::new(&destination).exists() {
+        return Err(format!("Destination already exists: {}", destination));
+    }
+
     let progress_manager = progress_manager.inner().clone();
     let operation_id_clone = operation_id.clone();
     let source_clone = source.clone();
@@ -480,6 +484,10 @@ pub async fn rename(old_path: String, new_path: String) -> Result<(), String> {
 
         if !old.exists() {
             return Err("Source file does not exist".to_string());
+        }
+
+        if new.exists() {
+            return Err(format!("Destination already exists: {}", new_path));
         }
 
         fs::rename(old, new).map_err(|e| format!("Failed to rename: {}", e))?;
