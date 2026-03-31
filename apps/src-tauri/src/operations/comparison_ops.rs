@@ -67,17 +67,15 @@ pub struct ComparisonOptions {
     pub binary_threshold: Option<f64>,
 }
 
-#[command]
-pub async fn compute_file_hash(path: String, algorithm: Option<String>) -> Result<String, String> {
-    validate_file_path(&path)?;
-    let file_path = Path::new(&path);
+fn compute_file_hash_sync(path: &str, algorithm: Option<&str>) -> Result<String, String> {
+    let file_path = Path::new(path);
     if !file_path.exists() {
         return Err(format!("File does not exist: {}", path));
     }
 
-    let content = fs::read(&path).map_err(|e| format!("Failed to read file: {}", e))?;
+    let content = fs::read(path).map_err(|e| format!("Failed to read file: {}", e))?;
 
-    let algorithm = algorithm.unwrap_or_else(|| "sha256".to_string());
+    let algorithm = algorithm.unwrap_or("sha256");
 
     match algorithm.to_lowercase().as_str() {
         "sha256" => {
@@ -96,6 +94,17 @@ pub async fn compute_file_hash(path: String, algorithm: Option<String>) -> Resul
 }
 
 #[command]
+pub async fn compute_file_hash(path: String, algorithm: Option<String>) -> Result<String, String> {
+    validate_file_path(&path)?;
+
+    tokio::task::spawn_blocking(move || {
+        compute_file_hash_sync(&path, algorithm.as_deref())
+    })
+    .await
+    .map_err(|e| e.to_string())?
+}
+
+#[command]
 pub async fn compare_files(
     file1_path: String,
     file2_path: String,
@@ -103,123 +112,128 @@ pub async fn compare_files(
 ) -> Result<FileComparisonResult, String> {
     validate_file_path(&file1_path)?;
     validate_file_path(&file2_path)?;
-    let start_time = std::time::Instant::now();
 
-    let path1 = Path::new(&file1_path);
-    let path2 = Path::new(&file2_path);
+    tokio::task::spawn_blocking(move || {
+        let start_time = std::time::Instant::now();
 
-    if !path1.exists() {
-        return Err(format!("File does not exist: {}", file1_path));
-    }
-    if !path2.exists() {
-        return Err(format!("File does not exist: {}", file2_path));
-    }
+        let path1 = Path::new(&file1_path);
+        let path2 = Path::new(&file2_path);
 
-    let opts = options.unwrap_or_else(|| ComparisonOptions {
-        ignore_whitespace: Some(false),
-        ignore_case: Some(false),
-        ignore_line_endings: Some(false),
-        context_lines: Some(3),
-        algorithm: Some("myers".to_string()),
-        max_file_size: Some(50 * 1024 * 1024), // 50MB
-        binary_threshold: Some(0.3),
-    });
+        if !path1.exists() {
+            return Err(format!("File does not exist: {}", file1_path));
+        }
+        if !path2.exists() {
+            return Err(format!("File does not exist: {}", file2_path));
+        }
 
-    // Get file metadata
-    let metadata1 = fs::metadata(path1)
-        .map_err(|e| format!("Failed to get metadata for {}: {}", file1_path, e))?;
-    let metadata2 = fs::metadata(path2)
-        .map_err(|e| format!("Failed to get metadata for {}: {}", file2_path, e))?;
+        let opts = options.unwrap_or_else(|| ComparisonOptions {
+            ignore_whitespace: Some(false),
+            ignore_case: Some(false),
+            ignore_line_endings: Some(false),
+            context_lines: Some(3),
+            algorithm: Some("myers".to_string()),
+            max_file_size: Some(50 * 1024 * 1024), // 50MB
+            binary_threshold: Some(0.3),
+        });
 
-    let mut file1 = FileComparisonFile {
-        path: file1_path.clone(),
-        name: path1
-            .file_name()
-            .unwrap_or_default()
-            .to_string_lossy()
-            .to_string(),
-        size: metadata1.len(),
-        modified: metadata1
-            .modified()
-            .map_err(|e| format!("Failed to get modified time: {}", e))?
-            .duration_since(std::time::UNIX_EPOCH)
-            .map_err(|e| format!("Failed to convert time: {}", e))?
-            .as_secs(),
-        hash: None,
-        content: None,
-        lines: None,
-        error: None,
-    };
+        // Get file metadata
+        let metadata1 = fs::metadata(path1)
+            .map_err(|e| format!("Failed to get metadata for {}: {}", file1_path, e))?;
+        let metadata2 = fs::metadata(path2)
+            .map_err(|e| format!("Failed to get metadata for {}: {}", file2_path, e))?;
 
-    let mut file2 = FileComparisonFile {
-        path: file2_path.clone(),
-        name: path2
-            .file_name()
-            .unwrap_or_default()
-            .to_string_lossy()
-            .to_string(),
-        size: metadata2.len(),
-        modified: metadata2
-            .modified()
-            .map_err(|e| format!("Failed to get modified time: {}", e))?
-            .duration_since(std::time::UNIX_EPOCH)
-            .map_err(|e| format!("Failed to convert time: {}", e))?
-            .as_secs(),
-        hash: None,
-        content: None,
-        lines: None,
-        error: None,
-    };
+        let mut file1 = FileComparisonFile {
+            path: file1_path.clone(),
+            name: path1
+                .file_name()
+                .unwrap_or_default()
+                .to_string_lossy()
+                .to_string(),
+            size: metadata1.len(),
+            modified: metadata1
+                .modified()
+                .map_err(|e| format!("Failed to get modified time: {}", e))?
+                .duration_since(std::time::UNIX_EPOCH)
+                .map_err(|e| format!("Failed to convert time: {}", e))?
+                .as_secs(),
+            hash: None,
+            content: None,
+            lines: None,
+            error: None,
+        };
 
-    // Check file size limits
-    let max_size = opts.max_file_size.unwrap_or(50 * 1024 * 1024);
-    if file1.size > max_size || file2.size > max_size {
-        return Err(format!(
-            "File too large for comparison (max: {} bytes)",
-            max_size
-        ));
-    }
+        let mut file2 = FileComparisonFile {
+            path: file2_path.clone(),
+            name: path2
+                .file_name()
+                .unwrap_or_default()
+                .to_string_lossy()
+                .to_string(),
+            size: metadata2.len(),
+            modified: metadata2
+                .modified()
+                .map_err(|e| format!("Failed to get modified time: {}", e))?
+                .duration_since(std::time::UNIX_EPOCH)
+                .map_err(|e| format!("Failed to convert time: {}", e))?
+                .as_secs(),
+            hash: None,
+            content: None,
+            lines: None,
+            error: None,
+        };
 
-    // Quick hash comparison for identical files
-    if file1.size == file2.size && file1.modified == file2.modified {
-        let hash1_result = compute_file_hash(file1_path.clone(), Some("sha256".to_string())).await;
-        let hash2_result = compute_file_hash(file2_path.clone(), Some("sha256".to_string())).await;
+        // Check file size limits
+        let max_size = opts.max_file_size.unwrap_or(50 * 1024 * 1024);
+        if file1.size > max_size || file2.size > max_size {
+            return Err(format!(
+                "File too large for comparison (max: {} bytes)",
+                max_size
+            ));
+        }
 
-        if let (Ok(hash1), Ok(hash2)) = (hash1_result, hash2_result) {
-            file1.hash = Some(hash1.clone());
-            file2.hash = Some(hash2.clone());
+        // Quick hash comparison for identical files
+        if file1.size == file2.size && file1.modified == file2.modified {
+            let hash1_result = compute_file_hash_sync(&file1_path, Some("sha256"));
+            let hash2_result = compute_file_hash_sync(&file2_path, Some("sha256"));
 
-            if hash1 == hash2 {
-                return Ok(FileComparisonResult {
-                    file1,
-                    file2,
-                    differences: vec![],
-                    identical: true,
-                    similarity: 1.0,
-                    comparison_type: "hash".to_string(),
-                    metadata: ComparisonMetadata {
-                        processing_time: start_time.elapsed().as_millis() as u64,
-                        lines_added: 0,
-                        lines_removed: 0,
-                        lines_modified: 0,
-                        total_lines1: 0,
-                        total_lines2: 0,
-                        bytes_different: 0,
-                        algorithm: "hash".to_string(),
-                    },
-                });
+            if let (Ok(hash1), Ok(hash2)) = (hash1_result, hash2_result) {
+                file1.hash = Some(hash1.clone());
+                file2.hash = Some(hash2.clone());
+
+                if hash1 == hash2 {
+                    return Ok(FileComparisonResult {
+                        file1,
+                        file2,
+                        differences: vec![],
+                        identical: true,
+                        similarity: 1.0,
+                        comparison_type: "hash".to_string(),
+                        metadata: ComparisonMetadata {
+                            processing_time: start_time.elapsed().as_millis() as u64,
+                            lines_added: 0,
+                            lines_removed: 0,
+                            lines_modified: 0,
+                            total_lines1: 0,
+                            total_lines2: 0,
+                            bytes_different: 0,
+                            algorithm: "hash".to_string(),
+                        },
+                    });
+                }
             }
         }
-    }
 
-    // Determine comparison type
-    let comparison_type = determine_comparison_type(&file1_path, &file2_path, &opts)?;
+        // Determine comparison type
+        let comparison_type = determine_comparison_type(&file1_path, &file2_path, &opts)?;
 
-    match comparison_type.as_str() {
-        "text" => compare_text_files(file1, file2, &opts, start_time).await,
-        "binary" => compare_binary_files(file1, file2, start_time).await,
-        _ => compare_text_files(file1, file2, &opts, start_time).await,
-    }
+        match comparison_type.as_str() {
+            "text" => compare_text_files_sync(file1, file2, &opts, start_time),
+            "binary" => compare_binary_files_sync(file1, file2, start_time),
+            _ => compare_text_files_sync(file1, file2, &opts, start_time),
+        }
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 fn determine_comparison_type(
@@ -252,7 +266,7 @@ fn determine_comparison_type(
     Ok("text".to_string())
 }
 
-async fn compare_text_files(
+fn compare_text_files_sync(
     mut file1: FileComparisonFile,
     mut file2: FileComparisonFile,
     options: &ComparisonOptions,
@@ -343,7 +357,7 @@ async fn compare_text_files(
     })
 }
 
-async fn compare_binary_files(
+fn compare_binary_files_sync(
     file1: FileComparisonFile,
     file2: FileComparisonFile,
     start_time: std::time::Instant,

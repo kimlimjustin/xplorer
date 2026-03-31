@@ -81,6 +81,7 @@ const FileGrid = ({
 }: FileGridProps) => {
   // ─── Git status for the current directory ───────────────────────────────────
   const [gitStatusMap, setGitStatusMap] = useState<Map<string, string>>(new Map());
+  const gitRepoCache = useRef(new Map<string, boolean>());
 
   useEffect(() => {
     if (!currentPath || currentPath.startsWith('xplorer://')) {
@@ -88,35 +89,56 @@ const FileGrid = ({
       return;
     }
 
-    let cancelled = false;
-    const loadGitStatus = async () => {
-      try {
-        const statuses = await TauriAPI.getGitStatus(currentPath);
-        if (!cancelled) {
-          const map = new Map<string, string>();
-          for (const s of statuses) {
-            const normalized = s.path.replace(/\\/g, '/');
-            map.set(normalized, s.status);
-            map.set(s.path, s.status);
-          }
-          setGitStatusMap(map);
-        }
-      } catch {
-        if (!cancelled) setGitStatusMap(new Map());
-      }
-    };
+    // Check cache: if we know this path prefix is not a git repo, skip IPC
+    const cached = gitRepoCache.current.get(currentPath);
+    if (cached === false) {
+      setGitStatusMap(new Map());
+      return;
+    }
 
-    loadGitStatus();
+    let cancelled = false;
+    const timer = setTimeout(() => {
+      if (cancelled) return;
+      const loadGitStatus = async () => {
+        try {
+          const statuses = await TauriAPI.getGitStatus(currentPath);
+          if (!cancelled) {
+            gitRepoCache.current.set(currentPath, statuses.length > 0);
+            const map = new Map<string, string>();
+            for (const s of statuses) {
+              const normalized = s.path.replace(/\\/g, '/');
+              map.set(normalized, s.status);
+              map.set(s.path, s.status);
+            }
+            setGitStatusMap(map);
+          }
+        } catch {
+          if (!cancelled) {
+            gitRepoCache.current.set(currentPath, false);
+            setGitStatusMap(new Map());
+          }
+        }
+      };
+
+      loadGitStatus();
+    }, 250);
     return () => {
       cancelled = true;
+      clearTimeout(timer);
     };
   }, [currentPath]);
 
   // ─── Batch-load tags for all visible files ──────────────────────────────────
   const [allTags, setAllTags] = useState<Map<string, FileTag[]>>(new Map());
 
+  // Use a stable key derived from file paths to avoid re-fetching on every render
+  const filePathsKey = useMemo(() => files.map((f) => f.path).join('\n'), [files]);
+
   useEffect(() => {
     if (files.length === 0) return;
+
+    // Only fetch tags when on a real filesystem path (not special pages)
+    if (currentPath.startsWith('xplorer://') || currentPath.startsWith('gdrive://')) return;
 
     let cancelled = false;
     const loadAllTags = async () => {
@@ -139,7 +161,8 @@ const FileGrid = ({
     return () => {
       cancelled = true;
     };
-  }, [files]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filePathsKey, currentPath]);
 
   // ─── Cross-tab selection state (Ctrl+Shift+Click toggles) ────────────────
   const [localCrossTabPaths, setLocalCrossTabPaths] = useState<Set<string>>(new Set());
@@ -221,7 +244,7 @@ const FileGrid = ({
   useEffect(() => {
     const imagePaths = files.filter(isImageFile).map((f) => f.path);
     if (imagePaths.length > 0) {
-      preloadThumbnails(imagePaths.slice(0, 50)); // preload up to 50
+      preloadThumbnails(imagePaths.slice(0, 10)); // preload viewport-visible images only
     }
   }, [files, preloadThumbnails]);
 

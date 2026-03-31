@@ -1,53 +1,49 @@
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { TauriAPI } from '@/lib/tauri-api';
 import { STORAGE_KEYS } from '@/lib/storage-keys';
-import { extensionHost } from '@/lib/extension-host';
 import { PATH_SEPARATOR } from '@/lib/constants';
-import type { TabItem } from '@/types/split-view';
+import type { TabItem, EditorGroup } from '@/types/split-view';
+import type { SplitLayoutHook } from '@/hooks/use-split-layout';
 
-interface UseNavigationDeps {
+export interface NavigationActionsDeps {
   currentPath: string;
-  splitLayout: {
-    navigate: (groupId: string, path: string, name: string) => void;
-    navigateBack: (groupId: string) => void;
-    navigateForward: (groupId: string) => void;
-    addTab: (groupId: string, tab: TabItem, activate: boolean) => void;
-    switchTab: (groupId: string, tabId: string) => void;
-  };
-  activeGroup: {
-    id: string;
-    tabs: TabItem[];
-    activeTabId: string | null;
-    pathHistory: string[];
-    historyIndex: number;
-  };
+  splitLayoutRef: React.MutableRefObject<SplitLayoutHook>;
+  activeGroupRef: React.MutableRefObject<EditorGroup>;
 }
 
-export const useNavigation = ({ currentPath, splitLayout, activeGroup }: UseNavigationDeps) => {
+export const useNavigationActions = (deps: NavigationActionsDeps) => {
+  const { currentPath, splitLayoutRef, activeGroupRef } = deps;
+  const navigateToPathRef = useRef<(path: string) => void>(() => {});
+
+  const setCurrentPath = useCallback(
+    (path: string) => {
+      splitLayoutRef.current.navigate(
+        activeGroupRef.current.id,
+        path,
+        path.split(/[/\\]/).pop() || path,
+      );
+    },
+    [splitLayoutRef, activeGroupRef],
+  );
+
   const navigateWithHistory = useCallback(
     (newPath: string, _addToHistory: boolean = true) => {
       if (newPath === currentPath) return;
 
-      const activeTabObj = activeGroup.tabs.find((t) => t.id === activeGroup.activeTabId);
-      const isExtensionTab = activeTabObj?.type
-        ? extensionHost.getTabRenderer(activeTabObj.type) !== null
-        : false;
-      const isLocalPath =
-        !extensionHost.isExtensionScheme(newPath) && !newPath.startsWith('xplorer://');
+      const ag = activeGroupRef.current;
+      const sl = splitLayoutRef.current;
 
-      if (isExtensionTab && isLocalPath) {
-        const folderTab = activeGroup.tabs.find((t) => t.type === 'folder' || t.type === undefined);
+      const activeTabObj = ag.tabs.find((t: TabItem) => t.id === ag.activeTabId);
+      const isGDriveTab =
+        activeTabObj?.type === 'gdrive' || activeTabObj?.type === 'gdrive-manager';
+      const isLocalPath =
+        !newPath.startsWith('gdrive://') && !newPath.startsWith('xplorer://gdrive-manager');
+
+      if (isGDriveTab && isLocalPath) {
+        const folderTab = ag.tabs.find((t: TabItem) => t.type === 'folder' || t.type === undefined);
         if (folderTab) {
-          splitLayout.switchTab(activeGroup.id, folderTab.id);
-          setTimeout(
-            () =>
-              splitLayout.navigate(
-                activeGroup.id,
-                newPath,
-                newPath.split(/[/\\]/).pop() || newPath,
-              ),
-            0,
-          );
+          sl.switchTab(ag.id, folderTab.id);
+          setTimeout(() => sl.navigate(ag.id, newPath, newPath.split(/[/\\]/).pop() || newPath), 0);
         } else {
           const newTab: TabItem = {
             id: `tab-folder-${Date.now()}`,
@@ -55,16 +51,17 @@ export const useNavigation = ({ currentPath, splitLayout, activeGroup }: UseNavi
             path: newPath,
             type: 'folder',
           };
-          splitLayout.addTab(activeGroup.id, newTab, true);
+          sl.addTab(ag.id, newTab, true);
         }
       } else {
-        splitLayout.navigate(activeGroup.id, newPath, newPath.split(/[/\\]/).pop() || newPath);
+        sl.navigate(ag.id, newPath, newPath.split(/[/\\]/).pop() || newPath);
       }
 
       if (
         !newPath.startsWith('xplorer://') &&
+        !newPath.startsWith('gdrive://') &&
         !newPath.startsWith('comparison://') &&
-        !extensionHost.isExtensionScheme(newPath)
+        !newPath.startsWith('collection://')
       ) {
         TauriAPI.setSearchContext(newPath).catch((err) =>
           console.error('Failed to set search context:', err),
@@ -75,10 +72,6 @@ export const useNavigation = ({ currentPath, splitLayout, activeGroup }: UseNavi
             console.error('Failed to index directory:', err),
           );
         }, 1000);
-        // Watch the directory for FS changes so the search index auto-rebuilds.
-        TauriAPI.startWatching(newPath).catch((err: unknown) =>
-          console.warn('Failed to start search watcher:', err),
-        );
         if (localStorage.getItem(STORAGE_KEYS.AUTO_WHITELIST_VISITED) !== 'false') {
           TauriAPI.addWhitelistedPath(newPath).catch((err) =>
             console.error('Failed to whitelist path:', err),
@@ -86,12 +79,14 @@ export const useNavigation = ({ currentPath, splitLayout, activeGroup }: UseNavi
         }
       }
     },
-    [currentPath, splitLayout, activeGroup],
+    [currentPath, splitLayoutRef, activeGroupRef],
   );
 
   const navigateUp = useCallback(() => {
     if (currentPath === 'xplorer://home') return;
-    if (extensionHost.isExtensionScheme(currentPath)) return;
+    if (currentPath === 'xplorer://gdrive-manager') return;
+    if (currentPath.startsWith('gdrive://')) return;
+    if (currentPath.startsWith('collection://')) return;
     if (currentPath.startsWith('/')) {
       const parts = currentPath.split('/').filter(Boolean);
       if (parts.length <= 1) return;
@@ -111,6 +106,7 @@ export const useNavigation = ({ currentPath, splitLayout, activeGroup }: UseNavi
     },
     [navigateWithHistory],
   );
+  navigateToPathRef.current = navigateToPath;
 
   const navigateToHome = useCallback(() => {
     navigateWithHistory('xplorer://home');
@@ -121,24 +117,31 @@ export const useNavigation = ({ currentPath, splitLayout, activeGroup }: UseNavi
       const tabId = path;
       const tabName = path.split(/[\\/]/).pop() || path;
       const newTab: TabItem = { id: tabId, name: tabName, path, type: 'folder' };
-      splitLayout.addTab(activeGroup.id, newTab, true);
+      splitLayoutRef.current.addTab(activeGroupRef.current.id, newTab, true);
     },
-    [splitLayout, activeGroup.id],
+    [splitLayoutRef, activeGroupRef],
   );
 
   const navigateBackInHistory = useCallback(() => {
-    splitLayout.navigateBack(activeGroup.id);
-  }, [splitLayout, activeGroup.id]);
+    splitLayoutRef.current.navigateBack(activeGroupRef.current.id);
+  }, [splitLayoutRef, activeGroupRef]);
 
   const navigateForwardInHistory = useCallback(() => {
-    splitLayout.navigateForward(activeGroup.id);
-  }, [splitLayout, activeGroup.id]);
+    splitLayoutRef.current.navigateForward(activeGroupRef.current.id);
+  }, [splitLayoutRef, activeGroupRef]);
 
-  const canNavigateBackInHistory = () => activeGroup.historyIndex > 0;
-  const canNavigateForwardInHistory = () =>
-    activeGroup.historyIndex < activeGroup.pathHistory.length - 1;
+  const canNavigateBackInHistory = useCallback(
+    () => activeGroupRef.current.historyIndex > 0,
+    [activeGroupRef],
+  );
+
+  const canNavigateForwardInHistory = useCallback(
+    () => activeGroupRef.current.historyIndex < activeGroupRef.current.pathHistory.length - 1,
+    [activeGroupRef],
+  );
 
   return {
+    setCurrentPath,
     navigateWithHistory,
     navigateUp,
     navigateToPath,
@@ -148,5 +151,6 @@ export const useNavigation = ({ currentPath, splitLayout, activeGroup }: UseNavi
     navigateForwardInHistory,
     canNavigateBackInHistory,
     canNavigateForwardInHistory,
+    navigateToPathRef,
   };
 };
