@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { FolderOpen, FolderClosed, FileText } from 'lucide-react';
+import { FolderOpen, FolderClosed, FileText, X } from 'lucide-react';
 import { AIService, type ChatMessage, type FileContext } from '@/lib/ai-service';
 import { AgentService, type AgentEvent } from '@/lib/agent-service';
+import { TauriAPI } from '@/lib/tauri-api';
 import { useChatState } from '@/hooks/use-chat-state';
 import {
   MessageBubble,
@@ -188,6 +189,35 @@ const ChatPanel = ({
     );
   }, [selectedFilePaths, allFiles, setContextFiles]);
 
+  // When a single file is selected in the explorer, auto-sync it to context
+  useEffect(() => {
+    if (!selectedFile) return;
+    // Replace existing auto-selected file with the new one
+    // (but preserve any manually-added files from selectedFilePaths)
+    if (selectedFilePaths && selectedFilePaths.size > 0) {
+      // Multi-selection is active; just ensure the single file is present
+      const alreadyInContext = state.contextFiles.some((f) => f.path === selectedFile.path);
+      if (!alreadyInContext) {
+        dispatchAddContextFile({
+          name: selectedFile.name,
+          path: selectedFile.path,
+          file_type: selectedFile.file_type,
+          content: undefined,
+        });
+      }
+    } else {
+      // No multi-selection — replace context with just this file
+      setContextFiles([
+        {
+          name: selectedFile.name,
+          path: selectedFile.path,
+          file_type: selectedFile.file_type,
+          content: undefined,
+        },
+      ]);
+    }
+  }, [selectedFile?.path]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const handleSendMessage = async (overrideText?: string) => {
     const text = overrideText ?? chatInput.trim();
     if (!text || isAiLoading || state.isAgentRunning) return;
@@ -259,20 +289,27 @@ const ChatPanel = ({
     let accumulatedText = '';
     let accumulatedThinking = '';
 
-    // Build filesystem context from selected files
+    // Build filesystem context from current folder and selected files
     const contextParts: string[] = [];
-    if (state.contextFiles.length > 0) {
-      contextParts.push('Selected files:');
-      for (const f of state.contextFiles) {
-        contextParts.push(`- ${f.name} (${f.path})`);
+    if (state.includeCurrentFolder) {
+      contextParts.push(`Current folder: ${currentPath}`);
+    }
+    for (const f of state.contextFiles.slice(0, 5)) {
+      try {
+        const content = await TauriAPI.readTextFile(f.path);
+        const truncated =
+          content.length > 5000 ? `${content.slice(0, 5000)}\n...(truncated)` : content;
+        contextParts.push(`--- ${f.name} (${f.path}) ---\n${truncated}`);
+      } catch {
+        contextParts.push(`--- ${f.name} (${f.path}) --- [binary/unreadable]`);
       }
     }
-    const filesystemContext = contextParts.length > 0 ? contextParts.join('\n') : undefined;
+    const filesystemContext = contextParts.length > 0 ? contextParts.join('\n\n') : undefined;
 
     try {
       await AgentService.startAgentChat(
         conversationMessages,
-        state.includeCurrentFolder ? currentPath : '',
+        currentPath,
         (event: AgentEvent) => {
           switch (event.event_type) {
             case 'thinking_delta':
@@ -890,6 +927,46 @@ const ChatPanel = ({
             {state.isAgentRunning && 'Agent is processing your request'}
             {isAiLoading && !state.isAgentRunning && 'AI is generating a response'}
           </div>
+        </div>
+      )}
+
+      {/* Context pills — show which files/folder are being sent as context */}
+      {(state.contextFiles.length > 0 || state.includeCurrentFolder) && (
+        <div className="border-xp-border flex flex-shrink-0 flex-wrap items-center gap-1 border-t px-3 py-1.5">
+          {state.includeCurrentFolder && (
+            <span className="bg-xp-blue/15 text-xp-blue inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px]">
+              <FolderOpen size={10} />
+              <span className="max-w-[100px] truncate">
+                {currentPath.split(/[/\\]/).pop() || currentPath}
+              </span>
+              <button
+                onClick={() => setIncludeCurrentFolder(false)}
+                className="hover:text-xp-red ml-0.5 transition-colors"
+                title="Remove current folder from context"
+                aria-label="Remove current folder from context"
+              >
+                <X size={10} />
+              </button>
+            </span>
+          )}
+          {state.contextFiles.map((file) => (
+            <span
+              key={file.path}
+              className="bg-xp-surface-light text-xp-text inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px]"
+              title={file.path}
+            >
+              <FileText size={10} className="flex-shrink-0" />
+              <span className="max-w-[100px] truncate">{file.name}</span>
+              <button
+                onClick={() => removeContextFile(file.path)}
+                className="hover:text-xp-red ml-0.5 transition-colors"
+                title={`Remove ${file.name} from context`}
+                aria-label={`Remove ${file.name} from context`}
+              >
+                <X size={10} />
+              </button>
+            </span>
+          ))}
         </div>
       )}
 
