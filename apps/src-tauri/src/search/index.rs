@@ -4,7 +4,7 @@
 // posting lists, BM25F scoring, bitmap filters, stemming, synonym expansion,
 // and document storage.  All search modules converge here.
 
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use std::path::Path;
 use std::sync::OnceLock;
 
@@ -40,9 +40,14 @@ pub struct SearchIndex {
     // each occurrence of a term within a document's content.
     pub(crate) positions: HashMap<String, HashMap<DocId, Vec<u32>>>,
 
-    // Reverse index: doc_id -> set of terms that appear in that document.
+    // Reverse index: doc_id -> list of term IDs that appear in that document.
     // Enables O(terms_in_doc) removal instead of scanning all postings.
-    pub(crate) doc_terms: HashMap<DocId, HashSet<String>>,
+    // Uses u32 term IDs instead of strings to save ~60% memory.
+    pub(crate) doc_terms: HashMap<DocId, Vec<u32>>,
+
+    // Bidirectional term string <-> ID mapping (interning table).
+    pub(crate) term_to_id: HashMap<String, u32>,
+    pub(crate) id_to_term: Vec<String>,
 
     // FST for fuzzy/prefix search (rebuilt periodically)
     pub(crate) fst_index: FstIndex,
@@ -293,6 +298,8 @@ impl SearchIndex {
             postings: DashMap::new(),
             positions: HashMap::new(),
             doc_terms: HashMap::new(),
+            term_to_id: HashMap::new(),
+            id_to_term: Vec::new(),
             fst_index: FstIndex::new(),
             bitmap_index: BitmapFilterIndex::new(),
             scorer: Bm25fScorer::new(Bm25fConfig::default(), 0, avg_field_lengths),
@@ -335,7 +342,7 @@ impl SearchIndex {
             })
             .sum();
 
-        // Content store (first 10 KB per doc)
+        // Content store (first 1 KB per doc)
         let content_bytes: usize = self.doc_content.values().map(|s| s.len()).sum();
 
         // Field lengths map
@@ -344,12 +351,25 @@ impl SearchIndex {
         // path_to_id lookup
         let path_lookup_bytes: usize = self.path_to_id.keys().map(|k| k.len() + 4).sum();
 
+        // doc_terms: per-doc Vec<u32> term IDs
+        let doc_terms_bytes: usize = self
+            .doc_terms
+            .values()
+            .map(|ids| ids.len() * 4)
+            .sum();
+
+        // Term interning table
+        let term_intern_bytes: usize = self.id_to_term.iter().map(|s| s.len() + 4).sum::<usize>()
+            + self.term_to_id.len() * 40; // key string + u32 + HashMap overhead
+
         docs_bytes
             + postings_bytes
             + positions_bytes
             + content_bytes
             + field_len_bytes
             + path_lookup_bytes
+            + doc_terms_bytes
+            + term_intern_bytes
     }
 
     // -- 2. index_document() -------------------------------------------------
@@ -474,11 +494,12 @@ impl SearchIndex {
                 .entry(term.clone())
                 .or_default()
                 .insert(doc_id, term_positions.clone());
-            // Track positional terms for efficient removal
-            self.doc_terms
-                .entry(doc_id)
-                .or_default()
-                .insert(term.clone());
+            // Track positional terms for efficient removal (using term IDs)
+            let term_id = self.intern_term(term);
+            let ids = self.doc_terms.entry(doc_id).or_default();
+            if !ids.contains(&term_id) {
+                ids.push(term_id);
+            }
         }
 
         // For BM25F scoring we still split into head/body fields.
@@ -506,8 +527,8 @@ impl SearchIndex {
         // -- Store field lengths for BM25F -----------------------------------
         self.doc_field_lengths.insert(doc_id, field_lengths);
 
-        // -- Store content for phrase matching (first 10 KB) -----------------
-        let content_limit = content.len().min(10240);
+        // -- Store content for phrase matching (first 1 KB) ------------------
+        let content_limit = content.len().min(1024);
         let safe_limit = content
             .char_indices()
             .take_while(|(i, _)| *i < content_limit)
@@ -542,23 +563,29 @@ impl SearchIndex {
         self.doc_field_lengths.remove(&doc_id);
         self.doc_content.remove(&doc_id);
 
-        // Use reverse index to only visit posting lists that contain this doc
-        if let Some(terms) = self.doc_terms.remove(&doc_id) {
-            for term in &terms {
+        // Use reverse index to only visit posting lists that contain this doc.
+        // Convert term IDs back to strings via id_to_term.
+        if let Some(term_ids) = self.doc_terms.remove(&doc_id) {
+            for &term_id in &term_ids {
+                let term = match self.id_to_term.get(term_id as usize) {
+                    Some(t) => t.clone(),
+                    None => continue,
+                };
+
                 // Remove from postings
-                if let Some(mut entries) = self.postings.get_mut(term) {
+                if let Some(mut entries) = self.postings.get_mut(&term) {
                     entries.retain(|e| e.doc_id != doc_id);
                     if entries.is_empty() {
                         drop(entries);
-                        self.postings.remove(term);
+                        self.postings.remove(&term);
                     }
                 }
 
                 // Remove from positional index
-                if let Some(doc_positions) = self.positions.get_mut(term) {
+                if let Some(doc_positions) = self.positions.get_mut(&term) {
                     doc_positions.remove(&doc_id);
                     if doc_positions.is_empty() {
-                        self.positions.remove(term);
+                        self.positions.remove(&term);
                     }
                 }
             }
@@ -627,7 +654,9 @@ impl SearchIndex {
         next_id: DocId,
         postings: DashMap<String, Vec<PostingEntry>>,
         positions: HashMap<String, HashMap<DocId, Vec<u32>>>,
-        doc_terms: HashMap<DocId, HashSet<String>>,
+        doc_terms: HashMap<DocId, Vec<u32>>,
+        term_to_id: HashMap<String, u32>,
+        id_to_term: Vec<String>,
         doc_field_lengths: HashMap<DocId, HashMap<SearchField, u32>>,
         doc_content: HashMap<DocId, String>,
         total_tokens: usize,
@@ -639,6 +668,8 @@ impl SearchIndex {
             postings,
             positions,
             doc_terms,
+            term_to_id,
+            id_to_term,
             fst_index: FstIndex::new(),
             bitmap_index: BitmapFilterIndex::new(),
             scorer: Bm25fScorer::new(Bm25fConfig::default(), 0, HashMap::new()),
@@ -1022,17 +1053,30 @@ impl SearchIndex {
 
     // -- Internal helpers ----------------------------------------------------
 
+    /// Get or create a term ID for the given term string.
+    fn intern_term(&mut self, term: &str) -> u32 {
+        if let Some(&id) = self.term_to_id.get(term) {
+            id
+        } else {
+            let id = self.id_to_term.len() as u32;
+            self.id_to_term.push(term.to_string());
+            self.term_to_id.insert(term.to_string(), id);
+            id
+        }
+    }
+
     /// Add a posting entry for a term.
     fn add_posting(&mut self, term: &str, doc_id: DocId, tf: u32, field: SearchField) {
         self.postings
             .entry(term.to_string())
             .or_default()
             .push(PostingEntry { doc_id, tf, field });
-        // Track which terms belong to each document for efficient removal
-        self.doc_terms
-            .entry(doc_id)
-            .or_default()
-            .insert(term.to_string());
+        // Track which terms belong to each document for efficient removal (using term IDs)
+        let term_id = self.intern_term(term);
+        let ids = self.doc_terms.entry(doc_id).or_default();
+        if !ids.contains(&term_id) {
+            ids.push(term_id);
+        }
     }
 
     /// Compute document frequency for a term (number of unique documents

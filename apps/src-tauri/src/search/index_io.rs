@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use std::path::PathBuf;
 
 use dashmap::DashMap;
@@ -41,6 +41,8 @@ impl SearchIndex {
             doc_content: self.doc_content.clone(),
             total_tokens: self.total_tokens,
             doc_terms: self.doc_terms.clone(),
+            term_to_id: self.term_to_id.clone(),
+            id_to_term: self.id_to_term.clone(),
         };
 
         let tmp_path = path.with_extension("bin.tmp");
@@ -100,24 +102,47 @@ impl SearchIndex {
 
         let postings: DashMap<String, Vec<PostingEntry>> = cache.postings.into_iter().collect();
 
-        // Rebuild doc_terms reverse index if not present in cache (migration)
-        let doc_terms = if cache.doc_terms.is_empty() {
-            let mut dt: HashMap<DocId, HashSet<String>> = HashMap::new();
+        // Rebuild term interning table and doc_terms if not present in cache (migration).
+        let (doc_terms, term_to_id, id_to_term) = if cache.id_to_term.is_empty() {
+            // Migration from older cache: rebuild interning table from postings + positions.
+            let mut t2id: HashMap<String, u32> = HashMap::new();
+            let mut id2t: Vec<String> = Vec::new();
+            let mut dt: HashMap<DocId, Vec<u32>> = HashMap::new();
+
+            let mut intern = |term: &str| -> u32 {
+                if let Some(&id) = t2id.get(term) {
+                    id
+                } else {
+                    let id = id2t.len() as u32;
+                    id2t.push(term.to_string());
+                    t2id.insert(term.to_string(), id);
+                    id
+                }
+            };
+
             for entry_ref in postings.iter() {
                 let term = entry_ref.key();
                 let entries = entry_ref.value();
+                let term_id = intern(term);
                 for entry in entries {
-                    dt.entry(entry.doc_id).or_default().insert(term.clone());
+                    let ids = dt.entry(entry.doc_id).or_default();
+                    if !ids.contains(&term_id) {
+                        ids.push(term_id);
+                    }
                 }
             }
             for (term, doc_positions) in &cache.positions {
+                let term_id = intern(term);
                 for &doc_id in doc_positions.keys() {
-                    dt.entry(doc_id).or_default().insert(term.clone());
+                    let ids = dt.entry(doc_id).or_default();
+                    if !ids.contains(&term_id) {
+                        ids.push(term_id);
+                    }
                 }
             }
-            dt
+            (dt, t2id, id2t)
         } else {
-            cache.doc_terms
+            (cache.doc_terms, cache.term_to_id, cache.id_to_term)
         };
 
         let mut index = Self::new_from_parts(
@@ -127,6 +152,8 @@ impl SearchIndex {
             postings,
             cache.positions,
             doc_terms,
+            term_to_id,
+            id_to_term,
             cache.doc_field_lengths,
             cache.doc_content,
             cache.total_tokens,

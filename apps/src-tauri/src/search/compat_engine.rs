@@ -4,12 +4,13 @@
 // searching, recommendations, PRF, context boost, watcher management.
 // Type definitions live in `compat_types`, persistence in `compat_persistence`.
 
+use moka::sync::Cache;
 use rustc_hash::FxHashSet;
 use std::collections::HashSet;
 use std::fs;
 use std::path::Path;
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::{Arc, Mutex, OnceLock, RwLock};
+use std::sync::{Arc, LazyLock, Mutex, OnceLock, RwLock};
 use std::thread;
 use std::time::UNIX_EPOCH;
 
@@ -29,6 +30,16 @@ use super::compat_types::{
 
 /// Timestamp helper.
 use crate::utils::now_secs;
+
+/// LRU cache for content snippets. Avoids re-reading files for search result
+/// snippets. Up to 500 entries, evicted after 5 minutes of idle time.
+#[allow(dead_code)]
+static CONTENT_CACHE: LazyLock<Cache<String, String>> = LazyLock::new(|| {
+    Cache::builder()
+        .max_capacity(500)
+        .time_to_idle(std::time::Duration::from_secs(300))
+        .build()
+});
 
 // ===== SearchEngine =========================================================
 
@@ -108,6 +119,18 @@ impl SearchEngine {
                             Err(e) => e.into_inner(),
                         };
                         *idx = cached_index;
+                    }
+                    // Log memory usage after loading the cached index.
+                    {
+                        let idx = match index.read() {
+                            Ok(g) => g,
+                            Err(e) => e.into_inner(),
+                        };
+                        info!(
+                            "[SearchEngine] Index loaded: {} docs, ~{} MB RAM",
+                            idx.doc_count(),
+                            idx.estimated_memory_bytes() / (1024 * 1024)
+                        );
                     }
                     // Do incremental update (add new files, remove stale ones).
                     Self::incremental_update_inner(&index, &settings_arc);

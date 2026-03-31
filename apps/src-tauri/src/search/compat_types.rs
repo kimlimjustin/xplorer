@@ -46,7 +46,7 @@ pub struct TokenizerSettings {
 }
 
 fn default_memory_limit_mb() -> u64 {
-    1024
+    256
 }
 
 /// The return type for `enhanced_search`.

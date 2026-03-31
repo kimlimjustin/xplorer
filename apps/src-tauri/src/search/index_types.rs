@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 
@@ -30,8 +30,9 @@ pub struct PostingEntry {
 
 // ===== Disk Cache ============================================================
 
-/// Current cache format version. Bump to invalidate old caches on schema changes.
-pub(crate) const INDEX_CACHE_VERSION: u32 = 1;
+/// Current cache format version. Bump when the on-disk schema changes to
+/// invalidate old caches.  Bumped to 2 for term-ID interning migration.
+pub(crate) const INDEX_CACHE_VERSION: u32 = 2;
 
 /// Serializable snapshot of the core index data.
 ///
@@ -48,6 +49,13 @@ pub(crate) struct IndexCache {
     pub doc_field_lengths: HashMap<DocId, HashMap<SearchField, u32>>,
     pub doc_content: HashMap<DocId, String>,
     pub total_tokens: usize,
+    /// Reverse index: doc_id -> Vec<u32> of interned term IDs.
     #[serde(default)]
-    pub doc_terms: HashMap<DocId, HashSet<String>>,
+    pub doc_terms: HashMap<DocId, Vec<u32>>,
+    /// Term string -> interned ID.
+    #[serde(default)]
+    pub term_to_id: HashMap<String, u32>,
+    /// Interned ID -> term string.
+    #[serde(default)]
+    pub id_to_term: Vec<String>,
 }
