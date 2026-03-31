@@ -4,119 +4,73 @@
 // posting lists, BM25F scoring, bitmap filters, stemming, synonym expansion,
 // and document storage.  All search modules converge here.
 
-use std::collections::HashMap;
-use std::path::{Path, PathBuf};
+use std::collections::{HashMap, HashSet};
+use std::path::Path;
 use std::sync::OnceLock;
 
 use dashmap::DashMap;
 
 use regex::Regex;
-use serde::{Deserialize, Serialize};
-use tracing::{info, warn};
 
 use super::bitmap_filters::{BitmapFilterIndex, FileMetaEntry};
-use super::bm25f::{Bm25fConfig, Bm25fScorer, FieldTermFreqs, SearchField};
+use super::bm25f::{Bm25fConfig, Bm25fScorer, SearchField};
 use super::fuzzy::FstIndex;
-use super::reranker::{path_depth, RankingSignals, Reranker};
-use super::{SearchMatch, SearchResult};
+use super::reranker::Reranker;
+use super::SearchResult;
 
-// ===== Types ================================================================
-
-pub type DocId = u32;
-
-/// Stored information about an indexed document.
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct DocumentInfo {
-    pub doc_id: DocId,
-    pub path: String,
-    pub filename: String,
-    pub extension: String,
-    pub file_size: u64,
-    pub modified: u64,          // unix timestamp
-    pub content_source: String, // "text", "pdf_extract", etc.
-}
-
-/// Posting list entry: (doc_id, term_frequency, field).
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PostingEntry {
-    pub doc_id: DocId,
-    pub tf: u32,
-    pub field: SearchField,
-}
-
-// ===== Disk Cache ============================================================
-
-/// Current cache format version. Bump to invalidate old caches on schema changes.
-const INDEX_CACHE_VERSION: u32 = 1;
-
-/// Serializable snapshot of the core index data.
-///
-/// FST, bitmap filters, and BM25F scorer are rebuilt from this data on load
-/// (fast — sub-second for typical indices).
-#[derive(Serialize, Deserialize)]
-struct IndexCache {
-    version: u32,
-    documents: HashMap<DocId, DocumentInfo>,
-    path_to_id: HashMap<String, DocId>,
-    next_id: DocId,
-    postings: HashMap<String, Vec<PostingEntry>>,
-    positions: HashMap<String, HashMap<DocId, Vec<u32>>>,
-    doc_field_lengths: HashMap<DocId, HashMap<SearchField, u32>>,
-    doc_content: HashMap<DocId, String>,
-    total_tokens: usize,
-}
-
-fn index_cache_path() -> PathBuf {
-    let base = dirs::data_local_dir().unwrap_or_else(|| PathBuf::from("."));
-    base.join("xplorer").join("search_index.bin")
-}
+// Re-export types so existing `use super::index::*` paths continue to work.
+pub use super::index_types::{DocId, DocumentInfo, PostingEntry};
 
 // ===== Core Index ===========================================================
 
 /// The core search index holding all data structures.
 pub struct SearchIndex {
     // Document store: doc_id -> document info
-    documents: HashMap<DocId, DocumentInfo>,
+    pub(crate) documents: HashMap<DocId, DocumentInfo>,
     // Path -> doc_id lookup
-    path_to_id: HashMap<String, DocId>,
+    pub(crate) path_to_id: HashMap<String, DocId>,
     // Next doc_id to assign
-    next_id: DocId,
+    pub(crate) next_id: DocId,
 
     // Inverted index: stemmed_term -> Vec<PostingEntry>
-    postings: DashMap<String, Vec<PostingEntry>>,
+    pub(crate) postings: DashMap<String, Vec<PostingEntry>>,
 
     // Positional index: stemmed_term -> { doc_id -> [positions] }
     // Used for phrase search — stores the word position (0-based index) of
     // each occurrence of a term within a document's content.
-    positions: HashMap<String, HashMap<DocId, Vec<u32>>>,
+    pub(crate) positions: HashMap<String, HashMap<DocId, Vec<u32>>>,
+
+    // Reverse index: doc_id -> set of terms that appear in that document.
+    // Enables O(terms_in_doc) removal instead of scanning all postings.
+    pub(crate) doc_terms: HashMap<DocId, HashSet<String>>,
 
     // FST for fuzzy/prefix search (rebuilt periodically)
-    fst_index: FstIndex,
+    pub(crate) fst_index: FstIndex,
 
     // Bitmap filters for metadata
     pub(crate) bitmap_index: BitmapFilterIndex,
 
     // BM25F scorer
-    scorer: Bm25fScorer,
+    pub(crate) scorer: Bm25fScorer,
 
     // Reranker
-    reranker: Reranker,
+    pub(crate) reranker: Reranker,
 
     // Per-document field lengths for BM25F
-    doc_field_lengths: HashMap<DocId, HashMap<SearchField, u32>>,
+    pub(crate) doc_field_lengths: HashMap<DocId, HashMap<SearchField, u32>>,
 
     // Content store for phrase post-filtering (first 10 KB per document)
-    doc_content: HashMap<DocId, String>,
+    pub(crate) doc_content: HashMap<DocId, String>,
 
     // Corpus stats
-    total_tokens: usize,
+    pub(crate) total_tokens: usize,
 }
 
 // ===== Private helpers ======================================================
 
 /// Regex for extracting word tokens: Unicode letters, digits, and underscores,
 /// minimum length 2.
-fn word_regex() -> &'static Regex {
+pub(crate) fn word_regex() -> &'static Regex {
     static RE: OnceLock<Regex> = OnceLock::new();
     RE.get_or_init(|| Regex::new(r"[\p{L}\p{N}_]{2,}").unwrap())
 }
@@ -338,6 +292,7 @@ impl SearchIndex {
             next_id: 0,
             postings: DashMap::new(),
             positions: HashMap::new(),
+            doc_terms: HashMap::new(),
             fst_index: FstIndex::new(),
             bitmap_index: BitmapFilterIndex::new(),
             scorer: Bm25fScorer::new(Bm25fConfig::default(), 0, avg_field_lengths),
@@ -512,13 +467,18 @@ impl SearchIndex {
         };
 
         // Tokenize with positions over the full content for phrase search.
-        let (full_content_freq, full_content_pos) = tokenize_with_positions(content);
+        let (_full_content_freq, full_content_pos) = tokenize_with_positions(content);
         // Store positions in the positional index.
         for (term, term_positions) in &full_content_pos {
             self.positions
                 .entry(term.clone())
                 .or_default()
                 .insert(doc_id, term_positions.clone());
+            // Track positional terms for efficient removal
+            self.doc_terms
+                .entry(doc_id)
+                .or_default()
+                .insert(term.clone());
         }
 
         // For BM25F scoring we still split into head/body fields.
@@ -535,8 +495,9 @@ impl SearchIndex {
         for (token, tf) in &body_tokens {
             self.add_posting(token, doc_id, *tf, SearchField::ContentBody);
         }
-        // drop full_content_freq (we only needed positions from it)
-        let _ = full_content_freq;
+        // _full_content_freq is intentionally unused — we only need positions from
+        // tokenize_with_positions; the head/body BM25F tokenization above provides
+        // the field-specific term frequencies.
 
         // -- Update total tokens ---------------------------------------------
         self.total_tokens +=
@@ -568,6 +529,9 @@ impl SearchIndex {
     // -- 3. remove_document() ------------------------------------------------
 
     /// Remove a document from the index by path.
+    ///
+    /// Uses the `doc_terms` reverse index for O(terms_in_doc) removal instead
+    /// of scanning all posting lists.
     pub fn remove_document(&mut self, path: &str) {
         let doc_id = match self.path_to_id.remove(path) {
             Some(id) => id,
@@ -578,28 +542,26 @@ impl SearchIndex {
         self.doc_field_lengths.remove(&doc_id);
         self.doc_content.remove(&doc_id);
 
-        // Remove all posting entries for this doc_id.
-        let mut empty_terms: Vec<String> = Vec::new();
-        for mut r in self.postings.iter_mut() {
-            r.value_mut().retain(|e| e.doc_id != doc_id);
-            if r.value().is_empty() {
-                empty_terms.push(r.key().clone());
-            }
-        }
-        for term in empty_terms {
-            self.postings.remove(&term);
-        }
+        // Use reverse index to only visit posting lists that contain this doc
+        if let Some(terms) = self.doc_terms.remove(&doc_id) {
+            for term in &terms {
+                // Remove from postings
+                if let Some(mut entries) = self.postings.get_mut(term) {
+                    entries.retain(|e| e.doc_id != doc_id);
+                    if entries.is_empty() {
+                        drop(entries);
+                        self.postings.remove(term);
+                    }
+                }
 
-        // Remove from positional index.
-        let mut empty_pos_terms: Vec<String> = Vec::new();
-        for (term, doc_positions) in self.positions.iter_mut() {
-            doc_positions.remove(&doc_id);
-            if doc_positions.is_empty() {
-                empty_pos_terms.push(term.clone());
+                // Remove from positional index
+                if let Some(doc_positions) = self.positions.get_mut(term) {
+                    doc_positions.remove(&doc_id);
+                    if doc_positions.is_empty() {
+                        self.positions.remove(term);
+                    }
+                }
             }
-        }
-        for term in empty_pos_terms {
-            self.positions.remove(&term);
         }
 
         // Remove from bitmap index.
@@ -655,127 +617,36 @@ impl SearchIndex {
         self.scorer.update_stats(num_docs, avg_field_lengths);
     }
 
-    // -- 5b. Disk persistence -------------------------------------------------
+    // -- 5b. new_from_parts (used by index_io for deserialization) --------------
 
-    /// Save the current index to disk as a bincode file.
-    ///
-    /// Uses atomic write (tmp + rename) to prevent corruption.
-    pub fn save_to_disk(&self) {
-        let path = index_cache_path();
-        if let Some(parent) = path.parent() {
-            let _ = std::fs::create_dir_all(parent);
-        }
-
-        let postings_snapshot: HashMap<String, Vec<PostingEntry>> = self
-            .postings
-            .iter()
-            .map(|r| (r.key().clone(), r.value().clone()))
-            .collect();
-
-        let cache = IndexCache {
-            version: INDEX_CACHE_VERSION,
-            documents: self.documents.clone(),
-            path_to_id: self.path_to_id.clone(),
-            next_id: self.next_id,
-            postings: postings_snapshot,
-            positions: self.positions.clone(),
-            doc_field_lengths: self.doc_field_lengths.clone(),
-            doc_content: self.doc_content.clone(),
-            total_tokens: self.total_tokens,
-        };
-
-        let tmp_path = path.with_extension("bin.tmp");
-        match bincode::serialize(&cache) {
-            Ok(bytes) => {
-                let size_mb = bytes.len() as f64 / (1024.0 * 1024.0);
-                if std::fs::write(&tmp_path, &bytes).is_ok() {
-                    if std::fs::rename(&tmp_path, &path).is_ok() {
-                        info!(
-                            "[SearchIndex] Saved index cache ({:.1} MB, {} docs, {} terms)",
-                            size_mb,
-                            self.documents.len(),
-                            self.postings.len()
-                        );
-                    } else {
-                        let _ = std::fs::remove_file(&tmp_path);
-                        warn!("[SearchIndex] Failed to rename cache file");
-                    }
-                } else {
-                    warn!("[SearchIndex] Failed to write cache file");
-                }
-            }
-            Err(e) => {
-                warn!("[SearchIndex] Failed to serialize index cache: {e}");
-            }
-        }
-    }
-
-    /// Load the index from disk cache, rebuilding FST/bitmap/scorer.
-    ///
-    /// Returns `None` if no cache exists, version mismatches, or deserialization fails.
-    pub fn load_from_disk() -> Option<Self> {
-        let path = index_cache_path();
-        let bytes = match std::fs::read(&path) {
-            Ok(b) => b,
-            Err(_) => return None,
-        };
-
-        let cache: IndexCache = match bincode::deserialize(&bytes) {
-            Ok(c) => c,
-            Err(e) => {
-                warn!("[SearchIndex] Failed to deserialize cache: {e}");
-                return None;
-            }
-        };
-
-        if cache.version != INDEX_CACHE_VERSION {
-            info!(
-                "[SearchIndex] Cache version mismatch (got {}, expected {}), rebuilding",
-                cache.version, INDEX_CACHE_VERSION
-            );
-            return None;
-        }
-
-        let doc_count = cache.documents.len();
-        let term_count = cache.postings.len();
-
-        let postings: DashMap<String, Vec<PostingEntry>> = cache.postings.into_iter().collect();
-
-        let mut index = Self {
-            documents: cache.documents,
-            path_to_id: cache.path_to_id,
-            next_id: cache.next_id,
+    /// Construct a `SearchIndex` from pre-loaded parts (used by `index_io`).
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn new_from_parts(
+        documents: HashMap<DocId, DocumentInfo>,
+        path_to_id: HashMap<String, DocId>,
+        next_id: DocId,
+        postings: DashMap<String, Vec<PostingEntry>>,
+        positions: HashMap<String, HashMap<DocId, Vec<u32>>>,
+        doc_terms: HashMap<DocId, HashSet<String>>,
+        doc_field_lengths: HashMap<DocId, HashMap<SearchField, u32>>,
+        doc_content: HashMap<DocId, String>,
+        total_tokens: usize,
+    ) -> Self {
+        Self {
+            documents,
+            path_to_id,
+            next_id,
             postings,
-            positions: cache.positions,
+            positions,
+            doc_terms,
             fst_index: FstIndex::new(),
             bitmap_index: BitmapFilterIndex::new(),
             scorer: Bm25fScorer::new(Bm25fConfig::default(), 0, HashMap::new()),
             reranker: Reranker::with_defaults(),
-            doc_field_lengths: cache.doc_field_lengths,
-            doc_content: cache.doc_content,
-            total_tokens: cache.total_tokens,
-        };
-
-        // Rebuild derived structures from loaded data.
-        index.rebuild_fst();
-        index.update_scorer_stats();
-
-        // Rebuild bitmap filters from document metadata.
-        for doc in index.documents.values() {
-            index.bitmap_index.add_file(&FileMetaEntry {
-                doc_id: doc.doc_id,
-                extension: doc.extension.clone(),
-                size: doc.file_size,
-                modified: doc.modified,
-            });
+            doc_field_lengths,
+            doc_content,
+            total_tokens,
         }
-
-        info!(
-            "[SearchIndex] Loaded cached index ({} docs, {} terms)",
-            doc_count, term_count
-        );
-
-        Some(index)
     }
 
     /// Get a reference to the documents map (for incremental validation).
@@ -790,327 +661,92 @@ impl SearchIndex {
     /// Parses the query, scores documents via BM25F, applies metadata/field
     /// filters, performs fuzzy fallback, reranks, and returns the top results.
     pub fn search(&self, query: &str, limit: usize) -> Vec<SearchResult> {
+        use super::search_pipeline::{
+            apply_field_filters, apply_fuzzy_fallback, apply_metadata_filters, apply_negations,
+            apply_phrase_filters, assemble_results, parse_and_expand_query, rank_and_rerank,
+            score_documents, SearchState,
+        };
+
         if query.trim().is_empty() || limit == 0 {
             return Vec::new();
         }
 
-        // a. Parse query
-        let parsed = super::query_parser::parse(query);
-
-        // b. Stem keywords
+        // a-c. Parse, stem, and expand the query.
+        let (parsed, expanded) = parse_and_expand_query(query);
         let stemmer = super::stemmer::default_stemmer();
         let stemmed = stemmer.stem_tokens(&parsed.keywords);
 
-        // c. Expand with synonyms
-        let expanded = super::synonyms::expand_query(&stemmed);
+        let mut state = SearchState::new();
 
-        // d. Score documents via BM25F
-        let mut doc_scores: HashMap<DocId, f64> = HashMap::new();
-        let mut doc_matched_terms: HashMap<DocId, Vec<String>> = HashMap::new();
+        // d. Score documents via BM25F.
+        let df_fn = |term: &str| self.document_frequency(term);
+        score_documents(
+            &mut state,
+            &expanded,
+            &self.postings,
+            &self.doc_field_lengths,
+            &self.scorer,
+            &df_fn,
+        );
 
-        for term in &expanded {
-            if let Some(entries) = self.postings.get(term) {
-                let df = self.document_frequency(term);
+        // e. Exclude negation terms.
+        apply_negations(&mut state, &parsed.negations, &self.postings, &stemmer);
 
-                // Accumulate FieldTermFreqs per document for this term
-                let mut doc_ftfs: HashMap<DocId, FieldTermFreqs> = HashMap::new();
-                for entry in entries.value() {
-                    let ftf = doc_ftfs.entry(entry.doc_id).or_default();
-                    let field_len = self
-                        .doc_field_lengths
-                        .get(&entry.doc_id)
-                        .and_then(|m| m.get(&entry.field))
-                        .copied()
-                        .unwrap_or(1);
-                    ftf.add(entry.field, entry.tf, field_len);
-                }
+        // f. Apply metadata filters via bitmap index.
+        apply_metadata_filters(&mut state, &parsed, &self.bitmap_index);
 
-                for (doc_id, ftf) in &doc_ftfs {
-                    let score = self.scorer.score_term(df, ftf);
-                    *doc_scores.entry(*doc_id).or_insert(0.0) += score;
-                    doc_matched_terms
-                        .entry(*doc_id)
-                        .or_default()
-                        .push(term.clone());
-                }
-            }
-        }
+        // g. Phrase filtering via positional index.
+        let phrase_fn = |phrase: &str| self.phrase_search(phrase);
+        apply_phrase_filters(
+            &mut state,
+            &parsed.phrases,
+            &expanded,
+            &phrase_fn,
+            &self.postings,
+            &self.doc_field_lengths,
+            &self.scorer,
+            &df_fn,
+            word_regex(),
+        );
 
-        // e. Exclude negation terms
-        for neg_term in &parsed.negations {
-            let neg_stemmed = stemmer.stem_word(neg_term);
-            if let Some(entries) = self.postings.get(&neg_stemmed) {
-                for entry in entries.value() {
-                    doc_scores.remove(&entry.doc_id);
-                    doc_matched_terms.remove(&entry.doc_id);
-                }
-            }
-            // Also check the unstemmed form
-            if let Some(entries) = self.postings.get(neg_term) {
-                for entry in entries.value() {
-                    doc_scores.remove(&entry.doc_id);
-                    doc_matched_terms.remove(&entry.doc_id);
-                }
-            }
-        }
+        // h. Apply field filters (name:, ext:, path:, content:).
+        apply_field_filters(
+            &mut state,
+            &parsed.field_filters,
+            &self.documents,
+            &self.doc_content,
+            &stemmer,
+        );
 
-        // f. Apply metadata filters via bitmap index
-        if parsed.metadata.file_type.is_some()
-            || parsed.metadata.size.is_some()
-            || parsed.metadata.date.is_some()
-            || !parsed.metadata.extensions.is_empty()
-        {
-            let allowed = self.bitmap_index.apply_filters(
-                None,
-                parsed.metadata.file_type,
-                parsed.metadata.size.as_ref(),
-                parsed.metadata.date.as_ref(),
-                &parsed.metadata.extensions,
-            );
+        // i. Fuzzy search fallback.
+        apply_fuzzy_fallback(
+            &mut state,
+            &expanded,
+            &self.postings,
+            &self.doc_field_lengths,
+            &self.scorer,
+            &df_fn,
+            &self.fst_index,
+        );
 
-            doc_scores.retain(|doc_id, _| allowed.contains(*doc_id));
-        }
+        // k. Build RankingSignals and rerank.
+        let ranked = rank_and_rerank(
+            &state,
+            query,
+            &stemmed,
+            &parsed,
+            &self.documents,
+            &self.reranker,
+        );
 
-        // g. Phrase filtering via positional index
-        //
-        // When the query contains phrases, we need to handle two cases:
-        //   - Phrase + keywords: filter doc_scores to only docs matching the phrase.
-        //   - Phrase-only query: seed doc_scores from phrase results, then score
-        //     using the phrase's constituent words.
-        if !parsed.phrases.is_empty() {
-            let is_phrase_only = doc_scores.is_empty() && expanded.is_empty();
-
-            for phrase in &parsed.phrases {
-                let phrase_docs = self.phrase_search(phrase);
-
-                if is_phrase_only {
-                    // Seed doc_scores with all phrase-matching documents.
-                    for &doc_id in &phrase_docs {
-                        doc_scores.entry(doc_id).or_insert(0.0);
-                    }
-                } else {
-                    // Intersect: keep only documents that also match the phrase.
-                    doc_scores.retain(|doc_id, _| phrase_docs.contains(doc_id));
-                }
-
-                // Score phrase constituent words via BM25F so documents get
-                // proper ranking (rather than all having score 0.0).
-                let stemmer_ref = super::stemmer::default_stemmer();
-                let phrase_keywords: Vec<String> = word_regex()
-                    .find_iter(phrase)
-                    .map(|m| stemmer_ref.stem_word(&m.as_str().to_lowercase()))
-                    .filter(|s| s.len() >= 2)
-                    .collect();
-
-                for term in &phrase_keywords {
-                    if let Some(entries) = self.postings.get(term) {
-                        let df = self.document_frequency(term);
-                        let mut doc_ftfs: HashMap<DocId, FieldTermFreqs> = HashMap::new();
-                        for entry in entries.value() {
-                            if !doc_scores.contains_key(&entry.doc_id) {
-                                continue;
-                            }
-                            let ftf = doc_ftfs.entry(entry.doc_id).or_default();
-                            let field_len = self
-                                .doc_field_lengths
-                                .get(&entry.doc_id)
-                                .and_then(|m| m.get(&entry.field))
-                                .copied()
-                                .unwrap_or(1);
-                            ftf.add(entry.field, entry.tf, field_len);
-                        }
-                        for (doc_id, ftf) in &doc_ftfs {
-                            let score = self.scorer.score_term(df, ftf);
-                            *doc_scores.entry(*doc_id).or_insert(0.0) += score;
-                            doc_matched_terms
-                                .entry(*doc_id)
-                                .or_default()
-                                .push(term.clone());
-                        }
-                    }
-                }
-            }
-        }
-
-        // h. Apply field filters (name:, ext:, path:, content:, type:)
-        for ff in &parsed.field_filters {
-            let value_lower = ff.value.to_lowercase();
-            match ff.field.as_str() {
-                "name" => {
-                    doc_scores.retain(|doc_id, _| {
-                        self.documents
-                            .get(doc_id)
-                            .map(|d| d.filename.to_lowercase().contains(&value_lower))
-                            .unwrap_or(false)
-                    });
-                }
-                "ext" => {
-                    doc_scores.retain(|doc_id, _| {
-                        self.documents
-                            .get(doc_id)
-                            .map(|d| d.extension.to_lowercase() == value_lower)
-                            .unwrap_or(false)
-                    });
-                }
-                "path" => {
-                    doc_scores.retain(|doc_id, _| {
-                        self.documents
-                            .get(doc_id)
-                            .map(|d| d.path.to_lowercase().contains(&value_lower))
-                            .unwrap_or(false)
-                    });
-                }
-                "content" => {
-                    let stemmed_val = stemmer.stem_word(&value_lower);
-                    doc_scores.retain(|doc_id, _| {
-                        self.doc_content
-                            .get(doc_id)
-                            .map(|c| c.contains(&value_lower) || c.contains(&stemmed_val))
-                            .unwrap_or(false)
-                    });
-                }
-                _ => {} // Unknown field filters are ignored.
-            }
-        }
-
-        // i. Fuzzy search fallback: for terms with no exact hits, use FST
-        let no_hit_terms: Vec<String> = expanded
-            .iter()
-            .filter(|t| !self.postings.contains_key(t.as_str()))
-            .cloned()
-            .collect();
-
-        if !no_hit_terms.is_empty() {
-            let fuzzy_matches = self.fst_index.fuzzy_search_multi(&no_hit_terms, 1);
-
-            for matched_terms in fuzzy_matches.values() {
-                for (matched_term, _offset) in matched_terms {
-                    if let Some(entries) = self.postings.get(matched_term) {
-                        let df = self.document_frequency(matched_term);
-
-                        let mut doc_ftfs: HashMap<DocId, FieldTermFreqs> = HashMap::new();
-                        for entry in entries.value() {
-                            let ftf = doc_ftfs.entry(entry.doc_id).or_default();
-                            let field_len = self
-                                .doc_field_lengths
-                                .get(&entry.doc_id)
-                                .and_then(|m| m.get(&entry.field))
-                                .copied()
-                                .unwrap_or(1);
-                            ftf.add(entry.field, entry.tf, field_len);
-                        }
-
-                        for (doc_id, ftf) in &doc_ftfs {
-                            // Fuzzy matches get a penalty (0.7x) to rank below exact matches
-                            let score = self.scorer.score_term(df, ftf) * 0.7;
-                            // j. Merge: take max score per document
-                            let current = doc_scores.entry(*doc_id).or_insert(0.0);
-                            if score > *current {
-                                *current = score;
-                            }
-                            doc_matched_terms
-                                .entry(*doc_id)
-                                .or_default()
-                                .push(matched_term.clone());
-                        }
-                    }
-                }
-            }
-        }
-
-        // k. Build RankingSignals and rerank
-        let now_secs = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .unwrap_or_default()
-            .as_secs();
-
-        let query_lower = query.to_lowercase();
-        let mut ranked: Vec<(String, f64, RankingSignals)> = doc_scores
-            .iter()
-            .filter_map(|(doc_id, &bm25f_score)| {
-                let doc = self.documents.get(doc_id)?;
-                let recency_days = if now_secs > doc.modified {
-                    (now_secs - doc.modified) as f64 / 86400.0
-                } else {
-                    0.0
-                };
-                let depth = path_depth(&doc.path);
-                let filename_match = doc.filename.to_lowercase().contains(&query_lower)
-                    || stemmed
-                        .iter()
-                        .any(|kw| doc.filename.to_lowercase().contains(kw));
-                let extension_match = parsed
-                    .metadata
-                    .file_type
-                    .as_ref()
-                    .map(|_ft| {
-                        // If a file type filter was specified and this doc passed the
-                        // bitmap filter, the extension matches.
-                        true
-                    })
-                    .unwrap_or(false);
-
-                let signals = RankingSignals {
-                    bm25f_score,
-                    recency_days,
-                    path_depth: depth,
-                    access_count: 0,
-                    extension_match,
-                    filename_match,
-                };
-                Some((doc.path.clone(), bm25f_score, signals))
-            })
-            .collect();
-
-        self.reranker.rerank(&mut ranked);
-
-        // l. Return top `limit` results as SearchResult
-        ranked
-            .into_iter()
-            .take(limit)
-            .map(|(path, score, _signals)| {
-                let filename = Path::new(&path)
-                    .file_name()
-                    .map(|f| f.to_string_lossy().to_string())
-                    .unwrap_or_default();
-
-                let matches = doc_matched_terms
-                    .get(&self.path_to_id.get(&path).copied().unwrap_or(u32::MAX))
-                    .map(|terms| {
-                        terms
-                            .iter()
-                            .take(5)
-                            .map(|t| SearchMatch {
-                                token: t.clone(),
-                                context: String::new(),
-                                line_number: None,
-                            })
-                            .collect()
-                    })
-                    .unwrap_or_default();
-
-                let snippet = self
-                    .path_to_id
-                    .get(&path)
-                    .and_then(|id| self.doc_content.get(id))
-                    .map(|c| {
-                        let mut preview_len = c.len().min(200);
-                        while preview_len > 0 && !c.is_char_boundary(preview_len) {
-                            preview_len -= 1;
-                        }
-                        c[..preview_len].to_string()
-                    });
-
-                SearchResult {
-                    path,
-                    filename,
-                    matches,
-                    score,
-                    relevance_type: "hybrid".to_string(),
-                    snippet,
-                }
-            })
-            .collect()
+        // l. Assemble final results.
+        assemble_results(
+            ranked,
+            limit,
+            &state.doc_matched_terms,
+            &self.path_to_id,
+            &self.doc_content,
+        )
     }
 
     // -- 7. phrase_search() --------------------------------------------------
@@ -1392,6 +1028,11 @@ impl SearchIndex {
             .entry(term.to_string())
             .or_default()
             .push(PostingEntry { doc_id, tf, field });
+        // Track which terms belong to each document for efficient removal
+        self.doc_terms
+            .entry(doc_id)
+            .or_default()
+            .insert(term.to_string());
     }
 
     /// Compute document frequency for a term (number of unique documents

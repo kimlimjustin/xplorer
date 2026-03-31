@@ -37,6 +37,66 @@ struct WatcherEntry {
 static WATCHERS: LazyLock<Arc<Mutex<HashMap<String, WatcherEntry>>>> =
     LazyLock::new(|| Arc::new(Mutex::new(HashMap::new())));
 
+// ─── Primary watcher (single-directory facade) ─────────────────────────────
+//
+// The "primary watcher" is the watcher started by the legacy `start_watching` /
+// `stop_watching` commands.  It maps onto a single multi-directory watcher entry
+// stored in `WATCHERS` above, using a dedicated slot for its ID.
+
+static PRIMARY_WATCHER_ID: LazyLock<Mutex<Option<String>>> = LazyLock::new(|| Mutex::new(None));
+
+/// Take the current primary watcher id out of the static, if any.
+fn take_primary_id() -> Option<String> {
+    let mut guard = PRIMARY_WATCHER_ID.lock().unwrap_or_else(|e| e.into_inner());
+    guard.take()
+}
+
+/// Store a new primary watcher id.
+fn set_primary_id(id: String) {
+    let mut guard = PRIMARY_WATCHER_ID.lock().unwrap_or_else(|e| e.into_inner());
+    *guard = Some(id);
+}
+
+/// Stop the current primary watcher (if any). Safe to call even if nothing is
+/// watching.  Used from the synchronous `on_window_event` close handler.
+pub fn stop_primary_watcher() {
+    if let Some(id) = take_primary_id() {
+        let _ = std::thread::spawn(move || {
+            let rt = tokio::runtime::Builder::new_current_thread()
+                .enable_all()
+                .build()
+                .expect("failed to build temp tokio runtime");
+            let _ = rt.block_on(unwatch_directory(id));
+        })
+        .join();
+    }
+}
+
+#[command]
+pub async fn start_watching(path: String, app_handle: AppHandle) -> Result<(), String> {
+    // Stop any previous primary watcher first.
+    if let Some(old_id) = take_primary_id() {
+        let _ = unwatch_directory(old_id).await;
+    }
+
+    // Delegate to the multi-directory watcher (non-recursive, matching original behaviour).
+    let watcher_id = watch_directory(path, false, app_handle).await?;
+
+    set_primary_id(watcher_id);
+
+    Ok(())
+}
+
+#[command]
+pub async fn stop_watching() -> Result<(), String> {
+    if let Some(id) = take_primary_id() {
+        unwatch_directory(id).await?;
+    }
+    Ok(())
+}
+
+// ─── Multi-directory watcher API ────────────────────────────────────────────
+
 fn generate_watcher_id() -> String {
     use std::time::{SystemTime, UNIX_EPOCH};
     let ts = SystemTime::now()

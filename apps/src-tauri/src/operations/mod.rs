@@ -2,13 +2,14 @@ pub mod accelerated_ops;
 pub mod agent_ops;
 pub mod analytics_ops;
 pub mod comparison_ops;
-pub mod compression_ops;
+pub mod compression;
 pub mod database_ops;
 pub mod directory_ops;
 pub mod docker_ops;
 pub mod encryption_ops;
 pub mod file_associations_ops;
 pub mod file_ops;
+pub mod folder_ops;
 pub mod image_ops;
 pub mod metadata_ops;
 pub mod progress;
@@ -18,17 +19,18 @@ pub mod shell_integration_ops;
 pub mod system_ops;
 pub mod trash_ops;
 pub mod types;
-pub mod undo_redo_ops;
+pub mod undo_redo;
 
 pub use accelerated_ops::*;
 pub use agent_ops::*;
 pub use analytics_ops::*;
 pub use comparison_ops::*;
-pub use compression_ops::*;
+pub use compression::*;
 pub use directory_ops::*;
 pub use encryption_ops::*;
 pub use file_associations_ops::*;
 pub use file_ops::*;
+pub use folder_ops::FolderSizeInfo;
 pub use image_ops::*;
 pub use metadata_ops::*;
 pub use progress::*;
@@ -38,7 +40,7 @@ pub use shell_integration_ops::*;
 pub use system_ops::*;
 pub use trash_ops::*;
 pub use types::*;
-// Note: undo_redo_ops items are accessed directly via operations::undo_redo_ops::*
+// Note: undo_redo items are accessed directly via operations::undo_redo::*
 // in main.rs, so no glob re-export is needed here.
 
 // ─── Shared helpers ─────────────────────────────────────────────────────────
@@ -104,9 +106,16 @@ pub fn validate_file_path(path: &str) -> Result<(), String> {
         return Err("Access denied: path contains null bytes".to_string());
     }
 
-    // Normalize to collapse any `..` traversal
-    let canonical =
-        std::fs::canonicalize(path).unwrap_or_else(|_| normalize_path_for_validation(path));
+    // Fast path: skip expensive canonicalize when path has no traversal components.
+    // Only call canonicalize when the path contains `..`, `./`, or similar.
+    let needs_canonicalize = path.contains("..")
+        || path.contains("./")
+        || path.contains(".\\");
+    let canonical = if needs_canonicalize {
+        std::fs::canonicalize(path).unwrap_or_else(|_| normalize_path_for_validation(path))
+    } else {
+        normalize_path_for_validation(path)
+    };
     let path_lower = canonical.to_string_lossy().to_lowercase();
     // Also normalize separators to forward slashes for uniform matching
     let mut path_normalized = path_lower.replace('\\', "/");

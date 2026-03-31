@@ -6,14 +6,22 @@ pub mod ai_pipeline;
 pub mod bitmap_filters;
 pub mod bm25f;
 pub mod compat;
+pub mod compat_commands;
+pub mod compat_engine;
+pub mod compat_persistence;
+pub mod compat_types;
+pub mod compat_watcher;
 pub mod context_ranker;
 pub mod fst_index;
 pub mod fuzzy;
 pub mod hybrid;
 pub mod index;
+pub mod index_io;
+pub mod index_types;
 pub mod ollama_client;
 pub mod query_parser;
 pub mod reranker;
+pub mod search_pipeline;
 pub mod stemmer;
 pub mod synonyms;
 pub mod watcher;
@@ -124,25 +132,42 @@ pub fn cosine_similarity(a: &[f32], b: &[f32]) -> f64 {
     }
 }
 
+/// O(1) extension classification using pre-built HashSets instead of linear scans.
 pub fn classify_extension(ext: &str) -> Option<FileTypeCategory> {
+    use std::collections::HashSet;
+    use std::sync::LazyLock;
+
+    static IMAGE_SET: LazyLock<HashSet<&str>> =
+        LazyLock::new(|| IMAGE_EXTENSIONS.iter().copied().collect());
+    static VIDEO_SET: LazyLock<HashSet<&str>> =
+        LazyLock::new(|| VIDEO_EXTENSIONS.iter().copied().collect());
+    static AUDIO_SET: LazyLock<HashSet<&str>> =
+        LazyLock::new(|| AUDIO_EXTENSIONS.iter().copied().collect());
+    static DOCUMENT_SET: LazyLock<HashSet<&str>> =
+        LazyLock::new(|| DOCUMENT_EXTENSIONS.iter().copied().collect());
+    static CODE_SET: LazyLock<HashSet<&str>> =
+        LazyLock::new(|| CODE_EXTENSIONS.iter().copied().collect());
+    static ARCHIVE_SET: LazyLock<HashSet<&str>> =
+        LazyLock::new(|| ARCHIVE_EXTENSIONS.iter().copied().collect());
+
     let ext_lower = ext.to_lowercase();
     let ext = ext_lower.as_str();
-    if IMAGE_EXTENSIONS.contains(&ext) {
+    if IMAGE_SET.contains(ext) {
         return Some(FileTypeCategory::Images);
     }
-    if VIDEO_EXTENSIONS.contains(&ext) {
+    if VIDEO_SET.contains(ext) {
         return Some(FileTypeCategory::Videos);
     }
-    if AUDIO_EXTENSIONS.contains(&ext) {
+    if AUDIO_SET.contains(ext) {
         return Some(FileTypeCategory::Audio);
     }
-    if DOCUMENT_EXTENSIONS.contains(&ext) {
+    if DOCUMENT_SET.contains(ext) {
         return Some(FileTypeCategory::Documents);
     }
-    if CODE_EXTENSIONS.contains(&ext) {
+    if CODE_SET.contains(ext) {
         return Some(FileTypeCategory::Code);
     }
-    if ARCHIVE_EXTENSIONS.contains(&ext) {
+    if ARCHIVE_SET.contains(ext) {
         return Some(FileTypeCategory::Archives);
     }
     None

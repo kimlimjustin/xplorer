@@ -1,26 +1,24 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use tauri::{Emitter, Manager, WindowEvent};
+use tauri::{Emitter, Listener, Manager, WindowEvent};
 use tracing::warn;
 
 // All modules are declared in lib.rs (the `xplorer` library crate).
 // Import them here so the binary can register Tauri commands.
 use xplorer::agent;
 use xplorer::ai;
-use xplorer::api;
 use xplorer::duplicate_finder;
 use xplorer::extensions;
 use xplorer::file_organizer;
 use xplorer::file_watcher;
-use xplorer::git_history;
+use xplorer::git;
 use xplorer::google_drive;
 use xplorer::operations;
 use xplorer::pty;
 use xplorer::shortcuts;
 use xplorer::storage;
-use xplorer::watcher;
-// git_integration is consolidated into git_history
+// git_integration is consolidated into git module
 use xplorer::audit_log;
 use xplorer::backup;
 use xplorer::file_versions;
@@ -44,6 +42,8 @@ fn main() {
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_drag::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
+        .plugin(tauri_plugin_process::init())
         .setup(|app| {
             // Initialize progress manager
             let progress_manager =
@@ -65,56 +65,59 @@ fn main() {
             // Migration: rename old-style seeded directories whose directory name
             // differs from their manifest.id (e.g. "code-editor-extension" → "code-editor").
             // If a correctly-named copy already exists, remove the old-named duplicate.
-            if let Ok(entries) = std::fs::read_dir(&extensions_dir) {
-                let mut actions: Vec<(std::path::PathBuf, String)> = Vec::new(); // (old_path, manifest_id)
-                for entry in entries.flatten() {
-                    let path = entry.path();
-                    if !path.is_dir() {
-                        continue;
-                    }
-                    let dir_name = entry.file_name().to_string_lossy().to_string();
-                    let pkg_path = path.join("package.json");
-                    if let Ok(raw) = std::fs::read_to_string(&pkg_path) {
-                        if let Ok(pkg) = serde_json::from_str::<serde_json::Value>(&raw) {
-                            if let Some(id) = pkg
-                                .get("xplorer")
-                                .and_then(|x| x.get("id"))
-                                .and_then(|v| v.as_str())
-                            {
-                                if dir_name != id {
-                                    actions.push((path.clone(), id.to_string()));
+            // Skip if the migration has already been completed (flag file present).
+            let migration_flag = extensions_dir.join(".migration-v2-done");
+            if !migration_flag.exists() {
+                if let Ok(entries) = std::fs::read_dir(&extensions_dir) {
+                    let mut actions: Vec<(std::path::PathBuf, String)> = Vec::new(); // (old_path, manifest_id)
+                    for entry in entries.flatten() {
+                        let path = entry.path();
+                        if !path.is_dir() {
+                            continue;
+                        }
+                        let dir_name = entry.file_name().to_string_lossy().to_string();
+                        let pkg_path = path.join("package.json");
+                        if let Ok(raw) = std::fs::read_to_string(&pkg_path) {
+                            if let Ok(pkg) = serde_json::from_str::<serde_json::Value>(&raw) {
+                                if let Some(id) = pkg
+                                    .get("xplorer")
+                                    .and_then(|x| x.get("id"))
+                                    .and_then(|v| v.as_str())
+                                {
+                                    if dir_name != id {
+                                        actions.push((path.clone(), id.to_string()));
+                                    }
                                 }
                             }
                         }
                     }
-                }
-                for (old_path, manifest_id) in actions {
-                    let correct_path = extensions_dir.join(&manifest_id);
-                    if correct_path.exists() {
-                        // Correctly-named copy already exists — remove the misnamed duplicate
-                        let _ = std::fs::remove_dir_all(&old_path);
-                    } else {
-                        // Rename the misnamed directory to use manifest.id
-                        let _ = std::fs::rename(&old_path, &correct_path);
+                    for (old_path, manifest_id) in actions {
+                        let correct_path = extensions_dir.join(&manifest_id);
+                        if correct_path.exists() {
+                            // Correctly-named copy already exists — remove the misnamed duplicate
+                            let _ = std::fs::remove_dir_all(&old_path);
+                        } else {
+                            // Rename the misnamed directory to use manifest.id
+                            let _ = std::fs::rename(&old_path, &correct_path);
+                        }
                     }
                 }
+                // Write flag file so this migration is not re-run on subsequent launches
+                let _ = std::fs::write(&migration_flag, "v2");
             }
 
             extensions::init_extension_manager(app_data_dir.to_str().unwrap_or("./data"));
 
-            // Check CLI args for .xtension file association opens
+            // Collect deferred CLI events (xtension file opens, folder opens)
+            // to emit once the frontend signals readiness via "frontend-ready".
             let handle = app.handle().clone();
             let args: Vec<String> = std::env::args().collect();
+            let mut deferred_events: Vec<(&str, String)> = Vec::new();
+
+            // Check CLI args for .xtension file association opens
             for arg in &args[1..] {
                 if arg.ends_with(".xtension") && std::path::Path::new(arg).exists() {
-                    let xtension_path = arg.to_string();
-                    let handle_clone = handle.clone();
-                    // Emit event to frontend after window is ready
-                    tauri::async_runtime::spawn(async move {
-                        // Small delay to ensure the frontend is ready to listen
-                        tokio::time::sleep(std::time::Duration::from_millis(1500)).await;
-                        let _ = handle_clone.emit("xtension-file-opened", &xtension_path);
-                    });
+                    deferred_events.push(("xtension-file-opened", arg.to_string()));
                     break; // Only handle the first .xtension file
                 }
             }
@@ -123,14 +126,40 @@ fn main() {
             for arg in &args[1..] {
                 let path = std::path::Path::new(arg);
                 if path.is_dir() {
-                    let folder_path = arg.to_string();
-                    let handle_clone2 = handle.clone();
-                    tauri::async_runtime::spawn(async move {
-                        tokio::time::sleep(std::time::Duration::from_millis(1500)).await;
-                        let _ = handle_clone2.emit("folder-opened", &folder_path);
-                    });
+                    deferred_events.push(("folder-opened", arg.to_string()));
                     break;
                 }
+            }
+
+            // Wait for the frontend to signal readiness before emitting deferred events.
+            // Falls back to a timeout if the frontend never signals (e.g. older builds).
+            if !deferred_events.is_empty() {
+                let owned_events: Vec<(String, String)> = deferred_events
+                    .into_iter()
+                    .map(|(name, payload)| (name.to_string(), payload))
+                    .collect();
+                let handle_for_listener = handle.clone();
+                let handle_for_emit = handle.clone();
+
+                let (tx, rx) = std::sync::mpsc::channel::<()>();
+
+                let listener_id = handle_for_listener.listen("frontend-ready", move |_| {
+                    let _ = tx.send(());
+                });
+
+                tauri::async_runtime::spawn(async move {
+                    // Wait up to 5 seconds for frontend-ready, then proceed anyway
+                    let _ = tokio::task::spawn_blocking(move || {
+                        let _ = rx.recv_timeout(std::time::Duration::from_secs(5));
+                    })
+                    .await;
+
+                    handle_for_emit.unlisten(listener_id);
+
+                    for (event_name, payload) in owned_events {
+                        let _ = handle_for_emit.emit(&event_name, &payload);
+                    }
+                });
             }
 
             #[cfg(debug_assertions)]
@@ -199,9 +228,9 @@ fn main() {
             ai::chat_with_ai,
             ai::analyze_file_with_ai,
             ai::get_file_help,
-            ai::calculate_folder_size,
-            ai::get_cached_folder_sizes,
-            ai::clear_folder_size_cache,
+            operations::folder_ops::calculate_folder_size,
+            operations::folder_ops::get_cached_folder_sizes,
+            operations::folder_ops::clear_folder_size_cache,
             ai::get_user_directories,
             ai::get_recent_folders,
             ai::add_to_recent_folders,
@@ -210,10 +239,10 @@ fn main() {
             ai::suggest_filename,
             ai::auto_tag_files,
             // Undo/Redo
-            operations::undo_redo_ops::undo_operation,
-            operations::undo_redo_ops::redo_operation,
-            operations::undo_redo_ops::get_undo_history,
-            operations::undo_redo_ops::clear_undo_history,
+            operations::undo_redo::undo_operation,
+            operations::undo_redo::redo_operation,
+            operations::undo_redo::get_undo_history,
+            operations::undo_redo::clear_undo_history,
             // File templates
             operations::file_ops::get_file_templates,
             operations::file_ops::create_from_template,
@@ -224,55 +253,34 @@ fn main() {
             operations::file_ops::get_directory_sizes,
             // Symlink creation
             operations::file_ops::create_symlink,
-            // API operations (migrated from server)
-            api::get_files,
-            api::get_file_tree,
-            api::get_file_by_id,
-            api::get_file_content,
-            api::create_file_record,
-            api::delete_file_record,
-            api::get_all_tags,
-            api::get_files_by_tag,
-            api::update_file_tags,
-            api::update_file_color,
-            api::get_extensions,
-            api::get_active_extensions,
-            api::create_extension,
-            api::install_extension,
-            api::uninstall_extension,
-            api::delete_extension,
-            api::get_chat_messages,
-            api::create_chat_message,
-            api::get_user_settings,
-            api::update_user_settings,
             // Native plugin invoke (for extensions with native code)
             extensions::native_plugin_invoke,
             // Search engine v2 (replaces old tokenizer commands)
-            xplorer::search::compat::set_tokenizer_settings,
-            xplorer::search::compat::get_tokenizer_settings,
-            xplorer::search::compat::rebuild_token_index,
-            xplorer::search::compat::search_tokens,
-            xplorer::search::compat::natural_language_search,
-            xplorer::search::compat::get_tokenizer_stats,
-            xplorer::search::compat::is_tokenizer_indexing,
-            xplorer::search::compat::get_file_tokens,
-            xplorer::search::compat::add_path_to_tokenizer,
-            xplorer::search::compat::get_file_recommendations,
-            xplorer::search::compat::parse_search_query,
-            xplorer::search::compat::enhanced_search,
+            xplorer::search::compat_commands::set_tokenizer_settings,
+            xplorer::search::compat_commands::get_tokenizer_settings,
+            xplorer::search::compat_commands::rebuild_token_index,
+            xplorer::search::compat_commands::search_tokens,
+            xplorer::search::compat_commands::natural_language_search,
+            xplorer::search::compat_commands::get_tokenizer_stats,
+            xplorer::search::compat_commands::is_tokenizer_indexing,
+            xplorer::search::compat_commands::get_file_tokens,
+            xplorer::search::compat_commands::add_path_to_tokenizer,
+            xplorer::search::compat_commands::get_file_recommendations,
+            xplorer::search::compat_commands::parse_search_query,
+            xplorer::search::compat_commands::enhanced_search,
             // Auto-index and context-aware search
-            xplorer::search::compat::index_directory,
-            xplorer::search::compat::set_search_context,
-            xplorer::search::compat::add_whitelisted_path,
-            xplorer::search::compat::ai_search,
+            xplorer::search::compat_commands::index_directory,
+            xplorer::search::compat_commands::set_search_context,
+            xplorer::search::compat_commands::add_whitelisted_path,
+            xplorer::search::compat_commands::ai_search,
             // AI indexing (new search engine v2 pipeline)
-            xplorer::search::compat::get_ai_index_status,
-            xplorer::search::compat::trigger_ai_indexing,
-            xplorer::search::compat::get_ai_index_entry,
+            xplorer::search::compat_commands::get_ai_index_status,
+            xplorer::search::compat_commands::trigger_ai_indexing,
+            xplorer::search::compat_commands::get_ai_index_entry,
             // Semantic / hybrid search (new search engine v2 pipeline)
-            xplorer::search::compat::semantic_search,
-            xplorer::search::compat::find_similar_files,
-            xplorer::search::compat::hybrid_search,
+            xplorer::search::compat_commands::semantic_search,
+            xplorer::search::compat_commands::find_similar_files,
+            xplorer::search::compat_commands::hybrid_search,
             // Shortcut operations
             shortcuts::get_shortcuts,
             shortcuts::get_shortcuts_by_category,
@@ -316,25 +324,25 @@ fn main() {
             extensions::extension_backend_call,
             extensions::extension_backend_status,
             // Git history operations
-            git_history::find_git_repository,
-            git_history::get_repository_info,
-            git_history::get_file_history,
-            git_history::get_file_blame,
-            git_history::get_file_diff,
-            git_history::get_commit_diff,
-            git_history::get_file_status,
-            git_history::get_branches,
-            git_history::create_branch,
-            git_history::switch_branch,
-            git_history::delete_branch,
-            git_history::stage_file,
-            git_history::unstage_file,
-            git_history::commit_changes,
-            git_history::get_stashes,
-            git_history::create_stash,
-            git_history::apply_stash,
-            git_history::drop_stash,
-            git_history::get_all_commits,
+            git::status::find_git_repository,
+            git::status::get_repository_info,
+            git::history::get_file_history,
+            git::history::get_file_blame,
+            git::history::get_file_diff,
+            git::history::get_commit_diff,
+            git::status::get_file_status,
+            git::branch_ops::get_branches,
+            git::branch_ops::create_branch,
+            git::branch_ops::switch_branch,
+            git::branch_ops::delete_branch,
+            git::staging::stage_file,
+            git::staging::unstage_file,
+            git::staging::commit_changes,
+            git::stash_ops::get_stashes,
+            git::stash_ops::create_stash,
+            git::stash_ops::apply_stash,
+            git::stash_ops::drop_stash,
+            git::history::get_all_commits,
             // File comparison operations
             operations::compute_file_hash,
             operations::compare_files,
@@ -464,10 +472,9 @@ fn main() {
             google_drive::gdrive_get_file_content,
             google_drive::get_gdrive_settings,
             google_drive::update_gdrive_settings,
-            // File watcher operations
-            watcher::start_watching,
-            watcher::stop_watching,
-            // File watcher operations (multi-watcher)
+            // File watcher operations (primary + multi-watcher)
+            file_watcher::start_watching,
+            file_watcher::stop_watching,
             file_watcher::watch_directory,
             file_watcher::unwatch_directory,
             file_watcher::get_active_watchers,
@@ -476,9 +483,9 @@ fn main() {
             operations::database_ops::get_sqlite_table_columns,
             operations::database_ops::query_sqlite_table,
             operations::database_ops::execute_sqlite_query,
-            // Git integration (consolidated into git_history)
-            git_history::get_git_status,
-            git_history::get_git_repo_info,
+            // Git integration (consolidated into git module)
+            git::status::get_git_status,
+            git::status::get_git_repo_info,
             // Audit log operations
             audit_log::get_audit_log,
             audit_log::clear_audit_log,
@@ -537,7 +544,7 @@ fn main() {
         .on_window_event(|_window, event| {
             if let WindowEvent::CloseRequested { .. } = event {
                 duplicate_finder::cancel_current_scan();
-                watcher::stop_watcher();
+                file_watcher::stop_primary_watcher();
                 file_watcher::stop_all_watchers();
                 sync::stop_auto_sync_blocking();
                 let _ = pty::pty_kill_all();

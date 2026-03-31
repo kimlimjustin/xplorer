@@ -1,9 +1,8 @@
 use crate::operations::types::*;
 use crate::operations::validate_file_path;
 use rayon::prelude::*;
-use std::collections::VecDeque;
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::sync::LazyLock;
 use tauri::command;
 use tokio::sync::Semaphore;
@@ -133,26 +132,25 @@ pub async fn get_dir_size(path: String) -> Result<DirectorySize, String> {
             return Err("Path is not a directory".to_string());
         }
 
-        let mut stack = VecDeque::new();
-        stack.push_back(PathBuf::from(&path));
+        // Use jwalk for parallel directory walking
         let mut total_size: u64 = 0;
         let mut file_count: usize = 0;
         let mut dir_count: usize = 0;
 
-        while let Some(dir) = stack.pop_front() {
-            if let Ok(entries) = fs::read_dir(&dir) {
-                for entry in entries.flatten() {
-                    if let Ok(ft) = entry.file_type() {
-                        if ft.is_dir() {
-                            dir_count += 1;
-                            stack.push_back(entry.path());
-                        } else {
-                            file_count += 1;
-                            if let Ok(meta) = entry.metadata() {
-                                total_size += meta.len();
-                            }
-                        }
-                    }
+        for entry in jwalk::WalkDir::new(path)
+            .skip_hidden(false)
+            .into_iter()
+            .filter_map(|e| e.ok())
+        {
+            if entry.file_type().is_file() {
+                file_count += 1;
+                if let Ok(meta) = entry.metadata() {
+                    total_size += meta.len();
+                }
+            } else if entry.file_type().is_dir() {
+                // Don't count the root directory itself
+                if entry.depth() > 0 {
+                    dir_count += 1;
                 }
             }
         }

@@ -88,7 +88,9 @@ pub async fn get_chat_sessions(
     app_handle: tauri::AppHandle,
 ) -> Result<Vec<ChatSessionSummary>, String> {
     let guard = ensure_cache(&app_handle)?;
-    let history = guard.as_ref().unwrap();
+    let history = guard
+        .as_ref()
+        .ok_or_else(|| "Chat history not loaded".to_string())?;
     Ok(history
         .sessions
         .iter()
@@ -109,7 +111,9 @@ pub async fn get_chat_session(
     session_id: String,
 ) -> Result<Option<ChatSession>, String> {
     let guard = ensure_cache(&app_handle)?;
-    let history = guard.as_ref().unwrap();
+    let history = guard
+        .as_ref()
+        .ok_or_else(|| "Chat history not loaded".to_string())?;
     Ok(history
         .sessions
         .iter()
@@ -124,7 +128,9 @@ pub async fn save_chat_session(
     session: ChatSession,
 ) -> Result<(), String> {
     let mut guard = ensure_cache(&app_handle)?;
-    let history = guard.as_mut().unwrap();
+    let history = guard
+        .as_mut()
+        .ok_or_else(|| "Chat history not loaded".to_string())?;
 
     if let Some(existing) = history.sessions.iter_mut().find(|s| s.id == session.id) {
         existing.title = session.title;
@@ -151,7 +157,9 @@ pub async fn delete_chat_session(
     session_id: String,
 ) -> Result<(), String> {
     let mut guard = ensure_cache(&app_handle)?;
-    let history = guard.as_mut().unwrap();
+    let history = guard
+        .as_mut()
+        .ok_or_else(|| "Chat history not loaded".to_string())?;
     history.sessions.retain(|s| s.id != session_id);
     flush_to_disk(&app_handle, &guard)?;
     Ok(())
@@ -161,7 +169,9 @@ pub async fn delete_chat_session(
 #[tauri::command]
 pub async fn clear_chat_history(app_handle: tauri::AppHandle) -> Result<(), String> {
     let mut guard = ensure_cache(&app_handle)?;
-    let history = guard.as_mut().unwrap();
+    let history = guard
+        .as_mut()
+        .ok_or_else(|| "Chat history not loaded".to_string())?;
     history.sessions.clear();
     flush_to_disk(&app_handle, &guard)?;
     Ok(())

@@ -1,9 +1,19 @@
+mod commands;
+mod redo_ops;
+mod undo_ops;
+
+pub use commands::*;
+
 use chrono::Local;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::{LazyLock, Mutex};
-use tauri::command;
+
+use super::file_ops::copy_dir_recursive as copy_dir_recursive_simple;
+
+pub(crate) use redo_ops::execute_redo;
+pub(crate) use undo_ops::execute_undo;
 
 const MAX_HISTORY: usize = 50;
 
@@ -118,6 +128,62 @@ impl FileOperation {
             }
         }
     }
+
+    /// A forward (original-action) description, used in the history panel.
+    pub fn describe_forward(&self) -> String {
+        match self {
+            FileOperation::Copy { src, dest } => {
+                let src_name = Path::new(src)
+                    .file_name()
+                    .map(|n| n.to_string_lossy().to_string())
+                    .unwrap_or_else(|| src.clone());
+                let dest_dir = Path::new(dest)
+                    .parent()
+                    .map(|p| p.to_string_lossy().to_string())
+                    .unwrap_or_else(|| dest.clone());
+                format!("Copied {} to {}", src_name, dest_dir)
+            }
+            FileOperation::Move { src, dest } => {
+                let name = Path::new(src)
+                    .file_name()
+                    .map(|n| n.to_string_lossy().to_string())
+                    .unwrap_or_else(|| src.clone());
+                let dest_dir = Path::new(dest)
+                    .parent()
+                    .map(|p| p.to_string_lossy().to_string())
+                    .unwrap_or_else(|| dest.clone());
+                format!("Moved {} to {}", name, dest_dir)
+            }
+            FileOperation::Delete { original_path, .. } => {
+                let name = Path::new(original_path)
+                    .file_name()
+                    .map(|n| n.to_string_lossy().to_string())
+                    .unwrap_or_else(|| original_path.clone());
+                format!("Deleted {}", name)
+            }
+            FileOperation::Rename { old_path, new_path } => {
+                let old_name = Path::new(old_path)
+                    .file_name()
+                    .map(|n| n.to_string_lossy().to_string())
+                    .unwrap_or_else(|| old_path.clone());
+                let new_name = Path::new(new_path)
+                    .file_name()
+                    .map(|n| n.to_string_lossy().to_string())
+                    .unwrap_or_else(|| new_path.clone());
+                format!("Renamed {} to {}", old_name, new_name)
+            }
+        }
+    }
+
+    /// Short operation type label.
+    pub fn type_label(&self) -> &'static str {
+        match self {
+            FileOperation::Copy { .. } => "Copy",
+            FileOperation::Move { .. } => "Move",
+            FileOperation::Delete { .. } => "Delete",
+            FileOperation::Rename { .. } => "Rename",
+        }
+    }
 }
 
 /// A timestamped file operation for the undo/redo stacks.
@@ -130,8 +196,8 @@ pub struct TimestampedOperation {
 
 /// Stores the undo and redo stacks for file operations.
 pub struct OperationHistory {
-    undo_stack: Vec<TimestampedOperation>,
-    redo_stack: Vec<TimestampedOperation>,
+    pub(crate) undo_stack: Vec<TimestampedOperation>,
+    pub(crate) redo_stack: Vec<TimestampedOperation>,
 }
 
 impl Default for OperationHistory {
@@ -242,10 +308,8 @@ pub fn soft_delete(path: &str) -> Result<String, String> {
     Ok(staging_path.to_string_lossy().to_string())
 }
 
-use super::file_ops::copy_dir_recursive as copy_dir_recursive_simple;
-
 /// Remove a file or directory recursively.
-fn remove_path(path: &Path) -> Result<(), String> {
+pub(crate) fn remove_path(path: &Path) -> Result<(), String> {
     if path.is_dir() {
         fs::remove_dir_all(path)
             .map_err(|e| format!("Failed to remove directory {}: {}", path.display(), e))
@@ -255,278 +319,12 @@ fn remove_path(path: &Path) -> Result<(), String> {
     }
 }
 
-/// Execute the inverse of an operation (undo).
-fn execute_undo(op: &FileOperation) -> Result<(), String> {
-    match op {
-        FileOperation::Copy { dest, .. } => {
-            // Undo copy = delete the copied file
-            let dest_path = Path::new(dest);
-            if dest_path.exists() {
-                remove_path(dest_path)
-            } else {
-                // Already gone, nothing to undo
-                Ok(())
-            }
-        }
-        FileOperation::Move { src, dest } => {
-            // Undo move = move it back from dest to src
-            let dest_path = Path::new(dest);
-            let src_path = Path::new(src);
-            if !dest_path.exists() {
-                return Err(format!("Cannot undo move: {} no longer exists", dest));
-            }
-            // Ensure parent of src exists
-            if let Some(parent) = src_path.parent() {
-                if !parent.exists() {
-                    fs::create_dir_all(parent)
-                        .map_err(|e| format!("Failed to create parent dir: {}", e))?;
-                }
-            }
-            fs::rename(dest_path, src_path).or_else(|_| {
-                // Cross-device fallback
-                if dest_path.is_dir() {
-                    copy_dir_recursive_simple(dest_path, src_path)?;
-                    fs::remove_dir_all(dest_path)
-                        .map_err(|e| format!("Failed to remove after cross-device move: {}", e))
-                } else {
-                    fs::copy(dest_path, src_path)
-                        .map_err(|e| format!("Failed to copy for cross-device move: {}", e))?;
-                    fs::remove_file(dest_path)
-                        .map_err(|e| format!("Failed to remove after cross-device move: {}", e))
-                }
-            })
-        }
-        FileOperation::Delete {
-            original_path,
-            staging_path,
-            ..
-        } => {
-            // Undo delete = restore from staging area
-            let staging = Path::new(staging_path);
-            let original = Path::new(original_path);
-            if !staging.exists() {
-                return Err(format!(
-                    "Cannot undo delete: staging file {} no longer exists",
-                    staging_path
-                ));
-            }
-            // Ensure parent directory exists
-            if let Some(parent) = original.parent() {
-                if !parent.exists() {
-                    fs::create_dir_all(parent)
-                        .map_err(|e| format!("Failed to create parent dir: {}", e))?;
-                }
-            }
-            fs::rename(staging, original).or_else(|_| {
-                if staging.is_dir() {
-                    copy_dir_recursive_simple(staging, original)?;
-                    fs::remove_dir_all(staging)
-                        .map_err(|e| format!("Failed to clean up staging: {}", e))
-                } else {
-                    fs::copy(staging, original)
-                        .map_err(|e| format!("Failed to restore from staging: {}", e))?;
-                    fs::remove_file(staging)
-                        .map_err(|e| format!("Failed to clean up staging: {}", e))
-                }
-            })
-        }
-        FileOperation::Rename { old_path, new_path } => {
-            // Undo rename = rename back
-            let new = Path::new(new_path);
-            let old = Path::new(old_path);
-            if !new.exists() {
-                return Err(format!("Cannot undo rename: {} no longer exists", new_path));
-            }
-            fs::rename(new, old).map_err(|e| format!("Failed to undo rename: {}", e))
-        }
-    }
-}
-
-/// Re-execute an operation (redo).
-fn execute_redo(op: &FileOperation) -> Result<(), String> {
-    match op {
-        FileOperation::Copy { src, dest } => {
-            let src_path = Path::new(src);
-            let dest_path = Path::new(dest);
-            if !src_path.exists() {
-                return Err(format!("Cannot redo copy: source {} no longer exists", src));
-            }
-            if let Some(parent) = dest_path.parent() {
-                if !parent.exists() {
-                    fs::create_dir_all(parent)
-                        .map_err(|e| format!("Failed to create parent dir: {}", e))?;
-                }
-            }
-            if src_path.is_dir() {
-                copy_dir_recursive_simple(src_path, dest_path)
-            } else {
-                fs::copy(src_path, dest_path)
-                    .map(|_| ())
-                    .map_err(|e| format!("Failed to redo copy: {}", e))
-            }
-        }
-        FileOperation::Move { src, dest } => {
-            let src_path = Path::new(src);
-            let dest_path = Path::new(dest);
-            if !src_path.exists() {
-                return Err(format!("Cannot redo move: source {} no longer exists", src));
-            }
-            if let Some(parent) = dest_path.parent() {
-                if !parent.exists() {
-                    fs::create_dir_all(parent)
-                        .map_err(|e| format!("Failed to create parent dir: {}", e))?;
-                }
-            }
-            fs::rename(src_path, dest_path).or_else(|_| {
-                if src_path.is_dir() {
-                    copy_dir_recursive_simple(src_path, dest_path)?;
-                    fs::remove_dir_all(src_path)
-                        .map_err(|e| format!("Failed to remove after cross-device move: {}", e))
-                } else {
-                    fs::copy(src_path, dest_path)
-                        .map_err(|e| format!("Failed to copy for redo move: {}", e))?;
-                    fs::remove_file(src_path)
-                        .map_err(|e| format!("Failed to remove after cross-device move: {}", e))
-                }
-            })
-        }
-        FileOperation::Delete {
-            original_path,
-            staging_path,
-            was_dir,
-        } => {
-            // Redo delete = move it back to staging
-            let original = Path::new(original_path);
-            let staging = Path::new(staging_path);
-            if !original.exists() {
-                return Err(format!(
-                    "Cannot redo delete: {} no longer exists",
-                    original_path
-                ));
-            }
-            fs::rename(original, staging).or_else(|_| {
-                if *was_dir {
-                    copy_dir_recursive_simple(original, staging)?;
-                    fs::remove_dir_all(original)
-                        .map_err(|e| format!("Failed to remove after cross-device move: {}", e))
-                } else {
-                    fs::copy(original, staging)
-                        .map_err(|e| format!("Failed to copy for redo delete: {}", e))?;
-                    fs::remove_file(original)
-                        .map_err(|e| format!("Failed to remove after cross-device move: {}", e))
-                }
-            })
-        }
-        FileOperation::Rename { old_path, new_path } => {
-            let old = Path::new(old_path);
-            let new = Path::new(new_path);
-            if !old.exists() {
-                return Err(format!("Cannot redo rename: {} no longer exists", old_path));
-            }
-            fs::rename(old, new).map_err(|e| format!("Failed to redo rename: {}", e))
-        }
-    }
-}
-
 /// Result returned to the frontend after an undo/redo operation.
 #[derive(Serialize, Deserialize, Clone)]
 pub struct UndoRedoResult {
     pub success: bool,
     pub message: String,
     pub operation_type: String,
-}
-
-#[command]
-pub async fn undo_operation() -> Result<UndoRedoResult, String> {
-    let ts_op = {
-        let mut history = OPERATION_HISTORY.lock().unwrap_or_else(|e| e.into_inner());
-        history.pop_undo()
-    };
-
-    match ts_op {
-        None => Ok(UndoRedoResult {
-            success: false,
-            message: "Nothing to undo".to_string(),
-            operation_type: "none".to_string(),
-        }),
-        Some(ts_op) => {
-            let description = ts_op.op.describe();
-            let op_type = match &ts_op.op {
-                FileOperation::Copy { .. } => "copy",
-                FileOperation::Move { .. } => "move",
-                FileOperation::Delete { .. } => "delete",
-                FileOperation::Rename { .. } => "rename",
-            }
-            .to_string();
-
-            match execute_undo(&ts_op.op) {
-                Ok(()) => {
-                    // Push to redo stack
-                    let mut history = OPERATION_HISTORY.lock().unwrap_or_else(|e| e.into_inner());
-                    history.push_redo(ts_op);
-                    Ok(UndoRedoResult {
-                        success: true,
-                        message: format!("Undone: {}", description),
-                        operation_type: op_type,
-                    })
-                }
-                Err(e) => {
-                    // Put the operation back since undo failed
-                    let mut history = OPERATION_HISTORY.lock().unwrap_or_else(|e| e.into_inner());
-                    history.undo_stack.push(ts_op);
-                    Err(format!("Failed to undo: {}", e))
-                }
-            }
-        }
-    }
-}
-
-#[command]
-pub async fn redo_operation() -> Result<UndoRedoResult, String> {
-    let ts_op = {
-        let mut history = OPERATION_HISTORY.lock().unwrap_or_else(|e| e.into_inner());
-        history.pop_redo()
-    };
-
-    match ts_op {
-        None => Ok(UndoRedoResult {
-            success: false,
-            message: "Nothing to redo".to_string(),
-            operation_type: "none".to_string(),
-        }),
-        Some(ts_op) => {
-            let description = ts_op.op.describe_redo();
-            let op_type = match &ts_op.op {
-                FileOperation::Copy { .. } => "copy",
-                FileOperation::Move { .. } => "move",
-                FileOperation::Delete { .. } => "delete",
-                FileOperation::Rename { .. } => "rename",
-            }
-            .to_string();
-
-            match execute_redo(&ts_op.op) {
-                Ok(()) => {
-                    // Push back to undo stack (without clearing redo — only new ops clear redo)
-                    let mut history = OPERATION_HISTORY.lock().unwrap_or_else(|e| e.into_inner());
-                    history.undo_stack.push(ts_op);
-                    if history.undo_stack.len() > MAX_HISTORY {
-                        history.undo_stack.remove(0);
-                    }
-                    Ok(UndoRedoResult {
-                        success: true,
-                        message: format!("Redone: {}", description),
-                        operation_type: op_type,
-                    })
-                }
-                Err(e) => {
-                    // Put the operation back since redo failed
-                    let mut history = OPERATION_HISTORY.lock().unwrap_or_else(|e| e.into_inner());
-                    history.redo_stack.push(ts_op);
-                    Err(format!("Failed to redo: {}", e))
-                }
-            }
-        }
-    }
 }
 
 /// A single entry in the undo history, suitable for the frontend panel.
@@ -559,66 +357,8 @@ pub struct UndoHistorySnapshot {
     pub undo_count: usize,
 }
 
-impl FileOperation {
-    /// A forward (original-action) description, used in the history panel.
-    pub fn describe_forward(&self) -> String {
-        match self {
-            FileOperation::Copy { src, dest } => {
-                let src_name = Path::new(src)
-                    .file_name()
-                    .map(|n| n.to_string_lossy().to_string())
-                    .unwrap_or_else(|| src.clone());
-                let dest_dir = Path::new(dest)
-                    .parent()
-                    .map(|p| p.to_string_lossy().to_string())
-                    .unwrap_or_else(|| dest.clone());
-                format!("Copied {} to {}", src_name, dest_dir)
-            }
-            FileOperation::Move { src, dest } => {
-                let name = Path::new(src)
-                    .file_name()
-                    .map(|n| n.to_string_lossy().to_string())
-                    .unwrap_or_else(|| src.clone());
-                let dest_dir = Path::new(dest)
-                    .parent()
-                    .map(|p| p.to_string_lossy().to_string())
-                    .unwrap_or_else(|| dest.clone());
-                format!("Moved {} to {}", name, dest_dir)
-            }
-            FileOperation::Delete { original_path, .. } => {
-                let name = Path::new(original_path)
-                    .file_name()
-                    .map(|n| n.to_string_lossy().to_string())
-                    .unwrap_or_else(|| original_path.clone());
-                format!("Deleted {}", name)
-            }
-            FileOperation::Rename { old_path, new_path } => {
-                let old_name = Path::new(old_path)
-                    .file_name()
-                    .map(|n| n.to_string_lossy().to_string())
-                    .unwrap_or_else(|| old_path.clone());
-                let new_name = Path::new(new_path)
-                    .file_name()
-                    .map(|n| n.to_string_lossy().to_string())
-                    .unwrap_or_else(|| new_path.clone());
-                format!("Renamed {} to {}", old_name, new_name)
-            }
-        }
-    }
-
-    /// Short operation type label.
-    pub fn type_label(&self) -> &'static str {
-        match self {
-            FileOperation::Copy { .. } => "Copy",
-            FileOperation::Move { .. } => "Move",
-            FileOperation::Delete { .. } => "Delete",
-            FileOperation::Rename { .. } => "Rename",
-        }
-    }
-}
-
 /// Extract source and destination paths from a FileOperation.
-fn extract_paths(op: &FileOperation) -> (Option<String>, Option<String>) {
+pub(crate) fn extract_paths(op: &FileOperation) -> (Option<String>, Option<String>) {
     match op {
         FileOperation::Copy { src, dest } => (Some(src.clone()), Some(dest.clone())),
         FileOperation::Move { src, dest } => (Some(src.clone()), Some(dest.clone())),
@@ -631,60 +371,6 @@ fn extract_paths(op: &FileOperation) -> (Option<String>, Option<String>) {
             (Some(old_path.clone()), Some(new_path.clone()))
         }
     }
-}
-
-#[command]
-pub async fn get_undo_history() -> Result<UndoHistorySnapshot, String> {
-    let history = OPERATION_HISTORY.lock().unwrap_or_else(|e| e.into_inner());
-
-    let mut entries = Vec::new();
-    let mut idx = 0usize;
-
-    // Undo stack entries (oldest first — index 0 is the first operation performed)
-    for ts_op in history.undo_stack.iter() {
-        let (source_path, dest_path) = extract_paths(&ts_op.op);
-        entries.push(UndoHistoryEntry {
-            index: idx,
-            operation_type: ts_op.op.type_label().to_string(),
-            description: ts_op.op.describe_forward(),
-            undoable: true,
-            timestamp_ms: ts_op.timestamp_ms,
-            source_path,
-            dest_path,
-        });
-        idx += 1;
-    }
-
-    let undo_count = idx;
-
-    // Redo stack entries (the most-recently-undone operation is at the top of the redo stack,
-    // so iterate in reverse to present them in chronological order)
-    for ts_op in history.redo_stack.iter().rev() {
-        let (source_path, dest_path) = extract_paths(&ts_op.op);
-        entries.push(UndoHistoryEntry {
-            index: idx,
-            operation_type: ts_op.op.type_label().to_string(),
-            description: ts_op.op.describe_forward(),
-            undoable: false,
-            timestamp_ms: ts_op.timestamp_ms,
-            source_path,
-            dest_path,
-        });
-        idx += 1;
-    }
-
-    Ok(UndoHistorySnapshot {
-        entries,
-        undo_count,
-    })
-}
-
-#[command]
-pub async fn clear_undo_history() -> Result<(), String> {
-    let mut history = OPERATION_HISTORY.lock().unwrap_or_else(|e| e.into_inner());
-    history.undo_stack.clear();
-    history.redo_stack.clear();
-    Ok(())
 }
 
 #[cfg(test)]
