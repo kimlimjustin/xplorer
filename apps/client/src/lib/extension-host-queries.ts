@@ -259,7 +259,7 @@ export const checkForUpdates = async (
       );
 
       try {
-        await API.downloadExtensionUpdate(update.id, update.download_url, update.checksum);
+        await API.downloadExtensionUpdate(update.download_url, update.checksum);
         console.warn(`[ExtensionHost] Updated ${update.id} to ${update.latest_version}`);
       } catch (dlErr) {
         console.error(`[ExtensionHost] Failed to update ${update.id}:`, dlErr);

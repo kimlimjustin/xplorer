@@ -107,12 +107,10 @@ export const checkForExtensionUpdates = async (
   });
 
 export const downloadExtensionUpdate = async (
-  extensionId: string,
-  downloadUrl: string,
-  checksum?: string,
+  url: string,
+  expectedChecksum?: string,
 ): Promise<string> =>
-  await transport('download_extension_update', {
-    extensionId,
-    downloadUrl,
-    checksum,
+  await transport('download_extension', {
+    url,
+    expectedChecksum: expectedChecksum ?? null,
   });

@@ -21,7 +21,7 @@ pub mod secure_credentials;
 pub mod shortcuts;
 pub mod storage;
 pub mod sync;
-pub mod watcher;
+
 #[cfg(windows)]
 pub mod windows_recycle_bin;
 

@@ -45,7 +45,7 @@ export interface PasteResult {
  *
  * Returns a summary so the caller can update clipboard state and show toasts.
  */
-export async function executePaste(ctx: PasteContext): Promise<PasteResult> {
+export const executePaste = async (ctx: PasteContext): Promise<PasteResult> => {
   const { files, operation, targetPath, resolveConflict, emitFileActivity, emitFilesChanged } = ctx;
   const total = files.length;
   const isCut = operation === 'cut';
@@ -140,7 +140,7 @@ export async function executePaste(ctx: PasteContext): Promise<PasteResult> {
   emitFilesChanged();
 
   return { succeeded, errors, isCut };
-}
+};
 
 // ── Toast helpers ────────────────────────────────────────────────────────────
 
