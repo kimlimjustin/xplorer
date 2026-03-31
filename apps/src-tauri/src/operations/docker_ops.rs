@@ -21,6 +21,21 @@ pub struct ImageInfo {
     pub created: String,
 }
 
+fn validate_docker_name(name: &str) -> Result<(), String> {
+    let re = regex::Regex::new(r"^[a-zA-Z0-9][a-zA-Z0-9._/:@-]{0,127}$").unwrap();
+    if !re.is_match(name) {
+        return Err(format!("Invalid Docker name: {}", name));
+    }
+    if name.contains("--")
+        && (name.contains("privileged")
+            || name.contains("volume")
+            || name.contains("-v "))
+    {
+        return Err("Docker name contains suspicious flag-like content".into());
+    }
+    Ok(())
+}
+
 fn run_docker_command(args: &[&str]) -> Result<String, String> {
     let output = StdCommand::new("docker").args(args).output().map_err(|e| {
         if e.kind() == std::io::ErrorKind::NotFound {
@@ -107,74 +122,111 @@ fn parse_image_json(line: &str) -> Option<ImageInfo> {
 
 #[command]
 pub async fn docker_is_available() -> Result<bool, String> {
-    match StdCommand::new("docker").arg("version").output() {
-        Ok(output) => Ok(output.status.success()),
-        Err(_) => Ok(false),
-    }
+    tokio::task::spawn_blocking(move || {
+        match StdCommand::new("docker").arg("version").output() {
+            Ok(output) => Ok(output.status.success()),
+            Err(_) => Ok(false),
+        }
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[command]
 pub async fn docker_list_containers(all: bool) -> Result<Vec<ContainerInfo>, String> {
-    let mut args = vec!["ps", "--format", "{{json .}}", "--no-trunc"];
-    if all {
-        args.insert(1, "-a");
-    }
-    let output = run_docker_command(&args)?;
-    let containers: Vec<ContainerInfo> = output
-        .lines()
-        .filter(|line| !line.trim().is_empty())
-        .filter_map(parse_container_json)
-        .collect();
-    Ok(containers)
+    tokio::task::spawn_blocking(move || {
+        let mut args = vec!["ps", "--format", "{{json .}}", "--no-trunc"];
+        if all {
+            args.insert(1, "-a");
+        }
+        let output = run_docker_command(&args)?;
+        let containers: Vec<ContainerInfo> = output
+            .lines()
+            .filter(|line| !line.trim().is_empty())
+            .filter_map(parse_container_json)
+            .collect();
+        Ok(containers)
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[command]
 pub async fn docker_list_images() -> Result<Vec<ImageInfo>, String> {
-    let output = run_docker_command(&["images", "--format", "{{json .}}", "--no-trunc"])?;
-    let images: Vec<ImageInfo> = output
-        .lines()
-        .filter(|line| !line.trim().is_empty())
-        .filter_map(parse_image_json)
-        .collect();
-    Ok(images)
+    tokio::task::spawn_blocking(move || {
+        let output = run_docker_command(&["images", "--format", "{{json .}}", "--no-trunc"])?;
+        let images: Vec<ImageInfo> = output
+            .lines()
+            .filter(|line| !line.trim().is_empty())
+            .filter_map(parse_image_json)
+            .collect();
+        Ok(images)
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[command]
 pub async fn docker_start_container(id: String) -> Result<(), String> {
-    run_docker_command(&["start", &id])?;
-    Ok(())
+    validate_docker_name(&id)?;
+    tokio::task::spawn_blocking(move || {
+        run_docker_command(&["start", &id])?;
+        Ok(())
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[command]
 pub async fn docker_stop_container(id: String) -> Result<(), String> {
-    run_docker_command(&["stop", &id])?;
-    Ok(())
+    validate_docker_name(&id)?;
+    tokio::task::spawn_blocking(move || {
+        run_docker_command(&["stop", &id])?;
+        Ok(())
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[command]
 pub async fn docker_remove_container(id: String, force: bool) -> Result<(), String> {
-    if force {
-        run_docker_command(&["rm", "-f", &id])?;
-    } else {
-        run_docker_command(&["rm", &id])?;
-    }
-    Ok(())
+    validate_docker_name(&id)?;
+    tokio::task::spawn_blocking(move || {
+        if force {
+            run_docker_command(&["rm", "-f", &id])?;
+        } else {
+            run_docker_command(&["rm", &id])?;
+        }
+        Ok(())
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[command]
 pub async fn docker_remove_image(id: String, force: bool) -> Result<(), String> {
-    if force {
-        run_docker_command(&["rmi", "-f", &id])?;
-    } else {
-        run_docker_command(&["rmi", &id])?;
-    }
-    Ok(())
+    validate_docker_name(&id)?;
+    tokio::task::spawn_blocking(move || {
+        if force {
+            run_docker_command(&["rmi", "-f", &id])?;
+        } else {
+            run_docker_command(&["rmi", &id])?;
+        }
+        Ok(())
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[command]
 pub async fn docker_container_logs(id: String, lines: u32) -> Result<String, String> {
-    let tail_arg = format!("{}", lines);
-    run_docker_command(&["logs", "--tail", &tail_arg, &id])
+    validate_docker_name(&id)?;
+    tokio::task::spawn_blocking(move || {
+        let tail_arg = format!("{}", lines);
+        run_docker_command(&["logs", "--tail", &tail_arg, &id])
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[cfg(test)]
@@ -246,6 +298,31 @@ mod tests {
         let deserialized: ContainerInfo = serde_json::from_str(&json).unwrap();
         assert_eq!(deserialized.id, "abc");
         assert_eq!(deserialized.name, "test");
+    }
+
+    #[test]
+    fn test_validate_docker_name_valid() {
+        assert!(validate_docker_name("nginx").is_ok());
+        assert!(validate_docker_name("nginx:latest").is_ok());
+        assert!(validate_docker_name("my-container").is_ok());
+        assert!(validate_docker_name("registry.example.com/image:v1.0").is_ok());
+        assert!(validate_docker_name("abc123").is_ok());
+        assert!(validate_docker_name("user/repo@sha256:abc123def456").is_ok());
+    }
+
+    #[test]
+    fn test_validate_docker_name_invalid() {
+        assert!(validate_docker_name("").is_err());
+        assert!(validate_docker_name(" spaces").is_err());
+        assert!(validate_docker_name("-leading-dash").is_err());
+        assert!(validate_docker_name(".leading-dot").is_err());
+        assert!(validate_docker_name("name with spaces").is_err());
+    }
+
+    #[test]
+    fn test_validate_docker_name_suspicious_flags() {
+        assert!(validate_docker_name("name--privileged").is_err());
+        assert!(validate_docker_name("name--volume-test").is_err());
     }
 
     #[test]

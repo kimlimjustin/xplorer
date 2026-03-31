@@ -130,6 +130,10 @@ export const verifyExtensionIntegrity = async (
 ): Promise<{ valid: boolean; reason?: string }> => {
   if (!manifest.checksum) {
     // No checksum = unverified extension (allow with warning)
+    console.warn(
+      `[ExtensionHost] SECURITY WARNING: Extension "${manifest.name}" (${manifest.id}) has no checksum and cannot be verified. ` +
+        `This extension has not been signed and may have been tampered with. Load at your own risk.`,
+    );
     return { valid: true, reason: 'no-checksum' };
   }
 

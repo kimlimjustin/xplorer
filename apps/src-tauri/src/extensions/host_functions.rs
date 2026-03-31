@@ -974,6 +974,13 @@ fn validate_storage_key(key: &str) -> Result<(), String> {
     if key.is_empty() || key.len() > 256 {
         return Err("Storage key must be 1-256 characters".to_string());
     }
+    // Reject path separators, traversal sequences, and null bytes
+    if key.contains('/') || key.contains('\\') || key.contains("..") || key.contains('\0') {
+        return Err(format!(
+            "Storage key '{}' contains forbidden characters (/, \\, .., or null bytes)",
+            key
+        ));
+    }
     if !key
         .chars()
         .all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_' || c == '.')
@@ -982,9 +989,6 @@ fn validate_storage_key(key: &str) -> Result<(), String> {
             "Storage key '{}' contains invalid characters (only alphanumeric, hyphens, underscores, dots allowed)",
             key
         ));
-    }
-    if key.contains("..") {
-        return Err("Storage key must not contain '..'".to_string());
     }
     Ok(())
 }

@@ -48,7 +48,10 @@ pub async fn call_claude_api_streaming(
             "budget_tokens": thinking_budget,
         });
         // Claude rejects temperature when thinking is enabled
-        body.as_object_mut().unwrap().remove("temperature");
+        let obj = body
+            .as_object_mut()
+            .ok_or_else(|| "Expected JSON object in request body".to_string())?;
+        obj.remove("temperature");
     }
 
     let response = client

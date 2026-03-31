@@ -23,12 +23,15 @@ const KEY_LEN: usize = 32;
 // - nonce  : random 96-bit value for AES-256-GCM
 // - ciphertext : AES-256-GCM authenticated ciphertext (includes 16-byte tag)
 
+/// Minimum password length for encryption operations.
+const MIN_PASSWORD_LENGTH: usize = 8;
+
 fn derive_key(password: &str, salt: &[u8]) -> Result<[u8; KEY_LEN], String> {
     let mut key = [0u8; KEY_LEN];
     let argon2 = Argon2::new(
         Algorithm::Argon2id,
         Version::V0x13,
-        Params::new(65536, 3, 1, Some(32)).map_err(|e| format!("Argon2 params error: {}", e))?,
+        Params::new(65536, 3, 4, Some(32)).map_err(|e| format!("Argon2 params error: {}", e))?,
     );
     argon2
         .hash_password_into(password.as_bytes(), salt, &mut key)
@@ -40,6 +43,7 @@ fn derive_key(password: &str, salt: &[u8]) -> Result<[u8; KEY_LEN], String> {
 pub async fn encrypt_file(
     path: String,
     password: String,
+    delete_original: Option<bool>,
     _app_handle: AppHandle,
     progress_manager: State<'_, Arc<ProgressManager>>,
 ) -> Result<String, String> {
@@ -52,8 +56,11 @@ pub async fn encrypt_file(
     if src.is_dir() {
         return Err("Cannot encrypt a directory".to_string());
     }
-    if password.is_empty() {
-        return Err("Password must not be empty".to_string());
+    if password.len() < MIN_PASSWORD_LENGTH {
+        return Err(format!(
+            "Password must be at least {} characters long",
+            MIN_PASSWORD_LENGTH
+        ));
     }
 
     let output_path = format!("{}.enc", path);
@@ -141,6 +148,20 @@ pub async fn encrypt_file(
                 None,
                 true,
             );
+
+            // Securely delete original if requested
+            if delete_original.unwrap_or(false) {
+                let original = Path::new(&path_for_log);
+                if original.exists() {
+                    // Overwrite with zeros before deleting
+                    if let Ok(metadata) = fs::metadata(&path_for_log) {
+                        let size = metadata.len() as usize;
+                        let zeros = vec![0u8; size];
+                        let _ = fs::write(&path_for_log, &zeros);
+                    }
+                    let _ = fs::remove_file(&path_for_log);
+                }
+            }
         }
         Err(msg) => {
             progress_manager.fail_file_operation(&op_id, msg.clone());
@@ -172,8 +193,11 @@ pub async fn decrypt_file(
     if src.is_dir() {
         return Err("Cannot decrypt a directory".to_string());
     }
-    if password.is_empty() {
-        return Err("Password must not be empty".to_string());
+    if password.len() < MIN_PASSWORD_LENGTH {
+        return Err(format!(
+            "Password must be at least {} characters long",
+            MIN_PASSWORD_LENGTH
+        ));
     }
     if !path.ends_with(".enc") {
         return Err("File does not have .enc extension".to_string());

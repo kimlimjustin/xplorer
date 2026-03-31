@@ -679,14 +679,15 @@ mod tests {
         println!("  {}", hex_encode(&sk.to_bytes()));
         println!("Public key (set as OFFICIAL_PUBLIC_KEY in signing.rs):");
         let pk_bytes = pk.to_bytes();
-        print!("  const OFFICIAL_PUBLIC_KEY: [u8; 32] = [\n    ");
+        let mut pk_display = String::from("  const OFFICIAL_PUBLIC_KEY: [u8; 32] = [\n    ");
         for (i, b) in pk_bytes.iter().enumerate() {
-            print!("0x{:02x}, ", b);
+            pk_display.push_str(&format!("0x{:02x}, ", b));
             if (i + 1) % 8 == 0 && i < 31 {
-                print!("\n    ");
+                pk_display.push_str("\n    ");
             }
         }
-        println!("\n  ];");
+        pk_display.push_str("\n  ];");
+        println!("{}", pk_display);
         println!("===========================\n");
     }
 }

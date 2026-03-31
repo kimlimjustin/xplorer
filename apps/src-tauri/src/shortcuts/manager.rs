@@ -514,7 +514,7 @@ fn format_key_combination(key: &ShortcutKeyInput) -> String {
 
 #[command]
 pub fn get_shortcuts() -> Result<Vec<ShortcutBinding>, String> {
-    let manager_guard = SHORTCUTS_MANAGER.lock().map_err(|e| e.to_string())?;
+    let manager_guard = SHORTCUTS_MANAGER.lock().unwrap_or_else(|e| e.into_inner());
     if let Some(manager) = manager_guard.as_ref() {
         let shortcuts = manager
             .settings
@@ -536,7 +536,7 @@ pub fn get_shortcuts_by_category(_category: String) -> Result<Vec<ShortcutBindin
 
 #[command]
 pub fn add_shortcut(shortcut: ShortcutBinding) -> Result<(), String> {
-    let mut manager_guard = SHORTCUTS_MANAGER.lock().map_err(|e| e.to_string())?;
+    let mut manager_guard = SHORTCUTS_MANAGER.lock().unwrap_or_else(|e| e.into_inner());
     if let Some(manager) = manager_guard.as_mut() {
         for profile in &manager.settings.profiles {
             if profile.id == shortcut.profile {
@@ -572,7 +572,7 @@ pub fn add_shortcut(shortcut: ShortcutBinding) -> Result<(), String> {
 
 #[command]
 pub fn update_shortcut(binding: ShortcutBinding) -> Result<(), String> {
-    let mut manager_guard = SHORTCUTS_MANAGER.lock().map_err(|e| e.to_string())?;
+    let mut manager_guard = SHORTCUTS_MANAGER.lock().unwrap_or_else(|e| e.into_inner());
     if let Some(manager) = manager_guard.as_mut() {
         if let Some(profile) = manager
             .settings
@@ -594,7 +594,7 @@ pub fn update_shortcut(binding: ShortcutBinding) -> Result<(), String> {
 
 #[command]
 pub fn remove_shortcut(shortcut_id: String) -> Result<(), String> {
-    let mut manager_guard = SHORTCUTS_MANAGER.lock().map_err(|e| e.to_string())?;
+    let mut manager_guard = SHORTCUTS_MANAGER.lock().unwrap_or_else(|e| e.into_inner());
     if let Some(manager) = manager_guard.as_mut() {
         for profile in &mut manager.settings.profiles {
             let before = profile.shortcuts.len();
@@ -611,7 +611,7 @@ pub fn remove_shortcut(shortcut_id: String) -> Result<(), String> {
 
 #[command]
 pub fn get_shortcut_profiles() -> Result<Vec<String>, String> {
-    let manager_guard = SHORTCUTS_MANAGER.lock().map_err(|e| e.to_string())?;
+    let manager_guard = SHORTCUTS_MANAGER.lock().unwrap_or_else(|e| e.into_inner());
     if let Some(manager) = manager_guard.as_ref() {
         let profiles = manager
             .settings
@@ -627,7 +627,7 @@ pub fn get_shortcut_profiles() -> Result<Vec<String>, String> {
 
 #[command]
 pub fn switch_shortcut_profile(profile_id: String) -> Result<(), String> {
-    let mut manager_guard = SHORTCUTS_MANAGER.lock().map_err(|e| e.to_string())?;
+    let mut manager_guard = SHORTCUTS_MANAGER.lock().unwrap_or_else(|e| e.into_inner());
     if let Some(manager) = manager_guard.as_mut() {
         if manager.settings.profiles.iter().any(|p| p.id == profile_id) {
             manager.current_profile_id = profile_id.clone();
@@ -642,7 +642,7 @@ pub fn switch_shortcut_profile(profile_id: String) -> Result<(), String> {
 
 #[command]
 pub fn get_shortcut_settings() -> Result<ShortcutSettings, String> {
-    let manager_guard = SHORTCUTS_MANAGER.lock().map_err(|e| e.to_string())?;
+    let manager_guard = SHORTCUTS_MANAGER.lock().unwrap_or_else(|e| e.into_inner());
     if let Some(manager) = manager_guard.as_ref() {
         return Ok(manager.settings.clone());
     }
@@ -651,7 +651,7 @@ pub fn get_shortcut_settings() -> Result<ShortcutSettings, String> {
 
 #[command]
 pub fn update_shortcut_settings(settings: ShortcutSettings) -> Result<(), String> {
-    let mut manager_guard = SHORTCUTS_MANAGER.lock().map_err(|e| e.to_string())?;
+    let mut manager_guard = SHORTCUTS_MANAGER.lock().unwrap_or_else(|e| e.into_inner());
     if let Some(manager) = manager_guard.as_mut() {
         manager.current_profile_id = settings.current_profile.clone();
         manager.settings = settings;
@@ -666,7 +666,7 @@ pub fn execute_shortcut_action(
     key_combination: String,
     context: String,
 ) -> Result<Option<ShortcutAction>, String> {
-    let manager_guard = SHORTCUTS_MANAGER.lock().map_err(|e| e.to_string())?;
+    let manager_guard = SHORTCUTS_MANAGER.lock().unwrap_or_else(|e| e.into_inner());
     if let Some(manager) = manager_guard.as_ref() {
         let action = manager
             .settings
@@ -696,7 +696,7 @@ pub fn register_extension_shortcut(
     action: String,
     context: Vec<String>,
 ) -> Result<(), String> {
-    let mut manager_guard = SHORTCUTS_MANAGER.lock().map_err(|e| e.to_string())?;
+    let mut manager_guard = SHORTCUTS_MANAGER.lock().unwrap_or_else(|e| e.into_inner());
     if let Some(manager) = manager_guard.as_mut() {
         let current_profile = manager.current_profile_id.clone();
         let Some(profile) = manager
@@ -731,7 +731,7 @@ pub fn register_extension_shortcut(
 
 #[command]
 pub fn unregister_extension_shortcuts(extension_id: String) -> Result<(), String> {
-    let mut manager_guard = SHORTCUTS_MANAGER.lock().map_err(|e| e.to_string())?;
+    let mut manager_guard = SHORTCUTS_MANAGER.lock().unwrap_or_else(|e| e.into_inner());
     if let Some(manager) = manager_guard.as_mut() {
         for profile in &mut manager.settings.profiles {
             profile
@@ -746,7 +746,7 @@ pub fn unregister_extension_shortcuts(extension_id: String) -> Result<(), String
 
 #[command]
 pub fn reset_shortcuts(profile_id: Option<String>) -> Result<(), String> {
-    let mut manager_guard = SHORTCUTS_MANAGER.lock().map_err(|e| e.to_string())?;
+    let mut manager_guard = SHORTCUTS_MANAGER.lock().unwrap_or_else(|e| e.into_inner());
     if let Some(manager) = manager_guard.as_mut() {
         let defaults = ShortcutsManager::default_settings();
         let target_id = profile_id.unwrap_or_else(|| manager.current_profile_id.clone());
@@ -775,7 +775,7 @@ pub fn reset_shortcuts(profile_id: Option<String>) -> Result<(), String> {
 
 #[command]
 pub fn reset_single_shortcut(shortcut_id: String) -> Result<ShortcutBinding, String> {
-    let mut manager_guard = SHORTCUTS_MANAGER.lock().map_err(|e| e.to_string())?;
+    let mut manager_guard = SHORTCUTS_MANAGER.lock().unwrap_or_else(|e| e.into_inner());
     if let Some(manager) = manager_guard.as_mut() {
         let defaults = ShortcutsManager::default_settings();
         let default_binding = defaults
@@ -823,7 +823,7 @@ pub fn unregister_global_shortcuts() -> Result<(), String> {
 
 #[command]
 pub fn toggle_global_shortcuts(enabled: bool) -> Result<(), String> {
-    let mut manager_guard = SHORTCUTS_MANAGER.lock().map_err(|e| e.to_string())?;
+    let mut manager_guard = SHORTCUTS_MANAGER.lock().unwrap_or_else(|e| e.into_inner());
     if let Some(manager) = manager_guard.as_mut() {
         manager.settings.global_shortcuts_enabled = enabled;
         manager.save_settings()?;

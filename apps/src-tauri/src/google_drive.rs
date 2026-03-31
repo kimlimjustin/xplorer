@@ -160,7 +160,16 @@ fn save_accounts() -> Result<(), String> {
         .collect();
 
     let json = serde_json::to_string_pretty(&safe).map_err(|e| e.to_string())?;
-    std::fs::write(&path, json).map_err(|e| e.to_string())?;
+    std::fs::write(&path, &json).map_err(|e| e.to_string())?;
+
+    // Set restrictive file permissions on the accounts file
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        let perms = std::fs::Permissions::from_mode(0o600);
+        std::fs::set_permissions(&path, perms).ok();
+    }
+
     Ok(())
 }
 
@@ -173,7 +182,10 @@ fn load_accounts() -> Result<(), String> {
 
     // Try loading full format (migration from old plaintext)
     let accounts: Vec<GoogleDriveAccount> = match serde_json::from_str(&json) {
-        Ok(accts) => accts,
+        Ok(accts) => {
+            warn!("[GDrive] Loaded accounts from legacy full format — migrating tokens to keychain");
+            accts
+        }
         Err(_) => {
             // Try loading safe format (no tokens)
             #[derive(serde::Deserialize)]
@@ -273,8 +285,17 @@ fn save_gdrive_settings(settings: &GoogleDriveSettings) -> Result<(), String> {
     };
     let path = gdrive_settings_path()?;
     let json = serde_json::to_string_pretty(&safe).map_err(|e| e.to_string())?;
-    std::fs::write(&path, json)
+    std::fs::write(&path, &json)
         .map_err(|e| format!("Failed to write Google Drive settings: {}", e))?;
+
+    // Set restrictive file permissions on the settings file
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        let perms = std::fs::Permissions::from_mode(0o600);
+        std::fs::set_permissions(&path, perms).ok();
+    }
+
     Ok(())
 }
 

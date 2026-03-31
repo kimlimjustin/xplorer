@@ -9,6 +9,7 @@ import {
   requestPermissionApproval,
   logPermissionViolation,
 } from './extension-sandbox';
+import { registerSidebarTab, registerBottomTab } from './extension-registration-helpers';
 import type { ExtensionRegistry } from './extension-registry';
 import type {
   ExtensionManifest,
@@ -336,6 +337,11 @@ export class ExtensionLifecycle {
       console.warn(
         `[ExtensionHost] Extension ${pkg.manifest.id} has no checksum — loading as unverified`,
       );
+      window.dispatchEvent(
+        new CustomEvent('xplorer:unsigned-extension', {
+          detail: { extensionId: pkg.manifest.id, extensionName: pkg.manifest.name },
+        }),
+      );
     }
 
     // No preprocessing needed — extensions are built as IIFE bundles.
@@ -531,70 +537,10 @@ export class ExtensionLifecycle {
       }
 
       // Register bottom tab from renderBottomTab + getBottomTabConfig
-      if (
-        typeof obj.renderBottomTab === 'function' &&
-        typeof obj.getBottomTabConfig === 'function'
-      ) {
-        const btConfig = (
-          obj.getBottomTabConfig as () => { id: string; title: string; icon?: string }
-        )();
-        this.registry.bottomTabRegistry.set(btConfig.id, {
-          id: btConfig.id,
-          extensionId: pkg.manifest.id,
-          title: btConfig.title,
-          icon: resolveIcon(btConfig.icon),
-          render: (props: { currentPath?: string; isActive?: boolean }) => {
-            try {
-              return (
-                obj.renderBottomTab as (props: {
-                  currentPath?: string;
-                  isActive?: boolean;
-                }) => React.ReactElement
-              )(props);
-            } catch (err) {
-              console.error(`[ExtensionHost] Bottom tab render failed for "${btConfig.id}":`, err);
-              return React.createElement(
-                'div',
-                { style: { padding: 16, color: '#f87171' } },
-                `Bottom tab "${btConfig.title}" failed to render.`,
-              );
-            }
-          },
-        });
-      }
+      registerBottomTab(obj, pkg.manifest.id, this.registry.bottomTabRegistry);
 
       // Register sidebar tab from renderSidebarTab + getSidebarTabConfig
-      if (
-        typeof obj.renderSidebarTab === 'function' &&
-        typeof obj.getSidebarTabConfig === 'function'
-      ) {
-        const stConfig = (
-          obj.getSidebarTabConfig as () => { id: string; title: string; icon?: string }
-        )();
-        this.registry.sidebarTabRegistry.set(stConfig.id, {
-          id: stConfig.id,
-          extensionId: pkg.manifest.id,
-          title: stConfig.title,
-          icon: resolveIcon(stConfig.icon),
-          render: (props: { currentPath?: string; isActive?: boolean }) => {
-            try {
-              return (
-                obj.renderSidebarTab as (props: {
-                  currentPath?: string;
-                  isActive?: boolean;
-                }) => React.ReactElement
-              )(props);
-            } catch (err) {
-              console.error(`[ExtensionHost] Sidebar tab render failed for "${stConfig.id}":`, err);
-              return React.createElement(
-                'div',
-                { style: { padding: 16, color: '#f87171' } },
-                `Sidebar tab "${stConfig.title}" failed to render.`,
-              );
-            }
-          },
-        });
-      }
+      registerSidebarTab(obj, pkg.manifest.id, this.registry.sidebarTabRegistry);
     }
   }
 
@@ -1137,6 +1083,10 @@ export class ExtensionLifecycle {
 
     for (const pkg of sorted) {
       await this.activateExtension(pkg.manifest.id);
+    }
+
+    if (sorted.length > 0) {
+      this.notifyChange();
     }
   }
 

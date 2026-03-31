@@ -31,6 +31,7 @@ const MarkdownPreview = ({ file, onError, onLoad }: PreviewProps) => {
           FORBID_TAGS: ['style', 'script', 'iframe', 'object', 'embed', 'form'],
           FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'style'],
           ALLOW_DATA_ATTR: false,
+          ALLOWED_URI_REGEXP: /^(?:https?|mailto|tel|data:image\/):/i,
         });
         setHtmlContent(htmlConverted);
 

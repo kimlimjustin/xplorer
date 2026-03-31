@@ -1,6 +1,7 @@
 //! Multi-instance PTY module — each terminal tab gets its own PTY session
 //! identified by a unique `session_id`.
 
+use crate::operations::validate_file_path;
 use portable_pty::{native_pty_system, CommandBuilder, MasterPty, PtySize};
 use std::collections::HashMap;
 use std::io::{Read, Write};
@@ -33,6 +34,18 @@ pub async fn pty_spawn(
     cols: u16,
     rows: u16,
 ) -> Result<(), String> {
+    // Validate session_id format
+    if !session_id
+        .chars()
+        .all(|c| c.is_alphanumeric() || c == '-' || c == '_')
+        || session_id.len() > 64
+    {
+        return Err("Invalid session ID format".to_string());
+    }
+
+    // Validate cwd path
+    validate_file_path(&cwd)?;
+
     kill_session(&session_id);
 
     let pty_system = native_pty_system();
@@ -96,7 +109,10 @@ pub async fn pty_spawn(
     });
 
     let mut guard = sessions();
-    let map = guard.as_mut().unwrap();
+    let map = guard
+        .as_mut()
+        .ok_or("PTY session map not initialized")
+        .map_err(|e| e.to_string())?;
     map.insert(
         session_id,
         PtySession {
@@ -113,7 +129,10 @@ pub async fn pty_spawn(
 #[command]
 pub fn pty_write(session_id: String, data: String) -> Result<(), String> {
     let mut guard = sessions();
-    let map = guard.as_mut().unwrap();
+    let map = guard
+        .as_mut()
+        .ok_or("PTY session map not initialized")
+        .map_err(|e| e.to_string())?;
     if let Some(session) = map.get_mut(&session_id) {
         session
             .writer
@@ -132,7 +151,10 @@ pub fn pty_write(session_id: String, data: String) -> Result<(), String> {
 #[command]
 pub fn pty_resize(session_id: String, cols: u16, rows: u16) -> Result<(), String> {
     let guard = sessions();
-    let map = guard.as_ref().unwrap();
+    let map = guard
+        .as_ref()
+        .ok_or("PTY session map not initialized")
+        .map_err(|e| e.to_string())?;
     if let Some(session) = map.get(&session_id) {
         session
             .master

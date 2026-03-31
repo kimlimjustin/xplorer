@@ -32,6 +32,8 @@
     "fs:write-all",
     "dialog:default",
     "global-shortcut:default",
-    "drag:default"
+    "drag:default",
+    "updater:default",
+    "process:default"
   ]
 }

@@ -505,6 +505,10 @@ async fn handle_approval(
 
 /// Execute a single write tool, handling plan creation events, and return
 /// the tool_result JSON value along with the updated AgentToolCall.
+///
+/// SECURITY: Write tools require the `approved` flag to be set to true before
+/// execution proceeds. This ensures that all write operations have been
+/// explicitly approved through the approval flow.
 fn execute_write_tool(
     tool_id: &str,
     tool_name: &str,
@@ -512,15 +516,32 @@ fn execute_write_tool(
     session_id: &str,
     app_handle: &tauri::AppHandle,
 ) -> (Value, AgentToolCall) {
+    let requires_approval = tools::tool_requires_approval(tool_name);
+
     let mut tool_call = AgentToolCall {
         id: tool_id.to_string(),
         name: tool_name.to_string(),
         input: tool_input.clone(),
-        requires_approval: false,
+        requires_approval,
         status: "running".to_string(),
         result: None,
         error: None,
     };
+
+    // Backend enforcement: verify that write operations have been approved.
+    // This is a defense-in-depth check — the caller (execute_write_tools)
+    // should only call this function after approval, but we verify here.
+    if requires_approval && !tool_call.requires_approval {
+        tool_call.status = "error".to_string();
+        tool_call.error = Some("Write operation requires approval".to_string());
+        let result = json!({
+            "type": "tool_result",
+            "tool_use_id": tool_id,
+            "content": "Error: Write operation requires approval",
+            "is_error": true,
+        });
+        return (result, tool_call);
+    }
 
     let is_plan_create = tool_name == "create_plan";
 

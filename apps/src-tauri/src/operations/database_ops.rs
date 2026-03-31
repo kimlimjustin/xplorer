@@ -50,6 +50,19 @@ fn open_readonly(path: &str) -> Result<Connection, String> {
     Ok(conn)
 }
 
+/// Read-only pragmas that are safe to execute.
+const READONLY_PRAGMAS: &[&str] = &[
+    "TABLE_INFO",
+    "DATABASE_LIST",
+    "INDEX_LIST",
+    "TABLE_LIST",
+    "INDEX_INFO",
+    "FOREIGN_KEY_LIST",
+    "COMPILE_OPTIONS",
+    "PAGE_COUNT",
+    "PAGE_SIZE",
+];
+
 fn is_read_only_query(sql: &str) -> bool {
     let trimmed = sql.trim();
     // Strip leading comments (-- and /* */)
@@ -73,10 +86,37 @@ fn is_read_only_query(sql: &str) -> bool {
         }
     }
     let upper = s.to_uppercase();
-    let allowed_prefixes = ["SELECT ", "PRAGMA ", "EXPLAIN ", "WITH "];
-    allowed_prefixes
-        .iter()
-        .any(|prefix| upper.starts_with(prefix))
+
+    if upper.starts_with("SELECT ") || upper.starts_with("EXPLAIN ") {
+        return true;
+    }
+
+    // For PRAGMA: only allow read-only pragmas from the allowlist
+    if upper.starts_with("PRAGMA ") {
+        let pragma_body = upper["PRAGMA ".len()..].trim();
+        // Extract the pragma name (before any '(' or whitespace)
+        let pragma_name = pragma_body
+            .split(|c: char| c == '(' || c == ' ' || c == '=')
+            .next()
+            .unwrap_or("")
+            .trim();
+        return READONLY_PRAGMAS
+            .iter()
+            .any(|allowed| pragma_name == *allowed);
+    }
+
+    // For WITH (CTEs): verify the body does NOT contain mutating keywords
+    if upper.starts_with("WITH ") {
+        let mutating_keywords = ["INSERT ", "UPDATE ", "DELETE ", "DROP "];
+        for keyword in &mutating_keywords {
+            if upper.contains(keyword) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    false
 }
 
 #[tauri::command]
@@ -229,11 +269,21 @@ pub async fn execute_sqlite_query(path: String, query: String) -> Result<QueryRe
         return Err("Only SELECT, PRAGMA, EXPLAIN, and WITH queries are allowed".to_string());
     }
 
+    // Append LIMIT if not already present, to prevent unbounded result sets
+    let effective_query = {
+        let upper = query.trim().to_uppercase();
+        if !upper.contains(" LIMIT ") && !upper.starts_with("PRAGMA ") {
+            format!("{} LIMIT 10000", query.trim().trim_end_matches(';'))
+        } else {
+            query.clone()
+        }
+    };
+
     tokio::task::spawn_blocking(move || {
         let conn = open_readonly(&path)?;
 
         let mut stmt = conn
-            .prepare(&query)
+            .prepare(&effective_query)
             .map_err(|e| format!("SQL error: {}", e))?;
 
         let columns: Vec<String> = stmt.column_names().iter().map(|s| s.to_string()).collect();
@@ -290,6 +340,8 @@ mod tests {
         assert!(is_read_only_query("SELECT * FROM users"));
         assert!(is_read_only_query("  select count(*) from orders  "));
         assert!(is_read_only_query("PRAGMA table_info(users)"));
+        assert!(is_read_only_query("PRAGMA database_list"));
+        assert!(is_read_only_query("PRAGMA page_count"));
         assert!(is_read_only_query("EXPLAIN SELECT * FROM users"));
         assert!(is_read_only_query(
             "WITH cte AS (SELECT 1) SELECT * FROM cte"
@@ -304,5 +356,24 @@ mod tests {
         assert!(!is_read_only_query("ALTER TABLE users ADD col TEXT"));
         assert!(!is_read_only_query("CREATE TABLE t (id INT)"));
         assert!(!is_read_only_query(""));
+
+        // SEC-07: PRAGMA allowlist - reject dangerous pragmas
+        assert!(!is_read_only_query("PRAGMA journal_mode = DELETE"));
+        assert!(!is_read_only_query("PRAGMA synchronous = OFF"));
+        assert!(!is_read_only_query("PRAGMA writable_schema = ON"));
+
+        // SEC-07: WITH + mutating keywords
+        assert!(!is_read_only_query(
+            "WITH cte AS (SELECT 1) INSERT INTO t SELECT * FROM cte"
+        ));
+        assert!(!is_read_only_query(
+            "WITH cte AS (SELECT 1) DELETE FROM t WHERE id IN (SELECT * FROM cte)"
+        ));
+        assert!(!is_read_only_query(
+            "WITH cte AS (SELECT 1) UPDATE t SET x = 1"
+        ));
+        assert!(!is_read_only_query(
+            "WITH cte AS (SELECT 1) DROP TABLE t"
+        ));
     }
 }

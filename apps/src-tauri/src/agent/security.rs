@@ -143,6 +143,12 @@ pub fn is_blocked_command(cmd: &str) -> Option<&'static str> {
     // Extract the first token (the actual command name)
     let first_token = cmd_lower.split_whitespace().next().unwrap_or("");
 
+    // Extract basename from first token to prevent path-based bypass (e.g. /usr/bin/rm)
+    let first_basename = std::path::Path::new(first_token)
+        .file_name()
+        .and_then(|n| n.to_str())
+        .unwrap_or(first_token);
+
     // Block destructive / dangerous commands
     let blocked = [
         ("rm", "File deletion"),
@@ -203,6 +209,13 @@ pub fn is_blocked_command(cmd: &str) -> Option<&'static str> {
         ("start", "Windows process launcher"),
         ("cmd", "Windows shell"),
         ("cmd.exe", "Windows shell"),
+        // File manipulation commands
+        ("mv", "File move/rename"),
+        ("cp", "File copy"),
+        ("tee", "Output duplication to file"),
+        ("source", "Shell script sourcing"),
+        ("exec", "Process replacement"),
+        (".", "Dot-source shell script"),
         // Network tools for data exfiltration
         ("nc", "Network tool"),
         ("ncat", "Network tool"),
@@ -210,9 +223,30 @@ pub fn is_blocked_command(cmd: &str) -> Option<&'static str> {
     ];
 
     for (blocked_cmd, reason) in &blocked {
-        if first_token == *blocked_cmd {
+        if first_basename == *blocked_cmd {
             return Some(reason);
         }
+    }
+
+    // Block shell variable expansion in command name position
+    if first_token.contains('$') && first_token.chars().any(|c| c.is_alphanumeric()) {
+        return Some("Shell variable expansion in command name");
+    }
+
+    // Block `find` when args contain -exec, -execdir, or -delete
+    if first_basename == "find" {
+        let args_lower = cmd_lower.as_str();
+        if args_lower.contains("-exec")
+            || args_lower.contains("-execdir")
+            || args_lower.contains("-delete")
+        {
+            return Some("find with -exec/-execdir/-delete");
+        }
+    }
+
+    // Block `xargs` entirely or when combined with dangerous commands
+    if first_basename == "xargs" {
+        return Some("xargs can execute arbitrary commands");
     }
 
     // Block commands containing backticks (command substitution bypass)
@@ -259,6 +293,14 @@ pub fn is_blocked_command(cmd: &str) -> Option<&'static str> {
             || cmd_lower.contains(&format!("|{}", target))
         {
             return Some("Piping to dangerous command");
+        }
+    }
+
+    // Block dangerous patterns with && or ; chaining to destructive commands
+    let chaining_patterns = ["&& rm", "&& sudo", "; rm", "; sudo", "| rm", "| sudo"];
+    for pattern in &chaining_patterns {
+        if cmd_lower.contains(pattern) {
+            return Some("Chaining to dangerous command");
         }
     }
 
@@ -621,9 +663,39 @@ mod tests {
     }
 
     #[test]
-    fn test_allowed_command_find() {
+    fn test_allowed_command_find_basic() {
         let result = is_blocked_command("find . -name '*.txt'");
-        assert!(result.is_none(), "find should be allowed");
+        assert!(result.is_none(), "find without -exec should be allowed");
+    }
+
+    #[test]
+    fn test_blocked_command_find_exec() {
+        let result = is_blocked_command("find . -exec rm {} \\;");
+        assert!(result.is_some(), "find -exec should be blocked");
+    }
+
+    #[test]
+    fn test_blocked_command_find_delete() {
+        let result = is_blocked_command("find . -name '*.tmp' -delete");
+        assert!(result.is_some(), "find -delete should be blocked");
+    }
+
+    #[test]
+    fn test_blocked_command_xargs() {
+        let result = is_blocked_command("xargs rm -f");
+        assert!(result.is_some(), "xargs should be blocked");
+    }
+
+    #[test]
+    fn test_blocked_command_path_bypass() {
+        let result = is_blocked_command("/usr/bin/rm -rf /");
+        assert!(result.is_some(), "full path to rm should be blocked");
+    }
+
+    #[test]
+    fn test_blocked_chaining_to_rm() {
+        let result = is_blocked_command("echo test && rm -rf /");
+        assert!(result.is_some(), "&& rm should be blocked");
     }
 
     #[test]

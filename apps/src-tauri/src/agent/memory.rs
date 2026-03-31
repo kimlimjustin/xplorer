@@ -127,7 +127,7 @@ pub fn execute_recall(input: &Value) -> Result<String, String> {
     let entries: Vec<Value> = store
         .entries
         .values()
-        .filter(|e| category.is_none() || e.category == category.unwrap())
+        .filter(|e| category.as_ref().is_none_or(|cat| e.category == *cat))
         .map(|e| {
             json!({
                 "key": e.key,
@@ -140,7 +140,7 @@ pub fn execute_recall(input: &Value) -> Result<String, String> {
 
     // Bump access count for retrieved entries
     for entry in store.entries.values_mut() {
-        if category.is_none() || entry.category == category.unwrap() {
+        if category.as_ref().is_none_or(|cat| entry.category == *cat) {
             entry.access_count += 1;
         }
     }

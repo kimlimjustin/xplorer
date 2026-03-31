@@ -1,6 +1,7 @@
 use tauri::command;
 use tauri::Emitter;
-use tracing::warn;
+
+use crate::operations::validate_file_path;
 
 #[cfg(windows)]
 use std::os::windows::process::CommandExt;
@@ -390,10 +391,11 @@ fn sanitize_command(command: &str) -> Result<(), String> {
     let binary_name = binary_name.strip_suffix(".exe").unwrap_or(&binary_name);
 
     if !SAFE_COMMANDS.contains(&binary_name) {
-        warn!(
-            "[Terminal] Running non-allowlisted command '{}' — user should be aware of what they are doing",
-            binary_name
-        );
+        return Err(format!(
+            "Command '{}' is not in the allowlist. Allowed commands: {}",
+            binary_name,
+            SAFE_COMMANDS.join(", ")
+        ));
     }
 
     Ok(())
@@ -432,6 +434,7 @@ fn walk_files(root: &PathBuf, out: &mut Vec<PathBuf>) -> Result<(), String> {
 
 #[command]
 pub async fn open_file(path: String) -> Result<(), String> {
+    validate_file_path(&path)?;
     let path = std::path::Path::new(&path);
 
     if !path.exists() {
@@ -468,6 +471,7 @@ pub async fn open_file(path: String) -> Result<(), String> {
 
 #[command]
 pub async fn open_in_terminal(path: String) -> Result<(), String> {
+    validate_file_path(&path)?;
     let path = std::path::Path::new(&path);
 
     if !path.exists() {
@@ -482,10 +486,10 @@ pub async fn open_in_terminal(path: String) -> Result<(), String> {
 
     #[cfg(windows)]
     {
-        // Use quoted path to prevent command injection via directory names containing shell metacharacters
-        let quoted_dir = format!("\"{}\"", dir_path.to_string_lossy());
+        // Use Command::new with proper args array to prevent injection via directory names
+        let dir_str = dir_path.to_string_lossy().to_string();
         std::process::Command::new("cmd")
-            .args(["/C", "start", "cmd", "/K", "cd", "/D", &quoted_dir])
+            .args(&["/C", "start", "cmd", "/K", &format!("cd /D \"{}\"", dir_str.replace('"', ""))])
             .creation_flags(0x08000000) // CREATE_NO_WINDOW
             .spawn()
             .map_err(|e| format!("Failed to open terminal: {}", e))?;
@@ -643,11 +647,11 @@ mod tests {
     }
 
     #[test]
-    fn test_sanitize_allows_non_whitelisted_command_without_metacharacters() {
-        // A non-whitelisted command with no metacharacters should pass
-        assert!(sanitize_command("mycustomtool --version").is_ok());
-        assert!(sanitize_command("cargo build").is_ok());
-        assert!(sanitize_command("npm install").is_ok());
+    fn test_sanitize_rejects_non_whitelisted_command() {
+        // Non-allowlisted commands are now blocked to prevent execution of arbitrary binaries
+        assert!(sanitize_command("mycustomtool --version").is_err());
+        assert!(sanitize_command("cargo build").is_err());
+        assert!(sanitize_command("npm install").is_err());
     }
 
     #[test]
@@ -679,8 +683,8 @@ mod tests {
         // checks. Previously, `find . -exec rm {} ; echo pwned` would pass
         // because `find` was on the allowlist and the allowlist skipped ALL
         // metacharacter checks. Now the semicolon is always caught.
-        assert!(sanitize_command("find . -name test").is_ok()); // safe args, no metacharacters
-        assert!(sanitize_command("env HOME=/tmp myapp").is_ok()); // no metacharacters
+        assert!(sanitize_command("find . -name test").is_err()); // not on allowlist
+        assert!(sanitize_command("env HOME=/tmp myapp").is_err()); // not on allowlist
 
         // Shell chaining via find/env is now blocked:
         assert!(sanitize_command("find . -exec rm {} ;").is_err()); // contains ';'
@@ -760,26 +764,31 @@ pub async fn get_current_shell() -> Result<String, String> {
 
 #[command]
 pub async fn find_files(pattern: String, search_path: String) -> Result<Vec<String>, String> {
-    let root = PathBuf::from(search_path);
+    validate_file_path(&search_path)?;
+    let root = PathBuf::from(&search_path);
     if !root.exists() || !root.is_dir() {
         return Err("Search path does not exist or is not a directory".to_string());
     }
 
-    let mut files = Vec::new();
-    walk_files(&root, &mut files)?;
+    tokio::task::spawn_blocking(move || {
+        let mut files = Vec::new();
+        walk_files(&root, &mut files)?;
 
-    let pattern_lower = pattern.to_lowercase();
-    Ok(files
-        .into_iter()
-        .filter_map(|p| {
-            let name = p.file_name()?.to_string_lossy().to_lowercase();
-            if name.contains(&pattern_lower) {
-                Some(p.to_string_lossy().to_string())
-            } else {
-                None
-            }
-        })
-        .collect())
+        let pattern_lower = pattern.to_lowercase();
+        Ok(files
+            .into_iter()
+            .filter_map(|p| {
+                let name = p.file_name()?.to_string_lossy().to_lowercase();
+                if name.contains(&pattern_lower) {
+                    Some(p.to_string_lossy().to_string())
+                } else {
+                    None
+                }
+            })
+            .collect())
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[command]
@@ -787,39 +796,49 @@ pub async fn search_in_files(
     pattern: String,
     search_path: String,
 ) -> Result<Vec<FileSearchMatch>, String> {
-    let root = PathBuf::from(search_path);
+    validate_file_path(&search_path)?;
+    let root = PathBuf::from(&search_path);
     if !root.exists() || !root.is_dir() {
         return Err("Search path does not exist or is not a directory".to_string());
     }
 
-    let mut files = Vec::new();
-    walk_files(&root, &mut files)?;
+    const MAX_RESULTS: usize = 200;
 
-    let pattern_lower = pattern.to_lowercase();
-    let mut matches = Vec::new();
+    tokio::task::spawn_blocking(move || {
+        let mut files = Vec::new();
+        walk_files(&root, &mut files)?;
 
-    for file_path in files {
-        let Ok(metadata) = std::fs::metadata(&file_path) else {
-            continue;
-        };
-        if metadata.len() > 1_000_000 {
-            continue;
-        }
-        let Ok(content) = std::fs::read_to_string(&file_path) else {
-            continue;
-        };
-        for (index, line) in content.lines().enumerate() {
-            if line.to_lowercase().contains(&pattern_lower) {
-                matches.push(FileSearchMatch {
-                    file: file_path.to_string_lossy().to_string(),
-                    line: index + 1,
-                    content: line.to_string(),
-                });
+        let pattern_lower = pattern.to_lowercase();
+        let mut matches = Vec::new();
+
+        'outer: for file_path in files {
+            let Ok(metadata) = std::fs::metadata(&file_path) else {
+                continue;
+            };
+            if metadata.len() > 1_000_000 {
+                continue;
+            }
+            let Ok(content) = std::fs::read_to_string(&file_path) else {
+                continue;
+            };
+            for (index, line) in content.lines().enumerate() {
+                if line.to_lowercase().contains(&pattern_lower) {
+                    matches.push(FileSearchMatch {
+                        file: file_path.to_string_lossy().to_string(),
+                        line: index + 1,
+                        content: line.to_string(),
+                    });
+                    if matches.len() >= MAX_RESULTS {
+                        break 'outer;
+                    }
+                }
             }
         }
-    }
 
-    Ok(matches)
+        Ok(matches)
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[command]
@@ -829,6 +848,7 @@ pub async fn get_app_version(app_handle: tauri::AppHandle) -> Result<String, Str
 
 #[command]
 pub async fn show_in_folder(path: String) -> Result<(), String> {
+    validate_file_path(&path)?;
     let path = std::path::Path::new(&path);
     if !path.exists() {
         return Err("Path does not exist".to_string());

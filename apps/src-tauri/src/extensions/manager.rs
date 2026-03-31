@@ -138,6 +138,17 @@ impl ExtensionManager {
     }
 
     pub fn activate_extension(&mut self, extension_id: &str) -> Result<(), String> {
+        self.activate_extension_with_trust(extension_id, false)
+    }
+
+    /// Activate an extension with an optional force_trust flag.
+    /// When `force_trust` is true, unverified extensions are allowed to activate
+    /// even if they are not in dev mode (requires explicit user action).
+    pub fn activate_extension_with_trust(
+        &mut self,
+        extension_id: &str,
+        force_trust: bool,
+    ) -> Result<(), String> {
         if !self
             .installed_extensions
             .iter()
@@ -154,16 +165,25 @@ impl ExtensionManager {
             if !ext.verified {
                 let ext_path = Path::new(&ext.path);
                 let is_builtin = !ext_path.starts_with(&self.extensions_dir);
-                if !is_builtin && !ext.is_dev {
+                if !is_builtin && !ext.is_dev && !force_trust {
+                    warn!(
+                        "[ExtensionManager] Blocked activation of unverified extension '{}'",
+                        extension_id
+                    );
                     return Err(format!(
                         "Extension '{}' failed signature verification and cannot be activated. \
-                         Re-install from a trusted source.",
+                         Re-install from a trusted source or explicitly trust this extension.",
                         extension_id
                     ));
                 }
                 if ext.is_dev {
                     warn!(
                         "[ExtensionManager] Activating UNVERIFIED dev extension '{}'",
+                        extension_id
+                    );
+                } else if force_trust {
+                    warn!(
+                        "[ExtensionManager] Activating UNVERIFIED extension '{}' via force_trust",
                         extension_id
                     );
                 } else {
