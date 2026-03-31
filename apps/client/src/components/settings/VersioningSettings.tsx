@@ -3,7 +3,7 @@ import { History, FolderOpen, Plus, Trash2, Save } from 'lucide-react';
 import { SectionTitle, SettingRow, Toggle, Divider, SelectField } from './shared';
 import { TauriAPI, type VersioningConfig } from '@/lib/tauri-api';
 
-export default function VersioningSettings() {
+const VersioningSettings = () => {
   const [config, setConfig] = useState<VersioningConfig>({
     enabled_dirs: [],
     max_versions_per_file: 10,
@@ -210,4 +210,6 @@ export default function VersioningSettings() {
       )}
     </div>
   );
-}
+};
+
+export default VersioningSettings;

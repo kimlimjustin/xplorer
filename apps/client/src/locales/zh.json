@@ -46,6 +46,13 @@
     "daysAgo": "{{count}}天前"
   },
 
+  "updater": {
+    "available": "Xplorer {{version}} 已可用",
+    "install": "立即更新",
+    "dismiss": "稍后",
+    "downloading": "正在下载更新..."
+  },
+
   "sidebar": {
     "quickAccess": "快速访问",
     "home": "主页",
@@ -451,7 +458,14 @@
     "allSet": {
       "title": "一切就绪！",
       "description": "探索您的文件，试用 AI 助手，或前往设置自定义一切。您可以随时从设置 > 通用中重新播放此导览。"
-    }
+    },
+    "closeTour": "Close tour",
+    "skip": "Skip",
+    "back": "Back",
+    "next": "Next",
+    "getStarted": "Get Started",
+    "stepOf": "{{current}} of {{total}}",
+    "goToStep": "Go to step {{step}}"
   },
 
   "commandPalette": {

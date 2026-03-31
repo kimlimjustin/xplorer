@@ -99,7 +99,7 @@ const relativeTime = (timestamp: number): string => {
   return `${days}d ago`;
 };
 
-export default function NotificationCenter() {
+const NotificationCenter = () => {
   const { notifications, clearAll, clearById, markAllAsRead } = useNotificationHistory();
   const [filter, setFilter] = useState<FilterTab>('all');
   const [, setTick] = useState(0);
@@ -301,4 +301,6 @@ export default function NotificationCenter() {
       </div>
     </div>
   );
-}
+};
+
+export default NotificationCenter;

@@ -196,7 +196,7 @@ import { Extension, PanelExtension, PreviewExtension, ThemeExtension, ActionExte
 import { registerExtension, createExtension } from '@xplorer/extension-sdk';
 ```
 
-See the [SDK Reference](docs/docs/extensions/sdk.md) for full class documentation.
+See the [Extension SDK API](#high-level-apis) section above for full class documentation.
 
 ## Sandbox
 
@@ -212,7 +212,5 @@ Extensions access functionality through the `XplorerAPI` object provided via `on
 
 See the `examples/` directory for complete working extensions:
 
-- **Themes**: aurora, catppuccin, cyberpunk, dracula, high-contrast, nord, ocean-deep, rose-pine, solarized-dark, sunset, tokyo-night
-- **Previews**: image-gallery, markdown-preview
-- **Panels**: folder-stats, code-editor-extension, ssh-extension
-- **Commands**: word-counter, json-formatter, file-hasher
+- **Themes**: tokyo-night-theme
+- **Automation**: workflow-automation

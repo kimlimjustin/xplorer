@@ -46,6 +46,13 @@
     "daysAgo": "{{count}}日前"
   },
 
+  "updater": {
+    "available": "Xplorer {{version}} が利用可能です",
+    "install": "今すぐ更新",
+    "dismiss": "後で",
+    "downloading": "アップデートをダウンロード中..."
+  },
+
   "sidebar": {
     "quickAccess": "クイックアクセス",
     "home": "ホーム",
@@ -451,7 +458,14 @@
     "allSet": {
       "title": "準備完了！",
       "description": "ファイルを探索し、AI アシスタントを試し、設定ですべてをカスタマイズしましょう。このツアーは設定 > 一般からいつでも再生できます。"
-    }
+    },
+    "closeTour": "Close tour",
+    "skip": "Skip",
+    "back": "Back",
+    "next": "Next",
+    "getStarted": "Get Started",
+    "stepOf": "{{current}} of {{total}}",
+    "goToStep": "Go to step {{step}}"
   },
 
   "commandPalette": {

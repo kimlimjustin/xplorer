@@ -53,6 +53,17 @@ export const getToolIcon = (name: string): React.ReactNode => {
   return <Icon size={14} className="inline-block" />;
 };
 
+interface ToolCallInput {
+  path?: string;
+  content?: string;
+  command?: string;
+  old_path?: string;
+  new_path?: string;
+  source?: string;
+  destination?: string;
+  [key: string]: unknown;
+}
+
 export const getToolStatusColor = (status: string): string => {
   switch (status) {
     case 'completed':
@@ -348,12 +359,12 @@ export const PendingApprovalCard = ({
           <>
             <div>
               <span className="text-xp-text-muted">Path: </span>
-              {String((tc.input as Record<string, unknown>).path || '')}
+              {String((tc.input as ToolCallInput).path || '')}
             </div>
             <div className="mt-1">
               <span className="text-xp-text-muted">Content preview:</span>
               <pre className="bg-xp-surface mt-1 max-h-20 overflow-y-auto rounded p-2 text-xs">
-                {String((tc.input as Record<string, unknown>).content || '').substring(0, 500)}
+                {String((tc.input as ToolCallInput).content || '').substring(0, 500)}
               </pre>
             </div>
           </>
@@ -362,38 +373,35 @@ export const PendingApprovalCard = ({
           <div>
             <span className="text-xp-text-muted">Command: </span>
             <code className="bg-xp-surface rounded px-1">
-              {String((tc.input as Record<string, unknown>).command || '')}
+              {String((tc.input as ToolCallInput).command || '')}
             </code>
           </div>
         )}
         {tc.name === 'delete' && (
           <div className="text-xp-red">
             <span className="text-xp-text-muted">Delete: </span>
-            {String((tc.input as Record<string, unknown>).path || '')}
+            {String((tc.input as ToolCallInput).path || '')}
           </div>
         )}
         {(tc.name === 'rename' || tc.name === 'move_file' || tc.name === 'copy_file') && (
           <div>
             <span className="text-xp-text-muted">{tc.name === 'rename' ? 'From' : 'Source'}: </span>
             {String(
-              (tc.input as Record<string, unknown>)[tc.name === 'rename' ? 'old_path' : 'source'] ||
-                '',
+              (tc.input as ToolCallInput)[tc.name === 'rename' ? 'old_path' : 'source'] || '',
             )}
             <br />
             <span className="text-xp-text-muted">
               {tc.name === 'rename' ? 'To' : 'Destination'}:{' '}
             </span>
             {String(
-              (tc.input as Record<string, unknown>)[
-                tc.name === 'rename' ? 'new_path' : 'destination'
-              ] || '',
+              (tc.input as ToolCallInput)[tc.name === 'rename' ? 'new_path' : 'destination'] || '',
             )}
           </div>
         )}
         {tc.name === 'create_directory' && (
           <div>
             <span className="text-xp-text-muted">Path: </span>
-            {String((tc.input as Record<string, unknown>).path || '')}
+            {String((tc.input as ToolCallInput).path || '')}
           </div>
         )}
         {tc.name === 'execute_plan' && activePlan && (

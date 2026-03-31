@@ -46,7 +46,14 @@ const ExtensionCard = React.memo(
         <div className="flex min-w-0 items-start gap-2">
           <div className="bg-xp-surface border-xp-border text-xp-blue flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-md border">
             {extension.icon ? (
-              renderIcon(extension.icon, 16)
+              extension.icon.trim().startsWith('<') ? (
+                <span
+                  className="flex items-center justify-center [&>svg]:h-4 [&>svg]:w-4"
+                  dangerouslySetInnerHTML={{ __html: extension.icon }}
+                />
+              ) : (
+                renderIcon(extension.icon, 16)
+              )
             ) : (
               <span className="text-sm font-semibold">
                 {extension.displayName.charAt(0).toUpperCase()}
@@ -69,18 +76,13 @@ const ExtensionCard = React.memo(
                       onUninstall(extension);
                     }}
                     disabled={isInstalling}
-                    className="bg-xp-red/20 hover:bg-xp-red/30 text-xp-red border-xp-red/30 flex items-center gap-1 rounded border px-2 py-0.5 text-[11px] transition-colors disabled:opacity-50"
+                    className="text-xp-text-muted hover:text-xp-red hover:bg-xp-red/10 flex items-center rounded p-1 transition-colors disabled:opacity-50"
+                    title="Uninstall"
                   >
                     {isInstalling ? (
-                      <>
-                        <Loader2 className="h-3 w-3 animate-spin" />
-                        Removing
-                      </>
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
                     ) : (
-                      <>
-                        <Trash2 className="h-3 w-3" />
-                        Uninstall
-                      </>
+                      <Trash2 className="h-3.5 w-3.5" />
                     )}
                   </button>
                 ) : (

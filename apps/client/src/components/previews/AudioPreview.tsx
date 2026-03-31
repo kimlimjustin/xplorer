@@ -2,19 +2,8 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Music, Headphones, Volume2, Mic } from 'lucide-react';
 import { PreviewProps } from '@/lib/preview-factory';
 import { convertAssetUrl } from '@/lib/transport';
-
-const formatTime = (seconds: number): string => {
-  if (isNaN(seconds) || !isFinite(seconds)) return '0:00';
-  const totalSeconds = Math.floor(seconds);
-  const mins = Math.floor(totalSeconds / 60);
-  const secs = totalSeconds % 60;
-  return `${mins}:${secs.toString().padStart(2, '0')}`;
-};
-
-const formatSize = (bytes: number): string => {
-  const mb = bytes / (1024 * 1024);
-  return `${Number(mb.toFixed(1))} MB`;
-};
+import { formatFileSize } from '@/lib/utils';
+import { formatTime } from '@/lib/format-utils';
 
 const getAudioIcon = (fileName: string): React.ReactNode => {
   const ext = fileName.split('.').pop()?.toLowerCase() || '';
@@ -270,7 +259,7 @@ const AudioPreview = ({ file, onError, onLoad }: PreviewProps) => {
             <h3 className="text-xp-text max-w-full truncate text-sm font-medium">{file.name}</h3>
             <div className="text-xp-text-muted mt-1 flex items-center space-x-3 text-xs">
               <span>{getFormatLabel(file.name)}</span>
-              <span>{formatSize(file.size)}</span>
+              <span>{formatFileSize(file.size)}</span>
             </div>
           </div>
 

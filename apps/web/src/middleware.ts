@@ -96,6 +96,11 @@ const authMiddleware = withAuth({
   },
 });
 
+// SEC-11: Tauri origins are required in production because the Xplorer desktop app
+// (built with Tauri) makes cross-origin requests to the marketplace API for
+// extension browsing, installation, publishing, and billing. Tauri uses
+// `tauri://localhost` (macOS/Linux) and `https://tauri.localhost` (Windows)
+// as its webview origin, so both must be allowed for CORS to work.
 const CORS_ORIGINS = [
   'tauri://localhost',
   'https://tauri.localhost',

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useSyncExternalStore } from 'react';
 
 // Lazy-loaded sub-panels -- only loaded when the user switches to their tab
 const XTermPanel = React.lazy(() => import('./XTermPanel'));
@@ -89,13 +89,10 @@ const BottomPanel = ({
   const [activityLogFilter, setActivityLogFilter] = useState<ActivityLogFilter>('all');
 
   // Collect extension-registered bottom tabs, re-evaluate when extensions change
-  const [extRefreshKey, setExtRefreshKey] = useState(0);
-  useEffect(() => {
-    const unsubscribe = extensionHost.onChange(() => {
-      setExtRefreshKey((k) => k + 1);
-    });
-    return () => unsubscribe();
-  }, []);
+  const extRefreshKey = useSyncExternalStore(
+    extensionHost.subscribe,
+    extensionHost.getSnapshotVersion,
+  );
 
   const extensionBottomTabs = useMemo(() => {
     try {

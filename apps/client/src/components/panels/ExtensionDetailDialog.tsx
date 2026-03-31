@@ -51,7 +51,14 @@ const ExtensionDetailDialog = ({
             {/* Icon */}
             <div className="bg-xp-bg border-xp-border flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg border text-lg">
               {extension.icon ? (
-                <span>{extension.icon}</span>
+                extension.icon.trim().startsWith('<') ? (
+                  <span
+                    className="flex h-8 w-8 items-center justify-center [&>svg]:h-8 [&>svg]:w-8"
+                    dangerouslySetInnerHTML={{ __html: extension.icon }}
+                  />
+                ) : (
+                  <span className="text-xl">{extension.icon}</span>
+                )
               ) : (
                 <span className="text-xp-blue text-xl font-bold">
                   {extension.displayName.charAt(0).toUpperCase()}

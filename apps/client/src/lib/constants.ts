@@ -111,7 +111,20 @@ export const MAX_MATCHES_SHOWN = 3;
 /** Number of archive files to preview in extract dialog */
 export const ARCHIVE_PREVIEW_LIMIT = 20;
 
-// ── Toast defaults ───────────────────────────────────────────────────────────
+// ── Route constants ─────────────────────────────────────────────────────────
+
+export const ROUTES = {
+  HOME: 'xplorer://home',
+  TRASH: 'xplorer://trash',
+  SETTINGS: 'xplorer://settings',
+  GDRIVE_MANAGER: 'xplorer://gdrive-manager',
+} as const;
+
+// ── Byte-size multipliers ───────────────────────────────────────────────────
+
+export const BYTES = { KB: 1024, MB: 1024 ** 2, GB: 1024 ** 3, TB: 1024 ** 4 } as const;
+
+// ── Toast defaults ──────────────────────────────────────────────────────────
 
 /** Default toast auto-dismiss delay, also defined in use-toast.ts */
 export const TOAST_DURATION_MS = 3000;

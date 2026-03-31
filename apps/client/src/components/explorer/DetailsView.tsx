@@ -63,7 +63,14 @@ const FileRow = React.memo(
         if (e.key === 'Enter') onFileDoubleClick(file.path);
         if (e.key === ' ') {
           e.preventDefault();
-          onFileClick(file.path, e as unknown as React.MouseEvent);
+          // Synthesize a partial MouseEvent carrying modifier keys for multi-select
+          const syntheticEvent = {
+            ctrlKey: e.ctrlKey,
+            shiftKey: e.shiftKey,
+            metaKey: e.metaKey,
+            button: 0,
+          } as React.MouseEvent;
+          onFileClick(file.path, syntheticEvent);
         }
       },
       [onFileDoubleClick, onFileClick, file.path],

@@ -283,6 +283,7 @@ ${JSON.stringify(tree, null, 2)}`;
         };
       } catch (error) {
         // If reading as text fails, it might be binary
+        console.warn('Failed to read file as text, may be binary:', error);
         const metadata = await TauriAPI.getFileProperties(filePath);
 
         return {

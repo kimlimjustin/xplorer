@@ -4,6 +4,7 @@ import { TauriAPI, type FileEntry } from '@/lib/tauri-api';
 import { STORAGE_KEYS } from '@/lib/storage-keys';
 import { PATH_SEPARATOR } from '@/lib/constants';
 import { showInputToast } from '@/components/ui/Toast';
+import { formatError } from '@/lib/file-operation-helpers';
 import { invertSelection } from '@/extensions/advanced-selection/selection-utils';
 import {
   getBookmarkBySlot,
@@ -50,17 +51,6 @@ const saveUiState = (patch: Record<string, unknown>) => {
     localStorage.setItem(UI_STATE_KEY, JSON.stringify({ ...existing, ...patch }));
   } catch (e) {
     console.warn('Failed to save UI state:', e);
-  }
-};
-
-const formatError = (err: unknown): string => {
-  if (err instanceof Error) return err.message;
-  if (typeof err === 'string') return err;
-  try {
-    return JSON.stringify(err);
-  } catch (e) {
-    console.warn('Failed to stringify error:', e);
-    return String(err);
   }
 };
 

@@ -253,13 +253,37 @@ const CommandPaletteInner = ({
         });
       });
     } else {
+      // If the query looks like a path, add a "Go to folder" item at the top
+      const trimmedQ = effectiveQuery;
+      const looksLikePath =
+        trimmedQ.startsWith('/') ||
+        trimmedQ.startsWith('~') ||
+        trimmedQ.startsWith('C:\\') ||
+        trimmedQ.startsWith('D:\\') ||
+        trimmedQ.startsWith('xplorer://');
+      if (looksLikePath && onFileSelect) {
+        items.push({
+          type: 'command',
+          command: {
+            id: '__go-to-path__',
+            title: `Go to ${trimmedQ}`,
+            category: 'Navigation',
+            action: () => {
+              onFileSelect(trimmedQ, true);
+            },
+          },
+          matchIndices: [],
+          sectionLabel: t('commandPalette.commands'),
+        });
+      }
+
       // Query is typed: show filtered commands with section header
       filteredCommands.forEach((item, i) => {
         items.push({
           type: 'command',
           command: item.command,
           matchIndices: item.matchIndices,
-          sectionLabel: i === 0 ? t('commandPalette.commands') : undefined,
+          sectionLabel: i === 0 && !looksLikePath ? t('commandPalette.commands') : undefined,
         });
       });
     }

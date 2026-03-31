@@ -1,14 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { PreviewProps } from '@/lib/preview-factory';
 import { convertAssetUrl } from '@/lib/transport';
-
-const formatTime = (seconds: number): string => {
-  if (isNaN(seconds) || !isFinite(seconds)) return '0:00';
-  const totalSeconds = Math.floor(seconds);
-  const mins = Math.floor(totalSeconds / 60);
-  const secs = totalSeconds % 60;
-  return `${mins}:${secs.toString().padStart(2, '0')}`;
-};
+import { formatTime } from '@/lib/format-utils';
 
 const VideoPreview = ({ file, onError, onLoad }: PreviewProps) => {
   const [videoError, setVideoError] = useState(false);

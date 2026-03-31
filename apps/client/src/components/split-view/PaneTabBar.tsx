@@ -1,23 +1,9 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import {
-  FolderClosed,
-  File,
-  FileCode,
-  GitCompareArrows,
-  Cloud,
-  Plus,
-  X,
-  Columns,
-  Rows,
-  Pin,
-  Maximize2,
-  Minimize2,
-  Link,
-  Unlink,
-} from 'lucide-react';
+import { Plus, X, Columns, Rows, Pin, Maximize2, Minimize2, Link, Unlink } from 'lucide-react';
 import type { TabItem } from '@/types/split-view';
 import type { CrossTabSelection } from '@/hooks/use-cross-tab-selection';
 import { useCrossTabSelectionContext } from '@/contexts/CrossTabSelectionContext';
+import { getTabIcon } from '@/lib/tab-utils';
 import type { PaneSyncMode } from '@/hooks/use-pane-sync';
 
 interface PaneTabBarProps {
@@ -55,22 +41,6 @@ interface PaneTabBarProps {
   /** Whether there are multiple panes (sync button only shows when true) */
   hasMultiplePanes?: boolean;
 }
-
-const getTabIcon = (tab: TabItem) => {
-  switch (tab.type) {
-    case 'editor':
-      return FileCode;
-    case 'comparison':
-      return GitCompareArrows;
-    case 'gdrive':
-    case 'gdrive-manager':
-      return Cloud;
-    case 'folder':
-      return FolderClosed;
-    default:
-      return File;
-  }
-};
 
 // ── Context Menu ──────────────────────────────────────────────────────────────
 

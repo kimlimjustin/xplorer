@@ -251,12 +251,24 @@ const GalleryView = ({
         e.preventDefault();
         const next = files[idx + 1];
         setFocusedFile(next);
-        handleFileClick(next, e as unknown as React.MouseEvent);
+        const syntheticEvent = {
+          ctrlKey: e.ctrlKey,
+          shiftKey: e.shiftKey,
+          metaKey: e.metaKey,
+          button: 0,
+        } as React.MouseEvent;
+        handleFileClick(next, syntheticEvent);
       } else if (e.key === 'ArrowLeft' && idx > 0) {
         e.preventDefault();
         const prev = files[idx - 1];
         setFocusedFile(prev);
-        handleFileClick(prev, e as unknown as React.MouseEvent);
+        const syntheticEvent = {
+          ctrlKey: e.ctrlKey,
+          shiftKey: e.shiftKey,
+          metaKey: e.metaKey,
+          button: 0,
+        } as React.MouseEvent;
+        handleFileClick(prev, syntheticEvent);
       }
     };
     document.addEventListener('keydown', handleKey);

@@ -3,6 +3,7 @@ import { TauriAPI, type DuplicateFinderResult } from '@/lib/tauri-api';
 import { listenToEvent } from '@/lib/transport';
 import { useToast } from '@/hooks/use-toast';
 import { cn, formatFileSize } from '@/lib/utils';
+import { sizeBadgeColor } from '@/lib/format-utils';
 import {
   Copy,
   Trash2,
@@ -27,15 +28,6 @@ interface ScanProgress {
 interface DuplicateFinderPanelProps {
   currentPath?: string;
 }
-
-/** Colored badge for file-size categories. */
-const sizeBadgeColor = (bytes: number): string => {
-  if (bytes >= 1024 * 1024 * 100) return 'bg-xp-red/20 text-xp-red border-xp-red/30';
-  if (bytes >= 1024 * 1024 * 10) return 'bg-xp-orange/20 text-xp-orange border-xp-orange/30';
-  if (bytes >= 1024 * 1024) return 'bg-xp-yellow/20 text-xp-yellow border-xp-yellow/30';
-  if (bytes >= 1024 * 100) return 'bg-xp-blue/20 text-xp-blue border-xp-blue/30';
-  return 'bg-xp-surface text-xp-text-muted border-xp-border';
-};
 
 const DuplicateFinderPanel = ({ currentPath = '' }: DuplicateFinderPanelProps) => {
   const { toast } = useToast();

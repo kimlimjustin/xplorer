@@ -46,6 +46,13 @@
     "daysAgo": "{{count}}d ago"
   },
 
+  "updater": {
+    "available": "Xplorer {{version}} is available",
+    "install": "Update now",
+    "dismiss": "Later",
+    "downloading": "Downloading update..."
+  },
+
   "sidebar": {
     "quickAccess": "QUICK ACCESS",
     "home": "Home",

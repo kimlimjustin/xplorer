@@ -452,12 +452,10 @@ const DialogLayer = ({
  * These are dialogs opened programmatically by extensions themselves.
  */
 const ExtensionDialogRenderer = () => {
-  const [, forceUpdate] = React.useReducer((x) => x + 1, 0);
-
-  React.useEffect(() => {
-    const unsub = extensionHost.onChange(forceUpdate);
-    return unsub;
-  }, []);
+  const _extVersion = React.useSyncExternalStore(
+    extensionHost.subscribe,
+    extensionHost.getSnapshotVersion,
+  );
 
   const openDialogs = extensionHost.getOpenDialogs();
   const elements: React.ReactElement[] = [];

@@ -18,7 +18,21 @@ import {
   type LoadedExtension,
 } from './extension-host-types';
 import { createExtensionApi } from './extension-api-factory';
+import { STORAGE_KEYS } from './storage-keys';
 import { createSandboxedEnvironment, BLOCKED_GLOBALS } from './extension-sandbox-env';
+import { registerSidebarTab, registerBottomTab } from './extension-registration-helpers';
+import {
+  cleanupExtensionRegistrations,
+  queryPreviewProvider,
+  findEditorForFile,
+  getActivePanels,
+  getActiveFileDecorations,
+  getActiveContextMenuItems,
+  buildCommandPaletteEntries,
+  getActiveSidebarTabs,
+  getActiveBottomTabs,
+  checkForUpdates,
+} from './extension-host-queries';
 
 // Re-export all types and helpers so consumers can import from either location
 export * from './extension-host-types';
@@ -48,6 +62,7 @@ class ExtensionHost {
   private contextMenuEntries = new Map<string, ContextMenuEntry[]>();
   private dialogRegistry = new Map<string, DialogRenderer>();
   private openDialogsMap = new Map<string, Record<string, unknown>>();
+  private bundleCache = new Map<string, string>();
   private tabRendererRegistry = new Map<string, TabRenderer>();
   private sidebarTabRegistry = new Map<
     string,
@@ -255,67 +270,10 @@ class ExtensionHost {
     }
 
     // Register sidebar tabs from renderSidebarTab + getSidebarTabConfig
-    if (
-      typeof ext.renderSidebarTab === 'function' &&
-      typeof ext.getSidebarTabConfig === 'function'
-    ) {
-      const stConfig = (
-        ext.getSidebarTabConfig as () => { id: string; title: string; icon?: string }
-      )();
-      this.sidebarTabRegistry.set(stConfig.id, {
-        id: stConfig.id,
-        extensionId: manifest.id,
-        title: stConfig.title,
-        icon: resolveIcon(stConfig.icon),
-        render: (props: { currentPath?: string; isActive?: boolean }) => {
-          try {
-            return (
-              ext.renderSidebarTab as (props: {
-                currentPath?: string;
-                isActive?: boolean;
-              }) => React.ReactElement
-            )(props);
-          } catch (err) {
-            console.error(`[ExtensionHost] Sidebar tab render failed for "${stConfig.id}":`, err);
-            return React.createElement(
-              'div',
-              { style: { padding: 16, color: '#f87171' } },
-              `Sidebar tab "${stConfig.title}" failed to render.`,
-            );
-          }
-        },
-      });
-    }
+    registerSidebarTab(ext as Record<string, unknown>, manifest.id, this.sidebarTabRegistry);
 
     // Register bottom tabs from renderBottomTab + getBottomTabConfig
-    if (typeof ext.renderBottomTab === 'function' && typeof ext.getBottomTabConfig === 'function') {
-      const btConfig = (
-        ext.getBottomTabConfig as () => { id: string; title: string; icon?: string }
-      )();
-      this.bottomTabRegistry.set(btConfig.id, {
-        id: btConfig.id,
-        extensionId: manifest.id,
-        title: btConfig.title,
-        icon: resolveIcon(btConfig.icon),
-        render: (props: { currentPath?: string; isActive?: boolean }) => {
-          try {
-            return (
-              ext.renderBottomTab as (props: {
-                currentPath?: string;
-                isActive?: boolean;
-              }) => React.ReactElement
-            )(props);
-          } catch (err) {
-            console.error(`[ExtensionHost] Bottom tab render failed for "${btConfig.id}":`, err);
-            return React.createElement(
-              'div',
-              { style: { padding: 16, color: '#f87171' } },
-              `Bottom tab "${btConfig.title}" failed to render.`,
-            );
-          }
-        },
-      });
-    }
+    registerBottomTab(ext as Record<string, unknown>, manifest.id, this.bottomTabRegistry);
 
     const context = {
       extensionPath: '',
@@ -426,11 +384,16 @@ class ExtensionHost {
     const fullPath = `${pkg.path}/${mainFile}`.replace(/\\/g, '/');
 
     let jsContent: string;
-    try {
-      jsContent = await TauriAPI.readTextFile(fullPath);
-    } catch {
-      console.warn(`[ExtensionHost] No JS bundle found for ${pkg.manifest.id} at ${fullPath}`);
-      return;
+    const cached = this.bundleCache.get(pkg.manifest.id);
+    if (cached) {
+      jsContent = cached;
+    } else {
+      try {
+        jsContent = await TauriAPI.readTextFile(fullPath);
+      } catch {
+        console.warn(`[ExtensionHost] No JS bundle found for ${pkg.manifest.id} at ${fullPath}`);
+        return;
+      }
     }
 
     const MAX_EXTENSION_SIZE = 5 * 1024 * 1024; // 5MB
@@ -802,46 +765,61 @@ class ExtensionHost {
       // Notify UI that extensions have been loaded
       this.notifyChange();
 
+      // Load marketplace-installed extensions from localStorage cache
+      await this.loadMarketplaceInstalledExtensions();
+
       // Check for updates in the background (non-blocking)
-      this.checkForUpdates(installed).catch(() => {});
+      this.checkForUpdatesAndNotify(installed).catch(() => {});
     } catch (err) {
       console.error('[ExtensionHost] Failed to load installed extensions:', err);
     }
   }
 
-  private async checkForUpdates(
-    installed: Array<{ manifest: { id: string; version?: string } }>,
-  ): Promise<void> {
+  private async loadMarketplaceInstalledExtensions(): Promise<void> {
     try {
-      const marketplaceUrl =
-        localStorage.getItem('xplorer:marketplace-url') || 'https://xplorer.space/api';
-      const extList = installed.map((pkg) => ({
-        id: pkg.manifest.id,
-        version: pkg.manifest.version || '0.0.0',
-      }));
+      const raw = localStorage.getItem(STORAGE_KEYS.INSTALLED_EXTENSIONS);
+      if (!raw) return;
+      const installed = JSON.parse(raw) as Record<
+        string,
+        { enabled: boolean; manifest: ExtensionManifest; downloadUrl: string; bundleCache?: string }
+      >;
 
-      const updates = await TauriAPI.checkForExtensionUpdates(marketplaceUrl, extList);
-      if (updates.length === 0) return;
-
-      for (const update of updates) {
-        console.warn(
-          `[ExtensionHost] Update available: ${update.id} ${update.current_version} → ${update.latest_version}`,
-        );
-
+      for (const [id, info] of Object.entries(installed)) {
+        if (!info.enabled || this.extensions.has(id)) continue;
         try {
-          await TauriAPI.downloadExtensionUpdate(update.id, update.download_url, update.checksum);
-          console.warn(`[ExtensionHost] Updated ${update.id} to ${update.latest_version}`);
-        } catch (dlErr) {
-          console.error(`[ExtensionHost] Failed to update ${update.id}:`, dlErr);
+          let jsContent = info.bundleCache;
+          if (!jsContent) {
+            const response = await fetch(info.downloadUrl);
+            if (!response.ok) continue;
+            jsContent = await response.text();
+            installed[id].bundleCache = jsContent;
+            localStorage.setItem(STORAGE_KEYS.INSTALLED_EXTENSIONS, JSON.stringify(installed));
+          }
+
+          this.bundleCache.set(id, jsContent);
+          const pkg: ExtensionPackage = {
+            manifest: info.manifest,
+            path: `marketplace://${id}`,
+            is_active: true,
+            is_installed: true,
+          };
+          await this.loadExtension(pkg);
+          await this.activateExtension(id);
+        } catch (err) {
+          console.warn(`[ExtensionHost] Failed to reload marketplace extension ${id}:`, err);
         }
       }
-
-      if (updates.length > 0) {
-        this.notifyChange();
-      }
+      this.notifyChange();
     } catch {
-      // Network errors are expected (offline, marketplace down) — silently ignore
+      // localStorage parse failure — skip marketplace extensions
     }
+  }
+
+  private async checkForUpdatesAndNotify(
+    installed: Array<{ manifest: { id: string; version?: string } }>,
+  ): Promise<void> {
+    await checkForUpdates(installed);
+    this.notifyChange();
   }
 
   async activateExtension(id: string): Promise<void> {
@@ -994,70 +972,21 @@ class ExtensionHost {
   async unloadExtension(id: string): Promise<void> {
     await this.deactivateExtension(id);
 
-    // Remove panels registered by this extension
-    for (const [panelId, panel] of this.panelRegistry) {
-      if (panel.extensionId === id) {
-        this.panelRegistry.delete(panelId);
-      }
-    }
+    cleanupExtensionRegistrations(id, {
+      panelRegistry: this.panelRegistry,
+      commandRegistry: this.commandRegistry,
+      editorRegistry: this.editorRegistry,
+      previewRegistry: this.previewRegistry,
+      decoratorRegistry: this.decoratorRegistry,
+      contextMenuEntries: this.contextMenuEntries,
+      dialogRegistry: this.dialogRegistry,
+      openDialogsMap: this.openDialogsMap,
+      tabRendererRegistry: this.tabRendererRegistry,
+      sidebarTabRegistry: this.sidebarTabRegistry,
+      bottomTabRegistry: this.bottomTabRegistry,
+    });
 
-    // Remove commands
-    for (const [cmd] of this.commandRegistry) {
-      if (cmd.startsWith(`${id}.`)) {
-        this.commandRegistry.delete(cmd);
-      }
-    }
-
-    // Remove editors
-    for (const [editorId, editor] of this.editorRegistry) {
-      if (editor.extensionId === id) {
-        this.editorRegistry.delete(editorId);
-      }
-    }
-
-    // Remove previews
-    for (const [previewId, preview] of this.previewRegistry) {
-      if (preview.extensionId === id) {
-        this.previewRegistry.delete(previewId);
-      }
-    }
-
-    // Remove decorators
-    this.decoratorRegistry.delete(id);
-    this.contextMenuEntries.delete(id);
-
-    // Remove dialog registrations scoped to this extension
-    for (const [dialogId] of this.dialogRegistry) {
-      if (dialogId.startsWith(`${id}:`) || dialogId.startsWith(`${id}.`)) {
-        this.dialogRegistry.delete(dialogId);
-        this.openDialogsMap.delete(dialogId);
-      }
-    }
-
-    // Remove tab renderers scoped to this extension
-    for (const [tabType] of this.tabRendererRegistry) {
-      if (tabType.startsWith(`${id}:`) || tabType.startsWith(`${id}.`) || tabType === id) {
-        this.tabRendererRegistry.delete(tabType);
-      }
-    }
-
-    // Remove sidebar tabs registered by this extension
-    for (const [stId, st] of this.sidebarTabRegistry) {
-      if (st.extensionId === id) {
-        this.sidebarTabRegistry.delete(stId);
-      }
-    }
-
-    // Remove bottom tabs registered by this extension
-    for (const [btId, bt] of this.bottomTabRegistry) {
-      if (bt.extensionId === id) {
-        this.bottomTabRegistry.delete(btId);
-      }
-    }
-
-    // Remove extension schemes
     this.extensionSchemes.delete(id);
-
     this.extensions.delete(id);
 
     this.notifyChange();
@@ -1070,72 +999,20 @@ class ExtensionHost {
    * Used to clean up after an extension crash during activation.
    */
   private cleanupExtension(id: string): void {
-    // Remove panels registered by this extension
-    for (const [panelId, panel] of this.panelRegistry) {
-      if (panel.extensionId === id) {
-        this.panelRegistry.delete(panelId);
-      }
-    }
+    cleanupExtensionRegistrations(id, {
+      panelRegistry: this.panelRegistry,
+      commandRegistry: this.commandRegistry,
+      editorRegistry: this.editorRegistry,
+      previewRegistry: this.previewRegistry,
+      decoratorRegistry: this.decoratorRegistry,
+      contextMenuEntries: this.contextMenuEntries,
+      dialogRegistry: this.dialogRegistry,
+      openDialogsMap: this.openDialogsMap,
+      tabRendererRegistry: this.tabRendererRegistry,
+      sidebarTabRegistry: this.sidebarTabRegistry,
+      bottomTabRegistry: this.bottomTabRegistry,
+    });
 
-    // Remove commands namespaced to this extension
-    for (const [cmd] of this.commandRegistry) {
-      if (
-        cmd.startsWith(`${id}.`) ||
-        cmd.startsWith(`state:${id}:`) ||
-        cmd.startsWith(`workspace:${id}:`)
-      ) {
-        this.commandRegistry.delete(cmd);
-      }
-    }
-
-    // Remove editors registered by this extension
-    for (const [editorId, editor] of this.editorRegistry) {
-      if (editor.extensionId === id) {
-        this.editorRegistry.delete(editorId);
-      }
-    }
-
-    // Remove previews registered by this extension
-    for (const [previewId, preview] of this.previewRegistry) {
-      if (preview.extensionId === id) {
-        this.previewRegistry.delete(previewId);
-      }
-    }
-
-    // Remove decorators and context menu entries
-    this.decoratorRegistry.delete(id);
-    this.contextMenuEntries.delete(id);
-
-    // Remove dialog registrations scoped to this extension
-    for (const [dialogId] of this.dialogRegistry) {
-      if (dialogId.startsWith(`${id}:`) || dialogId.startsWith(`${id}.`)) {
-        this.dialogRegistry.delete(dialogId);
-        this.openDialogsMap.delete(dialogId);
-      }
-    }
-
-    // Remove tab renderers scoped to this extension
-    for (const [tabType] of this.tabRendererRegistry) {
-      if (tabType.startsWith(`${id}:`) || tabType.startsWith(`${id}.`) || tabType === id) {
-        this.tabRendererRegistry.delete(tabType);
-      }
-    }
-
-    // Remove sidebar tabs registered by this extension
-    for (const [stId, st] of this.sidebarTabRegistry) {
-      if (st.extensionId === id) {
-        this.sidebarTabRegistry.delete(stId);
-      }
-    }
-
-    // Remove bottom tabs registered by this extension
-    for (const [btId, bt] of this.bottomTabRegistry) {
-      if (bt.extensionId === id) {
-        this.bottomTabRegistry.delete(btId);
-      }
-    }
-
-    // Unregister extension shortcuts
     TauriAPI.unregisterExtensionShortcuts(id).catch((err) =>
       console.warn(`[ExtensionHost] Failed to unregister shortcuts for ${id}:`, err),
     );
@@ -1174,17 +1051,7 @@ class ExtensionHost {
     is_dir: boolean;
     size?: number;
   }): PreviewRegistration | null {
-    let best: PreviewRegistration | null = null;
-    for (const [, preview] of this.previewRegistry) {
-      const ext = this.extensions.get(preview.extensionId);
-      if (!ext?.isActive) continue;
-      if (preview.canPreview(file)) {
-        if (!best || preview.priority > best.priority) {
-          best = preview;
-        }
-      }
-    }
-    return best;
+    return queryPreviewProvider(this.previewRegistry, this.extensions, file);
   }
 
   /**
@@ -1192,41 +1059,11 @@ class ExtensionHost {
    * Returns the highest-priority editor whose extensions list matches.
    */
   getEditorForFile(filePath: string): EditorRegistration | undefined {
-    const fileName = filePath.split(/[/\\]/).pop() || '';
-    const lower = fileName.toLowerCase();
-    // Get extension: handle dotfiles (.gitignore → gitignore)
-    let ext: string;
-    if (lower.startsWith('.') && !lower.includes('.', 1)) {
-      ext = lower.slice(1);
-    } else {
-      const parts = lower.split('.');
-      ext = parts.length > 1 ? parts[parts.length - 1] : '';
-    }
-    // Also check bare filename for Makefile, Dockerfile etc.
-    const bareName = lower;
-
-    let best: EditorRegistration | undefined;
-    for (const [, editor] of this.editorRegistry) {
-      const parentExt = this.extensions.get(editor.extensionId);
-      if (!parentExt?.isActive) continue;
-      if (editor.extensions.includes(ext) || editor.extensions.includes(bareName)) {
-        if (!best || editor.priority > best.priority) {
-          best = editor;
-        }
-      }
-    }
-    return best;
+    return findEditorForFile(this.editorRegistry, this.extensions, filePath);
   }
 
   getRegisteredPanels(): PanelRegistration[] {
-    const panels: PanelRegistration[] = [];
-    for (const [, panel] of this.panelRegistry) {
-      const ext = this.extensions.get(panel.extensionId);
-      if (ext && ext.isActive) {
-        panels.push(panel);
-      }
-    }
-    return panels;
+    return getActivePanels(this.panelRegistry, this.extensions);
   }
 
   getPanel(panelId: string): PanelRegistration | undefined {
@@ -1249,28 +1086,11 @@ class ExtensionHost {
     file?: ExtensionFileInfo;
     selectedFiles?: unknown;
   }): ContextMenuEntry[] {
-    const items: ContextMenuEntry[] = [];
-    for (const [extId, entries] of this.contextMenuEntries) {
-      const ext = this.extensions.get(extId);
-      if (ext?.isActive) {
-        items.push(...entries);
-      }
-    }
-    return items;
+    return getActiveContextMenuItems(this.contextMenuEntries, this.extensions);
   }
 
   getFileDecorations(file: ExtensionFileInfo): FileDecoration[] {
-    const decorations: FileDecoration[] = [];
-    for (const [, decorator] of this.decoratorRegistry) {
-      const ext = this.extensions.get(decorator.extensionId);
-      if (ext?.isActive) {
-        const decoration = decorator.decorate(file);
-        if (decoration) {
-          decorations.push(decoration);
-        }
-      }
-    }
-    return decorations;
+    return getActiveFileDecorations(this.decoratorRegistry, this.extensions, file);
   }
 
   // ─── Dialog Registry ────────────────────────────────────────────────────
@@ -1336,18 +1156,7 @@ class ExtensionHost {
     icon: React.ReactNode;
     render: (props: { currentPath?: string; isActive?: boolean }) => React.ReactElement;
   }> {
-    const tabs: Array<{
-      id: string;
-      extensionId: string;
-      title: string;
-      icon: React.ReactNode;
-      render: (props: { currentPath?: string; isActive?: boolean }) => React.ReactElement;
-    }> = [];
-    for (const [, st] of this.sidebarTabRegistry) {
-      const ext = this.extensions.get(st.extensionId);
-      if (ext?.isActive) tabs.push(st);
-    }
-    return tabs;
+    return getActiveSidebarTabs(this.sidebarTabRegistry, this.extensions);
   }
 
   /** Get the render function for an extension-registered sidebar tab */
@@ -1371,22 +1180,7 @@ class ExtensionHost {
     icon: React.ReactNode;
     render: (props: { currentPath?: string; isActive?: boolean }) => React.ReactElement;
   }> {
-    const tabs: Array<{
-      id: string;
-      extensionId: string;
-      title: string;
-      icon: React.ReactNode;
-      render: (props: { currentPath?: string; isActive?: boolean }) => React.ReactElement;
-    }> = [];
-    for (const [, bt] of this.bottomTabRegistry) {
-      const ext = this.extensions.get(bt.extensionId);
-      console.warn(
-        `[ExtensionHost] getBottomTabs: ${bt.id} (ext=${bt.extensionId}, active=${ext?.isActive})`,
-      );
-      if (ext?.isActive) tabs.push(bt);
-    }
-    console.warn(`[ExtensionHost] getBottomTabs returning ${tabs.length} tabs`);
-    return tabs;
+    return getActiveBottomTabs(this.bottomTabRegistry, this.extensions);
   }
 
   /** Get the render function for an extension-registered bottom tab */
@@ -1478,28 +1272,7 @@ class ExtensionHost {
     category?: string;
     action: () => void;
   }> {
-    const entries: Array<{
-      id: string;
-      title: string;
-      shortcut?: string;
-      category?: string;
-      action: () => void;
-    }> = [];
-    for (const [id, meta] of this.commandMetadata) {
-      const handler = this.commandRegistry.get(id);
-      if (handler) {
-        entries.push({
-          id: `ext:${id}`,
-          title: meta.title,
-          shortcut: meta.shortcut,
-          category: meta.category,
-          action: () => {
-            handler();
-          },
-        });
-      }
-    }
-    return entries;
+    return buildCommandPaletteEntries(this.commandMetadata, this.commandRegistry);
   }
 
   async executeCommand(command: string, ...args: unknown[]): Promise<unknown> {
@@ -1572,7 +1345,19 @@ class ExtensionHost {
     };
   }
 
+  // useSyncExternalStore-compatible API
+  private snapshotVersion = 0;
+
+  subscribe = (onStoreChange: () => void): (() => void) => {
+    return this.onChange(onStoreChange);
+  };
+
+  getSnapshotVersion = (): number => {
+    return this.snapshotVersion;
+  };
+
   private notifyChange() {
+    this.snapshotVersion++;
     this.changeListeners.forEach((cb) => {
       try {
         cb();

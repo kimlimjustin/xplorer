@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useSyncExternalStore } from 'react';
 import { extensionHost, resolveIcon } from '@/lib/extension-host';
 import { TauriAPI, type ExtensionManifestInfo } from '@/lib/tauri-api';
 import { AgentService } from '@/lib/agent-service';
@@ -22,7 +22,7 @@ interface ExtensionsPanelProps {
 
 const ExtensionsPanel = ({ themes, theme, applyTheme }: ExtensionsPanelProps) => {
   const { toast } = useToast();
-  const [, forceUpdate] = useState(0);
+  // forceUpdate removed — useSyncExternalStore handles re-renders
   const [installing, setInstalling] = useState(false);
   const [pendingInstall, setPendingInstall] = useState<{
     path: string;
@@ -47,13 +47,11 @@ const ExtensionsPanel = ({ themes, theme, applyTheme }: ExtensionsPanelProps) =>
     });
   }, []);
 
-  // Listen for extension host changes
-  useEffect(() => {
-    const unsubscribe = extensionHost.onChange(() => {
-      forceUpdate((n) => n + 1);
-    });
-    return unsubscribe;
-  }, []);
+  // Listen for extension host changes via useSyncExternalStore
+  const _extVersion = useSyncExternalStore(
+    extensionHost.subscribe,
+    extensionHost.getSnapshotVersion,
+  );
 
   const allExtensions = extensionHost.getAllExtensions();
 

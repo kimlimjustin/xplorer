@@ -135,73 +135,74 @@ const scoreRelevance = (name: string, queryParts: string[]): number => {
   return minScore;
 };
 
-// ── Recursive directory walker ───────────────────────────────────────────────
+// ── Backend-powered file search ─────────────────────────────────────────────
 
-async function walkDirectory(
+const searchFiles = async (
   basePath: string,
+  searchTerm: string,
   queryParts: string[],
   filter: SearchFilterType,
   maxResults: number,
   abortSignal: { aborted: boolean },
-): Promise<LiveSearchResult[]> {
+): Promise<LiveSearchResult[]> => {
+  // Use the Rust find_files command which walks the directory tree in a single IPC call
+  let filePaths: string[];
+  try {
+    filePaths = await TauriAPI.findFiles(searchTerm, basePath);
+  } catch {
+    return [];
+  }
+
+  if (abortSignal.aborted) return [];
+
   const results: LiveSearchResult[] = [];
-  const queue: string[] = [basePath];
-  const maxDepth = 8; // Prevent extremely deep traversal
-  const depthMap = new Map<string, number>();
-  depthMap.set(basePath, 0);
 
-  while (queue.length > 0 && results.length < maxResults && !abortSignal.aborted) {
-    const dirPath = queue.shift()!;
-    const depth = depthMap.get(dirPath) ?? 0;
+  for (const filePath of filePaths) {
+    if (abortSignal.aborted) break;
+    if (results.length >= maxResults) break;
 
-    let entries: FileEntry[];
-    try {
-      entries = await TauriAPI.readDirectory(dirPath);
-    } catch {
-      // Permission denied, inaccessible, etc.
-      continue;
-    }
+    const sep = filePath.includes('/') ? '/' : '\\';
+    const pathParts = filePath.split(sep);
+    const name = pathParts.pop() || '';
 
-    for (const entry of entries) {
-      if (abortSignal.aborted) break;
-      if (results.length >= maxResults) break;
+    // Skip hidden files
+    if (name.startsWith('.')) continue;
 
-      // Skip hidden files (starting with .)
-      if (entry.name.startsWith('.')) continue;
+    const parentDir = pathParts.join(sep);
+    const ext = name.split('.').pop()?.toLowerCase() || '';
+    // We don't have is_dir from find_files, but we can infer from extension presence
+    // find_files returns all matches; we approximate is_dir = no extension
+    const is_dir = ext === '' && !name.includes('.');
 
-      const relevance = scoreRelevance(entry.name, queryParts);
+    const entry: FileEntry = {
+      name,
+      path: filePath,
+      is_dir,
+      size: 0,
+      modified: 0,
+      file_type: ext,
+      is_readonly: false,
+    };
 
-      if (relevance > 0 && matchesFilter(entry, filter)) {
-        // Build relative path from basePath
-        let relativePath = entry.path;
-        if (relativePath.startsWith(basePath)) {
-          relativePath = relativePath.slice(basePath.length);
-          // Remove leading separator
-          if (relativePath.startsWith('/') || relativePath.startsWith('\\')) {
-            relativePath = relativePath.slice(1);
-          }
-        }
+    if (!matchesFilter(entry, filter)) continue;
 
-        // Determine parent directory
-        const sep = entry.path.includes('/') ? '/' : '\\';
-        const parts = entry.path.split(sep);
-        parts.pop();
-        const parentDir = parts.join(sep);
+    const relevance = scoreRelevance(name, queryParts);
+    if (relevance === 0) continue;
 
-        results.push({
-          file: entry,
-          relevance,
-          parentDir,
-          relativePath,
-        });
-      }
-
-      // Enqueue subdirectories for traversal (even if they matched, to search within them)
-      if (entry.is_dir && depth < maxDepth) {
-        queue.push(entry.path);
-        depthMap.set(entry.path, depth + 1);
+    let relativePath = filePath;
+    if (relativePath.startsWith(basePath)) {
+      relativePath = relativePath.slice(basePath.length);
+      if (relativePath.startsWith('/') || relativePath.startsWith('\\')) {
+        relativePath = relativePath.slice(1);
       }
     }
+
+    results.push({
+      file: entry,
+      relevance,
+      parentDir,
+      relativePath,
+    });
   }
 
   // Sort by relevance (desc), then name (asc)
@@ -211,7 +212,7 @@ async function walkDirectory(
   });
 
   return results;
-}
+};
 
 // ── Main hook ────────────────────────────────────────────────────────────────
 
@@ -259,8 +260,9 @@ export const useLiveSearch = (basePath: string) => {
 
       try {
         const queryParts = trimmed.toLowerCase().split(/\s+/).filter(Boolean);
-        const searchResults = await walkDirectory(
+        const searchResults = await searchFiles(
           basePath,
+          trimmed,
           queryParts,
           activeFilter,
           MAX_RESULTS,

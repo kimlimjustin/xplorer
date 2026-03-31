@@ -8,7 +8,7 @@ interface TokenizerSettingsProps {
   className?: string;
 }
 
-export default function TokenizerSettingsComponent({ className }: TokenizerSettingsProps) {
+const TokenizerSettingsComponent = ({ className }: TokenizerSettingsProps) => {
   const [settings, setSettings] = useState<TokenizerSettings>({
     enabled: false,
     whitelisted_paths: [],
@@ -610,4 +610,6 @@ export default function TokenizerSettingsComponent({ className }: TokenizerSetti
       </div>
     </div>
   );
-}
+};
+
+export default TokenizerSettingsComponent;

@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, forwardRef } from 'react';
+import React, { useRef, useState, useEffect, forwardRef } from 'react';
 import { useWindowEvent } from '@/hooks/use-window-event';
 import { isTauri } from '@/lib/transport';
 import {
@@ -11,11 +11,6 @@ import {
   Rows,
   ChevronUp,
   RefreshCw,
-  FolderClosed,
-  File,
-  FileCode,
-  GitCompareArrows,
-  Cloud,
   MessageSquare,
 } from 'lucide-react';
 import { TauriAPI } from '@/lib/tauri-api';
@@ -23,6 +18,7 @@ import { ROOT_PATH } from '@/lib/constants';
 import type { TabItem } from '@/types/split-view';
 import { type FileCollection, getAllCollections, isQuickFilter } from '@/lib/collections';
 import { renderIcon } from '@/lib/utils';
+import { getTabIcon } from '@/lib/tab-utils';
 import { useTranslation } from 'react-i18next';
 
 export interface TopBarHandle {
@@ -61,588 +57,283 @@ interface TopBarProps {
   onClearCollectionFilter?: () => void;
 }
 
-const getTabIcon = (tab: TabItem) => {
-  switch (tab.type) {
-    case 'editor':
-      return FileCode;
-    case 'comparison':
-      return GitCompareArrows;
-    case 'gdrive':
-    case 'gdrive-manager':
-      return Cloud;
-    case 'folder':
-      return FolderClosed;
-    default:
-      return File;
-  }
-};
+const TopBar = React.memo(
+  forwardRef<TopBarHandle, TopBarProps>(
+    (
+      {
+        leftSidebarCollapsed,
+        setLeftSidebarCollapsed,
+        currentPath,
+        navigateUp,
+        refetch,
+        navigateBackInHistory,
+        navigateForwardInHistory,
+        canNavigateBackInHistory,
+        canNavigateForwardInHistory,
+        tabs,
+        activeTabId,
+        onSwitchTab,
+        onCloseTab,
+        onAddTab,
+        onSplitRight,
+        onSplitDown,
+        'data-tour': dataTour,
+        crossTabTotalCount = 0,
+        crossTabTabCount = 0,
+        hasMultiTabSelection = false,
+        onOpenBatchActions,
+        onClearCrossTabSelection,
+        activeCollectionFilter,
+        onToggleCollectionFilter,
+        onClearCollectionFilter,
+      },
+      _ref,
+    ) => {
+      const { t } = useTranslation();
+      const [isMaximized, setIsMaximized] = useState(false);
+      const [filterDropdownOpen, setFilterDropdownOpen] = useState(false);
+      const [quickFilters, setQuickFilters] = useState<FileCollection[]>(() =>
+        getAllCollections().filter(isQuickFilter),
+      );
+      const filterDropdownRef = useRef<HTMLDivElement>(null);
 
-const TopBar = forwardRef<TopBarHandle, TopBarProps>(
-  (
-    {
-      leftSidebarCollapsed,
-      setLeftSidebarCollapsed,
-      currentPath,
-      navigateUp,
-      refetch,
-      navigateBackInHistory,
-      navigateForwardInHistory,
-      canNavigateBackInHistory,
-      canNavigateForwardInHistory,
-      tabs,
-      activeTabId,
-      onSwitchTab,
-      onCloseTab,
-      onAddTab,
-      onSplitRight,
-      onSplitDown,
-      'data-tour': dataTour,
-      crossTabTotalCount = 0,
-      crossTabTabCount = 0,
-      hasMultiTabSelection = false,
-      onOpenBatchActions,
-      onClearCrossTabSelection,
-      activeCollectionFilter,
-      onToggleCollectionFilter,
-      onClearCollectionFilter,
-    },
-    _ref,
-  ) => {
-    const { t } = useTranslation();
-    const [isMaximized, setIsMaximized] = useState(false);
-    const [filterDropdownOpen, setFilterDropdownOpen] = useState(false);
-    const [quickFilters, setQuickFilters] = useState<FileCollection[]>(() =>
-      getAllCollections().filter(isQuickFilter),
-    );
-    const filterDropdownRef = useRef<HTMLDivElement>(null);
+      // Load quick-filter collections and sync
+      useWindowEvent('collections-changed', () =>
+        setQuickFilters(getAllCollections().filter(isQuickFilter)),
+      );
 
-    // Load quick-filter collections and sync
-    useWindowEvent('collections-changed', () =>
-      setQuickFilters(getAllCollections().filter(isQuickFilter)),
-    );
+      // Close dropdown on outside click
+      useEffect(() => {
+        if (!filterDropdownOpen) return;
+        const close = (e: MouseEvent) => {
+          if (filterDropdownRef.current && !filterDropdownRef.current.contains(e.target as Node)) {
+            setFilterDropdownOpen(false);
+          }
+        };
+        document.addEventListener('mousedown', close);
+        return () => document.removeEventListener('mousedown', close);
+      }, [filterDropdownOpen]);
+      const appWindowRef = useRef<Awaited<
+        ReturnType<typeof import('@tauri-apps/api/window').getCurrentWindow>
+      > | null>(null);
+      const isMac = navigator.platform.toUpperCase().includes('MAC');
 
-    // Close dropdown on outside click
-    useEffect(() => {
-      if (!filterDropdownOpen) return;
-      const close = (e: MouseEvent) => {
-        if (filterDropdownRef.current && !filterDropdownRef.current.contains(e.target as Node)) {
-          setFilterDropdownOpen(false);
-        }
-      };
-      document.addEventListener('mousedown', close);
-      return () => document.removeEventListener('mousedown', close);
-    }, [filterDropdownOpen]);
-    const appWindowRef = useRef<Awaited<
-      ReturnType<typeof import('@tauri-apps/api/window').getCurrentWindow>
-    > | null>(null);
-    const isMac = navigator.platform.toUpperCase().includes('MAC');
-
-    useEffect(() => {
-      if (!isTauri()) return;
-      let debounceTimer: ReturnType<typeof setTimeout> | null = null;
-      let cancelled = false;
-      const cleanupRef = { current: null as (() => void) | null };
-      (async () => {
-        const { getCurrentWindow } = await import('@tauri-apps/api/window');
-        const win = getCurrentWindow();
-        if (cancelled) return;
-        appWindowRef.current = win;
-        win
-          .isMaximized()
-          .then(setIsMaximized)
-          .catch((err: unknown) => console.warn('Failed to check maximized state:', err));
-        const unlisten = win.onResized(() => {
-          if (debounceTimer) clearTimeout(debounceTimer);
-          debounceTimer = setTimeout(() => {
-            win
-              .isMaximized()
-              .then(setIsMaximized)
-              .catch((err: unknown) => console.warn('Failed to check maximized state:', err));
-          }, 150);
-        });
-        // Store unlisten for cleanup
-        if (!cancelled) {
-          cleanupRef.current = async () => {
+      useEffect(() => {
+        if (!isTauri()) return;
+        let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+        let cancelled = false;
+        const cleanupRef = { current: null as (() => void) | null };
+        (async () => {
+          const { getCurrentWindow } = await import('@tauri-apps/api/window');
+          const win = getCurrentWindow();
+          if (cancelled) return;
+          appWindowRef.current = win;
+          win
+            .isMaximized()
+            .then(setIsMaximized)
+            .catch((err: unknown) => console.warn('Failed to check maximized state:', err));
+          const unlisten = win.onResized(() => {
             if (debounceTimer) clearTimeout(debounceTimer);
-            (await unlisten)();
-          };
-        }
-      })();
-      return () => {
-        cancelled = true;
-        if (debounceTimer) clearTimeout(debounceTimer);
-        cleanupRef.current?.();
-      };
-    }, []);
+            debounceTimer = setTimeout(() => {
+              win
+                .isMaximized()
+                .then(setIsMaximized)
+                .catch((err: unknown) => console.warn('Failed to check maximized state:', err));
+            }, 150);
+          });
+          // Store unlisten for cleanup
+          if (!cancelled) {
+            cleanupRef.current = async () => {
+              if (debounceTimer) clearTimeout(debounceTimer);
+              (await unlisten)();
+            };
+          }
+        })();
+        return () => {
+          cancelled = true;
+          if (debounceTimer) clearTimeout(debounceTimer);
+          cleanupRef.current?.();
+        };
+      }, []);
 
-    return (
-      <div data-tour={dataTour} className="bg-xp-surface border-xp-border flex-none border-b">
-        {/* Row 1: Title bar (draggable) */}
-        <div
-          className="flex items-center justify-between px-4 py-1"
-          onMouseDown={(e) => {
-            if (
-              !(e.target as HTMLElement).closest(
-                'button, input, a, select, textarea, [role="button"]',
-              )
-            ) {
-              e.preventDefault();
-              appWindowRef.current?.startDragging();
-            }
-          }}
-          onDoubleClick={(e) => {
-            if (
-              !(e.target as HTMLElement).closest(
-                'button, input, a, select, textarea, [role="button"]',
-              )
-            ) {
-              appWindowRef.current?.toggleMaximize();
-            }
-          }}
-        >
+      return (
+        <div data-tour={dataTour} className="bg-xp-surface border-xp-border flex-none border-b">
+          {/* Row 1: Title bar (draggable) */}
           <div
-            className="flex items-center space-x-3"
-            style={isMac ? { paddingLeft: '60px' } : undefined}
-          >
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => setLeftSidebarCollapsed(!leftSidebarCollapsed)}
-                className="hover:bg-xp-surface-light rounded p-1 transition-colors"
-                aria-label={t('topBar.toggleSidebar')}
-                title={t('topBar.toggleSidebarShortcut')}
-              >
-                <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fillRule="evenodd"
-                    d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </button>
-              <h1 className="text-sm font-medium">Xplorer</h1>
-            </div>
-          </div>
-          {/* Spacer — search is in the left sidebar */}
-          <div className="flex-1" />
-          {!isMac && (
-            <div className="ml-2 flex items-center" role="toolbar" aria-label="Window controls">
-              <button
-                onClick={() => appWindowRef.current?.minimize()}
-                className="hover:bg-xp-surface-light rounded p-2 transition-colors"
-                aria-label={t('topBar.minimize')}
-              >
-                <Minus size={14} />
-              </button>
-              <button
-                onClick={() => appWindowRef.current?.toggleMaximize()}
-                className="hover:bg-xp-surface-light rounded p-2 transition-colors"
-                aria-label={isMaximized ? t('topBar.restore') : t('topBar.maximize')}
-              >
-                {isMaximized ? <Copy size={14} /> : <Square size={14} />}
-              </button>
-              <button
-                onClick={() => appWindowRef.current?.close()}
-                className="xp-close-btn rounded p-2 transition-colors"
-                aria-label={t('topBar.closeWindow')}
-              >
-                <X size={14} />
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Row 2: Nav buttons + Tabs + Split controls */}
-        <div className="flex items-center gap-0.5 px-2">
-          {/* Nav buttons */}
-          {navigateBackInHistory && (
-            <button
-              onClick={navigateBackInHistory}
-              disabled={!canNavigateBackInHistory?.()}
-              className="hover:bg-xp-surface-light flex-shrink-0 rounded p-1 transition-colors disabled:opacity-30"
-              title={t('topBar.goBack')}
-              aria-label={t('topBar.goBack')}
-            >
-              <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </button>
-          )}
-          {navigateForwardInHistory && (
-            <button
-              onClick={navigateForwardInHistory}
-              disabled={!canNavigateForwardInHistory?.()}
-              className="hover:bg-xp-surface-light flex-shrink-0 rounded p-1 transition-colors disabled:opacity-30"
-              title={t('topBar.goForward')}
-              aria-label={t('topBar.goForward')}
-            >
-              <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </button>
-          )}
-          {navigateUp && (
-            <button
-              onClick={navigateUp}
-              disabled={currentPath === ROOT_PATH}
-              className="hover:bg-xp-surface-light flex-shrink-0 rounded p-1 transition-colors disabled:opacity-30"
-              title={t('topBar.goUp')}
-              aria-label={t('topBar.goUp')}
-            >
-              <ChevronUp size={16} />
-            </button>
-          )}
-          {refetch && (
-            <button
-              onClick={refetch}
-              className="hover:bg-xp-surface-light flex-shrink-0 rounded p-1 transition-colors"
-              title={t('topBar.refresh')}
-              aria-label={t('topBar.refresh')}
-            >
-              <RefreshCw size={14} />
-            </button>
-          )}
-
-          {/* New Chat button — available in any folder */}
-          {!currentPath.startsWith('xplorer://') && (
-            <button
-              onClick={async () => {
-                try {
-                  await TauriAPI.createChatFile(currentPath);
-                  refetch?.();
-                } catch (err) {
-                  console.error('Failed to create chat:', err);
-                }
-              }}
-              className="hover:bg-xp-surface-light flex-shrink-0 rounded p-1 transition-colors"
-              title={t('topBar.newChatDesc')}
-              aria-label={t('topBar.newChat')}
-            >
-              <MessageSquare size={14} />
-            </button>
-          )}
-
-          {/* Quick Filter dropdown (built-in + user collections with no basePath) */}
-          <div ref={filterDropdownRef} style={{ position: 'relative' }} className="flex-shrink-0">
-            <button
-              onClick={() => setFilterDropdownOpen(!filterDropdownOpen)}
-              className={`flex flex-shrink-0 items-center gap-1 rounded p-1 transition-colors ${
-                activeCollectionFilter
-                  ? 'text-xp-text'
-                  : 'hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text'
-              }`}
-              style={
-                activeCollectionFilter
-                  ? {
-                      backgroundColor: `${activeCollectionFilter.color}20`,
-                      border: `1px solid ${activeCollectionFilter.color}40`,
-                    }
-                  : undefined
+            className="flex items-center justify-between px-4 py-1"
+            onMouseDown={(e) => {
+              if (
+                !(e.target as HTMLElement).closest(
+                  'button, input, a, select, textarea, [role="button"]',
+                )
+              ) {
+                e.preventDefault();
+                appWindowRef.current?.startDragging();
               }
-              title={t('topBar.quickFilters')}
-              aria-label={t('topBar.quickFilters')}
-              aria-expanded={filterDropdownOpen}
+            }}
+            onDoubleClick={(e) => {
+              if (
+                !(e.target as HTMLElement).closest(
+                  'button, input, a, select, textarea, [role="button"]',
+                )
+              ) {
+                appWindowRef.current?.toggleMaximize();
+              }
+            }}
+          >
+            <div
+              className="flex items-center space-x-3"
+              style={isMac ? { paddingLeft: '60px' } : undefined}
             >
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-              </svg>
-              {activeCollectionFilter && (
-                <span
-                  style={{
-                    fontSize: '11px',
-                    fontWeight: 500,
-                    maxWidth: '80px',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                  }}
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => setLeftSidebarCollapsed(!leftSidebarCollapsed)}
+                  className="hover:bg-xp-surface-light rounded p-1 transition-colors"
+                  aria-label={t('topBar.toggleSidebar')}
+                  title={t('topBar.toggleSidebarShortcut')}
                 >
-                  {activeCollectionFilter.name}
-                </span>
-              )}
-            </button>
-            {filterDropdownOpen && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '100%',
-                  left: 0,
-                  zIndex: 9999,
-                  minWidth: '200px',
-                  maxHeight: '320px',
-                  overflowY: 'auto',
-                  borderRadius: '8px',
-                  backgroundColor: 'var(--xp-surface)',
-                  backdropFilter: 'blur(12px)',
-                  WebkitBackdropFilter: 'blur(12px)',
-                  border: '1px solid var(--xp-border)',
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
-                  padding: '4px',
-                  marginTop: '4px',
-                  animation: 'fadeIn 100ms ease-out',
-                }}
-              >
-                {quickFilters.map((col) => {
-                  const isActive = activeCollectionFilter?.id === col.id;
-                  return (
-                    <button
-                      key={col.id}
-                      className="flex w-full items-center rounded px-3 py-1.5 text-xs transition-colors"
-                      style={{
-                        color: 'var(--xp-text)',
-                        backgroundColor: isActive ? `${col.color}15` : 'transparent',
-                        borderLeft: isActive ? `3px solid ${col.color}` : '3px solid transparent',
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!isActive) {
-                          (e.currentTarget as HTMLElement).style.backgroundColor =
-                            'var(--xp-surface-light)';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!isActive) {
-                          (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
-                        }
-                      }}
-                      onClick={() => {
-                        onToggleCollectionFilter?.(col);
-                        setFilterDropdownOpen(false);
-                      }}
-                    >
-                      <span
-                        style={{
-                          marginRight: '8px',
-                          fontSize: '14px',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                        }}
-                      >
-                        {renderIcon(col.icon, 14)}
-                      </span>
-                      <span style={{ flex: 1, textAlign: 'left' }}>{col.name}</span>
-                      {isActive && (
-                        <span
-                          style={{
-                            width: '6px',
-                            height: '6px',
-                            borderRadius: '50%',
-                            backgroundColor: col.color,
-                            marginLeft: '8px',
-                            flexShrink: 0,
-                          }}
-                        />
-                      )}
-                    </button>
-                  );
-                })}
-                {/* Divider + clear */}
-                {activeCollectionFilter && (
-                  <>
-                    <div
-                      style={{
-                        height: '1px',
-                        backgroundColor: 'var(--xp-border)',
-                        margin: '4px 0',
-                      }}
+                  <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      fillRule="evenodd"
+                      d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                      clipRule="evenodd"
                     />
-                    <button
-                      className="flex w-full items-center rounded px-3 py-1.5 text-xs transition-colors"
-                      style={{ color: 'var(--xp-text-muted)' }}
-                      onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLElement).style.backgroundColor =
-                          'var(--xp-surface-light)';
-                      }}
-                      onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
-                      }}
-                      onClick={() => {
-                        onClearCollectionFilter?.();
-                        setFilterDropdownOpen(false);
-                      }}
-                    >
-                      <X size={12} style={{ marginRight: '8px' }} />
-                      {t('topBar.clearFilter')}
-                    </button>
-                  </>
-                )}
+                  </svg>
+                </button>
+                <h1 className="text-sm font-medium">Xplorer</h1>
+              </div>
+            </div>
+            {/* Spacer — search is in the left sidebar */}
+            <div className="flex-1" />
+            {!isMac && (
+              <div className="ml-2 flex items-center" role="toolbar" aria-label="Window controls">
+                <button
+                  onClick={() => appWindowRef.current?.minimize()}
+                  className="hover:bg-xp-surface-light rounded p-2 transition-colors"
+                  aria-label={t('topBar.minimize')}
+                >
+                  <Minus size={14} />
+                </button>
+                <button
+                  onClick={() => appWindowRef.current?.toggleMaximize()}
+                  className="hover:bg-xp-surface-light rounded p-2 transition-colors"
+                  aria-label={isMaximized ? t('topBar.restore') : t('topBar.maximize')}
+                >
+                  {isMaximized ? <Copy size={14} /> : <Square size={14} />}
+                </button>
+                <button
+                  onClick={() => appWindowRef.current?.close()}
+                  className="xp-close-btn rounded p-2 transition-colors"
+                  aria-label={t('topBar.closeWindow')}
+                >
+                  <X size={14} />
+                </button>
               </div>
             )}
           </div>
 
-          {/* Separator */}
-          <div className="bg-xp-border mx-0.5 h-5 w-px flex-shrink-0" />
-
-          {/* Tabs */}
-          <div className="scrollbar-none flex min-w-0 flex-1 overflow-x-auto">
-            {tabs?.map((tab) => {
-              const TabIcon = getTabIcon(tab);
-              const isActive = activeTabId === tab.id;
-              return (
-                <div
-                  key={tab.id}
-                  className={`border-xp-border group flex min-w-0 max-w-[180px] flex-shrink-0 cursor-pointer items-center border-r px-3 py-1 ${
-                    isActive ? 'bg-xp-bg border-b-xp-blue border-b-2' : 'hover:bg-xp-surface-light'
-                  }`}
-                  onClick={() => onSwitchTab?.(tab.id)}
-                >
-                  <TabIcon size={13} className="text-xp-text-secondary mr-1.5 flex-shrink-0" />
-                  <span className="truncate text-xs font-medium">{tab.name}</span>
-                  {tabs.length > 1 && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onCloseTab?.(tab.id);
-                      }}
-                      className="hover:bg-xp-surface-light ml-1 flex-shrink-0 rounded p-0.5 opacity-0 group-hover:opacity-100"
-                      aria-label={`Close ${tab.name}`}
-                    >
-                      <X size={12} />
-                    </button>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Split/tab actions */}
-          <div className="ml-0.5 flex flex-shrink-0 items-center gap-0.5">
-            {onAddTab && (
+          {/* Row 2: Nav buttons + Tabs + Split controls */}
+          <div className="flex items-center gap-0.5 px-2">
+            {/* Nav buttons */}
+            {navigateBackInHistory && (
               <button
-                onClick={onAddTab}
-                className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text rounded p-1"
-                title={t('topBar.newTabShortcut')}
-                aria-label={t('topBar.newTab')}
+                onClick={navigateBackInHistory}
+                disabled={!canNavigateBackInHistory?.()}
+                className="hover:bg-xp-surface-light flex-shrink-0 rounded p-1 transition-colors disabled:opacity-30"
+                title={t('topBar.goBack')}
+                aria-label={t('topBar.goBack')}
               >
-                <Plus size={14} />
+                <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    fillRule="evenodd"
+                    d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
               </button>
             )}
-            {onSplitRight && (
+            {navigateForwardInHistory && (
               <button
-                onClick={onSplitRight}
-                className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text rounded p-1"
-                title={t('topBar.splitRightShortcut')}
-                aria-label={t('topBar.splitRight')}
+                onClick={navigateForwardInHistory}
+                disabled={!canNavigateForwardInHistory?.()}
+                className="hover:bg-xp-surface-light flex-shrink-0 rounded p-1 transition-colors disabled:opacity-30"
+                title={t('topBar.goForward')}
+                aria-label={t('topBar.goForward')}
               >
-                <Columns size={14} />
+                <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    fillRule="evenodd"
+                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
               </button>
             )}
-            {onSplitDown && (
+            {navigateUp && (
               <button
-                onClick={onSplitDown}
-                className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text rounded p-1"
-                title={t('topBar.splitDownShortcut')}
-                aria-label={t('topBar.splitDown')}
+                onClick={navigateUp}
+                disabled={currentPath === ROOT_PATH}
+                className="hover:bg-xp-surface-light flex-shrink-0 rounded p-1 transition-colors disabled:opacity-30"
+                title={t('topBar.goUp')}
+                aria-label={t('topBar.goUp')}
               >
-                <Rows size={14} />
+                <ChevronUp size={16} />
               </button>
             )}
-          </div>
-        </div>
-
-        {/* Cross-tab selection floating action bar */}
-        {hasMultiTabSelection && crossTabTotalCount > 0 && (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              padding: '4px 12px',
-              background: 'color-mix(in srgb, var(--xp-blue) 12%, var(--xp-surface))',
-              borderTop: '1px solid color-mix(in srgb, var(--xp-blue) 25%, var(--xp-border))',
-              fontSize: 12,
-              color: 'var(--xp-text)',
-            }}
-          >
-            {/* Selection badge */}
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 4,
-                padding: '2px 8px',
-                borderRadius: 10,
-                background: 'var(--xp-blue)',
-                color: '#fff',
-                fontSize: 11,
-                fontWeight: 600,
-              }}
-            >
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="9 11 12 14 22 4" />
-                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-              </svg>
-              {crossTabTotalCount !== 1 || crossTabTabCount !== 1
-                ? t('topBar.crossTabSelectionPlural', {
-                    fileCount: crossTabTotalCount,
-                    tabCount: crossTabTabCount,
-                  })
-                : t('topBar.crossTabSelection', {
-                    fileCount: crossTabTotalCount,
-                    tabCount: crossTabTabCount,
-                  })}
-            </span>
-
-            <span style={{ color: 'var(--xp-text-muted)', fontSize: 11 }}>
-              {t('topBar.crossTabHint')}
-            </span>
-
-            {/* Spacer */}
-            <div style={{ flex: 1 }} />
-
-            {/* Batch Actions button */}
-            {onOpenBatchActions && (
+            {refetch && (
               <button
-                onClick={onOpenBatchActions}
-                style={{
-                  padding: '3px 10px',
-                  fontSize: 11,
-                  fontWeight: 500,
-                  borderRadius: 5,
-                  border: '1px solid var(--xp-blue)',
-                  background: 'var(--xp-blue)',
-                  color: '#fff',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 4,
-                  transition: 'opacity 0.15s ease',
+                onClick={refetch}
+                className="hover:bg-xp-surface-light flex-shrink-0 rounded p-1 transition-colors"
+                title={t('topBar.refresh')}
+                aria-label={t('topBar.refresh')}
+              >
+                <RefreshCw size={14} />
+              </button>
+            )}
+
+            {/* New Chat button — available in any folder */}
+            {!currentPath.startsWith('xplorer://') && (
+              <button
+                onClick={async () => {
+                  try {
+                    await TauriAPI.createChatFile(currentPath);
+                    refetch?.();
+                  } catch (err) {
+                    console.error('Failed to create chat:', err);
+                  }
                 }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.opacity = '0.85';
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.opacity = '1';
-                }}
-                title={t('topBar.batchActionsDesc')}
+                className="hover:bg-xp-surface-light flex-shrink-0 rounded p-1 transition-colors"
+                title={t('topBar.newChatDesc')}
+                aria-label={t('topBar.newChat')}
+              >
+                <MessageSquare size={14} />
+              </button>
+            )}
+
+            {/* Quick Filter dropdown (built-in + user collections with no basePath) */}
+            <div ref={filterDropdownRef} style={{ position: 'relative' }} className="flex-shrink-0">
+              <button
+                onClick={() => setFilterDropdownOpen(!filterDropdownOpen)}
+                className={`flex flex-shrink-0 items-center gap-1 rounded p-1 transition-colors ${
+                  activeCollectionFilter
+                    ? 'text-xp-text'
+                    : 'hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text'
+                }`}
+                style={
+                  activeCollectionFilter
+                    ? {
+                        backgroundColor: `${activeCollectionFilter.color}20`,
+                        border: `1px solid ${activeCollectionFilter.color}40`,
+                      }
+                    : undefined
+                }
+                title={t('topBar.quickFilters')}
+                aria-label={t('topBar.quickFilters')}
+                aria-expanded={filterDropdownOpen}
               >
                 <svg
-                  width="12"
-                  height="12"
+                  width="14"
+                  height="14"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -650,51 +341,344 @@ const TopBar = forwardRef<TopBarHandle, TopBarProps>(
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
-                  <rect x="3" y="3" width="18" height="18" rx="2" />
-                  <line x1="3" y1="9" x2="21" y2="9" />
-                  <line x1="9" y1="21" x2="9" y2="9" />
+                  <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
                 </svg>
-                {t('topBar.batchActions')}
+                {activeCollectionFilter && (
+                  <span
+                    style={{
+                      fontSize: '11px',
+                      fontWeight: 500,
+                      maxWidth: '80px',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {activeCollectionFilter.name}
+                  </span>
+                )}
               </button>
-            )}
+              {filterDropdownOpen && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '100%',
+                    left: 0,
+                    zIndex: 9999,
+                    minWidth: '200px',
+                    maxHeight: '320px',
+                    overflowY: 'auto',
+                    borderRadius: '8px',
+                    backgroundColor: 'var(--xp-surface)',
+                    backdropFilter: 'blur(12px)',
+                    WebkitBackdropFilter: 'blur(12px)',
+                    border: '1px solid var(--xp-border)',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.4)',
+                    padding: '4px',
+                    marginTop: '4px',
+                    animation: 'fadeIn 100ms ease-out',
+                  }}
+                >
+                  {quickFilters.map((col) => {
+                    const isActive = activeCollectionFilter?.id === col.id;
+                    return (
+                      <button
+                        key={col.id}
+                        className="flex w-full items-center rounded px-3 py-1.5 text-xs transition-colors"
+                        style={{
+                          color: 'var(--xp-text)',
+                          backgroundColor: isActive ? `${col.color}15` : 'transparent',
+                          borderLeft: isActive ? `3px solid ${col.color}` : '3px solid transparent',
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!isActive) {
+                            (e.currentTarget as HTMLElement).style.backgroundColor =
+                              'var(--xp-surface-light)';
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!isActive) {
+                            (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
+                          }
+                        }}
+                        onClick={() => {
+                          onToggleCollectionFilter?.(col);
+                          setFilterDropdownOpen(false);
+                        }}
+                      >
+                        <span
+                          style={{
+                            marginRight: '8px',
+                            fontSize: '14px',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                          }}
+                        >
+                          {renderIcon(col.icon, 14)}
+                        </span>
+                        <span style={{ flex: 1, textAlign: 'left' }}>{col.name}</span>
+                        {isActive && (
+                          <span
+                            style={{
+                              width: '6px',
+                              height: '6px',
+                              borderRadius: '50%',
+                              backgroundColor: col.color,
+                              marginLeft: '8px',
+                              flexShrink: 0,
+                            }}
+                          />
+                        )}
+                      </button>
+                    );
+                  })}
+                  {/* Divider + clear */}
+                  {activeCollectionFilter && (
+                    <>
+                      <div
+                        style={{
+                          height: '1px',
+                          backgroundColor: 'var(--xp-border)',
+                          margin: '4px 0',
+                        }}
+                      />
+                      <button
+                        className="flex w-full items-center rounded px-3 py-1.5 text-xs transition-colors"
+                        style={{ color: 'var(--xp-text-muted)' }}
+                        onMouseEnter={(e) => {
+                          (e.currentTarget as HTMLElement).style.backgroundColor =
+                            'var(--xp-surface-light)';
+                        }}
+                        onMouseLeave={(e) => {
+                          (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
+                        }}
+                        onClick={() => {
+                          onClearCollectionFilter?.();
+                          setFilterDropdownOpen(false);
+                        }}
+                      >
+                        <X size={12} style={{ marginRight: '8px' }} />
+                        {t('topBar.clearFilter')}
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
 
-            {/* Clear Selection button */}
-            {onClearCrossTabSelection && (
-              <button
-                onClick={onClearCrossTabSelection}
+            {/* Separator */}
+            <div className="bg-xp-border mx-0.5 h-5 w-px flex-shrink-0" />
+
+            {/* Tabs */}
+            <div className="scrollbar-none flex min-w-0 flex-1 overflow-x-auto">
+              {tabs?.map((tab) => {
+                const TabIcon = getTabIcon(tab);
+                const isActive = activeTabId === tab.id;
+                return (
+                  <div
+                    key={tab.id}
+                    className={`border-xp-border group flex min-w-0 max-w-[180px] flex-shrink-0 cursor-pointer items-center border-r px-3 py-1 ${
+                      isActive
+                        ? 'bg-xp-bg border-b-xp-blue border-b-2'
+                        : 'hover:bg-xp-surface-light'
+                    }`}
+                    onClick={() => onSwitchTab?.(tab.id)}
+                  >
+                    <TabIcon size={13} className="text-xp-text-secondary mr-1.5 flex-shrink-0" />
+                    <span className="truncate text-xs font-medium">{tab.name}</span>
+                    {tabs.length > 1 && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onCloseTab?.(tab.id);
+                        }}
+                        className="hover:bg-xp-surface-light ml-1 flex-shrink-0 rounded p-0.5 opacity-0 group-hover:opacity-100"
+                        aria-label={`Close ${tab.name}`}
+                      >
+                        <X size={12} />
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Split/tab actions */}
+            <div className="ml-0.5 flex flex-shrink-0 items-center gap-0.5">
+              {onAddTab && (
+                <button
+                  onClick={onAddTab}
+                  className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text rounded p-1"
+                  title={t('topBar.newTabShortcut')}
+                  aria-label={t('topBar.newTab')}
+                >
+                  <Plus size={14} />
+                </button>
+              )}
+              {onSplitRight && (
+                <button
+                  onClick={onSplitRight}
+                  className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text rounded p-1"
+                  title={t('topBar.splitRightShortcut')}
+                  aria-label={t('topBar.splitRight')}
+                >
+                  <Columns size={14} />
+                </button>
+              )}
+              {onSplitDown && (
+                <button
+                  onClick={onSplitDown}
+                  className="hover:bg-xp-surface-light text-xp-text-muted hover:text-xp-text rounded p-1"
+                  title={t('topBar.splitDownShortcut')}
+                  aria-label={t('topBar.splitDown')}
+                >
+                  <Rows size={14} />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Cross-tab selection floating action bar */}
+          {hasMultiTabSelection && crossTabTotalCount > 0 && (
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '4px 12px',
+                background: 'color-mix(in srgb, var(--xp-blue) 12%, var(--xp-surface))',
+                borderTop: '1px solid color-mix(in srgb, var(--xp-blue) 25%, var(--xp-border))',
+                fontSize: 12,
+                color: 'var(--xp-text)',
+              }}
+            >
+              {/* Selection badge */}
+              <span
                 style={{
-                  padding: '3px 10px',
-                  fontSize: 11,
-                  fontWeight: 500,
-                  borderRadius: 5,
-                  border: '1px solid var(--xp-border)',
-                  background: 'var(--xp-surface-light)',
-                  color: 'var(--xp-text-muted)',
-                  cursor: 'pointer',
-                  display: 'flex',
+                  display: 'inline-flex',
                   alignItems: 'center',
                   gap: 4,
-                  transition: 'background 0.15s ease',
+                  padding: '2px 8px',
+                  borderRadius: 10,
+                  background: 'var(--xp-blue)',
+                  color: '#fff',
+                  fontSize: 11,
+                  fontWeight: 600,
                 }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = 'var(--xp-surface)';
-                  (e.currentTarget as HTMLElement).style.color = 'var(--xp-text)';
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = 'var(--xp-surface-light)';
-                  (e.currentTarget as HTMLElement).style.color = 'var(--xp-text-muted)';
-                }}
-                title={t('topBar.clearSelectionDesc')}
               >
-                <X size={12} />
-                {t('topBar.clearSelection')}
-              </button>
-            )}
-          </div>
-        )}
-      </div>
-    );
-  },
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="9 11 12 14 22 4" />
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                </svg>
+                {crossTabTotalCount !== 1 || crossTabTabCount !== 1
+                  ? t('topBar.crossTabSelectionPlural', {
+                      fileCount: crossTabTotalCount,
+                      tabCount: crossTabTabCount,
+                    })
+                  : t('topBar.crossTabSelection', {
+                      fileCount: crossTabTotalCount,
+                      tabCount: crossTabTabCount,
+                    })}
+              </span>
+
+              <span style={{ color: 'var(--xp-text-muted)', fontSize: 11 }}>
+                {t('topBar.crossTabHint')}
+              </span>
+
+              {/* Spacer */}
+              <div style={{ flex: 1 }} />
+
+              {/* Batch Actions button */}
+              {onOpenBatchActions && (
+                <button
+                  onClick={onOpenBatchActions}
+                  style={{
+                    padding: '3px 10px',
+                    fontSize: 11,
+                    fontWeight: 500,
+                    borderRadius: 5,
+                    border: '1px solid var(--xp-blue)',
+                    background: 'var(--xp-blue)',
+                    color: '#fff',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    transition: 'opacity 0.15s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.opacity = '0.85';
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.opacity = '1';
+                  }}
+                  title={t('topBar.batchActionsDesc')}
+                >
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <rect x="3" y="3" width="18" height="18" rx="2" />
+                    <line x1="3" y1="9" x2="21" y2="9" />
+                    <line x1="9" y1="21" x2="9" y2="9" />
+                  </svg>
+                  {t('topBar.batchActions')}
+                </button>
+              )}
+
+              {/* Clear Selection button */}
+              {onClearCrossTabSelection && (
+                <button
+                  onClick={onClearCrossTabSelection}
+                  style={{
+                    padding: '3px 10px',
+                    fontSize: 11,
+                    fontWeight: 500,
+                    borderRadius: 5,
+                    border: '1px solid var(--xp-border)',
+                    background: 'var(--xp-surface-light)',
+                    color: 'var(--xp-text-muted)',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    transition: 'background 0.15s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.background = 'var(--xp-surface)';
+                    (e.currentTarget as HTMLElement).style.color = 'var(--xp-text)';
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.background = 'var(--xp-surface-light)';
+                    (e.currentTarget as HTMLElement).style.color = 'var(--xp-text-muted)';
+                  }}
+                  title={t('topBar.clearSelectionDesc')}
+                >
+                  <X size={12} />
+                  {t('topBar.clearSelection')}
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      );
+    },
+  ),
 );
 TopBar.displayName = 'TopBar';
 export default TopBar;

@@ -10,7 +10,7 @@ interface RecycleBinProps {
   onClose?: () => void;
 }
 
-export default function RecycleBin({ onClose }: RecycleBinProps) {
+const RecycleBin = ({ onClose }: RecycleBinProps) => {
   const { toast } = useToast();
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
 
@@ -356,4 +356,6 @@ export default function RecycleBin({ onClose }: RecycleBinProps) {
       </div>
     </div>
   );
-}
+};
+
+export default RecycleBin;

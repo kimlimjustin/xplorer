@@ -46,6 +46,13 @@
     "daysAgo": "{{count}} hari lalu"
   },
 
+  "updater": {
+    "available": "Xplorer {{version}} tersedia",
+    "install": "Perbarui sekarang",
+    "dismiss": "Nanti",
+    "downloading": "Mengunduh pembaruan..."
+  },
+
   "sidebar": {
     "quickAccess": "AKSES CEPAT",
     "home": "Beranda",
@@ -451,7 +458,14 @@
     "allSet": {
       "title": "Anda Siap!",
       "description": "Jelajahi file, coba asisten AI, atau buka Pengaturan untuk menyesuaikan segalanya. Anda bisa memutar ulang tur ini kapan saja dari Pengaturan > Umum."
-    }
+    },
+    "closeTour": "Close tour",
+    "skip": "Skip",
+    "back": "Back",
+    "next": "Next",
+    "getStarted": "Get Started",
+    "stepOf": "{{current}} of {{total}}",
+    "goToStep": "Go to step {{step}}"
   },
 
   "commandPalette": {

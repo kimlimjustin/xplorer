@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
+import React, {
+  useState,
+  useRef,
+  useImperativeHandle,
+  forwardRef,
+  useSyncExternalStore,
+} from 'react';
 import { FileEntry } from '@/lib/tauri-api';
 import SearchResultsPanel, {
   type SearchResultsPanelHandle,
@@ -71,11 +77,10 @@ const LeftSidebar = forwardRef<LeftSidebarHandle, LeftSidebarProps>(function Lef
   // ─── Extension sidebar tabs ────────────────────────────────────────────
   const [activeExtensionTab, setActiveExtensionTab] = useState<string | null>(null);
 
-  const [, forceUpdate] = useState(0);
-  useEffect(() => {
-    const unsub = extensionHost.onChange(() => forceUpdate((n) => n + 1));
-    return unsub;
-  }, []);
+  const _extVersion = useSyncExternalStore(
+    extensionHost.subscribe,
+    extensionHost.getSnapshotVersion,
+  );
 
   const extensionSidebarTabs = extensionHost.getSidebarTabs();
 

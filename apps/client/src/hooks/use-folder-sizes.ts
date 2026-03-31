@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { TauriAPI, type FileEntry, type FolderSizeInfo } from '@/lib/tauri-api';
 
 interface FolderSizeState {
@@ -38,52 +38,53 @@ export const useFolderSizes = (files: FileEntry[]) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [folderPathsKey]);
 
-  // Calculate folder size for a specific folder
-  const calculateFolderSize = useCallback(
-    async (folderPath: string) => {
-      // Don't calculate if already calculating
-      if (state.isCalculating.has(folderPath)) return;
+  // Use a ref for isCalculating to avoid callback recreation
+  const isCalculatingRef = useRef(state.isCalculating);
+  isCalculatingRef.current = state.isCalculating;
 
+  // Calculate folder size for a specific folder
+  const calculateFolderSize = useCallback(async (folderPath: string) => {
+    // Don't calculate if already calculating
+    if (isCalculatingRef.current.has(folderPath)) return;
+
+    setState((prev) => {
+      const newCalculating = new Set(prev.isCalculating);
+      newCalculating.add(folderPath);
+      return {
+        ...prev,
+        isCalculating: newCalculating,
+        errors: { ...prev.errors, [folderPath]: undefined },
+      };
+    });
+
+    try {
+      const sizeInfo = await TauriAPI.calculateFolderSize(folderPath);
       setState((prev) => {
         const newCalculating = new Set(prev.isCalculating);
-        newCalculating.add(folderPath);
+        newCalculating.delete(folderPath);
+        return {
+          ...prev,
+          folderSizes: { ...prev.folderSizes, [folderPath]: sizeInfo },
+          isCalculating: newCalculating,
+        };
+      });
+    } catch (error) {
+      setState((prev) => {
+        const newCalculating = new Set(prev.isCalculating);
+        newCalculating.delete(folderPath);
         return {
           ...prev,
           isCalculating: newCalculating,
-          errors: { ...prev.errors, [folderPath]: undefined },
+          errors: { ...prev.errors, [folderPath]: (error as Error).message },
         };
       });
-
-      try {
-        const sizeInfo = await TauriAPI.calculateFolderSize(folderPath);
-        setState((prev) => {
-          const newCalculating = new Set(prev.isCalculating);
-          newCalculating.delete(folderPath);
-          return {
-            ...prev,
-            folderSizes: { ...prev.folderSizes, [folderPath]: sizeInfo },
-            isCalculating: newCalculating,
-          };
-        });
-      } catch (error) {
-        setState((prev) => {
-          const newCalculating = new Set(prev.isCalculating);
-          newCalculating.delete(folderPath);
-          return {
-            ...prev,
-            isCalculating: newCalculating,
-            errors: { ...prev.errors, [folderPath]: (error as Error).message },
-          };
-        });
-      }
-    },
-    [state.isCalculating],
-  );
+    }
+  }, []);
 
   // Calculate sizes for all folders that don't have cached sizes
   const calculateMissingSizes = useCallback(async () => {
     const missingFolders = folderPaths.filter(
-      (path) => !state.folderSizes[path] && !state.isCalculating.has(path),
+      (path) => !state.folderSizes[path] && !isCalculatingRef.current.has(path),
     );
 
     // Calculate sizes in batches to avoid overwhelming the system
@@ -103,7 +104,7 @@ export const useFolderSizes = (files: FileEntry[]) => {
         });
       }
     }
-  }, [folderPaths, state.folderSizes, state.isCalculating, calculateFolderSize]);
+  }, [folderPaths, state.folderSizes, calculateFolderSize]);
 
   // Clear cache
   const clearCache = useCallback(async () => {

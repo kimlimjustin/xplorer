@@ -6,6 +6,7 @@ import {
   type ChatSession,
   type ChatSessionSummary,
 } from '@/lib/tauri-api';
+import { formatError } from '@/lib/file-operation-helpers';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -20,16 +21,6 @@ interface UseChatDeps {
 
 const MAX_CHAT_MESSAGES = 100;
 const AUTO_SAVE_DELAY = 2000; // debounce auto-save by 2s
-
-const formatError = (err: unknown): string => {
-  if (err instanceof Error) return err.message;
-  if (typeof err === 'string') return err;
-  try {
-    return JSON.stringify(err);
-  } catch {
-    return String(err);
-  }
-};
 
 /** Generate a short unique ID */
 const generateId = (): string => {

@@ -1,18 +1,12 @@
 import React, { useCallback } from 'react';
 import type { FileChangeSet, FileChange } from '@/hooks/use-focus-change-tracker';
+import { formatFileSize } from '@/lib/utils';
 
 interface ChangeReviewPanelProps {
   changes: FileChangeSet;
   onDismiss: () => void;
   onNavigate?: (path: string) => void;
 }
-
-const formatSize = (bytes: number): string => {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
-};
 
 const formatTimestamp = (ts: number): string => {
   if (!ts) return '';
@@ -131,7 +125,7 @@ const ChangeSection = ({
           <FileIcon />
           <span style={nameStyle}>{change.name}</span>
           {change.size != null && change.size > 0 && (
-            <span style={metaStyle}>{formatSize(change.size)}</span>
+            <span style={metaStyle}>{formatFileSize(change.size)}</span>
           )}
           {change.modifiedAt != null && change.modifiedAt > 0 && (
             <span style={metaStyle}>{formatTimestamp(change.modifiedAt)}</span>

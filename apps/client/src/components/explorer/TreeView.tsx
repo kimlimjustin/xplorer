@@ -80,7 +80,13 @@ const TreeView = ({
           if (e.key === 'Enter') handleFileDoubleClick(file);
           if (e.key === ' ') {
             e.preventDefault();
-            handleFileClick(file, e as unknown as React.MouseEvent);
+            const syntheticEvent = {
+              ctrlKey: e.ctrlKey,
+              shiftKey: e.shiftKey,
+              metaKey: e.metaKey,
+              button: 0,
+            } as React.MouseEvent;
+            handleFileClick(file, syntheticEvent);
           }
         }}
       >

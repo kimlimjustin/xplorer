@@ -129,7 +129,7 @@ interface EditorGroupPaneProps {
   onSwitchPaneSyncMode?: (mode: PaneSyncMode) => void;
 }
 
-export default function EditorGroupPane({
+const EditorGroupPane = ({
   group,
   isActive,
   canClose,
@@ -167,7 +167,7 @@ export default function EditorGroupPane({
   paneSyncMode,
   onTogglePaneSync,
   onSwitchPaneSyncMode,
-}: EditorGroupPaneProps) {
+}: EditorGroupPaneProps) => {
   const {
     theme,
     setTheme,
@@ -682,8 +682,8 @@ export default function EditorGroupPane({
         />
       )}
 
-      {/* Navigation / Address Bar — shown for filesystem paths */}
-      {isDroppablePath && (
+      {/* Navigation / Address Bar */}
+      {!isEditorTab && (
         <NavigationBar
           currentPath={currentPath}
           navigateToPath={sharedActions.navigateToPath}
@@ -696,4 +696,6 @@ export default function EditorGroupPane({
       </div>
     </div>
   );
-}
+};
+
+export default EditorGroupPane;
