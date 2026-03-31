@@ -105,6 +105,13 @@ export async function executePaste(ctx: PasteContext): Promise<PasteResult> {
         if (resolution === 'keep-both') {
           destination = await TauriAPI.getRenameDest(targetPath, file.name);
         }
+        if (resolution === 'replace') {
+          try {
+            await TauriAPI.removeFile(destination);
+          } catch {
+            // Destination may not exist anymore — continue
+          }
+        }
       }
 
       if (isCut) {
