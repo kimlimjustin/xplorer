@@ -3,7 +3,7 @@ use tempfile::TempDir;
 use xplorer::duplicate_finder::*;
 use xplorer::extensions::permissions::*;
 use xplorer::extensions::types::*;
-use xplorer::git_history::*;
+use xplorer::git::*;
 use xplorer::shortcuts::manager::*;
 use xplorer::shortcuts::types::*;
 

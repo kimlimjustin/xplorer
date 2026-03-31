@@ -1,4 +1,4 @@
-use xplorer::git_history::*;
+use xplorer::git::*;
 
 #[test]
 fn test_git_commit_serialization() {

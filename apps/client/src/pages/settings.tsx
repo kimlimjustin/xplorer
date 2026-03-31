@@ -147,7 +147,7 @@ const MarketplaceSettings = ({
   </div>
 );
 
-export default function Settings() {
+const Settings = () => {
   const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState<SettingsTab>('general');
 
@@ -424,4 +424,6 @@ export default function Settings() {
       </div>
     </div>
   );
-}
+};
+
+export default Settings;
