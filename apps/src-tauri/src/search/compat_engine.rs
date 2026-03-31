@@ -273,18 +273,31 @@ impl SearchEngine {
             || parsed.metadata.date.is_some()
             || !parsed.metadata.extensions.is_empty();
 
-        let idx = match self.index.read() {
-            Ok(g) => g,
-            Err(e) => e.into_inner(),
+        // Extract the data we need from the locked index, then drop the lock
+        // BEFORE calling self.search(). Holding a read lock while search()
+        // acquires another read lock can deadlock if a writer (background
+        // indexer) is waiting between the two acquisitions.
+        let (total_scanned, metadata_results) = {
+            let idx = match self.index.read() {
+                Ok(g) => g,
+                Err(e) => e.into_inner(),
+            };
+            let scanned = idx.num_docs();
+
+            // Only compute metadata-only results under this lock
+            let meta = if all_keywords.is_empty() && has_metadata {
+                Some(self.metadata_only_search(&idx, &parsed, limit))
+            } else {
+                None
+            };
+            (scanned, meta)
         };
+        // Read lock is now dropped.
 
-        let total_scanned = idx.num_docs();
-
-        // -- Metadata-only path --
-        let mut results = if all_keywords.is_empty() && has_metadata {
-            self.metadata_only_search(&idx, &parsed, limit)
+        let mut results = if let Some(meta) = metadata_results {
+            meta
         } else {
-            // -- Text search path --
+            // -- Text search path (no lock held) --
             let search_str = if all_keywords.is_empty() {
                 query.to_string()
             } else {
@@ -301,7 +314,6 @@ impl SearchEngine {
             text_results
         };
 
-        drop(idx);
         self.apply_context_boost(&mut results);
         results.truncate(limit);
 

@@ -560,7 +560,15 @@ impl SearchIndex {
         };
 
         self.documents.remove(&doc_id);
-        self.doc_field_lengths.remove(&doc_id);
+
+        // Subtract this document's token count from total_tokens before removing
+        // field lengths so BM25F corpus stats remain accurate.
+        if let Some(field_lengths) = self.doc_field_lengths.remove(&doc_id) {
+            let doc_token_count: usize =
+                field_lengths.values().map(|&len| len as usize).sum();
+            self.total_tokens = self.total_tokens.saturating_sub(doc_token_count);
+        }
+
         self.doc_content.remove(&doc_id);
 
         // Use reverse index to only visit posting lists that contain this doc.

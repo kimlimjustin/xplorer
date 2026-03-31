@@ -569,6 +569,18 @@ impl SearchEngine {
                     }
                 }
             }
+
+            // Rebuild FST and update BM25F corpus stats after processing
+            // the batch of file-change events so fuzzy/prefix search and
+            // scoring reflect the incremental updates.
+            {
+                let mut idx = match index_for_cb.write() {
+                    Ok(g) => g,
+                    Err(e) => e.into_inner(),
+                };
+                idx.rebuild_fst();
+                idx.update_scorer_stats();
+            }
         }));
 
         if let Err(e) = watcher.start() {

@@ -296,11 +296,32 @@ pub fn is_blocked_command(cmd: &str) -> Option<&'static str> {
         }
     }
 
-    // Block dangerous patterns with && or ; chaining to destructive commands
-    let chaining_patterns = ["&& rm", "&& sudo", "; rm", "; sudo", "| rm", "| sudo"];
-    for pattern in &chaining_patterns {
-        if cmd_lower.contains(pattern) {
-            return Some("Chaining to dangerous command");
+    // Block chaining to ANY blocked command via ;, &&, ||, or |.
+    // Split the command on all chain/pipe operators and check each segment
+    // against the full blocklist (not just rm/sudo).
+    {
+        // Split on ;, &&, ||, | — order matters: check && and || before & and |
+        let segments: Vec<&str> = cmd_lower
+            .split("&&")
+            .flat_map(|s| s.split("||"))
+            .flat_map(|s| s.split(';'))
+            .flat_map(|s| s.split('|'))
+            .collect();
+
+        // Skip the first segment (already checked as first_token above).
+        for segment in segments.iter().skip(1) {
+            let seg_trimmed = segment.trim();
+            let seg_first = seg_trimmed.split_whitespace().next().unwrap_or("");
+            let seg_basename = std::path::Path::new(seg_first)
+                .file_name()
+                .and_then(|n| n.to_str())
+                .unwrap_or(seg_first);
+
+            for (blocked_cmd, _reason) in &blocked {
+                if seg_basename == *blocked_cmd {
+                    return Some("Chaining to dangerous command");
+                }
+            }
         }
     }
 
@@ -400,7 +421,11 @@ pub fn validate_agent_path_with_permissions(
 
     // Check custom blocked paths
     for bp in blocked_paths {
-        let bp_lower = bp.trim().to_lowercase().replace('/', "\\");
+        let bp_lower = if cfg!(target_os = "windows") {
+            bp.trim().to_lowercase().replace('/', "\\")
+        } else {
+            bp.trim().to_lowercase()
+        };
         if !bp_lower.is_empty() && path_str.starts_with(&bp_lower) {
             return Err(format!(
                 "Access denied: path '{}' is in a user-blocked directory",
@@ -412,7 +437,11 @@ pub fn validate_agent_path_with_permissions(
     // Check allowed paths (allowlist — if non-empty, must match one)
     if !allowed_paths.is_empty() {
         let in_allowed = allowed_paths.iter().any(|ap| {
-            let ap_lower = ap.trim().to_lowercase().replace('/', "\\");
+            let ap_lower = if cfg!(target_os = "windows") {
+                ap.trim().to_lowercase().replace('/', "\\")
+            } else {
+                ap.trim().to_lowercase()
+            };
             !ap_lower.is_empty() && path_str.starts_with(&ap_lower)
         });
         if !in_allowed {
