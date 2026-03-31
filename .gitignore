@@ -25,7 +25,9 @@ apps/src-tauri/gen/
 .next
 
 # IDE
-.vscode
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
 .idea
 
 # Test artifacts

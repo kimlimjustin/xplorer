@@ -5,6 +5,10 @@ on:
     branches: [next]
   pull_request:
     branches: [next]
+  workflow_call:
+
+permissions:
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -20,6 +24,7 @@ jobs:
   lint-and-typecheck:
     name: Lint & Typecheck
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -51,6 +56,7 @@ jobs:
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -70,7 +76,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run Vitest
-        run: npx vitest run --reporter=verbose --reporter=junit --outputFile=test-results/junit.xml
+        run: npx vitest run --coverage --reporter=verbose --reporter=junit --outputFile=test-results/junit.xml
 
       - name: Upload test results
         if: always()
@@ -82,9 +88,12 @@ jobs:
           if-no-files-found: warn
 
   # ─── E2E tests with Playwright ─────────────────────────────────────
+  # TODO: Enable when Playwright tests are added
   e2e-tests:
+    if: false
     name: E2E Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     needs: [unit-tests]
     steps:
       - name: Checkout
@@ -132,6 +141,7 @@ jobs:
   security-audit:
     name: Security Audit
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -152,10 +162,14 @@ jobs:
 
       - name: npm audit
         run: pnpm audit --audit-level=high
-        continue-on-error: true
 
       - name: Install Rust stable toolchain
         uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: apps/src-tauri
 
       - name: Install cargo-audit
         run: cargo install cargo-audit
@@ -167,6 +181,7 @@ jobs:
   rust-check:
     name: Rust Check
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4

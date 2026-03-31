@@ -85,5 +85,9 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/__tests__/setup.ts'],
     include: ['src/__tests__/**/*.{test,spec}.{ts,tsx}'],
+    define: {
+      'import.meta.env.TAURI_FAMILY': '"test"',
+      'window.__TAURI__': 'undefined',
+    },
   },
 });

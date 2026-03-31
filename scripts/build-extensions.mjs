@@ -125,28 +125,35 @@ const buildExtension = async (dir) => {
 
 // ── Main ─────────────────────────────────────────────────────────────────────
 
-const dirs = getExtensionDirs();
+const dirs = getExtensionDirs().filter((dir) => existsSync(join(EXT_DIR, dir, 'src', 'index.tsx')));
 console.log(`\n${WATCH ? '👀 Watching' : '🔨 Building'} ${dirs.length} extensions...\n`);
 
 let built = 0;
 let failed = 0;
 const contexts = [];
 
-for (const dir of dirs) {
-  const entry = join(EXT_DIR, dir, 'src', 'index.tsx');
-  if (!existsSync(entry)) {
-    continue;
-  }
+const CONCURRENCY = 4;
+const chunks = [];
+for (let i = 0; i < dirs.length; i += CONCURRENCY) {
+  chunks.push(dirs.slice(i, i + CONCURRENCY));
+}
 
-  try {
-    const ctx = await buildExtension(dir);
-    if (ctx) contexts.push(ctx);
-    built++;
-    if (!WATCH) console.log(`  ✓ ${dir}`);
-  } catch (err) {
-    failed++;
-    console.error(`  ✗ ${dir}: ${err.message?.split('\n')[0] || err}`);
-  }
+for (const chunk of chunks) {
+  await Promise.all(
+    chunk.map(async (dir) => {
+      try {
+        const ctx = await buildExtension(dir);
+        if (ctx) contexts.push(ctx);
+        built++;
+        if (!WATCH) console.log(`  ✓ ${dir}`);
+        return { dir, ok: true };
+      } catch (err) {
+        failed++;
+        console.error(`  ✗ ${dir}: ${err.message?.split('\n')[0] || err}`);
+        return { dir, ok: false };
+      }
+    }),
+  );
 }
 
 console.log(`\n${WATCH ? 'Watching' : 'Done'}. Built: ${built}, Failed: ${failed}\n`);

@@ -29,11 +29,13 @@
     "test:coverage": "vitest run --coverage",
     "test:tauri": "cd apps/src-tauri && cargo test",
     "test:e2e": "playwright test",
+    "test:all": "pnpm test:run && pnpm test:tauri",
+    "ci:local": "npx tsc --noEmit && pnpm lint && pnpm test:run && pnpm test:tauri",
     "test:e2e:update": "playwright test --update-snapshots",
-    "lint": "eslint apps/client/src/",
-    "lint:fix": "eslint --fix apps/client/src/",
-    "format": "prettier --write \"apps/client/src/**/*.{ts,tsx,css}\"",
-    "format:check": "prettier --check \"apps/client/src/**/*.{ts,tsx,css}\"",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "prepare": "husky"
   },
   "dependencies": {
@@ -44,6 +46,8 @@
     "@tanstack/react-virtual": "^3.13.19",
     "@tauri-apps/api": "^2.10.1",
     "@tauri-apps/plugin-dialog": "^2.6.0",
+    "@tauri-apps/plugin-process": "^2.3.1",
+    "@tauri-apps/plugin-updater": "^2.10.0",
     "@xterm/addon-fit": "^0.11.0",
     "@xterm/xterm": "^6.0.0",
     "clsx": "^2.1.1",
@@ -73,6 +77,12 @@
     "apps/client/src/**/*.css": [
       "prettier --write"
     ],
+    "packages/sdk/src/**/*.ts": [
+      "prettier --write"
+    ],
+    "packages/extension-sdk/src/**/*.ts": [
+      "prettier --write"
+    ],
     "e2e/**/*.ts": [
       "prettier --write"
     ],
@@ -89,8 +99,6 @@
     "@testing-library/jest-dom": "^6.4.0",
     "@testing-library/react": "^16.0.0",
     "@testing-library/user-event": "^14.5.0",
-    "@types/diff": "^8.0.0",
-    "@types/dompurify": "^3.2.0",
     "@types/node": "20.16.11",
     "@types/papaparse": "^5.3.16",
     "@types/react": "^18.3.11",
@@ -118,7 +126,7 @@
     "tailwindcss-animate": "^1.0.7",
     "tsx": "^4.19.1",
     "typescript": "5.6.3",
-    "vite": "^5.4.19",
+    "vite": "^5.4.20",
     "vitest": "^2.0.0"
   }
 }

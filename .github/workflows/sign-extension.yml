@@ -4,21 +4,27 @@ on:
   repository_dispatch:
     types: [extension-approved]
 
-env:
-  ED25519_PRIVATE_KEY: ${{ secrets.EXTENSION_SIGNING_KEY }}
-  BLOB_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
-  MARKETPLACE_URL: ${{ secrets.MARKETPLACE_URL }}
-  ADMIN_TOKEN: ${{ secrets.ADMIN_API_TOKEN }}
+permissions:
+  contents: read
 
 jobs:
   sign:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+
+      - name: Validate blob URL
+        run: |
+          BLOB_URL="${{ github.event.client_payload.blob_url }}"
+          if [[ ! "$BLOB_URL" =~ ^https://[a-zA-Z0-9-]+\.public\.blob\.vercel-storage\.com/ ]]; then
+            echo "ERROR: blob_url does not match expected Vercel Blob domain"
+            exit 1
+          fi
 
       - name: Download unsigned package
         run: |
@@ -39,6 +45,8 @@ jobs:
           "
 
       - name: Generate checksum and sign
+        env:
+          ED25519_PRIVATE_KEY: ${{ secrets.EXTENSION_SIGNING_KEY }}
         run: |
           # SHA-256 checksum of dist/index.js
           CHECKSUM=$(sha256sum ext/dist/index.js | cut -d' ' -f1)
@@ -98,6 +106,8 @@ jobs:
           echo "Package size: $(du -h signed.xtension | cut -f1)"
 
       - name: Upload signed package
+        env:
+          BLOB_TOKEN: ${{ secrets.BLOB_READ_WRITE_TOKEN }}
         run: |
           curl -fSL -X PUT \
             "${{ github.event.client_payload.upload_url }}" \
@@ -106,6 +116,9 @@ jobs:
             --data-binary @signed.xtension
 
       - name: Update marketplace database
+        env:
+          MARKETPLACE_URL: ${{ secrets.MARKETPLACE_URL }}
+          ADMIN_TOKEN: ${{ secrets.ADMIN_API_TOKEN }}
         run: |
           CHECKSUM=$(sha256sum ext/dist/index.js | cut -d' ' -f1)
           curl -fSL -X POST "$MARKETPLACE_URL/api/admin/extensions/publish" \

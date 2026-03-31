@@ -9,6 +9,15 @@ updates:
     labels:
       - dependencies
       - javascript
+    groups:
+      tauri:
+        patterns: ['@tauri-apps/*']
+      testing:
+        patterns: ['@testing-library/*', '@vitest/*', 'vitest']
+      eslint:
+        patterns: ['eslint*', '@eslint/*', '@typescript-eslint/*']
+      types:
+        patterns: ['@types/*']
 
   - package-ecosystem: cargo
     directory: /apps/src-tauri

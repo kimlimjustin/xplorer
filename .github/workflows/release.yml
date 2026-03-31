@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -16,95 +19,15 @@ env:
 
 jobs:
   # ─── Run full CI checks before building release artifacts ──────────
-  ci-lint:
-    name: Lint & Typecheck
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: TypeScript type check
-        run: npx tsc --noEmit
-
-      - name: Prettier format check
-        run: npx prettier --check .
-
-      - name: ESLint
-        run: npx eslint .
-
-  ci-unit-tests:
-    name: Unit Tests
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Run Vitest
-        run: npx vitest run
-
-  ci-rust:
-    name: Rust Check
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install system dependencies for Tauri
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libssl-dev
-
-      - name: Install Rust stable toolchain
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          components: clippy, rustfmt
-
-      - name: Rust cache
-        uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: apps/src-tauri
-
-      - name: Cargo check
-        run: cargo check --manifest-path apps/src-tauri/Cargo.toml
-
-      - name: Clippy lint
-        run: cargo clippy --manifest-path apps/src-tauri/Cargo.toml -- -D warnings
-
-      - name: Format check
-        run: cargo fmt --manifest-path apps/src-tauri/Cargo.toml -- --check
+  ci:
+    uses: ./.github/workflows/ci.yml
+    secrets: inherit
 
   # ─── Build release artifacts (after CI passes) ─────────────────────
   build:
     name: Build (${{ matrix.platform }})
-    needs: [ci-lint, ci-unit-tests, ci-rust]
+    needs: [ci]
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
@@ -160,6 +83,8 @@ jobs:
         uses: tauri-apps/tauri-action@v0.5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           projectPath: apps
           tagName: ${{ github.ref_name }}
@@ -167,6 +92,7 @@ jobs:
           releaseBody: 'See the changelog for details about this release.'
           releaseDraft: true
           prerelease: false
+          updaterJsonKeepUniversal: true
           args: --target ${{ matrix.target }}
 
       - name: Upload build artifacts

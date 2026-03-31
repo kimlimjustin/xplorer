@@ -61,9 +61,11 @@ cd xplorer
 # Install dependencies
 pnpm install
 
-# Start the development server (frontend + Tauri backend)
-pnpm dev
+# Start the desktop app (frontend + Tauri backend)
+pnpm dev:app
 ```
+
+> **Note:** `pnpm dev` runs the full stack including the marketplace web server, which requires a local PostgreSQL database. Use `pnpm dev:app` for desktop-only development.
 
 ### Building for Production
 
@@ -92,7 +94,7 @@ xplorer/
 │   ├── sdk/                 # @xplorer/sdk — internal service layer
 │   ├── extension-sdk/       # @xplorer/extension-sdk — public extension API
 │   ├── create-extension/    # CLI for scaffolding new extensions
-│   └── extensions/          # 28 free extensions (themes, tools, previews)
+│   └── extensions/          # 40+ free extensions (themes, tools, previews)
 ├── infra/                   # Docker Compose for local PostgreSQL
 ├── scripts/                 # Extension signing and utility scripts
 └── e2e/                     # Playwright end-to-end tests
