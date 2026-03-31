@@ -83,10 +83,12 @@ const useUpdater = () => {
   }, []);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      checkForUpdate();
-    }, 5000);
-    return () => clearTimeout(timer);
+    const timer = setTimeout(() => checkForUpdate(), 5000);
+    const interval = setInterval(() => checkForUpdate(), 4 * 60 * 60 * 1000);
+    return () => {
+      clearTimeout(timer);
+      clearInterval(interval);
+    };
   }, [checkForUpdate]);
 
   return { status, checkForUpdate, installUpdate, dismissUpdate };

@@ -167,37 +167,44 @@ pub(crate) async fn compress_to_tar_generic(
     options: &CompressionOptions,
     format: TarFormat,
 ) -> Result<String, String> {
-    let label = format.label();
-    let mut builder = create_tar_writer(output_path, format, options)?;
+    let file_paths = file_paths.to_vec();
+    let output_path = output_path.to_path_buf();
+    let options = options.clone();
+    tokio::task::spawn_blocking(move || {
+        let label = format.label();
+        let mut builder = create_tar_writer(&output_path, format, &options)?;
 
-    for file_path in file_paths {
-        let path = Path::new(file_path);
-        if path.is_file() {
-            let name = path
-                .file_name()
-                .unwrap_or_else(|| std::ffi::OsStr::new("unknown"));
-            builder
-                .append_path_with_name(path, name)
-                .map_err(|e| format!("Failed to add file to {}: {}", label, e))?;
-        } else if path.is_dir() {
-            builder
-                .append_dir_all(".", path)
-                .map_err(|e| format!("Failed to add directory to {}: {}", label, e))?;
+        for file_path in &file_paths {
+            let path = Path::new(file_path);
+            if path.is_file() {
+                let name = path
+                    .file_name()
+                    .unwrap_or_else(|| std::ffi::OsStr::new("unknown"));
+                builder
+                    .append_path_with_name(path, name)
+                    .map_err(|e| format!("Failed to add file to {}: {}", label, e))?;
+            } else if path.is_dir() {
+                builder
+                    .append_dir_all(".", path)
+                    .map_err(|e| format!("Failed to add directory to {}: {}", label, e))?;
+            }
         }
-    }
 
-    // Finish the tar layer, then finish the compression layer (if any).
-    let writer = builder
-        .into_inner()
-        .map_err(|e| format!("Failed to finalize {} archive: {}", label, e))?;
+        // Finish the tar layer, then finish the compression layer (if any).
+        let writer = builder
+            .into_inner()
+            .map_err(|e| format!("Failed to finalize {} archive: {}", label, e))?;
 
-    // The underlying writer is a Box<dyn Write>. For compressed formats the
-    // encoder's `finish()` is called via the `Drop` impl, but we need to
-    // ensure any errors surface. We explicitly drop here so that any
-    // buffered data is flushed.
-    drop(writer);
+        // The underlying writer is a Box<dyn Write>. For compressed formats the
+        // encoder's `finish()` is called via the `Drop` impl, but we need to
+        // ensure any errors surface. We explicitly drop here so that any
+        // buffered data is flushed.
+        drop(writer);
 
-    Ok(output_path.to_string_lossy().to_string())
+        Ok(output_path.to_string_lossy().to_string())
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 // ─── Generic archive info ───────────────────────────────────────────────────
@@ -206,8 +213,13 @@ pub(crate) async fn get_tar_info_generic(
     archive_path: &Path,
     format: TarFormat,
 ) -> Result<ArchiveInfo, String> {
-    let mut archive = open_tar_reader(archive_path, format)?;
-    get_tar_info_from_archive(&mut archive, format.compression_format(), archive_path)
+    let archive_path = archive_path.to_path_buf();
+    tokio::task::spawn_blocking(move || {
+        let mut archive = open_tar_reader(&archive_path, format)?;
+        get_tar_info_from_archive(&mut archive, format.compression_format(), &archive_path)
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 fn get_tar_info_from_archive<R: Read>(

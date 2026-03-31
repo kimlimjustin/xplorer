@@ -373,11 +373,16 @@ const NavigationBar = ({ currentPath, navigateToPath, refetch: _refetch }: Navig
       // Small delay to allow suggestion click to register
       setTimeout(() => {
         if (document.activeElement !== pathInputRef.current) {
-          handleSubmit();
+          // Only navigate if the path was validated as existing
+          if (validation === 'valid') {
+            handleSubmit();
+          } else {
+            handleCancel();
+          }
         }
       }, 150);
     },
-    [handleSubmit],
+    [handleSubmit, handleCancel, validation],
   );
 
   // ── Validation border style ─────────────────────────────────────────────────

@@ -618,6 +618,14 @@ pub async fn gdrive_authenticate() -> Result<GDriveAccountInfo, String> {
 pub async fn gdrive_disconnect(account_id: String) -> Result<(), String> {
     GDRIVE_POOL.remove_account(&account_id);
     save_accounts()?;
+
+    // Also delete the refresh token from the OS keychain
+    if let Err(e) = keyring::Entry::new("xplorer-gdrive", &account_id)
+        .and_then(|entry| entry.delete_credential())
+    {
+        warn!("Failed to delete keychain credential: {}", e);
+    }
+
     Ok(())
 }
 

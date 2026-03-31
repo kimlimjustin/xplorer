@@ -258,8 +258,7 @@ const CommandPaletteInner = ({
       const looksLikePath =
         trimmedQ.startsWith('/') ||
         trimmedQ.startsWith('~') ||
-        trimmedQ.startsWith('C:\\') ||
-        trimmedQ.startsWith('D:\\') ||
+        /^[A-Za-z]:[/\\]/.test(trimmedQ) ||
         trimmedQ.startsWith('xplorer://');
       if (looksLikePath && onFileSelect) {
         items.push({
