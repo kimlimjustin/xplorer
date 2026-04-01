@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { PreviewProps } from '@/lib/preview-factory';
 import { TauriAPI } from '@/lib/tauri-api';
 
-type XLSXModule = typeof import('xlsx');
-
 const SpreadsheetPreview = ({ file, onError, onLoad }: PreviewProps) => {
   const [sheets, setSheets] = useState<
     { name: string; data: (string | number | boolean | null)[][] }[]
@@ -21,25 +19,47 @@ const SpreadsheetPreview = ({ file, onError, onLoad }: PreviewProps) => {
         // Read the file as binary data using TauriAPI
         const binaryData = await TauriAPI.readBinaryFile(file.path);
 
-        // Dynamically import xlsx to avoid synchronous ~700KB bundle cost
-        const XLSX: XLSXModule = await import('xlsx');
+        // Dynamically import exceljs to avoid synchronous bundle cost
+        const ExcelJS = await import('exceljs');
 
-        // Parse the spreadsheet
-        const workbook = XLSX.read(binaryData, { type: 'array' });
+        const workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.load(binaryData.buffer);
 
         // Convert sheets to data arrays
-        const sheetsData = workbook.SheetNames.map((sheetName) => {
-          const worksheet = workbook.Sheets[sheetName];
-          const data = XLSX.utils.sheet_to_json(worksheet, {
-            header: 1,
-            raw: false,
-            defval: '',
-          }) as (string | number | boolean | null)[][];
+        const sheetsData: { name: string; data: (string | number | boolean | null)[][] }[] = [];
 
-          return {
-            name: sheetName,
-            data: data.slice(0, 50), // Limit to first 50 rows for preview
-          };
+        workbook.eachSheet((worksheet) => {
+          const data: (string | number | boolean | null)[][] = [];
+          let rowCount = 0;
+
+          worksheet.eachRow({ includeEmpty: false }, (row) => {
+            if (rowCount >= 50) return; // Limit to first 50 rows for preview
+            const rowValues = row.values as unknown[];
+            // ExcelJS row.values is 1-indexed (index 0 is empty), so slice from 1
+            const cells = rowValues.slice(1).map((cell) => {
+              if (cell == null) return '';
+              if (typeof cell === 'object') {
+                const cellObj = cell as Record<string, unknown>;
+                // Handle formulas
+                if ('result' in cellObj) return String(cellObj.result ?? '');
+                // Handle rich text
+                if ('richText' in cellObj && Array.isArray(cellObj.richText)) {
+                  return (cellObj.richText as { text: string }[]).map((rt) => rt.text).join('');
+                }
+                // Handle hyperlinks or other text objects
+                if ('text' in cellObj) return String(cellObj.text);
+                return String(cell);
+              }
+              return cell as string | number | boolean;
+            });
+            data.push(cells);
+            rowCount++;
+          });
+
+          sheetsData.push({
+            name: worksheet.name,
+            data,
+          });
         });
 
         setSheets(sheetsData);
