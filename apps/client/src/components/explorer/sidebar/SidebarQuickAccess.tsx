@@ -181,10 +181,10 @@ const SidebarQuickAccess = ({
       )}
       {/* Resize handle */}
       <div
-        className="hover:bg-xp-blue/30 group flex h-1 cursor-row-resize items-center justify-center transition-colors"
+        className="hover:bg-xp-blue/30 group flex h-2 cursor-row-resize items-center justify-center transition-colors"
         onMouseDown={(e) => onResizeStart('quickAccess', e)}
       >
-        <GripHorizontal className="text-xp-text-muted/0 group-hover:text-xp-text-muted/60 h-3 w-4 transition-colors" />
+        <GripHorizontal className="text-xp-text-muted/20 group-hover:text-xp-text-muted/60 h-3 w-4 transition-colors" />
       </div>
     </div>
   );
