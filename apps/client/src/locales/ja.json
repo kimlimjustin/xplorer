@@ -761,5 +761,10 @@
     "pinnedToSidebarDesc": "\"{{name}}\" をサイドバーブックマークに追加しました",
     "pinFailed": "ピン留めに失敗しました",
     "pinFailedDesc": "\"{{name}}\" のピン留めに失敗しました：{{error}}"
+  },
+  "extensions": {
+    "devMode": "開発",
+    "devReloaded": "拡張機能が再読み込みされました",
+    "devWatching": "変更を監視中..."
   }
 }

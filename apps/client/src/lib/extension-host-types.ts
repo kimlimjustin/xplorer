@@ -252,6 +252,10 @@ export interface LoadedExtension {
   sourcePath?: string;
   /** Timestamp when the extension was loaded (ms since epoch) */
   loadedAt?: number;
+  /** Whether this extension is running in dev mode (has .hotreload sentinel) */
+  isDev?: boolean;
+  /** Number of times this extension has been hot-reloaded this session */
+  reloadCount?: number;
 }
 
 // ─── Event Bus ────────────────────────────────────────────────────────────────

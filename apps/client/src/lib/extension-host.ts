@@ -1,5 +1,6 @@
 import React from 'react';
 import { TauriAPI } from './tauri-api';
+import { listen } from '@tauri-apps/api/event';
 import { resolveIcon } from './extension-host-icon';
 import {
   EventBus,
@@ -63,6 +64,8 @@ class ExtensionHost {
   private dialogRegistry = new Map<string, DialogRenderer>();
   private openDialogsMap = new Map<string, Record<string, unknown>>();
   private bundleCache = new Map<string, string>();
+  private extensionPackages = new Map<string, ExtensionPackage>();
+  private devReloadCounts = new Map<string, number>();
   private tabRendererRegistry = new Map<string, TabRenderer>();
   private sidebarTabRegistry = new Map<
     string,
@@ -99,7 +102,27 @@ class ExtensionHost {
         configurable: false,
       });
       this.hardenGlobals();
+      this.initDevReloadListener();
     }
+  }
+
+  /**
+   * Listen for extension-dev-reload events from the Rust dev watcher.
+   * When received, hot-reload the extension by unloading and re-loading it.
+   */
+  private initDevReloadListener(): void {
+    listen<{ path: string; id: string }>('extension-dev-reload', async (event) => {
+      const { id } = event.payload;
+      console.warn(`[ExtensionHost] Dev reload triggered for: ${id}`);
+      await this.reloadExtension(id);
+      window.dispatchEvent(
+        new CustomEvent('xplorer:extension-dev-reloaded', {
+          detail: { id },
+        }),
+      );
+    }).catch((err) => {
+      console.warn('[ExtensionHost] Failed to set up dev reload listener:', err);
+    });
   }
 
   /**
@@ -312,6 +335,9 @@ class ExtensionHost {
     if (this.extensions.has(pkg.manifest.id)) {
       return; // Already loaded
     }
+
+    // Store the package info for potential hot-reload later
+    this.extensionPackages.set(pkg.manifest.id, pkg);
 
     // Check dependencies
     if (pkg.manifest.dependencies?.length) {
@@ -1030,16 +1056,31 @@ class ExtensionHost {
     const ext = this.extensions.get(id);
     if (!ext) return;
 
-    const wasActive = ext.isActive;
+    // Retrieve the stored package info before unloading
+    const pkg = this.extensionPackages.get(id);
+
     await this.unloadExtension(id);
 
-    // Re-load would need the original package info
-    // For now, just emit the event
-    this.eventBus.emit('extensionReloaded', id);
+    if (pkg) {
+      // Clear the bundle cache to force re-reading from disk
+      this.bundleCache.delete(id);
 
-    if (wasActive) {
-      this.notifyChange();
+      // Re-load and re-activate the extension
+      await this.loadExtension(pkg);
+      await this.activateExtension(id);
+
+      // Mark the reloaded extension as dev mode and track reload count
+      const reloaded = this.extensions.get(id);
+      if (reloaded) {
+        reloaded.isDev = true;
+        const count = (this.devReloadCounts.get(id) ?? 0) + 1;
+        this.devReloadCounts.set(id, count);
+        reloaded.reloadCount = count;
+      }
     }
+
+    this.eventBus.emit('extensionReloaded', id);
+    this.notifyChange();
   }
 
   // ─── Registry Queries ───────────────────────────────────────────────────

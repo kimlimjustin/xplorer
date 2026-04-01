@@ -761,5 +761,10 @@
     "pinnedToSidebarDesc": "\"{{name}}\" added to sidebar bookmarks",
     "pinFailed": "Pin Failed",
     "pinFailedDesc": "Failed to pin \"{{name}}\": {{error}}"
+  },
+  "extensions": {
+    "devMode": "DEV",
+    "devReloaded": "Extension reloaded",
+    "devWatching": "Watching for changes..."
   }
 }

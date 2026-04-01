@@ -1,4 +1,5 @@
 pub mod commands;
+pub mod dev_watcher;
 pub mod host_functions;
 pub mod manager;
 pub mod native_plugin;

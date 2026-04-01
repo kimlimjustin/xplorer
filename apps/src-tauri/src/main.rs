@@ -108,6 +108,15 @@ fn main() {
 
             extensions::init_extension_manager(app_data_dir.to_str().unwrap_or("./data"));
 
+            // Start extension dev mode watcher
+            {
+                let dev_extensions_dir = extensions_dir.clone();
+                let dev_handle = app.handle().clone();
+                std::thread::spawn(move || {
+                    extensions::dev_watcher::start_dev_watcher(dev_handle, dev_extensions_dir);
+                });
+            }
+
             // Collect deferred CLI events (xtension file opens, folder opens)
             // to emit once the frontend signals readiness via "frontend-ready".
             let handle = app.handle().clone();
@@ -546,6 +555,7 @@ fn main() {
                 duplicate_finder::cancel_current_scan();
                 file_watcher::stop_primary_watcher();
                 file_watcher::stop_all_watchers();
+                extensions::dev_watcher::stop_all_dev_watchers();
                 sync::stop_auto_sync_blocking();
                 let _ = pty::pty_kill_all();
             }

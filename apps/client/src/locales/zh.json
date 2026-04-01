@@ -761,5 +761,10 @@
     "pinnedToSidebarDesc": "\"{{name}}\" 已添加到侧边栏书签",
     "pinFailed": "固定失败",
     "pinFailedDesc": "固定 \"{{name}}\" 失败：{{error}}"
+  },
+  "extensions": {
+    "devMode": "开发",
+    "devReloaded": "扩展已重新加载",
+    "devWatching": "正在监听更改..."
   }
 }

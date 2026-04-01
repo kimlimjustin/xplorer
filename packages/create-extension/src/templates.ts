@@ -45,6 +45,7 @@ const basePackageJson = (
         'esbuild src/index.tsx --bundle --format=esm --outfile=dist/index.js --external:react --external:react-dom --external:@xplorer/extension-sdk --target=es2020 --jsx=transform',
       watch:
         'esbuild src/index.tsx --bundle --format=esm --outfile=dist/index.js --external:react --external:react-dom --external:@xplorer/extension-sdk --target=es2020 --jsx=transform --watch',
+      dev: 'node -e "require(\'fs\').writeFileSync(\'.hotreload\',String(Date.now()))" && esbuild src/index.tsx --bundle --format=esm --outfile=dist/index.js --external:react --external:react-dom --external:@xplorer/extension-sdk --target=es2020 --jsx=transform --watch; node -e "try{require(\'fs\').unlinkSync(\'.hotreload\')}catch{}"',
     },
     devDependencies: {
       esbuild: '^0.20.0',
@@ -97,8 +98,9 @@ ${features.map((f) => `- ${f}`).join('\n')}
 
 \`\`\`bash
 npm install
+npm run dev       # dev mode with hot-reload (creates .hotreload sentinel)
 npm run build     # one-time production build
-npm run watch     # rebuild on file changes
+npm run watch     # rebuild on file changes (without hot-reload)
 \`\`\`
 
 ## Installation

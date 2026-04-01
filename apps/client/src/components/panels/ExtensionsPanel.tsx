@@ -3,6 +3,7 @@ import { extensionHost, resolveIcon } from '@/lib/extension-host';
 import { TauriAPI, type ExtensionManifestInfo } from '@/lib/tauri-api';
 import { AgentService } from '@/lib/agent-service';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from 'react-i18next';
 import { Bot } from 'lucide-react';
 import PermissionReviewDialog from '@/components/dialogs/PermissionReviewDialog';
 
@@ -22,12 +23,28 @@ interface ExtensionsPanelProps {
 
 const ExtensionsPanel = ({ themes, theme, applyTheme }: ExtensionsPanelProps) => {
   const { toast } = useToast();
+  const { t } = useTranslation();
   // forceUpdate removed — useSyncExternalStore handles re-renders
   const [installing, setInstalling] = useState(false);
   const [pendingInstall, setPendingInstall] = useState<{
     path: string;
     manifest: ExtensionManifestInfo;
   } | null>(null);
+
+  // Listen for dev-mode extension reloads and show a toast
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<{ id: string }>).detail;
+      const ext = extensionHost.getExtension(detail.id);
+      const name = ext?.manifest.display_name || ext?.manifest.name || detail.id;
+      toast({
+        title: t('extensions.devReloaded'),
+        description: `${name}`,
+      });
+    };
+    window.addEventListener('xplorer:extension-dev-reloaded', handler);
+    return () => window.removeEventListener('xplorer:extension-dev-reloaded', handler);
+  }, [toast, t]);
 
   // Agent enabled state — single source synced with AgentService backend
   const [agentEnabled, setAgentEnabled] = useState(false);
@@ -202,8 +219,16 @@ const ExtensionsPanel = ({ themes, theme, applyTheme }: ExtensionsPanelProps) =>
                 <div className="flex min-w-0 items-center space-x-2">
                   <span className="flex-shrink-0 text-base">{resolveIcon(ext.manifest.icon)}</span>
                   <div className="min-w-0">
-                    <p className="text-xp-text truncate text-sm">
+                    <p className="text-xp-text flex items-center gap-1.5 truncate text-sm">
                       {ext.manifest.display_name || ext.manifest.name}
+                      {ext.isDev && (
+                        <span
+                          className="inline-flex items-center rounded bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-emerald-400"
+                          title={`${t('extensions.devWatching')} — ${t('extensions.devReloaded')}: ${ext.reloadCount ?? 0}`}
+                        >
+                          {t('extensions.devMode')}
+                        </span>
+                      )}
                     </p>
                     <p className="text-xp-text-muted text-xs">
                       v{ext.manifest.version} by {ext.manifest.author}

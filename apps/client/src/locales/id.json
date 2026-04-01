@@ -761,5 +761,10 @@
     "pinnedToSidebarDesc": "\"{{name}}\" ditambahkan ke bookmark sidebar",
     "pinFailed": "Penyematan Gagal",
     "pinFailedDesc": "Gagal menyematkan \"{{name}}\": {{error}}"
+  },
+  "extensions": {
+    "devMode": "DEV",
+    "devReloaded": "Ekstensi dimuat ulang",
+    "devWatching": "Memantau perubahan..."
   }
 }
