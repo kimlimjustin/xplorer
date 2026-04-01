@@ -445,15 +445,17 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
                 setAiPendingApprovals((prev) => prev.filter((tc) => tc.id !== event.tool_call!.id));
               }
               break;
-            case 'complete':
-              if (streamBuf) {
-                setAiMessages((prev) => [...prev, { role: 'assistant', content: streamBuf }]);
-                setAiStreaming('');
-                streamBuf = '';
+            case 'complete': {
+              const finalText = streamBuf || event.text || '';
+              if (finalText) {
+                setAiMessages((prev) => [...prev, { role: 'assistant', content: finalText }]);
               }
+              setAiStreaming('');
+              streamBuf = '';
               setAiRunning(false);
               setAiToolCalls([]);
               break;
+            }
             case 'error':
               if (streamBuf) {
                 setAiMessages((prev) => [...prev, { role: 'assistant', content: streamBuf }]);
