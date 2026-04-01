@@ -58,9 +58,6 @@ const SidebarBookmarks = ({
       role="region"
       aria-label="Favorites"
       data-sidebar-section="favorites"
-      style={
-        !collapsed && sectionHeight ? { height: sectionHeight, overflow: 'hidden' } : undefined
-      }
     >
       <button
         className="text-xp-text-muted hover:bg-xp-surface-light/50 flex w-full items-center px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest transition-colors"
@@ -75,7 +72,10 @@ const SidebarBookmarks = ({
         {t('sidebar.favorites')}
       </button>
       {!collapsed && (
-        <div className="space-y-0.5 px-3 pb-2">
+        <div
+          className="space-y-0.5 overflow-y-auto px-3 pb-2"
+          style={sectionHeight ? { maxHeight: sectionHeight } : undefined}
+        >
           {bookmarks.length === 0 ? (
             <p className="text-xp-text-secondary py-1 text-xs">{t('sidebar.noBookmarks')}</p>
           ) : (

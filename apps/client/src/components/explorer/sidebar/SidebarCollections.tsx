@@ -63,9 +63,6 @@ const SidebarCollections = ({
         role="region"
         aria-label="Collections"
         data-sidebar-section="collections"
-        style={
-          !collapsed && sectionHeight ? { height: sectionHeight, overflow: 'hidden' } : undefined
-        }
       >
         <div className="flex items-center justify-between">
           <button
@@ -94,7 +91,10 @@ const SidebarCollections = ({
           )}
         </div>
         {!collapsed && (
-          <div className="space-y-0.5 px-3 pb-2">
+          <div
+            className="space-y-0.5 overflow-y-auto px-3 pb-2"
+            style={sectionHeight ? { maxHeight: sectionHeight } : undefined}
+          >
             {collections.length === 0 ? (
               <p className="text-xp-text-secondary py-1 text-xs">{t('sidebar.noCollections')}</p>
             ) : (
