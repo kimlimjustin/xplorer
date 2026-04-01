@@ -1,7 +1,0 @@
-{
-  "task": "Open-source the private folder — move premium extensions, marketplace web app, infra, and scripts from private submodule into the public repo",
-  "started": "2026-03-25T17:50:00+08:00",
-  "phase": 0,
-  "tier": null,
-  "branch": null
-}
