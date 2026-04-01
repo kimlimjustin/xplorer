@@ -1,7 +1,7 @@
 {
-  "name": "xplorer-claude-code",
+  "name": "xplorer-recommendations",
   "version": "1.0.0",
-  "description": "Claude Code integration for Xplorer — run AI coding commands from the bottom panel",
+  "description": "Find similar files and get file recommendations",
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
@@ -15,25 +15,15 @@
     "typescript": "^5.2.0"
   },
   "xplorer": {
-    "id": "claude-code",
-    "name": "Claude Code",
-    "displayName": "Claude Code",
-    "description": "Run Claude Code AI commands directly from Xplorer. Ask Claude to edit files, explain code, fix bugs, and more — all from a bottom panel.",
+    "id": "recommendations",
+    "name": "Recommendations",
+    "displayName": "Similar & Recommendations",
+    "description": "Find similar files and get file recommendations",
     "version": "1.0.0",
     "author": "Xplorer Team",
-    "category": "tool",
-    "icon": "terminal",
-    "keywords": ["claude", "ai", "code", "terminal", "assistant"],
-    "permissions": ["file:read", "file:write", "ui:panels", "system:exec", "ai:chat", "ai:read"],
-    "activationEvents": ["onStartup"],
-    "contributes": {
-      "commands": [
-        {
-          "id": "claude-code.open",
-          "title": "Open Claude Code",
-          "shortcut": "ctrl+shift+c"
-        }
-      ]
-    }
+    "category": "panel",
+    "icon": "target",
+    "permissions": ["file:read", "search:read", "search:duplicates", "ui:panels"],
+    "activationEvents": ["onStartup"]
   }
 }

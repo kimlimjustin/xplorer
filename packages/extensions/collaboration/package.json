@@ -1,0 +1,51 @@
+{
+  "name": "xplorer-collaboration",
+  "version": "1.0.0",
+  "description": "Multi-user collaboration: shared file browsing, file transfer, chat, and team workspace with company/organization support.",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild src/index.tsx --bundle --format=iife --outfile=dist/index.js --external:react --external:react-dom --external:@xplorer/extension-sdk --target=es2020 --jsx=transform",
+    "dev": "touch .hotreload && esbuild src/index.tsx --bundle --outfile=dist/index.js --watch --format=iife --external:react --external:react-dom --external:@xplorer/extension-sdk --define:process.env.NODE_ENV=\\\"development\\\"; rm -f .hotreload"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.0",
+    "@types/react": "^18.2.0",
+    "typescript": "^5.2.0"
+  },
+  "xplorer": {
+    "id": "xplorer-collaboration",
+    "name": "Xplorer Collaboration",
+    "displayName": "Collaboration",
+    "description": "Multi-user collaboration: shared file browsing, file transfer, chat, and team workspace with company/organization support.",
+    "version": "1.0.0",
+    "author": "Xplorer Team",
+    "category": "tool",
+    "icon": "users",
+    "permissions": [
+      "file:read",
+      "file:write",
+      "ui:panels",
+      "ui:notifications",
+      "ui:commands",
+      "native:invoke",
+      "system:network"
+    ],
+    "activationEvents": ["onStartup"],
+    "contributes": {
+      "panels": [
+        {
+          "id": "collab-panel",
+          "title": "Collaboration",
+          "location": "right",
+          "icon": "users"
+        }
+      ],
+      "commands": [
+        { "command": "collab.host", "title": "Host Collaboration Session" },
+        { "command": "collab.join", "title": "Join Collaboration Session" },
+        { "command": "collab.disconnect", "title": "Disconnect from Session" }
+      ]
+    }
+  }
+}

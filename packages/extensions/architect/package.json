@@ -1,7 +1,7 @@
 {
-  "name": "xplorer-claude-code",
+  "name": "xplorer-architect",
   "version": "1.0.0",
-  "description": "Claude Code integration for Xplorer — run AI coding commands from the bottom panel",
+  "description": "Interactive architecture visualizer - node graph for project structure, plan mode, and AI-driven vibe coding",
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
@@ -15,23 +15,30 @@
     "typescript": "^5.2.0"
   },
   "xplorer": {
-    "id": "claude-code",
-    "name": "Claude Code",
-    "displayName": "Claude Code",
-    "description": "Run Claude Code AI commands directly from Xplorer. Ask Claude to edit files, explain code, fix bugs, and more — all from a bottom panel.",
-    "version": "1.0.0",
+    "id": "xplorer-architect",
+    "name": "Architecture Visualizer",
+    "displayName": "Architecture Visualizer",
+    "description": "Visualize project architecture as a sidebar tree and interactive graph. Scan your project structure and see it as navigable modules.",
+    "version": "2.0.0",
     "author": "Xplorer Team",
     "category": "tool",
-    "icon": "terminal",
-    "keywords": ["claude", "ai", "code", "terminal", "assistant"],
-    "permissions": ["file:read", "file:write", "ui:panels", "system:exec", "ai:chat", "ai:read"],
+    "icon": "layout",
+    "keywords": ["architecture", "visualizer", "tree", "graph", "structure"],
+    "permissions": ["file:read", "file:write", "directory:list", "ui:panels"],
     "activationEvents": ["onStartup"],
     "contributes": {
       "commands": [
         {
-          "id": "claude-code.open",
-          "title": "Open Claude Code",
-          "shortcut": "ctrl+shift+c"
+          "id": "xplorer-architect.generate",
+          "title": "Generate Architecture",
+          "shortcut": "ctrl+shift+a"
+        }
+      ],
+      "editors": [
+        {
+          "id": "xplorer-architect-editor",
+          "extensions": ["xparch"],
+          "priority": 50
         }
       ]
     }
