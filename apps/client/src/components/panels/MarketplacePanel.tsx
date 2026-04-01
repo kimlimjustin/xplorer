@@ -352,13 +352,16 @@ const MarketplacePanel = () => {
       // Track by manifest ID (matches slug and what loadInstalledExtensions uses)
       setInstalledExtensions((prev) => [...prev, pkg.manifest.id]);
       toast({
-        title: 'Installed',
-        description: `${extension.displayName} installed successfully`,
+        title: t('toast.installed'),
+        description: t('toast.extensionInstalledDesc', {
+          name: extension.displayName,
+          version: '',
+        }),
       });
     } catch (err) {
       console.error('[Marketplace] Install failed:', extension.id, err);
       toast({
-        title: 'Install Failed',
+        title: t('toast.installFailed'),
         description: String(err),
         variant: 'destructive',
       });
@@ -388,13 +391,16 @@ const MarketplacePanel = () => {
       await extensionHost.activateExtension(pkg.manifest.id);
       setInstalledExtensions((prev) => [...prev, pkg.manifest.id]);
       toast({
-        title: 'Installed',
-        description: `${pkg.manifest.display_name || pkg.manifest.name} installed successfully`,
+        title: t('toast.installed'),
+        description: t('toast.extensionInstalledDesc', {
+          name: pkg.manifest.display_name || pkg.manifest.name,
+          version: pkg.manifest.version,
+        }),
       });
       loadExtensions(pagination.page);
     } catch (err) {
       toast({
-        title: 'Install Failed',
+        title: t('toast.installFailed'),
         description: String(err),
         variant: 'destructive',
       });
@@ -412,12 +418,12 @@ const MarketplacePanel = () => {
         prev.filter((id) => id !== extension.id && id !== extension.slug),
       );
       toast({
-        title: 'Uninstalled',
-        description: `${extension.displayName} removed successfully`,
+        title: t('toast.uninstalled'),
+        description: t('toast.extensionUninstalledDesc', { name: extension.displayName }),
       });
     } catch (err) {
       toast({
-        title: 'Uninstall Failed',
+        title: t('toast.uninstallFailed'),
         description: String(err),
         variant: 'destructive',
       });
@@ -486,13 +492,16 @@ const MarketplacePanel = () => {
 
     if (installed > 0) {
       toast({
-        title: `${pack.name} installed`,
-        description: `${installed} extension${installed > 1 ? 's' : ''} installed${failedIds.length > 0 ? ` (failed: ${failedIds.join(', ')})` : ''}`,
+        title: t('toast.packInstalled', { name: pack.name }),
+        description: t('toast.packInstalledDesc', {
+          count: installed,
+          failed: failedIds.length > 0 ? ` (${failedIds.join(', ')})` : '',
+        }),
       });
     } else if (failedIds.length > 0) {
       toast({
-        title: 'Install Failed',
-        description: `Could not install: ${failedIds.join(', ')}`,
+        title: t('toast.installFailed'),
+        description: t('toast.couldNotInstall', { names: failedIds.join(', ') }),
         variant: 'destructive',
       });
     }
@@ -520,13 +529,16 @@ const MarketplacePanel = () => {
 
     if (removed > 0) {
       toast({
-        title: `${pack.name} uninstalled`,
-        description: `${removed} extension${removed > 1 ? 's' : ''} removed${failedIds.length > 0 ? ` (failed: ${failedIds.join(', ')})` : ''}`,
+        title: t('toast.packUninstalled', { name: pack.name }),
+        description: t('toast.packUninstalledDesc', {
+          count: removed,
+          failed: failedIds.length > 0 ? ` (${failedIds.join(', ')})` : '',
+        }),
       });
     } else if (failedIds.length > 0) {
       toast({
-        title: 'Uninstall Failed',
-        description: `Could not remove: ${failedIds.join(', ')}`,
+        title: t('toast.uninstallFailed'),
+        description: t('toast.couldNotRemove', { names: failedIds.join(', ') }),
         variant: 'destructive',
       });
     }

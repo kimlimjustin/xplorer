@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Switch, Route } from 'wouter';
 import { queryClient } from './lib/queryClient';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -35,6 +36,7 @@ const Router = () => {
 };
 
 const XtensionFileHandler = () => {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [pendingXtension, setPendingXtension] = useState<{
     path: string;
@@ -57,7 +59,7 @@ const XtensionFileHandler = () => {
         setPendingXtension({ path: xtensionPath, manifest });
       } catch (err) {
         toast({
-          title: 'Invalid Extension',
+          title: t('toast.invalidExtension'),
           description: String(err),
           variant: 'destructive',
         });
@@ -79,12 +81,15 @@ const XtensionFileHandler = () => {
       await extensionHost.loadExtension(pkg);
       await extensionHost.activateExtension(pkg.manifest.id);
       toast({
-        title: 'Extension Installed',
-        description: `${pkg.manifest.display_name || pkg.manifest.name} v${pkg.manifest.version} installed successfully`,
+        title: t('toast.extensionInstalled'),
+        description: t('toast.extensionInstalledDesc', {
+          name: pkg.manifest.display_name || pkg.manifest.name,
+          version: pkg.manifest.version,
+        }),
       });
     } catch (err) {
       toast({
-        title: 'Install Failed',
+        title: t('toast.installFailed'),
         description: String(err),
         variant: 'destructive',
       });

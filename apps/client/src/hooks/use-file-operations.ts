@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TauriAPI, type FileEntry, type ConflictFileInfo } from '@/lib/tauri-api';
 import { PATH_SEPARATOR, detectSep } from '@/lib/constants';
 import { showConfirmationToast, showInputToast } from '@/components/ui/Toast';
@@ -96,6 +97,7 @@ interface UseFileOperationsDeps {
 // ── Hook ─────────────────────────────────────────────────────────────────────
 
 export const useFileOperations = (deps: UseFileOperationsDeps) => {
+  const { t } = useTranslation();
   const {
     currentPath,
     selectedFiles,
@@ -118,6 +120,8 @@ export const useFileOperations = (deps: UseFileOperationsDeps) => {
 
   // Use refs so that memoized actions (useMemo with [] deps) always read
   // the latest values without re-creating the action bag.
+  const tRef = useRef(t);
+  tRef.current = t;
   const toastRef = useRef(toast);
   toastRef.current = toast;
   const resolveConflictRef = useRef(resolveConflict);
@@ -354,12 +358,15 @@ export const useFileOperations = (deps: UseFileOperationsDeps) => {
             await TauriAPI.rename(file.path, newPath);
             emitFileActivityRef.current('file-renamed', newPath, newName, file.path);
             emitFilesChangedRef.current();
-            toastRef.current({ title: 'Renamed', description: `Renamed to ${newName}` });
+            toastRef.current({
+              title: tRef.current('toast.renamed'),
+              description: tRef.current('toast.renamedDesc', { name: newName }),
+            });
           } catch (error) {
             console.error('Rename operation failed:', error);
             toastRef.current({
-              title: 'Rename failed',
-              description: `Failed to rename item: ${formatError(error)}`,
+              title: tRef.current('toast.renameFailed'),
+              description: tRef.current('toast.renameFailedDesc', { error: formatError(error) }),
               variant: 'destructive',
             });
           }
@@ -380,14 +387,16 @@ export const useFileOperations = (deps: UseFileOperationsDeps) => {
             emitFileActivityRef.current('create', folderPath, folderName);
             emitFilesChangedRef.current();
             toastRef.current({
-              title: 'Folder created',
-              description: `Created folder "${folderName}"`,
+              title: tRef.current('toast.folderCreated'),
+              description: tRef.current('toast.folderCreatedDesc', { name: folderName }),
             });
           } catch (error) {
             console.error('Create folder operation failed:', error);
             toastRef.current({
-              title: 'Create folder failed',
-              description: `Failed to create folder: ${formatError(error)}`,
+              title: tRef.current('toast.createFolderFailed'),
+              description: tRef.current('toast.createFolderFailedDesc', {
+                error: formatError(error),
+              }),
               variant: 'destructive',
             });
           }
@@ -407,12 +416,17 @@ export const useFileOperations = (deps: UseFileOperationsDeps) => {
             await TauriAPI.createFile(filePath);
             emitFileActivityRef.current('create', filePath, fileName);
             emitFilesChangedRef.current();
-            toastRef.current({ title: 'File created', description: `Created file "${fileName}"` });
+            toastRef.current({
+              title: tRef.current('toast.fileCreated'),
+              description: tRef.current('toast.fileCreatedDesc', { name: fileName }),
+            });
           } catch (error) {
             console.error('Create file operation failed:', error);
             toastRef.current({
-              title: 'Create file failed',
-              description: `Failed to create file: ${formatError(error)}`,
+              title: tRef.current('toast.createFileFailed'),
+              description: tRef.current('toast.createFileFailedDesc', {
+                error: formatError(error),
+              }),
               variant: 'destructive',
             });
           }
@@ -427,22 +441,28 @@ export const useFileOperations = (deps: UseFileOperationsDeps) => {
       },
       refresh: () => {
         emitFilesChangedRef.current();
-        toastRef.current({ title: 'Refreshed', description: 'Directory refreshed' });
+        toastRef.current({
+          title: tRef.current('toast.refreshed'),
+          description: tRef.current('toast.refreshedDesc'),
+        });
       },
       selectAll: () => {
         const allFilePaths = new Set(filesRef.current.map((f) => f.path));
         setSelectedFilesRef.current(allFilePaths);
         toastRef.current({
-          title: 'Selected all',
-          description: `Selected ${filesRef.current.length} items`,
+          title: tRef.current('toast.selectedAll'),
+          description: tRef.current('common.selected', { count: filesRef.current.length }),
         });
       },
       invertSelection: () => {
         const inverted = invertSelection(filesRef.current, selectedFilesRef.current);
         setSelectedFilesRef.current(new Set(inverted));
         toastRef.current({
-          title: 'Selection Inverted',
-          description: `Now selecting ${inverted.length} of ${filesRef.current.length} items`,
+          title: tRef.current('toast.selectionInverted'),
+          description: tRef.current('toast.selectionInvertedDesc', {
+            selected: inverted.length,
+            total: filesRef.current.length,
+          }),
         });
       },
       openAdvancedSelection: () => {
@@ -450,27 +470,33 @@ export const useFileOperations = (deps: UseFileOperationsDeps) => {
       },
       copyPath: (file: FileEntry) => {
         navigator.clipboard.writeText(file.path);
-        toastRef.current({ title: 'Path copied', description: 'File path copied to clipboard' });
+        toastRef.current({
+          title: tRef.current('toast.pathCopied'),
+          description: tRef.current('toast.pathCopiedDesc'),
+        });
       },
       openInTerminal: (path: string) => {
         // Always open the built-in terminal panel immediately
         setBottomPanelCollapsedRef.current(false);
         setBottomPanelTabRef.current('terminal');
         setTerminalCwdRef.current(path);
-        toastRef.current({ title: 'Terminal opened', description: `Terminal opened at ${path}` });
+        toastRef.current({
+          title: tRef.current('toast.terminalOpened'),
+          description: tRef.current('toast.terminalOpenedDesc', { path }),
+        });
       },
       openRecycleBin: async () => {
         try {
           await TauriAPI.openRecycleBin();
           toastRef.current({
-            title: 'Recycle Bin Opened',
-            description: 'Your OS recycle bin has been opened',
+            title: tRef.current('toast.recycleBinOpened'),
+            description: tRef.current('toast.recycleBinOpenedDesc'),
           });
         } catch (error) {
           console.error('Failed to open recycle bin:', error);
           toastRef.current({
-            title: 'Failed to open recycle bin',
-            description: `Failed to open recycle bin: ${formatError(error)}`,
+            title: tRef.current('toast.recycleBinFailed'),
+            description: tRef.current('toast.recycleBinFailedDesc', { error: formatError(error) }),
             variant: 'destructive',
           });
         }
@@ -553,8 +579,8 @@ export const useFileOperations = (deps: UseFileOperationsDeps) => {
       copyName: (file: FileEntry) => {
         navigator.clipboard.writeText(file.name);
         toastRef.current({
-          title: 'Name copied',
-          description: `"${file.name}" copied to clipboard`,
+          title: tRef.current('toast.nameCopied'),
+          description: tRef.current('toast.nameCopiedDesc', { name: file.name }),
         });
       },
       pinToSidebar: async (file: FileEntry) => {
@@ -562,13 +588,16 @@ export const useFileOperations = (deps: UseFileOperationsDeps) => {
           await TauriAPI.addBookmark(file.path, file.name);
           window.dispatchEvent(new CustomEvent('bookmarks-changed'));
           toastRef.current({
-            title: 'Pinned to Sidebar',
-            description: `"${file.name}" added to sidebar bookmarks`,
+            title: tRef.current('toast.pinnedToSidebar'),
+            description: tRef.current('toast.pinnedToSidebarDesc', { name: file.name }),
           });
         } catch (error) {
           toastRef.current({
-            title: 'Pin failed',
-            description: `Failed to pin "${file.name}": ${formatError(error)}`,
+            title: tRef.current('toast.pinFailed'),
+            description: tRef.current('toast.pinFailedDesc', {
+              name: file.name,
+              error: formatError(error),
+            }),
             variant: 'destructive',
           });
         }
@@ -580,11 +609,14 @@ export const useFileOperations = (deps: UseFileOperationsDeps) => {
           const name = filePath.split(/[/\\]/).pop() || 'New Text File.txt';
           emitFileActivityRef.current('create', filePath, name);
           emitFilesChangedRef.current();
-          toastRef.current({ title: 'File created', description: `Created "${name}"` });
+          toastRef.current({
+            title: tRef.current('toast.fileCreated'),
+            description: tRef.current('toast.fileCreatedDesc', { name }),
+          });
         } catch (error) {
           toastRef.current({
-            title: 'Create file failed',
-            description: `Failed to create file: ${formatError(error)}`,
+            title: tRef.current('toast.createFileFailed'),
+            description: tRef.current('toast.createFileFailedDesc', { error: formatError(error) }),
             variant: 'destructive',
           });
         }
@@ -604,11 +636,16 @@ export const useFileOperations = (deps: UseFileOperationsDeps) => {
             await TauriAPI.createFile(filePath);
             emitFileActivityRef.current('create', filePath, fileName);
             emitFilesChangedRef.current();
-            toastRef.current({ title: 'File created', description: `Created "${fileName}"` });
+            toastRef.current({
+              title: tRef.current('toast.fileCreated'),
+              description: tRef.current('toast.fileCreatedDesc', { name: fileName }),
+            });
           } catch (error) {
             toastRef.current({
-              title: 'Create file failed',
-              description: `Failed to create file: ${formatError(error)}`,
+              title: tRef.current('toast.createFileFailed'),
+              description: tRef.current('toast.createFileFailedDesc', {
+                error: formatError(error),
+              }),
               variant: 'destructive',
             });
           }
@@ -723,15 +760,15 @@ export const useFileOperations = (deps: UseFileOperationsDeps) => {
         setSelectedFiles(new Set());
         emitFilesChanged();
         toast({
-          title: 'Moved to Recycle Bin',
-          description: `Successfully moved ${selectedFiles.size} item(s) to recycle bin`,
+          title: t('toast.movedToTrash'),
+          description: t('toast.movedToTrashDesc', { count: selectedFiles.size }),
         });
       } catch (error) {
         console.error('Failed to move files to trash:', error);
         toast({
           variant: 'destructive',
-          title: 'Move to Recycle Bin Failed',
-          description: `Failed to move some files to recycle bin: ${formatError(error)}`,
+          title: t('toast.moveToTrashFailed'),
+          description: t('toast.moveToTrashFailedDesc', { error: formatError(error) }),
         });
       }
     };
@@ -748,7 +785,16 @@ export const useFileOperations = (deps: UseFileOperationsDeps) => {
       });
       if (confirmed) await doDelete();
     }
-  }, [selectedFiles, setSelectedFiles, files, emitFilesChanged, emitFileActivity, toast, dialogs]);
+  }, [
+    selectedFiles,
+    setSelectedFiles,
+    files,
+    emitFilesChanged,
+    emitFileActivity,
+    toast,
+    dialogs,
+    t,
+  ]);
 
   const handleCreateFolder = useCallback(async () => {
     const folderName = await showInputToast({
@@ -766,18 +812,18 @@ export const useFileOperations = (deps: UseFileOperationsDeps) => {
       emitFileActivity('create', newFolderPath, folderName);
       emitFilesChanged();
       toast({
-        title: 'Folder Created',
-        description: `Successfully created folder "${folderName}"`,
+        title: t('toast.folderCreated'),
+        description: t('toast.folderCreatedDesc', { name: folderName }),
       });
     } catch (error) {
       console.error('Failed to create folder:', error);
       toast({
         variant: 'destructive',
-        title: 'Create Folder Failed',
-        description: `Failed to create folder: ${formatError(error)}`,
+        title: t('toast.createFolderFailed'),
+        description: t('toast.createFolderFailedDesc', { error: formatError(error) }),
       });
     }
-  }, [currentPath, emitFileActivity, emitFilesChanged, toast]);
+  }, [currentPath, emitFileActivity, emitFilesChanged, toast, t]);
 
   // ── Shortcut clipboard handlers ────────────────────────────────────────
 
@@ -845,17 +891,20 @@ export const useFileOperations = (deps: UseFileOperationsDeps) => {
         await TauriAPI.createFileWithContent(filePath, content);
         emitFileActivity('create', filePath, filename);
         emitFilesChanged();
-        toast({ title: 'File created', description: `Created "${filename}" from template` });
+        toast({
+          title: t('toast.fileCreated'),
+          description: t('toast.fileFromTemplateDesc', { name: filename }),
+        });
       } catch (error) {
         console.error('Failed to create file from template:', error);
         toast({
-          title: 'Create file failed',
-          description: `Failed to create file: ${formatError(error)}`,
+          title: t('toast.createFileFailed'),
+          description: t('toast.createFileFailedDesc', { error: formatError(error) }),
           variant: 'destructive',
         });
       }
     },
-    [currentPath, emitFileActivity, emitFilesChanged, toast],
+    [currentPath, emitFileActivity, emitFilesChanged, toast, t],
   );
 
   const renameFileInline = useCallback(
@@ -869,19 +918,22 @@ export const useFileOperations = (deps: UseFileOperationsDeps) => {
         const oldName = oldPath.substring(lastSepIdx + 1);
         emitFileActivity('file-renamed', newPath, newName, oldPath);
         emitFilesChanged();
-        toast({ title: 'Renamed', description: `"${oldName}" \u2192 "${newName}"` });
+        toast({
+          title: t('toast.renamed'),
+          description: t('toast.renamedInlineDesc', { oldName, newName }),
+        });
         return true;
       } catch (error) {
         console.error('Inline rename failed:', error);
         toast({
           variant: 'destructive',
-          title: 'Rename Failed',
-          description: `Failed to rename: ${formatError(error)}`,
+          title: t('toast.renameFailed'),
+          description: t('toast.renameFailedDesc', { error: formatError(error) }),
         });
         return false;
       }
     },
-    [emitFilesChanged, emitFileActivity, toast],
+    [emitFilesChanged, emitFileActivity, toast, t],
   );
 
   return {

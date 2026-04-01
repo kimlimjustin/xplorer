@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TauriAPI, type RecentFile } from '@/lib/tauri-api';
 import { AgentService, type AgentEvent, type AgentToolCall } from '@/lib/agent-service';
 import MarkdownRenderer from '@/components/ui/MarkdownRenderer';
@@ -186,8 +187,11 @@ const _CheckCircleIcon = ({ className = 'w-4 h-4' }: { className?: string }) => 
   </svg>
 );
 
-/** Returns a human-readable relative time string. */
-const relativeTime = (timestampMs: number): string => {
+/** Returns a human-readable relative time string using i18n. */
+const relativeTime = (
+  timestampMs: number,
+  t: (key: string, opts?: Record<string, unknown>) => string,
+): string => {
   const now = Date.now();
   const diff = now - timestampMs;
   const seconds = Math.floor(diff / 1000);
@@ -195,12 +199,12 @@ const relativeTime = (timestampMs: number): string => {
   const hours = Math.floor(minutes / 60);
   const days = Math.floor(hours / 24);
 
-  if (seconds < 60) return 'Just now';
-  if (minutes < 60) return `${minutes}m ago`;
-  if (hours < 24) return `${hours}h ago`;
-  if (days === 1) return 'Yesterday';
-  if (days < 7) return `${days}d ago`;
-  return `${Math.floor(days / 7)}w ago`;
+  if (seconds < 60) return t('common.justNow');
+  if (minutes < 60) return t('common.minutesAgo', { count: minutes });
+  if (hours < 24) return t('common.hoursAgo', { count: hours });
+  if (days === 1) return t('home.yesterday');
+  if (days < 7) return t('common.daysAgo', { count: days });
+  return t('home.weeksAgo', { count: Math.floor(days / 7) });
 };
 
 /** Icon gradient based on file type. */
@@ -259,6 +263,7 @@ const RecentFileTypeIcon = ({
 };
 
 const Clock = () => {
+  const { t, i18n } = useTranslation();
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
@@ -267,14 +272,17 @@ const Clock = () => {
   }, []);
 
   const hour = currentTime.getHours();
-  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  const greeting =
+    hour < 12 ? t('home.goodMorning') : hour < 17 ? t('home.goodAfternoon') : t('home.goodEvening');
+
+  const locale = i18n.language || 'en';
 
   return (
     <div className="flex items-end justify-between">
       <div>
         <p className="text-xp-text-muted mb-1 flex items-center gap-1.5 text-sm">
           <ClockIcon />
-          {currentTime.toLocaleDateString('en-US', {
+          {currentTime.toLocaleDateString(locale, {
             weekday: 'long',
             month: 'long',
             day: 'numeric',
@@ -283,13 +291,14 @@ const Clock = () => {
         <h1 className="text-xp-text text-3xl font-bold">{greeting}</h1>
       </div>
       <p className="text-xp-text-muted text-2xl font-light tabular-nums">
-        {currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+        {currentTime.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })}
       </p>
     </div>
   );
 };
 
 const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
+  const { t } = useTranslation();
   const themes = useAllThemes();
   const { toast } = useToast();
   const [recommendedFolders, setRecommendedFolders] = useState<string[]>([]);
@@ -540,45 +549,45 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
     applyTheme(newTheme);
     const themeData = themes[newTheme as keyof typeof themes];
     toast({
-      title: 'Theme Changed',
-      description: `Applied ${themeData?.name || newTheme} theme`,
+      title: t('home.themeChanged'),
+      description: t('home.themeApplied', { theme: themeData?.name || newTheme }),
     });
   };
 
   const quickAccessFolders = userDirectories
     ? [
         {
-          name: 'Documents',
+          name: t('sidebar.documents'),
           path: userDirectories.documents,
           icon: DocumentIcon,
           gradient: 'from-blue-500 to-blue-600',
         },
         {
-          name: 'Downloads',
+          name: t('sidebar.downloads'),
           path: userDirectories.downloads,
           icon: DownloadIcon,
           gradient: 'from-emerald-500 to-emerald-600',
         },
         {
-          name: 'Desktop',
+          name: t('sidebar.desktop'),
           path: userDirectories.desktop,
           icon: DesktopIcon,
           gradient: 'from-violet-500 to-violet-600',
         },
         {
-          name: 'Pictures',
+          name: t('sidebar.pictures'),
           path: userDirectories.pictures,
           icon: PhotoIcon,
           gradient: 'from-pink-500 to-pink-600',
         },
         {
-          name: 'Videos',
+          name: t('home.videos'),
           path: userDirectories.videos,
           icon: VideoIcon,
           gradient: 'from-orange-500 to-orange-600',
         },
         {
-          name: 'Music',
+          name: t('home.music'),
           path: userDirectories.music,
           icon: MusicIcon,
           gradient: 'from-cyan-500 to-cyan-600',
@@ -621,7 +630,7 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
               <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-red-500 to-red-600">
                 <TrashIcon className="h-3.5 w-3.5 text-white" />
               </div>
-              <span className="text-xp-text text-sm font-medium">Trash</span>
+              <span className="text-xp-text text-sm font-medium">{t('navigation.trash')}</span>
             </button>
             <button
               onClick={() => handleNavigate(ROOT_PATH)}
@@ -631,7 +640,7 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
                 <DriveIcon className="h-3.5 w-3.5 text-white" />
               </div>
               <span className="text-xp-text text-sm font-medium">
-                {isWindows ? 'C:' : 'Macintosh HD'}
+                {isWindows ? 'C:' : t('home.macintoshHD')}
               </span>
             </button>
           </div>
@@ -665,13 +674,13 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
             <div className="mb-2 flex items-center justify-between">
               <div className="flex items-center gap-1.5">
                 <ClockIcon />
-                <span className="text-xp-text text-sm font-medium">Recent Files</span>
+                <span className="text-xp-text text-sm font-medium">{t('home.recentFiles')}</span>
               </div>
               <button
                 onClick={handleClearRecentFiles}
                 className="text-xp-text-muted hover:text-xp-error text-[11px] transition-colors"
               >
-                Clear all
+                {t('home.clearAll')}
               </button>
             </div>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
@@ -703,14 +712,14 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
                     <div className="min-w-0 flex-1">
                       <p className="text-xp-text truncate text-sm font-medium">{file.name}</p>
                       <p className="text-xp-text-muted text-[10px]">
-                        {relativeTime(file.accessed_at)}
+                        {relativeTime(file.accessed_at, t)}
                       </p>
                     </div>
                     {/* Remove button on hover */}
                     <button
                       onClick={(e) => handleRemoveRecentFile(e, file.path)}
                       className="hover:bg-xp-error/20 text-xp-text-muted hover:text-xp-error absolute right-1 top-1 rounded p-0.5 opacity-0 transition-all group-hover:opacity-100"
-                      title="Remove from recent"
+                      title={t('home.removeFromRecent')}
                     >
                       <svg
                         className="h-3 w-3"
@@ -742,10 +751,9 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
                   <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-purple-600">
                     <SparklesIcon className="h-6 w-6 text-white" />
                   </div>
-                  <p className="text-xp-text mb-1 text-sm">Xplorer Agent</p>
+                  <p className="text-xp-text mb-1 text-sm">{t('home.agentTitle')}</p>
                   <p className="text-xp-text-muted max-w-xs text-xs">
-                    Ask me to organize files, find documents, run commands, or manage your
-                    workspace.
+                    {t('home.agentDescription')}
                   </p>
                 </div>
               )}
@@ -821,7 +829,7 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
                       className="rounded-lg border border-yellow-500/40 bg-yellow-500/5 p-3"
                     >
                       <p className="mb-1.5 text-xs font-medium text-yellow-400">
-                        Approve: {tc.name}
+                        {t('home.approve')}: {tc.name}
                       </p>
                       <p className="text-xp-text-muted mb-2 truncate font-mono text-xs">
                         {approvalDetail}
@@ -831,19 +839,19 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
                           onClick={() => handleApproval(tc.id, 'allow_once')}
                           className="rounded bg-green-600 px-3 py-1 text-xs text-white transition-colors hover:bg-green-500"
                         >
-                          This Time
+                          {t('home.thisTime')}
                         </button>
                         <button
                           onClick={() => handleApproval(tc.id, 'allow_always')}
                           className="bg-xp-blue rounded px-3 py-1 text-xs text-white transition-colors hover:opacity-80"
                         >
-                          Always
+                          {t('home.always')}
                         </button>
                         <button
                           onClick={() => handleApproval(tc.id, 'deny_always')}
                           className="bg-xp-surface border-xp-border text-xp-text hover:bg-xp-bg rounded border px-3 py-1 text-xs transition-colors"
                         >
-                          Never
+                          {t('home.never')}
                         </button>
                       </div>
                     </div>
@@ -866,7 +874,7 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
                         handleAiSend();
                       }
                     }}
-                    placeholder="Ask anything..."
+                    placeholder={t('home.askAnything')}
                     disabled={aiRunning}
                     className="bg-xp-bg/60 border-xp-border text-xp-text placeholder-xp-text-muted focus:border-xp-blue/50 focus:ring-xp-blue/30 w-full rounded-lg border py-2.5 pl-4 pr-20 text-sm transition-colors focus:outline-none focus:ring-1 disabled:opacity-50"
                   />
@@ -876,7 +884,7 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
                         onClick={() => AgentService.cancelSession()}
                         className="bg-xp-error/20 text-xp-error hover:bg-xp-error/30 rounded-md px-2.5 py-1 text-xs transition-colors"
                       >
-                        Stop
+                        {t('home.stop')}
                       </button>
                     ) : (
                       <button
@@ -884,7 +892,7 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
                         disabled={!aiInput.trim()}
                         className="bg-xp-blue/20 text-xp-blue hover:bg-xp-blue/30 rounded-md px-2.5 py-1 text-xs transition-colors disabled:opacity-30"
                       >
-                        Send
+                        {t('home.send')}
                       </button>
                     )}
                   </div>
@@ -893,9 +901,9 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
               {aiMessages.length === 0 && (
                 <div className="mt-2.5 flex gap-2">
                   {[
-                    'List my recent files',
-                    'Organize my Downloads',
-                    'What large files do I have?',
+                    t('home.suggestionListRecent'),
+                    t('home.suggestionOrganize'),
+                    t('home.suggestionLargeFiles'),
                   ].map((suggestion) => (
                     <button
                       key={suggestion}
