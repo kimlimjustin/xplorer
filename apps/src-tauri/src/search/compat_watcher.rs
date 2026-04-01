@@ -86,35 +86,48 @@ impl SearchEngine {
 
         let memory_limit_bytes = (settings.memory_limit_mb as usize) * 1024 * 1024;
 
-        // Phase 1: parallel content reading (no lock held).
-        let file_contents: Vec<_> = files_to_index
-            .par_iter()
-            .filter_map(|file_path| {
-                let content = read_file_content(file_path)?;
-                let source = content_source_for(file_path);
-                let (size, modified) = file_meta(file_path);
-                let path_str = file_path.to_string_lossy().to_string();
-                Some((path_str, content, source, size, modified))
-            })
-            .collect();
-
-        // Phase 2: single lock acquisition for all indexing.
+        // Index in batches to avoid loading all file contents into RAM at once.
+        // Each batch reads up to BATCH_SIZE files, indexes them, then drops.
+        const BATCH_SIZE: usize = 500;
         let mut indexed_count: usize = 0;
-        {
-            let mut idx = index.write().unwrap_or_else(|e| e.into_inner());
-            for (path_str, content, source, size, modified) in &file_contents {
-                idx.index_document(path_str, content, source, *size, *modified);
-                indexed_count += 1;
+        let mut budget_exhausted = false;
 
-                if memory_limit_bytes > 0 && idx.estimated_memory_bytes() >= memory_limit_bytes {
-                    warn!(
-                        "[SearchEngine] Memory limit reached ({} MB). Stopping indexing after {} files.",
-                        settings.memory_limit_mb,
-                        indexed_count
-                    );
-                    break;
+        for chunk in files_to_index.chunks(BATCH_SIZE) {
+            if budget_exhausted {
+                break;
+            }
+
+            // Phase 1: parallel content reading for this batch only.
+            let file_contents: Vec<_> = chunk
+                .par_iter()
+                .filter_map(|file_path| {
+                    let content = read_file_content(file_path)?;
+                    let source = content_source_for(file_path);
+                    let (size, modified) = file_meta(file_path);
+                    let path_str = file_path.to_string_lossy().to_string();
+                    Some((path_str, content, source, size, modified))
+                })
+                .collect();
+
+            // Phase 2: index this batch under the write lock.
+            {
+                let mut idx = index.write().unwrap_or_else(|e| e.into_inner());
+                for (path_str, content, source, size, modified) in &file_contents {
+                    idx.index_document(path_str, content, source, *size, *modified);
+                    indexed_count += 1;
+
+                    if memory_limit_bytes > 0 && idx.estimated_memory_bytes() >= memory_limit_bytes {
+                        warn!(
+                            "[SearchEngine] Memory limit reached ({} MB). Stopping indexing after {} files.",
+                            settings.memory_limit_mb,
+                            indexed_count
+                        );
+                        budget_exhausted = true;
+                        break;
+                    }
                 }
             }
+            // file_contents dropped here — batch memory freed
         }
 
         // Rebuild FST and update BM25F corpus stats.
@@ -251,32 +264,41 @@ impl SearchEngine {
         // Index new/modified files.
         let memory_limit_bytes = (settings.memory_limit_mb as usize) * 1024 * 1024;
 
-        // Phase 1: parallel content reading (no lock held).
-        let file_contents: Vec<_> = new_or_modified
-            .par_iter()
-            .filter_map(|path_str| {
-                let file_path = Path::new(path_str);
-                let content = read_file_content(file_path)?;
-                let source = content_source_for(file_path);
-                let (size, modified) = file_meta(file_path);
-                Some((path_str.clone(), content, source, size, modified))
-            })
-            .collect();
-
-        // Phase 2: single lock acquisition for all indexing.
+        // Index in batches to limit peak memory usage.
+        let new_or_mod_vec: Vec<_> = new_or_modified.into_iter().collect();
         let mut indexed_count: usize = 0;
-        {
-            let mut idx = index.write().unwrap_or_else(|e| e.into_inner());
-            for (path_str, content, source, size, modified) in &file_contents {
-                idx.index_document(path_str, content, source, *size, *modified);
-                indexed_count += 1;
+        let mut budget_exhausted = false;
 
-                if memory_limit_bytes > 0 && idx.estimated_memory_bytes() >= memory_limit_bytes {
-                    warn!(
-                        "[SearchEngine] Memory limit reached during incremental update after {} files.",
-                        indexed_count
-                    );
-                    break;
+        for chunk in new_or_mod_vec.chunks(500) {
+            if budget_exhausted {
+                break;
+            }
+
+            let file_contents: Vec<_> = chunk
+                .par_iter()
+                .filter_map(|path_str| {
+                    let file_path = Path::new(path_str);
+                    let content = read_file_content(file_path)?;
+                    let source = content_source_for(file_path);
+                    let (size, modified) = file_meta(file_path);
+                    Some((path_str.clone(), content, source, size, modified))
+                })
+                .collect();
+
+            {
+                let mut idx = index.write().unwrap_or_else(|e| e.into_inner());
+                for (path_str, content, source, size, modified) in &file_contents {
+                    idx.index_document(path_str, content, source, *size, *modified);
+                    indexed_count += 1;
+
+                    if memory_limit_bytes > 0 && idx.estimated_memory_bytes() >= memory_limit_bytes {
+                        warn!(
+                            "[SearchEngine] Memory limit reached during incremental update after {} files.",
+                            indexed_count
+                        );
+                        budget_exhausted = true;
+                        break;
+                    }
                 }
             }
         }

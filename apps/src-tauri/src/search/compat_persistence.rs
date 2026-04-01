@@ -117,8 +117,17 @@ pub(crate) fn read_file_content(path: &Path) -> Option<String> {
             _ => None,
         }
     } else {
-        // Plain text read — skip files that fail (binary, encoding errors).
-        fs::read_to_string(path).ok()
+        // Read only the first 32 KB of text files to limit memory usage.
+        // The full file content is NOT needed — only the first portion for indexing.
+        let file = fs::File::open(path).ok()?;
+        let file_size = file.metadata().ok()?.len();
+        let read_limit = file_size.min(32 * 1024) as usize;
+        let mut buf = String::with_capacity(read_limit);
+        use std::io::Read;
+        file.take(read_limit as u64)
+            .read_to_string(&mut buf)
+            .ok()?;
+        if buf.is_empty() { None } else { Some(buf) }
     }
 }
 
