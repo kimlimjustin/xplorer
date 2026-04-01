@@ -64,7 +64,7 @@ pub struct SearchIndex {
     // Per-document field lengths for BM25F
     pub(crate) doc_field_lengths: HashMap<DocId, HashMap<SearchField, u32>>,
 
-    // Content store for phrase post-filtering (first 10 KB per document)
+    // Content store for phrase post-filtering (first 1 KB per document)
     pub(crate) doc_content: HashMap<DocId, String>,
 
     // Corpus stats
@@ -81,7 +81,7 @@ pub(crate) fn word_regex() -> &'static Regex {
 }
 
 /// Check if a character is in a CJK Unicode block.
-fn is_cjk(c: char) -> bool {
+pub(crate) fn is_cjk(c: char) -> bool {
     matches!(c,
         '\u{4E00}'..='\u{9FFF}'   // CJK Unified Ideographs
         | '\u{3400}'..='\u{4DBF}' // CJK Extension A
@@ -96,7 +96,7 @@ fn is_cjk(c: char) -> bool {
 /// Extract CJK unigrams and bigrams from text.
 /// "文件管理器" → ["文件", "件管", "管理", "理器"] (bigrams)
 /// plus each individual character: ["文", "件", "管", "理", "器"]
-fn extract_cjk_tokens(text: &str) -> Vec<String> {
+pub(crate) fn extract_cjk_tokens(text: &str) -> Vec<String> {
     let cjk_chars: Vec<char> = text.chars().filter(|c| is_cjk(*c)).collect();
     if cjk_chars.is_empty() {
         return Vec::new();
@@ -573,6 +573,12 @@ impl SearchIndex {
 
         // Use reverse index to only visit posting lists that contain this doc.
         // Convert term IDs back to strings via id_to_term.
+        //
+        // NOTE: term_to_id / id_to_term are NOT pruned here. Orphaned terms
+        // remain in the interning table after their last document is removed.
+        // This is an acceptable trade-off for desktop use: unique terms rarely
+        // exceed 100K entries (~4 MB), and pruning would require a full scan of
+        // all posting lists per removed term to confirm zero references.
         if let Some(term_ids) = self.doc_terms.remove(&doc_id) {
             for &term_id in &term_ids {
                 let term = match self.id_to_term.get(term_id as usize) {

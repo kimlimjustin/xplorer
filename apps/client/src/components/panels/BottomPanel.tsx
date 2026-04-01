@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useSyncExternalStore } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // Lazy-loaded sub-panels -- only loaded when the user switches to their tab
 const XTermPanel = React.lazy(() => import('./XTermPanel'));
@@ -85,6 +86,7 @@ const BottomPanel = ({
   onDismissChanges,
   propertiesFilePath,
 }: BottomPanelProps) => {
+  const { t } = useTranslation();
   const { unreadCount } = useNotificationHistory();
   const [activityLogFilter, setActivityLogFilter] = useState<ActivityLogFilter>('all');
 
@@ -120,15 +122,26 @@ const BottomPanel = ({
   // Check if the active tab is an extension tab
   const isExtensionTab = !CORE_TABS.includes(bottomPanelTab);
 
+  const coreTabLabelKeys: Record<string, string> = {
+    terminal: 'bottomPanel.terminal',
+    'activity-log': 'bottomPanel.activityLog',
+    changes: 'bottomPanel.changes',
+    clipboard: 'bottomPanel.clipboard',
+    notifications: 'bottomPanel.notifications',
+    properties: 'bottomPanel.properties',
+  };
+
   const getTabLabel = (tab: BottomPanelTab): string => {
-    if (tab === 'activity-log') return 'Activity Log';
     if (tab === 'properties' && propertiesFilePath) {
-      return `Properties: ${propertiesFilePath.replace(/^.*[\\/]/, '')}`;
+      return `${t('bottomPanel.properties')}: ${propertiesFilePath.replace(/^.*[\\/]/, '')}`;
     }
-    // Extension tab label
+    // Extension tab label (not translated -- provided by extension)
     const extTab = extensionBottomTabs.find((bt) => bt.id === tab);
     if (extTab) return extTab.title;
-    // Title case: "terminal" -> "Terminal", "clipboard" -> "Clipboard"
+    // Use i18n key for core tabs
+    const key = coreTabLabelKeys[tab];
+    if (key) return t(key);
+    // Fallback to title case
     return tab.charAt(0).toUpperCase() + tab.slice(1);
   };
 

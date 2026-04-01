@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import { useTranslation } from 'react-i18next';
 import { FileEntry, FolderSizeInfo, FileTag, TauriAPI } from '@/lib/tauri-api';
 import { useDroppable } from '@/hooks/use-droppable';
 import { useGridLayout } from '@/hooks/use-grid-layout';
@@ -79,9 +80,26 @@ const FileGrid = ({
   renamingPath: externalRenamingPath,
   setRenamingPath: externalSetRenamingPath,
 }: FileGridProps) => {
+  const { t } = useTranslation();
+
   // ─── Git status for the current directory ───────────────────────────────────
   const [gitStatusMap, setGitStatusMap] = useState<Map<string, string>>(new Map());
-  const gitRepoCache = useRef(new Map<string, boolean>());
+  // Cache paths confirmed as NOT a git repo (backend returned an error).
+  // An empty status from the backend means "clean git repo", not "not a repo".
+  const notGitRepoCache = useRef(new Set<string>());
+  // Counter bumped by file-change events to trigger a git status re-fetch.
+  const [gitRefetchCounter, setGitRefetchCounter] = useState(0);
+
+  // Listen for file-change events so git status refreshes after staging/committing/editing
+  useEffect(() => {
+    const bump = () => setGitRefetchCounter((c) => c + 1);
+    window.addEventListener('xplorer:files-changed', bump);
+    window.addEventListener('xplorer:git-changed', bump);
+    return () => {
+      window.removeEventListener('xplorer:files-changed', bump);
+      window.removeEventListener('xplorer:git-changed', bump);
+    };
+  }, []);
 
   useEffect(() => {
     if (!currentPath || currentPath.startsWith('xplorer://')) {
@@ -89,9 +107,8 @@ const FileGrid = ({
       return;
     }
 
-    // Check cache: if we know this path prefix is not a git repo, skip IPC
-    const cached = gitRepoCache.current.get(currentPath);
-    if (cached === false) {
+    // Check cache: if we know this path is NOT a git repo (backend error), skip IPC
+    if (notGitRepoCache.current.has(currentPath)) {
       setGitStatusMap(new Map());
       return;
     }
@@ -103,7 +120,8 @@ const FileGrid = ({
         try {
           const statuses = await TauriAPI.getGitStatus(currentPath);
           if (!cancelled) {
-            gitRepoCache.current.set(currentPath, statuses.length > 0);
+            // A successful response (even empty) means this IS a git repo.
+            // Empty = clean repo with no changed files.
             const map = new Map<string, string>();
             for (const s of statuses) {
               const normalized = s.path.replace(/\\/g, '/');
@@ -114,7 +132,8 @@ const FileGrid = ({
           }
         } catch {
           if (!cancelled) {
-            gitRepoCache.current.set(currentPath, false);
+            // Backend returned an error -- this path is not inside a git repo
+            notGitRepoCache.current.add(currentPath);
             setGitStatusMap(new Map());
           }
         }
@@ -126,7 +145,7 @@ const FileGrid = ({
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [currentPath]);
+  }, [currentPath, gitRefetchCounter]);
 
   // ─── Batch-load tags for all visible files ──────────────────────────────────
   const [allTags, setAllTags] = useState<Map<string, FileTag[]>>(new Map());
@@ -489,7 +508,7 @@ const FileGrid = ({
         className="flex h-64 items-center justify-center"
         onContextMenu={handleBackgroundRightClick || undefined}
         role="status"
-        aria-label="Empty folder"
+        aria-label={t('fileGrid.emptyFolder')}
       >
         <div className="text-xp-text-secondary text-center">
           <svg
@@ -504,8 +523,8 @@ const FileGrid = ({
               clipRule="evenodd"
             />
           </svg>
-          <p>This folder is empty</p>
-          <p className="text-xp-text-muted mt-2 text-xs">Right-click to create files or folders</p>
+          <p>{t('fileGrid.emptyFolder')}</p>
+          <p className="text-xp-text-muted mt-2 text-xs">{t('fileGrid.emptyFolderHint')}</p>
         </div>
       </div>
     );

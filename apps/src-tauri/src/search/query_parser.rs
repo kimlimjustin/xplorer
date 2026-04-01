@@ -494,11 +494,21 @@ pub fn parse(input: &str) -> ParsedQuery {
 
     // -- 9. Tokenize remaining into keywords (stop-word removal) -----------
     let stops = stop_words();
-    let keywords: Vec<String> = remaining
+    let mut keywords: Vec<String> = remaining
         .split_whitespace()
         .map(|w| w.to_lowercase())
         .filter(|w| w.len() >= 2 && !stops.contains(w.as_str()))
         .collect();
+
+    // -- 9b. CJK bigram/unigram tokenization --------------------------------
+    // The indexer stores CJK text as bigrams + unigrams. Query terms containing
+    // CJK characters must be decomposed the same way so they match the index.
+    let cjk_tokens = super::index::extract_cjk_tokens(&remaining);
+    for token in cjk_tokens {
+        if !keywords.contains(&token) {
+            keywords.push(token);
+        }
+    }
 
     // -- 10. Assemble result -----------------------------------------------
     ParsedQuery {
