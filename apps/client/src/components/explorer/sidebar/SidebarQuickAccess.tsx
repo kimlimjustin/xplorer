@@ -100,7 +100,7 @@ const SidebarQuickAccess = ({
             (
               [
                 {
-                  path: userDirectories.home,
+                  path: 'xplorer://home',
                   Icon: Home,
                   color: 'text-xp-blue',
                   labelKey: 'sidebar.home' as const,

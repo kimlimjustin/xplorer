@@ -741,20 +741,20 @@ const HomePage = ({ onNavigate, theme: _theme, setTheme }: HomePageProps) => {
           </div>
         )}
 
-        {/* AI Assistant - takes remaining space */}
-        <div className="flex min-h-0 flex-1 flex-col">
-          <div className="bg-xp-surface/50 border-xp-border flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border">
+        {/* AI Assistant - compact, not flex-1 */}
+        <div className="mt-2 flex flex-col">
+          <div className="bg-xp-surface/50 border-xp-border flex flex-col overflow-hidden rounded-xl border">
             {/* Chat messages area */}
-            <div ref={aiScrollRef} className="min-h-0 flex-1 overflow-y-auto px-5 pb-2 pt-4">
+            <div ref={aiScrollRef} className="max-h-64 overflow-y-auto px-5 pb-2 pt-3">
               {aiMessages.length === 0 && !aiStreaming && (
-                <div className="flex h-full flex-col items-center justify-center py-12 text-center">
-                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-purple-600">
-                    <SparklesIcon className="h-6 w-6 text-white" />
+                <div className="flex items-center gap-3 py-2">
+                  <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-purple-600">
+                    <SparklesIcon className="h-4 w-4 text-white" />
                   </div>
-                  <p className="text-xp-text mb-1 text-sm">{t('home.agentTitle')}</p>
-                  <p className="text-xp-text-muted max-w-xs text-xs">
-                    {t('home.agentDescription')}
-                  </p>
+                  <div>
+                    <p className="text-xp-text text-sm">{t('home.agentTitle')}</p>
+                    <p className="text-xp-text-muted text-xs">{t('home.agentDescription')}</p>
+                  </div>
                 </div>
               )}
 
