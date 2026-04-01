@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { STORAGE_KEYS } from '@/lib/storage-keys';
 import { useLocation } from 'wouter';
+import { useTranslation } from 'react-i18next';
 import {
   ArrowLeft,
   FolderOpen,
@@ -18,6 +19,7 @@ import {
   ChevronRight,
   Globe,
   FileCode,
+  RefreshCw,
 } from 'lucide-react';
 import {
   AgentService,
@@ -38,7 +40,14 @@ import PermissionsSettings from '@/components/settings/PermissionsSettings';
 import AccessibilitySettings from '@/components/settings/AccessibilitySettings';
 import FileAssociationsSettings from '@/components/settings/FileAssociationsSettings';
 import { loadFontSize } from '@/lib/utils';
-import { AppSettings, DEFAULT_SETTINGS, SETTINGS_KEY } from '@/components/settings/shared';
+import {
+  AppSettings,
+  DEFAULT_SETTINGS,
+  SETTINGS_KEY,
+  Toggle,
+  SettingRow,
+  Divider,
+} from '@/components/settings/shared';
 
 type SettingsTab =
   | 'general'
@@ -107,9 +116,15 @@ const DEFAULT_MARKETPLACE_URL = 'https://xplorer.space/api';
 const MarketplaceSettings = ({
   marketplaceUrl,
   setMarketplaceUrl,
+  autoUpdateExtensions,
+  setAutoUpdateExtensions,
+  t,
 }: {
   marketplaceUrl: string;
   setMarketplaceUrl: (v: string) => void;
+  autoUpdateExtensions: boolean;
+  setAutoUpdateExtensions: (v: boolean) => void;
+  t: (key: string) => string;
 }) => (
   <div className="space-y-1">
     <div className="mb-1 px-4 pb-1 pt-2">
@@ -153,11 +168,30 @@ const MarketplaceSettings = ({
         </div>
       </div>
     </div>
+    <Divider />
+    <div className="mb-1 px-4 pb-1 pt-2">
+      <h3 className="text-xp-text-secondary text-xs font-semibold uppercase tracking-wider">
+        Updates
+      </h3>
+    </div>
+    <SettingRow
+      icon={RefreshCw}
+      label={t('extensions.autoUpdate')}
+      description={t('extensions.autoUpdateDescription')}
+    >
+      <Toggle
+        id="autoUpdateExtensions"
+        label={t('extensions.autoUpdate')}
+        checked={autoUpdateExtensions}
+        onChange={setAutoUpdateExtensions}
+      />
+    </SettingRow>
   </div>
 );
 
 const Settings = () => {
   const [, setLocation] = useLocation();
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<SettingsTab>('general');
 
   const [settings, setSettings] = useState<AppSettings>(() => {
@@ -181,6 +215,20 @@ const Settings = () => {
   useEffect(() => {
     localStorage.setItem(MARKETPLACE_KEY, marketplaceUrl);
   }, [marketplaceUrl]);
+
+  const [autoUpdateExtensions, setAutoUpdateExtensions] = useState(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEYS.AUTO_UPDATE_EXTENSIONS);
+      // Default to true if not explicitly set
+      return raw === null || raw === 'true';
+    } catch {
+      return true;
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.AUTO_UPDATE_EXTENSIONS, String(autoUpdateExtensions));
+  }, [autoUpdateExtensions]);
 
   const [agentSettings, setAgentSettings] = useState<SafeAgentSettings>({
     enabled: true,
@@ -345,6 +393,9 @@ const Settings = () => {
           <MarketplaceSettings
             marketplaceUrl={marketplaceUrl}
             setMarketplaceUrl={setMarketplaceUrl}
+            autoUpdateExtensions={autoUpdateExtensions}
+            setAutoUpdateExtensions={setAutoUpdateExtensions}
+            t={t}
           />
         );
       case 'accessibility':

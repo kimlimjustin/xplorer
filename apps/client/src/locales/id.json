@@ -765,6 +765,18 @@
   "extensions": {
     "devMode": "DEV",
     "devReloaded": "Ekstensi dimuat ulang",
-    "devWatching": "Memantau perubahan..."
+    "devWatching": "Memantau perubahan...",
+    "updateAvailable": "Pembaruan tersedia: v{{version}}",
+    "updating": "Memperbarui...",
+    "updated": "Diperbarui ke v{{version}}",
+    "updateAll": "Perbarui Semua",
+    "updateSingle": "Perbarui",
+    "updatesFound": "Pembaruan ekstensi tersedia",
+    "updatesFoundDesc": "{{count}} ekstensi memiliki pembaruan",
+    "updateFailed": "Pembaruan gagal",
+    "updateFailedDesc": "Gagal memperbarui {{name}}: {{error}}",
+    "autoUpdate": "Perbarui ekstensi otomatis",
+    "autoUpdateDescription": "Perbarui ekstensi secara otomatis saat versi baru tersedia",
+    "allUpToDate": "Semua ekstensi sudah terbaru"
   }
 }

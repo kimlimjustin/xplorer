@@ -237,10 +237,20 @@ export const getActiveBottomTabs = <T extends { extensionId: string }>(
   return tabs;
 };
 
-/** Check for extension updates from the marketplace. */
+/** Info about a single available extension update. */
+export interface ExtensionUpdateInfo {
+  id: string;
+  currentVersion: string;
+  latestVersion: string;
+  downloadUrl: string;
+  checksum: string;
+  changelog?: string;
+}
+
+/** Check for extension updates from the marketplace. Returns available updates. */
 export const checkForUpdates = async (
   installed: Array<{ manifest: { id: string; version?: string } }>,
-): Promise<void> => {
+): Promise<ExtensionUpdateInfo[]> => {
   try {
     const { TauriAPI: API } = await import('./tauri-api');
     const marketplaceUrl =
@@ -251,21 +261,18 @@ export const checkForUpdates = async (
     }));
 
     const updates = await API.checkForExtensionUpdates(marketplaceUrl, extList);
-    if (updates.length === 0) return;
+    if (updates.length === 0) return [];
 
-    for (const update of updates) {
-      console.warn(
-        `[ExtensionHost] Update available: ${update.id} ${update.current_version} → ${update.latest_version}`,
-      );
-
-      try {
-        await API.downloadExtensionUpdate(update.download_url, update.checksum);
-        console.warn(`[ExtensionHost] Updated ${update.id} to ${update.latest_version}`);
-      } catch (dlErr) {
-        console.error(`[ExtensionHost] Failed to update ${update.id}:`, dlErr);
-      }
-    }
+    return updates.map((u) => ({
+      id: u.id,
+      currentVersion: u.current_version,
+      latestVersion: u.latest_version,
+      downloadUrl: u.download_url,
+      checksum: u.checksum,
+      changelog: u.changelog,
+    }));
   } catch {
     // Network errors are expected (offline, marketplace down) — silently ignore
+    return [];
   }
 };

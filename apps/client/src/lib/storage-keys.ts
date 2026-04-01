@@ -67,6 +67,9 @@ export const STORAGE_KEYS = {
 
   // File open preferences (Open With)
   FILE_OPEN_PREFS: 'xplorer:file-open-prefs',
+
+  // Extension auto-update
+  AUTO_UPDATE_EXTENSIONS: 'xplorer:auto-update-extensions',
 } as const;
 
 export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];

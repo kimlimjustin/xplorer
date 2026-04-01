@@ -765,6 +765,18 @@
   "extensions": {
     "devMode": "开发",
     "devReloaded": "扩展已重新加载",
-    "devWatching": "正在监听更改..."
+    "devWatching": "正在监听更改...",
+    "updateAvailable": "有可用更新：v{{version}}",
+    "updating": "更新中...",
+    "updated": "已更新至 v{{version}}",
+    "updateAll": "全部更新",
+    "updateSingle": "更新",
+    "updatesFound": "扩展有可用更新",
+    "updatesFoundDesc": "{{count}} 个扩展有可用更新",
+    "updateFailed": "更新失败",
+    "updateFailedDesc": "更新 {{name}} 失败：{{error}}",
+    "autoUpdate": "自动更新扩展",
+    "autoUpdateDescription": "当有新版本可用时自动更新扩展",
+    "allUpToDate": "所有扩展已是最新版本"
   }
 }

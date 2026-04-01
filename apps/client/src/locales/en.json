@@ -765,6 +765,18 @@
   "extensions": {
     "devMode": "DEV",
     "devReloaded": "Extension reloaded",
-    "devWatching": "Watching for changes..."
+    "devWatching": "Watching for changes...",
+    "updateAvailable": "Update available: v{{version}}",
+    "updating": "Updating...",
+    "updated": "Updated to v{{version}}",
+    "updateAll": "Update All",
+    "updateSingle": "Update",
+    "updatesFound": "Extension updates available",
+    "updatesFoundDesc": "{{count}} extension(s) have updates available",
+    "updateFailed": "Update failed",
+    "updateFailedDesc": "Failed to update {{name}}: {{error}}",
+    "autoUpdate": "Auto-update extensions",
+    "autoUpdateDescription": "Automatically update extensions when new versions are available",
+    "allUpToDate": "All extensions are up to date"
   }
 }

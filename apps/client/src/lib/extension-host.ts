@@ -33,11 +33,13 @@ import {
   getActiveSidebarTabs,
   getActiveBottomTabs,
   checkForUpdates,
+  type ExtensionUpdateInfo,
 } from './extension-host-queries';
 
 // Re-export all types and helpers so consumers can import from either location
 export * from './extension-host-types';
 export { resolveIcon } from './extension-host-icon';
+export type { ExtensionUpdateInfo } from './extension-host-queries';
 
 // ─── Extension Host ────────────────────────────────────────────────────────────
 
@@ -91,6 +93,8 @@ class ExtensionHost {
   private eventBus = new EventBus();
   private changeListeners = new Set<() => void>();
   private expectedExtensionId: string | null = null;
+  private availableUpdates = new Map<string, ExtensionUpdateInfo>();
+  private updatingExtensions = new Set<string>();
 
   constructor() {
     if (typeof window !== 'undefined') {
@@ -844,8 +848,109 @@ class ExtensionHost {
   private async checkForUpdatesAndNotify(
     installed: Array<{ manifest: { id: string; version?: string } }>,
   ): Promise<void> {
-    await checkForUpdates(installed);
+    const updates = await checkForUpdates(installed);
+    if (updates.length === 0) return;
+
+    // Store available updates
+    for (const update of updates) {
+      this.availableUpdates.set(update.id, update);
+      console.warn(
+        `[ExtensionHost] Update available: ${update.id} ${update.currentVersion} -> ${update.latestVersion}`,
+      );
+    }
+
     this.notifyChange();
+
+    // Emit event for UI to show toast notifications
+    this.eventBus.emit('extensionUpdatesAvailable', updates);
+
+    // Check if auto-update is enabled
+    const autoUpdateRaw = localStorage.getItem(STORAGE_KEYS.AUTO_UPDATE_EXTENSIONS);
+    // Default to true if not explicitly set
+    const autoUpdateEnabled = autoUpdateRaw === null || autoUpdateRaw === 'true';
+
+    if (autoUpdateEnabled) {
+      // Auto-update all extensions
+      for (const update of updates) {
+        await this.applyExtensionUpdate(update.id);
+      }
+    }
+  }
+
+  /** Apply a pending update for a specific extension. */
+  async applyExtensionUpdate(extensionId: string): Promise<boolean> {
+    const update = this.availableUpdates.get(extensionId);
+    if (!update) return false;
+
+    this.updatingExtensions.add(extensionId);
+    this.notifyChange();
+
+    try {
+      // Download the new bundle
+      await TauriAPI.downloadAndInstallExtension(update.downloadUrl, extensionId, update.checksum);
+
+      // Unload the current version
+      await this.unloadExtension(extensionId);
+
+      // Reload the installed extensions to pick up the new version
+      const installed = await TauriAPI.getInstalledExtensions();
+      const updatedPkg = installed.find((p) => p.manifest.id === extensionId);
+      if (updatedPkg) {
+        await this.loadExtension(updatedPkg);
+        await this.activateExtension(extensionId);
+      }
+
+      // Remove from available updates
+      this.availableUpdates.delete(extensionId);
+      this.updatingExtensions.delete(extensionId);
+      this.notifyChange();
+
+      // Emit event for UI to show success toast
+      this.eventBus.emit('extensionUpdated', {
+        id: extensionId,
+        version: update.latestVersion,
+      });
+
+      console.warn(`[ExtensionHost] Updated ${extensionId} to ${update.latestVersion}`);
+      return true;
+    } catch (err) {
+      this.updatingExtensions.delete(extensionId);
+      this.notifyChange();
+      console.error(`[ExtensionHost] Failed to update ${extensionId}:`, err);
+      this.eventBus.emit('extensionUpdateFailed', {
+        id: extensionId,
+        error: err instanceof Error ? err.message : String(err),
+      });
+      return false;
+    }
+  }
+
+  /** Apply all pending extension updates. */
+  async applyAllUpdates(): Promise<void> {
+    const updateIds = Array.from(this.availableUpdates.keys());
+    for (const id of updateIds) {
+      await this.applyExtensionUpdate(id);
+    }
+  }
+
+  /** Get available updates for all extensions. */
+  getAvailableUpdates(): Map<string, ExtensionUpdateInfo> {
+    return new Map(this.availableUpdates);
+  }
+
+  /** Get update info for a specific extension. */
+  getUpdateForExtension(extensionId: string): ExtensionUpdateInfo | undefined {
+    return this.availableUpdates.get(extensionId);
+  }
+
+  /** Check if an extension is currently being updated. */
+  isUpdating(extensionId: string): boolean {
+    return this.updatingExtensions.has(extensionId);
+  }
+
+  /** Check if any extensions have pending updates. */
+  hasUpdatesAvailable(): boolean {
+    return this.availableUpdates.size > 0;
   }
 
   async activateExtension(id: string): Promise<void> {

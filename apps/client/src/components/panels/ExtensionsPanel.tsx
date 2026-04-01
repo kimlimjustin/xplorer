@@ -4,7 +4,7 @@ import { TauriAPI, type ExtensionManifestInfo } from '@/lib/tauri-api';
 import { AgentService } from '@/lib/agent-service';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from 'react-i18next';
-import { Bot } from 'lucide-react';
+import { Bot, ArrowDownCircle } from 'lucide-react';
 import PermissionReviewDialog from '@/components/dialogs/PermissionReviewDialog';
 
 interface Theme {
@@ -99,6 +99,54 @@ const ExtensionsPanel = ({ themes, theme, applyTheme }: ExtensionsPanelProps) =>
     },
     [toast],
   );
+
+  // Listen for extension update events and show toasts
+  useEffect(() => {
+    const updatesAvailableDispose = extensionHost.onEvent(
+      'extensionUpdatesAvailable',
+      (updates: unknown) => {
+        const updateList = updates as Array<{ id: string; latestVersion: string }>;
+        if (updateList.length > 0) {
+          toast({
+            title: t('extensions.updatesFound'),
+            description: t('extensions.updatesFoundDesc', { count: updateList.length }),
+          });
+        }
+      },
+    );
+    const updatedDispose = extensionHost.onEvent('extensionUpdated', (info: unknown) => {
+      const { id, version } = info as { id: string; version: string };
+      const ext = extensionHost.getExtension(id);
+      const name = ext?.manifest.display_name || ext?.manifest.name || id;
+      toast({
+        title: `${name}`,
+        description: t('extensions.updated', { version }),
+      });
+    });
+    const updateFailedDispose = extensionHost.onEvent('extensionUpdateFailed', (info: unknown) => {
+      const { id, error } = info as { id: string; error: string };
+      const ext = extensionHost.getExtension(id);
+      const name = ext?.manifest.display_name || ext?.manifest.name || id;
+      toast({
+        variant: 'destructive',
+        title: t('extensions.updateFailed'),
+        description: t('extensions.updateFailedDesc', { name, error }),
+      });
+    });
+    return () => {
+      updatesAvailableDispose.dispose();
+      updatedDispose.dispose();
+      updateFailedDispose.dispose();
+    };
+  }, [toast, t]);
+
+  const handleUpdateExtension = useCallback(async (id: string) => {
+    await extensionHost.applyExtensionUpdate(id);
+  }, []);
+
+  const handleUpdateAll = useCallback(async () => {
+    await extensionHost.applyAllUpdates();
+  }, []);
 
   const handleInstallFromFolder = useCallback(async () => {
     try {
@@ -207,60 +255,110 @@ const ExtensionsPanel = ({ themes, theme, applyTheme }: ExtensionsPanelProps) =>
       {/* Installed Extensions */}
       {allExtensions.length > 0 && (
         <div className="mb-4">
-          <h4 className="text-xp-text mb-2 text-xs font-semibold uppercase tracking-wider">
-            Installed Extensions ({allExtensions.length})
-          </h4>
-          <div className="space-y-1.5">
-            {allExtensions.map((ext) => (
-              <div
-                key={ext.id}
-                className="hover:bg-xp-surface-light group flex items-center justify-between rounded p-2 transition-colors"
+          <div className="mb-2 flex items-center justify-between">
+            <h4 className="text-xp-text text-xs font-semibold uppercase tracking-wider">
+              Installed Extensions ({allExtensions.length})
+            </h4>
+            {extensionHost.hasUpdatesAvailable() && (
+              <button
+                onClick={handleUpdateAll}
+                aria-label={t('extensions.updateAll')}
+                className="bg-xp-blue flex items-center gap-1 rounded px-2 py-0.5 text-xs text-white transition-colors hover:bg-opacity-90"
               >
-                <div className="flex min-w-0 items-center space-x-2">
-                  <span className="flex-shrink-0 text-base">{resolveIcon(ext.manifest.icon)}</span>
-                  <div className="min-w-0">
-                    <p className="text-xp-text flex items-center gap-1.5 truncate text-sm">
-                      {ext.manifest.display_name || ext.manifest.name}
-                      {ext.isDev && (
-                        <span
-                          className="inline-flex items-center rounded bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-emerald-400"
-                          title={`${t('extensions.devWatching')} — ${t('extensions.devReloaded')}: ${ext.reloadCount ?? 0}`}
-                        >
-                          {t('extensions.devMode')}
-                        </span>
-                      )}
-                    </p>
-                    <p className="text-xp-text-muted text-xs">
-                      v{ext.manifest.version} by {ext.manifest.author}
-                    </p>
+                <ArrowDownCircle size={12} />
+                {t('extensions.updateAll')}
+              </button>
+            )}
+          </div>
+          <div className="space-y-1.5">
+            {allExtensions.map((ext) => {
+              const update = extensionHost.getUpdateForExtension(ext.id);
+              const isUpdatingExt = extensionHost.isUpdating(ext.id);
+              return (
+                <div
+                  key={ext.id}
+                  className="hover:bg-xp-surface-light group flex items-center justify-between rounded p-2 transition-colors"
+                >
+                  <div className="flex min-w-0 items-center space-x-2">
+                    <span className="flex-shrink-0 text-base">
+                      {resolveIcon(ext.manifest.icon)}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-xp-text flex items-center gap-1.5 truncate text-sm">
+                        {ext.manifest.display_name || ext.manifest.name}
+                        {ext.isDev && (
+                          <span
+                            className="inline-flex items-center rounded bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-emerald-400"
+                            title={`${t('extensions.devWatching')} — ${t('extensions.devReloaded')}: ${ext.reloadCount ?? 0}`}
+                          >
+                            {t('extensions.devMode')}
+                          </span>
+                        )}
+                        {update && (
+                          <span
+                            className="inline-flex items-center rounded bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-amber-400"
+                            title={t('extensions.updateAvailable', {
+                              version: update.latestVersion,
+                            })}
+                          >
+                            {t('extensions.updateAvailable', {
+                              version: update.latestVersion,
+                            })}
+                          </span>
+                        )}
+                      </p>
+                      <p className="text-xp-text-muted text-xs">
+                        v{ext.manifest.version} by {ext.manifest.author}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex flex-shrink-0 items-center space-x-1">
+                    {update && (
+                      <button
+                        onClick={() => handleUpdateExtension(ext.id)}
+                        disabled={isUpdatingExt}
+                        aria-label={`${t('extensions.updateSingle')} ${ext.manifest.display_name || ext.manifest.name}`}
+                        className="bg-xp-blue flex items-center gap-1 rounded px-2 py-0.5 text-xs text-white transition-colors hover:bg-opacity-90 disabled:opacity-50"
+                      >
+                        {isUpdatingExt ? (
+                          <>
+                            <span className="h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                            {t('extensions.updating')}
+                          </>
+                        ) : (
+                          <>
+                            <ArrowDownCircle size={12} />
+                            {t('extensions.updateSingle')}
+                          </>
+                        )}
+                      </button>
+                    )}
+                    <button
+                      onClick={() => handleToggleExtension(ext.id)}
+                      aria-label={
+                        ext.isActive
+                          ? `Disable ${ext.manifest.display_name || ext.manifest.name}`
+                          : `Enable ${ext.manifest.display_name || ext.manifest.name}`
+                      }
+                      className={`rounded px-2 py-0.5 text-xs transition-colors ${
+                        ext.isActive
+                          ? 'bg-xp-green text-xp-green bg-opacity-20'
+                          : 'bg-xp-border text-xp-text-muted'
+                      }`}
+                    >
+                      {ext.isActive ? 'On' : 'Off'}
+                    </button>
+                    <button
+                      onClick={() => handleUninstall(ext.id)}
+                      aria-label={`Uninstall ${ext.manifest.display_name || ext.manifest.name}`}
+                      className="text-xp-red hover:bg-xp-red rounded px-2 py-0.5 text-xs opacity-0 transition-all hover:bg-opacity-10 group-hover:opacity-100"
+                    >
+                      Uninstall
+                    </button>
                   </div>
                 </div>
-                <div className="flex flex-shrink-0 items-center space-x-1">
-                  <button
-                    onClick={() => handleToggleExtension(ext.id)}
-                    aria-label={
-                      ext.isActive
-                        ? `Disable ${ext.manifest.display_name || ext.manifest.name}`
-                        : `Enable ${ext.manifest.display_name || ext.manifest.name}`
-                    }
-                    className={`rounded px-2 py-0.5 text-xs transition-colors ${
-                      ext.isActive
-                        ? 'bg-xp-green text-xp-green bg-opacity-20'
-                        : 'bg-xp-border text-xp-text-muted'
-                    }`}
-                  >
-                    {ext.isActive ? 'On' : 'Off'}
-                  </button>
-                  <button
-                    onClick={() => handleUninstall(ext.id)}
-                    aria-label={`Uninstall ${ext.manifest.display_name || ext.manifest.name}`}
-                    className="text-xp-red hover:bg-xp-red rounded px-2 py-0.5 text-xs opacity-0 transition-all hover:bg-opacity-10 group-hover:opacity-100"
-                  >
-                    Uninstall
-                  </button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
