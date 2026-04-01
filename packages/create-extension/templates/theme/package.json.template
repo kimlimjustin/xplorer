@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "type": "module",
   "scripts": {
-    "dev": "vite build --watch",
+    "dev": "node -e \"require('fs').writeFileSync('.hotreload',String(Date.now()))\" && vite build --watch; node -e \"try{require('fs').unlinkSync('.hotreload')}catch{}\"",
     "build": "vite build",
     "test": "vitest",
     "package": "npm run build && zip -r {{name}}.spx dist/ package.json README.md"
