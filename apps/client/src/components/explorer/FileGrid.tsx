@@ -93,11 +93,9 @@ const FileGrid = ({
   // Listen for file-change events so git status refreshes after staging/committing/editing
   useEffect(() => {
     const bump = () => setGitRefetchCounter((c) => c + 1);
-    window.addEventListener('xplorer:files-changed', bump);
-    window.addEventListener('xplorer:git-changed', bump);
+    window.addEventListener('files-changed', bump);
     return () => {
-      window.removeEventListener('xplorer:files-changed', bump);
-      window.removeEventListener('xplorer:git-changed', bump);
+      window.removeEventListener('files-changed', bump);
     };
   }, []);
 
