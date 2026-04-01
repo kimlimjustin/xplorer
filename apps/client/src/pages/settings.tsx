@@ -17,6 +17,7 @@ import {
   Settings2,
   ChevronRight,
   Globe,
+  FileCode,
 } from 'lucide-react';
 import {
   AgentService,
@@ -35,12 +36,14 @@ import ExplorerSettings from '@/components/settings/ExplorerSettings';
 import AISettings from '@/components/settings/AISettings';
 import PermissionsSettings from '@/components/settings/PermissionsSettings';
 import AccessibilitySettings from '@/components/settings/AccessibilitySettings';
+import FileAssociationsSettings from '@/components/settings/FileAssociationsSettings';
 import { loadFontSize } from '@/lib/utils';
 import { AppSettings, DEFAULT_SETTINGS, SETTINGS_KEY } from '@/components/settings/shared';
 
 type SettingsTab =
   | 'general'
   | 'explorer'
+  | 'file-associations'
   | 'context-menu'
   | 'ai'
   | 'permissions'
@@ -55,6 +58,12 @@ type SettingsTab =
 const tabs: { id: SettingsTab; label: string; icon: React.ElementType; description: string }[] = [
   { id: 'general', label: 'General', icon: Settings2, description: 'Appearance, layout & system' },
   { id: 'explorer', label: 'File Explorer', icon: FolderOpen, description: 'Views & file display' },
+  {
+    id: 'file-associations',
+    label: 'File Associations',
+    icon: FileCode,
+    description: 'Open-with defaults',
+  },
   {
     id: 'context-menu',
     label: 'Context Menu',
@@ -299,6 +308,8 @@ const Settings = () => {
         );
       case 'explorer':
         return <ExplorerSettings settings={settings} updateSetting={updateSetting} />;
+      case 'file-associations':
+        return <FileAssociationsSettings />;
       case 'context-menu':
         return <ContextMenuRulesCard />;
       case 'ai':

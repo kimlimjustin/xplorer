@@ -237,7 +237,17 @@
       "audit": "Log Audit",
       "auditDesc": "Riwayat operasi file",
       "versioning": "Versi",
-      "versioningDesc": "Riwayat versi file"
+      "versioningDesc": "Riwayat versi file",
+      "fileAssociations": "Asosiasi File",
+      "fileAssociationsDesc": "Pengaturan buka-dengan default"
+    },
+    "fileAssociations": {
+      "title": "Asosiasi File",
+      "description": "Pilih cara membuka berbagai jenis file. Atur default dengan mengklik dua kali file kode dan mencentang \"Selalu gunakan ini\".",
+      "noPreferences": "Belum ada preferensi asosiasi file. Klik dua kali file kode untuk mengaturnya.",
+      "reset": "Reset",
+      "resetExt": "Reset default untuk file .{{ext}}",
+      "resetAll": "Reset semua asosiasi file"
     },
     "general": {
       "appearance": "Tampilan",
@@ -559,6 +569,19 @@
     "betaWarning": "Peringatan Beta",
     "extensionInstall": "Pasang Ekstensi",
     "advancedSelection": "Pilihan Lanjutan"
+  },
+
+  "openWith": {
+    "title": "Buka Dengan",
+    "xplorerEditor": "Editor Xplorer",
+    "xplorerEditorDesc": "Buka di editor kode bawaan",
+    "vscode": "VS Code",
+    "vscodeDesc": "Buka di Visual Studio Code",
+    "systemDefault": "Default Sistem",
+    "systemDefaultDesc": "Buka dengan aplikasi default OS",
+    "alwaysUse": "Selalu gunakan ini untuk file .{{ext}}",
+    "open": "Buka",
+    "cancel": "Batal"
   },
 
   "permissions": {

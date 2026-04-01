@@ -9,6 +9,7 @@ import type { FileDetailsTab } from '@/components/dialogs/FileDetailsDialog';
 import type { Toast } from '@/hooks/use-toast';
 import type { EncryptionMode } from '@/components/dialogs/EncryptionDialog';
 import { extensionHost } from '@/lib/extension-host';
+import type { OpenHandler } from '@/hooks/use-open-with-prefs';
 
 import type { BatchOperationType } from '@/components/dialogs/BatchConfirmDialog';
 
@@ -40,6 +41,7 @@ export interface DialogLayerProps {
     openWithDialogOpen: boolean;
     closeOpenWithDialog: () => void;
     openWithDialogFile: string;
+    openWithDialogOnChoose: ((handler: OpenHandler) => void) | null;
     compressDialogOpen: boolean;
     closeCompressDialog: () => void;
     compressDialogFiles: FileEntry[];
@@ -192,6 +194,7 @@ const DialogLayer = ({
               isOpen={dialogManager.openWithDialogOpen}
               onClose={dialogManager.closeOpenWithDialog}
               filePath={dialogManager.openWithDialogFile}
+              onChoose={dialogManager.openWithDialogOnChoose ?? (() => {})}
             />
           </React.Suspense>
         </ErrorBoundary>

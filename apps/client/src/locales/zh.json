@@ -237,7 +237,17 @@
       "audit": "审计日志",
       "auditDesc": "文件操作历史",
       "versioning": "版本管理",
-      "versioningDesc": "文件版本历史"
+      "versioningDesc": "文件版本历史",
+      "fileAssociations": "文件关联",
+      "fileAssociationsDesc": "打开方式默认设置"
+    },
+    "fileAssociations": {
+      "title": "文件关联",
+      "description": "选择不同文件类型的打开方式。双击代码文件并勾选「始终使用此方式」来设置默认值。",
+      "noPreferences": "尚未设置文件关联偏好。双击代码文件来设置。",
+      "reset": "重置",
+      "resetExt": "重置 .{{ext}} 文件的默认打开方式",
+      "resetAll": "重置所有文件关联"
     },
     "general": {
       "appearance": "外观",
@@ -559,6 +569,19 @@
     "betaWarning": "Beta 警告",
     "extensionInstall": "安装扩展",
     "advancedSelection": "高级选择"
+  },
+
+  "openWith": {
+    "title": "打开方式",
+    "xplorerEditor": "Xplorer 编辑器",
+    "xplorerEditorDesc": "在内置代码编辑器中打开",
+    "vscode": "VS Code",
+    "vscodeDesc": "在 Visual Studio Code 中打开",
+    "systemDefault": "系统默认",
+    "systemDefaultDesc": "使用操作系统默认应用程序打开",
+    "alwaysUse": "始终使用此方式打开 .{{ext}} 文件",
+    "open": "打开",
+    "cancel": "取消"
   },
 
   "permissions": {

@@ -237,7 +237,17 @@
       "audit": "監査ログ",
       "auditDesc": "ファイル操作履歴",
       "versioning": "バージョニング",
-      "versioningDesc": "ファイルバージョン履歴"
+      "versioningDesc": "ファイルバージョン履歴",
+      "fileAssociations": "ファイルの関連付け",
+      "fileAssociationsDesc": "既定のプログラム設定"
+    },
+    "fileAssociations": {
+      "title": "ファイルの関連付け",
+      "description": "ファイルタイプごとの開き方を選択します。コードファイルをダブルクリックして「常にこれを使用する」にチェックを入れてデフォルトを設定できます。",
+      "noPreferences": "ファイルの関連付け設定はまだありません。コードファイルをダブルクリックして設定してください。",
+      "reset": "リセット",
+      "resetExt": ".{{ext}} ファイルのデフォルトをリセット",
+      "resetAll": "すべてのファイルの関連付けをリセット"
     },
     "general": {
       "appearance": "外観",
@@ -559,6 +569,19 @@
     "betaWarning": "ベータ警告",
     "extensionInstall": "拡張機能をインストール",
     "advancedSelection": "高度な選択"
+  },
+
+  "openWith": {
+    "title": "プログラムから開く",
+    "xplorerEditor": "Xplorer エディタ",
+    "xplorerEditorDesc": "内蔵コードエディタで開く",
+    "vscode": "VS Code",
+    "vscodeDesc": "Visual Studio Code で開く",
+    "systemDefault": "システムデフォルト",
+    "systemDefaultDesc": "OS のデフォルトアプリケーションで開く",
+    "alwaysUse": ".{{ext}} ファイルに常にこれを使用する",
+    "open": "開く",
+    "cancel": "キャンセル"
   },
 
   "permissions": {

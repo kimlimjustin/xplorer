@@ -1,292 +1,187 @@
-import React, { useState, useEffect } from 'react';
-import { useToast } from '@/hooks/use-toast';
-import { TauriAPI, type Application, type FileAssociation } from '@/lib/tauri-api';
-import { getFileIcon } from '@/lib/utils';
-import { AlertTriangle, AppWindow } from 'lucide-react';
+import { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import { FileCode, Monitor, ExternalLink, X } from 'lucide-react';
+import {
+  type OpenHandler,
+  getFileExtension,
+  isCodeFile,
+  setOpenPreference,
+} from '@/hooks/use-open-with-prefs';
 
 interface OpenWithDialogProps {
   isOpen: boolean;
   onClose: () => void;
   filePath: string;
+  onChoose: (handler: OpenHandler) => void;
 }
 
-const OpenWithDialog = ({ isOpen, onClose, filePath }: OpenWithDialogProps) => {
-  const { toast } = useToast();
-  const [fileAssociation, setFileAssociation] = useState<FileAssociation | null>(null);
-  const [systemApps, setSystemApps] = useState<Application[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [selectedApp, setSelectedApp] = useState<Application | null>(null);
+interface HandlerOption {
+  id: OpenHandler;
+  labelKey: string;
+  descriptionKey: string;
+  Icon: React.ElementType;
+}
+
+const HANDLER_OPTIONS: HandlerOption[] = [
+  {
+    id: 'xplorer-editor',
+    labelKey: 'openWith.xplorerEditor',
+    descriptionKey: 'openWith.xplorerEditorDesc',
+    Icon: FileCode,
+  },
+  {
+    id: 'vscode',
+    labelKey: 'openWith.vscode',
+    descriptionKey: 'openWith.vscodeDesc',
+    Icon: ExternalLink,
+  },
+  {
+    id: 'system',
+    labelKey: 'openWith.systemDefault',
+    descriptionKey: 'openWith.systemDefaultDesc',
+    Icon: Monitor,
+  },
+];
+
+const OpenWithDialog = ({ isOpen, onClose, filePath, onChoose }: OpenWithDialogProps) => {
+  const { t } = useTranslation();
+  const [selected, setSelected] = useState<OpenHandler>('xplorer-editor');
   const [rememberChoice, setRememberChoice] = useState(false);
 
-  useEffect(() => {
-    if (isOpen && filePath) {
-      loadFileAssociations();
+  const ext = getFileExtension(filePath);
+  const fileName = filePath.split(/[/\\]/).pop() ?? '';
+  const isCode = isCodeFile(filePath);
+
+  const handleOpen = useCallback(() => {
+    if (rememberChoice && ext) {
+      setOpenPreference(ext, selected);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, filePath]);
-
-  const loadFileAssociations = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const [associations, apps] = await Promise.all([
-        TauriAPI.getFileAssociations(filePath),
-        TauriAPI.getSystemApplications(),
-      ]);
-
-      setFileAssociation(associations);
-      setSystemApps(apps);
-
-      // Set default selected app
-      if (associations.default_app) {
-        setSelectedApp(associations.default_app);
-      } else if (associations.available_apps.length > 0) {
-        setSelectedApp(associations.available_apps[0]);
-      }
-    } catch (err) {
-      setError((err as Error).message);
-      toast({
-        title: 'Error Loading Applications',
-        description: `Failed to load available applications: ${(err as Error).message}`,
-        variant: 'destructive',
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleOpenWith = async () => {
-    if (!selectedApp) {
-      toast({
-        title: 'No Application Selected',
-        description: 'Please select an application to open the file with.',
-        variant: 'destructive',
-      });
-      return;
-    }
-
-    try {
-      await TauriAPI.openFileWithApplication(filePath, selectedApp.path);
-
-      // If user wants to remember this choice, set as default
-      if (rememberChoice && fileAssociation) {
-        try {
-          await TauriAPI.setDefaultApplication(fileAssociation.extension, selectedApp.path);
-          toast({
-            title: 'Default Application Set',
-            description: `${selectedApp.name} is now the default application for .${fileAssociation.extension} files.`,
-          });
-        } catch (err) {
-          // Don't show error for setting default - it's not critical
-          console.warn('Failed to set default application:', err);
-        }
-      }
-
-      toast({
-        title: 'File Opened',
-        description: `Opened ${filePath.split('/').pop()} with ${selectedApp.name}`,
-      });
-
-      onClose();
-    } catch (err) {
-      toast({
-        title: 'Error Opening File',
-        description: `Failed to open file: ${(err as Error).message}`,
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const handleClose = () => {
-    setSelectedApp(null);
-    setRememberChoice(false);
-    setError(null);
+    onChoose(selected);
     onClose();
-  };
+  }, [rememberChoice, ext, selected, onChoose, onClose]);
 
-  const getFileName = () => {
-    return filePath.split(/[/\\]/).pop() || 'Unknown File';
-  };
+  const handleClose = useCallback(() => {
+    setSelected('xplorer-editor');
+    setRememberChoice(false);
+    onClose();
+  }, [onClose]);
 
-  const getApplicationIcon = (_app: Application): React.ReactNode => {
-    return <AppWindow size="1em" className="inline-block" />;
-  };
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        handleClose();
+      } else if (e.key === 'Enter') {
+        handleOpen();
+      }
+    },
+    [handleClose, handleOpen],
+  );
 
   if (!isOpen) return null;
 
+  // For non-code files, fall through — this dialog is code-file specific.
+  // The caller should not open this for non-code files, but guard just in case.
+  const options = isCode
+    ? HANDLER_OPTIONS
+    : HANDLER_OPTIONS.filter((o) => o.id !== 'xplorer-editor');
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-xp-surface max-h-[90vh] w-[500px] max-w-[90vw] overflow-hidden rounded-lg shadow-2xl">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={t('openWith.title')}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+      onKeyDown={handleKeyDown}
+    >
+      <div className="bg-xp-surface border-xp-border w-[420px] max-w-[90vw] overflow-hidden rounded-xl border shadow-2xl">
         {/* Header */}
-        <div className="border-xp-border flex items-center justify-between border-b p-6">
-          <h2 className="text-xp-text text-xl font-semibold">Open With</h2>
+        <div className="border-xp-border flex items-center justify-between border-b px-5 py-4">
+          <div>
+            <h2 className="text-xp-text text-base font-semibold">{t('openWith.title')}</h2>
+            <p className="text-xp-text-secondary mt-0.5 max-w-[300px] truncate text-xs">
+              {fileName}
+            </p>
+          </div>
           <button
             onClick={handleClose}
-            className="hover:bg-xp-surface-light rounded-md p-2 transition-colors"
-            aria-label="Close open with dialog"
+            className="text-xp-text-secondary hover:bg-xp-surface-light hover:text-xp-text rounded-md p-1.5 transition-colors"
+            aria-label={t('openWith.cancel')}
           >
-            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-              <path
-                fillRule="evenodd"
-                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                clipRule="evenodd"
-              />
-            </svg>
+            <X size={16} />
           </button>
         </div>
 
-        {/* Content */}
-        <div className="max-h-[60vh] overflow-y-auto p-6">
-          {/* eslint-disable-next-line no-nested-ternary */}
-          {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="border-xp-blue h-8 w-8 animate-spin rounded-full border-b-2" />
-              <span className="text-xp-text-muted ml-3">Loading applications...</span>
-            </div>
-          ) : error ? (
-            <div className="py-12 text-center">
-              <div className="mb-4 text-4xl text-red-400">
-                <AlertTriangle size="1em" className="inline-block" />
-              </div>
-              <h3 className="text-xp-text mb-2 text-lg font-medium">Error Loading Applications</h3>
-              <p className="text-xp-text-muted mb-4">{error}</p>
+        {/* Options */}
+        <div className="space-y-1.5 p-4">
+          {options.map(({ id, labelKey, descriptionKey, Icon }) => {
+            const isSelected = selected === id;
+            return (
               <button
-                onClick={loadFileAssociations}
-                className="bg-xp-blue hover:bg-xp-blue-dark rounded px-4 py-2 text-white transition-colors"
+                key={id}
+                onClick={() => setSelected(id)}
+                className={`flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left transition-all ${
+                  isSelected
+                    ? 'bg-xp-accent/15 ring-xp-accent/40 ring-1'
+                    : 'hover:bg-xp-surface-light'
+                }`}
               >
-                Try Again
+                <div
+                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
+                    isSelected
+                      ? 'bg-xp-accent/20 text-xp-accent'
+                      : 'bg-xp-bg text-xp-text-secondary'
+                  }`}
+                >
+                  <Icon size={18} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div
+                    className={`text-sm font-medium ${isSelected ? 'text-xp-accent' : 'text-xp-text'}`}
+                  >
+                    {t(labelKey)}
+                  </div>
+                  <div className="text-xp-text-secondary text-xs">{t(descriptionKey)}</div>
+                </div>
+                <div
+                  className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
+                    isSelected ? 'border-xp-accent bg-xp-accent' : 'border-xp-border'
+                  }`}
+                >
+                  {isSelected && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
+                </div>
               </button>
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {/* File Information */}
-              <div className="bg-xp-bg flex items-center space-x-4 rounded-lg p-4">
-                <div className="text-4xl">
-                  {getFileIcon({
-                    name: getFileName(),
-                    is_dir: false,
-                    path: filePath,
-                    size: 0,
-                    modified: 0,
-                    file_type: fileAssociation?.extension || '',
-                    is_readonly: false,
-                  })}
-                </div>
-                <div>
-                  <h3 className="text-xp-text text-lg font-medium">{getFileName()}</h3>
-                  {fileAssociation && (
-                    <p className="text-xp-text-muted text-sm">
-                      {fileAssociation.extension && `.${fileAssociation.extension} file`}
-                      {fileAssociation.mime_type && ` (${fileAssociation.mime_type})`}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* Available Applications */}
-              <div>
-                <h4 className="text-md text-xp-text mb-3 font-medium">Choose an application:</h4>
-                <div className="max-h-64 space-y-2 overflow-y-auto">
-                  {/* Recommended applications first */}
-                  {fileAssociation?.available_apps && fileAssociation.available_apps.length > 0 && (
-                    <>
-                      <p className="text-xp-text-muted mb-2 px-2 text-xs">Recommended:</p>
-                      {fileAssociation.available_apps.map((app) => (
-                        <div
-                          key={`recommended-${app.path}`}
-                          className={`flex cursor-pointer items-center space-x-3 rounded p-3 transition-colors ${
-                            selectedApp?.path === app.path
-                              ? 'bg-xp-blue border-xp-blue border bg-opacity-20'
-                              : 'hover:bg-xp-surface-light border border-transparent'
-                          }`}
-                          onClick={() => setSelectedApp(app)}
-                        >
-                          <div className="text-2xl">{getApplicationIcon(app)}</div>
-                          <div className="flex-1">
-                            <div className="text-xp-text font-medium">{app.name}</div>
-                            <div className="text-xp-text-muted truncate text-xs">{app.path}</div>
-                            {app.is_default && (
-                              <span className="bg-xp-green text-xp-green rounded bg-opacity-20 px-2 py-0.5 text-xs">
-                                Default
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </>
-                  )}
-
-                  {/* Other system applications */}
-                  {systemApps.length > 0 && (
-                    <>
-                      <p className="text-xp-text-muted mb-2 mt-4 px-2 text-xs">
-                        Other applications:
-                      </p>
-                      {systemApps
-                        .filter(
-                          (app) =>
-                            !fileAssociation?.available_apps.some(
-                              (recApp) => recApp.path === app.path,
-                            ),
-                        )
-                        .slice(0, 10) // Limit to prevent overwhelming UI
-                        .map((app) => (
-                          <div
-                            key={`system-${app.path}`}
-                            className={`flex cursor-pointer items-center space-x-3 rounded p-3 transition-colors ${
-                              selectedApp?.path === app.path
-                                ? 'bg-xp-blue border-xp-blue border bg-opacity-20'
-                                : 'hover:bg-xp-surface-light border border-transparent'
-                            }`}
-                            onClick={() => setSelectedApp(app)}
-                          >
-                            <div className="text-2xl">{getApplicationIcon(app)}</div>
-                            <div className="flex-1">
-                              <div className="text-xp-text font-medium">{app.name}</div>
-                              <div className="text-xp-text-muted truncate text-xs">{app.path}</div>
-                            </div>
-                          </div>
-                        ))}
-                    </>
-                  )}
-                </div>
-              </div>
-
-              {/* Remember choice option */}
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="remember-choice"
-                  checked={rememberChoice}
-                  onChange={(e) => setRememberChoice(e.target.checked)}
-                  className="text-xp-blue bg-xp-bg border-xp-border focus:ring-xp-blue h-4 w-4 rounded focus:ring-2"
-                />
-                <label htmlFor="remember-choice" className="text-xp-text cursor-pointer text-sm">
-                  Always use this application for .{fileAssociation?.extension || 'this'} files
-                </label>
-              </div>
-            </div>
-          )}
+            );
+          })}
         </div>
+
+        {/* Remember checkbox */}
+        {ext && (
+          <div className="border-xp-border border-t px-5 py-3">
+            <label className="flex cursor-pointer items-center gap-2">
+              <input
+                type="checkbox"
+                checked={rememberChoice}
+                onChange={(e) => setRememberChoice(e.target.checked)}
+                className="text-xp-accent bg-xp-bg border-xp-border focus:ring-xp-accent h-4 w-4 rounded focus:ring-2"
+              />
+              <span className="text-xp-text text-sm">{t('openWith.alwaysUse', { ext })}</span>
+            </label>
+          </div>
+        )}
 
         {/* Footer */}
-        <div className="border-xp-border bg-xp-bg flex justify-end space-x-3 border-t p-6">
+        <div className="border-xp-border flex justify-end gap-2 border-t px-5 py-3">
           <button
             onClick={handleClose}
-            className="text-xp-text hover:bg-xp-surface-light rounded px-4 py-2 transition-colors"
-            aria-label="Cancel"
+            className="text-xp-text hover:bg-xp-surface-light rounded-md px-4 py-2 text-sm transition-colors"
           >
-            Cancel
+            {t('openWith.cancel')}
           </button>
           <button
-            onClick={handleOpenWith}
-            disabled={!selectedApp || loading}
-            className="bg-xp-blue hover:bg-xp-blue-dark rounded px-4 py-2 text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50"
-            aria-label="Open file with selected application"
+            onClick={handleOpen}
+            className="bg-xp-accent hover:bg-xp-accent/80 rounded-md px-4 py-2 text-sm font-medium text-white transition-colors"
           >
-            Open
+            {t('openWith.open')}
           </button>
         </div>
       </div>

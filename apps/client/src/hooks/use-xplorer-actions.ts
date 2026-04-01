@@ -174,6 +174,7 @@ export const useXplorerActions = (deps: XplorerActionsDeps) => {
     navigateWithHistory: navigation.navigateWithHistory,
     crossTabSelection,
     refetch,
+    openOpenWithDialog: (...args) => dialogManagerRef.current.openOpenWithDialog(...args),
   });
 
   // ── Change summary toast handlers ──────────────────────────────────────────

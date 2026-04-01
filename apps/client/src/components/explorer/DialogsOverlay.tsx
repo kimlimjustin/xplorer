@@ -52,6 +52,9 @@ export interface DialogsOverlayProps {
     openWithDialogOpen: boolean;
     closeOpenWithDialog: () => void;
     openWithDialogFile: string;
+    openWithDialogOnChoose:
+      | ((handler: import('@/hooks/use-open-with-prefs').OpenHandler) => void)
+      | null;
     compressDialogOpen: boolean;
     closeCompressDialog: () => void;
     compressDialogFiles: FileEntry[];

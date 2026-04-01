@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
 import { FileEntry } from '@/lib/tauri-api';
+import type { OpenHandler } from '@/hooks/use-open-with-prefs';
 import type { FileDetailsTab } from '@/components/dialogs/FileDetailsDialog';
 import type { EncryptionMode } from '@/components/dialogs/EncryptionDialog';
 import type { BatchOperationType } from '@/components/dialogs/BatchConfirmDialog';
@@ -17,7 +18,8 @@ export interface DialogState {
   // Open With
   openWithDialogOpen: boolean;
   openWithDialogFile: string;
-  openOpenWithDialog: (filePath: string) => void;
+  openWithDialogOnChoose: ((handler: OpenHandler) => void) | null;
+  openOpenWithDialog: (filePath: string, onChoose?: (handler: OpenHandler) => void) => void;
   closeOpenWithDialog: () => void;
 
   // Compress
@@ -194,11 +196,19 @@ export const useDialogs = (): DialogState => {
   // Open With
   const [openWithDialogOpen, setOpenWithDialogOpen] = useState(false);
   const [openWithDialogFile, setOpenWithDialogFile] = useState('');
-  const openOpenWithDialog = useCallback((filePath: string) => {
-    setOpenWithDialogFile(filePath);
-    setOpenWithDialogOpen(true);
+  const openWithOnChooseRef = useRef<((handler: OpenHandler) => void) | null>(null);
+  const openOpenWithDialog = useCallback(
+    (filePath: string, onChoose?: (handler: OpenHandler) => void) => {
+      setOpenWithDialogFile(filePath);
+      openWithOnChooseRef.current = onChoose ?? null;
+      setOpenWithDialogOpen(true);
+    },
+    [],
+  );
+  const closeOpenWithDialog = useCallback(() => {
+    setOpenWithDialogOpen(false);
+    openWithOnChooseRef.current = null;
   }, []);
-  const closeOpenWithDialog = useCallback(() => setOpenWithDialogOpen(false), []);
 
   // Compress
   const [compressDialogOpen, setCompressDialogOpen] = useState(false);
@@ -433,6 +443,7 @@ export const useDialogs = (): DialogState => {
     closePropertiesDialog,
     openWithDialogOpen,
     openWithDialogFile,
+    openWithDialogOnChoose: openWithOnChooseRef.current,
     openOpenWithDialog,
     closeOpenWithDialog,
     compressDialogOpen,

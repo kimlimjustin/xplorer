@@ -51,7 +51,10 @@ interface UseFileOperationsDeps {
   /** Dialog openers from useDialogManager */
   dialogs: {
     openPropertiesDialog: (path: string) => void;
-    openOpenWithDialog: (path: string) => void;
+    openOpenWithDialog: (
+      path: string,
+      onChoose?: (handler: import('@/hooks/use-open-with-prefs').OpenHandler) => void,
+    ) => void;
     openCompressDialog: (files: FileEntry[]) => void;
     openBulkRenameDialog: (files: FileEntry[]) => void;
     openExtractDialog: (path: string) => void;

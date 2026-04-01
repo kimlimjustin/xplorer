@@ -6,6 +6,12 @@ import type { TabItem, EditorGroup } from '@/types/split-view';
 import type { SplitLayoutHook } from '@/hooks/use-split-layout';
 import type { Toast } from '@/hooks/use-toast';
 import type { CrossTabSelectionState } from '@/hooks/use-cross-tab-selection';
+import {
+  type OpenHandler,
+  isCodeFile,
+  getFileExtension,
+  getOpenPreference,
+} from '@/hooks/use-open-with-prefs';
 
 export interface FileActionsDeps {
   splitLayoutRef: React.MutableRefObject<SplitLayoutHook>;
@@ -16,6 +22,7 @@ export interface FileActionsDeps {
   navigateWithHistory: (path: string) => void;
   crossTabSelection: CrossTabSelectionState;
   refetch: () => void;
+  openOpenWithDialog?: (path: string, onChoose?: (handler: OpenHandler) => void) => void;
 }
 
 export const useFileActions = (deps: FileActionsDeps) => {
@@ -28,6 +35,7 @@ export const useFileActions = (deps: FileActionsDeps) => {
     navigateWithHistory,
     crossTabSelection,
     refetch,
+    openOpenWithDialog,
   } = deps;
 
   const addTab = useCallback(
@@ -70,27 +78,84 @@ export const useFileActions = (deps: FileActionsDeps) => {
     [setSelectedFile, setSelectedFiles, toggleFileSelection],
   );
 
+  /** Execute a chosen open handler for a file. */
+  const executeOpenHandler = useCallback(
+    async (file: FileEntry, handler: OpenHandler) => {
+      try {
+        switch (handler) {
+          case 'xplorer-editor': {
+            const editorTab: TabItem = {
+              id: `editor-${file.path}-${Date.now()}`,
+              name: file.name,
+              path: file.path,
+              type: 'editor',
+            };
+            splitLayoutRef.current.addTab(activeGroupRef.current.id, editorTab, true);
+            break;
+          }
+          case 'vscode': {
+            const dir = file.path.replace(/[/\\][^/\\]*$/, '');
+            await TauriAPI.executeCommand(`code "${file.path}"`, dir);
+            break;
+          }
+          case 'system':
+            await TauriAPI.openFile(file.path);
+            break;
+        }
+      } catch (error) {
+        console.error('Failed to open file:', error);
+        toast({
+          variant: 'destructive',
+          title: 'Open File Failed',
+          description: `Failed to open "${file.name}": ${formatError(error)}`,
+        });
+      }
+    },
+    [splitLayoutRef, activeGroupRef, toast],
+  );
+
   const handleFileDoubleClick = useCallback(
     async (file: FileEntry) => {
       TauriAPI.addRecentFile(file.path).catch((err) =>
         console.error('Failed to add recent file:', err),
       );
-      if (!file.is_dir) {
-        try {
-          await TauriAPI.openFile(file.path);
-        } catch (error) {
-          console.error('Failed to open file:', error);
-          toast({
-            variant: 'destructive',
-            title: 'Open File Failed',
-            description: `Failed to open "${file.name}": ${formatError(error)}`,
-          });
-        }
-      } else {
+      if (file.is_dir) {
         navigateWithHistory(file.path);
+        return;
+      }
+
+      // For code/text files, check saved preference or show the Open With prompt
+      if (isCodeFile(file.path)) {
+        const ext = getFileExtension(file.path);
+        const savedPref = getOpenPreference(ext);
+
+        if (savedPref) {
+          await executeOpenHandler(file, savedPref);
+          return;
+        }
+
+        // No saved preference — show the dialog
+        if (openOpenWithDialog) {
+          openOpenWithDialog(file.path, (handler: OpenHandler) => {
+            executeOpenHandler(file, handler);
+          });
+          return;
+        }
+      }
+
+      // Default: open with system
+      try {
+        await TauriAPI.openFile(file.path);
+      } catch (error) {
+        console.error('Failed to open file:', error);
+        toast({
+          variant: 'destructive',
+          title: 'Open File Failed',
+          description: `Failed to open "${file.name}": ${formatError(error)}`,
+        });
       }
     },
-    [toast, navigateWithHistory],
+    [toast, navigateWithHistory, executeOpenHandler, openOpenWithDialog],
   );
 
   // ── Google Drive ───────────────────────────────────────────────────────────

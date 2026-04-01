@@ -237,7 +237,17 @@
       "audit": "Audit Log",
       "auditDesc": "File operation history",
       "versioning": "Versioning",
-      "versioningDesc": "File version history"
+      "versioningDesc": "File version history",
+      "fileAssociations": "File Associations",
+      "fileAssociationsDesc": "Open-with defaults"
+    },
+    "fileAssociations": {
+      "title": "File Associations",
+      "description": "Choose how to open different file types. Set defaults by double-clicking a code file and checking \"Always use this\".",
+      "noPreferences": "No file association preferences set yet. Double-click a code file to set one.",
+      "reset": "Reset",
+      "resetExt": "Reset default for .{{ext}} files",
+      "resetAll": "Reset all file associations"
     },
     "general": {
       "appearance": "Appearance",
@@ -559,6 +569,19 @@
     "betaWarning": "Beta Warning",
     "extensionInstall": "Install Extension",
     "advancedSelection": "Advanced Selection"
+  },
+
+  "openWith": {
+    "title": "Open With",
+    "xplorerEditor": "Xplorer Editor",
+    "xplorerEditorDesc": "Open in the built-in code editor",
+    "vscode": "VS Code",
+    "vscodeDesc": "Open in Visual Studio Code",
+    "systemDefault": "System Default",
+    "systemDefaultDesc": "Open with your OS default application",
+    "alwaysUse": "Always use this for .{{ext}} files",
+    "open": "Open",
+    "cancel": "Cancel"
   },
 
   "permissions": {

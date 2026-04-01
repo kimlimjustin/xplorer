@@ -64,6 +64,9 @@ export const STORAGE_KEYS = {
 
   // Google Drive
   PENDING_GDRIVE_TAB: 'xplorer:pending-gdrive-tab',
+
+  // File open preferences (Open With)
+  FILE_OPEN_PREFS: 'xplorer:file-open-prefs',
 } as const;
 
 export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];
