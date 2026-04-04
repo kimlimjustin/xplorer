@@ -90,7 +90,7 @@ jobs:
           args: --target ${{ matrix.target }}
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: xplorer-${{ matrix.target }}
           path: |
