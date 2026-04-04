@@ -57,7 +57,7 @@ rust-stemmers = "1.2"
 rustc-hash = "2"
 fst = { version = "0.4", features = ["levenshtein"] }
 roaring = "0.10"
-notify-debouncer-full = "0.4"
+notify-debouncer-full = "0.7"
 image = "0.25"
 git2 = "0.19"
 keyring = { version = "3", features = ["windows-native", "apple-native", "linux-native"] }
