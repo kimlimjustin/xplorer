@@ -56,7 +56,7 @@ notify = "7"
 rust-stemmers = "1.2"
 rustc-hash = "2"
 fst = { version = "0.4", features = ["levenshtein"] }
-roaring = "0.10"
+roaring = "0.11"
 notify-debouncer-full = "0.4"
 image = "0.25"
 git2 = "0.19"
