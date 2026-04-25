@@ -28,7 +28,7 @@ xz2 = "0.1"
 sha2 = "0.10"
 aes-gcm = "0.10"
 argon2 = "0.5"
-reqwest = { version = "0.12", features = ["json", "blocking", "stream"] }
+reqwest = { version = "0.13", features = ["json", "blocking", "stream"] }
 chrono = { version = "0.4", features = ["serde"] }
 ollama-rs = "0.3.2"
 trash = "5.1"
