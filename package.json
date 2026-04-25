@@ -123,7 +123,7 @@
     "postcss": "^8.4.47",
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
-    "tailwindcss": "^3.4.17",
+    "tailwindcss": "^4.2.2",
     "tailwindcss-animate": "^1.0.7",
     "tsx": "^4.19.1",
     "typescript": "5.6.3",

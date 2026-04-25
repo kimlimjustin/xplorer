@@ -53,7 +53,7 @@
     "jsdom": "^25.0.1",
     "postcss": "^8.4.0",
     "prisma": "^5.6.0",
-    "tailwindcss": "^3.4.0",
+    "tailwindcss": "^4.2.2",
     "tsx": "^4.0.0",
     "typescript": "^5.6.0",
     "vitest": "^2.1.9"
