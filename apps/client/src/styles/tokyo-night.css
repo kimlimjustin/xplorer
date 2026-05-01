@@ -168,7 +168,7 @@ select:focus {
 /* Selection styling */
 ::selection {
   background-color: var(--xp-blue);
-  color: var(--xp-bg);
+  color: var(--xp-text);
 }
 
 /* Backdrop blur for dropdowns */
