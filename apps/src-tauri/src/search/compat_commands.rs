@@ -622,6 +622,7 @@ pub async fn smart_search(
                     "openai" => "gpt-4o-mini".to_string(),
                     "ollama" => "llama3".to_string(),
                     "openrouter" => "anthropic/claude-sonnet-4".to_string(),
+                    "requesty" => "anthropic/claude-sonnet-4-5".to_string(),
                     _ => "llama3".to_string(),
                 }),
             ))
