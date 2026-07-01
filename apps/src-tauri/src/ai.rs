@@ -118,6 +118,41 @@ pub async fn get_ai_models() -> Result<Vec<AIModel>, String> {
         info!("Added OpenAI models to available models");
     }
 
+    // Add Requesty models if API key is available (from keychain or env var)
+    let requesty_api_key = crate::secure_credentials::get_secret("agent-requesty-api-key")
+        .ok()
+        .flatten()
+        .or_else(|| env::var("REQUESTY_API_KEY").ok());
+    if requesty_api_key.is_some() {
+        all_models.extend(vec![
+            AIModel {
+                id: "requesty:openai/gpt-4o-mini".to_string(),
+                name: "GPT-4o Mini (Requesty)".to_string(),
+                provider: "requesty".to_string(),
+                available: true,
+            },
+            AIModel {
+                id: "requesty:anthropic/claude-sonnet-4-5".to_string(),
+                name: "Claude Sonnet 4.5 (Requesty)".to_string(),
+                provider: "requesty".to_string(),
+                available: true,
+            },
+            AIModel {
+                id: "requesty:google/gemini-2.5-flash".to_string(),
+                name: "Gemini 2.5 Flash (Requesty)".to_string(),
+                provider: "requesty".to_string(),
+                available: true,
+            },
+            AIModel {
+                id: "requesty:deepseek/deepseek-chat".to_string(),
+                name: "DeepSeek Chat (Requesty)".to_string(),
+                provider: "requesty".to_string(),
+                available: true,
+            },
+        ]);
+        info!("Added Requesty models to available models");
+    }
+
     // Try to get Ollama models
     let ollama = Ollama::default();
     match ollama.list_local_models().await {
@@ -480,6 +515,13 @@ async fn route_ai_request(
             .unwrap_or(&model)
             .to_string();
         chat_with_openrouter(or_model, messages, file_context, None).await
+    } else if model.starts_with("requesty:") {
+        // Requesty model — strip the "requesty:" prefix
+        let rq_model = model
+            .strip_prefix("requesty:")
+            .unwrap_or(&model)
+            .to_string();
+        chat_with_requesty(rq_model, messages, file_context, None).await
     } else {
         // Use existing Ollama chat function
         chat_with_ollama(model, messages, file_context).await
@@ -587,6 +629,109 @@ async fn chat_with_openrouter(
         .and_then(|t| t.as_str())
         .map(|s| s.to_string())
         .ok_or_else(|| "No content in OpenRouter response".to_string())
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Requesty API (OpenAI-compatible)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// Chat via Requesty. Uses the caller's `api_key` when provided, otherwise
+/// falls back to the `REQUESTY_API_KEY` env var (for the hosted Xplorer Cloud service).
+async fn chat_with_requesty(
+    model: String,
+    messages: Vec<ChatMessage>,
+    file_context: Option<FileContext>,
+    api_key: Option<String>,
+) -> Result<String, String> {
+    let key = api_key
+        .or_else(|| env::var("REQUESTY_API_KEY").ok())
+        .ok_or_else(|| {
+            "Requesty API key not configured. Set it in Settings → AI or via REQUESTY_API_KEY env var.".to_string()
+        })?;
+
+    let client = reqwest::Client::builder()
+        .timeout(std::time::Duration::from_secs(60))
+        .connect_timeout(std::time::Duration::from_secs(10))
+        .build()
+        .map_err(|e| format!("Failed to create HTTP client: {}", e))?;
+
+    // Build system message
+    let mut system_content = "You are Copilot, an AI assistant integrated into the Xplorer file explorer. You help users with file management, code analysis, and development tasks. Be helpful, thorough, and practical. Provide detailed, comprehensive responses with specific examples and step-by-step guidance when appropriate. Include code examples, best practices, and additional context that would be valuable to the user.".to_string();
+
+    if let Some(context) = &file_context {
+        system_content.push_str(&format!(
+            "\n\nYou are currently working with:\nFile: {}\nPath: {}\nType: {}",
+            context.name, context.path, context.file_type
+        ));
+        if let Some(content) = &context.content {
+            system_content.push_str(&format!("\nContent:\n{}", content));
+        }
+    }
+
+    // Build OpenAI-compatible messages array
+    let mut api_messages = vec![serde_json::json!({
+        "role": "system",
+        "content": system_content,
+    })];
+
+    for msg in &messages {
+        let role = if msg.role == "user" {
+            "user"
+        } else {
+            "assistant"
+        };
+        api_messages.push(serde_json::json!({
+            "role": role,
+            "content": msg.content,
+        }));
+    }
+
+    // Ensure conversation ends with a user message
+    if messages.last().map(|m| m.role.as_str()) != Some("user") {
+        api_messages.push(serde_json::json!({
+            "role": "user",
+            "content": "Continue.",
+        }));
+    }
+
+    let body = serde_json::json!({
+        "model": model,
+        "max_tokens": 4096,
+        "messages": api_messages,
+    });
+
+    let response = client
+        .post("https://router.requesty.ai/v1/chat/completions")
+        .header("Authorization", format!("Bearer {}", key))
+        .header("HTTP-Referer", "https://requesty.ai")
+        .header("X-Title", "Xplorer")
+        .header("content-type", "application/json")
+        .json(&body)
+        .send()
+        .await
+        .map_err(|e| format!("Failed to send request to Requesty API: {}", e))?;
+
+    if !response.status().is_success() {
+        let error_text = response
+            .text()
+            .await
+            .unwrap_or_else(|_| "Unknown error".to_string());
+        return Err(format!("Requesty API error: {}", error_text));
+    }
+
+    let resp: serde_json::Value = response
+        .json()
+        .await
+        .map_err(|e| format!("Failed to parse Requesty response: {}", e))?;
+
+    resp.get("choices")
+        .and_then(|c| c.as_array())
+        .and_then(|arr| arr.first())
+        .and_then(|choice| choice.get("message"))
+        .and_then(|msg| msg.get("content"))
+        .and_then(|t| t.as_str())
+        .map(|s| s.to_string())
+        .ok_or_else(|| "No content in Requesty response".to_string())
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -819,6 +964,68 @@ pub async fn search_rerank_with_ai(
                 .ok_or_else(|| "No content in OpenRouter response".to_string())
         }
 
+        "requesty" => {
+            let key = api_key
+                .map(|k| k.to_string())
+                .or_else(|| env::var("REQUESTY_API_KEY").ok())
+                .ok_or_else(|| {
+                    "Requesty API key not configured. Set it in Settings → AI or via REQUESTY_API_KEY env var.".to_string()
+                })?;
+
+            let model_id = model.unwrap_or("anthropic/claude-sonnet-4-5");
+
+            let client = reqwest::Client::builder()
+                .timeout(std::time::Duration::from_secs(30))
+                .build()
+                .map_err(|e| format!("HTTP client error: {}", e))?;
+
+            let body = serde_json::json!({
+                "model": model_id,
+                "max_tokens": 2048,
+                "messages": [
+                    {"role": "system", "content": sys_prompt},
+                    {"role": "user", "content": prompt}
+                ]
+            });
+
+            let response = client
+                .post("https://router.requesty.ai/v1/chat/completions")
+                .header("Authorization", format!("Bearer {}", key))
+                .header("HTTP-Referer", "https://requesty.ai")
+                .header("X-Title", "Xplorer")
+                .header("content-type", "application/json")
+                .json(&body)
+                .send()
+                .await
+                .map_err(|e| format!("Requesty API request failed: {}", e))?;
+
+            if !response.status().is_success() {
+                let err = response.text().await.unwrap_or_default();
+                return Err(format!("Requesty API error: {}", err));
+            }
+
+            let resp: serde_json::Value = response
+                .json()
+                .await
+                .map_err(|e| format!("Failed to parse Requesty response: {}", e))?;
+
+            resp.get("choices")
+                .and_then(|c| c.as_array())
+                .and_then(|arr| arr.first())
+                .and_then(|choice| choice.get("message"))
+                .and_then(|msg| msg.get("content"))
+                .and_then(|t| t.as_str())
+                .map(|s| {
+                    if let Some(start) = s.find('[') {
+                        if let Some(end) = s.rfind(']') {
+                            return s[start..=end].to_string();
+                        }
+                    }
+                    s.to_string()
+                })
+                .ok_or_else(|| "No content in Requesty response".to_string())
+        }
+
         _ => Err(format!("Unknown AI provider: {}", provider)),
     }
 }
@@ -871,6 +1078,15 @@ pub async fn detect_best_provider() -> Option<(String, Option<String>, String)> 
             "openrouter".into(),
             Some(key),
             "anthropic/claude-sonnet-4".into(),
+        ));
+    }
+
+    // 5. Try Requesty (env var — used by Xplorer Cloud hosted service)
+    if let Ok(key) = env::var("REQUESTY_API_KEY") {
+        return Some((
+            "requesty".into(),
+            Some(key),
+            "anthropic/claude-sonnet-4-5".into(),
         ));
     }
 
